@@ -13,8 +13,8 @@ handed off; see "Status / what's left" below.**
 ## Layout
 
 ```
-gophertunnel/        gophertunnel-format generator (+ -drift)  (package main)
-raw/                 raw-format generator                       (package main)
+cmd/gophertunnel/        gophertunnel-format generator (+ -drift)  (package main)
+cmd/raw/                 raw-format generator                       (package main)
 internal/codegen/    shared generator library (both formats)
 internal/driftcheck/ drift detector
 ```
@@ -29,14 +29,14 @@ git clone --depth=1 https://github.com/Mojang/bedrock-protocol-docs /tmp/bpd
 git -C /tmp/bpd fetch origin pull/33/head && git -C /tmp/bpd checkout FETCH_HEAD
 
 # generate into a directory for inspection
-go run ./gophertunnel -docs=/tmp/bpd/json -out=out_gophertunnel
+go run ./cmd/gophertunnel -docs=/tmp/bpd/json -out=out_gophertunnel
 
 # overwrite an existing gophertunnel packet dir in place for git-diff review
-go run ./gophertunnel -docs=/tmp/bpd/json \
+go run ./cmd/gophertunnel -docs=/tmp/bpd/json \
     -packets=/path/to/gophertunnel/minecraft/protocol/packet -overwrite
 
 # report drift between the docs and a packet dir (no generation)
-go run ./gophertunnel -docs=/tmp/bpd/json \
+go run ./cmd/gophertunnel -docs=/tmp/bpd/json \
     -packets=/path/to/gophertunnel/minecraft/protocol/packet -drift
 ```
 
@@ -49,7 +49,7 @@ gopher's field names where the wire is unchanged.
 ## raw — a self-contained package
 
 ```sh
-go run ./raw -docs=/tmp/bpd/json -out=out_raw   # -pkg sets the package name (default "raw")
+go run ./cmd/raw -docs=/tmp/bpd/json -out=out_raw   # -pkg sets the package name (default "raw")
 ```
 
 Generates a struct for every packet (doc-faithful names, the `Packet` suffix kept
