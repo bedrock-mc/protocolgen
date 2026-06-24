@@ -30,7 +30,7 @@ git -C /tmp/bpd fetch origin pull/33/head && git -C /tmp/bpd checkout FETCH_HEAD
 go run ./gen -format=gophertunnel -docs=/tmp/bpd/json -out=out_gt
 
 # raw format: a self-contained package, no gophertunnel dependency
-go run ./gen -format=raw -docs=/tmp/bpd/json -out=out_raw -raw-pkg=bedrockproto
+go run ./gen -format=raw -docs=/tmp/bpd/json -out=out_raw   # package name defaults to "raw"
 ```
 
 It is built around a `Format` interface (`gen/format.go`) with two strategies:

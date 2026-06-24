@@ -31,7 +31,7 @@ func main() {
 	packetsDir := flag.String("packets", "minecraft/protocol/packet", "gophertunnel packet directory (for id.go); gophertunnel format only")
 	outDir := flag.String("out", "generated", "directory to write generated files into")
 	formatName := flag.String("format", "gophertunnel", "output format: gophertunnel | raw")
-	rawPkg := flag.String("raw-pkg", "bedrockproto", "package name for -format=raw output")
+	rawPkg := flag.String("raw-pkg", "raw", "package name for -format=raw output")
 	overwrite := flag.Bool("overwrite", false, "gophertunnel format only: overwrite existing packet files in -packets in place (matched by packet id) for git-diff review")
 	preserveMatching := flag.Bool("preserve-matching", true, "overwrite mode: keep gophertunnel's existing field name/type/op when the wire encoding is unchanged (skips pure renames)")
 	flag.Parse()
