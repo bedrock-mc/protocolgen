@@ -74,12 +74,19 @@ func ParseMojang(root string, pin manifest.SourcePin, corrections string) (claim
 		if name == "" {
 			name = strings.TrimSuffix(packetDoc.file, filepath.Ext(packetDoc.file))
 		}
-		properties, ok := asMap(document["properties"])
-		if !ok {
-			return claims.Result{}, fmt.Errorf("Mojang packet %s has no properties object", packetDoc.file)
+		body, bodyFile, err := lowerer.resolvePacketBody(document, packetDoc.file)
+		if err != nil {
+			return claims.Result{}, fmt.Errorf("Mojang packet %s: %w", packetDoc.file, err)
 		}
-		required := requiredNames(document["required"])
-		fields, err := lowerMojangFields(lowerer, packetDoc.id, name, parseDirection(document), packetDoc.file, properties, required, "")
+		properties, ok := asMap(body["properties"])
+		if !ok {
+			if asString(body["type"]) != "object" {
+				return claims.Result{}, fmt.Errorf("Mojang packet %s has no properties object", packetDoc.file)
+			}
+			properties = map[string]any{}
+		}
+		required := requiredNames(body["required"])
+		fields, err := lowerMojangFields(lowerer, packetDoc.id, name, parseDirection(document), bodyFile, properties, required, "")
 		if err != nil {
 			return claims.Result{}, err
 		}
@@ -92,6 +99,32 @@ func ParseMojang(root string, pin manifest.SourcePin, corrections string) (claim
 		return result.Claims[i].Ordinal < result.Claims[j].Ordinal
 	})
 	return result, nil
+}
+
+func (l *mojangLowerer) resolvePacketBody(document map[string]any, file string) (map[string]any, string, error) {
+	seen := map[string]bool{}
+	for reference := asString(document["$ref"]); reference != ""; reference = asString(document["$ref"]) {
+		fileName, pointer := splitReference(reference, file)
+		key := fileName + pointer
+		if seen[key] {
+			return nil, "", fmt.Errorf("cyclic root reference %s", reference)
+		}
+		seen[key] = true
+		targetDocument, ok := l.documents[fileName]
+		if !ok {
+			return nil, "", fmt.Errorf("missing root reference %s", reference)
+		}
+		target, ok := valueAt(targetDocument, pointer)
+		if !ok {
+			return nil, "", fmt.Errorf("missing root reference target %s", reference)
+		}
+		document, ok = asMap(target)
+		if !ok {
+			return nil, "", fmt.Errorf("root reference %s is not an object", reference)
+		}
+		file = fileName
+	}
+	return document, file, nil
 }
 
 func mojangTarget(documents map[string]any, pin manifest.SourcePin) (manifest.Target, error) {
@@ -288,6 +321,18 @@ func (l *mojangLowerer) lowerReference(reference, file, hint string, context map
 	if !ok {
 		return manifest.Unresolved("Mojang reference is not a schema "+reference, true)
 	}
+	if strings.EqualFold(asString(targetObject["title"]), "mce::UUID") {
+		result := manifest.Primitive("uuid")
+		result.Semantic = "mce::UUID"
+		result.TypeID = typeID
+		return result
+	}
+	if nested := asString(targetObject["$ref"]); nested != "" {
+		nestedFile, nestedPointer := splitReference(nested, fileName)
+		if nestedFile == fileName && nestedPointer == pointer && targetObject["type"] == nil && targetObject["properties"] == nil && targetObject["oneOf"] == nil && targetObject["allOf"] == nil && targetObject["enum"] == nil {
+			return manifest.Unresolved("bare self-referencing Mojang schema "+reference, true)
+		}
+	}
 	if hasOption(context, "Enum-as-Value") {
 		copyOfTarget := cloneMap(targetObject)
 		if underlying := asString(context["x-underlying-type"]); underlying != "" {
@@ -315,6 +360,21 @@ func (l *mojangLowerer) lowerUnion(schema map[string]any, branches []any, file, 
 	}
 	control := primitive(controlType, options(schema), "integer")
 	controlValues, _ := asArray(schema["x-control-values"])
+	positionalConfirmed, positionalCompatible := false, true
+	for index, rawBranch := range branches {
+		branch, ok := asMap(rawBranch)
+		if !ok {
+			continue
+		}
+		value, explicit := asInt(branch["x-ordinal-index"])
+		if !explicit && index < len(controlValues) {
+			value, explicit = asInt(controlValues[index])
+		}
+		if explicit {
+			positionalConfirmed = true
+			positionalCompatible = positionalCompatible && value == int64(index)
+		}
+	}
 	variants := make([]manifest.Variant, 0, len(branches))
 	seen := map[int64]bool{}
 	for index, rawBranch := range branches {
@@ -325,6 +385,9 @@ func (l *mojangLowerer) lowerUnion(schema map[string]any, branches []any, file, 
 		value, ok := asInt(branch["x-ordinal-index"])
 		if !ok && index < len(controlValues) {
 			value, ok = asInt(controlValues[index])
+		}
+		if !ok && positionalConfirmed && positionalCompatible {
+			value, ok = int64(index), true
 		}
 		if !ok || seen[value] {
 			return manifest.Unresolved("Mojang oneOf lacks unique explicit control values "+hint, true)

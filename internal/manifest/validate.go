@@ -142,6 +142,10 @@ func validateNode(node Node, path string, sourceIDs map[string]bool) error {
 		if err := validatePrefix(*node.Prefix, path+".prefix"); err != nil {
 			return err
 		}
+	case KindBitset:
+		if node.Length == 0 || node.Representation != "bitset" {
+			return fmt.Errorf("%s bitset must have a positive bit length and bitset representation", path)
+		}
 	case KindArray:
 		if node.Prefix == nil || node.Element == nil {
 			return fmt.Errorf("%s array must have explicit prefix and element", path)

@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "target": {
+    "minecraft_version": "1.26.40",
+    "protocol_version": 2168
+  },
+  "sources": [
+    {
+      "id": "mojang",
+      "kind": "mojang",
+      "revision": "bpd-fixer:529074ae7b332d1a5990de8fe9775edac16f191d/mojang:0e00fe80f4f3c71572ff6429de40146d1f4412fc",
+      "digest": "sha256:8484bfa294f9dd48b8b2dc6a2c7b9db4111f6e0a2a190c9a1b968f4f0937a246",
+      "locator": "https://github.com/TwistedAsylumMC/bpd-fixer/tree/529074ae7b332d1a5990de8fe9775edac16f191d/output/json",
+      "minecraft_version": "1.26.40",
+      "protocol_version": 2168
+    },
+    {
+      "id": "endstone",
+      "kind": "endstone",
+      "revision": "a25dea184832f8b0911d669bad400f43bedde1dd",
+      "digest": "sha256:431a94a90d3bd4f892ebe39c65e3468b4f439b3e5a9becfb65fc25fb529dc1a8",
+      "locator": "https://github.com/EndstoneMC/protocol-docs/tree/a25dea184832f8b0911d669bad400f43bedde1dd",
+      "minecraft_version": "1.26.40",
+      "protocol_version": 2168
+    }
+  ]
+}

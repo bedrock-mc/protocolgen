@@ -67,6 +67,10 @@ This produces:
   cannot alter; and
 - typed Rust packet structures with the same wire-layout descriptors.
 
+`generated/1.26.40/` contains the checked-in protocol 2168 source lock,
+canonical 223-packet manifest, and matching Go and Rust outputs generated from
+the pinned Endstone Cereal dump.
+
 For real generation, replace the fixture paths with immutable local Mojang and
 Endstone checkouts and record their revisions and directory hashes in the
 source lock. Protocol data is never downloaded or vendored by this repository.

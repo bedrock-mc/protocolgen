@@ -4,8 +4,11 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"reflect"
 	"sort"
+	"strconv"
 	"strings"
+	"unicode"
 
 	"protocolgen/internal/claims"
 	"protocolgen/internal/manifest"
@@ -110,6 +113,7 @@ func ParseEndstone(root string, pin manifest.SourcePin, corrections string) (cla
 		if !ok {
 			return claims.Result{}, fmt.Errorf("Endstone packet %s has no fields array", packet.name)
 		}
+		fields = normalizeEndstoneFields(fields)
 		for index, rawField := range fields {
 			field, ok := asMap(rawField)
 			if !ok {
@@ -124,12 +128,7 @@ func ParseEndstone(root string, pin manifest.SourcePin, corrections string) (cla
 				return claims.Result{}, fmt.Errorf("Endstone packet %s field %s has no type", packet.name, name)
 			}
 			node := lowerer.lowerTypeValue(typeValue, packet.name+safeIdentifierName(name), packet.name+"."+name)
-			if field["optional"] == true {
-				node = manifest.Optional(node)
-			}
-			if field["double_optional"] == true {
-				node = manifest.Optional(manifest.Optional(node))
-			}
+			node = lowerer.applyFieldWrappers(node, field, packet.name+"."+name)
 			reserved, ignored, compatibility := fieldCompatibility(field)
 			if reserved {
 				node = manifest.Reserved(node)
@@ -172,6 +171,9 @@ func endstoneTarget(root string, pin manifest.SourcePin) (manifest.Target, error
 }
 
 func (l *endstoneLowerer) lowerNamed(name, context string) manifest.Node {
+	if name == "cereal::DynamicValue" {
+		return cerealDynamicValue()
+	}
 	if primitiveNode := endstoneScalar(name); primitiveNode.Kind != manifest.KindUnresolved {
 		return primitiveNode
 	}
@@ -194,11 +196,30 @@ func (l *endstoneLowerer) lowerNamed(name, context string) manifest.Node {
 	return result
 }
 
+func cerealDynamicValue() manifest.Node {
+	const typeID = "cereal::DynamicValue"
+	recursive := manifest.Recursive(typeID)
+	node := manifest.Union(
+		manifest.Primitive("i32le"),
+		manifest.Variant{Value: 0, Name: "None", Encode: manifest.Void()},
+		manifest.Variant{Value: 1, Name: "Bool", Encode: manifest.Primitive("bool")},
+		manifest.Variant{Value: 2, Name: "Int64", Encode: manifest.Primitive("i64le")},
+		manifest.Variant{Value: 3, Name: "Double", Encode: manifest.Primitive("f64le")},
+		manifest.Variant{Value: 4, Name: "String", Encode: manifest.String(manifest.Primitive("var_u32"))},
+		manifest.Variant{Value: 5, Name: "List", Encode: manifest.Array(manifest.Primitive("var_u32"), recursive)},
+		manifest.Variant{Value: 6, Name: "Map", Encode: manifest.Map(manifest.Primitive("var_u32"), manifest.String(manifest.Primitive("var_u32")), recursive)},
+	)
+	node.Semantic = typeID
+	node.TypeID = typeID
+	return node
+}
+
 func (l *endstoneLowerer) lowerContainer(object map[string]any, name, context string) manifest.Node {
 	values, ok := asArray(object["fields"])
 	if !ok {
 		return manifest.Unresolved("Endstone type "+name+" has no fields", true)
 	}
+	values = normalizeEndstoneFields(values)
 	fields := make([]manifest.Field, 0, len(values))
 	for index, rawField := range values {
 		field, ok := asMap(rawField)
@@ -211,12 +232,26 @@ func (l *endstoneLowerer) lowerContainer(object map[string]any, name, context st
 		}
 		typeValue := field["type"]
 		node := l.lowerTypeValue(typeValue, name+safeIdentifierName(fieldName), context+"."+fieldName)
-		if field["optional"] == true {
-			node = manifest.Optional(node)
-		}
+		node = l.applyFieldWrappers(node, field, context+"."+fieldName)
 		fields = append(fields, manifest.Field{Ordinal: index, Name: fieldName, Semantic: fieldName, Encode: node, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{l.source.ID}}})
 	}
 	return manifest.Node{Kind: manifest.KindStruct, Semantic: name, TypeID: name, Fields: fields}
+}
+
+func (l *endstoneLowerer) applyFieldWrappers(node manifest.Node, field map[string]any, context string) manifest.Node {
+	if enumName := asString(field["enum"]); enumName != "" && node.Kind == manifest.KindPrimitive {
+		node = l.lowerEnum(enumName, node, context, endstoneEnumConstraints(field))
+	}
+	if repeat, ok := asMap(field["repeat"]); ok {
+		node = lowerEndstoneRepeat(repeat, node, context)
+	}
+	if field["optional"] == true {
+		node = manifest.Optional(node)
+	}
+	if field["double_optional"] == true {
+		node = manifest.Optional(manifest.Optional(node))
+	}
+	return node
 }
 
 func (l *endstoneLowerer) lowerTypeValue(value any, hint, context string) manifest.Node {
@@ -233,6 +268,17 @@ func (l *endstoneLowerer) lowerTypeValue(value any, hint, context string) manife
 		enumName := asString(switchObject["enum"])
 		discriminants := l.enumValues(enumName)
 		cases, ok := asArray(object["cases"])
+		if ok {
+			if variants, found := l.constrainedSwitchVariants(cases, asString(switchObject["name"]), enumName, context); found {
+				return manifest.Union(control, variants...)
+			}
+		}
+		if ok && enumName == "" {
+			discriminants = make([]int64, len(cases))
+			for index := range cases {
+				discriminants[index] = int64(index)
+			}
+		}
 		if !ok || len(cases) != len(discriminants) {
 			return manifest.Unresolved("Endstone switch cases do not have explicit enum ordinals at "+context, true)
 		}
@@ -266,7 +312,7 @@ func (l *endstoneLowerer) lowerTypeValue(value any, hint, context string) manife
 			result = l.lowerTypeValue(inner, hint, context)
 		}
 		if enumName := asString(object["enum"]); enumName != "" && result.Kind == manifest.KindPrimitive {
-			result = l.lowerEnum(enumName, result, context)
+			result = l.lowerEnum(enumName, result, context, endstoneEnumConstraints(object))
 		}
 		if repeat, ok := asMap(object["repeat"]); ok {
 			result = lowerEndstoneRepeat(repeat, result, context)
@@ -276,16 +322,197 @@ func (l *endstoneLowerer) lowerTypeValue(value any, hint, context string) manife
 	return manifest.Unresolved("unsupported Endstone type at "+context, true)
 }
 
-func (l *endstoneLowerer) lowerEnum(name string, underlying manifest.Node, context string) manifest.Node {
+// normalizeEndstoneFields collapses Cereal's repeated reflection view of one
+// union into the single wire field represented by its shared switch.
+func normalizeEndstoneFields(fields []any) []any {
+	result := make([]any, 0, len(fields))
+	for index := 0; index < len(fields); {
+		field, ok := asMap(fields[index])
+		if !ok {
+			result = append(result, fields[index])
+			index++
+			continue
+		}
+		typeObject, ok := asMap(field["type"])
+		if !ok {
+			result = append(result, fields[index])
+			index++
+			continue
+		}
+		cases, ok := asArray(typeObject["cases"])
+		if !ok || len(cases) < 2 || index+len(cases) > len(fields) {
+			result = append(result, fields[index])
+			index++
+			continue
+		}
+
+		matches := true
+		for offset, rawCase := range cases {
+			candidate, fieldOK := asMap(fields[index+offset])
+			caseName, caseOK := rawCase.(string)
+			if !fieldOK || !caseOK || !reflect.DeepEqual(candidate["type"], field["type"]) ||
+				normalizeCerealName(asString(candidate["name"])) != normalizeCerealName(shortCerealName(caseName)) {
+				matches = false
+				break
+			}
+		}
+		if !matches {
+			result = append(result, fields[index])
+			index++
+			continue
+		}
+		collapsed := cloneMap(field)
+		if name := cerealUnionFieldName(cases); name != "" {
+			collapsed["name"] = name
+		}
+		result = append(result, collapsed)
+		index += len(cases)
+	}
+	return result
+}
+
+func cerealUnionFieldName(cases []any) string {
+	common := ""
+	for _, rawCase := range cases {
+		caseName, ok := rawCase.(string)
+		if !ok {
+			return ""
+		}
+		position := strings.LastIndex(caseName, "::")
+		if position < 0 {
+			return ""
+		}
+		namespace := caseName[:position]
+		if common == "" {
+			common = namespace
+		} else if common != namespace {
+			return ""
+		}
+	}
+	base := shortCerealName(common)
+	switch {
+	case strings.HasSuffix(base, "PacketPayload"), strings.HasSuffix(base, "Payload"):
+		return "Payload"
+	case strings.HasSuffix(base, "Event"):
+		return "Event"
+	default:
+		return base
+	}
+}
+
+func shortCerealName(name string) string {
+	if position := strings.LastIndex(name, "::"); position >= 0 {
+		return name[position+2:]
+	}
+	return name
+}
+
+func normalizeCerealName(name string) string {
+	var builder strings.Builder
+	for _, r := range name {
+		if unicode.IsLetter(r) || unicode.IsDigit(r) {
+			builder.WriteRune(unicode.ToLower(r))
+		}
+	}
+	return builder.String()
+}
+
+func (l *endstoneLowerer) constrainedSwitchVariants(cases []any, controlField, enumName, context string) ([]manifest.Variant, bool) {
+	names := map[int64]string{}
+	for _, value := range l.enumValuesWithNames(enumName) {
+		names[value.value] = value.name
+	}
+	seen := map[int64]bool{}
+	var variants []manifest.Variant
+	for _, rawCase := range cases {
+		caseName, ok := rawCase.(string)
+		if !ok {
+			return nil, false
+		}
+		document, ok := namedDocument(l.types, caseName)
+		if !ok {
+			return nil, false
+		}
+		object, ok := asMap(document)
+		if !ok {
+			return nil, false
+		}
+		fields, ok := asArray(object["fields"])
+		if !ok || len(fields) == 0 {
+			return nil, false
+		}
+		discriminator, ok := asMap(fields[0])
+		if !ok || controlField != "" && asString(discriminator["name"]) != controlField {
+			return nil, false
+		}
+		constraints, ok := asMap(discriminator["constraints"])
+		if !ok {
+			return nil, false
+		}
+		values, ok := asArray(constraints["enum_values"])
+		if !ok || len(values) == 0 {
+			return nil, false
+		}
+		payload := l.lowerNamed(caseName, context)
+		if payload.Kind != manifest.KindStruct || len(payload.Fields) == 0 {
+			return nil, false
+		}
+		payload.Fields = append([]manifest.Field(nil), payload.Fields[1:]...)
+		for _, rawValue := range values {
+			value, ok := asInt(rawValue)
+			if !ok || seen[value] {
+				return nil, false
+			}
+			seen[value] = true
+			name := names[value]
+			if name == "" {
+				name = fmt.Sprintf("%s%d", safeIdentifierName(caseName), value)
+			}
+			variants = append(variants, manifest.Variant{Value: value, Name: name, Encode: payload})
+		}
+	}
+	sort.Slice(variants, func(i, j int) bool { return variants[i].Value < variants[j].Value })
+	return variants, len(variants) != 0
+}
+
+func (l *endstoneLowerer) lowerEnum(name string, underlying manifest.Node, context string, allowed map[int64]bool) manifest.Node {
 	values := l.enumValuesWithNames(name)
 	if len(values) == 0 || underlying.Primitive == nil {
 		return manifest.Unresolved("Endstone enum "+name+" is incomplete at "+context, true)
 	}
 	variants := make([]manifest.Variant, 0, len(values))
+	seen := map[int64]bool{}
 	for _, value := range values {
+		if len(allowed) != 0 && !allowed[value.value] || seen[value.value] {
+			continue
+		}
+		seen[value.value] = true
 		variants = append(variants, manifest.Variant{Value: value.value, Name: value.name, Encode: manifest.Void()})
 	}
+	if len(allowed) != 0 && len(seen) != len(allowed) {
+		return manifest.Unresolved("Endstone enum "+name+" constraints reference unknown values at "+context, true)
+	}
 	return manifest.Node{Kind: manifest.KindEnum, Primitive: underlying.Primitive, Semantic: name, TypeID: "enums/" + name, Variants: variants}
+}
+
+func endstoneEnumConstraints(field map[string]any) map[int64]bool {
+	constraints, ok := asMap(field["constraints"])
+	if !ok {
+		return nil
+	}
+	values, ok := asArray(constraints["enum_values"])
+	if !ok {
+		return nil
+	}
+	result := make(map[int64]bool, len(values))
+	for _, rawValue := range values {
+		value, ok := asInt(rawValue)
+		if !ok {
+			return nil
+		}
+		result[value] = true
+	}
+	return result
 }
 
 func (l *endstoneLowerer) enumValues(name string) []int64 {
@@ -342,25 +569,34 @@ func namedDocument(documents map[string]any, name string) (any, bool) {
 		if strings.TrimSuffix(file, filepath.Ext(file)) == name {
 			return document, true
 		}
+		if object, ok := asMap(document); ok && asString(object["name"]) == name {
+			return document, true
+		}
 	}
 	return nil, false
 }
 
 func endstoneScalar(name string) manifest.Node {
+	lowerName := strings.ToLower(name)
+	for _, prefix := range []string{"brstd::bitset<", "std::bitset<"} {
+		if strings.HasPrefix(lowerName, prefix) && strings.HasSuffix(lowerName, ">") {
+			bits, err := strconv.ParseUint(strings.TrimSuffix(strings.TrimPrefix(lowerName, prefix), ">"), 10, 64)
+			if err == nil && bits > 0 {
+				return manifest.Bitset(bits)
+			}
+		}
+	}
 	switch strings.ToLower(name) {
 	case "string", "pstring", "mcpe_string":
 		return manifest.String(manifest.Primitive("var_u32"))
 	case "restbuffer", "bytearray", "buffer", "bytes":
 		return manifest.Bytes(manifest.Primitive("var_u32"))
-	case "nbt", "lnbt":
+	case "nbt", "lnbt", "compoundtag":
 		return manifest.Primitive("nbt_le")
 	case "bool", "boolean":
 		return manifest.Primitive("bool")
 	}
-	if strings.HasPrefix(strings.ToLower(name), "var") {
-		return primitive(name, nil, "integer")
-	}
-	known := map[string]string{"byte": "i8", "int8": "i8", "ubyte": "u8", "uint8": "u8", "short": "i16le", "int16": "i16le", "ushort": "u16le", "uint16": "u16le", "int": "i32le", "int32": "i32le", "uint": "u32le", "uint32": "u32le", "long": "i64le", "int64": "i64le", "ulong": "u64le", "uint64": "u64le", "float": "f32le", "float32": "f32le", "double": "f64le", "float64": "f64le", "uuid": "uuid"}
+	known := map[string]string{"byte": "i8", "int8": "i8", "ubyte": "u8", "uint8": "u8", "short": "i16le", "int16": "i16le", "ushort": "u16le", "uint16": "u16le", "int": "i32le", "int32": "i32le", "int32_be": "i32be", "uint": "u32le", "uint32": "u32le", "long": "i64le", "int64": "i64le", "ulong": "u64le", "uint64": "u64le", "float": "f32le", "float32": "f32le", "double": "f64le", "float64": "f64le", "varint": "zigzag_i32", "varint32": "zigzag_i32", "varlong": "zigzag_i64", "varint64": "zigzag_i64", "uvarint32": "var_u32", "uvarint64": "var_u64", "uuid": "uuid", "mce::uuid": "uuid"}
 	if code, ok := known[strings.ToLower(name)]; ok {
 		return manifest.Primitive(code)
 	}
@@ -369,7 +605,7 @@ func endstoneScalar(name string) manifest.Node {
 
 func lowerEndstoneRepeat(repeat map[string]any, inner manifest.Node, context string) manifest.Node {
 	if prefix := asString(repeat["prefix"]); prefix != "" {
-		prefixNode := primitive(prefix, nil, "integer")
+		prefixNode := endstoneScalar(prefix)
 		if prefixNode.Kind == manifest.KindUnresolved {
 			return manifest.Unresolved("unknown Endstone repeat prefix "+prefix+" at "+context, true)
 		}

@@ -32,6 +32,7 @@ const (
 	KindPrimitive   NodeKind = "primitive"
 	KindString      NodeKind = "string"
 	KindBytes       NodeKind = "bytes"
+	KindBitset      NodeKind = "bitset"
 	KindArray       NodeKind = "array"
 	KindFixedArray  NodeKind = "fixed_array"
 	KindSequence    NodeKind = "sequence"
@@ -217,6 +218,8 @@ func String(prefix Node) Node {
 func Bytes(prefix Node) Node {
 	return Node{Kind: KindBytes, Prefix: &prefix, Representation: "bytes"}
 }
+
+func Bitset(bits uint64) Node { return Node{Kind: KindBitset, Length: bits, Representation: "bitset"} }
 
 func Array(prefix, element Node) Node {
 	return Node{Kind: KindArray, Prefix: &prefix, Element: &element}

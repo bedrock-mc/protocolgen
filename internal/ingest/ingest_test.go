@@ -55,6 +55,110 @@ func TestMojangIngestionRetainsWireVocabulary(t *testing.T) {
 	}
 }
 
+func TestMojangPacketRootReferenceUsesPayloadFields(t *testing.T) {
+	root := t.TempDir()
+	writeJSON(t, filepath.Join(root, "LoginPacket.json"), map[string]any{
+		"title": "LoginPacket", "$metaProperties": map[string]any{"[cereal:packet]": 1},
+		"x-minecraft-version": "1.26.40", "x-protocol-version": 2168,
+		"$ref": "./LoginPacketPayload.json",
+	})
+	writeJSON(t, filepath.Join(root, "LoginPacketPayload.json"), map[string]any{
+		"title": "LoginPacketPayload", "type": "object",
+		"x-minecraft-version": "1.26.40", "x-protocol-version": 2168,
+		"properties": map[string]any{
+			"Client Network Version": map[string]any{"type": "integer", "x-underlying-type": "int32", "x-serialization-options": []string{"Big Endian"}, "x-ordinal-index": 0},
+			"Connection Request":     map[string]any{"type": "string", "x-ordinal-index": 1},
+		},
+		"required": []string{"Client Network Version", "Connection Request"},
+	})
+
+	result, err := ParseMojang(root, fixturePin("mojang"), "")
+	if err != nil {
+		t.Fatalf("ParseMojang: %v", err)
+	}
+	if len(result.Claims) != 2 {
+		t.Fatalf("claims = %d, want 2", len(result.Claims))
+	}
+	if got := result.Claims[0].Encode.Primitive.Code; got != "i32be" {
+		t.Fatalf("client network version codec = %q, want i32be", got)
+	}
+}
+
+func TestMojangPacketRootReferenceAllowsEmptyObject(t *testing.T) {
+	root := t.TempDir()
+	writeJSON(t, filepath.Join(root, "HandshakePacket.json"), map[string]any{
+		"title": "HandshakePacket", "$metaProperties": map[string]any{"[cereal:packet]": 4},
+		"x-minecraft-version": "1.26.40", "x-protocol-version": 2168,
+		"$ref": "./HandshakePacketPayload.json",
+	})
+	writeJSON(t, filepath.Join(root, "HandshakePacketPayload.json"), map[string]any{
+		"title": "HandshakePacketPayload", "type": "object",
+		"x-minecraft-version": "1.26.40", "x-protocol-version": 2168,
+	})
+
+	result, err := ParseMojang(root, fixturePin("mojang"), "")
+	if err != nil {
+		t.Fatalf("ParseMojang: %v", err)
+	}
+	if len(result.Claims) != 0 {
+		t.Fatalf("claims = %d, want 0", len(result.Claims))
+	}
+}
+
+func TestMojangBareSelfReferenceIsUnresolved(t *testing.T) {
+	root := t.TempDir()
+	writeJSON(t, filepath.Join(root, "HandshakePacket.json"), map[string]any{
+		"title": "HandshakePacket", "$metaProperties": map[string]any{"[cereal:packet]": 3},
+		"x-minecraft-version": "1.26.40", "x-protocol-version": 2168,
+		"properties": map[string]any{
+			"Token": map[string]any{"$ref": "./WebToken.json", "x-ordinal-index": 0},
+		},
+		"required": []string{"Token"},
+	})
+	writeJSON(t, filepath.Join(root, "WebToken.json"), map[string]any{
+		"title": "WebToken", "$ref": "./WebToken.json",
+		"x-minecraft-version": "1.26.40", "x-protocol-version": 2168,
+	})
+
+	result, err := ParseMojang(root, fixturePin("mojang"), "")
+	if err != nil {
+		t.Fatalf("ParseMojang: %v", err)
+	}
+	if got := result.Claims[0].Encode.Kind; got != manifest.KindUnresolved {
+		t.Fatalf("self reference kind = %q, want unresolved", got)
+	}
+}
+
+func TestMojangUnionInfersMissingPositionalSelectorWhenPublishedSelectorsConfirmOrder(t *testing.T) {
+	lowerer := &mojangLowerer{documents: map[string]any{}, active: map[string]bool{}}
+	node := lowerer.lowerSchema(map[string]any{
+		"oneOf": []any{
+			map[string]any{"title": "Payload", "type": "string"},
+			map[string]any{"title": "None", "type": "null", "x-ordinal-index": 1},
+		},
+		"x-control-value-type": "uint32",
+	}, "Packet.json", "PacketChoice")
+	if node.Kind != manifest.KindUnion || len(node.Variants) != 2 || node.Variants[0].Value != 0 || node.Variants[1].Value != 1 {
+		t.Fatalf("union = %#v, want positional selectors 0 and 1", node)
+	}
+}
+
+func TestMojangUUIDReferenceUsesCanonicalPrimitive(t *testing.T) {
+	lowerer := &mojangLowerer{documents: map[string]any{
+		"mce__UUID.json": map[string]any{
+			"title": "mce::UUID", "type": "object",
+			"properties": map[string]any{
+				"Most Significant Bits":  map[string]any{"type": "integer", "x-underlying-type": "uint64", "x-ordinal-index": 0},
+				"Least Significant Bits": map[string]any{"type": "integer", "x-underlying-type": "uint64", "x-ordinal-index": 1},
+			},
+		},
+	}, active: map[string]bool{}}
+	node := lowerer.lowerSchema(map[string]any{"$ref": "./mce__UUID.json"}, "Packet.json", "PacketUUID")
+	if node.Kind != manifest.KindPrimitive || node.Primitive == nil || node.Primitive.Code != "uuid" {
+		t.Fatalf("UUID reference = %#v, want canonical uuid primitive", node)
+	}
+}
+
 func TestEndstoneIngestionRetainsMapsSwitchesAndFixedArrays(t *testing.T) {
 	root := t.TempDir()
 	if err := os.Mkdir(filepath.Join(root, "packets"), 0o755); err != nil {
@@ -88,6 +192,150 @@ func TestEndstoneIngestionRetainsMapsSwitchesAndFixedArrays(t *testing.T) {
 	}
 	if result.Claims[1].Encode.Kind != manifest.KindFixedArray || result.Claims[2].Encode.Kind != manifest.KindUnion || result.Claims[4].Encode.Kind != manifest.KindBytes || result.Claims[5].Encode.Kind != manifest.KindMap {
 		t.Fatalf("unexpected Endstone shapes: %#v", result.Claims)
+	}
+}
+
+func TestEndstonePacketFieldAppliesRepeatPrefix(t *testing.T) {
+	root := t.TempDir()
+	for _, directory := range []string{"packets", "types", "enums"} {
+		if err := os.Mkdir(filepath.Join(root, directory), 0o755); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := os.WriteFile(filepath.Join(root, "README.md"), []byte("**Minecraft Version:** `1.26.40.1`\n**Network Version:** `2168`\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	writeJSON(t, filepath.Join(root, "packets", "ListPacket.json"), map[string]any{
+		"name": "ListPacket", "id": 1,
+		"fields": []any{map[string]any{"name": "Items", "type": "uint16", "repeat": map[string]any{"prefix": "uvarint32"}}},
+	})
+
+	result, err := ParseEndstone(root, fixturePin("endstone"), "")
+	if err != nil {
+		t.Fatalf("ParseEndstone: %v", err)
+	}
+	node := result.Claims[0].Encode
+	if node.Kind != manifest.KindArray || node.Prefix == nil || node.Prefix.Primitive == nil || node.Prefix.Primitive.Code != "var_u32" {
+		t.Fatalf("field = %#v, want var_u32-prefixed array", node)
+	}
+}
+
+func TestEndstoneFieldEnumUsesItsCerealValueConstraints(t *testing.T) {
+	lowerer := &endstoneLowerer{
+		types: map[string]any{},
+		enums: map[string]any{
+			"GameType.json": map[string]any{"name": "GameType", "values": []any{
+				map[string]any{"name": "Survival", "value": 0},
+				map[string]any{"name": "Creative", "value": 1},
+				map[string]any{"name": "WorldDefault", "value": 0},
+			}},
+		},
+		active: map[string]bool{},
+	}
+	field := map[string]any{
+		"name": "Game Type", "type": "varint32", "enum": "GameType",
+		"constraints": map[string]any{"enum_values": []any{0, 1}},
+	}
+	node := lowerer.applyFieldWrappers(endstoneScalar("varint32"), field, "StartGamePacket.Game Type")
+	if node.Kind != manifest.KindEnum || len(node.Variants) != 2 {
+		t.Fatalf("enum = %#v, want two constrained values", node)
+	}
+	if node.Variants[0].Name != "Survival" || node.Variants[1].Name != "Creative" {
+		t.Fatalf("variants = %#v, want first canonical names for values 0 and 1", node.Variants)
+	}
+}
+
+func TestEndstoneSwitchUsesVariantCerealSelectorConstraints(t *testing.T) {
+	lowerer := &endstoneLowerer{
+		types: map[string]any{
+			"MessageOnly.json": map[string]any{"name": "MessageOnly", "fields": []any{
+				map[string]any{"name": "Message Type", "type": "uint8", "enum": "MessageType", "constraints": map[string]any{"enum_values": []any{0, 2}}},
+				map[string]any{"name": "Message", "type": "string"},
+			}},
+		},
+		enums: map[string]any{
+			"MessageType.json": map[string]any{"name": "MessageType", "values": []any{
+				map[string]any{"name": "Raw", "value": 0}, map[string]any{"name": "Chat", "value": 1}, map[string]any{"name": "System", "value": 2},
+			}},
+		},
+		active: map[string]bool{},
+	}
+	node := lowerer.lowerTypeValue(map[string]any{
+		"switch": map[string]any{"name": "Message Type", "type": "uint8", "enum": "MessageType"},
+		"cases":  []any{"MessageOnly"},
+	}, "PacketBody", "Packet.Body")
+	if node.Kind != manifest.KindUnion || len(node.Variants) != 2 || node.Variants[0].Value != 0 || node.Variants[1].Value != 2 {
+		t.Fatalf("union = %#v, want selectors 0 and 2", node)
+	}
+	for _, variant := range node.Variants {
+		if variant.Encode.Kind != manifest.KindStruct || len(variant.Encode.Fields) != 1 || variant.Encode.Fields[0].Name != "Message" {
+			t.Fatalf("variant payload = %#v, want discriminator removed", variant.Encode)
+		}
+	}
+}
+
+func TestEndstoneSwitchUsesCaseOrderWithoutNamedEnum(t *testing.T) {
+	lowerer := &endstoneLowerer{
+		types: map[string]any{
+			"Stop.json":      map[string]any{"name": "Stop", "fields": []any{}},
+			"SetVolume.json": map[string]any{"name": "SetVolume", "fields": []any{map[string]any{"name": "Volume", "type": "float32"}}},
+		},
+		enums:  map[string]any{},
+		active: map[string]bool{},
+	}
+	node := lowerer.lowerTypeValue(map[string]any{
+		"switch": map[string]any{"type": "uvarint32"},
+		"cases":  []any{"Stop", "SetVolume"},
+	}, "SoundEvent", "Packet.Event")
+	if node.Kind != manifest.KindUnion || len(node.Variants) != 2 {
+		t.Fatalf("union = %#v, want two variants", node)
+	}
+	if node.Variants[0].Value != 0 || node.Variants[1].Value != 1 {
+		t.Fatalf("selectors = [%d, %d], want [0, 1]", node.Variants[0].Value, node.Variants[1].Value)
+	}
+}
+
+func TestEndstoneCollapsesRepeatedCerealUnionFields(t *testing.T) {
+	root := t.TempDir()
+	for _, directory := range []string{"packets", "types", "enums"} {
+		if err := os.Mkdir(filepath.Join(root, directory), 0o755); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := os.WriteFile(filepath.Join(root, "README.md"), []byte("**Minecraft Version:** `1.26.40.1`\n**Network Version:** `2168`\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	unionType := map[string]any{
+		"switch": map[string]any{"type": "uvarint32"},
+		"cases":  []any{"SoundDataEvent::Stop", "SoundDataEvent::SetVolume"},
+	}
+	writeJSON(t, filepath.Join(root, "packets", "SoundPacket.json"), map[string]any{
+		"name": "SoundPacket", "id": 7,
+		"fields": []any{
+			map[string]any{"name": "Handle", "type": "uint64"},
+			map[string]any{"name": "Stop", "type": unionType},
+			map[string]any{"name": "SetVolume", "type": unionType},
+			map[string]any{"name": "Tail", "type": "bool"},
+		},
+	})
+	writeJSON(t, filepath.Join(root, "types", "Stop.json"), map[string]any{"name": "SoundDataEvent::Stop", "fields": []any{}})
+	writeJSON(t, filepath.Join(root, "types", "SetVolume.json"), map[string]any{"name": "SoundDataEvent::SetVolume", "fields": []any{map[string]any{"name": "Volume", "type": "float32"}}})
+
+	result, err := ParseEndstone(root, fixturePin("endstone"), "")
+	if err != nil {
+		t.Fatalf("ParseEndstone: %v", err)
+	}
+	if len(result.Claims) != 3 {
+		t.Fatalf("claims = %d, want handle, one union, and tail", len(result.Claims))
+	}
+	if result.Claims[1].Encode.Kind != manifest.KindUnion {
+		t.Fatalf("collapsed field = %#v, want union", result.Claims[1].Encode)
+	}
+	if result.Claims[1].Name != "Event" {
+		t.Fatalf("collapsed field name = %q, want common Cereal union name Event", result.Claims[1].Name)
+	}
+	if result.Claims[2].Name != "Tail" || result.Claims[2].Ordinal != 2 {
+		t.Fatalf("tail = %#v, want recomputed ordinal 2", result.Claims[2])
 	}
 }
 
@@ -138,7 +386,7 @@ func TestMojangRejectsMixedProtocolDocuments(t *testing.T) {
 
 func TestEndstoneSpecialUnknownsStayReachableUnresolved(t *testing.T) {
 	lowerer := &endstoneLowerer{types: map[string]any{}, enums: map[string]any{}, active: map[string]bool{}}
-	for _, name := range []string{"cereal::DynamicValue", "brstd::bitset<128>"} {
+	for _, name := range []string{"cereal::UnknownBuiltin"} {
 		node := lowerer.lowerNamed(name, "fixture")
 		if node.Kind != manifest.KindUnresolved || !node.Reachable {
 			t.Fatalf("%s lowered to %#v, want reachable unresolved", name, node)
@@ -153,6 +401,60 @@ func TestUUIDUsesCanonicalPrimitive(t *testing.T) {
 	node := primitive("uuid", nil, "")
 	if node.Kind != manifest.KindPrimitive || node.Primitive == nil || node.Primitive.Code != "uuid" {
 		t.Fatalf("uuid node = %#v, want canonical uuid primitive", node)
+	}
+}
+
+func TestEndstoneScalarSpellingsUseCanonicalPrimitives(t *testing.T) {
+	tests := map[string]string{
+		"int32_be":    "i32be",
+		"varint32":    "zigzag_i32",
+		"varint64":    "zigzag_i64",
+		"uvarint32":   "var_u32",
+		"uvarint64":   "var_u64",
+		"mce::UUID":   "uuid",
+		"CompoundTag": "nbt_le",
+	}
+	for input, want := range tests {
+		t.Run(input, func(t *testing.T) {
+			node := endstoneScalar(input)
+			if node.Kind != manifest.KindPrimitive || node.Primitive == nil || node.Primitive.Code != want {
+				t.Fatalf("endstoneScalar(%q) = %#v, want %s", input, node, want)
+			}
+		})
+	}
+}
+
+func TestEndstoneFixedWidthBitsetRetainsItsCerealBitCount(t *testing.T) {
+	node := endstoneScalar("brstd::bitset<131>")
+	if node.Kind != manifest.NodeKind("bitset") || node.Length != 131 {
+		t.Fatalf("bitset = %#v, want 131-bit wire shape", node)
+	}
+}
+
+func TestEndstoneCerealDynamicValueLowersToRecursiveTaggedValue(t *testing.T) {
+	lowerer := &endstoneLowerer{types: map[string]any{}, enums: map[string]any{}, active: map[string]bool{}}
+	node := lowerer.lowerNamed("cereal::DynamicValue", "fixture")
+	if node.Kind != manifest.KindUnion || node.TypeID != "cereal::DynamicValue" || len(node.Variants) != 7 {
+		t.Fatalf("dynamic value = %#v, want seven-way recursive union", node)
+	}
+	if node.Control == nil || node.Control.Primitive == nil || node.Control.Primitive.Code != "i32le" {
+		t.Fatalf("dynamic value control = %#v, want fixed i32", node.Control)
+	}
+	list := node.Variants[5].Encode
+	if list.Kind != manifest.KindArray || list.Element == nil || list.Element.Kind != manifest.KindRecursive || list.Element.Target != "cereal::DynamicValue" {
+		t.Fatalf("dynamic list = %#v, want recursive value array", list)
+	}
+	mapping := node.Variants[6].Encode
+	if mapping.Kind != manifest.KindMap || mapping.Value == nil || mapping.Value.Kind != manifest.KindRecursive || mapping.Value.Target != "cereal::DynamicValue" {
+		t.Fatalf("dynamic map = %#v, want recursive string/value map", mapping)
+	}
+}
+
+func TestEndstoneNamedDocumentUsesDeclaredName(t *testing.T) {
+	document := map[string]any{"name": "Connection::DisconnectFailReason", "values": []any{}}
+	got, ok := namedDocument(map[string]any{"Connection__DisconnectFailReason.json": document}, "Connection::DisconnectFailReason")
+	if !ok || got == nil {
+		t.Fatal("namedDocument did not match the document's declared C++ name")
 	}
 }
 

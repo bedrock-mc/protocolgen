@@ -149,6 +149,8 @@ func (g *generator) rustType(node manifest.Node, hint string) (string, error) {
 		return "String", nil
 	case manifest.KindBytes:
 		return "Vec<u8>", nil
+	case manifest.KindBitset:
+		return "Vec<u8>", nil
 	case manifest.KindArray:
 		if node.Element == nil {
 			return "", fmt.Errorf("array has no element")
@@ -330,13 +332,50 @@ func typeName(value string) string {
 }
 
 func fieldName(value string) string {
-	name := typeName(value)
+	runes := []rune(value)
+	var b strings.Builder
+	boundary := false
+	for index, r := range runes {
+		if !unicode.IsLetter(r) && !unicode.IsDigit(r) {
+			boundary = b.Len() != 0
+			continue
+		}
+		upper := unicode.IsUpper(r)
+		previousLowerOrDigit := index > 0 && (unicode.IsLower(runes[index-1]) || unicode.IsDigit(runes[index-1]))
+		nextLower := index+1 < len(runes) && unicode.IsLower(runes[index+1])
+		if b.Len() != 0 && (boundary || upper && (previousLowerOrDigit || nextLower)) {
+			b.WriteByte('_')
+		}
+		b.WriteRune(unicode.ToLower(r))
+		boundary = false
+	}
+	name := b.String()
 	if name == "" {
 		return "field"
 	}
-	runes := []rune(name)
-	runes[0] = unicode.ToLower(runes[0])
-	return string(runes)
+	if rustUnrawableKeywords[name] {
+		return name + "_"
+	}
+	if rustKeywords[name] {
+		return "r#" + name
+	}
+	return name
+}
+
+var rustUnrawableKeywords = map[string]bool{"crate": true, "self": true, "super": true}
+
+var rustKeywords = map[string]bool{
+	"Self": true, "abstract": true, "as": true, "async": true, "await": true,
+	"become": true, "box": true, "break": true, "const": true, "continue": true,
+	"crate": true, "do": true, "dyn": true, "else": true, "enum": true,
+	"extern": true, "false": true, "final": true, "fn": true, "for": true,
+	"gen": true, "if": true, "impl": true, "in": true, "let": true,
+	"loop": true, "macro": true, "match": true, "mod": true, "move": true,
+	"mut": true, "override": true, "priv": true, "pub": true, "ref": true,
+	"return": true, "self": true, "static": true, "struct": true, "super": true,
+	"trait": true, "true": true, "try": true, "type": true, "typeof": true,
+	"union": true, "unsafe": true, "unsized": true, "use": true, "virtual": true,
+	"where": true, "while": true, "yield": true,
 }
 
 func uniqueField(base string, used map[string]bool) string {

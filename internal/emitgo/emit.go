@@ -73,6 +73,8 @@ func (g *generator) goType(node manifest.Node, hint string) (string, error) {
 		return "string", nil
 	case manifest.KindBytes:
 		return "[]byte", nil
+	case manifest.KindBitset:
+		return "[]byte", nil
 	case manifest.KindArray:
 		if node.Element == nil {
 			return "", fmt.Errorf("array has no element")

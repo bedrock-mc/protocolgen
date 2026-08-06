@@ -37,3 +37,32 @@ func TestGenerateRustFailsClosedForUnresolved(t *testing.T) {
 		t.Fatalf("Generate error = %v, want unresolved failure", err)
 	}
 }
+
+func TestGenerateRustEscapesKeywordFieldNames(t *testing.T) {
+	m := manifest.Manifest{
+		SchemaVersion: 2,
+		Target:        manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168},
+		Sources:       []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:rust", MinecraftVersion: "fixture", ProtocolVersion: 2168}},
+		Packets:       []manifest.Packet{{ID: 1, Name: "KeywordPacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{Ordinal: 0, Name: "Type", Encode: manifest.Primitive("u8"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}},
+	}
+	source, err := Generate(m)
+	if err != nil {
+		t.Fatalf("Generate: %v", err)
+	}
+	if !strings.Contains(source, "pub r#type: u8") {
+		t.Fatalf("generated Rust did not escape keyword field:\n%s", source)
+	}
+}
+
+func TestRustFieldNamesUseSnakeCase(t *testing.T) {
+	tests := map[string]string{
+		"Actor Unique ID": "actor_unique_id",
+		"FrameRate":       "frame_rate",
+		"Pack UUID":       "pack_uuid",
+	}
+	for input, want := range tests {
+		if got := fieldName(input); got != want {
+			t.Fatalf("fieldName(%q) = %q, want %q", input, got, want)
+		}
+	}
+}

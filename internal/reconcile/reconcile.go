@@ -126,21 +126,8 @@ func selectClaim(target manifest.Target, group []claims.Claim, adjudications []m
 	if len(group) == 0 {
 		return claims.Claim{}, nil, nil, "", fmt.Errorf("empty claim group")
 	}
-	first := comparable(group[0])
-	same := true
-	for _, claim := range group[1:] {
-		if !reflect.DeepEqual(first, comparable(claim)) {
-			same = false
-			break
-		}
-	}
-	if same {
-		pinIDs := make([]string, 0, len(group))
-		for _, claim := range group {
-			pinIDs = append(pinIDs, claim.SourceID)
-		}
-		sort.Strings(pinIDs)
-		return group[0], pinIDs, nil, "", nil
+	if merged, pinIDs, ok := mergeClaimGroup(group); ok {
+		return merged, pinIDs, nil, "", nil
 	}
 
 	context, err := claims.ContextFingerprint(target, group)
@@ -172,10 +159,412 @@ func selectClaim(target manifest.Target, group []claims.Claim, adjudications []m
 	return claims.Claim{}, nil, nil, "", fmt.Errorf("source claims for %s disagree; an evidenced fingerprinted adjudication is required", group[0].FieldPath)
 }
 
+func mergeClaimGroup(group []claims.Claim) (claims.Claim, []string, bool) {
+	selected := group[0]
+	for _, claim := range group[1:] {
+		if semanticScore(claim) > semanticScore(selected) {
+			selected = claim
+		}
+	}
+	merged := selected
+	for _, claim := range group {
+		if claim.PacketID != merged.PacketID || claim.Ordinal != merged.Ordinal || claim.Direction != merged.Direction || claim.Symmetry != merged.Symmetry || claim.Reserved != merged.Reserved || claim.Ignored != merged.Ignored || !reflect.DeepEqual(claim.Compatibility, merged.Compatibility) {
+			return claims.Claim{}, nil, false
+		}
+		encode, ok := mergeNode(merged.Encode, claim.Encode)
+		if !ok {
+			return claims.Claim{}, nil, false
+		}
+		merged.Encode = encode
+		leftDecode, rightDecode := merged.Encode, claim.Encode
+		if merged.Decode != nil {
+			leftDecode = *merged.Decode
+		}
+		if claim.Decode != nil {
+			rightDecode = *claim.Decode
+		}
+		decode, ok := mergeNode(leftDecode, rightDecode)
+		if !ok {
+			return claims.Claim{}, nil, false
+		}
+		if reflect.DeepEqual(wireNode(merged.Encode), wireNode(decode)) {
+			merged.Decode = nil
+		} else {
+			merged.Decode = &decode
+		}
+	}
+	var pinIDs []string
+	for _, claim := range group {
+		if hasConcreteEvidence(claim.Encode) || claim.Decode != nil && hasConcreteEvidence(*claim.Decode) {
+			pinIDs = append(pinIDs, claim.SourceID)
+		}
+	}
+	if len(pinIDs) == 0 {
+		for _, claim := range group {
+			pinIDs = append(pinIDs, claim.SourceID)
+		}
+	}
+	sort.Strings(pinIDs)
+	return merged, pinIDs, true
+}
+
+func hasConcreteEvidence(node manifest.Node) bool {
+	if node.Kind == manifest.KindUnresolved || node.Kind == manifest.KindOpaque {
+		return false
+	}
+	if node.Kind != manifest.KindStruct && node.Kind != manifest.KindSequence && node.Kind != manifest.KindUnion && node.Kind != manifest.KindConditional {
+		return true
+	}
+	for _, child := range node.Elements {
+		if hasConcreteEvidence(child) {
+			return true
+		}
+	}
+	for _, field := range node.Fields {
+		if hasConcreteEvidence(field.Encode) {
+			return true
+		}
+	}
+	for _, variant := range node.Variants {
+		if hasConcreteEvidence(variant.Encode) {
+			return true
+		}
+	}
+	for _, oneCase := range node.Cases {
+		for _, child := range oneCase.Encode {
+			if hasConcreteEvidence(child) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func mergeNode(left, right manifest.Node) (manifest.Node, bool) {
+	if hasEvidenceGap(left) && (left.Kind == manifest.KindUnresolved || left.Kind == manifest.KindOpaque) {
+		return right, true
+	}
+	if hasEvidenceGap(right) && (right.Kind == manifest.KindUnresolved || right.Kind == manifest.KindOpaque) {
+		return left, true
+	}
+	if left.Kind == manifest.KindEnum && right.Kind == manifest.KindPrimitive && reflect.DeepEqual(left.Primitive, right.Primitive) {
+		return left, true
+	}
+	if right.Kind == manifest.KindEnum && left.Kind == manifest.KindPrimitive && reflect.DeepEqual(left.Primitive, right.Primitive) {
+		return right, true
+	}
+	if reflect.DeepEqual(wireNode(left), wireNode(right)) {
+		if nodeSemanticScore(right) > nodeSemanticScore(left) {
+			return right, true
+		}
+		return left, true
+	}
+	if left.Kind != right.Kind {
+		return manifest.Node{}, false
+	}
+	result := left
+	if nodeSemanticScore(right) > nodeSemanticScore(left) {
+		result.Semantic, result.TypeID = right.Semantic, right.TypeID
+	}
+	var ok bool
+	switch left.Kind {
+	case manifest.KindStruct:
+		if len(left.Fields) != len(right.Fields) {
+			return manifest.Node{}, false
+		}
+		result.Fields = append([]manifest.Field(nil), left.Fields...)
+		for index := range left.Fields {
+			if left.Fields[index].Ordinal != right.Fields[index].Ordinal {
+				return manifest.Node{}, false
+			}
+			result.Fields[index], ok = mergeField(left.Fields[index], right.Fields[index])
+			if !ok {
+				return manifest.Node{}, false
+			}
+		}
+	case manifest.KindArray, manifest.KindFixedArray:
+		if left.Length != right.Length {
+			return manifest.Node{}, false
+		}
+		result.Prefix, ok = mergeNodePointer(left.Prefix, right.Prefix)
+		if !ok {
+			return manifest.Node{}, false
+		}
+		result.Element, ok = mergeNodePointer(left.Element, right.Element)
+		if !ok {
+			return manifest.Node{}, false
+		}
+	case manifest.KindOptional, manifest.KindReserved, manifest.KindIgnored:
+		result.Value, ok = mergeNodePointer(left.Value, right.Value)
+		if left.Kind == manifest.KindReserved || left.Kind == manifest.KindIgnored {
+			result.Element, ok = mergeNodePointer(left.Element, right.Element)
+		}
+		if !ok {
+			return manifest.Node{}, false
+		}
+	case manifest.KindMap:
+		result.Prefix, ok = mergeNodePointer(left.Prefix, right.Prefix)
+		if !ok {
+			return manifest.Node{}, false
+		}
+		result.Key, ok = mergeNodePointer(left.Key, right.Key)
+		if !ok {
+			return manifest.Node{}, false
+		}
+		result.Value, ok = mergeNodePointer(left.Value, right.Value)
+		if !ok {
+			return manifest.Node{}, false
+		}
+	case manifest.KindSequence:
+		if len(left.Elements) != len(right.Elements) {
+			return manifest.Node{}, false
+		}
+		result.Elements = append([]manifest.Node(nil), left.Elements...)
+		for index := range left.Elements {
+			result.Elements[index], ok = mergeNode(left.Elements[index], right.Elements[index])
+			if !ok {
+				return manifest.Node{}, false
+			}
+		}
+	case manifest.KindUnion:
+		if len(left.Variants) != len(right.Variants) {
+			return manifest.Node{}, false
+		}
+		result.Control, ok = mergeNodePointer(left.Control, right.Control)
+		if !ok {
+			return manifest.Node{}, false
+		}
+		result.Variants = append([]manifest.Variant(nil), left.Variants...)
+		for index := range left.Variants {
+			if left.Variants[index].Value != right.Variants[index].Value {
+				return manifest.Node{}, false
+			}
+			result.Variants[index].Encode, ok = mergeNode(left.Variants[index].Encode, right.Variants[index].Encode)
+			if !ok {
+				return manifest.Node{}, false
+			}
+		}
+	case manifest.KindString, manifest.KindBytes:
+		if left.Encoding != right.Encoding || left.Representation != right.Representation {
+			return manifest.Node{}, false
+		}
+		result.Prefix, ok = mergeNodePointer(left.Prefix, right.Prefix)
+		if !ok {
+			return manifest.Node{}, false
+		}
+	case manifest.KindEnum:
+		if !reflect.DeepEqual(left.Primitive, right.Primitive) {
+			return manifest.Node{}, false
+		}
+		if len(right.Variants) > len(left.Variants) {
+			return right, true
+		}
+		return left, true
+	default:
+		return manifest.Node{}, false
+	}
+	return result, true
+}
+
+func mergeField(left, right manifest.Field) (manifest.Field, bool) {
+	result := left
+	if semanticScoreForField(right) > semanticScoreForField(left) {
+		result.Name, result.Semantic, result.TypeID = right.Name, right.Semantic, right.TypeID
+	}
+	leftGap, rightGap := hasEvidenceGap(left.Encode), hasEvidenceGap(right.Encode)
+	encode, ok := mergeNode(left.Encode, right.Encode)
+	if !ok {
+		return manifest.Field{}, false
+	}
+	result.Encode = encode
+	if !leftGap && !rightGap {
+		result.Provenance.Pins = mergeStrings(left.Provenance.Pins, right.Provenance.Pins)
+	} else if leftGap && !rightGap {
+		result.Provenance = right.Provenance
+	}
+	return result, true
+}
+
+func mergeNodePointer(left, right *manifest.Node) (*manifest.Node, bool) {
+	if left == nil || right == nil {
+		return nil, left == nil && right == nil
+	}
+	merged, ok := mergeNode(*left, *right)
+	return &merged, ok
+}
+
+func semanticScoreForField(field manifest.Field) int {
+	score := nodeSemanticScore(field.Encode)
+	if field.Semantic != "" {
+		score++
+	}
+	if field.TypeID != "" {
+		score += 2
+	}
+	return score
+}
+
+func mergeStrings(left, right []string) []string {
+	seen := map[string]bool{}
+	for _, value := range append(append([]string(nil), left...), right...) {
+		seen[value] = true
+	}
+	result := make([]string, 0, len(seen))
+	for value := range seen {
+		result = append(result, value)
+	}
+	sort.Strings(result)
+	return result
+}
+
+func hasEvidenceGap(node manifest.Node) bool {
+	if node.Kind == manifest.KindUnresolved || node.Kind == manifest.KindOpaque {
+		return true
+	}
+	for _, child := range []*manifest.Node{node.Prefix, node.Element, node.Value, node.Key, node.Control, node.Default} {
+		if child != nil && hasEvidenceGap(*child) {
+			return true
+		}
+	}
+	for _, child := range node.Elements {
+		if hasEvidenceGap(child) {
+			return true
+		}
+	}
+	for _, field := range node.Fields {
+		if hasEvidenceGap(field.Encode) || field.Decode != nil && hasEvidenceGap(*field.Decode) {
+			return true
+		}
+	}
+	for _, variant := range node.Variants {
+		if hasEvidenceGap(variant.Encode) || variant.Decode != nil && hasEvidenceGap(*variant.Decode) {
+			return true
+		}
+	}
+	for _, oneCase := range node.Cases {
+		for _, child := range oneCase.Encode {
+			if hasEvidenceGap(child) {
+				return true
+			}
+		}
+		for _, child := range oneCase.Decode {
+			if hasEvidenceGap(child) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func comparable(claim claims.Claim) claims.Claim {
 	claim.SourceID = ""
 	claim.Locator = ""
 	return claim
+}
+
+func wireComparable(claim claims.Claim) claims.Claim {
+	claim = comparable(claim)
+	claim.PacketName = ""
+	claim.FieldPath = ""
+	claim.Name = ""
+	claim.Semantic = ""
+	claim.TypeID = ""
+	claim.Encode = wireNode(claim.Encode)
+	if claim.Decode != nil {
+		decode := wireNode(*claim.Decode)
+		claim.Decode = &decode
+	}
+	return claim
+}
+
+func wireNode(node manifest.Node) manifest.Node {
+	node.Elements = append([]manifest.Node(nil), node.Elements...)
+	node.Fields = append([]manifest.Field(nil), node.Fields...)
+	node.Variants = append([]manifest.Variant(nil), node.Variants...)
+	node.Cases = append([]manifest.Case(nil), node.Cases...)
+	for index := range node.Cases {
+		node.Cases[index].Encode = append([]manifest.Node(nil), node.Cases[index].Encode...)
+		node.Cases[index].Decode = append([]manifest.Node(nil), node.Cases[index].Decode...)
+	}
+	node.Semantic = ""
+	node.TypeID = ""
+	if node.Kind == manifest.KindEnum {
+		return manifest.Node{Kind: manifest.KindPrimitive, Primitive: node.Primitive}
+	}
+	node.Prefix = wireNodePointer(node.Prefix)
+	node.Element = wireNodePointer(node.Element)
+	node.Value = wireNodePointer(node.Value)
+	node.Key = wireNodePointer(node.Key)
+	node.Control = wireNodePointer(node.Control)
+	node.Default = wireNodePointer(node.Default)
+	for index := range node.Elements {
+		node.Elements[index] = wireNode(node.Elements[index])
+	}
+	for index := range node.Fields {
+		field := &node.Fields[index]
+		field.Name = ""
+		field.Semantic = ""
+		field.TypeID = ""
+		field.Provenance = manifest.Provenance{}
+		field.Encode = wireNode(field.Encode)
+		if field.Decode != nil {
+			decode := wireNode(*field.Decode)
+			field.Decode = &decode
+		}
+	}
+	for index := range node.Variants {
+		node.Variants[index].Name = ""
+		node.Variants[index].Encode = wireNode(node.Variants[index].Encode)
+		if node.Variants[index].Decode != nil {
+			decode := wireNode(*node.Variants[index].Decode)
+			node.Variants[index].Decode = &decode
+		}
+	}
+	for caseIndex := range node.Cases {
+		for nodeIndex := range node.Cases[caseIndex].Encode {
+			node.Cases[caseIndex].Encode[nodeIndex] = wireNode(node.Cases[caseIndex].Encode[nodeIndex])
+		}
+		for nodeIndex := range node.Cases[caseIndex].Decode {
+			node.Cases[caseIndex].Decode[nodeIndex] = wireNode(node.Cases[caseIndex].Decode[nodeIndex])
+		}
+	}
+	return node
+}
+
+func wireNodePointer(node *manifest.Node) *manifest.Node {
+	if node == nil {
+		return nil
+	}
+	result := wireNode(*node)
+	return &result
+}
+
+func semanticScore(claim claims.Claim) int {
+	score := 0
+	if claim.Semantic != "" {
+		score++
+	}
+	if claim.TypeID != "" {
+		score += 2
+	}
+	return score + nodeSemanticScore(claim.Encode)
+}
+
+func nodeSemanticScore(node manifest.Node) int {
+	score := 0
+	if node.Semantic != "" {
+		score++
+	}
+	if node.TypeID != "" {
+		score += 2
+	}
+	if node.Kind == manifest.KindEnum {
+		score += 10 + len(node.Variants)
+	}
+	for _, field := range node.Fields {
+		score += nodeSemanticScore(field.Encode)
+	}
+	return score
 }
 
 func matchClaimFingerprints(adjudication manifest.Adjudication, group []claims.Claim) error {
