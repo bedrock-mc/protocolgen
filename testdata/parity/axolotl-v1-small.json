@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "source": "fixture",
+  "minecraft_version": "1.26.40",
+  "protocol_version": 2168,
+  "packets": [
+    {
+      "id": 7,
+      "name": "Fixture",
+      "operations": [
+        {"kind": "primitive", "field": "Value", "op": "U8"},
+        {"kind": "option", "field": "Maybe", "presence": "Bool", "value": [
+          {"kind": "string", "field": "Maybe", "prefix": "VarInt", "encoding": "utf8"}
+        ]}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "name": "v2-vocabulary",
+  "features": [
+    "nested_double_optional",
+    "explicit_array_prefix",
+    "nested_fixed_arrays",
+    "discriminated_union_with_skipped_ordinal",
+    "explicit_enum_ordinal",
+    "reserved_field",
+    "text_string_and_arbitrary_bytes",
+    "semantic_id_wire_equivalence"
+  ],
+  "expected_hex": "0101070201000302040006050703a000ff09341202c3a904030201"
+}

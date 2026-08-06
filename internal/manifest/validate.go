@@ -1,0 +1,528 @@
+package manifest
+
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"reflect"
+	"sort"
+)
+
+func Validate(m Manifest) error {
+	if m.SchemaVersion != SchemaVersion {
+		return fmt.Errorf("schema_version %d is not v%d", m.SchemaVersion, SchemaVersion)
+	}
+	if m.Target.MinecraftVersion == "" || m.Target.ProtocolVersion <= 0 {
+		return fmt.Errorf("target must pin minecraft_version and positive protocol_version")
+	}
+	if len(m.Sources) == 0 {
+		return fmt.Errorf("manifest has no source pins")
+	}
+	if len(m.Packets) == 0 {
+		return fmt.Errorf("manifest has no packets")
+	}
+	sourceIDs := make(map[string]bool, len(m.Sources))
+	for i, source := range m.Sources {
+		if source.ID == "" || source.Kind == "" || source.Revision == "" || source.Digest == "" {
+			return fmt.Errorf("sources[%d] is missing an immutable pin", i)
+		}
+		if sourceIDs[source.ID] {
+			return fmt.Errorf("duplicate source pin %q", source.ID)
+		}
+		sourceIDs[source.ID] = true
+		if source.ProtocolVersion != 0 && source.ProtocolVersion != m.Target.ProtocolVersion {
+			return fmt.Errorf("mixes protocol %d source %q into target protocol %d", source.ProtocolVersion, source.ID, m.Target.ProtocolVersion)
+		}
+		if source.MinecraftVersion != "" && source.MinecraftVersion != m.Target.MinecraftVersion {
+			return fmt.Errorf("mixes Minecraft %s source %q into target Minecraft %s", source.MinecraftVersion, source.ID, m.Target.MinecraftVersion)
+		}
+	}
+
+	packetIDs := map[uint32]bool{}
+	for i, packet := range m.Packets {
+		if packetIDs[packet.ID] {
+			return fmt.Errorf("packets[%d] duplicates packet id %d", i, packet.ID)
+		}
+		packetIDs[packet.ID] = true
+		if packet.Name == "" {
+			return fmt.Errorf("packets[%d] has no name", i)
+		}
+		if !validDirection(packet.Direction) {
+			return fmt.Errorf("packet %s has invalid direction %q", packet.Name, packet.Direction)
+		}
+		previous := -1
+		for fieldIndex, field := range packet.Fields {
+			path := fmt.Sprintf("packet %s field[%d]", packet.Name, fieldIndex)
+			if field.Ordinal < 0 || field.Ordinal <= previous {
+				return fmt.Errorf("%s ordinals are not strictly increasing", path)
+			}
+			previous = field.Ordinal
+			if err := validateField(field, path, sourceIDs); err != nil {
+				return err
+			}
+		}
+	}
+	if err := validateAdjudications(m, sourceIDs); err != nil {
+		return err
+	}
+	return validateOverrides(m, sourceIDs)
+}
+
+func validDirection(direction Direction) bool {
+	switch direction {
+	case DirectionClientbound, DirectionServerbound, DirectionBidirectional, DirectionUnknown:
+		return true
+	default:
+		return false
+	}
+}
+
+func validateField(field Field, path string, sourceIDs map[string]bool) error {
+	if field.Name == "" {
+		return fmt.Errorf("%s has no name", path)
+	}
+	if len(field.Provenance.Pins) == 0 {
+		return fmt.Errorf("%s has no machine-derived provenance pins", path)
+	}
+	if field.Symmetry != Symmetric && field.Symmetry != Asymmetric {
+		return fmt.Errorf("%s has invalid symmetry %q", path, field.Symmetry)
+	}
+	if field.Symmetry == Symmetric && field.Decode != nil {
+		return fmt.Errorf("%s declares symmetric wire but has a decode shape", path)
+	}
+	if field.Symmetry == Asymmetric && field.Decode == nil {
+		return fmt.Errorf("%s declares asymmetric wire without a decode shape", path)
+	}
+	if field.Decode != nil && reflect.DeepEqual(field.Encode, *field.Decode) {
+		return fmt.Errorf("%s declares asymmetry with identical encode/decode shapes", path)
+	}
+	if err := validateNode(field.Encode, path+".encode", sourceIDs); err != nil {
+		return err
+	}
+	if field.Decode != nil {
+		if err := validateNode(*field.Decode, path+".decode", sourceIDs); err != nil {
+			return err
+		}
+	}
+	if field.Reserved && field.Encode.Kind != KindReserved {
+		return fmt.Errorf("%s reserved metadata disagrees with node kind", path)
+	}
+	if field.Ignored && field.Encode.Kind != KindIgnored && field.Encode.Kind != KindReserved {
+		return fmt.Errorf("%s ignored metadata disagrees with node kind", path)
+	}
+	if field.Encode.Kind == KindReserved && !field.Reserved && !field.Ignored {
+		return fmt.Errorf("%s reserved node is missing compatibility metadata", path)
+	}
+	if field.Encode.Kind == KindIgnored && !field.Ignored {
+		return fmt.Errorf("%s ignored node is missing compatibility metadata", path)
+	}
+	return validateProvenance(field.Provenance, sourceIDs, path)
+}
+
+func validateNode(node Node, path string, sourceIDs map[string]bool) error {
+	switch node.Kind {
+	case KindPrimitive:
+		if node.Primitive == nil {
+			return fmt.Errorf("%s primitive has no exact shape", path)
+		}
+		canonical, ok := primitiveTable[node.Primitive.Code]
+		if !ok || !reflect.DeepEqual(canonical, *node.Primitive) {
+			return fmt.Errorf("%s primitive %q has incomplete or invented signedness/width/endianness", path, node.Primitive.Code)
+		}
+	case KindString, KindBytes:
+		if node.Prefix == nil {
+			return fmt.Errorf("%s has no explicit length prefix", path)
+		}
+		if node.Kind == KindString && (node.Representation != "text" || node.Encoding == "") {
+			return fmt.Errorf("%s must distinguish text encoding from arbitrary bytes", path)
+		}
+		if node.Kind == KindBytes && (node.Representation != "bytes" || node.Encoding != "") {
+			return fmt.Errorf("%s bytes node has text metadata", path)
+		}
+		if err := validatePrefix(*node.Prefix, path+".prefix"); err != nil {
+			return err
+		}
+	case KindArray:
+		if node.Prefix == nil || node.Element == nil {
+			return fmt.Errorf("%s array must have explicit prefix and element", path)
+		}
+		if err := validatePrefix(*node.Prefix, path+".prefix"); err != nil {
+			return err
+		}
+		if err := validateNode(*node.Element, path+".element", sourceIDs); err != nil {
+			return err
+		}
+	case KindFixedArray:
+		if node.Element == nil || node.Length == 0 {
+			return fmt.Errorf("%s fixed array must have positive length and element", path)
+		}
+		if err := validateNode(*node.Element, path+".element", sourceIDs); err != nil {
+			return err
+		}
+	case KindSequence:
+		if len(node.Elements) == 0 {
+			return fmt.Errorf("%s sequence must contain at least one node", path)
+		}
+		for index, element := range node.Elements {
+			if err := validateNode(element, fmt.Sprintf("%s.elements[%d]", path, index), sourceIDs); err != nil {
+				return err
+			}
+		}
+	case KindOptional:
+		if node.Value == nil {
+			return fmt.Errorf("%s optional has no value shape", path)
+		}
+		if err := validateNode(*node.Value, path+".value", sourceIDs); err != nil {
+			return err
+		}
+	case KindStruct:
+		previous := -1
+		for i, field := range node.Fields {
+			if field.Ordinal < 0 || field.Ordinal <= previous {
+				return fmt.Errorf("%s.fields[%d] ordinals are not strictly increasing", path, i)
+			}
+			previous = field.Ordinal
+			if err := validateField(field, fmt.Sprintf("%s.fields[%d]", path, i), sourceIDs); err != nil {
+				return err
+			}
+		}
+	case KindMap:
+		if node.Prefix == nil || node.Key == nil || node.Value == nil || node.Representation != "ordered_entries" {
+			return fmt.Errorf("%s map must be ordered entries with prefix, key, and value", path)
+		}
+		if err := validatePrefix(*node.Prefix, path+".prefix"); err != nil {
+			return err
+		}
+		if err := validateNode(*node.Key, path+".key", sourceIDs); err != nil {
+			return err
+		}
+		if err := validateNode(*node.Value, path+".value", sourceIDs); err != nil {
+			return err
+		}
+	case KindUnion:
+		if node.Control == nil || len(node.Variants) == 0 {
+			return fmt.Errorf("%s union must have explicit control and variants", path)
+		}
+		if err := validateControl(*node.Control, path+".control"); err != nil {
+			return err
+		}
+		seenValues := map[int64]bool{}
+		seenNames := map[string]bool{}
+		for i, variant := range node.Variants {
+			if variant.Name == "" || seenNames[variant.Name] || seenValues[variant.Value] {
+				return fmt.Errorf("%s variant[%d] has duplicate or empty explicit identity", path, i)
+			}
+			seenNames[variant.Name], seenValues[variant.Value] = true, true
+			if err := validateNode(variant.Encode, fmt.Sprintf("%s.variants[%d].encode", path, i), sourceIDs); err != nil {
+				return err
+			}
+			if variant.Decode != nil {
+				if err := validateNode(*variant.Decode, fmt.Sprintf("%s.variants[%d].decode", path, i), sourceIDs); err != nil {
+					return err
+				}
+			}
+		}
+	case KindConditional:
+		if node.CompareTo == "" || len(node.Cases) == 0 {
+			return fmt.Errorf("%s conditional must retain discriminator and cases", path)
+		}
+		for i, oneCase := range node.Cases {
+			if oneCase.Value == "" || len(oneCase.Encode) == 0 {
+				return fmt.Errorf("%s case[%d] has no explicit value or shape", path, i)
+			}
+			for j, child := range oneCase.Encode {
+				if err := validateNode(child, fmt.Sprintf("%s.cases[%d].encode[%d]", path, i, j), sourceIDs); err != nil {
+					return err
+				}
+			}
+		}
+		if node.Default != nil {
+			if err := validateNode(*node.Default, path+".default", sourceIDs); err != nil {
+				return err
+			}
+		}
+	case KindEnum:
+		if node.Primitive == nil {
+			return fmt.Errorf("%s enum has no exact underlying primitive", path)
+		}
+		canonical, ok := primitiveTable[node.Primitive.Code]
+		if !ok || canonical.Width == 0 || !reflect.DeepEqual(canonical, *node.Primitive) {
+			return fmt.Errorf("%s enum underlying primitive is not exact", path)
+		}
+		seenValues, seenNames := map[int64]bool{}, map[string]bool{}
+		for i, variant := range node.Variants {
+			if variant.Name == "" || seenNames[variant.Name] || seenValues[variant.Value] {
+				return fmt.Errorf("%s enum value[%d] lacks unique explicit ordinal", path, i)
+			}
+			seenNames[variant.Name], seenValues[variant.Value] = true, true
+		}
+	case KindReserved, KindIgnored:
+		if node.Element == nil {
+			return fmt.Errorf("%s compatibility node has no preserved wire shape", path)
+		}
+		if err := validateNode(*node.Element, path+".element", sourceIDs); err != nil {
+			return err
+		}
+	case KindRecursive:
+		if node.TypeID == "" && node.Target == "" {
+			return fmt.Errorf("%s recursive node has no type identity", path)
+		}
+	case KindOpaque, KindUnresolved:
+		// Manifest nodes are embedded only beneath packet fields; there is no
+		// detached type table in which an unresolved definition could be safely
+		// parked. Treat even a producer-marked non-reachable node as reachable
+		// here so a parser cannot accidentally make a fail-open claim by lying in
+		// the flag.
+		return fmt.Errorf("%s %s node blocks generation: %s", path, node.Kind, node.Reason)
+	case KindVoid:
+		// Explicitly consumes no bytes.
+	default:
+		return fmt.Errorf("%s has unknown node kind %q", path, node.Kind)
+	}
+	return nil
+}
+
+func validatePrefix(node Node, path string) error {
+	if node.Kind != KindPrimitive || node.Primitive == nil {
+		return fmt.Errorf("%s must be a primitive length codec", path)
+	}
+	if !isIntegerPrimitive(node.Primitive.Code) {
+		return fmt.Errorf("%s has non-integer length codec %q", path, node.Primitive.Code)
+	}
+	return nil
+}
+
+func validateControl(node Node, path string) error {
+	if node.Kind != KindPrimitive || node.Primitive == nil || !isIntegerPrimitive(node.Primitive.Code) {
+		return fmt.Errorf("%s must be an explicit numeric discriminator codec", path)
+	}
+	return nil
+}
+
+func isIntegerPrimitive(code string) bool {
+	switch code {
+	case "i8", "u8", "i16le", "u16le", "i16be", "u16be",
+		"i32le", "u32le", "i32be", "u32be", "i64le", "u64le",
+		"i64be", "u64be", "var_i32", "var_u32", "var_i64", "var_u64",
+		"zigzag_i32", "zigzag_i64":
+		return true
+	default:
+		return false
+	}
+}
+
+func validateProvenance(provenance Provenance, sourceIDs map[string]bool, path string) error {
+	if len(provenance.Pins) == 0 {
+		return fmt.Errorf("%s has no provenance pins", path)
+	}
+	previous := ""
+	for _, pin := range provenance.Pins {
+		if !sourceIDs[pin] {
+			return fmt.Errorf("%s provenance references unknown source %q", path, pin)
+		}
+		if pin <= previous {
+			return fmt.Errorf("%s provenance pins are not sorted and unique", path)
+		}
+		previous = pin
+	}
+	for i, evidence := range provenance.Evidence {
+		if evidence.SourceID == "" || evidence.Locator == "" || !sourceIDs[evidence.SourceID] {
+			return fmt.Errorf("%s evidence[%d] has no pinned source locator", path, i)
+		}
+	}
+	return nil
+}
+
+func validateAdjudications(m Manifest, sourceIDs map[string]bool) error {
+	seen := map[string]bool{}
+	for i, adjudication := range m.Adjudications {
+		if adjudication.ID == "" || adjudication.Target == "" || adjudication.PrePatchContextSHA256 == "" || adjudication.SelectedSource == "" || adjudication.Reason == "" {
+			return fmt.Errorf("adjudications[%d] is incomplete", i)
+		}
+		if seen[adjudication.ID] {
+			return fmt.Errorf("duplicate adjudication %q", adjudication.ID)
+		}
+		seen[adjudication.ID] = true
+		if !sourceIDs[adjudication.SelectedSource] {
+			return fmt.Errorf("adjudication %q selects unknown source %q", adjudication.ID, adjudication.SelectedSource)
+		}
+		if len(adjudication.Claims) < 2 {
+			return fmt.Errorf("adjudication %q must fingerprint both source claims", adjudication.ID)
+		}
+		for _, claim := range adjudication.Claims {
+			if claim.Digest == "" || !sourceIDs[claim.SourceID] {
+				return fmt.Errorf("adjudication %q contains an incomplete claim fingerprint", adjudication.ID)
+			}
+		}
+		if len(adjudication.Evidence) == 0 {
+			return fmt.Errorf("adjudication %q has no cited evidence", adjudication.ID)
+		}
+	}
+	return nil
+}
+
+func validateOverrides(m Manifest, sourceIDs map[string]bool) error {
+	seen := map[string]bool{}
+	for i, proof := range m.Overrides {
+		if proof.ID == "" || proof.Target == "" || proof.PrePatchNodeSHA256 == "" || proof.PrePatchContextSHA256 == "" || proof.PostPatchNodeSHA256 == "" || proof.Reason == "" || len(proof.Evidence) == 0 {
+			return fmt.Errorf("overrides[%d] is incomplete", i)
+		}
+		if seen[proof.ID] {
+			return fmt.Errorf("duplicate override proof %q", proof.ID)
+		}
+		seen[proof.ID] = true
+		for _, evidence := range proof.Evidence {
+			if evidence.SourceID == "" || evidence.Locator == "" || !sourceIDs[evidence.SourceID] {
+				return fmt.Errorf("override %q cites an unpinned evidence source", proof.ID)
+			}
+		}
+	}
+	return nil
+}
+
+// MarshalStable returns canonical pretty JSON. JSON object keys are encoded in
+// deterministic order by encoding/json; slices are sorted on their semantic
+// identities in a copy so generation does not depend on filesystem iteration.
+func MarshalStable(m Manifest) ([]byte, error) {
+	if err := Validate(m); err != nil {
+		return nil, err
+	}
+	normalized := normalize(m)
+	data, err := json.MarshalIndent(normalized, "", "  ")
+	if err != nil {
+		return nil, err
+	}
+	return append(data, '\n'), nil
+}
+
+func normalize(m Manifest) Manifest {
+	data, _ := json.Marshal(m)
+	var out Manifest
+	_ = json.Unmarshal(data, &out)
+	sort.Slice(out.Sources, func(i, j int) bool { return out.Sources[i].ID < out.Sources[j].ID })
+	sort.Slice(out.Packets, func(i, j int) bool {
+		if out.Packets[i].ID != out.Packets[j].ID {
+			return out.Packets[i].ID < out.Packets[j].ID
+		}
+		return out.Packets[i].Name < out.Packets[j].Name
+	})
+	for packetIndex := range out.Packets {
+		packet := &out.Packets[packetIndex]
+		sort.SliceStable(packet.Fields, func(i, j int) bool {
+			if packet.Fields[i].Ordinal != packet.Fields[j].Ordinal {
+				return packet.Fields[i].Ordinal < packet.Fields[j].Ordinal
+			}
+			return packet.Fields[i].Name < packet.Fields[j].Name
+		})
+		for fieldIndex := range packet.Fields {
+			normalizeField(&packet.Fields[fieldIndex])
+		}
+	}
+	sort.Slice(out.Adjudications, func(i, j int) bool { return out.Adjudications[i].ID < out.Adjudications[j].ID })
+	for index := range out.Adjudications {
+		adjudication := &out.Adjudications[index]
+		sort.SliceStable(adjudication.Claims, func(i, j int) bool {
+			return adjudication.Claims[i].SourceID < adjudication.Claims[j].SourceID
+		})
+		sortEvidence(adjudication.Evidence)
+	}
+	sort.Slice(out.Overrides, func(i, j int) bool { return out.Overrides[i].ID < out.Overrides[j].ID })
+	for index := range out.Overrides {
+		sortEvidence(out.Overrides[index].Evidence)
+	}
+	return out
+}
+
+func normalizeField(field *Field) {
+	sort.Strings(field.Provenance.Pins)
+	sort.Strings(field.Compatibility)
+	sortEvidence(field.Provenance.Evidence)
+	normalizeNode(&field.Encode)
+	if field.Decode != nil {
+		normalizeNode(field.Decode)
+	}
+}
+
+func normalizeNode(node *Node) {
+	if node.Prefix != nil {
+		normalizeNode(node.Prefix)
+	}
+	if node.Element != nil {
+		normalizeNode(node.Element)
+	}
+	if node.Value != nil {
+		normalizeNode(node.Value)
+	}
+	for index := range node.Elements {
+		normalizeNode(&node.Elements[index])
+	}
+	sort.SliceStable(node.Fields, func(i, j int) bool {
+		if node.Fields[i].Ordinal != node.Fields[j].Ordinal {
+			return node.Fields[i].Ordinal < node.Fields[j].Ordinal
+		}
+		return node.Fields[i].Name < node.Fields[j].Name
+	})
+	for index := range node.Fields {
+		normalizeField(&node.Fields[index])
+	}
+	if node.Key != nil {
+		normalizeNode(node.Key)
+	}
+	if node.Control != nil {
+		normalizeNode(node.Control)
+	}
+	for index := range node.Variants {
+		variant := &node.Variants[index]
+		normalizeNode(&variant.Encode)
+		if variant.Decode != nil {
+			normalizeNode(variant.Decode)
+		}
+	}
+	sort.SliceStable(node.Variants, func(i, j int) bool {
+		if node.Variants[i].Value != node.Variants[j].Value {
+			return node.Variants[i].Value < node.Variants[j].Value
+		}
+		return node.Variants[i].Name < node.Variants[j].Name
+	})
+	for index := range node.Cases {
+		oneCase := &node.Cases[index]
+		for childIndex := range oneCase.Encode {
+			normalizeNode(&oneCase.Encode[childIndex])
+		}
+		for childIndex := range oneCase.Decode {
+			normalizeNode(&oneCase.Decode[childIndex])
+		}
+	}
+	sort.SliceStable(node.Cases, func(i, j int) bool { return node.Cases[i].Value < node.Cases[j].Value })
+	if node.Default != nil {
+		normalizeNode(node.Default)
+	}
+}
+
+func sortEvidence(evidence []Evidence) {
+	sort.SliceStable(evidence, func(i, j int) bool {
+		left, right := evidence[i], evidence[j]
+		if left.SourceID != right.SourceID {
+			return left.SourceID < right.SourceID
+		}
+		if left.Locator != right.Locator {
+			return left.Locator < right.Locator
+		}
+		if left.ClaimFingerprint != right.ClaimFingerprint {
+			return left.ClaimFingerprint < right.ClaimFingerprint
+		}
+		return left.Summary < right.Summary
+	})
+}
+
+func canonicalBytes(value any) ([]byte, error) {
+	data, err := json.Marshal(value)
+	if err != nil {
+		return nil, err
+	}
+	var compact bytes.Buffer
+	if err := json.Compact(&compact, data); err != nil {
+		return nil, err
+	}
+	return compact.Bytes(), nil
+}

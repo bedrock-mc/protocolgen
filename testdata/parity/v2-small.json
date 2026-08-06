@@ -1,0 +1,38 @@
+{
+  "schema_version": 2,
+  "target": {"minecraft_version": "1.26.40", "protocol_version": 2168},
+  "sources": [
+    {"id": "fixture", "kind": "synthetic", "revision": "fixture-2168", "digest": "fixture:parity", "minecraft_version": "1.26.40", "protocol_version": 2168}
+  ],
+  "packets": [
+    {
+      "id": 7,
+      "name": "Fixture",
+      "direction": "unknown",
+      "fields": [
+        {
+          "ordinal": 0,
+          "name": "Value",
+          "encode": {"kind": "primitive", "primitive": {"code": "u8", "width": 8, "signed": false, "zigzag": false, "endianness": "none"}},
+          "symmetry": "symmetric",
+          "provenance": {"pins": ["fixture"]}
+        },
+        {
+          "ordinal": 1,
+          "name": "Maybe",
+          "encode": {
+            "kind": "optional",
+            "value": {
+              "kind": "string",
+              "prefix": {"kind": "primitive", "primitive": {"code": "var_u32", "width": 32, "signed": false, "zigzag": false, "endianness": "none"}},
+              "encoding": "utf8",
+              "representation": "text"
+            }
+          },
+          "symmetry": "symmetric",
+          "provenance": {"pins": ["fixture"]}
+        }
+      ]
+    }
+  ]
+}

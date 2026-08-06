@@ -1,0 +1,441 @@
+package ingest
+
+import (
+	"fmt"
+	"os"
+	"path/filepath"
+	"sort"
+	"strings"
+
+	"protocolgen/internal/claims"
+	"protocolgen/internal/manifest"
+)
+
+type mojangLowerer struct {
+	documents map[string]any
+	active    map[string]bool
+	source    manifest.SourcePin
+}
+
+func ParseMojang(root string, pin manifest.SourcePin, corrections string) (claims.Result, error) {
+	docsRoot := root
+	if filepath.Base(filepath.Clean(root)) != "json" {
+		candidate := filepath.Join(root, "json")
+		if _, statErr := os.Stat(candidate); statErr == nil {
+			docsRoot = candidate
+		}
+	}
+	documents, err := loadJSONFiles(docsRoot)
+	if err != nil {
+		return claims.Result{}, fmt.Errorf("load Mojang JSON: %w", err)
+	}
+	proofs, err := applyCorrections(documents, corrections, pin)
+	if err != nil {
+		return claims.Result{}, err
+	}
+	target, err := mojangTarget(documents, pin)
+	if err != nil {
+		return claims.Result{}, err
+	}
+	lowerer := &mojangLowerer{documents: documents, active: map[string]bool{}, source: pin}
+	type packetDoc struct {
+		file string
+		id   uint32
+	}
+	var packets []packetDoc
+	for file, rawDocument := range documents {
+		document, ok := asMap(rawDocument)
+		if !ok {
+			continue
+		}
+		meta, ok := asMap(document["$metaProperties"])
+		if !ok {
+			continue
+		}
+		idValue, ok := asInt(meta["[cereal:packet]"])
+		if !ok || idValue < 0 {
+			return claims.Result{}, fmt.Errorf("Mojang packet %s has invalid cereal packet id", file)
+		}
+		packets = append(packets, packetDoc{file: file, id: uint32(idValue)})
+	}
+	sort.Slice(packets, func(i, j int) bool {
+		if packets[i].id != packets[j].id {
+			return packets[i].id < packets[j].id
+		}
+		return packets[i].file < packets[j].file
+	})
+	if len(packets) == 0 {
+		return claims.Result{}, fmt.Errorf("Mojang source contains no cereal packet schemas")
+	}
+	result := claims.Result{Pin: pin, Target: target, Overrides: proofs}
+	for _, packetDoc := range packets {
+		document := documents[packetDoc.file].(map[string]any)
+		name := asString(document["title"])
+		if name == "" {
+			name = strings.TrimSuffix(packetDoc.file, filepath.Ext(packetDoc.file))
+		}
+		properties, ok := asMap(document["properties"])
+		if !ok {
+			return claims.Result{}, fmt.Errorf("Mojang packet %s has no properties object", packetDoc.file)
+		}
+		required := requiredNames(document["required"])
+		fields, err := lowerMojangFields(lowerer, packetDoc.id, name, parseDirection(document), packetDoc.file, properties, required, "")
+		if err != nil {
+			return claims.Result{}, err
+		}
+		result.Claims = append(result.Claims, fields...)
+	}
+	sort.Slice(result.Claims, func(i, j int) bool {
+		if result.Claims[i].PacketID != result.Claims[j].PacketID {
+			return result.Claims[i].PacketID < result.Claims[j].PacketID
+		}
+		return result.Claims[i].Ordinal < result.Claims[j].Ordinal
+	})
+	return result, nil
+}
+
+func mojangTarget(documents map[string]any, pin manifest.SourcePin) (manifest.Target, error) {
+	target := manifest.Target{MinecraftVersion: pin.MinecraftVersion, ProtocolVersion: pin.ProtocolVersion}
+	seenVersion, seenProtocol := "", 0
+	for file, rawDocument := range documents {
+		document, ok := asMap(rawDocument)
+		if !ok {
+			continue
+		}
+		version := asString(document["x-minecraft-version"])
+		if version != "" {
+			version = strings.Split(version, "-")[0]
+			if seenVersion == "" {
+				seenVersion = version
+			} else if seenVersion != version {
+				return manifest.Target{}, fmt.Errorf("Mojang source mixes Minecraft versions at %s", file)
+			}
+		}
+		if protocol, ok := asInt(document["x-protocol-version"]); ok {
+			if seenProtocol == 0 {
+				seenProtocol = int(protocol)
+			} else if seenProtocol != int(protocol) {
+				return manifest.Target{}, fmt.Errorf("Mojang source mixes protocol versions at %s", file)
+			}
+		}
+	}
+	if seenVersion != "" && target.MinecraftVersion != "" && seenVersion != target.MinecraftVersion {
+		return manifest.Target{}, fmt.Errorf("Mojang source version %s does not match locked target %s", seenVersion, target.MinecraftVersion)
+	}
+	if seenProtocol != 0 && target.ProtocolVersion != 0 && seenProtocol != target.ProtocolVersion {
+		return manifest.Target{}, fmt.Errorf("Mojang source protocol %d does not match locked target %d", seenProtocol, target.ProtocolVersion)
+	}
+	if target.MinecraftVersion == "" {
+		target.MinecraftVersion = seenVersion
+	}
+	if target.ProtocolVersion == 0 {
+		target.ProtocolVersion = seenProtocol
+	}
+	if target.MinecraftVersion == "" || target.ProtocolVersion == 0 {
+		return manifest.Target{}, fmt.Errorf("Mojang source has no complete version metadata")
+	}
+	return target, nil
+}
+
+func lowerMojangFields(lowerer *mojangLowerer, packetID uint32, packetName string, direction manifest.Direction, file string, properties map[string]any, required map[string]bool, parent string) ([]claims.Claim, error) {
+	type property struct {
+		name    string
+		object  map[string]any
+		ordinal int
+	}
+	propertiesSorted := make([]property, 0, len(properties))
+	for name, rawProperty := range properties {
+		object, ok := asMap(rawProperty)
+		if !ok {
+			return nil, fmt.Errorf("Mojang %s property %s is not an object", file, name)
+		}
+		ordinalValue, ok := asInt(object["x-ordinal-index"])
+		if !ok || ordinalValue < 0 {
+			return nil, fmt.Errorf("Mojang %s property %s has no explicit ordinal", file, name)
+		}
+		propertiesSorted = append(propertiesSorted, property{name: name, object: object, ordinal: int(ordinalValue)})
+	}
+	sort.Slice(propertiesSorted, func(i, j int) bool {
+		if propertiesSorted[i].ordinal != propertiesSorted[j].ordinal {
+			return propertiesSorted[i].ordinal < propertiesSorted[j].ordinal
+		}
+		return propertiesSorted[i].name < propertiesSorted[j].name
+	})
+	result := make([]claims.Claim, 0, len(propertiesSorted))
+	for _, item := range propertiesSorted {
+		fieldPath := item.name
+		if parent != "" {
+			fieldPath = parent + "." + item.name
+		}
+		node := lowerer.lowerSchema(item.object, file, packetName+safeIdentifierName(item.name))
+		if !required[item.name] {
+			node = manifest.Optional(node)
+			if hasOption(item.object, "+double-optional") {
+				node = manifest.Optional(node)
+			}
+		} else if hasOption(item.object, "+double-optional") {
+			node = manifest.Optional(manifest.Optional(node))
+		}
+		reserved, ignored, compatibility := fieldCompatibility(item.object)
+		if reserved {
+			node = manifest.Reserved(node)
+		}
+		if ignored {
+			node = manifest.Ignored(node)
+		}
+		claim := makeClaim(lowerer.pin(), packetID, packetName, direction, item.ordinal, item.name, item.object, node, file+"#/properties/"+escapeJSONPointer(item.name))
+		claim.FieldPath = packetName + "." + fieldPath
+		claim.Reserved, claim.Ignored, claim.Compatibility = reserved, ignored, compatibility
+		claim.Semantic = asString(item.object["title"])
+		if claim.Semantic == "" {
+			claim.Semantic = item.name
+		}
+		result = append(result, claim)
+	}
+	return result, nil
+}
+
+func (l *mojangLowerer) pin() manifest.SourcePin {
+	return l.source
+}
+
+func (l *mojangLowerer) lowerSchema(schema map[string]any, file, hint string) manifest.Node {
+	if reference := asString(schema["$ref"]); reference != "" {
+		return l.lowerReference(reference, file, hint, schema)
+	}
+	if branches, ok := asArray(schema["oneOf"]); ok {
+		return l.lowerUnion(schema, branches, file, hint)
+	}
+	if allOf, ok := asArray(schema["allOf"]); ok && len(allOf) == 1 {
+		if branch, ok := asMap(allOf[0]); ok {
+			return l.lowerSchema(branch, file, hint)
+		}
+	}
+	if _, ok := schema["enum"]; ok {
+		return l.lowerEnum(schema, file, hint)
+	}
+	schemaType := asString(schema["type"])
+	switch schemaType {
+	case "object", "":
+		if properties, ok := asMap(schema["properties"]); ok {
+			fields, err := lowerMojangFields(l, 0, hint, manifest.DirectionUnknown, file, properties, requiredNames(schema["required"]), hint)
+			if err != nil {
+				return manifest.Unresolved(err.Error(), true)
+			}
+			return manifest.Node{Kind: manifest.KindStruct, Semantic: asString(schema["title"]), TypeID: hint, Fields: claimsToFields(fields)}
+		}
+		if additional, ok := schema["additionalProperties"]; ok {
+			if valueSchema, ok := asMap(additional); ok {
+				return manifest.Map(manifest.Primitive("var_u32"), manifest.String(manifest.Primitive("var_u32")), l.lowerSchema(valueSchema, file, hint+"Value"))
+			}
+		}
+		if schemaType == "" {
+			return manifest.Unresolved("untyped Mojang schema "+hint, true)
+		}
+		return manifest.Struct()
+	case "array":
+		items, ok := asMap(schema["items"])
+		if !ok {
+			return manifest.Unresolved("array has no items "+hint, true)
+		}
+		inner := l.lowerSchema(items, file, hint+"Item")
+		if min, okMin := asInt(schema["minItems"]); okMin {
+			if max, okMax := asInt(schema["maxItems"]); okMax && min == max && min >= 0 {
+				return manifest.FixedArray(uint64(min), inner)
+			}
+		}
+		prefixCode := "var_u32"
+		if explicit := asString(schema["x-valentine-array-count-type"]); explicit != "" {
+			prefixCode = explicit
+		} else if hasOption(schema, "No size compression") {
+			prefixCode = "u32le"
+		}
+		return manifest.Array(manifest.Primitive(prefixCode), inner)
+	case "string":
+		if strings.EqualFold(asString(schema["x-wire-kind"]), "bytes") || strings.EqualFold(asString(schema["x-underlying-type"]), "bytearray") {
+			return manifest.Bytes(manifest.Primitive("var_u32"))
+		}
+		return manifest.String(manifest.Primitive("var_u32"))
+	case "boolean":
+		return manifest.Primitive("bool")
+	case "integer", "number":
+		return primitive(asString(schema["x-underlying-type"]), options(schema), schemaType)
+	case "null":
+		return manifest.Void()
+	default:
+		return manifest.Unresolved("unsupported Mojang schema type "+schemaType, true)
+	}
+}
+
+func (l *mojangLowerer) lowerReference(reference, file, hint string, context map[string]any) manifest.Node {
+	fileName, pointer := splitReference(reference, file)
+	if strings.HasSuffix(pointer, "/3172631924") {
+		return manifest.Primitive("nbt_le")
+	}
+	document, ok := l.documents[fileName]
+	if !ok {
+		return manifest.Unresolved("missing Mojang reference "+reference, true)
+	}
+	target, ok := valueAt(document, pointer)
+	if !ok {
+		return manifest.Unresolved("missing Mojang reference target "+reference, true)
+	}
+	typeID := fileName + pointer
+	if l.active[typeID] {
+		return manifest.Recursive(typeID)
+	}
+	targetObject, ok := asMap(target)
+	if !ok {
+		return manifest.Unresolved("Mojang reference is not a schema "+reference, true)
+	}
+	if hasOption(context, "Enum-as-Value") {
+		copyOfTarget := cloneMap(targetObject)
+		if underlying := asString(context["x-underlying-type"]); underlying != "" {
+			copyOfTarget["x-underlying-type"] = underlying
+		}
+		if values := context["x-serialization-options"]; values != nil {
+			copyOfTarget["x-serialization-options"] = values
+		}
+		targetObject = copyOfTarget
+	}
+	l.active[typeID] = true
+	result := l.lowerSchema(targetObject, fileName, hint)
+	delete(l.active, typeID)
+	if result.Semantic == "" {
+		result.Semantic = asString(targetObject["title"])
+	}
+	result.TypeID = typeID
+	return result
+}
+
+func (l *mojangLowerer) lowerUnion(schema map[string]any, branches []any, file, hint string) manifest.Node {
+	controlType := asString(schema["x-control-value-type"])
+	if controlType == "" {
+		return manifest.Unresolved("Mojang oneOf has no explicit control codec "+hint, true)
+	}
+	control := primitive(controlType, options(schema), "integer")
+	controlValues, _ := asArray(schema["x-control-values"])
+	variants := make([]manifest.Variant, 0, len(branches))
+	seen := map[int64]bool{}
+	for index, rawBranch := range branches {
+		branch, ok := asMap(rawBranch)
+		if !ok {
+			return manifest.Unresolved(fmt.Sprintf("Mojang oneOf branch %d is not an object", index), true)
+		}
+		value, ok := asInt(branch["x-ordinal-index"])
+		if !ok && index < len(controlValues) {
+			value, ok = asInt(controlValues[index])
+		}
+		if !ok || seen[value] {
+			return manifest.Unresolved("Mojang oneOf lacks unique explicit control values "+hint, true)
+		}
+		seen[value] = true
+		name := asString(branch["title"])
+		if name == "" {
+			name = fmt.Sprintf("Variant%d", value)
+		}
+		variants = append(variants, manifest.Variant{Value: value, Name: name, Encode: l.lowerSchema(branch, file, hint+name)})
+	}
+	return manifest.Union(control, variants...)
+}
+
+func (l *mojangLowerer) lowerEnum(schema map[string]any, file, hint string) manifest.Node {
+	values, ok := asArray(schema["enum"])
+	if !ok || len(values) == 0 {
+		return manifest.Unresolved("Mojang enum has no values "+hint, true)
+	}
+	explicit, hasExplicit := asArray(schema["x-enum-values"])
+	variants := make([]manifest.Variant, 0, len(values))
+	seen := map[int64]bool{}
+	for index, rawValue := range values {
+		value, numeric := asInt(rawValue)
+		if !numeric && hasExplicit && index < len(explicit) {
+			value, numeric = asInt(explicit[index])
+		}
+		if !numeric || seen[value] {
+			return manifest.Unresolved("Mojang enum lacks unique explicit ordinals "+hint, true)
+		}
+		seen[value] = true
+		name := asString(rawValue)
+		if name == "" {
+			name = fmt.Sprintf("Value%d", value)
+		}
+		variants = append(variants, manifest.Variant{Value: value, Name: name, Encode: manifest.Void()})
+	}
+	underlying := primitive(asString(schema["x-underlying-type"]), options(schema), asString(schema["type"]))
+	if underlying.Kind != manifest.KindPrimitive || underlying.Primitive == nil {
+		return manifest.Unresolved("Mojang enum has unresolved underlying codec "+hint, true)
+	}
+	return manifest.Node{Kind: manifest.KindEnum, Primitive: underlying.Primitive, Semantic: asString(schema["title"]), TypeID: file + "#" + hint, Variants: variants}
+}
+
+func claimsToFields(input []claims.Claim) []manifest.Field {
+	fields := make([]manifest.Field, 0, len(input))
+	for _, claim := range input {
+		fields = append(fields, manifest.Field{Ordinal: claim.Ordinal, Name: claim.Name, Semantic: claim.Semantic, TypeID: claim.TypeID, Encode: claim.Encode, Decode: claim.Decode, Symmetry: claim.Symmetry, Reserved: claim.Reserved, Ignored: claim.Ignored, Compatibility: claim.Compatibility, Provenance: manifest.Provenance{Pins: []string{claim.SourceID}}})
+	}
+	return fields
+}
+
+func requiredNames(raw any) map[string]bool {
+	result := map[string]bool{}
+	if values, ok := asArray(raw); ok {
+		for _, value := range values {
+			if name := asString(value); name != "" {
+				result[name] = true
+			}
+		}
+	}
+	return result
+}
+
+func options(schema map[string]any) []string {
+	values, _ := asArray(schema["x-serialization-options"])
+	result := make([]string, 0, len(values))
+	for _, value := range values {
+		if text := asString(value); text != "" {
+			result = append(result, text)
+		}
+	}
+	return result
+}
+
+func hasOption(schema map[string]any, want string) bool {
+	for _, option := range options(schema) {
+		if strings.EqualFold(option, want) {
+			return true
+		}
+	}
+	return false
+}
+
+func splitReference(reference, currentFile string) (string, string) {
+	parts := strings.SplitN(reference, "#", 2)
+	file := currentFile
+	pointer := ""
+	if len(parts) == 2 {
+		pointer = parts[1]
+	}
+	if parts[0] != "" {
+		file = filepath.Base(parts[0])
+	}
+	if pointer == "" {
+		pointer = "#"
+	}
+	if !strings.HasPrefix(pointer, "#") {
+		pointer = "#" + pointer
+	}
+	return file, pointer
+}
+
+func escapeJSONPointer(value string) string {
+	return strings.ReplaceAll(strings.ReplaceAll(value, "~", "~0"), "/", "~1")
+}
+
+func cloneMap(input map[string]any) map[string]any {
+	output := make(map[string]any, len(input))
+	for key, value := range input {
+		output[key] = value
+	}
+	return output
+}

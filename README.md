@@ -1,5 +1,15 @@
 # protocolgen
 
+The first coherent pipeline is protocolgen v2. Read
+[`docs/protocolgen-v2.md`](docs/protocolgen-v2.md) for the architecture,
+source policy, fingerprints, Axolotl parity gate, commands, and explicit gaps.
+
+The v2 entry point is `cmd/protocolgen`; it lowers pinned Mojang/bpd-corrected
+or Endstone inputs into one canonical manifest, reconciles disagreements
+fail-closed, and feeds standalone Go/Rust consumers from that manifest only.
+The older `cmd/gophertunnel` and `cmd/raw` tools remain available for their
+existing standalone workflows and are not v2 inputs.
+
 Tooling that turns Mojang's [bedrock-protocol-docs](https://github.com/Mojang/bedrock-protocol-docs)
 JSON into Go packet codecs, in two formats, and detects drift between the docs
 and an existing hand-written implementation.

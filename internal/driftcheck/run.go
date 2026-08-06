@@ -81,3 +81,11 @@ func loadSourcePackets(dir string) ([]SourcePacket, error) {
 	sort.Slice(resolved, func(i, j int) bool { return resolved[i].ID < resolved[j].ID })
 	return resolved, nil
 }
+
+// ExtractSourcePackets is the public hand-written-code adapter entry point.
+// It exposes the existing go/ast extractor without importing or executing the
+// target implementation; v2 reconciliation still treats these observations
+// as assistive rather than canonical source claims.
+func ExtractSourcePackets(dir string) ([]SourcePacket, error) {
+	return loadSourcePackets(dir)
+}

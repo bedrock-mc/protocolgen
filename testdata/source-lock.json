@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "target": {"minecraft_version": "1.26.40", "protocol_version": 2168},
+  "sources": [
+    {"id": "mojang", "kind": "mojang", "revision": "synthetic-v2168", "digest": "fixture:mojang-v2168", "minecraft_version": "1.26.40", "protocol_version": 2168},
+    {"id": "endstone", "kind": "endstone", "revision": "synthetic-v2168", "digest": "fixture:endstone-v2168", "minecraft_version": "1.26.40", "protocol_version": 2168}
+  ]
+}

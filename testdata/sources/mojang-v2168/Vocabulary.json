@@ -1,0 +1,19 @@
+{
+  "title": "VocabularyPacket",
+  "x-minecraft-version": "1.26.40-beta.0",
+  "x-protocol-version": 2168,
+  "$metaProperties": {"[cereal:packet]": 1},
+  "properties": {
+    "Value": {"type": "integer", "x-underlying-type": "uint8", "x-ordinal-index": 0},
+    "Optional": {"type": "integer", "x-underlying-type": "int32", "x-ordinal-index": 1},
+    "Text": {"type": "string", "x-ordinal-index": 2},
+    "Bytes": {"type": "string", "x-underlying-type": "bytearray", "x-ordinal-index": 3},
+    "Fixed": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "integer", "x-underlying-type": "uint16"}, "x-ordinal-index": 4},
+    "Choice": {"oneOf": [
+      {"title": "None", "type": "null", "x-ordinal-index": 0},
+      {"title": "Payload", "type": "string", "x-wire-kind": "bytes", "x-ordinal-index": 7}
+    ], "x-control-value-type": "uint8", "x-ordinal-index": 5},
+    "Mode": {"type": "integer", "x-underlying-type": "uint8", "enum": ["Ready", "Later"], "x-enum-values": [4, 9], "x-serialization-options": ["Enum-as-Value"], "x-ordinal-index": 6}
+  },
+  "required": ["Value", "Text", "Bytes", "Fixed", "Choice", "Mode"]
+}
