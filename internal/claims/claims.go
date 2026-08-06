@@ -32,9 +32,20 @@ type Claim struct {
 	Compatibility []string           `json:"compatibility,omitempty"`
 }
 
+// PacketClaim records packet identity independently of its fields so empty
+// packets remain part of the canonical protocol inventory.
+type PacketClaim struct {
+	SourceID  string             `json:"source_id"`
+	Locator   string             `json:"locator"`
+	ID        uint32             `json:"id"`
+	Name      string             `json:"name"`
+	Direction manifest.Direction `json:"direction"`
+}
+
 type Result struct {
 	Pin       manifest.SourcePin
 	Target    manifest.Target
+	Packets   []PacketClaim
 	Claims    []Claim
 	Overrides []manifest.OverrideProof
 }

@@ -3,6 +3,7 @@
 package emitgo
 
 import (
+	"encoding/json"
 	"fmt"
 	"go/format"
 	"sort"
@@ -21,6 +22,8 @@ type typeDefinition struct {
 	EntryValue string
 	Underlying string
 	Variants   []manifest.Variant
+	Union      []string
+	Implements []string
 }
 
 type typedField struct {
@@ -124,15 +127,22 @@ func (g *generator) goType(node manifest.Node, hint string) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		entryName := g.registerIdentity(node, hint+"Entry")
-		if _, exists := g.definitions[entryName]; !exists {
-			g.definitions[entryName] = typeDefinition{Name: entryName, Kind: manifest.KindStruct, Fields: []typedField{{Name: "Key", Type: key}, {Name: "Value", Type: value}}}
-		}
-		return "[]" + entryName, nil
+		return "[]OrderedEntry[" + key + ", " + value + "]", nil
 	case manifest.KindUnion:
 		name := g.registerIdentity(node, hint+"Union")
 		if _, exists := g.definitions[name]; !exists {
 			g.definitions[name] = typeDefinition{Name: name, Kind: manifest.KindUnion}
+			members := make([]string, 0, len(node.Variants))
+			for _, variant := range node.Variants {
+				member, err := g.registerUnionMember(name, variant)
+				if err != nil {
+					return "", err
+				}
+				members = append(members, member)
+			}
+			definition := g.definitions[name]
+			definition.Union = members
+			g.definitions[name] = definition
 		}
 		return name, nil
 	case manifest.KindEnum:
@@ -166,6 +176,37 @@ func (g *generator) goType(node manifest.Node, hint string) (string, error) {
 	}
 }
 
+func (g *generator) registerUnionMember(union string, variant manifest.Variant) (string, error) {
+	member, err := g.goType(variant.Encode, union+exportName(shortTypeName(variant.Name)))
+	if err != nil {
+		return "", err
+	}
+	if variant.Encode.Kind == manifest.KindVoid {
+		member = g.unique(union + exportName(shortTypeName(variant.Name)))
+		g.definitions[member] = typeDefinition{Name: member, Kind: manifest.KindStruct}
+	}
+	definition, ok := g.definitions[member]
+	if !ok || definition.Kind != manifest.KindStruct {
+		wrapper := g.unique(union + exportName(shortTypeName(variant.Name)))
+		g.definitions[wrapper] = typeDefinition{Name: wrapper, Kind: manifest.KindStruct, Fields: []typedField{{Name: "Value", Type: member}}, Implements: []string{union}}
+		return wrapper, nil
+	}
+	if !containsString(definition.Implements, union) {
+		definition.Implements = append(definition.Implements, union)
+	}
+	g.definitions[member] = definition
+	return member, nil
+}
+
+func containsString(values []string, target string) bool {
+	for _, value := range values {
+		if value == target {
+			return true
+		}
+	}
+	return false
+}
+
 func (g *generator) registerStruct(node manifest.Node, hint string) (string, error) {
 	name := g.registerIdentity(node, hint+"Struct")
 	if _, exists := g.definitions[name]; exists {
@@ -190,15 +231,50 @@ func (g *generator) registerStruct(node manifest.Node, hint string) (string, err
 
 func (g *generator) registerIdentity(node manifest.Node, hint string) string {
 	key := node.TypeID
+	inferred := inferredTypeName(node)
 	if key == "" {
-		key = fmt.Sprintf("%q/%q/%q", node.Kind, node.Semantic, hint)
+		identityHint := inferred
+		if identityHint == "" {
+			identityHint = hint
+		} else {
+			identityHint += "/" + unionIdentity(node)
+		}
+		key = fmt.Sprintf("%q/%q/%q", node.Kind, node.Semantic, identityHint)
 	}
 	if name, ok := g.identity[key]; ok {
 		return name
 	}
-	name := g.unique(exportName(hint))
+	base := hint
+	if node.TypeID != "" {
+		base = node.TypeID
+	} else if node.Semantic != "" {
+		base = node.Semantic
+	} else if inferred != "" {
+		base = inferred
+	}
+	name := g.unique(exportName(base))
 	g.identity[key] = name
 	return name
+}
+
+func unionIdentity(node manifest.Node) string {
+	type variantIdentity struct {
+		Value  int64  `json:"value"`
+		Name   string `json:"name"`
+		TypeID string `json:"type_id,omitempty"`
+	}
+	identity := struct {
+		Control  string            `json:"control"`
+		Variants []variantIdentity `json:"variants"`
+	}{}
+	if node.Control != nil && node.Control.Primitive != nil {
+		identity.Control = node.Control.Primitive.Code
+	}
+	for _, variant := range node.Variants {
+		identity.Variants = append(identity.Variants, variantIdentity{Value: variant.Value, Name: variant.Name, TypeID: variant.Encode.TypeID})
+	}
+	encoded, _ := json.Marshal(identity)
+	return string(encoded)
 }
 
 func (g *generator) unique(base string) string {
@@ -222,6 +298,8 @@ func (g *generator) emitPackets(packageName string, packets []manifest.Packet, p
 	var b strings.Builder
 	fmt.Fprintf(&b, "// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\npackage %s\n\n", packageName)
 	b.WriteString("import \"fmt\"\n\n")
+	b.WriteString("// OrderedEntry preserves the source order and duplicate keys of a wire map.\n")
+	b.WriteString("type OrderedEntry[K, V any] struct {\n\tKey K\n\tValue V\n}\n\n")
 	definitions := make([]typeDefinition, 0, len(g.definitions))
 	for _, definition := range g.definitions {
 		definitions = append(definitions, definition)
@@ -235,8 +313,11 @@ func (g *generator) emitPackets(packageName string, packets []manifest.Packet, p
 				fmt.Fprintf(&b, "\t%s %s\n", field.Name, field.Type)
 			}
 			b.WriteString("}\n\n")
+			for _, union := range definition.Implements {
+				fmt.Fprintf(&b, "func (%s) is%s() {}\n\n", definition.Name, union)
+			}
 		case manifest.KindUnion:
-			fmt.Fprintf(&b, "type %s struct {\n\tTag int64\n\tValue any\n}\n\n", definition.Name)
+			fmt.Fprintf(&b, "type %s interface {\n\tis%s()\n}\n\n", definition.Name, definition.Name)
 		case manifest.KindEnum:
 			fmt.Fprintf(&b, "type %s %s\n\nconst (\n", definition.Name, definition.Underlying)
 			for _, variant := range definition.Variants {
@@ -295,6 +376,37 @@ func (g *generator) emitPackets(packageName string, packets []manifest.Packet, p
 		return b.String(), fmt.Errorf("format generated Go: %w", err)
 	}
 	return string(formatted), nil
+}
+
+func inferredTypeName(node manifest.Node) string {
+	if node.Kind != manifest.KindUnion || len(node.Variants) == 0 {
+		return ""
+	}
+	prefix := ""
+	for _, variant := range node.Variants {
+		qualified := variant.Name
+		if !strings.Contains(qualified, "::") && variant.Encode.TypeID != "" {
+			qualified = variant.Encode.TypeID
+		}
+		position := strings.LastIndex(qualified, "::")
+		if position < 0 {
+			return ""
+		}
+		candidate := qualified[:position]
+		if prefix == "" {
+			prefix = candidate
+		} else if prefix != candidate {
+			return ""
+		}
+	}
+	return prefix
+}
+
+func shortTypeName(name string) string {
+	if position := strings.LastIndex(name, "::"); position >= 0 {
+		return name[position+2:]
+	}
+	return name
 }
 
 func shapeExpr(node manifest.Node) (string, error) {

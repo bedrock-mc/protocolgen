@@ -17,6 +17,11 @@ type fieldKey struct {
 	Ordinal  int
 }
 
+type packetMetadata struct {
+	Name      string
+	Direction manifest.Direction
+}
+
 func Reconcile(target manifest.Target, results []claims.Result, adjudications []manifest.Adjudication) (manifest.Manifest, error) {
 	if len(results) == 0 {
 		return manifest.Manifest{}, fmt.Errorf("reconcile has no source results")
@@ -25,6 +30,7 @@ func Reconcile(target manifest.Target, results []claims.Result, adjudications []
 	pins := map[string]manifest.SourcePin{}
 	allOverrides := map[string]manifest.OverrideProof{}
 	groups := map[fieldKey][]claims.Claim{}
+	packetMetadataByID := map[uint32]packetMetadata{}
 	for resultIndex, result := range results {
 		if result.Pin.ID == "" {
 			return manifest.Manifest{}, fmt.Errorf("source result %d has no source pin", resultIndex)
@@ -39,6 +45,23 @@ func Reconcile(target manifest.Target, results []claims.Result, adjudications []
 			pins[result.Pin.ID] = result.Pin
 			allPins = append(allPins, result.Pin)
 		}
+		for _, packet := range result.Packets {
+			if packet.SourceID != result.Pin.ID {
+				return manifest.Manifest{}, fmt.Errorf("packet %d has source %q but result is %q", packet.ID, packet.SourceID, result.Pin.ID)
+			}
+			metadata := packetMetadata{Name: packet.Name, Direction: packet.Direction}
+			if old, ok := packetMetadataByID[packet.ID]; ok {
+				if old.Name != metadata.Name {
+					return manifest.Manifest{}, fmt.Errorf("packet %d name disagrees: %q vs %q", packet.ID, old.Name, metadata.Name)
+				}
+				direction, ok := mergeDirection(old.Direction, metadata.Direction)
+				if !ok {
+					return manifest.Manifest{}, fmt.Errorf("packet %d direction disagrees: %q vs %q", packet.ID, old.Direction, metadata.Direction)
+				}
+				metadata.Direction = direction
+			}
+			packetMetadataByID[packet.ID] = metadata
+		}
 		for _, claim := range result.Claims {
 			if claim.SourceID != result.Pin.ID {
 				return manifest.Manifest{}, fmt.Errorf("claim %s has source %q but result is %q", claim.FieldPath, claim.SourceID, result.Pin.ID)
@@ -52,8 +75,8 @@ func Reconcile(target manifest.Target, results []claims.Result, adjudications []
 			allOverrides[proof.ID] = proof
 		}
 	}
-	if len(groups) == 0 {
-		return manifest.Manifest{}, fmt.Errorf("reconcile has no packet field claims")
+	if len(groups) == 0 && len(packetMetadataByID) == 0 {
+		return manifest.Manifest{}, fmt.Errorf("reconcile has no packet claims")
 	}
 
 	keys := make([]fieldKey, 0, len(groups))
@@ -68,6 +91,9 @@ func Reconcile(target manifest.Target, results []claims.Result, adjudications []
 	})
 
 	packets := map[uint32]*manifest.Packet{}
+	for id, metadata := range packetMetadataByID {
+		packets[id] = &manifest.Packet{ID: id, Name: metadata.Name, Direction: metadata.Direction}
+	}
 	usedAdjudications := map[string]bool{}
 	for _, key := range keys {
 		group := groups[key]
@@ -84,9 +110,11 @@ func Reconcile(target manifest.Target, results []claims.Result, adjudications []
 			packet = &manifest.Packet{ID: selected.PacketID, Name: selected.PacketName, Direction: selected.Direction}
 			packets[selected.PacketID] = packet
 		}
-		if packet.Name != selected.PacketName || packet.Direction != selected.Direction {
+		direction, directionsAgree := mergeDirection(packet.Direction, selected.Direction)
+		if packet.Name != selected.PacketName || !directionsAgree {
 			return manifest.Manifest{}, fmt.Errorf("packet %d metadata disagrees without a field adjudication", selected.PacketID)
 		}
+		packet.Direction = direction
 		field := manifest.Field{
 			Ordinal: selected.Ordinal, Name: selected.Name, Semantic: selected.Semantic, TypeID: selected.TypeID,
 			Encode: selected.Encode, Decode: selected.Decode, Symmetry: selected.Symmetry,
@@ -120,6 +148,16 @@ func Reconcile(target manifest.Target, results []claims.Result, adjudications []
 		return manifest.Manifest{}, err
 	}
 	return result, nil
+}
+
+func mergeDirection(left, right manifest.Direction) (manifest.Direction, bool) {
+	if left == manifest.DirectionUnknown {
+		return right, true
+	}
+	if right == manifest.DirectionUnknown || left == right {
+		return left, true
+	}
+	return "", false
 }
 
 func selectClaim(target manifest.Target, group []claims.Claim, adjudications []manifest.Adjudication) (claims.Claim, []string, []manifest.Evidence, string, error) {
@@ -252,6 +290,18 @@ func mergeNode(left, right manifest.Node) (manifest.Node, bool) {
 	}
 	if right.Kind == manifest.KindEnum && left.Kind == manifest.KindPrimitive && reflect.DeepEqual(left.Primitive, right.Primitive) {
 		return right, true
+	}
+	if left.Kind == manifest.KindOptional && left.Value != nil && hasEvidenceGap(*left.Value) && right.Kind != manifest.KindOptional {
+		result := left
+		value := right
+		result.Value = &value
+		return result, true
+	}
+	if right.Kind == manifest.KindOptional && right.Value != nil && hasEvidenceGap(*right.Value) && left.Kind != manifest.KindOptional {
+		result := right
+		value := left
+		result.Value = &value
+		return result, true
 	}
 	if reflect.DeepEqual(wireNode(left), wireNode(right)) {
 		if nodeSemanticScore(right) > nodeSemanticScore(left) {

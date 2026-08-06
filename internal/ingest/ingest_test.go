@@ -274,6 +274,24 @@ func TestEndstoneSwitchUsesVariantCerealSelectorConstraints(t *testing.T) {
 	}
 }
 
+func TestEndstoneSwitchRetainsDifferentlyEncodedCompatibilityDiscriminator(t *testing.T) {
+	lowerer := &endstoneLowerer{
+		types: map[string]any{"Coordinates.json": map[string]any{"name": "Coordinates", "fields": []any{
+			map[string]any{"name": "Packet Type", "type": "varint32", "constraints": map[string]any{"enum_values": []any{0}}},
+			map[string]any{"name": "X", "type": "float32"},
+		}}},
+		enums:  map[string]any{},
+		active: map[string]bool{},
+	}
+	node := lowerer.lowerTypeValue(map[string]any{
+		"switch": map[string]any{"name": "Packet Type", "type": "uvarint32"},
+		"cases":  []any{"Coordinates"},
+	}, "Location", "PlayerLocationPacket.Location")
+	if node.Kind != manifest.KindUnion || len(node.Variants) != 1 || len(node.Variants[0].Encode.Fields) != 2 {
+		t.Fatalf("union = %#v, want compatibility discriminator retained before payload", node)
+	}
+}
+
 func TestEndstoneSwitchUsesCaseOrderWithoutNamedEnum(t *testing.T) {
 	lowerer := &endstoneLowerer{
 		types: map[string]any{
@@ -295,7 +313,7 @@ func TestEndstoneSwitchUsesCaseOrderWithoutNamedEnum(t *testing.T) {
 	}
 }
 
-func TestEndstoneCollapsesRepeatedCerealUnionFields(t *testing.T) {
+func TestEndstoneRetainsRepeatedCerealUnionFields(t *testing.T) {
 	root := t.TempDir()
 	for _, directory := range []string{"packets", "types", "enums"} {
 		if err := os.Mkdir(filepath.Join(root, directory), 0o755); err != nil {
@@ -325,17 +343,38 @@ func TestEndstoneCollapsesRepeatedCerealUnionFields(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ParseEndstone: %v", err)
 	}
-	if len(result.Claims) != 3 {
-		t.Fatalf("claims = %d, want handle, one union, and tail", len(result.Claims))
+	if len(result.Claims) != 4 {
+		t.Fatalf("claims = %d, want handle, both union slots, and tail", len(result.Claims))
 	}
 	if result.Claims[1].Encode.Kind != manifest.KindUnion {
-		t.Fatalf("collapsed field = %#v, want union", result.Claims[1].Encode)
+		t.Fatalf("first union field = %#v, want union", result.Claims[1].Encode)
 	}
-	if result.Claims[1].Name != "Event" {
-		t.Fatalf("collapsed field name = %q, want common Cereal union name Event", result.Claims[1].Name)
+	if result.Claims[1].Name != "Stop" || result.Claims[2].Name != "SetVolume" {
+		t.Fatalf("union field names = %q, %q, want Stop and SetVolume", result.Claims[1].Name, result.Claims[2].Name)
 	}
-	if result.Claims[2].Name != "Tail" || result.Claims[2].Ordinal != 2 {
-		t.Fatalf("tail = %#v, want recomputed ordinal 2", result.Claims[2])
+	if result.Claims[3].Name != "Tail" || result.Claims[3].Ordinal != 3 {
+		t.Fatalf("tail = %#v, want source ordinal 3", result.Claims[3])
+	}
+}
+
+func TestEndstoneRecordsEmptyPackets(t *testing.T) {
+	root := t.TempDir()
+	for _, directory := range []string{"packets", "types", "enums"} {
+		if err := os.Mkdir(filepath.Join(root, directory), 0o755); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := os.WriteFile(filepath.Join(root, "README.md"), []byte("**Minecraft Version:** `1.26.40.1`\n**Network Version:** `2168`\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	writeJSON(t, filepath.Join(root, "packets", "EmptyPacket.json"), map[string]any{"name": "EmptyPacket", "id": 4, "fields": []any{}})
+
+	result, err := ParseEndstone(root, fixturePin("endstone"), "")
+	if err != nil {
+		t.Fatalf("ParseEndstone: %v", err)
+	}
+	if len(result.Packets) != 1 || result.Packets[0].ID != 4 || result.Packets[0].Name != "EmptyPacket" {
+		t.Fatalf("packet claims = %#v, want empty packet metadata", result.Packets)
 	}
 }
 
@@ -362,6 +401,26 @@ func TestCorrectionRequiresPrePatchFingerprintAndEvidence(t *testing.T) {
 	documents["Packet.json"].(map[string]any)["value"] = "mutated"
 	if _, err := applyCorrections(documents, corrections, fixturePin("mojang")); err == nil || !strings.Contains(err.Error(), "stale") {
 		t.Fatalf("stale correction error = %v", err)
+	}
+}
+
+func TestCorrectionCanAddMissingObjectMetadataWithoutOverwriting(t *testing.T) {
+	documents := map[string]any{"Packet.json": map[string]any{"field": map[string]any{"name": "Value", "type": "uint8"}}}
+	before, err := canonicalDigest(documents["Packet.json"].(map[string]any)["field"])
+	if err != nil {
+		t.Fatal(err)
+	}
+	corrections := t.TempDir()
+	writeJSON(t, filepath.Join(corrections, "optional.json"), map[string]any{"operations": []any{map[string]any{
+		"id": "optional-field", "file": "Packet.json", "pointer": "/field", "pre_patch_sha256": before,
+		"merge": map[string]any{"optional": true}, "why": "fixture optional evidence", "evidence": []any{map[string]any{"locator": "fixture/runtime"}},
+	}}})
+	if _, err := applyCorrections(documents, corrections, fixturePin("endstone")); err != nil {
+		t.Fatalf("applyCorrections: %v", err)
+	}
+	field := documents["Packet.json"].(map[string]any)["field"].(map[string]any)
+	if field["optional"] != true {
+		t.Fatalf("field = %#v, want optional metadata merged", field)
 	}
 }
 

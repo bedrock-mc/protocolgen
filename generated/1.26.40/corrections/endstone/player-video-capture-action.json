@@ -1,0 +1,35 @@
+{
+  "operations": [
+    {
+      "id": "player-video-capture-is-one-byte-action-union",
+      "file": "packets/PlayerVideoCapturePacket.json",
+      "pointer": "/fields",
+      "pre_patch_sha256": "sha256:b4ad67c6483453f56b51fb25ec893027817b0baa926a3845b7773400190c16ce",
+      "replace": [
+        {
+          "name": "Action",
+          "type": {
+            "switch": {
+              "type": "uint8"
+            },
+            "cases": [
+              "PlayerVideoCapturePacketPayload::StopVideoCapture",
+              "PlayerVideoCapturePacketPayload::StartVideoCapture"
+            ]
+          }
+        }
+      ],
+      "why": "PlayerVideoCapture has one fixed-byte action selector; only the start variant carries frame-rate and file-prefix payload fields.",
+      "evidence": [
+        {
+          "locator": "https://github.com/CloudburstMC/Protocol/blob/fbbeee7d/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v786/serializer/PlayerVideoCaptureSerializer_v786.java",
+          "summary": "The serializer writes one action byte and conditionally writes the start payload."
+        },
+        {
+          "locator": "https://github.com/Sandertv/gophertunnel/blob/1653b540/minecraft/protocol/packet/player_video_capture.go",
+          "summary": "gophertunnel independently models STOP=0, START=1 with one byte selector."
+        }
+      ]
+    }
+  ]
+}

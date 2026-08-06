@@ -63,17 +63,41 @@ go run ./cmd/protocolgen emit-rust \
 This produces:
 
 - a deterministic JSON manifest containing the canonical wire protocol;
-- typed Go packet structures with wire-layout descriptors generated code
-  cannot alter; and
-- typed Rust packet structures with the same wire-layout descriptors.
+- typed Go packet structures with reusable semantic types, closed union
+  interfaces, and ordered map entries;
+- typed Rust packet structures with reusable semantic types, ordered map
+  tuples, and payload-bearing enums for Cereal unions; and
+- wire-layout descriptors that preserve the exact encoding separately from
+  those language-level types.
 
 `generated/1.26.40/` contains the checked-in protocol 2168 source lock,
-canonical 223-packet manifest, and matching Go and Rust outputs generated from
-the pinned Endstone Cereal dump.
+canonical 229-packet Cereal manifest, and matching Go and Rust outputs generated
+from the pinned Endstone dump. Its `corrections/` directory contains
+fingerprinted, evidence-backed fixes for source defects; each correction stops
+applying if the pinned source changes.
 
 For real generation, replace the fixture paths with immutable local Mojang and
 Endstone checkouts and record their revisions and directory hashes in the
 source lock. Protocol data is never downloaded or vendored by this repository.
+
+The checked 1.26.40 snapshot is regenerated with:
+
+```sh
+go run ./cmd/protocolgen reconcile \
+  -lock generated/1.26.40/source-lock.json \
+  -endstone /path/to/endstone-protocol-docs \
+  -endstone-corrections generated/1.26.40/corrections/endstone \
+  -out generated/1.26.40/manifest.json
+
+go run ./cmd/protocolgen emit-go \
+  -manifest generated/1.26.40/manifest.json \
+  -out generated/1.26.40/go \
+  -pkg protocol2168
+
+go run ./cmd/protocolgen emit-rust \
+  -manifest generated/1.26.40/manifest.json \
+  -out generated/1.26.40/rust
+```
 
 ## Why the manifest matters
 

@@ -74,6 +74,8 @@ func ParseMojang(root string, pin manifest.SourcePin, corrections string) (claim
 		if name == "" {
 			name = strings.TrimSuffix(packetDoc.file, filepath.Ext(packetDoc.file))
 		}
+		direction := parseDirection(document)
+		result.Packets = append(result.Packets, claims.PacketClaim{SourceID: pin.ID, Locator: packetDoc.file, ID: packetDoc.id, Name: name, Direction: direction})
 		body, bodyFile, err := lowerer.resolvePacketBody(document, packetDoc.file)
 		if err != nil {
 			return claims.Result{}, fmt.Errorf("Mojang packet %s: %w", packetDoc.file, err)
@@ -86,7 +88,7 @@ func ParseMojang(root string, pin manifest.SourcePin, corrections string) (claim
 			properties = map[string]any{}
 		}
 		required := requiredNames(body["required"])
-		fields, err := lowerMojangFields(lowerer, packetDoc.id, name, parseDirection(document), bodyFile, properties, required, "")
+		fields, err := lowerMojangFields(lowerer, packetDoc.id, name, direction, bodyFile, properties, required, "")
 		if err != nil {
 			return claims.Result{}, err
 		}

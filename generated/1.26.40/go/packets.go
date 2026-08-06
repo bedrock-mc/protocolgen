@@ -4,283 +4,296 @@ package protocol2168
 
 import "fmt"
 
-type ActorEventPacketEventIDEnum uint8
-
-const (
-	ActorEventPacketEventIDEnumNONE                             ActorEventPacketEventIDEnum = 0
-	ActorEventPacketEventIDEnumJUMP                             ActorEventPacketEventIDEnum = 1
-	ActorEventPacketEventIDEnumHURT                             ActorEventPacketEventIDEnum = 2
-	ActorEventPacketEventIDEnumDEATH                            ActorEventPacketEventIDEnum = 3
-	ActorEventPacketEventIDEnumSTARTATTACKING                   ActorEventPacketEventIDEnum = 4
-	ActorEventPacketEventIDEnumSTOPATTACKING                    ActorEventPacketEventIDEnum = 5
-	ActorEventPacketEventIDEnumTAMINGFAILED                     ActorEventPacketEventIDEnum = 6
-	ActorEventPacketEventIDEnumTAMINGSUCCEEDED                  ActorEventPacketEventIDEnum = 7
-	ActorEventPacketEventIDEnumSHAKEWETNESS                     ActorEventPacketEventIDEnum = 8
-	ActorEventPacketEventIDEnumEATGRASS                         ActorEventPacketEventIDEnum = 10
-	ActorEventPacketEventIDEnumFISHHOOKBUBBLE                   ActorEventPacketEventIDEnum = 11
-	ActorEventPacketEventIDEnumFISHHOOKFISHPOS                  ActorEventPacketEventIDEnum = 12
-	ActorEventPacketEventIDEnumFISHHOOKHOOKTIME                 ActorEventPacketEventIDEnum = 13
-	ActorEventPacketEventIDEnumFISHHOOKTEASE                    ActorEventPacketEventIDEnum = 14
-	ActorEventPacketEventIDEnumSQUIDFLEEING                     ActorEventPacketEventIDEnum = 15
-	ActorEventPacketEventIDEnumZOMBIECONVERTING                 ActorEventPacketEventIDEnum = 16
-	ActorEventPacketEventIDEnumPLAYAMBIENT                      ActorEventPacketEventIDEnum = 17
-	ActorEventPacketEventIDEnumSPAWNALIVE                       ActorEventPacketEventIDEnum = 18
-	ActorEventPacketEventIDEnumSTARTOFFERFLOWER                 ActorEventPacketEventIDEnum = 19
-	ActorEventPacketEventIDEnumSTOPOFFERFLOWER                  ActorEventPacketEventIDEnum = 20
-	ActorEventPacketEventIDEnumLOVEHEARTS                       ActorEventPacketEventIDEnum = 21
-	ActorEventPacketEventIDEnumVILLAGERANGRY                    ActorEventPacketEventIDEnum = 22
-	ActorEventPacketEventIDEnumVILLAGERHAPPY                    ActorEventPacketEventIDEnum = 23
-	ActorEventPacketEventIDEnumWITCHHATMAGIC                    ActorEventPacketEventIDEnum = 24
-	ActorEventPacketEventIDEnumFIREWORKSEXPLODE                 ActorEventPacketEventIDEnum = 25
-	ActorEventPacketEventIDEnumINLOVEHEARTS                     ActorEventPacketEventIDEnum = 26
-	ActorEventPacketEventIDEnumSILVERFISHMERGEANIM              ActorEventPacketEventIDEnum = 27
-	ActorEventPacketEventIDEnumGUARDIANATTACKSOUND              ActorEventPacketEventIDEnum = 28
-	ActorEventPacketEventIDEnumDRINKPOTION                      ActorEventPacketEventIDEnum = 29
-	ActorEventPacketEventIDEnumTHROWPOTION                      ActorEventPacketEventIDEnum = 30
-	ActorEventPacketEventIDEnumPRIMETNTCART                     ActorEventPacketEventIDEnum = 31
-	ActorEventPacketEventIDEnumPRIMECREEPER                     ActorEventPacketEventIDEnum = 32
-	ActorEventPacketEventIDEnumAIRSUPPLY                        ActorEventPacketEventIDEnum = 33
-	ActorEventPacketEventIDEnumDEPRECATEDADDPLAYERLEVELS        ActorEventPacketEventIDEnum = 34
-	ActorEventPacketEventIDEnumGUARDIANMININGFATIGUE            ActorEventPacketEventIDEnum = 35
-	ActorEventPacketEventIDEnumAGENTSWINGARM                    ActorEventPacketEventIDEnum = 36
-	ActorEventPacketEventIDEnumDRAGONSTARTDEATHANIM             ActorEventPacketEventIDEnum = 37
-	ActorEventPacketEventIDEnumGROUNDDUST                       ActorEventPacketEventIDEnum = 38
-	ActorEventPacketEventIDEnumSHAKE                            ActorEventPacketEventIDEnum = 39
-	ActorEventPacketEventIDEnumFEED                             ActorEventPacketEventIDEnum = 57
-	ActorEventPacketEventIDEnumBABYAGE                          ActorEventPacketEventIDEnum = 60
-	ActorEventPacketEventIDEnumINSTANTDEATH                     ActorEventPacketEventIDEnum = 61
-	ActorEventPacketEventIDEnumNOTIFYTRADE                      ActorEventPacketEventIDEnum = 62
-	ActorEventPacketEventIDEnumLEASHDESTROYED                   ActorEventPacketEventIDEnum = 63
-	ActorEventPacketEventIDEnumCARAVANUPDATED                   ActorEventPacketEventIDEnum = 64
-	ActorEventPacketEventIDEnumTALISMANACTIVATE                 ActorEventPacketEventIDEnum = 65
-	ActorEventPacketEventIDEnumDEPRECATEDUPDATESTRUCTUREFEATURE ActorEventPacketEventIDEnum = 66
-	ActorEventPacketEventIDEnumPLAYERSPAWNEDMOB                 ActorEventPacketEventIDEnum = 67
-	ActorEventPacketEventIDEnumPUKE                             ActorEventPacketEventIDEnum = 68
-	ActorEventPacketEventIDEnumUPDATESTACKSIZE                  ActorEventPacketEventIDEnum = 69
-	ActorEventPacketEventIDEnumSTARTSWIMMING                    ActorEventPacketEventIDEnum = 70
-	ActorEventPacketEventIDEnumBALLOONPOP                       ActorEventPacketEventIDEnum = 71
-	ActorEventPacketEventIDEnumTREASUREHUNT                     ActorEventPacketEventIDEnum = 72
-	ActorEventPacketEventIDEnumSUMMONAGENT                      ActorEventPacketEventIDEnum = 73
-	ActorEventPacketEventIDEnumFINISHEDCHARGINGITEM             ActorEventPacketEventIDEnum = 74
-	ActorEventPacketEventIDEnumACTORGROWUP                      ActorEventPacketEventIDEnum = 76
-	ActorEventPacketEventIDEnumVIBRATIONDETECTED                ActorEventPacketEventIDEnum = 77
-	ActorEventPacketEventIDEnumDRINKMILK                        ActorEventPacketEventIDEnum = 78
-	ActorEventPacketEventIDEnumSHAKEWETNESSSTOP                 ActorEventPacketEventIDEnum = 79
-	ActorEventPacketEventIDEnumKINETICDAMAGEDEALT               ActorEventPacketEventIDEnum = 80
-	ActorEventPacketEventIDEnumHURTWITHOUTRECEIVINGDAMAGE       ActorEventPacketEventIDEnum = 81
-)
-
-type AddActorPacketAttributesListItemStruct struct {
-	AttributeName string
-	MinValue      float32
-	CurrentValue  float32
-	MaxValue      float32
+// OrderedEntry preserves the source order and duplicate keys of a wire map.
+type OrderedEntry[K, V any] struct {
+	Key   K
+	Value V
 }
 
-type AddPlayerPacketAbilitiesDataStruct struct {
-	TargetPlayerRawId  int64
-	PlayerPermissions  StartGamePacketSettingsStructPlayerPermissionsEnum
-	CommandPermissions AddPlayerPacketAbilitiesDataStructCommandPermissionsEnum
-	Layers             []AddPlayerPacketAbilitiesDataStructLayersItemStruct
+type ActorDataBoundingBoxComponent struct {
+	ActorDataBoundingBox [3]float32
 }
 
-type AddPlayerPacketAbilitiesDataStructCommandPermissionsEnum uint8
-
-const (
-	AddPlayerPacketAbilitiesDataStructCommandPermissionsEnumAny           AddPlayerPacketAbilitiesDataStructCommandPermissionsEnum = 0
-	AddPlayerPacketAbilitiesDataStructCommandPermissionsEnumGameDirectors AddPlayerPacketAbilitiesDataStructCommandPermissionsEnum = 1
-	AddPlayerPacketAbilitiesDataStructCommandPermissionsEnumAdmin         AddPlayerPacketAbilitiesDataStructCommandPermissionsEnum = 2
-	AddPlayerPacketAbilitiesDataStructCommandPermissionsEnumHost          AddPlayerPacketAbilitiesDataStructCommandPermissionsEnum = 3
-	AddPlayerPacketAbilitiesDataStructCommandPermissionsEnumOwner         AddPlayerPacketAbilitiesDataStructCommandPermissionsEnum = 4
-	AddPlayerPacketAbilitiesDataStructCommandPermissionsEnumInternal      AddPlayerPacketAbilitiesDataStructCommandPermissionsEnum = 5
-)
-
-type AddPlayerPacketAbilitiesDataStructLayersItemStruct struct {
-	SerializedLayer  uint16
-	AbilitiesSet     uint32
-	AbilityValues    uint32
-	FlySpeed         float32
-	VerticalFlySpeed float32
-	WalkSpeed        float32
+type ActorDataFlagComponent struct {
+	ActorFlagBitsetData []byte
 }
 
-type AddPlayerPacketActorLinksItemStruct struct {
-	TargetA                StartGamePacketEntityIDStruct
-	TargetB                StartGamePacketEntityIDStruct
-	Type                   AddPlayerPacketActorLinksItemStructTypeEnum
+type ActorLink struct {
+	TargetA                ActorUniqueID
+	TargetB                ActorUniqueID
+	Type                   EnumsActorLinkType
 	Immediate              bool
 	PassengerInitiated     bool
 	VehicleAngularVelocity float32
 }
 
-type AddPlayerPacketActorLinksItemStructTypeEnum uint8
-
-const (
-	AddPlayerPacketActorLinksItemStructTypeEnumNone      AddPlayerPacketActorLinksItemStructTypeEnum = 0
-	AddPlayerPacketActorLinksItemStructTypeEnumRiding    AddPlayerPacketActorLinksItemStructTypeEnum = 1
-	AddPlayerPacketActorLinksItemStructTypeEnumPassenger AddPlayerPacketActorLinksItemStructTypeEnum = 2
-)
-
-type AddPlayerPacketBuildPlatformEnum int32
-
-const (
-	AddPlayerPacketBuildPlatformEnumUnknown      AddPlayerPacketBuildPlatformEnum = -1
-	AddPlayerPacketBuildPlatformEnumGoogle       AddPlayerPacketBuildPlatformEnum = 1
-	AddPlayerPacketBuildPlatformEnumIOS          AddPlayerPacketBuildPlatformEnum = 2
-	AddPlayerPacketBuildPlatformEnumOSX          AddPlayerPacketBuildPlatformEnum = 3
-	AddPlayerPacketBuildPlatformEnumAmazon       AddPlayerPacketBuildPlatformEnum = 4
-	AddPlayerPacketBuildPlatformEnumGearVR       AddPlayerPacketBuildPlatformEnum = 5
-	AddPlayerPacketBuildPlatformEnumUWP          AddPlayerPacketBuildPlatformEnum = 7
-	AddPlayerPacketBuildPlatformEnumWin32        AddPlayerPacketBuildPlatformEnum = 8
-	AddPlayerPacketBuildPlatformEnumDedicated    AddPlayerPacketBuildPlatformEnum = 9
-	AddPlayerPacketBuildPlatformEnumTvOS         AddPlayerPacketBuildPlatformEnum = 10
-	AddPlayerPacketBuildPlatformEnumSony         AddPlayerPacketBuildPlatformEnum = 11
-	AddPlayerPacketBuildPlatformEnumNx           AddPlayerPacketBuildPlatformEnum = 12
-	AddPlayerPacketBuildPlatformEnumXbox         AddPlayerPacketBuildPlatformEnum = 13
-	AddPlayerPacketBuildPlatformEnumWindowsPhone AddPlayerPacketBuildPlatformEnum = 14
-	AddPlayerPacketBuildPlatformEnumLinux        AddPlayerPacketBuildPlatformEnum = 15
-)
-
-type AddPlayerPacketCarriedItemStruct struct {
-	Id             int16
-	StackSize      uint16
-	AuxValue       uint32
-	NetIdVariant   *int32
-	BlockRuntimeId uint32
-	UserDataBuffer string
+type ActorRuntimeID struct {
+	ActorRuntimeID uint64
 }
 
-type AddPlayerPacketEntityDataStruct struct {
-	Data []AddPlayerPacketEntityDataStructDataItemStruct
+type ActorUniqueID struct {
+	ActorUniqueID int64
 }
 
-type AddPlayerPacketEntityDataStructDataItemStruct struct {
-	ID      uint32
-	Payload AddPlayerPacketEntityDataStructDataItemStructPayloadUnion
+type AdventureSettings struct {
+	NoPvM          bool
+	NoMvP          bool
+	ImmutableWorld bool
+	ShowNameTags   bool
+	AutoJump       bool
 }
 
-type AddPlayerPacketEntityDataStructDataItemStructPayloadUnion struct {
-	Tag   int64
-	Value any
+type AgentCapabilities struct {
+	CanModifyBlocks *bool
 }
 
-type AddPlayerPacketSynchedPropertiesStruct struct {
-	IntEntriesList   []AddPlayerPacketSynchedPropertiesStructIntEntriesListItemStruct
-	FloatEntriesList []AddPlayerPacketSynchedPropertiesStructFloatEntriesListItemStruct
+type AnimatedImageData struct {
+	SkinImage           SkinImage
+	AnimatedTextureType EnumsPersonaAnimatedTextureType
+	Frames              float32
+	AnimationExpression EnumsPersonaAnimationExpression
 }
 
-type AddPlayerPacketSynchedPropertiesStructFloatEntriesListItemStruct struct {
-	PropertyIndex uint32
-	Data          float32
+type ArmorSlotAndDamagePair struct {
+	ArmorSlot EnumsSharedTypesLegacyArmorSlot
+	Damage    int16
 }
 
-type AddPlayerPacketSynchedPropertiesStructIntEntriesListItemStruct struct {
-	PropertyIndex uint32
-	Data          int32
+type ArrowDataPayload struct {
+	ArrowEndLocation *Vec3
+	ArrowHeadLength  *float32
+	ArrowHeadRadius  *float32
+	NumSegments      *uint8
 }
 
-type AddVolumeEntityPacketEntityNetworkIdStruct struct {
-	RawId uint32
+func (ArrowDataPayload) isPrimitiveShapeDataPayloadExtraShapeDataUnion() {}
+
+type AttributeData struct {
+	MinValue        float32
+	MaxValue        float32
+	CurrentValue    float32
+	DefaultMinValue float32
+	DefaultMaxValue float32
+	DefaultValue    float32
+	Name            string
+	Modifiers       []AttributeModifier
 }
 
-type AgentActionEventPacketActionEnum int32
-
-const (
-	AgentActionEventPacketActionEnumAttack            AgentActionEventPacketActionEnum = 1
-	AgentActionEventPacketActionEnumCollect           AgentActionEventPacketActionEnum = 2
-	AgentActionEventPacketActionEnumDestroy           AgentActionEventPacketActionEnum = 3
-	AgentActionEventPacketActionEnumDetectRedstone    AgentActionEventPacketActionEnum = 4
-	AgentActionEventPacketActionEnumDetectObstacle    AgentActionEventPacketActionEnum = 5
-	AgentActionEventPacketActionEnumDrop              AgentActionEventPacketActionEnum = 6
-	AgentActionEventPacketActionEnumDropAll           AgentActionEventPacketActionEnum = 7
-	AgentActionEventPacketActionEnumInspect           AgentActionEventPacketActionEnum = 8
-	AgentActionEventPacketActionEnumInspectData       AgentActionEventPacketActionEnum = 9
-	AgentActionEventPacketActionEnumInspectItemCount  AgentActionEventPacketActionEnum = 10
-	AgentActionEventPacketActionEnumInspectItemDetail AgentActionEventPacketActionEnum = 11
-	AgentActionEventPacketActionEnumInspectItemSpace  AgentActionEventPacketActionEnum = 12
-	AgentActionEventPacketActionEnumInteract          AgentActionEventPacketActionEnum = 13
-	AgentActionEventPacketActionEnumMove              AgentActionEventPacketActionEnum = 14
-	AgentActionEventPacketActionEnumPlaceBlock        AgentActionEventPacketActionEnum = 15
-	AgentActionEventPacketActionEnumTill              AgentActionEventPacketActionEnum = 16
-	AgentActionEventPacketActionEnumTransferItemTo    AgentActionEventPacketActionEnum = 17
-	AgentActionEventPacketActionEnumTurn              AgentActionEventPacketActionEnum = 18
-)
-
-type AgentAnimationPacketAgentAnimationEnum uint8
-
-const (
-	AgentAnimationPacketAgentAnimationEnumArmSwing AgentAnimationPacketAgentAnimationEnum = 0
-	AgentAnimationPacketAgentAnimationEnumShrug    AgentAnimationPacketAgentAnimationEnum = 1
-)
-
-type AnimatePacketActionEnum uint8
-
-const (
-	AnimatePacketActionEnumNoAction         AnimatePacketActionEnum = 0
-	AnimatePacketActionEnumSwing            AnimatePacketActionEnum = 1
-	AnimatePacketActionEnumWakeUp           AnimatePacketActionEnum = 3
-	AnimatePacketActionEnumCriticalHit      AnimatePacketActionEnum = 4
-	AnimatePacketActionEnumMagicCriticalHit AnimatePacketActionEnum = 5
-)
-
-type AutomationClientConnectPacketWebSocketDataStruct struct {
-	WebsocketServerURI string
+type AttributeLayerSyncPacketData interface {
+	isAttributeLayerSyncPacketData()
 }
 
-type AvailableCommandsPacketChainedSubcommandDataItemStruct struct {
+type AttributeLayerSyncPacketDataRemoveEnvironmentAttributesData struct {
+	AttributeLayerName      string
+	AttributeLayerDimension DimensionType
+	Attributes              []string
+}
+
+func (AttributeLayerSyncPacketDataRemoveEnvironmentAttributesData) isAttributeLayerSyncPacketData() {}
+
+type AttributeLayerSyncPacketDataUpdateAttributeLayerSettingsData struct {
+	AttributeLayerName      string
+	AttributeLayerDimension DimensionType
+	AttributesLayerSettings EASAttributeLayerSettings
+}
+
+func (AttributeLayerSyncPacketDataUpdateAttributeLayerSettingsData) isAttributeLayerSyncPacketData() {
+}
+
+type AttributeLayerSyncPacketDataUpdateAttributeLayersData struct {
+	AttributeLayers []EASAttributeLayerData
+}
+
+func (AttributeLayerSyncPacketDataUpdateAttributeLayersData) isAttributeLayerSyncPacketData() {}
+
+type AttributeLayerSyncPacketDataUpdateEnvironmentAttributesData struct {
+	AttributeLayerName      string
+	AttributeLayerDimension DimensionType
+	Attributes              []EASEnvironmentAttributeData
+}
+
+func (AttributeLayerSyncPacketDataUpdateEnvironmentAttributesData) isAttributeLayerSyncPacketData() {}
+
+type AttributeModifier struct {
+	Id             string
+	Name           string
+	Amount         float32
+	Operation      int32
+	Operand        int32
+	IsSerializable bool
+}
+
+type AvailableCommandsPacketPayloadChainedSubcommandData struct {
 	Name             string
-	SubCommandValues []AvailableCommandsPacketChainedSubcommandDataItemStructSubCommandValuesItemStruct
+	SubCommandValues []AvailableCommandsPacketPayloadChainedSubcommandRelationship
 }
 
-type AvailableCommandsPacketChainedSubcommandDataItemStructSubCommandValuesItemStruct struct {
+type AvailableCommandsPacketPayloadChainedSubcommandRelationship struct {
 	SubCommandFirstValue  uint32
 	SubCommandSecondValue uint32
 }
 
-type AvailableCommandsPacketCommandsItemStruct struct {
+type AvailableCommandsPacketPayloadCommandData struct {
 	Name                                string
 	Description                         string
 	Flags                               uint16
 	PermissionLevel                     string
 	AliasEnum                           int32
 	CommandDataChainedSubcommandIndexes []uint32
-	Overloads                           []AvailableCommandsPacketCommandsItemStructOverloadsItemStruct
+	Overloads                           []AvailableCommandsPacketPayloadOverloadData
 }
 
-type AvailableCommandsPacketCommandsItemStructOverloadsItemStruct struct {
+type AvailableCommandsPacketPayloadConstrainedValueData struct {
+	EnumValueSymbol   uint32
+	EnumSymbol        uint32
+	ConstraintIndices []uint8
+}
+
+type AvailableCommandsPacketPayloadEnumData struct {
+	Name   string
+	Values []uint32
+}
+
+type AvailableCommandsPacketPayloadOverloadData struct {
 	IsChaining    bool
-	ParameterData []AvailableCommandsPacketCommandsItemStructOverloadsItemStructParameterDataItemStruct
+	ParameterData []AvailableCommandsPacketPayloadParamData
 }
 
-type AvailableCommandsPacketCommandsItemStructOverloadsItemStructParameterDataItemStruct struct {
+type AvailableCommandsPacketPayloadParamData struct {
 	Name        string
 	ParseSymbol uint32
 	IsOptional  bool
 	Options     uint8
 }
 
-type AvailableCommandsPacketConstraintsItemStruct struct {
-	EnumValueSymbol   uint32
-	EnumSymbol        uint32
-	ConstraintIndices []uint8
-}
-
-type AvailableCommandsPacketEnumDataItemStruct struct {
-	Name   string
-	Values []uint32
-}
-
-type AvailableCommandsPacketSoftEnumsItemStruct struct {
+type AvailableCommandsPacketPayloadSoftEnumData struct {
 	EnumName    string
 	EnumOptions []string
 }
 
-type BiomeDefinitionListPacketMapOfBiomeNamesToDataEntry struct {
-	Key   uint16
-	Value BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStruct
+type BedrockDDUI interface {
+	isBedrockDDUI()
 }
 
-type BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStruct struct {
+type BedrockDDUIDataStoreChange struct {
+	DataStoreName       string
+	Property            string
+	UpdateCount         uint32
+	TheNewPropertyValue CerealDynamicValue
+}
+
+func (BedrockDDUIDataStoreChange) isBedrockDDUI() {}
+
+type BedrockDDUIDataStoreRemoval struct {
+	DataStoreName string
+}
+
+func (BedrockDDUIDataStoreRemoval) isBedrockDDUI() {}
+
+type BedrockDDUIDataStoreUpdate struct {
+	DataStoreName       string
+	Property            string
+	Path                string
+	Data                BedrockDDUIDataStoreUpdateDataUnion
+	PropertyUpdateCount uint32
+	PathUpdateCount     uint32
+}
+
+func (BedrockDDUIDataStoreUpdate) isBedrockDDUI() {}
+
+type BedrockDDUIDataStoreUpdateDataUnion interface {
+	isBedrockDDUIDataStoreUpdateDataUnion()
+}
+
+type BedrockDDUIDataStoreUpdateDataUnionBool struct {
+	Value bool
+}
+
+func (BedrockDDUIDataStoreUpdateDataUnionBool) isBedrockDDUIDataStoreUpdateDataUnion() {}
+
+type BedrockDDUIDataStoreUpdateDataUnionDouble struct {
+	Value float64
+}
+
+func (BedrockDDUIDataStoreUpdateDataUnionDouble) isBedrockDDUIDataStoreUpdateDataUnion() {}
+
+type BedrockDDUIDataStoreUpdateDataUnionString struct {
+	Value string
+}
+
+func (BedrockDDUIDataStoreUpdateDataUnionString) isBedrockDDUIDataStoreUpdateDataUnion() {}
+
+type BedrockProfileWhiskerDiagnosticsScopeDataSummary struct {
+	Label           string
+	Indentation     string
+	TotalHighCostNS uint64
+	TotalMidCostNS  uint64
+	TotalLowCostNS  uint64
+}
+
+type BedrockSafetyRedactableString struct {
+	Unredacted string
+	Redacted   *string
+}
+
+type BiomeCappedSurfaceData struct {
+	FloorBlocks     []uint32
+	CeilingBlocks   []uint32
+	SeaBlock        *uint32
+	FoundationBlock *uint32
+	BeachBlock      *uint32
+}
+
+type BiomeClimateData struct {
+	Temperature         float32
+	Downfall            float32
+	SnowAccumulationMin float32
+	SnowAccumulationMax float32
+}
+
+type BiomeConditionalTransformationData struct {
+	TransformsInto      []BiomeWeightedData
+	ConditionJson       uint16
+	MinPassingNeighbors uint32
+}
+
+type BiomeConsolidatedFeatureData struct {
+	Scatter               BiomeScatterParamData
+	Feature               uint16
+	Identifier            uint16
+	Pass                  uint16
+	CanUseInternalFeature bool
+}
+
+type BiomeConsolidatedFeaturesData struct {
+	Features []BiomeConsolidatedFeatureData
+}
+
+type BiomeCoordinateData struct {
+	MinValueType int32
+	MinValue     uint16
+	MaxValueType int32
+	MaxValue     uint16
+	GridOffset   uint32
+	GridStepSize uint32
+	Distribution EnumsSharedTypesV12110RandomDistributionType
+}
+
+type BiomeDefinitionChunkGenData struct {
+	Climate                    *BiomeClimateData
+	ConsolidatedFeatures       *BiomeConsolidatedFeaturesData
+	MountainParams             *BiomeMountainParamsData
+	SurfaceMaterialAdjustments *BiomeSurfaceMaterialAdjustmentData
+	OverworldGenRules          *BiomeOverworldGenRulesData
+	MultinoiseGenRules         *BiomeMultinoiseGenRulesData
+	LegacyWorldGenRules        *BiomeLegacyWorldGenRulesData
+	ReplacementBiomes          *BiomeReplacementsData
+	VillageType                *EnumsSharedTypesVillageType
+	SurfaceBuilderData         *BiomeSurfaceBuilderData
+	SubsurfaceBuilderData      *BiomeSurfaceBuilderData
+}
+
+type BiomeDefinitionData struct {
 	Id                uint16
 	Temperature       float32
 	Downfall          float32
@@ -289,92 +302,33 @@ type BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStruct struct {
 	Scale             float32
 	MapWaterColorARGB int32
 	Rain              bool
-	Tags              *BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructTagsValueStruct
-	ChunkGenData      *BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStruct
+	Tags              *BiomeTagsData
+	ChunkGenData      *BiomeDefinitionChunkGenData
 }
 
-type BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStruct struct {
-	Climate                    *BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructClimateValueStruct
-	ConsolidatedFeatures       *BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructConsolidatedFeaturesValueStruct
-	MountainParams             *BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructMountainParamsValueStruct
-	SurfaceMaterialAdjustments *BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructSurfaceMaterialAdjustmentsValueStruct
-	OverworldGenRules          *BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructOverworldGenRulesValueStruct
-	MultinoiseGenRules         *BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructMultinoiseGenRulesValueStruct
-	LegacyWorldGenRules        *BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructLegacyWorldGenRulesValueStruct
-	ReplacementBiomes          *BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructReplacementBiomesValueStruct
-	VillageType                *BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructVillageTypeValueEnum
-	SurfaceBuilderData         *BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructSurfaceBuilderDataValueStruct
-	SubsurfaceBuilderData      *BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructSurfaceBuilderDataValueStruct
+type BiomeElementData struct {
+	NoiseFreqScale    float32
+	NoiseLowerBound   float32
+	NoiseUpperBound   float32
+	HeightMinType     int32
+	HeightMin         uint16
+	HeightMaxType     int32
+	HeightMax         uint16
+	AdjustedMaterials BiomeSurfaceMaterialData
 }
 
-type BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructClimateValueStruct struct {
-	Temperature         float32
-	Downfall            float32
-	SnowAccumulationMin float32
-	SnowAccumulationMax float32
+type BiomeLegacyWorldGenRulesData struct {
+	LegacyPreHillsEdge []BiomeConditionalTransformationData
 }
 
-type BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructConsolidatedFeaturesValueStruct struct {
-	Features []BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructConsolidatedFeaturesValueStructFeaturesItemStruct
+type BiomeMesaSurfaceData struct {
+	ClayMaterial     uint32
+	HardClayMaterial uint32
+	BrycePillars     bool
+	HasForest        bool
 }
 
-type BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructConsolidatedFeaturesValueStructFeaturesItemStruct struct {
-	Scatter               BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructConsolidatedFeaturesValueStructFeaturesItemStructScatterStruct
-	Feature               uint16
-	Identifier            uint16
-	Pass                  uint16
-	CanUseInternalFeature bool
-}
-
-type BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructConsolidatedFeaturesValueStructFeaturesItemStructScatterStruct struct {
-	Coordinates       []BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructConsolidatedFeaturesValueStructFeaturesItemStructScatterStructCoordinatesItemStruct
-	EvalOrder         BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructConsolidatedFeaturesValueStructFeaturesItemStructScatterStructEvalOrderEnum
-	ChancePercentType int32
-	ChancePercent     uint16
-	ChanceNumerator   int32
-	ChanceDenominator int32
-	IterationsType    int32
-	Iterations        uint16
-}
-
-type BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructConsolidatedFeaturesValueStructFeaturesItemStructScatterStructCoordinatesItemStruct struct {
-	MinValueType int32
-	MinValue     uint16
-	MaxValueType int32
-	MaxValue     uint16
-	GridOffset   uint32
-	GridStepSize uint32
-	Distribution BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructConsolidatedFeaturesValueStructFeaturesItemStructScatterStructCoordinatesItemStructDistributionEnum
-}
-
-type BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructConsolidatedFeaturesValueStructFeaturesItemStructScatterStructCoordinatesItemStructDistributionEnum int32
-
-const (
-	BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructConsolidatedFeaturesValueStructFeaturesItemStructScatterStructCoordinatesItemStructDistributionEnumSingleValued    BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructConsolidatedFeaturesValueStructFeaturesItemStructScatterStructCoordinatesItemStructDistributionEnum = 0
-	BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructConsolidatedFeaturesValueStructFeaturesItemStructScatterStructCoordinatesItemStructDistributionEnumUniform         BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructConsolidatedFeaturesValueStructFeaturesItemStructScatterStructCoordinatesItemStructDistributionEnum = 1
-	BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructConsolidatedFeaturesValueStructFeaturesItemStructScatterStructCoordinatesItemStructDistributionEnumGaussian        BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructConsolidatedFeaturesValueStructFeaturesItemStructScatterStructCoordinatesItemStructDistributionEnum = 2
-	BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructConsolidatedFeaturesValueStructFeaturesItemStructScatterStructCoordinatesItemStructDistributionEnumInverseGaussian BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructConsolidatedFeaturesValueStructFeaturesItemStructScatterStructCoordinatesItemStructDistributionEnum = 3
-	BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructConsolidatedFeaturesValueStructFeaturesItemStructScatterStructCoordinatesItemStructDistributionEnumFixedGrid       BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructConsolidatedFeaturesValueStructFeaturesItemStructScatterStructCoordinatesItemStructDistributionEnum = 4
-	BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructConsolidatedFeaturesValueStructFeaturesItemStructScatterStructCoordinatesItemStructDistributionEnumJitteredGrid    BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructConsolidatedFeaturesValueStructFeaturesItemStructScatterStructCoordinatesItemStructDistributionEnum = 5
-	BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructConsolidatedFeaturesValueStructFeaturesItemStructScatterStructCoordinatesItemStructDistributionEnumTriangle        BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructConsolidatedFeaturesValueStructFeaturesItemStructScatterStructCoordinatesItemStructDistributionEnum = 6
-)
-
-type BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructConsolidatedFeaturesValueStructFeaturesItemStructScatterStructEvalOrderEnum int32
-
-const (
-	BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructConsolidatedFeaturesValueStructFeaturesItemStructScatterStructEvalOrderEnumXYZ BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructConsolidatedFeaturesValueStructFeaturesItemStructScatterStructEvalOrderEnum = 0
-	BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructConsolidatedFeaturesValueStructFeaturesItemStructScatterStructEvalOrderEnumXZY BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructConsolidatedFeaturesValueStructFeaturesItemStructScatterStructEvalOrderEnum = 1
-	BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructConsolidatedFeaturesValueStructFeaturesItemStructScatterStructEvalOrderEnumYXZ BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructConsolidatedFeaturesValueStructFeaturesItemStructScatterStructEvalOrderEnum = 2
-	BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructConsolidatedFeaturesValueStructFeaturesItemStructScatterStructEvalOrderEnumYZX BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructConsolidatedFeaturesValueStructFeaturesItemStructScatterStructEvalOrderEnum = 3
-	BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructConsolidatedFeaturesValueStructFeaturesItemStructScatterStructEvalOrderEnumZXY BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructConsolidatedFeaturesValueStructFeaturesItemStructScatterStructEvalOrderEnum = 4
-	BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructConsolidatedFeaturesValueStructFeaturesItemStructScatterStructEvalOrderEnumZYX BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructConsolidatedFeaturesValueStructFeaturesItemStructScatterStructEvalOrderEnum = 5
-)
-
-type BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructLegacyWorldGenRulesValueStruct struct {
-	LegacyPreHillsEdge []BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructOverworldGenRulesValueStructPreHillsEdgeItemStruct
-}
-
-type BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructMountainParamsValueStruct struct {
+type BiomeMountainParamsData struct {
 	SteepBlock      uint32
 	NorthSlopes     bool
 	SouthSlopes     bool
@@ -383,7 +337,7 @@ type BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueS
 	TopSlideEnabled bool
 }
 
-type BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructMultinoiseGenRulesValueStruct struct {
+type BiomeMultinoiseGenRulesData struct {
 	Temperature float32
 	Humidity    float32
 	Altitude    float32
@@ -391,37 +345,23 @@ type BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueS
 	Weight      float32
 }
 
-type BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructOverworldGenRulesValueStruct struct {
-	HillsTransformations  []BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructOverworldGenRulesValueStructHillsTransformationsItemStruct
-	MutateTransformations []BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructOverworldGenRulesValueStructHillsTransformationsItemStruct
-	RiverTransformations  []BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructOverworldGenRulesValueStructHillsTransformationsItemStruct
-	ShoreTransformations  []BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructOverworldGenRulesValueStructHillsTransformationsItemStruct
-	PreHillsEdge          []BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructOverworldGenRulesValueStructPreHillsEdgeItemStruct
-	PostShoreEdge         []BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructOverworldGenRulesValueStructPreHillsEdgeItemStruct
-	Climate               []BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructOverworldGenRulesValueStructClimateItemStruct
+type BiomeNoiseGradientSurfaceData struct {
+	NonReplaceableBlocks []uint32
+	GradientBlocks       []SerializedNoiseBlockSpecifier
+	Noise                SharedTypesV12630NoiseDescriptor
 }
 
-type BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructOverworldGenRulesValueStructClimateItemStruct struct {
-	Temperature int32
-	Weight      uint32
+type BiomeOverworldGenRulesData struct {
+	HillsTransformations  []BiomeWeightedData
+	MutateTransformations []BiomeWeightedData
+	RiverTransformations  []BiomeWeightedData
+	ShoreTransformations  []BiomeWeightedData
+	PreHillsEdge          []BiomeConditionalTransformationData
+	PostShoreEdge         []BiomeConditionalTransformationData
+	Climate               []BiomeWeightedTemperatureData
 }
 
-type BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructOverworldGenRulesValueStructHillsTransformationsItemStruct struct {
-	BiomeIdentifier uint16
-	Weight          uint32
-}
-
-type BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructOverworldGenRulesValueStructPreHillsEdgeItemStruct struct {
-	TransformsInto      []BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructOverworldGenRulesValueStructHillsTransformationsItemStruct
-	ConditionJson       uint16
-	MinPassingNeighbors uint32
-}
-
-type BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructReplacementBiomesValueStruct struct {
-	BiomeReplacements []BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructReplacementBiomesValueStructBiomeReplacementsItemStruct
-}
-
-type BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructReplacementBiomesValueStructBiomeReplacementsItemStruct struct {
+type BiomeReplacementData struct {
 	ReplacementBiome    uint16
 	Dimension           uint16
 	TargetBiomes        []uint16
@@ -430,72 +370,41 @@ type BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueS
 	ReplacementIndex    uint32
 }
 
-type BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructSurfaceBuilderDataValueStruct struct {
-	SurfaceMaterials           *BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructSurfaceMaterialAdjustmentsValueStructAdjustmentsItemStructAdjustedMaterialsStruct
+type BiomeReplacementsData struct {
+	BiomeReplacements []BiomeReplacementData
+}
+
+type BiomeScatterParamData struct {
+	Coordinates       []BiomeCoordinateData
+	EvalOrder         EnumsSharedTypesV12110CoordinateEvaluationOrder
+	ChancePercentType int32
+	ChancePercent     uint16
+	ChanceNumerator   int32
+	ChanceDenominator int32
+	IterationsType    int32
+	Iterations        uint16
+}
+
+type BiomeStringList struct {
+	Strings []string
+}
+
+type BiomeSurfaceBuilderData struct {
+	SurfaceMaterials           *BiomeSurfaceMaterialData
 	HasDefaultOverworldSurface bool
 	HasSwampSurface            bool
 	HasFrozenOceanSurface      bool
 	HasTheEndSurface           bool
-	MesaSurface                *BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructSurfaceBuilderDataValueStructMesaSurfaceValueStruct
-	CappedSurface              *BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructSurfaceBuilderDataValueStructCappedSurfaceValueStruct
-	NoiseGradientSurface       *BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructSurfaceBuilderDataValueStructNoiseGradientSurfaceValueStruct
+	MesaSurface                *BiomeMesaSurfaceData
+	CappedSurface              *BiomeCappedSurfaceData
+	NoiseGradientSurface       *BiomeNoiseGradientSurfaceData
 }
 
-type BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructSurfaceBuilderDataValueStructCappedSurfaceValueStruct struct {
-	FloorBlocks     []uint32
-	CeilingBlocks   []uint32
-	SeaBlock        *uint32
-	FoundationBlock *uint32
-	BeachBlock      *uint32
+type BiomeSurfaceMaterialAdjustmentData struct {
+	Adjustments []BiomeElementData
 }
 
-type BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructSurfaceBuilderDataValueStructMesaSurfaceValueStruct struct {
-	ClayMaterial     uint32
-	HardClayMaterial uint32
-	BrycePillars     bool
-	HasForest        bool
-}
-
-type BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructSurfaceBuilderDataValueStructNoiseGradientSurfaceValueStruct struct {
-	NonReplaceableBlocks []uint32
-	GradientBlocks       []BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructSurfaceBuilderDataValueStructNoiseGradientSurfaceValueStructGradientBlocksItemStruct
-	Noise                BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructSurfaceBuilderDataValueStructNoiseGradientSurfaceValueStructNoiseStruct
-}
-
-type BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructSurfaceBuilderDataValueStructNoiseGradientSurfaceValueStructGradientBlocksItemStruct struct {
-	Noise     string
-	Threshold float32
-	Range     BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructSurfaceBuilderDataValueStructNoiseGradientSurfaceValueStructGradientBlocksItemStructRangeStruct
-	Block     uint32
-}
-
-type BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructSurfaceBuilderDataValueStructNoiseGradientSurfaceValueStructGradientBlocksItemStructRangeStruct struct {
-	Min float32
-	Max float32
-}
-
-type BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructSurfaceBuilderDataValueStructNoiseGradientSurfaceValueStructNoiseStruct struct {
-	Name        string
-	FirstOctave int32
-	Amplitudes  []float32
-}
-
-type BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructSurfaceMaterialAdjustmentsValueStruct struct {
-	Adjustments []BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructSurfaceMaterialAdjustmentsValueStructAdjustmentsItemStruct
-}
-
-type BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructSurfaceMaterialAdjustmentsValueStructAdjustmentsItemStruct struct {
-	NoiseFreqScale    float32
-	NoiseLowerBound   float32
-	NoiseUpperBound   float32
-	HeightMinType     int32
-	HeightMin         uint16
-	HeightMaxType     int32
-	HeightMax         uint16
-	AdjustedMaterials BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructSurfaceMaterialAdjustmentsValueStructAdjustmentsItemStructAdjustedMaterialsStruct
-}
-
-type BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructSurfaceMaterialAdjustmentsValueStructAdjustmentsItemStructAdjustedMaterialsStruct struct {
+type BiomeSurfaceMaterialData struct {
 	TopBlock        uint32
 	MidBlock        uint32
 	SeaFloorBlock   uint32
@@ -504,586 +413,243 @@ type BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueS
 	SeaFloorDepth   int32
 }
 
-type BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructVillageTypeValueEnum uint8
-
-const (
-	BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructVillageTypeValueEnumDesert  BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructVillageTypeValueEnum = 0
-	BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructVillageTypeValueEnumIce     BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructVillageTypeValueEnum = 1
-	BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructVillageTypeValueEnumSavanna BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructVillageTypeValueEnum = 2
-	BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructVillageTypeValueEnumTaiga   BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructVillageTypeValueEnum = 3
-	BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructVillageTypeValueEnumDefault BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructChunkGenDataValueStructVillageTypeValueEnum = 4
-)
-
-type BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStructTagsValueStruct struct {
+type BiomeTagsData struct {
 	Tags []uint16
 }
 
-type BiomeDefinitionListPacketStringListStruct struct {
-	Strings []string
+type BiomeWeightedData struct {
+	BiomeIdentifier uint16
+	Weight          uint32
 }
 
-type BookEditPacketOperationUnion struct {
-	Tag   int64
-	Value any
+type BiomeWeightedTemperatureData struct {
+	Temperature int32
+	Weight      uint32
 }
 
-type BossEventPacketColorEnum uint8
+type BlockPos struct {
+	X int32
+	Y int32
+	Z int32
+}
 
-const (
-	BossEventPacketColorEnumPINK          BossEventPacketColorEnum = 0
-	BossEventPacketColorEnumBLUE          BossEventPacketColorEnum = 1
-	BossEventPacketColorEnumRED           BossEventPacketColorEnum = 2
-	BossEventPacketColorEnumGREEN         BossEventPacketColorEnum = 3
-	BossEventPacketColorEnumYELLOW        BossEventPacketColorEnum = 4
-	BossEventPacketColorEnumPURPLE        BossEventPacketColorEnum = 5
-	BossEventPacketColorEnumREBECCAPURPLE BossEventPacketColorEnum = 6
-	BossEventPacketColorEnumWHITE         BossEventPacketColorEnum = 7
-)
+type BookEditAction interface {
+	isBookEditAction()
+}
 
-type BossEventPacketEventTypeEnum uint8
+type BookEditActionAddPage struct {
+	PageIndex int32
+	PageText  string
+	PhotoName string
+}
 
-const (
-	BossEventPacketEventTypeEnumAdd              BossEventPacketEventTypeEnum = 0
-	BossEventPacketEventTypeEnumPlayerAdded      BossEventPacketEventTypeEnum = 1
-	BossEventPacketEventTypeEnumRemove           BossEventPacketEventTypeEnum = 2
-	BossEventPacketEventTypeEnumPlayerRemoved    BossEventPacketEventTypeEnum = 3
-	BossEventPacketEventTypeEnumUpdatePercent    BossEventPacketEventTypeEnum = 4
-	BossEventPacketEventTypeEnumUpdateName       BossEventPacketEventTypeEnum = 5
-	BossEventPacketEventTypeEnumUpdateProperties BossEventPacketEventTypeEnum = 6
-	BossEventPacketEventTypeEnumUpdateStyle      BossEventPacketEventTypeEnum = 7
-	BossEventPacketEventTypeEnumQuery            BossEventPacketEventTypeEnum = 8
-)
+func (BookEditActionAddPage) isBookEditAction() {}
 
-type BossEventPacketOverlayEnum uint8
+type BookEditActionDeletePage struct {
+	PageIndex int32
+}
 
-const (
-	BossEventPacketOverlayEnumPROGRESS  BossEventPacketOverlayEnum = 0
-	BossEventPacketOverlayEnumNOTCHED6  BossEventPacketOverlayEnum = 1
-	BossEventPacketOverlayEnumNOTCHED10 BossEventPacketOverlayEnum = 2
-	BossEventPacketOverlayEnumNOTCHED12 BossEventPacketOverlayEnum = 3
-	BossEventPacketOverlayEnumNOTCHED20 BossEventPacketOverlayEnum = 4
-)
+func (BookEditActionDeletePage) isBookEditAction() {}
 
-type CameraAimAssistActorPriorityPacketCameraAimAssistActorPriorityListItemStruct struct {
+type BookEditActionFinalize struct {
+	Title  string
+	Author string
+	XUID   string
+}
+
+func (BookEditActionFinalize) isBookEditAction() {}
+
+type BookEditActionReplacePage struct {
+	PageIndex int32
+	PageText  string
+	PhotoName string
+}
+
+func (BookEditActionReplacePage) isBookEditAction() {}
+
+type BookEditActionSwapPages struct {
+	PageIndex     int32
+	SwapWithIndex int32
+}
+
+func (BookEditActionSwapPages) isBookEditAction() {}
+
+type BoxDataPayload struct {
+	BoxBound Vec3
+}
+
+func (BoxDataPayload) isPrimitiveShapeDataPayloadExtraShapeDataUnion() {}
+
+type CameraAimAssistActorPriorityPriorityData struct {
 	PresetIndex   int32
 	CategoryIndex int32
 	ActorIndex    int32
 	PriorityValue int32
 }
 
-type CameraAimAssistPacketActionEnum uint8
-
-const (
-	CameraAimAssistPacketActionEnumSet   CameraAimAssistPacketActionEnum = 0
-	CameraAimAssistPacketActionEnumClear CameraAimAssistPacketActionEnum = 1
-)
-
-type CameraAimAssistPacketTargetModeEnum uint8
-
-const (
-	CameraAimAssistPacketTargetModeEnumAngle    CameraAimAssistPacketTargetModeEnum = 0
-	CameraAimAssistPacketTargetModeEnumDistance CameraAimAssistPacketTargetModeEnum = 1
-)
-
-type CameraAimAssistPresetsPacketCameraAimAssistCategoriesItemStruct struct {
-	Identifier          string
-	ExclusionSettings   CameraAimAssistPresetsPacketCameraAimAssistCategoriesItemStructExclusionSettingsStruct
-	LiquidTargetingList []string
-	ItemSettings        []CameraAimAssistPresetsPacketCameraAimAssistCategoriesItemStructItemSettingsEntry
-	DefaultItemSettings *string
-	HandSettings        *string
-}
-
-type CameraAimAssistPresetsPacketCameraAimAssistCategoriesItemStructExclusionSettingsStruct struct {
-	Blocks             []string
-	Entities           []string
-	BlockTags          []string
-	EntityTypeFamilies []string
-}
-
-type CameraAimAssistPresetsPacketCameraAimAssistCategoriesItemStructItemSettingsEntry struct {
-	Key   string
-	Value string
-}
-
-type CameraAimAssistPresetsPacketCameraAimAssistPresetsItemStruct struct {
-	Name       string
-	Priorities CameraAimAssistPresetsPacketCameraAimAssistPresetsItemStructPrioritiesStruct
-}
-
-type CameraAimAssistPresetsPacketCameraAimAssistPresetsItemStructPrioritiesStruct struct {
-	Entities           []CameraAimAssistPresetsPacketCameraAimAssistPresetsItemStructPrioritiesStructEntitiesEntry
-	Blocks             []CameraAimAssistPresetsPacketCameraAimAssistPresetsItemStructPrioritiesStructBlocksEntry
-	BlockTags          []CameraAimAssistPresetsPacketCameraAimAssistPresetsItemStructPrioritiesStructBlockTagsEntry
-	EntityTypeFamilies []CameraAimAssistPresetsPacketCameraAimAssistPresetsItemStructPrioritiesStructEntityTypeFamiliesEntry
-	EntityDefault      *int32
-	BlockDefault       *int32
-}
-
-type CameraAimAssistPresetsPacketCameraAimAssistPresetsItemStructPrioritiesStructBlockTagsEntry struct {
-	Key   string
-	Value int32
-}
-
-type CameraAimAssistPresetsPacketCameraAimAssistPresetsItemStructPrioritiesStructBlocksEntry struct {
-	Key   string
-	Value int32
-}
-
-type CameraAimAssistPresetsPacketCameraAimAssistPresetsItemStructPrioritiesStructEntitiesEntry struct {
-	Key   string
-	Value int32
-}
-
-type CameraAimAssistPresetsPacketCameraAimAssistPresetsItemStructPrioritiesStructEntityTypeFamiliesEntry struct {
-	Key   string
-	Value int32
-}
-
-type CameraAimAssistPresetsPacketOperationEnum uint8
-
-const (
-	CameraAimAssistPresetsPacketOperationEnumSet           CameraAimAssistPresetsPacketOperationEnum = 0
-	CameraAimAssistPresetsPacketOperationEnumAddToExisting CameraAimAssistPresetsPacketOperationEnum = 1
-)
-
-type CameraInstructionPacketCameraInstructionStruct struct {
-	Set              *CameraInstructionPacketCameraInstructionStructSetValueStruct
+type CameraInstruction struct {
+	Set              *CameraInstructionOptionsSetInstruction
 	Clear            *bool
-	Fade             *CameraInstructionPacketCameraInstructionStructFadeValueStruct
-	Target           *CameraInstructionPacketCameraInstructionStructTargetValueStruct
+	Fade             *CameraInstructionOptionsFadeInstruction
+	Target           *CameraInstructionOptionsTargetInstruction
 	RemoveTarget     *bool
-	FieldOfView      *CameraInstructionPacketCameraInstructionStructFieldOfViewValueStruct
-	Spline           *CameraInstructionPacketCameraInstructionStructSplineValueStruct
-	AttachToEntity   *CameraInstructionPacketCameraInstructionStructAttachToEntityValueStruct
+	FieldOfView      *CameraInstructionOptionsFovInstruction
+	Spline           *CameraInstructionOptionsSplineInstruction
+	AttachToEntity   *CameraInstructionOptionsAttachToEntityInstruction
 	DetachFromEntity *bool
 }
 
-type CameraInstructionPacketCameraInstructionStructAttachToEntityValueStruct struct {
+type CameraInstructionOptionsAttachToEntityInstruction struct {
 	EntityActorID int64
 }
 
-type CameraInstructionPacketCameraInstructionStructFadeValueStruct struct {
-	Time  *CameraInstructionPacketCameraInstructionStructFadeValueStructTimeValueStruct
-	Color *CameraInstructionPacketCameraInstructionStructFadeValueStructColorValueStruct
+type CameraInstructionOptionsFadeInstruction struct {
+	Time  *CameraInstructionOptionsFadeInstructionTimeOption
+	Color *CameraInstructionOptionsFadeInstructionColorOption
 }
 
-type CameraInstructionPacketCameraInstructionStructFadeValueStructColorValueStruct struct {
+type CameraInstructionOptionsFadeInstructionColorOption struct {
 	Red   float32
 	Green float32
 	Blue  float32
 }
 
-type CameraInstructionPacketCameraInstructionStructFadeValueStructTimeValueStruct struct {
+type CameraInstructionOptionsFadeInstructionTimeOption struct {
 	FadeInTime  float32
 	HoldTime    float32
 	FadeOutTime float32
 }
 
-type CameraInstructionPacketCameraInstructionStructFieldOfViewValueStruct struct {
+type CameraInstructionOptionsFovInstruction struct {
 	FieldOfView      float32
 	FOVEaseTime      float32
 	FOVEaseType      string
 	FieldOfViewClear bool
 }
 
-type CameraInstructionPacketCameraInstructionStructSetValueStruct struct {
+type CameraInstructionOptionsSetInstruction struct {
 	Preset                              uint32
-	Ease                                *CameraInstructionPacketCameraInstructionStructSetValueStructEaseValueStruct
-	Pos                                 *CameraInstructionPacketCameraInstructionStructSetValueStructPosValueStruct
-	Rot                                 *CameraInstructionPacketCameraInstructionStructSetValueStructRotValueStruct
-	Facing                              *CameraInstructionPacketCameraInstructionStructSetValueStructFacingValueStruct
-	ViewOffset                          *CameraInstructionPacketCameraInstructionStructSetValueStructViewOffsetValueStruct
-	EntityOffset                        *CameraInstructionPacketCameraInstructionStructSetValueStructEntityOffsetValueStruct
+	Ease                                *CameraInstructionOptionsSetInstructionEaseOption
+	Pos                                 *CameraInstructionOptionsSetInstructionPosOption
+	Rot                                 *CameraInstructionOptionsSetInstructionRotOption
+	Facing                              *CameraInstructionOptionsSetInstructionFacingOption
+	ViewOffset                          *CameraInstructionOptionsSetInstructionViewOffsetOption
+	EntityOffset                        *CameraInstructionOptionsSetInstructionEntityOffsetOption
 	Default                             *bool
 	RemoveIgnoreStartingValuesComponent bool
 }
 
-type CameraInstructionPacketCameraInstructionStructSetValueStructEaseValueStruct struct {
+type CameraInstructionOptionsSetInstructionEaseOption struct {
 	Type uint8
 	Time float32
 }
 
-type CameraInstructionPacketCameraInstructionStructSetValueStructEntityOffsetValueStruct struct {
+type CameraInstructionOptionsSetInstructionEntityOffsetOption struct {
 	EntityOffsetX float32
 	EntityOffsetY float32
 	EntityOffsetZ float32
 }
 
-type CameraInstructionPacketCameraInstructionStructSetValueStructFacingValueStruct struct {
-	Pos StartGamePacketPositionStruct
+type CameraInstructionOptionsSetInstructionFacingOption struct {
+	Pos Vec3
 }
 
-type CameraInstructionPacketCameraInstructionStructSetValueStructPosValueStruct struct {
-	Pos StartGamePacketPositionStruct
+type CameraInstructionOptionsSetInstructionPosOption struct {
+	Pos Vec3
 }
 
-type CameraInstructionPacketCameraInstructionStructSetValueStructRotValueStruct struct {
+type CameraInstructionOptionsSetInstructionRotOption struct {
 	X float32
 	Y float32
 }
 
-type CameraInstructionPacketCameraInstructionStructSetValueStructViewOffsetValueStruct struct {
+type CameraInstructionOptionsSetInstructionViewOffsetOption struct {
 	X float32
 	Y float32
 }
 
-type CameraInstructionPacketCameraInstructionStructSplineValueStruct struct {
+type CameraInstructionOptionsSplineInstruction struct {
 	TotalTime         float32
 	Type              uint8
-	Curve             []StartGamePacketPositionStruct
-	ProgressKeyFrames []CameraInstructionPacketCameraInstructionStructSplineValueStructProgressKeyFramesItemStruct
-	RotationOption    []CameraInstructionPacketCameraInstructionStructSplineValueStructRotationOptionItemStruct
+	Curve             []Vec3
+	ProgressKeyFrames []CameraInstructionOptionsSplineInstructionSplineProgressOption
+	RotationOption    []CameraInstructionOptionsSplineInstructionSplineRotationOption
 	SplineIdentifier  string
 	LoadFromJson      bool
 }
 
-type CameraInstructionPacketCameraInstructionStructSplineValueStructProgressKeyFramesItemStruct struct {
+type CameraInstructionOptionsSplineInstructionSplineProgressOption struct {
 	KeyFrameValue      float32
 	KeyFrameTime       float32
 	KeyFrameEasingFunc string
 }
 
-type CameraInstructionPacketCameraInstructionStructSplineValueStructRotationOptionItemStruct struct {
-	KeyFrameValue      StartGamePacketPositionStruct
+type CameraInstructionOptionsSplineInstructionSplineRotationOption struct {
+	KeyFrameValue      Vec3
 	KeyFrameTime       float32
 	KeyFrameEasingFunc string
 }
 
-type CameraInstructionPacketCameraInstructionStructTargetValueStruct struct {
-	TargetCenterOffset *StartGamePacketPositionStruct
+type CameraInstructionOptionsTargetInstruction struct {
+	TargetCenterOffset *Vec3
 	TargetActorID      int64
 }
 
-type CameraPresetsPacketCameraPresetsStruct struct {
-	Presets []CameraPresetsPacketCameraPresetsStructPresetsItemStruct
+type CameraPresets struct {
+	Presets []SharedTypesV12190CameraPreset
 }
 
-type CameraPresetsPacketCameraPresetsStructPresetsItemStruct struct {
-	Name                    string
-	InheritFrom             string
-	PosX                    *float32
-	PosY                    *float32
-	PosZ                    *float32
-	RotX                    *float32
-	RotY                    *float32
-	RotationSpeed           *float32
-	SnapToTarget            *bool
-	HorizontalRotationLimit *StartGamePacketRotationStruct
-	VerticalRotationLimit   *StartGamePacketRotationStruct
-	ContinueTargeting       *bool
-	BlockListeningRadius    *float32
-	ViewOffset              *StartGamePacketRotationStruct
-	EntityOffset            *StartGamePacketPositionStruct
-	Radius                  *float32
-	YawLimitMin             *float32
-	YawLimitMax             *float32
-	Listener                *CameraPresetsPacketCameraPresetsStructPresetsItemStructListenerValueEnum
-	PlayerEffects           *bool
-	AimAssist               *CameraPresetsPacketCameraPresetsStructPresetsItemStructAimAssistValueStruct
-	ControlScheme           *CameraPresetsPacketCameraPresetsStructPresetsItemStructControlSchemeValueEnum
+type CerealDynamicValue interface {
+	isCerealDynamicValue()
 }
 
-type CameraPresetsPacketCameraPresetsStructPresetsItemStructAimAssistValueStruct struct {
-	PresetId   *string
-	TargetMode *CameraPresetsPacketCameraPresetsStructPresetsItemStructAimAssistValueStructTargetModeValueEnum
-	ViewAngle  *StartGamePacketRotationStruct
-	Distance   *float32
+type CerealDynamicValueBool struct {
+	Value bool
 }
 
-type CameraPresetsPacketCameraPresetsStructPresetsItemStructAimAssistValueStructTargetModeValueEnum uint8
+func (CerealDynamicValueBool) isCerealDynamicValue() {}
 
-const (
-	CameraPresetsPacketCameraPresetsStructPresetsItemStructAimAssistValueStructTargetModeValueEnumAngle    CameraPresetsPacketCameraPresetsStructPresetsItemStructAimAssistValueStructTargetModeValueEnum = 0
-	CameraPresetsPacketCameraPresetsStructPresetsItemStructAimAssistValueStructTargetModeValueEnumDistance CameraPresetsPacketCameraPresetsStructPresetsItemStructAimAssistValueStructTargetModeValueEnum = 1
-)
-
-type CameraPresetsPacketCameraPresetsStructPresetsItemStructControlSchemeValueEnum uint8
-
-const (
-	CameraPresetsPacketCameraPresetsStructPresetsItemStructControlSchemeValueEnumLockedPlayerRelativeStrafe CameraPresetsPacketCameraPresetsStructPresetsItemStructControlSchemeValueEnum = 0
-	CameraPresetsPacketCameraPresetsStructPresetsItemStructControlSchemeValueEnumCameraRelative             CameraPresetsPacketCameraPresetsStructPresetsItemStructControlSchemeValueEnum = 1
-	CameraPresetsPacketCameraPresetsStructPresetsItemStructControlSchemeValueEnumCameraRelativeStrafe       CameraPresetsPacketCameraPresetsStructPresetsItemStructControlSchemeValueEnum = 2
-	CameraPresetsPacketCameraPresetsStructPresetsItemStructControlSchemeValueEnumPlayerRelative             CameraPresetsPacketCameraPresetsStructPresetsItemStructControlSchemeValueEnum = 3
-	CameraPresetsPacketCameraPresetsStructPresetsItemStructControlSchemeValueEnumPlayerRelativeStrafe       CameraPresetsPacketCameraPresetsStructPresetsItemStructControlSchemeValueEnum = 4
-)
-
-type CameraPresetsPacketCameraPresetsStructPresetsItemStructListenerValueEnum uint8
-
-const (
-	CameraPresetsPacketCameraPresetsStructPresetsItemStructListenerValueEnumCamera CameraPresetsPacketCameraPresetsStructPresetsItemStructListenerValueEnum = 0
-	CameraPresetsPacketCameraPresetsStructPresetsItemStructListenerValueEnumPlayer CameraPresetsPacketCameraPresetsStructPresetsItemStructListenerValueEnum = 1
-)
-
-type CameraShakePacketShakeActionEnum uint8
-
-const (
-	CameraShakePacketShakeActionEnumAdd  CameraShakePacketShakeActionEnum = 0
-	CameraShakePacketShakeActionEnumStop CameraShakePacketShakeActionEnum = 1
-)
-
-type CameraShakePacketShakeTypeEnum uint8
-
-const (
-	CameraShakePacketShakeTypeEnumPositional CameraShakePacketShakeTypeEnum = 0
-	CameraShakePacketShakeTypeEnumRotational CameraShakePacketShakeTypeEnum = 1
-)
-
-type CameraSplinePacketCameraDataSplinesItemStruct struct {
-	Name              string
-	TotalTime         float32
-	SplineType        string
-	ControlPoints     []CameraSplinePacketCameraDataSplinesItemStructControlPointsItemStruct
-	ProgressKeyFrames []CameraSplinePacketCameraDataSplinesItemStructProgressKeyFramesItemStruct
-	RotationKeyFrames []CameraSplinePacketCameraDataSplinesItemStructRotationKeyFramesItemStruct
+type CerealDynamicValueDouble struct {
+	Value float64
 }
 
-type CameraSplinePacketCameraDataSplinesItemStructControlPointsItemStruct struct {
-	Position StartGamePacketPositionStruct
+func (CerealDynamicValueDouble) isCerealDynamicValue() {}
+
+type CerealDynamicValueInt64 struct {
+	Value int64
 }
 
-type CameraSplinePacketCameraDataSplinesItemStructProgressKeyFramesItemStruct struct {
-	Progress float32
-	Time     float32
-	Easing   *string
+func (CerealDynamicValueInt64) isCerealDynamicValue() {}
+
+type CerealDynamicValueList struct {
+	Value []any
 }
 
-type CameraSplinePacketCameraDataSplinesItemStructRotationKeyFramesItemStruct struct {
-	Rotation StartGamePacketPositionStruct
-	Time     float32
-	Easing   *string
+func (CerealDynamicValueList) isCerealDynamicValue() {}
+
+type CerealDynamicValueMap struct {
+	Value []OrderedEntry[string, any]
 }
 
-type ClientCacheMissResponsePacketMissingBlobsItemStruct struct {
-	BlobId   uint64
-	BlobData string
+func (CerealDynamicValueMap) isCerealDynamicValue() {}
+
+type CerealDynamicValueNone struct {
 }
 
-type ClientCameraAimAssistPacketActionEnum uint8
+func (CerealDynamicValueNone) isCerealDynamicValue() {}
 
-const (
-	ClientCameraAimAssistPacketActionEnumSetFromCameraPreset ClientCameraAimAssistPacketActionEnum = 0
-	ClientCameraAimAssistPacketActionEnumClear               ClientCameraAimAssistPacketActionEnum = 1
-)
-
-type ClientMovementPredictionSyncPacketActorBoundingBoxStruct struct {
-	ActorDataBoundingBox [3]float32
-}
-
-type ClientMovementPredictionSyncPacketActorDataFlagStruct struct {
-	ActorFlagBitsetData []byte
-}
-
-type ClientboundAttributeLayerSyncPacketDataUnion struct {
-	Tag   int64
-	Value any
-}
-
-type ClientboundDataStorePacketUpdatesItemUnion struct {
-	Tag   int64
-	Value any
-}
-
-type ClientboundDebugRendererPacketDebugMarkerDataValueStruct struct {
-	Text     string
-	Position StartGamePacketPositionStruct
-	Color    ClientboundMapItemDataPacketDecorationsValueItemStructColorStruct
-	Duration uint64
-}
-
-type ClientboundMapItemDataPacketDecorationsValueItemStruct struct {
-	ImageType ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnum
-	Rotation  uint8
-	X         uint8
-	Y         uint8
-	Label     string
-	Color     ClientboundMapItemDataPacketDecorationsValueItemStructColorStruct
-}
-
-type ClientboundMapItemDataPacketDecorationsValueItemStructColorStruct struct {
-	Color int32
-}
-
-type ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnum int8
-
-const (
-	ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnumMarkerWhite      ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnum = 0
-	ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnumMarkerGreen      ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnum = 1
-	ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnumMarkerRed        ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnum = 2
-	ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnumMarkerBlue       ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnum = 3
-	ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnumXWhite           ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnum = 4
-	ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnumTriangleRed      ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnum = 5
-	ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnumSquareWhite      ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnum = 6
-	ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnumMarkerSign       ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnum = 7
-	ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnumMarkerPink       ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnum = 8
-	ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnumMarkerOrange     ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnum = 9
-	ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnumMarkerYellow     ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnum = 10
-	ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnumMarkerTeal       ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnum = 11
-	ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnumTriangleGreen    ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnum = 12
-	ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnumSmallSquareWhite ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnum = 13
-	ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnumMansion          ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnum = 14
-	ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnumMonument         ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnum = 15
-	ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnumNoDraw           ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnum = 16
-	ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnumVillageDesert    ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnum = 17
-	ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnumVillagePlains    ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnum = 18
-	ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnumVillageSavanna   ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnum = 19
-	ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnumVillageSnowy     ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnum = 20
-	ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnumVillageTaiga     ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnum = 21
-	ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnumJungleTemple     ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnum = 22
-	ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnumWitchHut         ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnum = 23
-	ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnumTrialChambers    ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnum = 24
-	ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnumCount            ClientboundMapItemDataPacketDecorationsValueItemStructImageTypeEnum = 25
-)
-
-type ClientboundMapItemDataPacketTrackedActorIDsValueItemStruct struct {
-	Type          ClientboundMapItemDataPacketTrackedActorIDsValueItemStructTypeEnum
-	EntityID      *StartGamePacketEntityIDStruct
-	BlockPosition *StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct
-}
-
-type ClientboundMapItemDataPacketTrackedActorIDsValueItemStructTypeEnum int32
-
-const (
-	ClientboundMapItemDataPacketTrackedActorIDsValueItemStructTypeEnumEntity      ClientboundMapItemDataPacketTrackedActorIDsValueItemStructTypeEnum = 0
-	ClientboundMapItemDataPacketTrackedActorIDsValueItemStructTypeEnumBlockEntity ClientboundMapItemDataPacketTrackedActorIDsValueItemStructTypeEnum = 1
-	ClientboundMapItemDataPacketTrackedActorIDsValueItemStructTypeEnumOther       ClientboundMapItemDataPacketTrackedActorIDsValueItemStructTypeEnum = 2
-)
-
-type ClientboundTextureShiftPacketActionIDEnum uint8
-
-const (
-	ClientboundTextureShiftPacketActionIDEnumInvalid    ClientboundTextureShiftPacketActionIDEnum = 0
-	ClientboundTextureShiftPacketActionIDEnumInitialize ClientboundTextureShiftPacketActionIDEnum = 1
-	ClientboundTextureShiftPacketActionIDEnumStart      ClientboundTextureShiftPacketActionIDEnum = 2
-	ClientboundTextureShiftPacketActionIDEnumSetEnabled ClientboundTextureShiftPacketActionIDEnum = 3
-	ClientboundTextureShiftPacketActionIDEnumSync       ClientboundTextureShiftPacketActionIDEnum = 4
-)
-
-type ClientboundUpdateSoundDataPacketEventUnion struct {
-	Tag   int64
-	Value any
-}
-
-type CodeBuilderSourcePacketCategoryEnum uint8
-
-const (
-	CodeBuilderSourcePacketCategoryEnumNone          CodeBuilderSourcePacketCategoryEnum = 0
-	CodeBuilderSourcePacketCategoryEnumCodeStatus    CodeBuilderSourcePacketCategoryEnum = 1
-	CodeBuilderSourcePacketCategoryEnumInstantiation CodeBuilderSourcePacketCategoryEnum = 2
-)
-
-type CodeBuilderSourcePacketCodeStatusEnum uint8
-
-const (
-	CodeBuilderSourcePacketCodeStatusEnumNone       CodeBuilderSourcePacketCodeStatusEnum = 0
-	CodeBuilderSourcePacketCodeStatusEnumNotStarted CodeBuilderSourcePacketCodeStatusEnum = 1
-	CodeBuilderSourcePacketCodeStatusEnumInProgress CodeBuilderSourcePacketCodeStatusEnum = 2
-	CodeBuilderSourcePacketCodeStatusEnumPaused     CodeBuilderSourcePacketCodeStatusEnum = 3
-	CodeBuilderSourcePacketCodeStatusEnumError      CodeBuilderSourcePacketCodeStatusEnum = 4
-	CodeBuilderSourcePacketCodeStatusEnumSucceeded  CodeBuilderSourcePacketCodeStatusEnum = 5
-)
-
-type CodeBuilderSourcePacketOperationEnum uint8
-
-const (
-	CodeBuilderSourcePacketOperationEnumNone  CodeBuilderSourcePacketOperationEnum = 0
-	CodeBuilderSourcePacketOperationEnumGet   CodeBuilderSourcePacketOperationEnum = 1
-	CodeBuilderSourcePacketOperationEnumSet   CodeBuilderSourcePacketOperationEnum = 2
-	CodeBuilderSourcePacketOperationEnumReset CodeBuilderSourcePacketOperationEnum = 3
-)
-
-type CommandBlockUpdatePacketTargetUnion struct {
-	Tag   int64
-	Value any
-}
-
-type CommandOutputPacketOutputStruct struct {
-	OutputType     string
-	SuccessCount   uint32
-	OutputMessages []CommandOutputPacketOutputStructOutputMessagesItemStruct
-	DataSet        *string
-}
-
-type CommandOutputPacketOutputStructOutputMessagesItemStruct struct {
-	MessageID  string
-	Successful bool
-	Parameters []string
-}
-
-type CommandRequestPacketOriginStruct struct {
-	Type      string
-	UUID      [16]byte
-	RequestId string
-	PlayerId  int64
-}
-
-type CorrectPlayerMovePredictionPacketPredictionTypeEnum uint8
-
-const (
-	CorrectPlayerMovePredictionPacketPredictionTypeEnumPlayer  CorrectPlayerMovePredictionPacketPredictionTypeEnum = 0
-	CorrectPlayerMovePredictionPacketPredictionTypeEnumVehicle CorrectPlayerMovePredictionPacketPredictionTypeEnum = 1
-)
-
-type CraftingDataPacketContainerMixesItemStruct struct {
-	FromItemId    int32
-	ReagentItemId int32
-	ToItemId      int32
-}
-
-type CraftingDataPacketMaterialReducersItemStruct struct {
-	FromItemKey      int32
-	ItemIdsAndCounts []CraftingDataPacketMaterialReducersItemStructItemIdsAndCountsItemStruct
-}
-
-type CraftingDataPacketMaterialReducersItemStructItemIdsAndCountsItemStruct struct {
-	ItemId    int32
-	ItemCount int32
-}
-
-type CraftingDataPacketMultiRecipesItemStruct struct {
-	MultiRecipeUUID [16]byte
-	NetId           CraftingDataPacketShapedRecipesItemStructNetIdStruct
-}
-
-type CraftingDataPacketPotionMixesItemStruct struct {
-	FromPotionId   int32
-	FromItemAux    int32
-	ReagentItemId  int32
-	ReagentItemAux int32
-	ToPotionId     int32
-	ToItemAux      int32
-}
-
-type CraftingDataPacketShapedRecipesItemStruct struct {
-	RecipeId             string
-	Width                int32
-	Height               int32
-	Ingredients          []CraftingDataPacketShapedRecipesItemStructIngredientsItemStruct
-	Results              []CraftingDataPacketShapedRecipesItemStructResultsItemStruct
-	UUID                 [16]byte
-	Tag                  string
-	Priority             int32
-	AssumeSymmetry       bool
-	UnlockingRequirement *CraftingDataPacketShapedRecipesItemStructUnlockingRequirementValueStruct
-	NetId                CraftingDataPacketShapedRecipesItemStructNetIdStruct
-}
-
-type CraftingDataPacketShapedRecipesItemStructIngredientsItemStruct struct {
-	Descriptor []CraftingDataPacketShapedRecipesItemStructIngredientsItemStructDescriptorEntry
-	AuxValue   int32
-	StackSize  int32
-}
-
-type CraftingDataPacketShapedRecipesItemStructIngredientsItemStructDescriptorEntry struct {
-	Key   string
+type CerealDynamicValueString struct {
 	Value string
 }
 
-type CraftingDataPacketShapedRecipesItemStructNetIdStruct struct {
-	RawId uint32
+func (CerealDynamicValueString) isCerealDynamicValue() {}
+
+type CerealizerExperimentsAnonExperimentToggle struct {
+	Name    string
+	Enabled bool
 }
 
-type CraftingDataPacketShapedRecipesItemStructResultsItemStruct struct {
+type CerealizerNetworkItemInstanceDescriptorSerializedData struct {
 	Id             int32
 	StackSize      uint16
 	AuxValue       uint32
@@ -1091,2007 +657,3082 @@ type CraftingDataPacketShapedRecipesItemStructResultsItemStruct struct {
 	UserDataBuffer string
 }
 
-type CraftingDataPacketShapedRecipesItemStructUnlockingRequirementValueStruct struct {
-	UnlockingContext     CraftingDataPacketShapedRecipesItemStructUnlockingRequirementValueStructUnlockingContextEnum
-	UnlockingIngredients *[]CraftingDataPacketShapedRecipesItemStructIngredientsItemStruct
+type CerealizerNetworkItemStackDescriptorSerializedData struct {
+	Id             int16
+	StackSize      uint16
+	AuxValue       uint32
+	NetIdVariant   *int32
+	BlockRuntimeId uint32
+	UserDataBuffer string
 }
 
-type CraftingDataPacketShapedRecipesItemStructUnlockingRequirementValueStructUnlockingContextEnum int32
-
-const (
-	CraftingDataPacketShapedRecipesItemStructUnlockingRequirementValueStructUnlockingContextEnumNone               CraftingDataPacketShapedRecipesItemStructUnlockingRequirementValueStructUnlockingContextEnum = 0
-	CraftingDataPacketShapedRecipesItemStructUnlockingRequirementValueStructUnlockingContextEnumAlwaysUnlocked     CraftingDataPacketShapedRecipesItemStructUnlockingRequirementValueStructUnlockingContextEnum = 1
-	CraftingDataPacketShapedRecipesItemStructUnlockingRequirementValueStructUnlockingContextEnumPlayerInWater      CraftingDataPacketShapedRecipesItemStructUnlockingRequirementValueStructUnlockingContextEnum = 2
-	CraftingDataPacketShapedRecipesItemStructUnlockingRequirementValueStructUnlockingContextEnumPlayerHasManyItems CraftingDataPacketShapedRecipesItemStructUnlockingRequirementValueStructUnlockingContextEnum = 3
-)
-
-type CraftingDataPacketShapelessRecipesItemStruct struct {
-	RecipeId             string
-	Ingredients          []CraftingDataPacketShapedRecipesItemStructIngredientsItemStruct
-	Results              []CraftingDataPacketShapedRecipesItemStructResultsItemStruct
-	UUID                 [16]byte
-	Tag                  string
-	Priority             int32
-	UnlockingRequirement *CraftingDataPacketShapedRecipesItemStructUnlockingRequirementValueStruct
-	NetId                CraftingDataPacketShapedRecipesItemStructNetIdStruct
+type CerealizerRecipeIngredientSerializedData struct {
+	Descriptor []OrderedEntry[string, string]
+	AuxValue   int32
+	StackSize  int32
 }
 
-type CraftingDataPacketSmithingTransformRecipesItemStruct struct {
-	RecipeId           string
-	TemplateIngredient CraftingDataPacketShapedRecipesItemStructIngredientsItemStruct
-	BaseIngredient     CraftingDataPacketShapedRecipesItemStructIngredientsItemStruct
-	AdditionIngredient CraftingDataPacketShapedRecipesItemStructIngredientsItemStruct
-	Result             CraftingDataPacketShapedRecipesItemStructResultsItemStruct
-	Tag                string
-	NetId              CraftingDataPacketShapedRecipesItemStructNetIdStruct
+type CerealizerRecipeUnlockingRequirementSerializedData struct {
+	UnlockingContext     EnumsRecipeUnlockingRequirementUnlockingContext
+	UnlockingIngredients *[]CerealizerRecipeIngredientSerializedData
 }
 
-type CraftingDataPacketSmithingTrimRecipesItemStruct struct {
-	RecipeId           string
-	TemplateIngredient CraftingDataPacketShapedRecipesItemStructIngredientsItemStruct
-	BaseIngredient     CraftingDataPacketShapedRecipesItemStructIngredientsItemStruct
-	AdditionIngredient CraftingDataPacketShapedRecipesItemStructIngredientsItemStruct
-	Tag                string
-	NetId              CraftingDataPacketShapedRecipesItemStructNetIdStruct
+type ChangeEntityScore struct {
+	Action        string
+	ScoreboardId  ScoreboardId
+	ObjectiveName string
+	ScoreValue    int32
+	ActorId       ActorUniqueID
 }
 
-type CreativeContentPacketEntriesItemStruct struct {
-	CreativeNetId CreativeContentPacketEntriesItemStructCreativeNetIdStruct
-	ItemInstance  CraftingDataPacketShapedRecipesItemStructResultsItemStruct
-	GroupIndex    uint32
+func (ChangeEntityScore) isSetScorePacketScoreInfoItemUnion() {}
+
+type ChangeFakePlayerScore struct {
+	Action         string
+	ScoreboardId   ScoreboardId
+	ObjectiveName  string
+	ScoreValue     int32
+	FakePlayerName string
 }
 
-type CreativeContentPacketEntriesItemStructCreativeNetIdStruct struct {
-	ID uint32
+func (ChangeFakePlayerScore) isSetScorePacketScoreInfoItemUnion() {}
+
+type ChangePlayerScore struct {
+	Action         string
+	ScoreboardId   ScoreboardId
+	ObjectiveName  string
+	ScoreValue     int32
+	PlayerUniqueId PlayerScoreboardId
 }
 
-type CreativeContentPacketGroupsItemStruct struct {
-	CreativeCategory CreativeContentPacketGroupsItemStructCreativeCategoryEnum
-	Name             string
-	GroupIconItem    CraftingDataPacketShapedRecipesItemStructResultsItemStruct
-}
+func (ChangePlayerScore) isSetScorePacketScoreInfoItemUnion() {}
 
-type CreativeContentPacketGroupsItemStructCreativeCategoryEnum uint8
-
-const (
-	CreativeContentPacketGroupsItemStructCreativeCategoryEnumConstruction    CreativeContentPacketGroupsItemStructCreativeCategoryEnum = 1
-	CreativeContentPacketGroupsItemStructCreativeCategoryEnumNature          CreativeContentPacketGroupsItemStructCreativeCategoryEnum = 2
-	CreativeContentPacketGroupsItemStructCreativeCategoryEnumEquipment       CreativeContentPacketGroupsItemStructCreativeCategoryEnum = 3
-	CreativeContentPacketGroupsItemStructCreativeCategoryEnumItems           CreativeContentPacketGroupsItemStructCreativeCategoryEnum = 4
-	CreativeContentPacketGroupsItemStructCreativeCategoryEnumItemCommandOnly CreativeContentPacketGroupsItemStructCreativeCategoryEnum = 5
-)
-
-type DimensionDataPacketDefinitionsEntry struct {
-	Key   string
-	Value DimensionDataPacketDefinitionsValueStruct
-}
-
-type DimensionDataPacketDefinitionsValueStruct struct {
-	HeightMaximum int32
-	HeightMinimum int32
-	GeneratorType StartGamePacketSettingsStructGeneratorTypeEnum
-	DimensionType SetSpawnPositionPacketDimensionTypeStruct
-	PackId        [16]byte
-}
-
-type DisconnectPacketMessagesUnion struct {
-	Tag   int64
-	Value any
-}
-
-type DisconnectPacketReasonEnum int32
-
-const (
-	DisconnectPacketReasonEnumUnknown                                       DisconnectPacketReasonEnum = 0
-	DisconnectPacketReasonEnumCantConnectNoInternet                         DisconnectPacketReasonEnum = 1
-	DisconnectPacketReasonEnumNoPermissions                                 DisconnectPacketReasonEnum = 2
-	DisconnectPacketReasonEnumUnrecoverableError                            DisconnectPacketReasonEnum = 3
-	DisconnectPacketReasonEnumThirdPartyBlocked                             DisconnectPacketReasonEnum = 4
-	DisconnectPacketReasonEnumThirdPartyNoInternet                          DisconnectPacketReasonEnum = 5
-	DisconnectPacketReasonEnumThirdPartyBadIP                               DisconnectPacketReasonEnum = 6
-	DisconnectPacketReasonEnumThirdPartyNoServerOrServerLocked              DisconnectPacketReasonEnum = 7
-	DisconnectPacketReasonEnumVersionMismatch                               DisconnectPacketReasonEnum = 8
-	DisconnectPacketReasonEnumSkinIssue                                     DisconnectPacketReasonEnum = 9
-	DisconnectPacketReasonEnumInviteSessionNotFound                         DisconnectPacketReasonEnum = 10
-	DisconnectPacketReasonEnumEduLevelSettingsMissing                       DisconnectPacketReasonEnum = 11
-	DisconnectPacketReasonEnumLocalServerNotFound                           DisconnectPacketReasonEnum = 12
-	DisconnectPacketReasonEnumLegacyDisconnect                              DisconnectPacketReasonEnum = 13
-	DisconnectPacketReasonEnumINTERNALUserLeaveGameAttempted                DisconnectPacketReasonEnum = 14
-	DisconnectPacketReasonEnumPlatformLockedSkinsError                      DisconnectPacketReasonEnum = 15
-	DisconnectPacketReasonEnumRealmsWorldUnassigned                         DisconnectPacketReasonEnum = 16
-	DisconnectPacketReasonEnumRealmsServerCantConnect                       DisconnectPacketReasonEnum = 17
-	DisconnectPacketReasonEnumRealmsServerHidden                            DisconnectPacketReasonEnum = 18
-	DisconnectPacketReasonEnumRealmsServerDisabledBeta                      DisconnectPacketReasonEnum = 19
-	DisconnectPacketReasonEnumRealmsServerDisabled                          DisconnectPacketReasonEnum = 20
-	DisconnectPacketReasonEnumCrossPlatformDisabled                         DisconnectPacketReasonEnum = 21
-	DisconnectPacketReasonEnumTESTONLYCantConnect                           DisconnectPacketReasonEnum = 22
-	DisconnectPacketReasonEnumSessionNotFound                               DisconnectPacketReasonEnum = 23
-	DisconnectPacketReasonEnumClientSettingsIncompatibleWithServer          DisconnectPacketReasonEnum = 24
-	DisconnectPacketReasonEnumServerFull                                    DisconnectPacketReasonEnum = 25
-	DisconnectPacketReasonEnumInvalidPlatformSkin                           DisconnectPacketReasonEnum = 26
-	DisconnectPacketReasonEnumEditionVersionMismatch                        DisconnectPacketReasonEnum = 27
-	DisconnectPacketReasonEnumEditionMismatch                               DisconnectPacketReasonEnum = 28
-	DisconnectPacketReasonEnumLevelNewerThanExeVersion                      DisconnectPacketReasonEnum = 29
-	DisconnectPacketReasonEnumINTERNALNoFailOccurred                        DisconnectPacketReasonEnum = 30
-	DisconnectPacketReasonEnumBannedSkin                                    DisconnectPacketReasonEnum = 31
-	DisconnectPacketReasonEnumTimeout                                       DisconnectPacketReasonEnum = 32
-	DisconnectPacketReasonEnumServerNotFound                                DisconnectPacketReasonEnum = 33
-	DisconnectPacketReasonEnumOutdatedServer                                DisconnectPacketReasonEnum = 34
-	DisconnectPacketReasonEnumOutdatedClient                                DisconnectPacketReasonEnum = 35
-	DisconnectPacketReasonEnumNoPremiumPlatform                             DisconnectPacketReasonEnum = 36
-	DisconnectPacketReasonEnumMultiplayerDisabled                           DisconnectPacketReasonEnum = 37
-	DisconnectPacketReasonEnumNoWiFi                                        DisconnectPacketReasonEnum = 38
-	DisconnectPacketReasonEnumWorldCorruption                               DisconnectPacketReasonEnum = 39
-	DisconnectPacketReasonEnumNoReason                                      DisconnectPacketReasonEnum = 40
-	DisconnectPacketReasonEnumDisconnected                                  DisconnectPacketReasonEnum = 41
-	DisconnectPacketReasonEnumInvalidPlayer                                 DisconnectPacketReasonEnum = 42
-	DisconnectPacketReasonEnumLoggedInOtherLocation                         DisconnectPacketReasonEnum = 43
-	DisconnectPacketReasonEnumServerIdConflict                              DisconnectPacketReasonEnum = 44
-	DisconnectPacketReasonEnumNotAllowed                                    DisconnectPacketReasonEnum = 45
-	DisconnectPacketReasonEnumNotAuthenticated                              DisconnectPacketReasonEnum = 46
-	DisconnectPacketReasonEnumInvalidTenant                                 DisconnectPacketReasonEnum = 47
-	DisconnectPacketReasonEnumUnknownPacket                                 DisconnectPacketReasonEnum = 48
-	DisconnectPacketReasonEnumUnexpectedPacket                              DisconnectPacketReasonEnum = 49
-	DisconnectPacketReasonEnumInvalidCommandRequestPacket                   DisconnectPacketReasonEnum = 50
-	DisconnectPacketReasonEnumHostSuspended                                 DisconnectPacketReasonEnum = 51
-	DisconnectPacketReasonEnumLoginPacketNoRequest                          DisconnectPacketReasonEnum = 52
-	DisconnectPacketReasonEnumLoginPacketNoCert                             DisconnectPacketReasonEnum = 53
-	DisconnectPacketReasonEnumMissingClient                                 DisconnectPacketReasonEnum = 54
-	DisconnectPacketReasonEnumKicked                                        DisconnectPacketReasonEnum = 55
-	DisconnectPacketReasonEnumKickedForExploit                              DisconnectPacketReasonEnum = 56
-	DisconnectPacketReasonEnumKickedForIdle                                 DisconnectPacketReasonEnum = 57
-	DisconnectPacketReasonEnumResourcePackProblem                           DisconnectPacketReasonEnum = 58
-	DisconnectPacketReasonEnumIncompatiblePack                              DisconnectPacketReasonEnum = 59
-	DisconnectPacketReasonEnumOutOfStorage                                  DisconnectPacketReasonEnum = 60
-	DisconnectPacketReasonEnumInvalidLevel                                  DisconnectPacketReasonEnum = 61
-	DisconnectPacketReasonEnumDisconnectPacket                              DisconnectPacketReasonEnum = 62
-	DisconnectPacketReasonEnumBlockMismatch                                 DisconnectPacketReasonEnum = 63
-	DisconnectPacketReasonEnumInvalidHeights                                DisconnectPacketReasonEnum = 64
-	DisconnectPacketReasonEnumInvalidWidths                                 DisconnectPacketReasonEnum = 65
-	DisconnectPacketReasonEnumConnectionLost                                DisconnectPacketReasonEnum = 66
-	DisconnectPacketReasonEnumZombieConnection                              DisconnectPacketReasonEnum = 67
-	DisconnectPacketReasonEnumShutdown                                      DisconnectPacketReasonEnum = 68
-	DisconnectPacketReasonEnumReasonNotSet                                  DisconnectPacketReasonEnum = 69
-	DisconnectPacketReasonEnumLoadingStateTimeout                           DisconnectPacketReasonEnum = 70
-	DisconnectPacketReasonEnumResourcePackLoadingFailed                     DisconnectPacketReasonEnum = 71
-	DisconnectPacketReasonEnumSearchingForSessionLoadingScreenFailed        DisconnectPacketReasonEnum = 72
-	DisconnectPacketReasonEnumNetherNetProtocolVersion                      DisconnectPacketReasonEnum = 73
-	DisconnectPacketReasonEnumSubsystemStatusError                          DisconnectPacketReasonEnum = 74
-	DisconnectPacketReasonEnumEmptyAuthFromDiscovery                        DisconnectPacketReasonEnum = 75
-	DisconnectPacketReasonEnumEmptyUrlFromDiscovery                         DisconnectPacketReasonEnum = 76
-	DisconnectPacketReasonEnumExpiredAuthFromDiscovery                      DisconnectPacketReasonEnum = 77
-	DisconnectPacketReasonEnumUnknownSignalServiceSignInFailure             DisconnectPacketReasonEnum = 78
-	DisconnectPacketReasonEnumXBLJoinLobbyFailure                           DisconnectPacketReasonEnum = 79
-	DisconnectPacketReasonEnumUnspecifiedClientInstanceDisconnection        DisconnectPacketReasonEnum = 80
-	DisconnectPacketReasonEnumNetherNetSessionNotFound                      DisconnectPacketReasonEnum = 81
-	DisconnectPacketReasonEnumNetherNetCreatePeerConnection                 DisconnectPacketReasonEnum = 82
-	DisconnectPacketReasonEnumNetherNetICE                                  DisconnectPacketReasonEnum = 83
-	DisconnectPacketReasonEnumNetherNetConnectRequest                       DisconnectPacketReasonEnum = 84
-	DisconnectPacketReasonEnumNetherNetConnectResponse                      DisconnectPacketReasonEnum = 85
-	DisconnectPacketReasonEnumNetherNetNegotiationTimeout                   DisconnectPacketReasonEnum = 86
-	DisconnectPacketReasonEnumNetherNetInactivityTimeout                    DisconnectPacketReasonEnum = 87
-	DisconnectPacketReasonEnumStaleConnectionBeingReplaced                  DisconnectPacketReasonEnum = 88
-	DisconnectPacketReasonEnumRealmsSessionNotFound                         DisconnectPacketReasonEnum = 89
-	DisconnectPacketReasonEnumBadPacket                                     DisconnectPacketReasonEnum = 90
-	DisconnectPacketReasonEnumNetherNetFailedToCreateOffer                  DisconnectPacketReasonEnum = 91
-	DisconnectPacketReasonEnumNetherNetFailedToCreateAnswer                 DisconnectPacketReasonEnum = 92
-	DisconnectPacketReasonEnumNetherNetFailedToSetLocalDescription          DisconnectPacketReasonEnum = 93
-	DisconnectPacketReasonEnumNetherNetFailedToSetRemoteDescription         DisconnectPacketReasonEnum = 94
-	DisconnectPacketReasonEnumNetherNetNegotiationTimeoutWaitingForResponse DisconnectPacketReasonEnum = 95
-	DisconnectPacketReasonEnumNetherNetNegotiationTimeoutWaitingForAccept   DisconnectPacketReasonEnum = 96
-	DisconnectPacketReasonEnumNetherNetIncomingConnectionIgnored            DisconnectPacketReasonEnum = 97
-	DisconnectPacketReasonEnumNetherNetSignalingParsingFailure              DisconnectPacketReasonEnum = 98
-	DisconnectPacketReasonEnumNetherNetSignalingUnknownError                DisconnectPacketReasonEnum = 99
-	DisconnectPacketReasonEnumNetherNetSignalingUnicastDeliveryFailed       DisconnectPacketReasonEnum = 100
-	DisconnectPacketReasonEnumNetherNetSignalingBroadcastDeliveryFailed     DisconnectPacketReasonEnum = 101
-	DisconnectPacketReasonEnumNetherNetSignalingGenericDeliveryFailed       DisconnectPacketReasonEnum = 102
-	DisconnectPacketReasonEnumEditorMismatchEditorWorld                     DisconnectPacketReasonEnum = 103
-	DisconnectPacketReasonEnumEditorMismatchVanillaWorld                    DisconnectPacketReasonEnum = 104
-	DisconnectPacketReasonEnumWorldTransferNotPrimaryClient                 DisconnectPacketReasonEnum = 105
-	DisconnectPacketReasonEnumINTERNALRequestServerShutdown                 DisconnectPacketReasonEnum = 106
-	DisconnectPacketReasonEnumClientGameSetupCancelled                      DisconnectPacketReasonEnum = 107
-	DisconnectPacketReasonEnumClientGameSetupFailed                         DisconnectPacketReasonEnum = 108
-	DisconnectPacketReasonEnumNoVenue                                       DisconnectPacketReasonEnum = 109
-	DisconnectPacketReasonEnumNetherNetSignalingSigninFailed                DisconnectPacketReasonEnum = 110
-	DisconnectPacketReasonEnumSessionAccessDenied                           DisconnectPacketReasonEnum = 111
-	DisconnectPacketReasonEnumServiceSigninIssue                            DisconnectPacketReasonEnum = 112
-	DisconnectPacketReasonEnumNetherNetNoSignalingChannel                   DisconnectPacketReasonEnum = 113
-	DisconnectPacketReasonEnumNetherNetNotLoggedIn                          DisconnectPacketReasonEnum = 114
-	DisconnectPacketReasonEnumNetherNetClientSignalingError                 DisconnectPacketReasonEnum = 115
-	DisconnectPacketReasonEnumSubClientLoginDisabled                        DisconnectPacketReasonEnum = 116
-	DisconnectPacketReasonEnumDeepLinkTryingToOpenDemoWorldWhileSignedIn    DisconnectPacketReasonEnum = 117
-	DisconnectPacketReasonEnumAsyncJoinTaskDenied                           DisconnectPacketReasonEnum = 118
-	DisconnectPacketReasonEnumRealmsTimelineRequired                        DisconnectPacketReasonEnum = 119
-	DisconnectPacketReasonEnumGuestWithoutHost                              DisconnectPacketReasonEnum = 120
-	DisconnectPacketReasonEnumFailedToJoinExperience                        DisconnectPacketReasonEnum = 121
-	DisconnectPacketReasonEnumNetherNetDataChannelClosed                    DisconnectPacketReasonEnum = 122
-	DisconnectPacketReasonEnumDiscoveryEnvironmentMismatch                  DisconnectPacketReasonEnum = 123
-	DisconnectPacketReasonEnumHostWithoutKeys                               DisconnectPacketReasonEnum = 124
-	DisconnectPacketReasonEnumHostSignedOut                                 DisconnectPacketReasonEnum = 125
-	DisconnectPacketReasonEnumScriptWatchdogException                       DisconnectPacketReasonEnum = 126
-	DisconnectPacketReasonEnumScriptMemoryLimitExceeded                     DisconnectPacketReasonEnum = 127
-	DisconnectPacketReasonEnumStorageLowDuringGameplay                      DisconnectPacketReasonEnum = 128
-	DisconnectPacketReasonEnumStorageFullDuringGameplay                     DisconnectPacketReasonEnum = 129
-	DisconnectPacketReasonEnumLevelStorageCorruption                        DisconnectPacketReasonEnum = 130
-	DisconnectPacketReasonEnumEditionMismatchVanillaToEdu                   DisconnectPacketReasonEnum = 131
-	DisconnectPacketReasonEnumEditionMismatchEduToVanilla                   DisconnectPacketReasonEnum = 132
-	DisconnectPacketReasonEnumEditorMismatchEditorToVanilla                 DisconnectPacketReasonEnum = 133
-	DisconnectPacketReasonEnumEditorMismatchVanillaToEditor                 DisconnectPacketReasonEnum = 134
-	DisconnectPacketReasonEnumDenyListed                                    DisconnectPacketReasonEnum = 135
-	DisconnectPacketReasonEnumNonceMissing                                  DisconnectPacketReasonEnum = 136
-	DisconnectPacketReasonEnumNonceNotFound                                 DisconnectPacketReasonEnum = 137
-	DisconnectPacketReasonEnumNonceExpired                                  DisconnectPacketReasonEnum = 138
-	DisconnectPacketReasonEnumNonceNotValid                                 DisconnectPacketReasonEnum = 139
-	DisconnectPacketReasonEnumHostDisconnected                              DisconnectPacketReasonEnum = 140
-	DisconnectPacketReasonEnumEditorJoinIntentPolicyFailure                 DisconnectPacketReasonEnum = 141
-	DisconnectPacketReasonEnumNetherNetIdentityNotAllowed                   DisconnectPacketReasonEnum = 142
-	DisconnectPacketReasonEnumInvalidName                                   DisconnectPacketReasonEnum = 143
-	DisconnectPacketReasonEnumExpiredToken                                  DisconnectPacketReasonEnum = 144
-	DisconnectPacketReasonEnumHostAcceptsNoTypeOfAuth                       DisconnectPacketReasonEnum = 145
-	DisconnectPacketReasonEnumNotAuthenticatedFastFail                      DisconnectPacketReasonEnum = 146
-	DisconnectPacketReasonEnumEditorNotAllowed                              DisconnectPacketReasonEnum = 147
-)
-
-type EducationSettingsPacketEducationLevelSettingsStruct struct {
-	CodeBuilderDefaultURI        string
-	CodeBuilderTitle             string
-	CanResizeCodeBuilder         bool
-	DisableLegacyTitleBar        bool
-	PostProcessFilter            string
-	ScreenshotBorderResourcePath string
-	AgentCapabilities            *EducationSettingsPacketEducationLevelSettingsStructAgentCapabilitiesValueStruct
-	LocalSettings                EducationSettingsPacketEducationLevelSettingsStructLocalSettingsStruct
-	DeprecatedAlwaysFalse        bool
-	ExternalLinkSettings         *EducationSettingsPacketEducationLevelSettingsStructExternalLinkSettingsValueStruct
-}
-
-type EducationSettingsPacketEducationLevelSettingsStructAgentCapabilitiesValueStruct struct {
-	CanModifyBlocks *bool
-}
-
-type EducationSettingsPacketEducationLevelSettingsStructExternalLinkSettingsValueStruct struct {
-	URL         string
-	DisplayName string
-}
-
-type EducationSettingsPacketEducationLevelSettingsStructLocalSettingsStruct struct {
-	CodeBuilderOverrideUri *string
-}
-
-type FeatureRegistryPacketFeaturesDataListItemStruct struct {
-	FeatureName      string
-	BinaryJsonOutput string
-}
-
-type GraphicsOverrideParameterPacketIdentifierForParameterEnum uint8
-
-const (
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumSkyZenithColor          GraphicsOverrideParameterPacketIdentifierForParameterEnum = 0
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumSkyHorizonColor         GraphicsOverrideParameterPacketIdentifierForParameterEnum = 1
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumHorizonBlendMin         GraphicsOverrideParameterPacketIdentifierForParameterEnum = 2
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumHorizonBlendMax         GraphicsOverrideParameterPacketIdentifierForParameterEnum = 3
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumHorizonBlendStart       GraphicsOverrideParameterPacketIdentifierForParameterEnum = 4
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumHorizonBlendMieStart    GraphicsOverrideParameterPacketIdentifierForParameterEnum = 5
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumRayleighStrength        GraphicsOverrideParameterPacketIdentifierForParameterEnum = 6
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumSunMieStrength          GraphicsOverrideParameterPacketIdentifierForParameterEnum = 7
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumMoonMieStrength         GraphicsOverrideParameterPacketIdentifierForParameterEnum = 8
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumSunGlareShape           GraphicsOverrideParameterPacketIdentifierForParameterEnum = 9
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumChlorophyll             GraphicsOverrideParameterPacketIdentifierForParameterEnum = 10
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumCDOM                    GraphicsOverrideParameterPacketIdentifierForParameterEnum = 11
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumSuspendedSediment       GraphicsOverrideParameterPacketIdentifierForParameterEnum = 12
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumWavesDepth              GraphicsOverrideParameterPacketIdentifierForParameterEnum = 13
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumWavesFrequency          GraphicsOverrideParameterPacketIdentifierForParameterEnum = 14
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumWavesFrequencyScaling   GraphicsOverrideParameterPacketIdentifierForParameterEnum = 15
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumWavesSpeed              GraphicsOverrideParameterPacketIdentifierForParameterEnum = 16
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumWavesSpeedScaling       GraphicsOverrideParameterPacketIdentifierForParameterEnum = 17
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumWavesShape              GraphicsOverrideParameterPacketIdentifierForParameterEnum = 18
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumWavesOctaves            GraphicsOverrideParameterPacketIdentifierForParameterEnum = 19
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumWavesMix                GraphicsOverrideParameterPacketIdentifierForParameterEnum = 20
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumWavesPull               GraphicsOverrideParameterPacketIdentifierForParameterEnum = 21
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumWavesDirectionIncrement GraphicsOverrideParameterPacketIdentifierForParameterEnum = 22
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumMidtonesContrast        GraphicsOverrideParameterPacketIdentifierForParameterEnum = 23
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumHighlightsContrast      GraphicsOverrideParameterPacketIdentifierForParameterEnum = 24
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumShadowsContrast         GraphicsOverrideParameterPacketIdentifierForParameterEnum = 25
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumHighlightsGain          GraphicsOverrideParameterPacketIdentifierForParameterEnum = 26
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumHighlightsGamma         GraphicsOverrideParameterPacketIdentifierForParameterEnum = 27
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumHighlightsOffset        GraphicsOverrideParameterPacketIdentifierForParameterEnum = 28
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumHighlightsSaturation    GraphicsOverrideParameterPacketIdentifierForParameterEnum = 29
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumMidtonesGain            GraphicsOverrideParameterPacketIdentifierForParameterEnum = 30
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumMidtonesGamma           GraphicsOverrideParameterPacketIdentifierForParameterEnum = 31
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumMidtonesOffset          GraphicsOverrideParameterPacketIdentifierForParameterEnum = 32
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumMidtonesSaturation      GraphicsOverrideParameterPacketIdentifierForParameterEnum = 33
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumShadowsGain             GraphicsOverrideParameterPacketIdentifierForParameterEnum = 34
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumShadowsGamma            GraphicsOverrideParameterPacketIdentifierForParameterEnum = 35
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumShadowsOffset           GraphicsOverrideParameterPacketIdentifierForParameterEnum = 36
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumShadowsSaturation       GraphicsOverrideParameterPacketIdentifierForParameterEnum = 37
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumHighlightsMin           GraphicsOverrideParameterPacketIdentifierForParameterEnum = 38
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumShadowsMax              GraphicsOverrideParameterPacketIdentifierForParameterEnum = 39
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumTemperature             GraphicsOverrideParameterPacketIdentifierForParameterEnum = 40
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumSunColor                GraphicsOverrideParameterPacketIdentifierForParameterEnum = 41
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumSunIlluminance          GraphicsOverrideParameterPacketIdentifierForParameterEnum = 42
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumMoonColor               GraphicsOverrideParameterPacketIdentifierForParameterEnum = 43
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumMoonIlluminance         GraphicsOverrideParameterPacketIdentifierForParameterEnum = 44
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumFlashColor              GraphicsOverrideParameterPacketIdentifierForParameterEnum = 45
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumFlashIlluminance        GraphicsOverrideParameterPacketIdentifierForParameterEnum = 46
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumAmbientColor            GraphicsOverrideParameterPacketIdentifierForParameterEnum = 47
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumAmbientIlluminance      GraphicsOverrideParameterPacketIdentifierForParameterEnum = 48
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumEmissiveDesaturation    GraphicsOverrideParameterPacketIdentifierForParameterEnum = 49
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumSkyIntensity            GraphicsOverrideParameterPacketIdentifierForParameterEnum = 50
-	GraphicsOverrideParameterPacketIdentifierForParameterEnumOrbitalOffsetDegrees    GraphicsOverrideParameterPacketIdentifierForParameterEnum = 51
-)
-
-type GraphicsOverrideParameterPacketParameterKeyframeValuesEntry struct {
-	Key   float32
-	Value StartGamePacketPositionStruct
-}
-
-type InteractPacketActionEnum uint8
-
-const (
-	InteractPacketActionEnumInvalid        InteractPacketActionEnum = 0
-	InteractPacketActionEnumStopRiding     InteractPacketActionEnum = 3
-	InteractPacketActionEnumInteractUpdate InteractPacketActionEnum = 4
-	InteractPacketActionEnumNpcOpen        InteractPacketActionEnum = 5
-	InteractPacketActionEnumOpenInventory  InteractPacketActionEnum = 6
-)
-
-type InventoryContentPacketFullContainerNameStruct struct {
-	ContainerName InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum
-	DynamicID     *uint32
-}
-
-type InventoryTransactionPacketLegacyRequestIDStruct struct {
-	ID int32
-}
-
-type InventoryTransactionPacketLegacySetItemSlotsValueItemStruct struct {
-	ContainerEnum InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum
-	Slots         []uint8
-}
-
-type InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum uint8
-
-const (
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumAnvilInputContainer                 InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 0
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumAnvilMaterialContainer              InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 1
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumAnvilResultPreviewContainer         InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 2
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumSmithingTableInputContainer         InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 3
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumSmithingTableMaterialContainer      InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 4
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumSmithingTableResultPreviewContainer InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 5
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumArmorContainer                      InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 6
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumLevelEntityContainer                InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 7
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumBeaconPaymentContainer              InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 8
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumBrewingStandInputContainer          InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 9
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumBrewingStandResultContainer         InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 10
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumBrewingStandFuelContainer           InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 11
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumCombinedHotbarAndInventoryContainer InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 12
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumCraftingInputContainer              InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 13
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumCraftingOutputPreviewContainer      InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 14
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumRecipeConstructionContainer         InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 15
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumRecipeNatureContainer               InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 16
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumRecipeItemsContainer                InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 17
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumRecipeSearchContainer               InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 18
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumRecipeSearchBarContainer            InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 19
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumRecipeEquipmentContainer            InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 20
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumRecipeBookContainer                 InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 21
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumEnchantingInputContainer            InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 22
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumEnchantingMaterialContainer         InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 23
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumFurnaceFuelContainer                InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 24
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumFurnaceIngredientContainer          InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 25
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumFurnaceResultContainer              InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 26
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumHorseEquipContainer                 InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 27
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumHotbarContainer                     InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 28
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumInventoryContainer                  InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 29
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumShulkerBoxContainer                 InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 30
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumTradeIngredient1Container           InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 31
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumTradeIngredient2Container           InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 32
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumTradeResultPreviewContainer         InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 33
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumOffhandContainer                    InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 34
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumCompoundCreatorInput                InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 35
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumCompoundCreatorOutputPreview        InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 36
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumElementConstructorOutputPreview     InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 37
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumMaterialReducerInput                InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 38
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumMaterialReducerOutput               InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 39
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumLabTableInput                       InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 40
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumLoomInputContainer                  InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 41
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumLoomDyeContainer                    InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 42
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumLoomMaterialContainer               InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 43
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumLoomResultPreviewContainer          InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 44
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumBlastFurnaceIngredientContainer     InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 45
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumSmokerIngredientContainer           InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 46
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumTrade2Ingredient1Container          InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 47
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumTrade2Ingredient2Container          InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 48
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumTrade2ResultPreviewContainer        InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 49
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumGrindstoneInputContainer            InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 50
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumGrindstoneAdditionalContainer       InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 51
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumGrindstoneResultPreviewContainer    InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 52
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumStonecutterInputContainer           InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 53
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumStonecutterResultPreviewContainer   InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 54
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumCartographyInputContainer           InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 55
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumCartographyAdditionalContainer      InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 56
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumCartographyResultPreviewContainer   InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 57
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumBarrelContainer                     InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 58
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumCursorContainer                     InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 59
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumCreatedOutputContainer              InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 60
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumSmithingTableTemplateContainer      InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 61
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumCrafterLevelEntityContainer         InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 62
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumDynamicContainer                    InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 63
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumRecipeFoodContainer                 InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 64
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumRecipeBlocksContainer               InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 65
-	InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnumRecipeFurnaceItemsContainer         InventoryTransactionPacketLegacySetItemSlotsValueItemStructContainerEnumEnum = 66
-)
-
-type InventoryTransactionPacketTransactionUnion struct {
-	Tag   int64
-	Value any
-}
-
-type ItemRegistryPacketItemDataItemStruct struct {
-	ItemName          string
-	ItemId            int16
-	IsComponentBased  bool
-	ItemVersion       ItemRegistryPacketItemDataItemStructItemVersionEnum
-	ItemComponentData []byte
-}
-
-type ItemRegistryPacketItemDataItemStructItemVersionEnum int32
-
-const (
-	ItemRegistryPacketItemDataItemStructItemVersionEnumLegacy     ItemRegistryPacketItemDataItemStructItemVersionEnum = 0
-	ItemRegistryPacketItemDataItemStructItemVersionEnumDataDriven ItemRegistryPacketItemDataItemStructItemVersionEnum = 1
-	ItemRegistryPacketItemDataItemStructItemVersionEnumNone       ItemRegistryPacketItemDataItemStructItemVersionEnum = 2
-)
-
-type ItemStackRequestPacketRequestsItemStruct struct {
-	ClientRequestId       PlayerAuthInputPacketItemStackRequestValueStructClientRequestIdStruct
-	Actions               []ItemStackRequestPacketRequestsItemStructActionsItemUnion
-	StringsToFilter       []string
-	StringsToFilterOrigin PlayerAuthInputPacketItemStackRequestValueStructStringsToFilterOriginEnum
-}
-
-type ItemStackRequestPacketRequestsItemStructActionsItemUnion struct {
-	Tag   int64
-	Value any
-}
-
-type ItemStackResponsePacketResponsesItemStruct struct {
-	Result          ItemStackResponsePacketResponsesItemStructResultEnum
-	ClientRequestId PlayerAuthInputPacketItemStackRequestValueStructClientRequestIdStruct
-	Constant2       bool
-	Containers      *[]ItemStackResponsePacketResponsesItemStructContainersValueItemStruct
-}
-
-type ItemStackResponsePacketResponsesItemStructContainersValueItemStruct struct {
-	FullContainerName InventoryContentPacketFullContainerNameStruct
-	Slots             []ItemStackResponsePacketResponsesItemStructContainersValueItemStructSlotsItemStruct
-}
-
-type ItemStackResponsePacketResponsesItemStructContainersValueItemStructSlotsItemStruct struct {
-	RequestedSlot        uint8
-	Slot                 uint8
-	Amount               uint8
-	Constant3            bool
-	ItemStackNetId       *ItemStackResponsePacketResponsesItemStructContainersValueItemStructSlotsItemStructItemStackNetIdValueStruct
-	CustomName           StructureBlockUpdatePacketStructureDataStructStructureNameStruct
-	DurabilityCorrection int32
-}
-
-type ItemStackResponsePacketResponsesItemStructContainersValueItemStructSlotsItemStructItemStackNetIdValueStruct struct {
-	ID int32
-}
-
-type ItemStackResponsePacketResponsesItemStructResultEnum uint8
-
-const (
-	ItemStackResponsePacketResponsesItemStructResultEnumSuccess                                          ItemStackResponsePacketResponsesItemStructResultEnum = 0
-	ItemStackResponsePacketResponsesItemStructResultEnumError                                            ItemStackResponsePacketResponsesItemStructResultEnum = 1
-	ItemStackResponsePacketResponsesItemStructResultEnumInvalidRequestActionType                         ItemStackResponsePacketResponsesItemStructResultEnum = 2
-	ItemStackResponsePacketResponsesItemStructResultEnumActionRequestNotAllowed                          ItemStackResponsePacketResponsesItemStructResultEnum = 3
-	ItemStackResponsePacketResponsesItemStructResultEnumScreenHandlerEndRequestFailed                    ItemStackResponsePacketResponsesItemStructResultEnum = 4
-	ItemStackResponsePacketResponsesItemStructResultEnumItemRequestActionHandlerCommitFailed             ItemStackResponsePacketResponsesItemStructResultEnum = 5
-	ItemStackResponsePacketResponsesItemStructResultEnumInvalidRequestCraftActionType                    ItemStackResponsePacketResponsesItemStructResultEnum = 6
-	ItemStackResponsePacketResponsesItemStructResultEnumInvalidCraftRequest                              ItemStackResponsePacketResponsesItemStructResultEnum = 7
-	ItemStackResponsePacketResponsesItemStructResultEnumInvalidCraftRequestScreen                        ItemStackResponsePacketResponsesItemStructResultEnum = 8
-	ItemStackResponsePacketResponsesItemStructResultEnumInvalidCraftResult                               ItemStackResponsePacketResponsesItemStructResultEnum = 9
-	ItemStackResponsePacketResponsesItemStructResultEnumInvalidCraftResultIndex                          ItemStackResponsePacketResponsesItemStructResultEnum = 10
-	ItemStackResponsePacketResponsesItemStructResultEnumInvalidCraftResultItem                           ItemStackResponsePacketResponsesItemStructResultEnum = 11
-	ItemStackResponsePacketResponsesItemStructResultEnumInvalidItemNetId                                 ItemStackResponsePacketResponsesItemStructResultEnum = 12
-	ItemStackResponsePacketResponsesItemStructResultEnumMissingCreatedOutputContainer                    ItemStackResponsePacketResponsesItemStructResultEnum = 13
-	ItemStackResponsePacketResponsesItemStructResultEnumFailedToSetCreatedItemOutputSlot                 ItemStackResponsePacketResponsesItemStructResultEnum = 14
-	ItemStackResponsePacketResponsesItemStructResultEnumRequestAlreadyInProgress                         ItemStackResponsePacketResponsesItemStructResultEnum = 15
-	ItemStackResponsePacketResponsesItemStructResultEnumFailedToInitSparseContainer                      ItemStackResponsePacketResponsesItemStructResultEnum = 16
-	ItemStackResponsePacketResponsesItemStructResultEnumResultTransferFailed                             ItemStackResponsePacketResponsesItemStructResultEnum = 17
-	ItemStackResponsePacketResponsesItemStructResultEnumExpectedItemSlotNotFullyConsumed                 ItemStackResponsePacketResponsesItemStructResultEnum = 18
-	ItemStackResponsePacketResponsesItemStructResultEnumExpectedAnywhereItemNotFullyConsumed             ItemStackResponsePacketResponsesItemStructResultEnum = 19
-	ItemStackResponsePacketResponsesItemStructResultEnumItemAlreadyConsumedFromSlot                      ItemStackResponsePacketResponsesItemStructResultEnum = 20
-	ItemStackResponsePacketResponsesItemStructResultEnumConsumedTooMuchFromSlot                          ItemStackResponsePacketResponsesItemStructResultEnum = 21
-	ItemStackResponsePacketResponsesItemStructResultEnumMismatchSlotExpectedConsumedItem                 ItemStackResponsePacketResponsesItemStructResultEnum = 22
-	ItemStackResponsePacketResponsesItemStructResultEnumMismatchSlotExpectedConsumedItemNetIdVariant     ItemStackResponsePacketResponsesItemStructResultEnum = 23
-	ItemStackResponsePacketResponsesItemStructResultEnumFailedToMatchExpectedSlotConsumedItem            ItemStackResponsePacketResponsesItemStructResultEnum = 24
-	ItemStackResponsePacketResponsesItemStructResultEnumFailedToMatchExpectedAllowedAnywhereConsumedItem ItemStackResponsePacketResponsesItemStructResultEnum = 25
-	ItemStackResponsePacketResponsesItemStructResultEnumConsumedItemOutOfAllowedSlotRange                ItemStackResponsePacketResponsesItemStructResultEnum = 26
-	ItemStackResponsePacketResponsesItemStructResultEnumConsumedItemNotAllowed                           ItemStackResponsePacketResponsesItemStructResultEnum = 27
-	ItemStackResponsePacketResponsesItemStructResultEnumPlayerNotInCreativeMode                          ItemStackResponsePacketResponsesItemStructResultEnum = 28
-	ItemStackResponsePacketResponsesItemStructResultEnumInvalidExperimentalRecipeRequest                 ItemStackResponsePacketResponsesItemStructResultEnum = 29
-	ItemStackResponsePacketResponsesItemStructResultEnumFailedToCraftCreative                            ItemStackResponsePacketResponsesItemStructResultEnum = 30
-	ItemStackResponsePacketResponsesItemStructResultEnumFailedToGetLevelRecipe                           ItemStackResponsePacketResponsesItemStructResultEnum = 31
-	ItemStackResponsePacketResponsesItemStructResultEnumFailedToFindRecipeByNetId                        ItemStackResponsePacketResponsesItemStructResultEnum = 32
-	ItemStackResponsePacketResponsesItemStructResultEnumMismatchedCraftingSize                           ItemStackResponsePacketResponsesItemStructResultEnum = 33
-	ItemStackResponsePacketResponsesItemStructResultEnumMissingInputSparseContainer                      ItemStackResponsePacketResponsesItemStructResultEnum = 34
-	ItemStackResponsePacketResponsesItemStructResultEnumMismatchedRecipeForInputGridItems                ItemStackResponsePacketResponsesItemStructResultEnum = 35
-	ItemStackResponsePacketResponsesItemStructResultEnumEmptyCraftResults                                ItemStackResponsePacketResponsesItemStructResultEnum = 36
-	ItemStackResponsePacketResponsesItemStructResultEnumFailedToEnchant                                  ItemStackResponsePacketResponsesItemStructResultEnum = 37
-	ItemStackResponsePacketResponsesItemStructResultEnumMissingInputItem                                 ItemStackResponsePacketResponsesItemStructResultEnum = 38
-	ItemStackResponsePacketResponsesItemStructResultEnumInsufficientPlayerLevelToEnchant                 ItemStackResponsePacketResponsesItemStructResultEnum = 39
-	ItemStackResponsePacketResponsesItemStructResultEnumMissingMaterialItem                              ItemStackResponsePacketResponsesItemStructResultEnum = 40
-	ItemStackResponsePacketResponsesItemStructResultEnumMissingActor                                     ItemStackResponsePacketResponsesItemStructResultEnum = 41
-	ItemStackResponsePacketResponsesItemStructResultEnumUnknownPrimaryEffect                             ItemStackResponsePacketResponsesItemStructResultEnum = 42
-	ItemStackResponsePacketResponsesItemStructResultEnumPrimaryEffectOutOfRange                          ItemStackResponsePacketResponsesItemStructResultEnum = 43
-	ItemStackResponsePacketResponsesItemStructResultEnumPrimaryEffectUnavailable                         ItemStackResponsePacketResponsesItemStructResultEnum = 44
-	ItemStackResponsePacketResponsesItemStructResultEnumSecondaryEffectOutOfRange                        ItemStackResponsePacketResponsesItemStructResultEnum = 45
-	ItemStackResponsePacketResponsesItemStructResultEnumSecondaryEffectUnavailable                       ItemStackResponsePacketResponsesItemStructResultEnum = 46
-	ItemStackResponsePacketResponsesItemStructResultEnumDstContainerEqualToCreatedOutputContainer        ItemStackResponsePacketResponsesItemStructResultEnum = 47
-	ItemStackResponsePacketResponsesItemStructResultEnumDstContainerAndSlotEqualToSrcContainerAndSlot    ItemStackResponsePacketResponsesItemStructResultEnum = 48
-	ItemStackResponsePacketResponsesItemStructResultEnumFailedToValidateSrcSlot                          ItemStackResponsePacketResponsesItemStructResultEnum = 49
-	ItemStackResponsePacketResponsesItemStructResultEnumFailedToValidateDstSlot                          ItemStackResponsePacketResponsesItemStructResultEnum = 50
-	ItemStackResponsePacketResponsesItemStructResultEnumInvalidAdjustedAmount                            ItemStackResponsePacketResponsesItemStructResultEnum = 51
-	ItemStackResponsePacketResponsesItemStructResultEnumInvalidItemSetType                               ItemStackResponsePacketResponsesItemStructResultEnum = 52
-	ItemStackResponsePacketResponsesItemStructResultEnumInvalidTransferAmount                            ItemStackResponsePacketResponsesItemStructResultEnum = 53
-	ItemStackResponsePacketResponsesItemStructResultEnumCannotSwapItem                                   ItemStackResponsePacketResponsesItemStructResultEnum = 54
-	ItemStackResponsePacketResponsesItemStructResultEnumCannotPlaceItem                                  ItemStackResponsePacketResponsesItemStructResultEnum = 55
-	ItemStackResponsePacketResponsesItemStructResultEnumUnhandledItemSetType                             ItemStackResponsePacketResponsesItemStructResultEnum = 56
-	ItemStackResponsePacketResponsesItemStructResultEnumInvalidRemovedAmount                             ItemStackResponsePacketResponsesItemStructResultEnum = 57
-	ItemStackResponsePacketResponsesItemStructResultEnumInvalidRegion                                    ItemStackResponsePacketResponsesItemStructResultEnum = 58
-	ItemStackResponsePacketResponsesItemStructResultEnumCannotDropItem                                   ItemStackResponsePacketResponsesItemStructResultEnum = 59
-	ItemStackResponsePacketResponsesItemStructResultEnumCannotDestroyItem                                ItemStackResponsePacketResponsesItemStructResultEnum = 60
-	ItemStackResponsePacketResponsesItemStructResultEnumInvalidSourceContainer                           ItemStackResponsePacketResponsesItemStructResultEnum = 61
-	ItemStackResponsePacketResponsesItemStructResultEnumItemNotConsumed                                  ItemStackResponsePacketResponsesItemStructResultEnum = 62
-	ItemStackResponsePacketResponsesItemStructResultEnumInvalidNumCrafts                                 ItemStackResponsePacketResponsesItemStructResultEnum = 63
-	ItemStackResponsePacketResponsesItemStructResultEnumInvalidCraftResultStackSize                      ItemStackResponsePacketResponsesItemStructResultEnum = 64
-	ItemStackResponsePacketResponsesItemStructResultEnumCannotRemoveItem                                 ItemStackResponsePacketResponsesItemStructResultEnum = 65
-	ItemStackResponsePacketResponsesItemStructResultEnumCannotConsumeItem                                ItemStackResponsePacketResponsesItemStructResultEnum = 66
-	ItemStackResponsePacketResponsesItemStructResultEnumScreenStackError                                 ItemStackResponsePacketResponsesItemStructResultEnum = 67
-)
-
-type LabTablePacketReactionEnum uint8
-
-const (
-	LabTablePacketReactionEnumNone               LabTablePacketReactionEnum = 0
-	LabTablePacketReactionEnumIceBomb            LabTablePacketReactionEnum = 1
-	LabTablePacketReactionEnumBleach             LabTablePacketReactionEnum = 2
-	LabTablePacketReactionEnumElephantToothpaste LabTablePacketReactionEnum = 3
-	LabTablePacketReactionEnumFertilizer         LabTablePacketReactionEnum = 4
-	LabTablePacketReactionEnumHeatBlock          LabTablePacketReactionEnum = 5
-	LabTablePacketReactionEnumMagnesiumSalts     LabTablePacketReactionEnum = 6
-	LabTablePacketReactionEnumMiscFire           LabTablePacketReactionEnum = 7
-	LabTablePacketReactionEnumMiscExplosion      LabTablePacketReactionEnum = 8
-	LabTablePacketReactionEnumMiscLava           LabTablePacketReactionEnum = 9
-	LabTablePacketReactionEnumMiscMystical       LabTablePacketReactionEnum = 10
-	LabTablePacketReactionEnumMiscSmoke          LabTablePacketReactionEnum = 11
-	LabTablePacketReactionEnumMiscLargeSmoke     LabTablePacketReactionEnum = 12
-)
-
-type LabTablePacketTypeEnum uint8
-
-const (
-	LabTablePacketTypeEnumStartCombine  LabTablePacketTypeEnum = 0
-	LabTablePacketTypeEnumStartReaction LabTablePacketTypeEnum = 1
-	LabTablePacketTypeEnumReset         LabTablePacketTypeEnum = 2
-)
-
-type LegacyTelemetryEventPacketEventDataUnion struct {
-	Tag   int64
-	Value any
-}
-
-type LegacyTelemetryEventPacketEventTypeEnum int32
-
-const (
-	LegacyTelemetryEventPacketEventTypeEnumAchievement                     LegacyTelemetryEventPacketEventTypeEnum = 0
-	LegacyTelemetryEventPacketEventTypeEnumInteraction                     LegacyTelemetryEventPacketEventTypeEnum = 1
-	LegacyTelemetryEventPacketEventTypeEnumPortalCreated                   LegacyTelemetryEventPacketEventTypeEnum = 2
-	LegacyTelemetryEventPacketEventTypeEnumPortalUsed                      LegacyTelemetryEventPacketEventTypeEnum = 3
-	LegacyTelemetryEventPacketEventTypeEnumMobKilled                       LegacyTelemetryEventPacketEventTypeEnum = 4
-	LegacyTelemetryEventPacketEventTypeEnumCauldronUsed                    LegacyTelemetryEventPacketEventTypeEnum = 5
-	LegacyTelemetryEventPacketEventTypeEnumPlayerDied                      LegacyTelemetryEventPacketEventTypeEnum = 6
-	LegacyTelemetryEventPacketEventTypeEnumBossKilled                      LegacyTelemetryEventPacketEventTypeEnum = 7
-	LegacyTelemetryEventPacketEventTypeEnumAgentCommandOBSOLETE            LegacyTelemetryEventPacketEventTypeEnum = 8
-	LegacyTelemetryEventPacketEventTypeEnumAgentCreated                    LegacyTelemetryEventPacketEventTypeEnum = 9
-	LegacyTelemetryEventPacketEventTypeEnumPatternRemovedOBSOLETE          LegacyTelemetryEventPacketEventTypeEnum = 10
-	LegacyTelemetryEventPacketEventTypeEnumSlashCommand                    LegacyTelemetryEventPacketEventTypeEnum = 11
-	LegacyTelemetryEventPacketEventTypeEnumFishBucketedOBSOLETE            LegacyTelemetryEventPacketEventTypeEnum = 12
-	LegacyTelemetryEventPacketEventTypeEnumMobBorn                         LegacyTelemetryEventPacketEventTypeEnum = 13
-	LegacyTelemetryEventPacketEventTypeEnumPetDiedOBSOLETE                 LegacyTelemetryEventPacketEventTypeEnum = 14
-	LegacyTelemetryEventPacketEventTypeEnumPOICauldronUsed                 LegacyTelemetryEventPacketEventTypeEnum = 15
-	LegacyTelemetryEventPacketEventTypeEnumComposterUsed                   LegacyTelemetryEventPacketEventTypeEnum = 16
-	LegacyTelemetryEventPacketEventTypeEnumBellUsed                        LegacyTelemetryEventPacketEventTypeEnum = 17
-	LegacyTelemetryEventPacketEventTypeEnumActorDefinition                 LegacyTelemetryEventPacketEventTypeEnum = 18
-	LegacyTelemetryEventPacketEventTypeEnumRaidUpdate                      LegacyTelemetryEventPacketEventTypeEnum = 19
-	LegacyTelemetryEventPacketEventTypeEnumPlayerMovementAnomalyOBSOLETE   LegacyTelemetryEventPacketEventTypeEnum = 20
-	LegacyTelemetryEventPacketEventTypeEnumPlayerMovementCorrectedOBSOLETE LegacyTelemetryEventPacketEventTypeEnum = 21
-	LegacyTelemetryEventPacketEventTypeEnumHoneyHarvested                  LegacyTelemetryEventPacketEventTypeEnum = 22
-	LegacyTelemetryEventPacketEventTypeEnumTargetBlockHit                  LegacyTelemetryEventPacketEventTypeEnum = 23
-	LegacyTelemetryEventPacketEventTypeEnumPiglinBarter                    LegacyTelemetryEventPacketEventTypeEnum = 24
-	LegacyTelemetryEventPacketEventTypeEnumPlayerWaxedOrUnwaxedCopper      LegacyTelemetryEventPacketEventTypeEnum = 25
-	LegacyTelemetryEventPacketEventTypeEnumCodeBuilderRuntimeAction        LegacyTelemetryEventPacketEventTypeEnum = 26
-	LegacyTelemetryEventPacketEventTypeEnumCodeBuilderScoreboard           LegacyTelemetryEventPacketEventTypeEnum = 27
-	LegacyTelemetryEventPacketEventTypeEnumStriderRiddenInLavaInOverworld  LegacyTelemetryEventPacketEventTypeEnum = 28
-	LegacyTelemetryEventPacketEventTypeEnumSneakCloseToSculkSensor         LegacyTelemetryEventPacketEventTypeEnum = 29
-	LegacyTelemetryEventPacketEventTypeEnumCarefulRestoration              LegacyTelemetryEventPacketEventTypeEnum = 30
-	LegacyTelemetryEventPacketEventTypeEnumItemUsed                        LegacyTelemetryEventPacketEventTypeEnum = 31
-)
-
-type LevelChunkPacketCacheMetadataItemStruct struct {
-	BlobId uint64
-}
-
-type LevelChunkPacketChunkPositionStruct struct {
+type ChunkPos struct {
 	X int32
 	Z int32
 }
 
-type LocatorBarPacketWaypointsItemStruct struct {
-	GroupHandle           LocatorBarPacketWaypointsItemStructGroupHandleStruct
-	ServerWaypointPayload LocatorBarPacketWaypointsItemStructServerWaypointPayloadStruct
-	ActionFlag            LocatorBarPacketWaypointsItemStructActionFlagEnum
+type ClientboundDebugRendererPacketPayloadDebugMarkerData struct {
+	Text     string
+	Position Vec3
+	Color    MceColor
+	Duration uint64
 }
 
-type LocatorBarPacketWaypointsItemStructActionFlagEnum uint8
-
-const (
-	LocatorBarPacketWaypointsItemStructActionFlagEnumNone   LocatorBarPacketWaypointsItemStructActionFlagEnum = 0
-	LocatorBarPacketWaypointsItemStructActionFlagEnumAdd    LocatorBarPacketWaypointsItemStructActionFlagEnum = 1
-	LocatorBarPacketWaypointsItemStructActionFlagEnumRemove LocatorBarPacketWaypointsItemStructActionFlagEnum = 2
-	LocatorBarPacketWaypointsItemStructActionFlagEnumUpdate LocatorBarPacketWaypointsItemStructActionFlagEnum = 3
-)
-
-type LocatorBarPacketWaypointsItemStructGroupHandleStruct struct {
-	UUID [16]byte
+type CommandBlockUpdatePacketPayload interface {
+	isCommandBlockUpdatePacketPayload()
 }
 
-type LocatorBarPacketWaypointsItemStructServerWaypointPayloadStruct struct {
-	UpdateFlag              uint32
-	IsVisible               *bool
-	WorldPosition           *LocatorBarPacketWaypointsItemStructServerWaypointPayloadStructWorldPositionValueStruct
-	TexturePath             *string
-	IconSize                *StartGamePacketRotationStruct
-	Color                   *ClientboundMapItemDataPacketDecorationsValueItemStructColorStruct
-	ClientPositionAuthority *bool
-	ActorUniqueID           *StartGamePacketEntityIDStruct
+type CommandBlockUpdatePacketPayloadBlockCommandData struct {
+	BlockPosition    BlockPos
+	CommandBlockMode uint32
+	RedstoneMode     bool
+	IsConditional    bool
 }
 
-type LocatorBarPacketWaypointsItemStructServerWaypointPayloadStructWorldPositionValueStruct struct {
-	Position      StartGamePacketPositionStruct
-	DimensionType SetSpawnPositionPacketDimensionTypeStruct
+func (CommandBlockUpdatePacketPayloadBlockCommandData) isCommandBlockUpdatePacketPayload() {}
+
+type CommandBlockUpdatePacketPayloadEntityCommandTarget struct {
+	TargetRuntimeID ActorRuntimeID
 }
 
-type MapInfoRequestPacketClientPixelsListItemStruct struct {
-	Pixel uint32
-	Index uint16
+func (CommandBlockUpdatePacketPayloadEntityCommandTarget) isCommandBlockUpdatePacketPayload() {}
+
+type CommandOriginData struct {
+	Type      string
+	UUID      [16]byte
+	RequestId string
+	PlayerId  int64
 }
 
-type MobEffectPacketEventIDEnum uint8
-
-const (
-	MobEffectPacketEventIDEnumInvalid MobEffectPacketEventIDEnum = 0
-	MobEffectPacketEventIDEnumAdd     MobEffectPacketEventIDEnum = 1
-	MobEffectPacketEventIDEnumUpdate  MobEffectPacketEventIDEnum = 2
-	MobEffectPacketEventIDEnumRemove  MobEffectPacketEventIDEnum = 3
-)
-
-type ModalFormResponsePacketFormCancelReasonValueEnum uint8
-
-const (
-	ModalFormResponsePacketFormCancelReasonValueEnumUserClosed ModalFormResponsePacketFormCancelReasonValueEnum = 0
-	ModalFormResponsePacketFormCancelReasonValueEnumUserBusy   ModalFormResponsePacketFormCancelReasonValueEnum = 1
-)
-
-type MoveActorAbsolutePacketMoveDataStruct struct {
-	ActorRuntimeID StartGamePacketRuntimeIDStruct
-	Header         uint8
-	Position       StartGamePacketPositionStruct
-	RotationX      uint8
-	RotationY      uint8
-	RotationYHead  uint8
+type CommandOutput struct {
+	OutputType     string
+	SuccessCount   uint32
+	OutputMessages []CommandOutputMessage
+	DataSet        *string
 }
 
-type MoveActorDeltaPacketMoveDataStruct struct {
-	ActorRuntimeID       StartGamePacketRuntimeIDStruct
-	NewPositionX         *float32
-	NewPositionY         *float32
-	NewPositionZ         *float32
-	RotationX            *int8
-	RotationY            *int8
-	RotationYHead        *int8
-	IsOnGround           bool
-	ForceMove            bool
-	ForceMoveLocalEntity bool
-	ForceCompletion      bool
+type CommandOutputMessage struct {
+	MessageID  string
+	Successful bool
+	Parameters []string
 }
 
-type MovePlayerPacketPositionModeEnum uint8
-
-const (
-	MovePlayerPacketPositionModeEnumNormal      MovePlayerPacketPositionModeEnum = 0
-	MovePlayerPacketPositionModeEnumRespawn     MovePlayerPacketPositionModeEnum = 1
-	MovePlayerPacketPositionModeEnumTeleport    MovePlayerPacketPositionModeEnum = 2
-	MovePlayerPacketPositionModeEnumOnlyHeadRot MovePlayerPacketPositionModeEnum = 3
-)
-
-type MovePlayerPacketTeleportDataValueStruct struct {
-	TeleportationCause int32
-	SourceActorType    int32
+type ConeDataPayload struct {
+	Radii       Vec2
+	Height      float32
+	NumSegments uint8
 }
 
-type MovePlayerPacketTickStruct struct {
-	InputTick uint64
+func (ConeDataPayload) isPrimitiveShapeDataPayloadExtraShapeDataUnion() {}
+
+type ContainerMixDataEntry struct {
+	FromItemId    int32
+	ReagentItemId int32
+	ToItemId      int32
 }
 
-type MovementEffectPacketEffectIDEnum int32
-
-const (
-	MovementEffectPacketEffectIDEnumGLIDEBOOST   MovementEffectPacketEffectIDEnum = 0
-	MovementEffectPacketEffectIDEnumDOLPHINBOOST MovementEffectPacketEffectIDEnum = 1
-	MovementEffectPacketEffectIDEnumGEYSERBOOST  MovementEffectPacketEffectIDEnum = 2
-)
-
-type MultiplayerSettingsPacketPacketTypeEnum int32
-
-const (
-	MultiplayerSettingsPacketPacketTypeEnumEnableMultiplayer  MultiplayerSettingsPacketPacketTypeEnum = 0
-	MultiplayerSettingsPacketPacketTypeEnumDisableMultiplayer MultiplayerSettingsPacketPacketTypeEnum = 1
-	MultiplayerSettingsPacketPacketTypeEnumRefreshJoincode    MultiplayerSettingsPacketPacketTypeEnum = 2
-)
-
-type NetworkSettingsPacketCompressionAlgorithmEnum uint16
-
-const (
-	NetworkSettingsPacketCompressionAlgorithmEnumZLib   NetworkSettingsPacketCompressionAlgorithmEnum = 0
-	NetworkSettingsPacketCompressionAlgorithmEnumSnappy NetworkSettingsPacketCompressionAlgorithmEnum = 1
-	NetworkSettingsPacketCompressionAlgorithmEnumNone   NetworkSettingsPacketCompressionAlgorithmEnum = 65535
-)
-
-type NpcDialoguePacketNpcDialogueActionTypeEnum int32
-
-const (
-	NpcDialoguePacketNpcDialogueActionTypeEnumOpen  NpcDialoguePacketNpcDialogueActionTypeEnum = 0
-	NpcDialoguePacketNpcDialogueActionTypeEnumClose NpcDialoguePacketNpcDialogueActionTypeEnum = 1
-)
-
-type NpcRequestPacketRequestTypeEnum uint8
-
-const (
-	NpcRequestPacketRequestTypeEnumSetActions             NpcRequestPacketRequestTypeEnum = 0
-	NpcRequestPacketRequestTypeEnumExecuteAction          NpcRequestPacketRequestTypeEnum = 1
-	NpcRequestPacketRequestTypeEnumExecuteClosingCommands NpcRequestPacketRequestTypeEnum = 2
-	NpcRequestPacketRequestTypeEnumSetName                NpcRequestPacketRequestTypeEnum = 3
-	NpcRequestPacketRequestTypeEnumSetSkin                NpcRequestPacketRequestTypeEnum = 4
-	NpcRequestPacketRequestTypeEnumSetInteractText        NpcRequestPacketRequestTypeEnum = 5
-	NpcRequestPacketRequestTypeEnumExecuteOpeningCommands NpcRequestPacketRequestTypeEnum = 6
-)
-
-type PacketViolationWarningPacketViolationSeverityEnum int32
-
-const (
-	PacketViolationWarningPacketViolationSeverityEnumUnknown               PacketViolationWarningPacketViolationSeverityEnum = -1
-	PacketViolationWarningPacketViolationSeverityEnumWarning               PacketViolationWarningPacketViolationSeverityEnum = 0
-	PacketViolationWarningPacketViolationSeverityEnumFinalWarning          PacketViolationWarningPacketViolationSeverityEnum = 1
-	PacketViolationWarningPacketViolationSeverityEnumTerminatingConnection PacketViolationWarningPacketViolationSeverityEnum = 2
-)
-
-type PacketViolationWarningPacketViolationTypeEnum int32
-
-const (
-	PacketViolationWarningPacketViolationTypeEnumUnknown         PacketViolationWarningPacketViolationTypeEnum = -1
-	PacketViolationWarningPacketViolationTypeEnumPacketMalformed PacketViolationWarningPacketViolationTypeEnum = 0
-)
-
-type PartyChangedPacketPartyInfoValueStruct struct {
-	PartyId       string
-	IsPartyLeader bool
-}
-
-type PhotoTransferPacketTypeEnum uint8
-
-const (
-	PhotoTransferPacketTypeEnumPortfolio PhotoTransferPacketTypeEnum = 0
-	PhotoTransferPacketTypeEnumPhotoItem PhotoTransferPacketTypeEnum = 1
-	PhotoTransferPacketTypeEnumBook      PhotoTransferPacketTypeEnum = 2
-)
-
-type PlaySoundPacketServerSoundHandleValueStruct struct {
-	ServerSoundHandle uint64
-}
-
-type PlayStatusPacketStatusEnum int32
-
-const (
-	PlayStatusPacketStatusEnumLoginSuccess                             PlayStatusPacketStatusEnum = 0
-	PlayStatusPacketStatusEnumLoginFailedClientOld                     PlayStatusPacketStatusEnum = 1
-	PlayStatusPacketStatusEnumLoginFailedServerOld                     PlayStatusPacketStatusEnum = 2
-	PlayStatusPacketStatusEnumPlayerSpawn                              PlayStatusPacketStatusEnum = 3
-	PlayStatusPacketStatusEnumLoginFailedInvalidTenant                 PlayStatusPacketStatusEnum = 4
-	PlayStatusPacketStatusEnumLoginFailedEditionMismatchEduToVanilla   PlayStatusPacketStatusEnum = 5
-	PlayStatusPacketStatusEnumLoginFailedEditionMismatchVanillaToEdu   PlayStatusPacketStatusEnum = 6
-	PlayStatusPacketStatusEnumLoginFailedServerFullSubClient           PlayStatusPacketStatusEnum = 7
-	PlayStatusPacketStatusEnumLoginFailedEditorMismatchEditorToVanilla PlayStatusPacketStatusEnum = 8
-	PlayStatusPacketStatusEnumLoginFailedEditorMismatchVanillaToEditor PlayStatusPacketStatusEnum = 9
-)
-
-type PlayerActionPacketActionEnum int32
-
-const (
-	PlayerActionPacketActionEnumUnknown               PlayerActionPacketActionEnum = -1
-	PlayerActionPacketActionEnumStartDestroyBlock     PlayerActionPacketActionEnum = 0
-	PlayerActionPacketActionEnumAbortDestroyBlock     PlayerActionPacketActionEnum = 1
-	PlayerActionPacketActionEnumStopDestroyBlock      PlayerActionPacketActionEnum = 2
-	PlayerActionPacketActionEnumGetUpdatedBlock       PlayerActionPacketActionEnum = 3
-	PlayerActionPacketActionEnumDropItem              PlayerActionPacketActionEnum = 4
-	PlayerActionPacketActionEnumStartSleeping         PlayerActionPacketActionEnum = 5
-	PlayerActionPacketActionEnumStopSleeping          PlayerActionPacketActionEnum = 6
-	PlayerActionPacketActionEnumRespawn               PlayerActionPacketActionEnum = 7
-	PlayerActionPacketActionEnumStartJump             PlayerActionPacketActionEnum = 8
-	PlayerActionPacketActionEnumStartSprinting        PlayerActionPacketActionEnum = 9
-	PlayerActionPacketActionEnumStopSprinting         PlayerActionPacketActionEnum = 10
-	PlayerActionPacketActionEnumStartSneaking         PlayerActionPacketActionEnum = 11
-	PlayerActionPacketActionEnumStopSneaking          PlayerActionPacketActionEnum = 12
-	PlayerActionPacketActionEnumCreativeDestroyBlock  PlayerActionPacketActionEnum = 13
-	PlayerActionPacketActionEnumChangeDimensionAck    PlayerActionPacketActionEnum = 14
-	PlayerActionPacketActionEnumStartGliding          PlayerActionPacketActionEnum = 15
-	PlayerActionPacketActionEnumStopGliding           PlayerActionPacketActionEnum = 16
-	PlayerActionPacketActionEnumDenyDestroyBlock      PlayerActionPacketActionEnum = 17
-	PlayerActionPacketActionEnumCrackBlock            PlayerActionPacketActionEnum = 18
-	PlayerActionPacketActionEnumChangeSkin            PlayerActionPacketActionEnum = 19
-	PlayerActionPacketActionEnumUpdatedEnchantingSeed PlayerActionPacketActionEnum = 20
-	PlayerActionPacketActionEnumStartSwimming         PlayerActionPacketActionEnum = 21
-	PlayerActionPacketActionEnumStopSwimming          PlayerActionPacketActionEnum = 22
-	PlayerActionPacketActionEnumStartSpinAttack       PlayerActionPacketActionEnum = 23
-	PlayerActionPacketActionEnumStopSpinAttack        PlayerActionPacketActionEnum = 24
-	PlayerActionPacketActionEnumInteractWithBlock     PlayerActionPacketActionEnum = 25
-	PlayerActionPacketActionEnumPredictDestroyBlock   PlayerActionPacketActionEnum = 26
-	PlayerActionPacketActionEnumContinueDestroyBlock  PlayerActionPacketActionEnum = 27
-	PlayerActionPacketActionEnumStartItemUseOn        PlayerActionPacketActionEnum = 28
-	PlayerActionPacketActionEnumStopItemUseOn         PlayerActionPacketActionEnum = 29
-	PlayerActionPacketActionEnumHandledTeleport       PlayerActionPacketActionEnum = 30
-	PlayerActionPacketActionEnumMissedSwing           PlayerActionPacketActionEnum = 31
-	PlayerActionPacketActionEnumStartCrawling         PlayerActionPacketActionEnum = 32
-	PlayerActionPacketActionEnumStopCrawling          PlayerActionPacketActionEnum = 33
-	PlayerActionPacketActionEnumStartFlying           PlayerActionPacketActionEnum = 34
-	PlayerActionPacketActionEnumStopFlying            PlayerActionPacketActionEnum = 35
-	PlayerActionPacketActionEnumClientAckServerData   PlayerActionPacketActionEnum = 36
-	PlayerActionPacketActionEnumStartUsingItem        PlayerActionPacketActionEnum = 37
-	PlayerActionPacketActionEnumInternalUpdate        PlayerActionPacketActionEnum = 38
-	PlayerActionPacketActionEnumCount                 PlayerActionPacketActionEnum = 39
-)
-
-type PlayerArmorDamagePacketArmorSlotAndDamagePairsItemStruct struct {
-	ArmorSlot PlayerArmorDamagePacketArmorSlotAndDamagePairsItemStructArmorSlotEnum
-	Damage    int16
-}
-
-type PlayerArmorDamagePacketArmorSlotAndDamagePairsItemStructArmorSlotEnum int32
-
-const (
-	PlayerArmorDamagePacketArmorSlotAndDamagePairsItemStructArmorSlotEnumHead  PlayerArmorDamagePacketArmorSlotAndDamagePairsItemStructArmorSlotEnum = 0
-	PlayerArmorDamagePacketArmorSlotAndDamagePairsItemStructArmorSlotEnumTorso PlayerArmorDamagePacketArmorSlotAndDamagePairsItemStructArmorSlotEnum = 1
-	PlayerArmorDamagePacketArmorSlotAndDamagePairsItemStructArmorSlotEnumLegs  PlayerArmorDamagePacketArmorSlotAndDamagePairsItemStructArmorSlotEnum = 2
-	PlayerArmorDamagePacketArmorSlotAndDamagePairsItemStructArmorSlotEnumFeet  PlayerArmorDamagePacketArmorSlotAndDamagePairsItemStructArmorSlotEnum = 3
-	PlayerArmorDamagePacketArmorSlotAndDamagePairsItemStructArmorSlotEnumBody  PlayerArmorDamagePacketArmorSlotAndDamagePairsItemStructArmorSlotEnum = 4
-)
-
-type PlayerAuthInputPacketInputDataItemEnum int32
-
-const (
-	PlayerAuthInputPacketInputDataItemEnumAscend                          PlayerAuthInputPacketInputDataItemEnum = 0
-	PlayerAuthInputPacketInputDataItemEnumDescend                         PlayerAuthInputPacketInputDataItemEnum = 1
-	PlayerAuthInputPacketInputDataItemEnumNorthJump                       PlayerAuthInputPacketInputDataItemEnum = 2
-	PlayerAuthInputPacketInputDataItemEnumJumpDown                        PlayerAuthInputPacketInputDataItemEnum = 3
-	PlayerAuthInputPacketInputDataItemEnumSprintDown                      PlayerAuthInputPacketInputDataItemEnum = 4
-	PlayerAuthInputPacketInputDataItemEnumChangeHeight                    PlayerAuthInputPacketInputDataItemEnum = 5
-	PlayerAuthInputPacketInputDataItemEnumJumping                         PlayerAuthInputPacketInputDataItemEnum = 6
-	PlayerAuthInputPacketInputDataItemEnumAutoJumpingInWater              PlayerAuthInputPacketInputDataItemEnum = 7
-	PlayerAuthInputPacketInputDataItemEnumSneaking                        PlayerAuthInputPacketInputDataItemEnum = 8
-	PlayerAuthInputPacketInputDataItemEnumSneakDown                       PlayerAuthInputPacketInputDataItemEnum = 9
-	PlayerAuthInputPacketInputDataItemEnumUp                              PlayerAuthInputPacketInputDataItemEnum = 10
-	PlayerAuthInputPacketInputDataItemEnumDown                            PlayerAuthInputPacketInputDataItemEnum = 11
-	PlayerAuthInputPacketInputDataItemEnumLeft                            PlayerAuthInputPacketInputDataItemEnum = 12
-	PlayerAuthInputPacketInputDataItemEnumRight                           PlayerAuthInputPacketInputDataItemEnum = 13
-	PlayerAuthInputPacketInputDataItemEnumUpLeft                          PlayerAuthInputPacketInputDataItemEnum = 14
-	PlayerAuthInputPacketInputDataItemEnumUpRight                         PlayerAuthInputPacketInputDataItemEnum = 15
-	PlayerAuthInputPacketInputDataItemEnumWantUp                          PlayerAuthInputPacketInputDataItemEnum = 16
-	PlayerAuthInputPacketInputDataItemEnumWantDown                        PlayerAuthInputPacketInputDataItemEnum = 17
-	PlayerAuthInputPacketInputDataItemEnumWantDownSlow                    PlayerAuthInputPacketInputDataItemEnum = 18
-	PlayerAuthInputPacketInputDataItemEnumWantUpSlow                      PlayerAuthInputPacketInputDataItemEnum = 19
-	PlayerAuthInputPacketInputDataItemEnumSprinting                       PlayerAuthInputPacketInputDataItemEnum = 20
-	PlayerAuthInputPacketInputDataItemEnumAscendBlock                     PlayerAuthInputPacketInputDataItemEnum = 21
-	PlayerAuthInputPacketInputDataItemEnumDescendBlock                    PlayerAuthInputPacketInputDataItemEnum = 22
-	PlayerAuthInputPacketInputDataItemEnumSneakToggleDown                 PlayerAuthInputPacketInputDataItemEnum = 23
-	PlayerAuthInputPacketInputDataItemEnumPersistSneak                    PlayerAuthInputPacketInputDataItemEnum = 24
-	PlayerAuthInputPacketInputDataItemEnumStartSprinting                  PlayerAuthInputPacketInputDataItemEnum = 25
-	PlayerAuthInputPacketInputDataItemEnumStopSprinting                   PlayerAuthInputPacketInputDataItemEnum = 26
-	PlayerAuthInputPacketInputDataItemEnumStartSneaking                   PlayerAuthInputPacketInputDataItemEnum = 27
-	PlayerAuthInputPacketInputDataItemEnumStopSneaking                    PlayerAuthInputPacketInputDataItemEnum = 28
-	PlayerAuthInputPacketInputDataItemEnumStartSwimming                   PlayerAuthInputPacketInputDataItemEnum = 29
-	PlayerAuthInputPacketInputDataItemEnumStopSwimming                    PlayerAuthInputPacketInputDataItemEnum = 30
-	PlayerAuthInputPacketInputDataItemEnumStartJumping                    PlayerAuthInputPacketInputDataItemEnum = 31
-	PlayerAuthInputPacketInputDataItemEnumStartGliding                    PlayerAuthInputPacketInputDataItemEnum = 32
-	PlayerAuthInputPacketInputDataItemEnumStopGliding                     PlayerAuthInputPacketInputDataItemEnum = 33
-	PlayerAuthInputPacketInputDataItemEnumPerformItemInteraction          PlayerAuthInputPacketInputDataItemEnum = 34
-	PlayerAuthInputPacketInputDataItemEnumPerformBlockActions             PlayerAuthInputPacketInputDataItemEnum = 35
-	PlayerAuthInputPacketInputDataItemEnumPerformItemStackRequest         PlayerAuthInputPacketInputDataItemEnum = 36
-	PlayerAuthInputPacketInputDataItemEnumHandledTeleport                 PlayerAuthInputPacketInputDataItemEnum = 37
-	PlayerAuthInputPacketInputDataItemEnumEmoting                         PlayerAuthInputPacketInputDataItemEnum = 38
-	PlayerAuthInputPacketInputDataItemEnumMissedSwing                     PlayerAuthInputPacketInputDataItemEnum = 39
-	PlayerAuthInputPacketInputDataItemEnumStartCrawling                   PlayerAuthInputPacketInputDataItemEnum = 40
-	PlayerAuthInputPacketInputDataItemEnumStopCrawling                    PlayerAuthInputPacketInputDataItemEnum = 41
-	PlayerAuthInputPacketInputDataItemEnumStartFlying                     PlayerAuthInputPacketInputDataItemEnum = 42
-	PlayerAuthInputPacketInputDataItemEnumStopFlying                      PlayerAuthInputPacketInputDataItemEnum = 43
-	PlayerAuthInputPacketInputDataItemEnumClientAckServerData             PlayerAuthInputPacketInputDataItemEnum = 44
-	PlayerAuthInputPacketInputDataItemEnumIsInClientPredictedVehicle      PlayerAuthInputPacketInputDataItemEnum = 45
-	PlayerAuthInputPacketInputDataItemEnumPaddlingLeft                    PlayerAuthInputPacketInputDataItemEnum = 46
-	PlayerAuthInputPacketInputDataItemEnumPaddlingRight                   PlayerAuthInputPacketInputDataItemEnum = 47
-	PlayerAuthInputPacketInputDataItemEnumBlockBreakingDelayEnabled       PlayerAuthInputPacketInputDataItemEnum = 48
-	PlayerAuthInputPacketInputDataItemEnumHorizontalCollision             PlayerAuthInputPacketInputDataItemEnum = 49
-	PlayerAuthInputPacketInputDataItemEnumVerticalCollision               PlayerAuthInputPacketInputDataItemEnum = 50
-	PlayerAuthInputPacketInputDataItemEnumDownLeft                        PlayerAuthInputPacketInputDataItemEnum = 51
-	PlayerAuthInputPacketInputDataItemEnumDownRight                       PlayerAuthInputPacketInputDataItemEnum = 52
-	PlayerAuthInputPacketInputDataItemEnumStartUsingItem                  PlayerAuthInputPacketInputDataItemEnum = 53
-	PlayerAuthInputPacketInputDataItemEnumIsCameraRelativeMovementEnabled PlayerAuthInputPacketInputDataItemEnum = 54
-	PlayerAuthInputPacketInputDataItemEnumIsRotControlledByMoveDirection  PlayerAuthInputPacketInputDataItemEnum = 55
-	PlayerAuthInputPacketInputDataItemEnumStartSpinAttack                 PlayerAuthInputPacketInputDataItemEnum = 56
-	PlayerAuthInputPacketInputDataItemEnumStopSpinAttack                  PlayerAuthInputPacketInputDataItemEnum = 57
-	PlayerAuthInputPacketInputDataItemEnumIsHotbarOnlyTouch               PlayerAuthInputPacketInputDataItemEnum = 58
-	PlayerAuthInputPacketInputDataItemEnumJumpReleasedRaw                 PlayerAuthInputPacketInputDataItemEnum = 59
-	PlayerAuthInputPacketInputDataItemEnumJumpPressedRaw                  PlayerAuthInputPacketInputDataItemEnum = 60
-	PlayerAuthInputPacketInputDataItemEnumJumpCurrentRaw                  PlayerAuthInputPacketInputDataItemEnum = 61
-	PlayerAuthInputPacketInputDataItemEnumSneakReleasedRaw                PlayerAuthInputPacketInputDataItemEnum = 62
-	PlayerAuthInputPacketInputDataItemEnumSneakPressedRaw                 PlayerAuthInputPacketInputDataItemEnum = 63
-	PlayerAuthInputPacketInputDataItemEnumSneakCurrentRaw                 PlayerAuthInputPacketInputDataItemEnum = 64
-	PlayerAuthInputPacketInputDataItemEnumInternalUpdate                  PlayerAuthInputPacketInputDataItemEnum = 65
-)
-
-type PlayerAuthInputPacketInputModeEnum uint32
-
-const (
-	PlayerAuthInputPacketInputModeEnumUndefined        PlayerAuthInputPacketInputModeEnum = 0
-	PlayerAuthInputPacketInputModeEnumMouse            PlayerAuthInputPacketInputModeEnum = 1
-	PlayerAuthInputPacketInputModeEnumTouch            PlayerAuthInputPacketInputModeEnum = 2
-	PlayerAuthInputPacketInputModeEnumGamePad          PlayerAuthInputPacketInputModeEnum = 3
-	PlayerAuthInputPacketInputModeEnumMotionController PlayerAuthInputPacketInputModeEnum = 4
-	PlayerAuthInputPacketInputModeEnumCount            PlayerAuthInputPacketInputModeEnum = 5
-)
-
-type PlayerAuthInputPacketItemStackRequestValueStruct struct {
-	ClientRequestId       PlayerAuthInputPacketItemStackRequestValueStructClientRequestIdStruct
-	Actions               []PlayerAuthInputPacketItemStackRequestValueStructActionsItemUnion
-	StringsToFilter       []string
-	StringsToFilterOrigin PlayerAuthInputPacketItemStackRequestValueStructStringsToFilterOriginEnum
-}
-
-type PlayerAuthInputPacketItemStackRequestValueStructActionsItemUnion struct {
-	Tag   int64
-	Value any
-}
-
-type PlayerAuthInputPacketItemStackRequestValueStructClientRequestIdStruct struct {
-	ID int32
-}
-
-type PlayerAuthInputPacketItemStackRequestValueStructStringsToFilterOriginEnum int32
-
-const (
-	PlayerAuthInputPacketItemStackRequestValueStructStringsToFilterOriginEnumUnknown            PlayerAuthInputPacketItemStackRequestValueStructStringsToFilterOriginEnum = -1
-	PlayerAuthInputPacketItemStackRequestValueStructStringsToFilterOriginEnumServerChatPublic   PlayerAuthInputPacketItemStackRequestValueStructStringsToFilterOriginEnum = 0
-	PlayerAuthInputPacketItemStackRequestValueStructStringsToFilterOriginEnumServerChatWhisper  PlayerAuthInputPacketItemStackRequestValueStructStringsToFilterOriginEnum = 1
-	PlayerAuthInputPacketItemStackRequestValueStructStringsToFilterOriginEnumSignText           PlayerAuthInputPacketItemStackRequestValueStructStringsToFilterOriginEnum = 2
-	PlayerAuthInputPacketItemStackRequestValueStructStringsToFilterOriginEnumAnvilText          PlayerAuthInputPacketItemStackRequestValueStructStringsToFilterOriginEnum = 3
-	PlayerAuthInputPacketItemStackRequestValueStructStringsToFilterOriginEnumBookAndQuillText   PlayerAuthInputPacketItemStackRequestValueStructStringsToFilterOriginEnum = 4
-	PlayerAuthInputPacketItemStackRequestValueStructStringsToFilterOriginEnumCommandBlockText   PlayerAuthInputPacketItemStackRequestValueStructStringsToFilterOriginEnum = 5
-	PlayerAuthInputPacketItemStackRequestValueStructStringsToFilterOriginEnumBlockActorDataText PlayerAuthInputPacketItemStackRequestValueStructStringsToFilterOriginEnum = 6
-	PlayerAuthInputPacketItemStackRequestValueStructStringsToFilterOriginEnumJoinEventText      PlayerAuthInputPacketItemStackRequestValueStructStringsToFilterOriginEnum = 7
-	PlayerAuthInputPacketItemStackRequestValueStructStringsToFilterOriginEnumLeaveEventText     PlayerAuthInputPacketItemStackRequestValueStructStringsToFilterOriginEnum = 8
-	PlayerAuthInputPacketItemStackRequestValueStructStringsToFilterOriginEnumSlashCommandChat   PlayerAuthInputPacketItemStackRequestValueStructStringsToFilterOriginEnum = 9
-	PlayerAuthInputPacketItemStackRequestValueStructStringsToFilterOriginEnumCartographyText    PlayerAuthInputPacketItemStackRequestValueStructStringsToFilterOriginEnum = 10
-	PlayerAuthInputPacketItemStackRequestValueStructStringsToFilterOriginEnumKickCommand        PlayerAuthInputPacketItemStackRequestValueStructStringsToFilterOriginEnum = 11
-	PlayerAuthInputPacketItemStackRequestValueStructStringsToFilterOriginEnumTitleCommand       PlayerAuthInputPacketItemStackRequestValueStructStringsToFilterOriginEnum = 12
-	PlayerAuthInputPacketItemStackRequestValueStructStringsToFilterOriginEnumSummonCommand      PlayerAuthInputPacketItemStackRequestValueStructStringsToFilterOriginEnum = 13
-	PlayerAuthInputPacketItemStackRequestValueStructStringsToFilterOriginEnumServerForm         PlayerAuthInputPacketItemStackRequestValueStructStringsToFilterOriginEnum = 14
-	PlayerAuthInputPacketItemStackRequestValueStructStringsToFilterOriginEnumDataDrivenUI       PlayerAuthInputPacketItemStackRequestValueStructStringsToFilterOriginEnum = 15
-)
-
-type PlayerAuthInputPacketItemUseTransactionValueStruct struct {
-	LegacyRequestID    InventoryTransactionPacketLegacyRequestIDStruct
-	LegacySetItemSlots *[]InventoryTransactionPacketLegacySetItemSlotsValueItemStruct
-	Constant2          bool
-	ItemUseTransaction PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStruct
-}
-
-type PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStruct struct {
-	Actions                  PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructActionsStruct
-	ActionType               PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructActionTypeEnum
-	TriggerType              PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructTriggerTypeEnum
-	Position                 StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct
-	Face                     uint8
-	Slot                     int32
-	Item                     AddPlayerPacketCarriedItemStruct
-	FromPosition             StartGamePacketPositionStruct
-	ClickPosition            StartGamePacketPositionStruct
-	TargetBlockId            uint32
-	ClientInteractPrediction PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructClientInteractPredictionEnum
-	ClientCooldownState      PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructClientCooldownStateEnum
-}
-
-type PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructActionTypeEnum int32
-
-const (
-	PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructActionTypeEnumPlace       PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructActionTypeEnum = 0
-	PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructActionTypeEnumUse         PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructActionTypeEnum = 1
-	PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructActionTypeEnumDestroy     PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructActionTypeEnum = 2
-	PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructActionTypeEnumUseAsAttack PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructActionTypeEnum = 3
-)
-
-type PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructActionsStruct struct {
-	Constant0 bool
-	Actions   []PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructActionsStructActionsItemStruct
-}
-
-type PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructActionsStructActionsItemStruct struct {
-	Source   PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructActionsStructActionsItemStructSourceStruct
-	Slot     uint32
-	FromItem AddPlayerPacketCarriedItemStruct
-	ToItem   AddPlayerPacketCarriedItemStruct
-}
-
-type PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructActionsStructActionsItemStructSourceStruct struct {
-	SourceType  PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructActionsStructActionsItemStructSourceStructSourceTypeEnum
-	Constant1   bool
-	ContainerID *int8
-	Constant3   bool
-	BitFlags    *PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructActionsStructActionsItemStructSourceStructBitFlagsValueEnum
-}
-
-type PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructActionsStructActionsItemStructSourceStructBitFlagsValueEnum uint32
-
-const (
-	PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructActionsStructActionsItemStructSourceStructBitFlagsValueEnumNoFlag                 PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructActionsStructActionsItemStructSourceStructBitFlagsValueEnum = 0
-	PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructActionsStructActionsItemStructSourceStructBitFlagsValueEnumWorldInteractionRandom PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructActionsStructActionsItemStructSourceStructBitFlagsValueEnum = 1
-)
-
-type PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructActionsStructActionsItemStructSourceStructSourceTypeEnum uint32
-
-const (
-	PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructActionsStructActionsItemStructSourceStructSourceTypeEnumContainerInventory        PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructActionsStructActionsItemStructSourceStructSourceTypeEnum = 0
-	PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructActionsStructActionsItemStructSourceStructSourceTypeEnumGlobalInventory           PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructActionsStructActionsItemStructSourceStructSourceTypeEnum = 1
-	PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructActionsStructActionsItemStructSourceStructSourceTypeEnumWorldInteraction          PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructActionsStructActionsItemStructSourceStructSourceTypeEnum = 2
-	PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructActionsStructActionsItemStructSourceStructSourceTypeEnumCreativeInventory         PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructActionsStructActionsItemStructSourceStructSourceTypeEnum = 3
-	PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructActionsStructActionsItemStructSourceStructSourceTypeEnumNonImplementedFeatureTODO PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructActionsStructActionsItemStructSourceStructSourceTypeEnum = 99999
-)
-
-type PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructClientCooldownStateEnum uint8
-
-const (
-	PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructClientCooldownStateEnumOff PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructClientCooldownStateEnum = 0
-	PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructClientCooldownStateEnumOn  PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructClientCooldownStateEnum = 1
-)
-
-type PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructClientInteractPredictionEnum uint8
-
-const (
-	PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructClientInteractPredictionEnumFailure PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructClientInteractPredictionEnum = 0
-	PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructClientInteractPredictionEnumSuccess PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructClientInteractPredictionEnum = 1
-)
-
-type PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructTriggerTypeEnum uint8
-
-const (
-	PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructTriggerTypeEnumUnknown        PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructTriggerTypeEnum = 0
-	PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructTriggerTypeEnumPlayerInput    PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructTriggerTypeEnum = 1
-	PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructTriggerTypeEnumSimulationTick PlayerAuthInputPacketItemUseTransactionValueStructItemUseTransactionStructTriggerTypeEnum = 2
-)
-
-type PlayerAuthInputPacketNewInteractionModelEnum int32
-
-const (
-	PlayerAuthInputPacketNewInteractionModelEnumTouch     PlayerAuthInputPacketNewInteractionModelEnum = 0
-	PlayerAuthInputPacketNewInteractionModelEnumCrosshair PlayerAuthInputPacketNewInteractionModelEnum = 1
-	PlayerAuthInputPacketNewInteractionModelEnumClassic   PlayerAuthInputPacketNewInteractionModelEnum = 2
-	PlayerAuthInputPacketNewInteractionModelEnumCount     PlayerAuthInputPacketNewInteractionModelEnum = 3
-)
-
-type PlayerAuthInputPacketPlayModeEnum uint32
-
-const (
-	PlayerAuthInputPacketPlayModeEnumNormal              PlayerAuthInputPacketPlayModeEnum = 0
-	PlayerAuthInputPacketPlayModeEnumTeaser              PlayerAuthInputPacketPlayModeEnum = 1
-	PlayerAuthInputPacketPlayModeEnumScreen              PlayerAuthInputPacketPlayModeEnum = 2
-	PlayerAuthInputPacketPlayModeEnumViewer              PlayerAuthInputPacketPlayModeEnum = 3
-	PlayerAuthInputPacketPlayModeEnumReality             PlayerAuthInputPacketPlayModeEnum = 4
-	PlayerAuthInputPacketPlayModeEnumPlacement           PlayerAuthInputPacketPlayModeEnum = 5
-	PlayerAuthInputPacketPlayModeEnumLivingRoom          PlayerAuthInputPacketPlayModeEnum = 6
-	PlayerAuthInputPacketPlayModeEnumExitLevel           PlayerAuthInputPacketPlayModeEnum = 7
-	PlayerAuthInputPacketPlayModeEnumExitLevelLivingRoom PlayerAuthInputPacketPlayModeEnum = 8
-	PlayerAuthInputPacketPlayModeEnumNumModes            PlayerAuthInputPacketPlayModeEnum = 9
-)
-
-type PlayerAuthInputPacketPlayerBlockActionsValueItemStruct struct {
-	PlayerActionType PlayerActionPacketActionEnum
-	Position         StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct
-	Facing           int32
-}
-
-type PlayerEnchantOptionsPacketOptionsItemStruct struct {
-	Cost         uint8
-	Enchants     PlayerEnchantOptionsPacketOptionsItemStructEnchantsStruct
-	EnchantName  string
-	EnchantNetId CraftingDataPacketShapedRecipesItemStructNetIdStruct
-}
-
-type PlayerEnchantOptionsPacketOptionsItemStructEnchantsStruct struct {
-	Slot         int32
-	ItemEnchants [3][]PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStruct
-}
-
-type PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStruct struct {
-	EnchantType  PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum
-	EnchantLevel uint8
-}
-
-type PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum uint8
-
-const (
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumProtection           PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 0
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumFireProtection       PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 1
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumFeatherFalling       PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 2
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumBlastProtection      PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 3
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumProjectileProtection PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 4
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumThorns               PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 5
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumRespiration          PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 6
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumDepthStrider         PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 7
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumAquaAffinity         PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 8
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumSharpness            PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 9
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumSmite                PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 10
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumBaneOfArthropods     PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 11
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumKnockback            PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 12
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumFireAspect           PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 13
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumLooting              PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 14
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumEfficiency           PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 15
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumSilkTouch            PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 16
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumUnbreaking           PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 17
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumFortune              PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 18
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumPower                PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 19
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumPunch                PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 20
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumFlame                PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 21
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumInfinity             PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 22
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumLuckOfTheSea         PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 23
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumLure                 PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 24
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumFrostWalker          PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 25
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumMending              PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 26
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumCurseOfBinding       PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 27
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumCurseOfVanishing     PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 28
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumImpaling             PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 29
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumRiptide              PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 30
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumLoyalty              PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 31
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumChanneling           PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 32
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumMultishot            PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 33
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumPiercing             PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 34
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumQuickCharge          PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 35
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumSoulSpeed            PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 36
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumSwiftSneak           PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 37
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumWindBurst            PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 38
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumDensity              PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 39
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumBreach               PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 40
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumLunge                PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 41
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumNumEnchantments      PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 42
-	PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnumInvalidEnchantment   PlayerEnchantOptionsPacketOptionsItemStructEnchantsStructItemEnchantsItemItemStructEnchantTypeEnum = 43
-)
-
-type PlayerListPacketEntriesItemUnion struct {
-	Tag   int64
-	Value any
-}
-
-type PlayerLocationPacketLocationUnion struct {
-	Tag   int64
-	Value any
-}
-
-type PlayerSkinPacketSerializedSkinStruct struct {
-	ID                           string
-	PlayFabID                    string
-	ResourcePatch                string
-	ImageData                    PlayerSkinPacketSerializedSkinStructImageDataStruct
-	AnimatedImageData            []PlayerSkinPacketSerializedSkinStructAnimatedImageDataItemStruct
-	CapeImageData                PlayerSkinPacketSerializedSkinStructImageDataStruct
-	GeometryData                 string
-	GeometryDataMinEngineVersion string
-	AnimationData                string
-	CapeID                       string
-	FullID                       string
-	ArmSize                      PlayerSkinPacketSerializedSkinStructArmSizeEnum
-	SkinColor                    ClientboundMapItemDataPacketDecorationsValueItemStructColorStruct
-	PersonaPieces                []PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStruct
-	PieceTintColors              []PlayerSkinPacketSerializedSkinStructPieceTintColorsEntry
-	IsPremium                    bool
-	IsPersona                    bool
-	IsPersonaCapeOnClassicSkin   bool
-	IsPrimaryUser                bool
-	OverridesPlayerAppearance    bool
-	TrustedSkinFlag              string
-	ProfileHash                  string
-}
-
-type PlayerSkinPacketSerializedSkinStructAnimatedImageDataItemStruct struct {
-	SkinImage           PlayerSkinPacketSerializedSkinStructImageDataStruct
-	AnimatedTextureType PlayerSkinPacketSerializedSkinStructAnimatedImageDataItemStructAnimatedTextureTypeEnum
-	Frames              float32
-	AnimationExpression PlayerSkinPacketSerializedSkinStructAnimatedImageDataItemStructAnimationExpressionEnum
-}
-
-type PlayerSkinPacketSerializedSkinStructAnimatedImageDataItemStructAnimatedTextureTypeEnum uint32
-
-const (
-	PlayerSkinPacketSerializedSkinStructAnimatedImageDataItemStructAnimatedTextureTypeEnumFace        PlayerSkinPacketSerializedSkinStructAnimatedImageDataItemStructAnimatedTextureTypeEnum = 1
-	PlayerSkinPacketSerializedSkinStructAnimatedImageDataItemStructAnimatedTextureTypeEnumBody32x32   PlayerSkinPacketSerializedSkinStructAnimatedImageDataItemStructAnimatedTextureTypeEnum = 2
-	PlayerSkinPacketSerializedSkinStructAnimatedImageDataItemStructAnimatedTextureTypeEnumBody128x128 PlayerSkinPacketSerializedSkinStructAnimatedImageDataItemStructAnimatedTextureTypeEnum = 3
-)
-
-type PlayerSkinPacketSerializedSkinStructAnimatedImageDataItemStructAnimationExpressionEnum uint32
-
-const (
-	PlayerSkinPacketSerializedSkinStructAnimatedImageDataItemStructAnimationExpressionEnumLinear   PlayerSkinPacketSerializedSkinStructAnimatedImageDataItemStructAnimationExpressionEnum = 0
-	PlayerSkinPacketSerializedSkinStructAnimatedImageDataItemStructAnimationExpressionEnumBlinking PlayerSkinPacketSerializedSkinStructAnimatedImageDataItemStructAnimationExpressionEnum = 1
-)
-
-type PlayerSkinPacketSerializedSkinStructArmSizeEnum uint8
-
-const (
-	PlayerSkinPacketSerializedSkinStructArmSizeEnumSlim PlayerSkinPacketSerializedSkinStructArmSizeEnum = 0
-	PlayerSkinPacketSerializedSkinStructArmSizeEnumWide PlayerSkinPacketSerializedSkinStructArmSizeEnum = 1
-)
-
-type PlayerSkinPacketSerializedSkinStructImageDataStruct struct {
-	Width      uint32
-	Height     uint32
-	ImageBytes []uint8
-}
-
-type PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStruct struct {
-	PieceId        string
-	PieceType      PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnum
-	PackId         [16]byte
-	IsDefaultPiece bool
-	ProductId      string
-}
-
-type PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnum uint32
-
-const (
-	PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnumSkeleton      PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnum = 1
-	PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnumBody          PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnum = 2
-	PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnumSkin          PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnum = 3
-	PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnumBottom        PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnum = 4
-	PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnumFeet          PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnum = 5
-	PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnumDress         PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnum = 6
-	PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnumTop           PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnum = 7
-	PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnumHighPants     PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnum = 8
-	PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnumHands         PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnum = 9
-	PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnumOuterwear     PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnum = 10
-	PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnumFacialHair    PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnum = 11
-	PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnumMouth         PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnum = 12
-	PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnumEyes          PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnum = 13
-	PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnumHair          PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnum = 14
-	PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnumHood          PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnum = 15
-	PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnumBack          PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnum = 16
-	PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnumFaceAccessory PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnum = 17
-	PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnumHead          PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnum = 18
-	PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnumLegs          PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnum = 19
-	PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnumLeftLeg       PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnum = 20
-	PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnumRightLeg      PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnum = 21
-	PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnumArms          PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnum = 22
-	PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnumLeftArm       PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnum = 23
-	PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnumRightArm      PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnum = 24
-	PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnumCapes         PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnum = 25
-	PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnumClassicSkin   PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnum = 26
-	PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnumEmote         PlayerSkinPacketSerializedSkinStructPersonaPiecesItemStructPieceTypeEnum = 27
-)
-
-type PlayerSkinPacketSerializedSkinStructPieceTintColorsEntry struct {
-	Key   string
-	Value PlayerSkinPacketSerializedSkinStructPieceTintColorsValueStruct
-}
-
-type PlayerSkinPacketSerializedSkinStructPieceTintColorsValueStruct struct {
-	Colors [4]ClientboundMapItemDataPacketDecorationsValueItemStructColorStruct
-}
-
-type PlayerUpdateEntityOverridesPacketUpdateUnion struct {
-	Tag   int64
-	Value any
-}
-
-type PlayerVideoCapturePacketPayloadUnion struct {
-	Tag   int64
-	Value any
-}
-
-type PositionTrackingDBClientRequestPacketActionEnum uint8
-
-const (
-	PositionTrackingDBClientRequestPacketActionEnumQuery PositionTrackingDBClientRequestPacketActionEnum = 0
-)
-
-type PositionTrackingDBServerBroadcastPacketActionEnum uint8
-
-const (
-	PositionTrackingDBServerBroadcastPacketActionEnumUpdate   PositionTrackingDBServerBroadcastPacketActionEnum = 0
-	PositionTrackingDBServerBroadcastPacketActionEnumDestroy  PositionTrackingDBServerBroadcastPacketActionEnum = 1
-	PositionTrackingDBServerBroadcastPacketActionEnumNotFound PositionTrackingDBServerBroadcastPacketActionEnum = 2
-)
-
-type PositionTrackingDBServerBroadcastPacketIdStruct struct {
-	Value int32
-}
-
-type PrimitiveShapesPacketArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemovedItemStruct struct {
-	NetworkId             uint64
-	ShapeType             *PrimitiveShapesPacketArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemovedItemStructShapeTypeValueEnum
-	Location              *StartGamePacketPositionStruct
-	Scale                 *float32
-	Rotation              *StartGamePacketPositionStruct
-	TotalTimeLeft         *float32
-	MaximumRenderDistance *float32
-	Color                 *ClientboundMapItemDataPacketDecorationsValueItemStructColorStruct
-	DimensionID           *SetSpawnPositionPacketDimensionTypeStruct
-	AttachedToEntityID    *StartGamePacketEntityIDStruct
-	ExtraShapeData        PrimitiveShapesPacketArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemovedItemStructExtraShapeDataUnion
-}
-
-type PrimitiveShapesPacketArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemovedItemStructExtraShapeDataUnion struct {
-	Tag   int64
-	Value any
-}
-
-type PrimitiveShapesPacketArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemovedItemStructShapeTypeValueEnum uint8
-
-const (
-	PrimitiveShapesPacketArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemovedItemStructShapeTypeValueEnumLine      PrimitiveShapesPacketArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemovedItemStructShapeTypeValueEnum = 0
-	PrimitiveShapesPacketArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemovedItemStructShapeTypeValueEnumBox       PrimitiveShapesPacketArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemovedItemStructShapeTypeValueEnum = 1
-	PrimitiveShapesPacketArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemovedItemStructShapeTypeValueEnumSphere    PrimitiveShapesPacketArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemovedItemStructShapeTypeValueEnum = 2
-	PrimitiveShapesPacketArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemovedItemStructShapeTypeValueEnumCircle    PrimitiveShapesPacketArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemovedItemStructShapeTypeValueEnum = 3
-	PrimitiveShapesPacketArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemovedItemStructShapeTypeValueEnumText      PrimitiveShapesPacketArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemovedItemStructShapeTypeValueEnum = 4
-	PrimitiveShapesPacketArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemovedItemStructShapeTypeValueEnumArrow     PrimitiveShapesPacketArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemovedItemStructShapeTypeValueEnum = 5
-	PrimitiveShapesPacketArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemovedItemStructShapeTypeValueEnumCylinder  PrimitiveShapesPacketArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemovedItemStructShapeTypeValueEnum = 6
-	PrimitiveShapesPacketArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemovedItemStructShapeTypeValueEnumPyramid   PrimitiveShapesPacketArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemovedItemStructShapeTypeValueEnum = 7
-	PrimitiveShapesPacketArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemovedItemStructShapeTypeValueEnumEllipsoid PrimitiveShapesPacketArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemovedItemStructShapeTypeValueEnum = 8
-	PrimitiveShapesPacketArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemovedItemStructShapeTypeValueEnumCone      PrimitiveShapesPacketArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemovedItemStructShapeTypeValueEnum = 9
-)
-
-type RequestAbilityPacketValueTypeEnum uint8
-
-const (
-	RequestAbilityPacketValueTypeEnumUnset RequestAbilityPacketValueTypeEnum = 0
-	RequestAbilityPacketValueTypeEnumBool  RequestAbilityPacketValueTypeEnum = 1
-	RequestAbilityPacketValueTypeEnumFloat RequestAbilityPacketValueTypeEnum = 2
-)
-
-type ResourcePackClientResponsePacketResponseUnion struct {
-	Tag   int64
-	Value any
-}
-
-type ResourcePackStackPacketExperimentsStruct struct {
-	Toggles                []ResourcePackStackPacketExperimentsStructTogglesItemStruct
-	ExperimentsEverToggled bool
-}
-
-type ResourcePackStackPacketExperimentsStructTogglesItemStruct struct {
-	Name    string
-	Enabled bool
-}
-
-type ResourcePackStackPacketTexturePackListItemStruct struct {
-	PackID      string
-	Version     string
-	SubPackName string
-}
-
-type ResourcePacksInfoPacketResourcePacksItemStruct struct {
-	PackIdVersion       ResourcePacksInfoPacketWorldTemplateIdAndVersionStruct
-	PackSize            uint64
-	ContentKey          string
-	SubpackName         string
-	ContentIdentity     ResourcePacksInfoPacketResourcePacksItemStructContentIdentityStruct
-	HasScripts          bool
-	IsAddonPack         bool
-	IsRayTracingCapable bool
-	CDNURL              string
-}
-
-type ResourcePacksInfoPacketResourcePacksItemStructContentIdentityStruct struct {
+type ContentIdentity struct {
 	Identity string
 }
 
-type ResourcePacksInfoPacketWorldTemplateIdAndVersionStruct struct {
-	PackUUID    [16]byte
-	PackVersion ResourcePacksInfoPacketWorldTemplateIdAndVersionStructPackVersionStruct
+type CreativeGroupInfoPayload struct {
+	CreativeCategory EnumsSharedTypesCreativeItemCategory
+	Name             string
+	GroupIconItem    CerealizerNetworkItemInstanceDescriptorSerializedData
 }
 
-type ResourcePacksInfoPacketWorldTemplateIdAndVersionStructPackVersionStruct struct {
-	Version string
+type CreativeItemEntryPayload struct {
+	CreativeNetId TypedServerNetIdStructCreativeItemNetIdTag
+	ItemInstance  CerealizerNetworkItemInstanceDescriptorSerializedData
+	GroupIndex    uint32
 }
 
-type RespawnPacketStateEnum uint8
-
-const (
-	RespawnPacketStateEnumSearchingForSpawn  RespawnPacketStateEnum = 0
-	RespawnPacketStateEnumReadyToSpawn       RespawnPacketStateEnum = 1
-	RespawnPacketStateEnumClientReadyToSpawn RespawnPacketStateEnum = 2
-)
-
-type ServerboundDataStorePacketUpdateStruct struct {
-	DataStoreName       string
-	Property            string
-	Path                string
-	Data                ServerboundDataStorePacketUpdateStructDataUnion
-	PropertyUpdateCount uint32
-	PathUpdateCount     uint32
+type CylinderDataPayload struct {
+	RadiusX     Vec2
+	RadiusZ     Vec2
+	Height      float32
+	NumSegments uint8
 }
 
-type ServerboundDataStorePacketUpdateStructDataUnion struct {
-	Tag   int64
-	Value any
+func (CylinderDataPayload) isPrimitiveShapeDataPayloadExtraShapeDataUnion() {}
+
+type DataItemBytePayload struct {
+	Type  EnumsDataItemType
+	Value int8
 }
 
-type ServerboundDiagnosticsPacketEntityDiagnosticsItemStruct struct {
+func (DataItemBytePayload) isDataItemEntryPayloadUnion() {}
+
+type DataItemCompoundTagPayload struct {
+	Type  EnumsDataItemType
+	Value []byte
+}
+
+func (DataItemCompoundTagPayload) isDataItemEntryPayloadUnion() {}
+
+type DataItemEntry struct {
+	ID      uint32
+	Payload DataItemEntryPayloadUnion
+}
+
+type DataItemEntryPayloadUnion interface {
+	isDataItemEntryPayloadUnion()
+}
+
+type DataItemFloatPayload struct {
+	Type  EnumsDataItemType
+	Value float32
+}
+
+func (DataItemFloatPayload) isDataItemEntryPayloadUnion() {}
+
+type DataItemInt64Payload struct {
+	Type  EnumsDataItemType
+	Value int64
+}
+
+func (DataItemInt64Payload) isDataItemEntryPayloadUnion() {}
+
+type DataItemIntPayload struct {
+	Type  EnumsDataItemType
+	Value int32
+}
+
+func (DataItemIntPayload) isDataItemEntryPayloadUnion() {}
+
+type DataItemPosPayload struct {
+	Type  EnumsDataItemType
+	Value BlockPos
+}
+
+func (DataItemPosPayload) isDataItemEntryPayloadUnion() {}
+
+type DataItemShortPayload struct {
+	Type  EnumsDataItemType
+	Value int16
+}
+
+func (DataItemShortPayload) isDataItemEntryPayloadUnion() {}
+
+type DataItemStringPayload struct {
+	Type  EnumsDataItemType
+	Value string
+}
+
+func (DataItemStringPayload) isDataItemEntryPayloadUnion() {}
+
+type DataItemVec3Payload struct {
+	Type  EnumsDataItemType
+	Value Vec3
+}
+
+func (DataItemVec3Payload) isDataItemEntryPayloadUnion() {}
+
+type DimensionDefinitionGroupDimensionDefinition struct {
+	HeightMaximum int32
+	HeightMinimum int32
+	GeneratorType EnumsGeneratorType
+	DimensionType DimensionType
+	PackId        [16]byte
+}
+
+type DimensionType struct {
+	Value int32
+}
+
+type DisconnectPacketMessages struct {
+	Message         string
+	FilteredMessage string
+}
+
+func (DisconnectPacketMessages) isDisconnectPacketMessagesUnion() {}
+
+type DisconnectPacketMessagesUnion interface {
+	isDisconnectPacketMessagesUnion()
+}
+
+type DisconnectPacketMessagesUnionEmpty1 struct {
+}
+
+func (DisconnectPacketMessagesUnionEmpty1) isDisconnectPacketMessagesUnion() {}
+
+type EAS interface {
+	isEAS()
+}
+
+type EASAttributeLayerData struct {
+	Name       string
+	NoiseName  *string
+	Dimension  DimensionType
+	Settings   EASAttributeLayerSettings
+	Attributes []EASEnvironmentAttributeData
+}
+
+type EASAttributeLayerSettings struct {
+	Priority          int32
+	Weight            float32
+	Enabled           bool
+	TransitionsPaused bool
+}
+
+type EASBoolAttributeData struct {
+	Value     bool
+	Operation string
+}
+
+func (EASBoolAttributeData) isEAS() {}
+
+type EASColorAttributeData struct {
+	Value     [4]int32
+	Operation string
+}
+
+func (EASColorAttributeData) isEAS() {}
+
+type EASEnvironmentAttributeData struct {
+	AttributeName          string
+	FromAttribute          *EAS
+	Attribute              EAS
+	ToAttribute            *EAS
+	CurrentTransitionTicks uint32
+	TotalTransitionTicks   uint32
+	Easing                 string
+	LocalTransitionTicks   uint32
+	NoiseTransition        bool
+}
+
+type EASFloatAttributeData struct {
+	Value         float32
+	Operation     string
+	ConstraintMin *float32
+	ConstraintMax *float32
+}
+
+func (EASFloatAttributeData) isEAS() {}
+
+type ECSProfilingDiagnosticsEntityDiagnosticTimingInfo struct {
 	DisplayName    string
 	Entity         string
 	TimeInNS       uint64
 	PercentOfTotal uint8
 }
 
-type ServerboundDiagnosticsPacketMemoryCategoryValuesItemStruct struct {
-	Category     ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum
-	CurrentBytes uint64
-}
-
-type ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum uint8
-
-const (
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumUnknown                               ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 0
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumInvalidSizeUnknown                    ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 1
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumActor                                 ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 2
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumActorAnimation                        ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 3
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumActorRendering                        ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 4
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumBlockTickingQueues                    ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 5
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumBiomeStorage                          ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 6
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumBlobs                                 ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 7
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumCereal                                ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 8
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumCircuitSystem                         ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 9
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumClient                                ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 10
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumCommands                              ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 11
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumDBStorage                             ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 12
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumDebug                                 ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 13
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumDocumentation                         ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 14
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumECSSystems                            ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 15
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumFMOD                                  ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 16
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumFonts                                 ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 17
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumImGui                                 ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 18
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumInput                                 ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 19
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumJsonUI                                ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 20
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumJsonUIControlFactoryJson              ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 21
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumJsonUIControlTree                     ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 22
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumJsonUIControlTreeControlElement       ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 23
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumJsonUIControlTreePopulateDataBinding  ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 24
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumJsonUIControlTreePopulateFocus        ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 25
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumJsonUIControlTreePopulateLayout       ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 26
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumJsonUIControlTreePopulateOther        ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 27
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumJsonUIControlTreePopulateSprite       ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 28
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumJsonUIControlTreePopulateText         ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 29
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumJsonUIControlTreePopulateTTS          ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 30
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumJsonUIControlTreeVisibility           ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 31
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumJsonUICreateUI                        ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 32
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumJsonUIDefs                            ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 33
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumJsonUILayoutManager                   ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 34
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumJsonUILayoutManagerRemoveDependencies ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 35
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumJsonUILayoutManagerInitVariable       ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 36
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumLanguages                             ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 37
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumLevel                                 ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 38
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumLevelStructures                       ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 39
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumLevelChunk                            ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 40
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumLevelChunkGen                         ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 41
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumLevelChunkGenThreadLocal              ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 42
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumLightVolumeManager                    ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 43
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumNetwork                               ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 44
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumMarketplace                           ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 45
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumMaterialDragonCompiledDefinition      ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 46
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumMaterialDragonMaterial                ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 47
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumMaterialDragonResource                ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 48
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumMaterialDragonUniformMap              ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 49
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumMaterialRenderMaterial                ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 50
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumMaterialRenderMaterialGroup           ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 51
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumMaterialVariationManager              ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 52
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumMolang                                ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 53
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumOreUI                                 ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 54
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumOreUIClient                           ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 55
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumPersonaPieces                         ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 56
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumPersonaAnimations                     ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 57
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumPersonaTextures                       ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 58
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumPersonaCharacters                     ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 59
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumPersonaSkinPacks                      ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 60
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumPersonaRepo                           ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 61
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumPlayer                                ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 62
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumRenderChunk                           ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 63
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumRenderChunkIndexBuffer                ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 64
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumRenderChunkVertexBuffer               ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 65
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumRendering                             ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 66
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumRenderingBgfxInit                     ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 67
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumRenderingBgfxStartFrame               ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 68
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumRenderingBlockTessellator             ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 69
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumRenderingEndFrame                     ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 70
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumRenderingGraphicsTasksInit            ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 71
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumRenderingLibrary                      ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 72
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumRenderingPolygonOperatorPool          ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 73
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumRenderingPBRTextureData               ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 74
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumRenderingRenderRegistry               ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 75
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumRenderingSetup                        ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 76
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumRenderingVertices                     ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 77
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumRequestLog                            ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 78
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumResourcePacks                         ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 79
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumSound                                 ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 80
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumSubChunkBiomeData                     ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 81
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumSubChunkBlockData                     ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 82
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumSubChunkLightData                     ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 83
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumTextures                              ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 84
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumWeatherRenderer                       ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 85
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumWorldGenerator                        ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 86
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumTasks                                 ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 87
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumTest                                  ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 88
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumTestLoadTestTags                      ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 89
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumScripting                             ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 90
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumScriptingRuntime                      ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 91
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumScriptingContext                      ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 92
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumScriptingContextBindingsMC            ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 93
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumScriptingContextBindingsGT            ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 94
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumScriptingContextRun                   ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 95
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumDataDrivenUI                          ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 96
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumDataDrivenUIDefs                      ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 97
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumGameface                              ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 98
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumGamefaceSystem                        ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 99
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumGamefaceDOM                           ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 100
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumGamefaceCSS                           ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 101
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumGamefaceDisplay                       ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 102
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumGamefaceTempAllocator                 ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 103
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumGamefacePoolAllocator                 ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 104
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumGamefaceDump                          ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 105
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumGamefaceMedia                         ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 106
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumGamefaceJSON                          ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 107
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumGamefaceScriptEngine                  ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 108
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumGamefaceScript                        ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 109
-	ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnumGamefaceLayout                        ServerboundDiagnosticsPacketMemoryCategoryValuesItemStructCategoryEnum = 110
-)
-
-type ServerboundDiagnosticsPacketSystemCategoriesValueItemStruct struct {
+type ECSProfilingDiagnosticsSystemCategory struct {
 	CategoryName string
 	SystemIndex  uint64
 }
 
-type ServerboundDiagnosticsPacketSystemDiagnosticsItemStruct struct {
+type ECSProfilingDiagnosticsSystemDiagnosticTimingInfo struct {
 	DisplayName    string
 	SystemIndex    uint64
 	TimeInNS       uint64
 	PercentOfTotal uint8
 }
 
-type ServerboundDiagnosticsPacketWhiskerScopesItemStruct struct {
-	Label           string
-	Indentation     string
-	TotalHighCostNS uint64
-	TotalMidCostNS  uint64
-	TotalLowCostNS  uint64
+type EduSharedUriResource struct {
+	ButtonName string
+	LinkUri    string
 }
 
-type ServerboundLoadingScreenPacketLoadingScreenPacketTypeEnum int32
-
-const (
-	ServerboundLoadingScreenPacketLoadingScreenPacketTypeEnumStartLoadingScreen ServerboundLoadingScreenPacketLoadingScreenPacketTypeEnum = 1
-	ServerboundLoadingScreenPacketLoadingScreenPacketTypeEnumEndLoadingScreen   ServerboundLoadingScreenPacketLoadingScreenPacketTypeEnum = 2
-)
-
-type ServerboundPackSettingChangePacketPackSettingValueUnion struct {
-	Tag   int64
-	Value any
+type EducationLevelSettings struct {
+	CodeBuilderDefaultURI        string
+	CodeBuilderTitle             string
+	CanResizeCodeBuilder         bool
+	DisableLegacyTitleBar        bool
+	PostProcessFilter            string
+	ScreenshotBorderResourcePath string
+	AgentCapabilities            *AgentCapabilities
+	LocalSettings                EducationLocalLevelSettings
+	DeprecatedAlwaysFalse        bool
+	ExternalLinkSettings         *ExternalLinkSettings
 }
 
-type SetHudPacketHudElementItemEnum int32
-
-const (
-	SetHudPacketHudElementItemEnumPaperDoll     SetHudPacketHudElementItemEnum = 0
-	SetHudPacketHudElementItemEnumArmor         SetHudPacketHudElementItemEnum = 1
-	SetHudPacketHudElementItemEnumToolTips      SetHudPacketHudElementItemEnum = 2
-	SetHudPacketHudElementItemEnumTouchControls SetHudPacketHudElementItemEnum = 3
-	SetHudPacketHudElementItemEnumCrosshair     SetHudPacketHudElementItemEnum = 4
-	SetHudPacketHudElementItemEnumHotBar        SetHudPacketHudElementItemEnum = 5
-	SetHudPacketHudElementItemEnumHealth        SetHudPacketHudElementItemEnum = 6
-	SetHudPacketHudElementItemEnumProgressBar   SetHudPacketHudElementItemEnum = 7
-	SetHudPacketHudElementItemEnumHunger        SetHudPacketHudElementItemEnum = 8
-	SetHudPacketHudElementItemEnumAirBubbles    SetHudPacketHudElementItemEnum = 9
-	SetHudPacketHudElementItemEnumHorseHealth   SetHudPacketHudElementItemEnum = 10
-	SetHudPacketHudElementItemEnumStatusEffects SetHudPacketHudElementItemEnum = 11
-	SetHudPacketHudElementItemEnumItemText      SetHudPacketHudElementItemEnum = 12
-)
-
-type SetHudPacketHudVisibleEnum int32
-
-const (
-	SetHudPacketHudVisibleEnumHide  SetHudPacketHudVisibleEnum = 0
-	SetHudPacketHudVisibleEnumReset SetHudPacketHudVisibleEnum = 1
-)
-
-type SetLastHurtByPacketLastHurtByEnum int32
-
-const (
-	SetLastHurtByPacketLastHurtByEnumUndefined                  SetLastHurtByPacketLastHurtByEnum = 1
-	SetLastHurtByPacketLastHurtByEnumItemEntity                 SetLastHurtByPacketLastHurtByEnum = 64
-	SetLastHurtByPacketLastHurtByEnumPrimedTnt                  SetLastHurtByPacketLastHurtByEnum = 65
-	SetLastHurtByPacketLastHurtByEnumFallingBlock               SetLastHurtByPacketLastHurtByEnum = 66
-	SetLastHurtByPacketLastHurtByEnumMovingBlock                SetLastHurtByPacketLastHurtByEnum = 67
-	SetLastHurtByPacketLastHurtByEnumExperience                 SetLastHurtByPacketLastHurtByEnum = 69
-	SetLastHurtByPacketLastHurtByEnumEyeOfEnder                 SetLastHurtByPacketLastHurtByEnum = 70
-	SetLastHurtByPacketLastHurtByEnumEnderCrystal               SetLastHurtByPacketLastHurtByEnum = 71
-	SetLastHurtByPacketLastHurtByEnumFireworksRocket            SetLastHurtByPacketLastHurtByEnum = 72
-	SetLastHurtByPacketLastHurtByEnumFishingHook                SetLastHurtByPacketLastHurtByEnum = 77
-	SetLastHurtByPacketLastHurtByEnumChalkboard                 SetLastHurtByPacketLastHurtByEnum = 78
-	SetLastHurtByPacketLastHurtByEnumPainting                   SetLastHurtByPacketLastHurtByEnum = 83
-	SetLastHurtByPacketLastHurtByEnumLeashKnot                  SetLastHurtByPacketLastHurtByEnum = 88
-	SetLastHurtByPacketLastHurtByEnumBoatRideable               SetLastHurtByPacketLastHurtByEnum = 90
-	SetLastHurtByPacketLastHurtByEnumLightningBolt              SetLastHurtByPacketLastHurtByEnum = 93
-	SetLastHurtByPacketLastHurtByEnumAreaEffectCloud            SetLastHurtByPacketLastHurtByEnum = 95
-	SetLastHurtByPacketLastHurtByEnumBalloon                    SetLastHurtByPacketLastHurtByEnum = 107
-	SetLastHurtByPacketLastHurtByEnumShield                     SetLastHurtByPacketLastHurtByEnum = 117
-	SetLastHurtByPacketLastHurtByEnumLectern                    SetLastHurtByPacketLastHurtByEnum = 119
-	SetLastHurtByPacketLastHurtByEnumOminousItemSpawner         SetLastHurtByPacketLastHurtByEnum = 145
-	SetLastHurtByPacketLastHurtByEnumCushion                    SetLastHurtByPacketLastHurtByEnum = 154
-	SetLastHurtByPacketLastHurtByEnumChestBoatRideable          SetLastHurtByPacketLastHurtByEnum = 218
-	SetLastHurtByPacketLastHurtByEnumMob                        SetLastHurtByPacketLastHurtByEnum = 256
-	SetLastHurtByPacketLastHurtByEnumNpc                        SetLastHurtByPacketLastHurtByEnum = 307
-	SetLastHurtByPacketLastHurtByEnumAgent                      SetLastHurtByPacketLastHurtByEnum = 312
-	SetLastHurtByPacketLastHurtByEnumArmorStand                 SetLastHurtByPacketLastHurtByEnum = 317
-	SetLastHurtByPacketLastHurtByEnumTripodCamera               SetLastHurtByPacketLastHurtByEnum = 318
-	SetLastHurtByPacketLastHurtByEnumPlayer                     SetLastHurtByPacketLastHurtByEnum = 319
-	SetLastHurtByPacketLastHurtByEnumBee                        SetLastHurtByPacketLastHurtByEnum = 378
-	SetLastHurtByPacketLastHurtByEnumPiglin                     SetLastHurtByPacketLastHurtByEnum = 379
-	SetLastHurtByPacketLastHurtByEnumPiglinBrute                SetLastHurtByPacketLastHurtByEnum = 383
-	SetLastHurtByPacketLastHurtByEnumAllay                      SetLastHurtByPacketLastHurtByEnum = 390
-	SetLastHurtByPacketLastHurtByEnumPathfinderMob              SetLastHurtByPacketLastHurtByEnum = 768
-	SetLastHurtByPacketLastHurtByEnumIronGolem                  SetLastHurtByPacketLastHurtByEnum = 788
-	SetLastHurtByPacketLastHurtByEnumSnowGolem                  SetLastHurtByPacketLastHurtByEnum = 789
-	SetLastHurtByPacketLastHurtByEnumWanderingTrader            SetLastHurtByPacketLastHurtByEnum = 886
-	SetLastHurtByPacketLastHurtByEnumCopperGolem                SetLastHurtByPacketLastHurtByEnum = 916
-	SetLastHurtByPacketLastHurtByEnumSulfurCube                 SetLastHurtByPacketLastHurtByEnum = 921
-	SetLastHurtByPacketLastHurtByEnumMonster                    SetLastHurtByPacketLastHurtByEnum = 2816
-	SetLastHurtByPacketLastHurtByEnumCreeper                    SetLastHurtByPacketLastHurtByEnum = 2849
-	SetLastHurtByPacketLastHurtByEnumSlime                      SetLastHurtByPacketLastHurtByEnum = 2853
-	SetLastHurtByPacketLastHurtByEnumEnderMan                   SetLastHurtByPacketLastHurtByEnum = 2854
-	SetLastHurtByPacketLastHurtByEnumGhast                      SetLastHurtByPacketLastHurtByEnum = 2857
-	SetLastHurtByPacketLastHurtByEnumLavaSlime                  SetLastHurtByPacketLastHurtByEnum = 2858
-	SetLastHurtByPacketLastHurtByEnumBlaze                      SetLastHurtByPacketLastHurtByEnum = 2859
-	SetLastHurtByPacketLastHurtByEnumWitch                      SetLastHurtByPacketLastHurtByEnum = 2861
-	SetLastHurtByPacketLastHurtByEnumGuardian                   SetLastHurtByPacketLastHurtByEnum = 2865
-	SetLastHurtByPacketLastHurtByEnumElderGuardian              SetLastHurtByPacketLastHurtByEnum = 2866
-	SetLastHurtByPacketLastHurtByEnumDragon                     SetLastHurtByPacketLastHurtByEnum = 2869
-	SetLastHurtByPacketLastHurtByEnumShulker                    SetLastHurtByPacketLastHurtByEnum = 2870
-	SetLastHurtByPacketLastHurtByEnumVindicator                 SetLastHurtByPacketLastHurtByEnum = 2873
-	SetLastHurtByPacketLastHurtByEnumIllagerBeast               SetLastHurtByPacketLastHurtByEnum = 2875
-	SetLastHurtByPacketLastHurtByEnumEvocationIllager           SetLastHurtByPacketLastHurtByEnum = 2920
-	SetLastHurtByPacketLastHurtByEnumVex                        SetLastHurtByPacketLastHurtByEnum = 2921
-	SetLastHurtByPacketLastHurtByEnumPillager                   SetLastHurtByPacketLastHurtByEnum = 2930
-	SetLastHurtByPacketLastHurtByEnumElderGuardianGhost         SetLastHurtByPacketLastHurtByEnum = 2936
-	SetLastHurtByPacketLastHurtByEnumWarden                     SetLastHurtByPacketLastHurtByEnum = 2947
-	SetLastHurtByPacketLastHurtByEnumBreeze                     SetLastHurtByPacketLastHurtByEnum = 2956
-	SetLastHurtByPacketLastHurtByEnumCreaking                   SetLastHurtByPacketLastHurtByEnum = 2962
-	SetLastHurtByPacketLastHurtByEnumAnimal                     SetLastHurtByPacketLastHurtByEnum = 4864
-	SetLastHurtByPacketLastHurtByEnumChicken                    SetLastHurtByPacketLastHurtByEnum = 4874
-	SetLastHurtByPacketLastHurtByEnumCow                        SetLastHurtByPacketLastHurtByEnum = 4875
-	SetLastHurtByPacketLastHurtByEnumPig                        SetLastHurtByPacketLastHurtByEnum = 4876
-	SetLastHurtByPacketLastHurtByEnumSheep                      SetLastHurtByPacketLastHurtByEnum = 4877
-	SetLastHurtByPacketLastHurtByEnumMushroomCow                SetLastHurtByPacketLastHurtByEnum = 4880
-	SetLastHurtByPacketLastHurtByEnumRabbit                     SetLastHurtByPacketLastHurtByEnum = 4882
-	SetLastHurtByPacketLastHurtByEnumPolarBear                  SetLastHurtByPacketLastHurtByEnum = 4892
-	SetLastHurtByPacketLastHurtByEnumLlama                      SetLastHurtByPacketLastHurtByEnum = 4893
-	SetLastHurtByPacketLastHurtByEnumTurtle                     SetLastHurtByPacketLastHurtByEnum = 4938
-	SetLastHurtByPacketLastHurtByEnumPanda                      SetLastHurtByPacketLastHurtByEnum = 4977
-	SetLastHurtByPacketLastHurtByEnumFox                        SetLastHurtByPacketLastHurtByEnum = 4985
-	SetLastHurtByPacketLastHurtByEnumHoglin                     SetLastHurtByPacketLastHurtByEnum = 4988
-	SetLastHurtByPacketLastHurtByEnumStrider                    SetLastHurtByPacketLastHurtByEnum = 4989
-	SetLastHurtByPacketLastHurtByEnumGoat                       SetLastHurtByPacketLastHurtByEnum = 4992
-	SetLastHurtByPacketLastHurtByEnumAxolotl                    SetLastHurtByPacketLastHurtByEnum = 4994
-	SetLastHurtByPacketLastHurtByEnumFrog                       SetLastHurtByPacketLastHurtByEnum = 4996
-	SetLastHurtByPacketLastHurtByEnumCamel                      SetLastHurtByPacketLastHurtByEnum = 5002
-	SetLastHurtByPacketLastHurtByEnumSniffer                    SetLastHurtByPacketLastHurtByEnum = 5003
-	SetLastHurtByPacketLastHurtByEnumArmadillo                  SetLastHurtByPacketLastHurtByEnum = 5006
-	SetLastHurtByPacketLastHurtByEnumHappyGhast                 SetLastHurtByPacketLastHurtByEnum = 5011
-	SetLastHurtByPacketLastHurtByEnumTraderLlama                SetLastHurtByPacketLastHurtByEnum = 5021
-	SetLastHurtByPacketLastHurtByEnumWaterAnimal                SetLastHurtByPacketLastHurtByEnum = 8960
-	SetLastHurtByPacketLastHurtByEnumSquid                      SetLastHurtByPacketLastHurtByEnum = 8977
-	SetLastHurtByPacketLastHurtByEnumDolphin                    SetLastHurtByPacketLastHurtByEnum = 8991
-	SetLastHurtByPacketLastHurtByEnumPufferfish                 SetLastHurtByPacketLastHurtByEnum = 9068
-	SetLastHurtByPacketLastHurtByEnumSalmon                     SetLastHurtByPacketLastHurtByEnum = 9069
-	SetLastHurtByPacketLastHurtByEnumTropicalfish               SetLastHurtByPacketLastHurtByEnum = 9071
-	SetLastHurtByPacketLastHurtByEnumFish                       SetLastHurtByPacketLastHurtByEnum = 9072
-	SetLastHurtByPacketLastHurtByEnumGlowSquid                  SetLastHurtByPacketLastHurtByEnum = 9089
-	SetLastHurtByPacketLastHurtByEnumTadpole                    SetLastHurtByPacketLastHurtByEnum = 9093
-	SetLastHurtByPacketLastHurtByEnumNautilus                   SetLastHurtByPacketLastHurtByEnum = 9109
-	SetLastHurtByPacketLastHurtByEnumTamableAnimal              SetLastHurtByPacketLastHurtByEnum = 21248
-	SetLastHurtByPacketLastHurtByEnumWolf                       SetLastHurtByPacketLastHurtByEnum = 21262
-	SetLastHurtByPacketLastHurtByEnumOcelot                     SetLastHurtByPacketLastHurtByEnum = 21270
-	SetLastHurtByPacketLastHurtByEnumParrot                     SetLastHurtByPacketLastHurtByEnum = 21278
-	SetLastHurtByPacketLastHurtByEnumCat                        SetLastHurtByPacketLastHurtByEnum = 21323
-	SetLastHurtByPacketLastHurtByEnumAmbient                    SetLastHurtByPacketLastHurtByEnum = 33024
-	SetLastHurtByPacketLastHurtByEnumBat                        SetLastHurtByPacketLastHurtByEnum = 33043
-	SetLastHurtByPacketLastHurtByEnumUndeadMonster              SetLastHurtByPacketLastHurtByEnum = 68352
-	SetLastHurtByPacketLastHurtByEnumPigZombie                  SetLastHurtByPacketLastHurtByEnum = 68388
-	SetLastHurtByPacketLastHurtByEnumWitherBoss                 SetLastHurtByPacketLastHurtByEnum = 68404
-	SetLastHurtByPacketLastHurtByEnumPhantom                    SetLastHurtByPacketLastHurtByEnum = 68410
-	SetLastHurtByPacketLastHurtByEnumZoglin                     SetLastHurtByPacketLastHurtByEnum = 68478
-	SetLastHurtByPacketLastHurtByEnumCamelHusk                  SetLastHurtByPacketLastHurtByEnum = 70552
-	SetLastHurtByPacketLastHurtByEnumZombieNautilus             SetLastHurtByPacketLastHurtByEnum = 74646
-	SetLastHurtByPacketLastHurtByEnumZombieMonster              SetLastHurtByPacketLastHurtByEnum = 199424
-	SetLastHurtByPacketLastHurtByEnumZombie                     SetLastHurtByPacketLastHurtByEnum = 199456
-	SetLastHurtByPacketLastHurtByEnumZombieVillager             SetLastHurtByPacketLastHurtByEnum = 199468
-	SetLastHurtByPacketLastHurtByEnumHusk                       SetLastHurtByPacketLastHurtByEnum = 199471
-	SetLastHurtByPacketLastHurtByEnumDrowned                    SetLastHurtByPacketLastHurtByEnum = 199534
-	SetLastHurtByPacketLastHurtByEnumZombieVillagerV2           SetLastHurtByPacketLastHurtByEnum = 199540
-	SetLastHurtByPacketLastHurtByEnumArthropod                  SetLastHurtByPacketLastHurtByEnum = 264960
-	SetLastHurtByPacketLastHurtByEnumSpider                     SetLastHurtByPacketLastHurtByEnum = 264995
-	SetLastHurtByPacketLastHurtByEnumSilverfish                 SetLastHurtByPacketLastHurtByEnum = 264999
-	SetLastHurtByPacketLastHurtByEnumCaveSpider                 SetLastHurtByPacketLastHurtByEnum = 265000
-	SetLastHurtByPacketLastHurtByEnumEndermite                  SetLastHurtByPacketLastHurtByEnum = 265015
-	SetLastHurtByPacketLastHurtByEnumMinecart                   SetLastHurtByPacketLastHurtByEnum = 524288
-	SetLastHurtByPacketLastHurtByEnumMinecartRideable           SetLastHurtByPacketLastHurtByEnum = 524372
-	SetLastHurtByPacketLastHurtByEnumMinecartHopper             SetLastHurtByPacketLastHurtByEnum = 524384
-	SetLastHurtByPacketLastHurtByEnumMinecartTNT                SetLastHurtByPacketLastHurtByEnum = 524385
-	SetLastHurtByPacketLastHurtByEnumMinecartChest              SetLastHurtByPacketLastHurtByEnum = 524386
-	SetLastHurtByPacketLastHurtByEnumMinecartFurnace            SetLastHurtByPacketLastHurtByEnum = 524387
-	SetLastHurtByPacketLastHurtByEnumMinecartCommandBlock       SetLastHurtByPacketLastHurtByEnum = 524388
-	SetLastHurtByPacketLastHurtByEnumSkeletonMonster            SetLastHurtByPacketLastHurtByEnum = 1116928
-	SetLastHurtByPacketLastHurtByEnumSkeleton                   SetLastHurtByPacketLastHurtByEnum = 1116962
-	SetLastHurtByPacketLastHurtByEnumStray                      SetLastHurtByPacketLastHurtByEnum = 1116974
-	SetLastHurtByPacketLastHurtByEnumWitherSkeleton             SetLastHurtByPacketLastHurtByEnum = 1116976
-	SetLastHurtByPacketLastHurtByEnumBogged                     SetLastHurtByPacketLastHurtByEnum = 1117072
-	SetLastHurtByPacketLastHurtByEnumParched                    SetLastHurtByPacketLastHurtByEnum = 1117079
-	SetLastHurtByPacketLastHurtByEnumEquineAnimal               SetLastHurtByPacketLastHurtByEnum = 2118400
-	SetLastHurtByPacketLastHurtByEnumHorse                      SetLastHurtByPacketLastHurtByEnum = 2118423
-	SetLastHurtByPacketLastHurtByEnumDonkey                     SetLastHurtByPacketLastHurtByEnum = 2118424
-	SetLastHurtByPacketLastHurtByEnumMule                       SetLastHurtByPacketLastHurtByEnum = 2118425
-	SetLastHurtByPacketLastHurtByEnumSkeletonHorse              SetLastHurtByPacketLastHurtByEnum = 2183962
-	SetLastHurtByPacketLastHurtByEnumZombieHorse                SetLastHurtByPacketLastHurtByEnum = 2183963
-	SetLastHurtByPacketLastHurtByEnumProjectile                 SetLastHurtByPacketLastHurtByEnum = 4194304
-	SetLastHurtByPacketLastHurtByEnumExperiencePotion           SetLastHurtByPacketLastHurtByEnum = 4194372
-	SetLastHurtByPacketLastHurtByEnumShulkerBullet              SetLastHurtByPacketLastHurtByEnum = 4194380
-	SetLastHurtByPacketLastHurtByEnumDragonFireball             SetLastHurtByPacketLastHurtByEnum = 4194383
-	SetLastHurtByPacketLastHurtByEnumSnowball                   SetLastHurtByPacketLastHurtByEnum = 4194385
-	SetLastHurtByPacketLastHurtByEnumThrownEgg                  SetLastHurtByPacketLastHurtByEnum = 4194386
-	SetLastHurtByPacketLastHurtByEnumLargeFireball              SetLastHurtByPacketLastHurtByEnum = 4194389
-	SetLastHurtByPacketLastHurtByEnumThrownPotion               SetLastHurtByPacketLastHurtByEnum = 4194390
-	SetLastHurtByPacketLastHurtByEnumEnderpearl                 SetLastHurtByPacketLastHurtByEnum = 4194391
-	SetLastHurtByPacketLastHurtByEnumWitherSkull                SetLastHurtByPacketLastHurtByEnum = 4194393
-	SetLastHurtByPacketLastHurtByEnumWitherSkullDangerous       SetLastHurtByPacketLastHurtByEnum = 4194395
-	SetLastHurtByPacketLastHurtByEnumSmallFireball              SetLastHurtByPacketLastHurtByEnum = 4194398
-	SetLastHurtByPacketLastHurtByEnumLingeringPotion            SetLastHurtByPacketLastHurtByEnum = 4194405
-	SetLastHurtByPacketLastHurtByEnumLlamaSpit                  SetLastHurtByPacketLastHurtByEnum = 4194406
-	SetLastHurtByPacketLastHurtByEnumEvocationFang              SetLastHurtByPacketLastHurtByEnum = 4194407
-	SetLastHurtByPacketLastHurtByEnumIceBomb                    SetLastHurtByPacketLastHurtByEnum = 4194410
-	SetLastHurtByPacketLastHurtByEnumBreezeWindChargeProjectile SetLastHurtByPacketLastHurtByEnum = 4194445
-	SetLastHurtByPacketLastHurtByEnumWindChargeProjectile       SetLastHurtByPacketLastHurtByEnum = 4194447
-	SetLastHurtByPacketLastHurtByEnumAbstractArrow              SetLastHurtByPacketLastHurtByEnum = 8388608
-	SetLastHurtByPacketLastHurtByEnumTrident                    SetLastHurtByPacketLastHurtByEnum = 12582985
-	SetLastHurtByPacketLastHurtByEnumArrow                      SetLastHurtByPacketLastHurtByEnum = 12582992
-	SetLastHurtByPacketLastHurtByEnumVillagerBase               SetLastHurtByPacketLastHurtByEnum = 16777984
-	SetLastHurtByPacketLastHurtByEnumVillager                   SetLastHurtByPacketLastHurtByEnum = 16777999
-	SetLastHurtByPacketLastHurtByEnumVillagerV2                 SetLastHurtByPacketLastHurtByEnum = 16778099
-)
-
-type SetPlayerInventoryOptionsPacketInventoryOptionsStruct struct {
-	LeftInventoryTab  SetPlayerInventoryOptionsPacketInventoryOptionsStructLeftInventoryTabEnum
-	RightInventoryTab SetPlayerInventoryOptionsPacketInventoryOptionsStructRightInventoryTabEnum
-	Filtering         bool
-	LayoutInv         SetPlayerInventoryOptionsPacketInventoryOptionsStructLayoutInvEnum
-	LayoutCraft       SetPlayerInventoryOptionsPacketInventoryOptionsStructLayoutInvEnum
+type EducationLocalLevelSettings struct {
+	CodeBuilderOverrideUri *string
 }
 
-type SetPlayerInventoryOptionsPacketInventoryOptionsStructLayoutInvEnum int32
-
-const (
-	SetPlayerInventoryOptionsPacketInventoryOptionsStructLayoutInvEnumNone           SetPlayerInventoryOptionsPacketInventoryOptionsStructLayoutInvEnum = 0
-	SetPlayerInventoryOptionsPacketInventoryOptionsStructLayoutInvEnumInventoryOnly  SetPlayerInventoryOptionsPacketInventoryOptionsStructLayoutInvEnum = 1
-	SetPlayerInventoryOptionsPacketInventoryOptionsStructLayoutInvEnumDefault        SetPlayerInventoryOptionsPacketInventoryOptionsStructLayoutInvEnum = 2
-	SetPlayerInventoryOptionsPacketInventoryOptionsStructLayoutInvEnumRecipeBookOnly SetPlayerInventoryOptionsPacketInventoryOptionsStructLayoutInvEnum = 3
-)
-
-type SetPlayerInventoryOptionsPacketInventoryOptionsStructLeftInventoryTabEnum int32
-
-const (
-	SetPlayerInventoryOptionsPacketInventoryOptionsStructLeftInventoryTabEnumNone               SetPlayerInventoryOptionsPacketInventoryOptionsStructLeftInventoryTabEnum = 0
-	SetPlayerInventoryOptionsPacketInventoryOptionsStructLeftInventoryTabEnumRecipeConstruction SetPlayerInventoryOptionsPacketInventoryOptionsStructLeftInventoryTabEnum = 1
-	SetPlayerInventoryOptionsPacketInventoryOptionsStructLeftInventoryTabEnumRecipeEquipment    SetPlayerInventoryOptionsPacketInventoryOptionsStructLeftInventoryTabEnum = 2
-	SetPlayerInventoryOptionsPacketInventoryOptionsStructLeftInventoryTabEnumRecipeItems        SetPlayerInventoryOptionsPacketInventoryOptionsStructLeftInventoryTabEnum = 3
-	SetPlayerInventoryOptionsPacketInventoryOptionsStructLeftInventoryTabEnumRecipeNature       SetPlayerInventoryOptionsPacketInventoryOptionsStructLeftInventoryTabEnum = 4
-	SetPlayerInventoryOptionsPacketInventoryOptionsStructLeftInventoryTabEnumRecipeSearch       SetPlayerInventoryOptionsPacketInventoryOptionsStructLeftInventoryTabEnum = 5
-	SetPlayerInventoryOptionsPacketInventoryOptionsStructLeftInventoryTabEnumSurvival           SetPlayerInventoryOptionsPacketInventoryOptionsStructLeftInventoryTabEnum = 6
-)
-
-type SetPlayerInventoryOptionsPacketInventoryOptionsStructRightInventoryTabEnum int32
-
-const (
-	SetPlayerInventoryOptionsPacketInventoryOptionsStructRightInventoryTabEnumNone       SetPlayerInventoryOptionsPacketInventoryOptionsStructRightInventoryTabEnum = 0
-	SetPlayerInventoryOptionsPacketInventoryOptionsStructRightInventoryTabEnumFullScreen SetPlayerInventoryOptionsPacketInventoryOptionsStructRightInventoryTabEnum = 1
-	SetPlayerInventoryOptionsPacketInventoryOptionsStructRightInventoryTabEnumCrafting   SetPlayerInventoryOptionsPacketInventoryOptionsStructRightInventoryTabEnum = 2
-	SetPlayerInventoryOptionsPacketInventoryOptionsStructRightInventoryTabEnumArmor      SetPlayerInventoryOptionsPacketInventoryOptionsStructRightInventoryTabEnum = 3
-)
-
-type SetScorePacketScoreInfoItemUnion struct {
-	Tag   int64
-	Value any
+type EllipsoidDataPayload struct {
+	Radii           Vec3
+	SegmentsPerAxis uint8
 }
 
-type SetScoreboardIdentityPacketScoreboardIdentityInfoItemStruct struct {
-	ScoreboardId   SetScoreboardIdentityPacketScoreboardIdentityInfoItemStructScoreboardIdStruct
-	PlayerUniqueId *int64
+func (EllipsoidDataPayload) isPrimitiveShapeDataPayloadExtraShapeDataUnion() {}
+
+type EnchantmentInstance struct {
+	EnchantType  EnumsEnchantType
+	EnchantLevel uint8
 }
 
-type SetScoreboardIdentityPacketScoreboardIdentityInfoItemStructScoreboardIdStruct struct {
-	ScoreboardId int64
+type EntityNetId struct {
+	RawId uint32
 }
 
-type SetScoreboardIdentityPacketScoreboardIdentityPacketTypeEnum uint8
+type EnumsActorEvent uint8
 
 const (
-	SetScoreboardIdentityPacketScoreboardIdentityPacketTypeEnumUpdate SetScoreboardIdentityPacketScoreboardIdentityPacketTypeEnum = 0
-	SetScoreboardIdentityPacketScoreboardIdentityPacketTypeEnumRemove SetScoreboardIdentityPacketScoreboardIdentityPacketTypeEnum = 1
+	EnumsActorEventNONE                             EnumsActorEvent = 0
+	EnumsActorEventJUMP                             EnumsActorEvent = 1
+	EnumsActorEventHURT                             EnumsActorEvent = 2
+	EnumsActorEventDEATH                            EnumsActorEvent = 3
+	EnumsActorEventSTARTATTACKING                   EnumsActorEvent = 4
+	EnumsActorEventSTOPATTACKING                    EnumsActorEvent = 5
+	EnumsActorEventTAMINGFAILED                     EnumsActorEvent = 6
+	EnumsActorEventTAMINGSUCCEEDED                  EnumsActorEvent = 7
+	EnumsActorEventSHAKEWETNESS                     EnumsActorEvent = 8
+	EnumsActorEventEATGRASS                         EnumsActorEvent = 10
+	EnumsActorEventFISHHOOKBUBBLE                   EnumsActorEvent = 11
+	EnumsActorEventFISHHOOKFISHPOS                  EnumsActorEvent = 12
+	EnumsActorEventFISHHOOKHOOKTIME                 EnumsActorEvent = 13
+	EnumsActorEventFISHHOOKTEASE                    EnumsActorEvent = 14
+	EnumsActorEventSQUIDFLEEING                     EnumsActorEvent = 15
+	EnumsActorEventZOMBIECONVERTING                 EnumsActorEvent = 16
+	EnumsActorEventPLAYAMBIENT                      EnumsActorEvent = 17
+	EnumsActorEventSPAWNALIVE                       EnumsActorEvent = 18
+	EnumsActorEventSTARTOFFERFLOWER                 EnumsActorEvent = 19
+	EnumsActorEventSTOPOFFERFLOWER                  EnumsActorEvent = 20
+	EnumsActorEventLOVEHEARTS                       EnumsActorEvent = 21
+	EnumsActorEventVILLAGERANGRY                    EnumsActorEvent = 22
+	EnumsActorEventVILLAGERHAPPY                    EnumsActorEvent = 23
+	EnumsActorEventWITCHHATMAGIC                    EnumsActorEvent = 24
+	EnumsActorEventFIREWORKSEXPLODE                 EnumsActorEvent = 25
+	EnumsActorEventINLOVEHEARTS                     EnumsActorEvent = 26
+	EnumsActorEventSILVERFISHMERGEANIM              EnumsActorEvent = 27
+	EnumsActorEventGUARDIANATTACKSOUND              EnumsActorEvent = 28
+	EnumsActorEventDRINKPOTION                      EnumsActorEvent = 29
+	EnumsActorEventTHROWPOTION                      EnumsActorEvent = 30
+	EnumsActorEventPRIMETNTCART                     EnumsActorEvent = 31
+	EnumsActorEventPRIMECREEPER                     EnumsActorEvent = 32
+	EnumsActorEventAIRSUPPLY                        EnumsActorEvent = 33
+	EnumsActorEventDEPRECATEDADDPLAYERLEVELS        EnumsActorEvent = 34
+	EnumsActorEventGUARDIANMININGFATIGUE            EnumsActorEvent = 35
+	EnumsActorEventAGENTSWINGARM                    EnumsActorEvent = 36
+	EnumsActorEventDRAGONSTARTDEATHANIM             EnumsActorEvent = 37
+	EnumsActorEventGROUNDDUST                       EnumsActorEvent = 38
+	EnumsActorEventSHAKE                            EnumsActorEvent = 39
+	EnumsActorEventFEED                             EnumsActorEvent = 57
+	EnumsActorEventBABYAGE                          EnumsActorEvent = 60
+	EnumsActorEventINSTANTDEATH                     EnumsActorEvent = 61
+	EnumsActorEventNOTIFYTRADE                      EnumsActorEvent = 62
+	EnumsActorEventLEASHDESTROYED                   EnumsActorEvent = 63
+	EnumsActorEventCARAVANUPDATED                   EnumsActorEvent = 64
+	EnumsActorEventTALISMANACTIVATE                 EnumsActorEvent = 65
+	EnumsActorEventDEPRECATEDUPDATESTRUCTUREFEATURE EnumsActorEvent = 66
+	EnumsActorEventPLAYERSPAWNEDMOB                 EnumsActorEvent = 67
+	EnumsActorEventPUKE                             EnumsActorEvent = 68
+	EnumsActorEventUPDATESTACKSIZE                  EnumsActorEvent = 69
+	EnumsActorEventSTARTSWIMMING                    EnumsActorEvent = 70
+	EnumsActorEventBALLOONPOP                       EnumsActorEvent = 71
+	EnumsActorEventTREASUREHUNT                     EnumsActorEvent = 72
+	EnumsActorEventSUMMONAGENT                      EnumsActorEvent = 73
+	EnumsActorEventFINISHEDCHARGINGITEM             EnumsActorEvent = 74
+	EnumsActorEventACTORGROWUP                      EnumsActorEvent = 76
+	EnumsActorEventVIBRATIONDETECTED                EnumsActorEvent = 77
+	EnumsActorEventDRINKMILK                        EnumsActorEvent = 78
+	EnumsActorEventSHAKEWETNESSSTOP                 EnumsActorEvent = 79
+	EnumsActorEventKINETICDAMAGEDEALT               EnumsActorEvent = 80
+	EnumsActorEventHURTWITHOUTRECEIVINGDAMAGE       EnumsActorEvent = 81
 )
 
-type SetSpawnPositionPacketDimensionTypeStruct struct {
+type EnumsActorLinkType uint8
+
+const (
+	EnumsActorLinkTypeNone      EnumsActorLinkType = 0
+	EnumsActorLinkTypeRiding    EnumsActorLinkType = 1
+	EnumsActorLinkTypePassenger EnumsActorLinkType = 2
+)
+
+type EnumsActorType int32
+
+const (
+	EnumsActorTypeUndefined                  EnumsActorType = 1
+	EnumsActorTypeItemEntity                 EnumsActorType = 64
+	EnumsActorTypePrimedTnt                  EnumsActorType = 65
+	EnumsActorTypeFallingBlock               EnumsActorType = 66
+	EnumsActorTypeMovingBlock                EnumsActorType = 67
+	EnumsActorTypeExperience                 EnumsActorType = 69
+	EnumsActorTypeEyeOfEnder                 EnumsActorType = 70
+	EnumsActorTypeEnderCrystal               EnumsActorType = 71
+	EnumsActorTypeFireworksRocket            EnumsActorType = 72
+	EnumsActorTypeFishingHook                EnumsActorType = 77
+	EnumsActorTypeChalkboard                 EnumsActorType = 78
+	EnumsActorTypePainting                   EnumsActorType = 83
+	EnumsActorTypeLeashKnot                  EnumsActorType = 88
+	EnumsActorTypeBoatRideable               EnumsActorType = 90
+	EnumsActorTypeLightningBolt              EnumsActorType = 93
+	EnumsActorTypeAreaEffectCloud            EnumsActorType = 95
+	EnumsActorTypeBalloon                    EnumsActorType = 107
+	EnumsActorTypeShield                     EnumsActorType = 117
+	EnumsActorTypeLectern                    EnumsActorType = 119
+	EnumsActorTypeOminousItemSpawner         EnumsActorType = 145
+	EnumsActorTypeCushion                    EnumsActorType = 154
+	EnumsActorTypeChestBoatRideable          EnumsActorType = 218
+	EnumsActorTypeMob                        EnumsActorType = 256
+	EnumsActorTypeNpc                        EnumsActorType = 307
+	EnumsActorTypeAgent                      EnumsActorType = 312
+	EnumsActorTypeArmorStand                 EnumsActorType = 317
+	EnumsActorTypeTripodCamera               EnumsActorType = 318
+	EnumsActorTypePlayer                     EnumsActorType = 319
+	EnumsActorTypeBee                        EnumsActorType = 378
+	EnumsActorTypePiglin                     EnumsActorType = 379
+	EnumsActorTypePiglinBrute                EnumsActorType = 383
+	EnumsActorTypeAllay                      EnumsActorType = 390
+	EnumsActorTypePathfinderMob              EnumsActorType = 768
+	EnumsActorTypeIronGolem                  EnumsActorType = 788
+	EnumsActorTypeSnowGolem                  EnumsActorType = 789
+	EnumsActorTypeWanderingTrader            EnumsActorType = 886
+	EnumsActorTypeCopperGolem                EnumsActorType = 916
+	EnumsActorTypeSulfurCube                 EnumsActorType = 921
+	EnumsActorTypeMonster                    EnumsActorType = 2816
+	EnumsActorTypeCreeper                    EnumsActorType = 2849
+	EnumsActorTypeSlime                      EnumsActorType = 2853
+	EnumsActorTypeEnderMan                   EnumsActorType = 2854
+	EnumsActorTypeGhast                      EnumsActorType = 2857
+	EnumsActorTypeLavaSlime                  EnumsActorType = 2858
+	EnumsActorTypeBlaze                      EnumsActorType = 2859
+	EnumsActorTypeWitch                      EnumsActorType = 2861
+	EnumsActorTypeGuardian                   EnumsActorType = 2865
+	EnumsActorTypeElderGuardian              EnumsActorType = 2866
+	EnumsActorTypeDragon                     EnumsActorType = 2869
+	EnumsActorTypeShulker                    EnumsActorType = 2870
+	EnumsActorTypeVindicator                 EnumsActorType = 2873
+	EnumsActorTypeIllagerBeast               EnumsActorType = 2875
+	EnumsActorTypeEvocationIllager           EnumsActorType = 2920
+	EnumsActorTypeVex                        EnumsActorType = 2921
+	EnumsActorTypePillager                   EnumsActorType = 2930
+	EnumsActorTypeElderGuardianGhost         EnumsActorType = 2936
+	EnumsActorTypeWarden                     EnumsActorType = 2947
+	EnumsActorTypeBreeze                     EnumsActorType = 2956
+	EnumsActorTypeCreaking                   EnumsActorType = 2962
+	EnumsActorTypeAnimal                     EnumsActorType = 4864
+	EnumsActorTypeChicken                    EnumsActorType = 4874
+	EnumsActorTypeCow                        EnumsActorType = 4875
+	EnumsActorTypePig                        EnumsActorType = 4876
+	EnumsActorTypeSheep                      EnumsActorType = 4877
+	EnumsActorTypeMushroomCow                EnumsActorType = 4880
+	EnumsActorTypeRabbit                     EnumsActorType = 4882
+	EnumsActorTypePolarBear                  EnumsActorType = 4892
+	EnumsActorTypeLlama                      EnumsActorType = 4893
+	EnumsActorTypeTurtle                     EnumsActorType = 4938
+	EnumsActorTypePanda                      EnumsActorType = 4977
+	EnumsActorTypeFox                        EnumsActorType = 4985
+	EnumsActorTypeHoglin                     EnumsActorType = 4988
+	EnumsActorTypeStrider                    EnumsActorType = 4989
+	EnumsActorTypeGoat                       EnumsActorType = 4992
+	EnumsActorTypeAxolotl                    EnumsActorType = 4994
+	EnumsActorTypeFrog                       EnumsActorType = 4996
+	EnumsActorTypeCamel                      EnumsActorType = 5002
+	EnumsActorTypeSniffer                    EnumsActorType = 5003
+	EnumsActorTypeArmadillo                  EnumsActorType = 5006
+	EnumsActorTypeHappyGhast                 EnumsActorType = 5011
+	EnumsActorTypeTraderLlama                EnumsActorType = 5021
+	EnumsActorTypeWaterAnimal                EnumsActorType = 8960
+	EnumsActorTypeSquid                      EnumsActorType = 8977
+	EnumsActorTypeDolphin                    EnumsActorType = 8991
+	EnumsActorTypePufferfish                 EnumsActorType = 9068
+	EnumsActorTypeSalmon                     EnumsActorType = 9069
+	EnumsActorTypeTropicalfish               EnumsActorType = 9071
+	EnumsActorTypeFish                       EnumsActorType = 9072
+	EnumsActorTypeGlowSquid                  EnumsActorType = 9089
+	EnumsActorTypeTadpole                    EnumsActorType = 9093
+	EnumsActorTypeNautilus                   EnumsActorType = 9109
+	EnumsActorTypeTamableAnimal              EnumsActorType = 21248
+	EnumsActorTypeWolf                       EnumsActorType = 21262
+	EnumsActorTypeOcelot                     EnumsActorType = 21270
+	EnumsActorTypeParrot                     EnumsActorType = 21278
+	EnumsActorTypeCat                        EnumsActorType = 21323
+	EnumsActorTypeAmbient                    EnumsActorType = 33024
+	EnumsActorTypeBat                        EnumsActorType = 33043
+	EnumsActorTypeUndeadMonster              EnumsActorType = 68352
+	EnumsActorTypePigZombie                  EnumsActorType = 68388
+	EnumsActorTypeWitherBoss                 EnumsActorType = 68404
+	EnumsActorTypePhantom                    EnumsActorType = 68410
+	EnumsActorTypeZoglin                     EnumsActorType = 68478
+	EnumsActorTypeCamelHusk                  EnumsActorType = 70552
+	EnumsActorTypeZombieNautilus             EnumsActorType = 74646
+	EnumsActorTypeZombieMonster              EnumsActorType = 199424
+	EnumsActorTypeZombie                     EnumsActorType = 199456
+	EnumsActorTypeZombieVillager             EnumsActorType = 199468
+	EnumsActorTypeHusk                       EnumsActorType = 199471
+	EnumsActorTypeDrowned                    EnumsActorType = 199534
+	EnumsActorTypeZombieVillagerV2           EnumsActorType = 199540
+	EnumsActorTypeArthropod                  EnumsActorType = 264960
+	EnumsActorTypeSpider                     EnumsActorType = 264995
+	EnumsActorTypeSilverfish                 EnumsActorType = 264999
+	EnumsActorTypeCaveSpider                 EnumsActorType = 265000
+	EnumsActorTypeEndermite                  EnumsActorType = 265015
+	EnumsActorTypeMinecart                   EnumsActorType = 524288
+	EnumsActorTypeMinecartRideable           EnumsActorType = 524372
+	EnumsActorTypeMinecartHopper             EnumsActorType = 524384
+	EnumsActorTypeMinecartTNT                EnumsActorType = 524385
+	EnumsActorTypeMinecartChest              EnumsActorType = 524386
+	EnumsActorTypeMinecartFurnace            EnumsActorType = 524387
+	EnumsActorTypeMinecartCommandBlock       EnumsActorType = 524388
+	EnumsActorTypeSkeletonMonster            EnumsActorType = 1116928
+	EnumsActorTypeSkeleton                   EnumsActorType = 1116962
+	EnumsActorTypeStray                      EnumsActorType = 1116974
+	EnumsActorTypeWitherSkeleton             EnumsActorType = 1116976
+	EnumsActorTypeBogged                     EnumsActorType = 1117072
+	EnumsActorTypeParched                    EnumsActorType = 1117079
+	EnumsActorTypeEquineAnimal               EnumsActorType = 2118400
+	EnumsActorTypeHorse                      EnumsActorType = 2118423
+	EnumsActorTypeDonkey                     EnumsActorType = 2118424
+	EnumsActorTypeMule                       EnumsActorType = 2118425
+	EnumsActorTypeSkeletonHorse              EnumsActorType = 2183962
+	EnumsActorTypeZombieHorse                EnumsActorType = 2183963
+	EnumsActorTypeProjectile                 EnumsActorType = 4194304
+	EnumsActorTypeExperiencePotion           EnumsActorType = 4194372
+	EnumsActorTypeShulkerBullet              EnumsActorType = 4194380
+	EnumsActorTypeDragonFireball             EnumsActorType = 4194383
+	EnumsActorTypeSnowball                   EnumsActorType = 4194385
+	EnumsActorTypeThrownEgg                  EnumsActorType = 4194386
+	EnumsActorTypeLargeFireball              EnumsActorType = 4194389
+	EnumsActorTypeThrownPotion               EnumsActorType = 4194390
+	EnumsActorTypeEnderpearl                 EnumsActorType = 4194391
+	EnumsActorTypeWitherSkull                EnumsActorType = 4194393
+	EnumsActorTypeWitherSkullDangerous       EnumsActorType = 4194395
+	EnumsActorTypeSmallFireball              EnumsActorType = 4194398
+	EnumsActorTypeLingeringPotion            EnumsActorType = 4194405
+	EnumsActorTypeLlamaSpit                  EnumsActorType = 4194406
+	EnumsActorTypeEvocationFang              EnumsActorType = 4194407
+	EnumsActorTypeIceBomb                    EnumsActorType = 4194410
+	EnumsActorTypeBreezeWindChargeProjectile EnumsActorType = 4194445
+	EnumsActorTypeWindChargeProjectile       EnumsActorType = 4194447
+	EnumsActorTypeAbstractArrow              EnumsActorType = 8388608
+	EnumsActorTypeTrident                    EnumsActorType = 12582985
+	EnumsActorTypeArrow                      EnumsActorType = 12582992
+	EnumsActorTypeVillagerBase               EnumsActorType = 16777984
+	EnumsActorTypeVillager                   EnumsActorType = 16777999
+	EnumsActorTypeVillagerV2                 EnumsActorType = 16778099
+)
+
+type EnumsAgentActionType int32
+
+const (
+	EnumsAgentActionTypeAttack            EnumsAgentActionType = 1
+	EnumsAgentActionTypeCollect           EnumsAgentActionType = 2
+	EnumsAgentActionTypeDestroy           EnumsAgentActionType = 3
+	EnumsAgentActionTypeDetectRedstone    EnumsAgentActionType = 4
+	EnumsAgentActionTypeDetectObstacle    EnumsAgentActionType = 5
+	EnumsAgentActionTypeDrop              EnumsAgentActionType = 6
+	EnumsAgentActionTypeDropAll           EnumsAgentActionType = 7
+	EnumsAgentActionTypeInspect           EnumsAgentActionType = 8
+	EnumsAgentActionTypeInspectData       EnumsAgentActionType = 9
+	EnumsAgentActionTypeInspectItemCount  EnumsAgentActionType = 10
+	EnumsAgentActionTypeInspectItemDetail EnumsAgentActionType = 11
+	EnumsAgentActionTypeInspectItemSpace  EnumsAgentActionType = 12
+	EnumsAgentActionTypeInteract          EnumsAgentActionType = 13
+	EnumsAgentActionTypeMove              EnumsAgentActionType = 14
+	EnumsAgentActionTypePlaceBlock        EnumsAgentActionType = 15
+	EnumsAgentActionTypeTill              EnumsAgentActionType = 16
+	EnumsAgentActionTypeTransferItemTo    EnumsAgentActionType = 17
+	EnumsAgentActionTypeTurn              EnumsAgentActionType = 18
+)
+
+type EnumsAgentAnimation uint8
+
+const (
+	EnumsAgentAnimationArmSwing EnumsAgentAnimation = 0
+	EnumsAgentAnimationShrug    EnumsAgentAnimation = 1
+)
+
+type EnumsAnimatePacketPayloadAction uint8
+
+const (
+	EnumsAnimatePacketPayloadActionNoAction         EnumsAnimatePacketPayloadAction = 0
+	EnumsAnimatePacketPayloadActionSwing            EnumsAnimatePacketPayloadAction = 1
+	EnumsAnimatePacketPayloadActionWakeUp           EnumsAnimatePacketPayloadAction = 3
+	EnumsAnimatePacketPayloadActionCriticalHit      EnumsAnimatePacketPayloadAction = 4
+	EnumsAnimatePacketPayloadActionMagicCriticalHit EnumsAnimatePacketPayloadAction = 5
+)
+
+type EnumsAnimationMode uint8
+
+const (
+	EnumsAnimationModeNone   EnumsAnimationMode = 0
+	EnumsAnimationModeLayers EnumsAnimationMode = 1
+	EnumsAnimationModeBlocks EnumsAnimationMode = 2
+)
+
+type EnumsBossBarColor uint8
+
+const (
+	EnumsBossBarColorPINK          EnumsBossBarColor = 0
+	EnumsBossBarColorBLUE          EnumsBossBarColor = 1
+	EnumsBossBarColorRED           EnumsBossBarColor = 2
+	EnumsBossBarColorGREEN         EnumsBossBarColor = 3
+	EnumsBossBarColorYELLOW        EnumsBossBarColor = 4
+	EnumsBossBarColorPURPLE        EnumsBossBarColor = 5
+	EnumsBossBarColorREBECCAPURPLE EnumsBossBarColor = 6
+	EnumsBossBarColorWHITE         EnumsBossBarColor = 7
+)
+
+type EnumsBossBarOverlay uint8
+
+const (
+	EnumsBossBarOverlayPROGRESS  EnumsBossBarOverlay = 0
+	EnumsBossBarOverlayNOTCHED6  EnumsBossBarOverlay = 1
+	EnumsBossBarOverlayNOTCHED10 EnumsBossBarOverlay = 2
+	EnumsBossBarOverlayNOTCHED12 EnumsBossBarOverlay = 3
+	EnumsBossBarOverlayNOTCHED20 EnumsBossBarOverlay = 4
+)
+
+type EnumsBossEventUpdateType uint8
+
+const (
+	EnumsBossEventUpdateTypeAdd              EnumsBossEventUpdateType = 0
+	EnumsBossEventUpdateTypePlayerAdded      EnumsBossEventUpdateType = 1
+	EnumsBossEventUpdateTypeRemove           EnumsBossEventUpdateType = 2
+	EnumsBossEventUpdateTypePlayerRemoved    EnumsBossEventUpdateType = 3
+	EnumsBossEventUpdateTypeUpdatePercent    EnumsBossEventUpdateType = 4
+	EnumsBossEventUpdateTypeUpdateName       EnumsBossEventUpdateType = 5
+	EnumsBossEventUpdateTypeUpdateProperties EnumsBossEventUpdateType = 6
+	EnumsBossEventUpdateTypeUpdateStyle      EnumsBossEventUpdateType = 7
+	EnumsBossEventUpdateTypeQuery            EnumsBossEventUpdateType = 8
+)
+
+type EnumsBuildPlatform int32
+
+const (
+	EnumsBuildPlatformUnknown      EnumsBuildPlatform = -1
+	EnumsBuildPlatformGoogle       EnumsBuildPlatform = 1
+	EnumsBuildPlatformIOS          EnumsBuildPlatform = 2
+	EnumsBuildPlatformOSX          EnumsBuildPlatform = 3
+	EnumsBuildPlatformAmazon       EnumsBuildPlatform = 4
+	EnumsBuildPlatformGearVR       EnumsBuildPlatform = 5
+	EnumsBuildPlatformUWP          EnumsBuildPlatform = 7
+	EnumsBuildPlatformWin32        EnumsBuildPlatform = 8
+	EnumsBuildPlatformDedicated    EnumsBuildPlatform = 9
+	EnumsBuildPlatformTvOS         EnumsBuildPlatform = 10
+	EnumsBuildPlatformSony         EnumsBuildPlatform = 11
+	EnumsBuildPlatformNx           EnumsBuildPlatform = 12
+	EnumsBuildPlatformXbox         EnumsBuildPlatform = 13
+	EnumsBuildPlatformWindowsPhone EnumsBuildPlatform = 14
+	EnumsBuildPlatformLinux        EnumsBuildPlatform = 15
+)
+
+type EnumsCameraAimAssistPacketPayloadAction uint8
+
+const (
+	EnumsCameraAimAssistPacketPayloadActionSet   EnumsCameraAimAssistPacketPayloadAction = 0
+	EnumsCameraAimAssistPacketPayloadActionClear EnumsCameraAimAssistPacketPayloadAction = 1
+)
+
+type EnumsCameraAimAssistPacketPayloadTargetMode uint8
+
+const (
+	EnumsCameraAimAssistPacketPayloadTargetModeAngle    EnumsCameraAimAssistPacketPayloadTargetMode = 0
+	EnumsCameraAimAssistPacketPayloadTargetModeDistance EnumsCameraAimAssistPacketPayloadTargetMode = 1
+)
+
+type EnumsCameraAimAssistPresetsPacketOperation uint8
+
+const (
+	EnumsCameraAimAssistPresetsPacketOperationSet           EnumsCameraAimAssistPresetsPacketOperation = 0
+	EnumsCameraAimAssistPresetsPacketOperationAddToExisting EnumsCameraAimAssistPresetsPacketOperation = 1
+)
+
+type EnumsCameraAimAssistTargetMode uint8
+
+const (
+	EnumsCameraAimAssistTargetModeAngle    EnumsCameraAimAssistTargetMode = 0
+	EnumsCameraAimAssistTargetModeDistance EnumsCameraAimAssistTargetMode = 1
+)
+
+type EnumsCameraShakeAction uint8
+
+const (
+	EnumsCameraShakeActionAdd  EnumsCameraShakeAction = 0
+	EnumsCameraShakeActionStop EnumsCameraShakeAction = 1
+)
+
+type EnumsCameraShakeType uint8
+
+const (
+	EnumsCameraShakeTypePositional EnumsCameraShakeType = 0
+	EnumsCameraShakeTypeRotational EnumsCameraShakeType = 1
+)
+
+type EnumsChatRestrictionLevel uint8
+
+const (
+	EnumsChatRestrictionLevelNone     EnumsChatRestrictionLevel = 0
+	EnumsChatRestrictionLevelDropped  EnumsChatRestrictionLevel = 1
+	EnumsChatRestrictionLevelDisabled EnumsChatRestrictionLevel = 2
+)
+
+type EnumsClientCameraAimAssistPacketAction uint8
+
+const (
+	EnumsClientCameraAimAssistPacketActionSetFromCameraPreset EnumsClientCameraAimAssistPacketAction = 0
+	EnumsClientCameraAimAssistPacketActionClear               EnumsClientCameraAimAssistPacketAction = 1
+)
+
+type EnumsClientPlayMode uint32
+
+const (
+	EnumsClientPlayModeNormal              EnumsClientPlayMode = 0
+	EnumsClientPlayModeTeaser              EnumsClientPlayMode = 1
+	EnumsClientPlayModeScreen              EnumsClientPlayMode = 2
+	EnumsClientPlayModeViewer              EnumsClientPlayMode = 3
+	EnumsClientPlayModeReality             EnumsClientPlayMode = 4
+	EnumsClientPlayModePlacement           EnumsClientPlayMode = 5
+	EnumsClientPlayModeLivingRoom          EnumsClientPlayMode = 6
+	EnumsClientPlayModeExitLevel           EnumsClientPlayMode = 7
+	EnumsClientPlayModeExitLevelLivingRoom EnumsClientPlayMode = 8
+	EnumsClientPlayModeNumModes            EnumsClientPlayMode = 9
+)
+
+type EnumsClientboundTextureShiftPacketPayloadAction uint8
+
+const (
+	EnumsClientboundTextureShiftPacketPayloadActionInvalid    EnumsClientboundTextureShiftPacketPayloadAction = 0
+	EnumsClientboundTextureShiftPacketPayloadActionInitialize EnumsClientboundTextureShiftPacketPayloadAction = 1
+	EnumsClientboundTextureShiftPacketPayloadActionStart      EnumsClientboundTextureShiftPacketPayloadAction = 2
+	EnumsClientboundTextureShiftPacketPayloadActionSetEnabled EnumsClientboundTextureShiftPacketPayloadAction = 3
+	EnumsClientboundTextureShiftPacketPayloadActionSync       EnumsClientboundTextureShiftPacketPayloadAction = 4
+)
+
+type EnumsCodeBuilderExecutionStateCodeStatus uint8
+
+const (
+	EnumsCodeBuilderExecutionStateCodeStatusNone       EnumsCodeBuilderExecutionStateCodeStatus = 0
+	EnumsCodeBuilderExecutionStateCodeStatusNotStarted EnumsCodeBuilderExecutionStateCodeStatus = 1
+	EnumsCodeBuilderExecutionStateCodeStatusInProgress EnumsCodeBuilderExecutionStateCodeStatus = 2
+	EnumsCodeBuilderExecutionStateCodeStatusPaused     EnumsCodeBuilderExecutionStateCodeStatus = 3
+	EnumsCodeBuilderExecutionStateCodeStatusError      EnumsCodeBuilderExecutionStateCodeStatus = 4
+	EnumsCodeBuilderExecutionStateCodeStatusSucceeded  EnumsCodeBuilderExecutionStateCodeStatus = 5
+)
+
+type EnumsCodeBuilderStorageQueryOptionsCategory uint8
+
+const (
+	EnumsCodeBuilderStorageQueryOptionsCategoryNone          EnumsCodeBuilderStorageQueryOptionsCategory = 0
+	EnumsCodeBuilderStorageQueryOptionsCategoryCodeStatus    EnumsCodeBuilderStorageQueryOptionsCategory = 1
+	EnumsCodeBuilderStorageQueryOptionsCategoryInstantiation EnumsCodeBuilderStorageQueryOptionsCategory = 2
+)
+
+type EnumsCodeBuilderStorageQueryOptionsOperation uint8
+
+const (
+	EnumsCodeBuilderStorageQueryOptionsOperationNone  EnumsCodeBuilderStorageQueryOptionsOperation = 0
+	EnumsCodeBuilderStorageQueryOptionsOperationGet   EnumsCodeBuilderStorageQueryOptionsOperation = 1
+	EnumsCodeBuilderStorageQueryOptionsOperationSet   EnumsCodeBuilderStorageQueryOptionsOperation = 2
+	EnumsCodeBuilderStorageQueryOptionsOperationReset EnumsCodeBuilderStorageQueryOptionsOperation = 3
+)
+
+type EnumsCommandPermissionLevel uint8
+
+const (
+	EnumsCommandPermissionLevelAny           EnumsCommandPermissionLevel = 0
+	EnumsCommandPermissionLevelGameDirectors EnumsCommandPermissionLevel = 1
+	EnumsCommandPermissionLevelAdmin         EnumsCommandPermissionLevel = 2
+	EnumsCommandPermissionLevelHost          EnumsCommandPermissionLevel = 3
+	EnumsCommandPermissionLevelOwner         EnumsCommandPermissionLevel = 4
+	EnumsCommandPermissionLevelInternal      EnumsCommandPermissionLevel = 5
+)
+
+type EnumsConnectionDisconnectFailReason int32
+
+const (
+	EnumsConnectionDisconnectFailReasonUnknown                                       EnumsConnectionDisconnectFailReason = 0
+	EnumsConnectionDisconnectFailReasonCantConnectNoInternet                         EnumsConnectionDisconnectFailReason = 1
+	EnumsConnectionDisconnectFailReasonNoPermissions                                 EnumsConnectionDisconnectFailReason = 2
+	EnumsConnectionDisconnectFailReasonUnrecoverableError                            EnumsConnectionDisconnectFailReason = 3
+	EnumsConnectionDisconnectFailReasonThirdPartyBlocked                             EnumsConnectionDisconnectFailReason = 4
+	EnumsConnectionDisconnectFailReasonThirdPartyNoInternet                          EnumsConnectionDisconnectFailReason = 5
+	EnumsConnectionDisconnectFailReasonThirdPartyBadIP                               EnumsConnectionDisconnectFailReason = 6
+	EnumsConnectionDisconnectFailReasonThirdPartyNoServerOrServerLocked              EnumsConnectionDisconnectFailReason = 7
+	EnumsConnectionDisconnectFailReasonVersionMismatch                               EnumsConnectionDisconnectFailReason = 8
+	EnumsConnectionDisconnectFailReasonSkinIssue                                     EnumsConnectionDisconnectFailReason = 9
+	EnumsConnectionDisconnectFailReasonInviteSessionNotFound                         EnumsConnectionDisconnectFailReason = 10
+	EnumsConnectionDisconnectFailReasonEduLevelSettingsMissing                       EnumsConnectionDisconnectFailReason = 11
+	EnumsConnectionDisconnectFailReasonLocalServerNotFound                           EnumsConnectionDisconnectFailReason = 12
+	EnumsConnectionDisconnectFailReasonLegacyDisconnect                              EnumsConnectionDisconnectFailReason = 13
+	EnumsConnectionDisconnectFailReasonINTERNALUserLeaveGameAttempted                EnumsConnectionDisconnectFailReason = 14
+	EnumsConnectionDisconnectFailReasonPlatformLockedSkinsError                      EnumsConnectionDisconnectFailReason = 15
+	EnumsConnectionDisconnectFailReasonRealmsWorldUnassigned                         EnumsConnectionDisconnectFailReason = 16
+	EnumsConnectionDisconnectFailReasonRealmsServerCantConnect                       EnumsConnectionDisconnectFailReason = 17
+	EnumsConnectionDisconnectFailReasonRealmsServerHidden                            EnumsConnectionDisconnectFailReason = 18
+	EnumsConnectionDisconnectFailReasonRealmsServerDisabledBeta                      EnumsConnectionDisconnectFailReason = 19
+	EnumsConnectionDisconnectFailReasonRealmsServerDisabled                          EnumsConnectionDisconnectFailReason = 20
+	EnumsConnectionDisconnectFailReasonCrossPlatformDisabled                         EnumsConnectionDisconnectFailReason = 21
+	EnumsConnectionDisconnectFailReasonTESTONLYCantConnect                           EnumsConnectionDisconnectFailReason = 22
+	EnumsConnectionDisconnectFailReasonSessionNotFound                               EnumsConnectionDisconnectFailReason = 23
+	EnumsConnectionDisconnectFailReasonClientSettingsIncompatibleWithServer          EnumsConnectionDisconnectFailReason = 24
+	EnumsConnectionDisconnectFailReasonServerFull                                    EnumsConnectionDisconnectFailReason = 25
+	EnumsConnectionDisconnectFailReasonInvalidPlatformSkin                           EnumsConnectionDisconnectFailReason = 26
+	EnumsConnectionDisconnectFailReasonEditionVersionMismatch                        EnumsConnectionDisconnectFailReason = 27
+	EnumsConnectionDisconnectFailReasonEditionMismatch                               EnumsConnectionDisconnectFailReason = 28
+	EnumsConnectionDisconnectFailReasonLevelNewerThanExeVersion                      EnumsConnectionDisconnectFailReason = 29
+	EnumsConnectionDisconnectFailReasonINTERNALNoFailOccurred                        EnumsConnectionDisconnectFailReason = 30
+	EnumsConnectionDisconnectFailReasonBannedSkin                                    EnumsConnectionDisconnectFailReason = 31
+	EnumsConnectionDisconnectFailReasonTimeout                                       EnumsConnectionDisconnectFailReason = 32
+	EnumsConnectionDisconnectFailReasonServerNotFound                                EnumsConnectionDisconnectFailReason = 33
+	EnumsConnectionDisconnectFailReasonOutdatedServer                                EnumsConnectionDisconnectFailReason = 34
+	EnumsConnectionDisconnectFailReasonOutdatedClient                                EnumsConnectionDisconnectFailReason = 35
+	EnumsConnectionDisconnectFailReasonNoPremiumPlatform                             EnumsConnectionDisconnectFailReason = 36
+	EnumsConnectionDisconnectFailReasonMultiplayerDisabled                           EnumsConnectionDisconnectFailReason = 37
+	EnumsConnectionDisconnectFailReasonNoWiFi                                        EnumsConnectionDisconnectFailReason = 38
+	EnumsConnectionDisconnectFailReasonWorldCorruption                               EnumsConnectionDisconnectFailReason = 39
+	EnumsConnectionDisconnectFailReasonNoReason                                      EnumsConnectionDisconnectFailReason = 40
+	EnumsConnectionDisconnectFailReasonDisconnected                                  EnumsConnectionDisconnectFailReason = 41
+	EnumsConnectionDisconnectFailReasonInvalidPlayer                                 EnumsConnectionDisconnectFailReason = 42
+	EnumsConnectionDisconnectFailReasonLoggedInOtherLocation                         EnumsConnectionDisconnectFailReason = 43
+	EnumsConnectionDisconnectFailReasonServerIdConflict                              EnumsConnectionDisconnectFailReason = 44
+	EnumsConnectionDisconnectFailReasonNotAllowed                                    EnumsConnectionDisconnectFailReason = 45
+	EnumsConnectionDisconnectFailReasonNotAuthenticated                              EnumsConnectionDisconnectFailReason = 46
+	EnumsConnectionDisconnectFailReasonInvalidTenant                                 EnumsConnectionDisconnectFailReason = 47
+	EnumsConnectionDisconnectFailReasonUnknownPacket                                 EnumsConnectionDisconnectFailReason = 48
+	EnumsConnectionDisconnectFailReasonUnexpectedPacket                              EnumsConnectionDisconnectFailReason = 49
+	EnumsConnectionDisconnectFailReasonInvalidCommandRequestPacket                   EnumsConnectionDisconnectFailReason = 50
+	EnumsConnectionDisconnectFailReasonHostSuspended                                 EnumsConnectionDisconnectFailReason = 51
+	EnumsConnectionDisconnectFailReasonLoginPacketNoRequest                          EnumsConnectionDisconnectFailReason = 52
+	EnumsConnectionDisconnectFailReasonLoginPacketNoCert                             EnumsConnectionDisconnectFailReason = 53
+	EnumsConnectionDisconnectFailReasonMissingClient                                 EnumsConnectionDisconnectFailReason = 54
+	EnumsConnectionDisconnectFailReasonKicked                                        EnumsConnectionDisconnectFailReason = 55
+	EnumsConnectionDisconnectFailReasonKickedForExploit                              EnumsConnectionDisconnectFailReason = 56
+	EnumsConnectionDisconnectFailReasonKickedForIdle                                 EnumsConnectionDisconnectFailReason = 57
+	EnumsConnectionDisconnectFailReasonResourcePackProblem                           EnumsConnectionDisconnectFailReason = 58
+	EnumsConnectionDisconnectFailReasonIncompatiblePack                              EnumsConnectionDisconnectFailReason = 59
+	EnumsConnectionDisconnectFailReasonOutOfStorage                                  EnumsConnectionDisconnectFailReason = 60
+	EnumsConnectionDisconnectFailReasonInvalidLevel                                  EnumsConnectionDisconnectFailReason = 61
+	EnumsConnectionDisconnectFailReasonDisconnectPacket                              EnumsConnectionDisconnectFailReason = 62
+	EnumsConnectionDisconnectFailReasonBlockMismatch                                 EnumsConnectionDisconnectFailReason = 63
+	EnumsConnectionDisconnectFailReasonInvalidHeights                                EnumsConnectionDisconnectFailReason = 64
+	EnumsConnectionDisconnectFailReasonInvalidWidths                                 EnumsConnectionDisconnectFailReason = 65
+	EnumsConnectionDisconnectFailReasonConnectionLost                                EnumsConnectionDisconnectFailReason = 66
+	EnumsConnectionDisconnectFailReasonZombieConnection                              EnumsConnectionDisconnectFailReason = 67
+	EnumsConnectionDisconnectFailReasonShutdown                                      EnumsConnectionDisconnectFailReason = 68
+	EnumsConnectionDisconnectFailReasonReasonNotSet                                  EnumsConnectionDisconnectFailReason = 69
+	EnumsConnectionDisconnectFailReasonLoadingStateTimeout                           EnumsConnectionDisconnectFailReason = 70
+	EnumsConnectionDisconnectFailReasonResourcePackLoadingFailed                     EnumsConnectionDisconnectFailReason = 71
+	EnumsConnectionDisconnectFailReasonSearchingForSessionLoadingScreenFailed        EnumsConnectionDisconnectFailReason = 72
+	EnumsConnectionDisconnectFailReasonNetherNetProtocolVersion                      EnumsConnectionDisconnectFailReason = 73
+	EnumsConnectionDisconnectFailReasonSubsystemStatusError                          EnumsConnectionDisconnectFailReason = 74
+	EnumsConnectionDisconnectFailReasonEmptyAuthFromDiscovery                        EnumsConnectionDisconnectFailReason = 75
+	EnumsConnectionDisconnectFailReasonEmptyUrlFromDiscovery                         EnumsConnectionDisconnectFailReason = 76
+	EnumsConnectionDisconnectFailReasonExpiredAuthFromDiscovery                      EnumsConnectionDisconnectFailReason = 77
+	EnumsConnectionDisconnectFailReasonUnknownSignalServiceSignInFailure             EnumsConnectionDisconnectFailReason = 78
+	EnumsConnectionDisconnectFailReasonXBLJoinLobbyFailure                           EnumsConnectionDisconnectFailReason = 79
+	EnumsConnectionDisconnectFailReasonUnspecifiedClientInstanceDisconnection        EnumsConnectionDisconnectFailReason = 80
+	EnumsConnectionDisconnectFailReasonNetherNetSessionNotFound                      EnumsConnectionDisconnectFailReason = 81
+	EnumsConnectionDisconnectFailReasonNetherNetCreatePeerConnection                 EnumsConnectionDisconnectFailReason = 82
+	EnumsConnectionDisconnectFailReasonNetherNetICE                                  EnumsConnectionDisconnectFailReason = 83
+	EnumsConnectionDisconnectFailReasonNetherNetConnectRequest                       EnumsConnectionDisconnectFailReason = 84
+	EnumsConnectionDisconnectFailReasonNetherNetConnectResponse                      EnumsConnectionDisconnectFailReason = 85
+	EnumsConnectionDisconnectFailReasonNetherNetNegotiationTimeout                   EnumsConnectionDisconnectFailReason = 86
+	EnumsConnectionDisconnectFailReasonNetherNetInactivityTimeout                    EnumsConnectionDisconnectFailReason = 87
+	EnumsConnectionDisconnectFailReasonStaleConnectionBeingReplaced                  EnumsConnectionDisconnectFailReason = 88
+	EnumsConnectionDisconnectFailReasonRealmsSessionNotFound                         EnumsConnectionDisconnectFailReason = 89
+	EnumsConnectionDisconnectFailReasonBadPacket                                     EnumsConnectionDisconnectFailReason = 90
+	EnumsConnectionDisconnectFailReasonNetherNetFailedToCreateOffer                  EnumsConnectionDisconnectFailReason = 91
+	EnumsConnectionDisconnectFailReasonNetherNetFailedToCreateAnswer                 EnumsConnectionDisconnectFailReason = 92
+	EnumsConnectionDisconnectFailReasonNetherNetFailedToSetLocalDescription          EnumsConnectionDisconnectFailReason = 93
+	EnumsConnectionDisconnectFailReasonNetherNetFailedToSetRemoteDescription         EnumsConnectionDisconnectFailReason = 94
+	EnumsConnectionDisconnectFailReasonNetherNetNegotiationTimeoutWaitingForResponse EnumsConnectionDisconnectFailReason = 95
+	EnumsConnectionDisconnectFailReasonNetherNetNegotiationTimeoutWaitingForAccept   EnumsConnectionDisconnectFailReason = 96
+	EnumsConnectionDisconnectFailReasonNetherNetIncomingConnectionIgnored            EnumsConnectionDisconnectFailReason = 97
+	EnumsConnectionDisconnectFailReasonNetherNetSignalingParsingFailure              EnumsConnectionDisconnectFailReason = 98
+	EnumsConnectionDisconnectFailReasonNetherNetSignalingUnknownError                EnumsConnectionDisconnectFailReason = 99
+	EnumsConnectionDisconnectFailReasonNetherNetSignalingUnicastDeliveryFailed       EnumsConnectionDisconnectFailReason = 100
+	EnumsConnectionDisconnectFailReasonNetherNetSignalingBroadcastDeliveryFailed     EnumsConnectionDisconnectFailReason = 101
+	EnumsConnectionDisconnectFailReasonNetherNetSignalingGenericDeliveryFailed       EnumsConnectionDisconnectFailReason = 102
+	EnumsConnectionDisconnectFailReasonEditorMismatchEditorWorld                     EnumsConnectionDisconnectFailReason = 103
+	EnumsConnectionDisconnectFailReasonEditorMismatchVanillaWorld                    EnumsConnectionDisconnectFailReason = 104
+	EnumsConnectionDisconnectFailReasonWorldTransferNotPrimaryClient                 EnumsConnectionDisconnectFailReason = 105
+	EnumsConnectionDisconnectFailReasonINTERNALRequestServerShutdown                 EnumsConnectionDisconnectFailReason = 106
+	EnumsConnectionDisconnectFailReasonClientGameSetupCancelled                      EnumsConnectionDisconnectFailReason = 107
+	EnumsConnectionDisconnectFailReasonClientGameSetupFailed                         EnumsConnectionDisconnectFailReason = 108
+	EnumsConnectionDisconnectFailReasonNoVenue                                       EnumsConnectionDisconnectFailReason = 109
+	EnumsConnectionDisconnectFailReasonNetherNetSignalingSigninFailed                EnumsConnectionDisconnectFailReason = 110
+	EnumsConnectionDisconnectFailReasonSessionAccessDenied                           EnumsConnectionDisconnectFailReason = 111
+	EnumsConnectionDisconnectFailReasonServiceSigninIssue                            EnumsConnectionDisconnectFailReason = 112
+	EnumsConnectionDisconnectFailReasonNetherNetNoSignalingChannel                   EnumsConnectionDisconnectFailReason = 113
+	EnumsConnectionDisconnectFailReasonNetherNetNotLoggedIn                          EnumsConnectionDisconnectFailReason = 114
+	EnumsConnectionDisconnectFailReasonNetherNetClientSignalingError                 EnumsConnectionDisconnectFailReason = 115
+	EnumsConnectionDisconnectFailReasonSubClientLoginDisabled                        EnumsConnectionDisconnectFailReason = 116
+	EnumsConnectionDisconnectFailReasonDeepLinkTryingToOpenDemoWorldWhileSignedIn    EnumsConnectionDisconnectFailReason = 117
+	EnumsConnectionDisconnectFailReasonAsyncJoinTaskDenied                           EnumsConnectionDisconnectFailReason = 118
+	EnumsConnectionDisconnectFailReasonRealmsTimelineRequired                        EnumsConnectionDisconnectFailReason = 119
+	EnumsConnectionDisconnectFailReasonGuestWithoutHost                              EnumsConnectionDisconnectFailReason = 120
+	EnumsConnectionDisconnectFailReasonFailedToJoinExperience                        EnumsConnectionDisconnectFailReason = 121
+	EnumsConnectionDisconnectFailReasonNetherNetDataChannelClosed                    EnumsConnectionDisconnectFailReason = 122
+	EnumsConnectionDisconnectFailReasonDiscoveryEnvironmentMismatch                  EnumsConnectionDisconnectFailReason = 123
+	EnumsConnectionDisconnectFailReasonHostWithoutKeys                               EnumsConnectionDisconnectFailReason = 124
+	EnumsConnectionDisconnectFailReasonHostSignedOut                                 EnumsConnectionDisconnectFailReason = 125
+	EnumsConnectionDisconnectFailReasonScriptWatchdogException                       EnumsConnectionDisconnectFailReason = 126
+	EnumsConnectionDisconnectFailReasonScriptMemoryLimitExceeded                     EnumsConnectionDisconnectFailReason = 127
+	EnumsConnectionDisconnectFailReasonStorageLowDuringGameplay                      EnumsConnectionDisconnectFailReason = 128
+	EnumsConnectionDisconnectFailReasonStorageFullDuringGameplay                     EnumsConnectionDisconnectFailReason = 129
+	EnumsConnectionDisconnectFailReasonLevelStorageCorruption                        EnumsConnectionDisconnectFailReason = 130
+	EnumsConnectionDisconnectFailReasonEditionMismatchVanillaToEdu                   EnumsConnectionDisconnectFailReason = 131
+	EnumsConnectionDisconnectFailReasonEditionMismatchEduToVanilla                   EnumsConnectionDisconnectFailReason = 132
+	EnumsConnectionDisconnectFailReasonEditorMismatchEditorToVanilla                 EnumsConnectionDisconnectFailReason = 133
+	EnumsConnectionDisconnectFailReasonEditorMismatchVanillaToEditor                 EnumsConnectionDisconnectFailReason = 134
+	EnumsConnectionDisconnectFailReasonDenyListed                                    EnumsConnectionDisconnectFailReason = 135
+	EnumsConnectionDisconnectFailReasonNonceMissing                                  EnumsConnectionDisconnectFailReason = 136
+	EnumsConnectionDisconnectFailReasonNonceNotFound                                 EnumsConnectionDisconnectFailReason = 137
+	EnumsConnectionDisconnectFailReasonNonceExpired                                  EnumsConnectionDisconnectFailReason = 138
+	EnumsConnectionDisconnectFailReasonNonceNotValid                                 EnumsConnectionDisconnectFailReason = 139
+	EnumsConnectionDisconnectFailReasonHostDisconnected                              EnumsConnectionDisconnectFailReason = 140
+	EnumsConnectionDisconnectFailReasonEditorJoinIntentPolicyFailure                 EnumsConnectionDisconnectFailReason = 141
+	EnumsConnectionDisconnectFailReasonNetherNetIdentityNotAllowed                   EnumsConnectionDisconnectFailReason = 142
+	EnumsConnectionDisconnectFailReasonInvalidName                                   EnumsConnectionDisconnectFailReason = 143
+	EnumsConnectionDisconnectFailReasonExpiredToken                                  EnumsConnectionDisconnectFailReason = 144
+	EnumsConnectionDisconnectFailReasonHostAcceptsNoTypeOfAuth                       EnumsConnectionDisconnectFailReason = 145
+	EnumsConnectionDisconnectFailReasonNotAuthenticatedFastFail                      EnumsConnectionDisconnectFailReason = 146
+	EnumsConnectionDisconnectFailReasonEditorNotAllowed                              EnumsConnectionDisconnectFailReason = 147
+)
+
+type EnumsContainerEnumName uint8
+
+const (
+	EnumsContainerEnumNameAnvilInputContainer                 EnumsContainerEnumName = 0
+	EnumsContainerEnumNameAnvilMaterialContainer              EnumsContainerEnumName = 1
+	EnumsContainerEnumNameAnvilResultPreviewContainer         EnumsContainerEnumName = 2
+	EnumsContainerEnumNameSmithingTableInputContainer         EnumsContainerEnumName = 3
+	EnumsContainerEnumNameSmithingTableMaterialContainer      EnumsContainerEnumName = 4
+	EnumsContainerEnumNameSmithingTableResultPreviewContainer EnumsContainerEnumName = 5
+	EnumsContainerEnumNameArmorContainer                      EnumsContainerEnumName = 6
+	EnumsContainerEnumNameLevelEntityContainer                EnumsContainerEnumName = 7
+	EnumsContainerEnumNameBeaconPaymentContainer              EnumsContainerEnumName = 8
+	EnumsContainerEnumNameBrewingStandInputContainer          EnumsContainerEnumName = 9
+	EnumsContainerEnumNameBrewingStandResultContainer         EnumsContainerEnumName = 10
+	EnumsContainerEnumNameBrewingStandFuelContainer           EnumsContainerEnumName = 11
+	EnumsContainerEnumNameCombinedHotbarAndInventoryContainer EnumsContainerEnumName = 12
+	EnumsContainerEnumNameCraftingInputContainer              EnumsContainerEnumName = 13
+	EnumsContainerEnumNameCraftingOutputPreviewContainer      EnumsContainerEnumName = 14
+	EnumsContainerEnumNameRecipeConstructionContainer         EnumsContainerEnumName = 15
+	EnumsContainerEnumNameRecipeNatureContainer               EnumsContainerEnumName = 16
+	EnumsContainerEnumNameRecipeItemsContainer                EnumsContainerEnumName = 17
+	EnumsContainerEnumNameRecipeSearchContainer               EnumsContainerEnumName = 18
+	EnumsContainerEnumNameRecipeSearchBarContainer            EnumsContainerEnumName = 19
+	EnumsContainerEnumNameRecipeEquipmentContainer            EnumsContainerEnumName = 20
+	EnumsContainerEnumNameRecipeBookContainer                 EnumsContainerEnumName = 21
+	EnumsContainerEnumNameEnchantingInputContainer            EnumsContainerEnumName = 22
+	EnumsContainerEnumNameEnchantingMaterialContainer         EnumsContainerEnumName = 23
+	EnumsContainerEnumNameFurnaceFuelContainer                EnumsContainerEnumName = 24
+	EnumsContainerEnumNameFurnaceIngredientContainer          EnumsContainerEnumName = 25
+	EnumsContainerEnumNameFurnaceResultContainer              EnumsContainerEnumName = 26
+	EnumsContainerEnumNameHorseEquipContainer                 EnumsContainerEnumName = 27
+	EnumsContainerEnumNameHotbarContainer                     EnumsContainerEnumName = 28
+	EnumsContainerEnumNameInventoryContainer                  EnumsContainerEnumName = 29
+	EnumsContainerEnumNameShulkerBoxContainer                 EnumsContainerEnumName = 30
+	EnumsContainerEnumNameTradeIngredient1Container           EnumsContainerEnumName = 31
+	EnumsContainerEnumNameTradeIngredient2Container           EnumsContainerEnumName = 32
+	EnumsContainerEnumNameTradeResultPreviewContainer         EnumsContainerEnumName = 33
+	EnumsContainerEnumNameOffhandContainer                    EnumsContainerEnumName = 34
+	EnumsContainerEnumNameCompoundCreatorInput                EnumsContainerEnumName = 35
+	EnumsContainerEnumNameCompoundCreatorOutputPreview        EnumsContainerEnumName = 36
+	EnumsContainerEnumNameElementConstructorOutputPreview     EnumsContainerEnumName = 37
+	EnumsContainerEnumNameMaterialReducerInput                EnumsContainerEnumName = 38
+	EnumsContainerEnumNameMaterialReducerOutput               EnumsContainerEnumName = 39
+	EnumsContainerEnumNameLabTableInput                       EnumsContainerEnumName = 40
+	EnumsContainerEnumNameLoomInputContainer                  EnumsContainerEnumName = 41
+	EnumsContainerEnumNameLoomDyeContainer                    EnumsContainerEnumName = 42
+	EnumsContainerEnumNameLoomMaterialContainer               EnumsContainerEnumName = 43
+	EnumsContainerEnumNameLoomResultPreviewContainer          EnumsContainerEnumName = 44
+	EnumsContainerEnumNameBlastFurnaceIngredientContainer     EnumsContainerEnumName = 45
+	EnumsContainerEnumNameSmokerIngredientContainer           EnumsContainerEnumName = 46
+	EnumsContainerEnumNameTrade2Ingredient1Container          EnumsContainerEnumName = 47
+	EnumsContainerEnumNameTrade2Ingredient2Container          EnumsContainerEnumName = 48
+	EnumsContainerEnumNameTrade2ResultPreviewContainer        EnumsContainerEnumName = 49
+	EnumsContainerEnumNameGrindstoneInputContainer            EnumsContainerEnumName = 50
+	EnumsContainerEnumNameGrindstoneAdditionalContainer       EnumsContainerEnumName = 51
+	EnumsContainerEnumNameGrindstoneResultPreviewContainer    EnumsContainerEnumName = 52
+	EnumsContainerEnumNameStonecutterInputContainer           EnumsContainerEnumName = 53
+	EnumsContainerEnumNameStonecutterResultPreviewContainer   EnumsContainerEnumName = 54
+	EnumsContainerEnumNameCartographyInputContainer           EnumsContainerEnumName = 55
+	EnumsContainerEnumNameCartographyAdditionalContainer      EnumsContainerEnumName = 56
+	EnumsContainerEnumNameCartographyResultPreviewContainer   EnumsContainerEnumName = 57
+	EnumsContainerEnumNameBarrelContainer                     EnumsContainerEnumName = 58
+	EnumsContainerEnumNameCursorContainer                     EnumsContainerEnumName = 59
+	EnumsContainerEnumNameCreatedOutputContainer              EnumsContainerEnumName = 60
+	EnumsContainerEnumNameSmithingTableTemplateContainer      EnumsContainerEnumName = 61
+	EnumsContainerEnumNameCrafterLevelEntityContainer         EnumsContainerEnumName = 62
+	EnumsContainerEnumNameDynamicContainer                    EnumsContainerEnumName = 63
+	EnumsContainerEnumNameRecipeFoodContainer                 EnumsContainerEnumName = 64
+	EnumsContainerEnumNameRecipeBlocksContainer               EnumsContainerEnumName = 65
+	EnumsContainerEnumNameRecipeFurnaceItemsContainer         EnumsContainerEnumName = 66
+)
+
+type EnumsControlSchemeScheme uint8
+
+const (
+	EnumsControlSchemeSchemeLockedPlayerRelativeStrafe EnumsControlSchemeScheme = 0
+	EnumsControlSchemeSchemeCameraRelative             EnumsControlSchemeScheme = 1
+	EnumsControlSchemeSchemeCameraRelativeStrafe       EnumsControlSchemeScheme = 2
+	EnumsControlSchemeSchemePlayerRelative             EnumsControlSchemeScheme = 3
+	EnumsControlSchemeSchemePlayerRelativeStrafe       EnumsControlSchemeScheme = 4
+)
+
+type EnumsDataItemType uint8
+
+const (
+	EnumsDataItemTypeByte        EnumsDataItemType = 0
+	EnumsDataItemTypeShort       EnumsDataItemType = 1
+	EnumsDataItemTypeInt         EnumsDataItemType = 2
+	EnumsDataItemTypeFloat       EnumsDataItemType = 3
+	EnumsDataItemTypeString      EnumsDataItemType = 4
+	EnumsDataItemTypeCompoundTag EnumsDataItemType = 5
+	EnumsDataItemTypePos         EnumsDataItemType = 6
+	EnumsDataItemTypeInt64       EnumsDataItemType = 7
+	EnumsDataItemTypeVec3        EnumsDataItemType = 8
+)
+
+type EnumsEditorWorldType int32
+
+const (
+	EnumsEditorWorldTypeNonEditor          EnumsEditorWorldType = 0
+	EnumsEditorWorldTypeEditorProject      EnumsEditorWorldType = 1
+	EnumsEditorWorldTypeEditorTestLevel    EnumsEditorWorldType = 2
+	EnumsEditorWorldTypeEditorRealmsUpload EnumsEditorWorldType = 3
+)
+
+type EnumsEducationEditionOffer uint32
+
+const (
+	EnumsEducationEditionOfferNone            EnumsEducationEditionOffer = 0
+	EnumsEducationEditionOfferRestOfWorld     EnumsEducationEditionOffer = 1
+	EnumsEducationEditionOfferChinaDeprecated EnumsEducationEditionOffer = 2
+)
+
+type EnumsEnchantType uint8
+
+const (
+	EnumsEnchantTypeProtection           EnumsEnchantType = 0
+	EnumsEnchantTypeFireProtection       EnumsEnchantType = 1
+	EnumsEnchantTypeFeatherFalling       EnumsEnchantType = 2
+	EnumsEnchantTypeBlastProtection      EnumsEnchantType = 3
+	EnumsEnchantTypeProjectileProtection EnumsEnchantType = 4
+	EnumsEnchantTypeThorns               EnumsEnchantType = 5
+	EnumsEnchantTypeRespiration          EnumsEnchantType = 6
+	EnumsEnchantTypeDepthStrider         EnumsEnchantType = 7
+	EnumsEnchantTypeAquaAffinity         EnumsEnchantType = 8
+	EnumsEnchantTypeSharpness            EnumsEnchantType = 9
+	EnumsEnchantTypeSmite                EnumsEnchantType = 10
+	EnumsEnchantTypeBaneOfArthropods     EnumsEnchantType = 11
+	EnumsEnchantTypeKnockback            EnumsEnchantType = 12
+	EnumsEnchantTypeFireAspect           EnumsEnchantType = 13
+	EnumsEnchantTypeLooting              EnumsEnchantType = 14
+	EnumsEnchantTypeEfficiency           EnumsEnchantType = 15
+	EnumsEnchantTypeSilkTouch            EnumsEnchantType = 16
+	EnumsEnchantTypeUnbreaking           EnumsEnchantType = 17
+	EnumsEnchantTypeFortune              EnumsEnchantType = 18
+	EnumsEnchantTypePower                EnumsEnchantType = 19
+	EnumsEnchantTypePunch                EnumsEnchantType = 20
+	EnumsEnchantTypeFlame                EnumsEnchantType = 21
+	EnumsEnchantTypeInfinity             EnumsEnchantType = 22
+	EnumsEnchantTypeLuckOfTheSea         EnumsEnchantType = 23
+	EnumsEnchantTypeLure                 EnumsEnchantType = 24
+	EnumsEnchantTypeFrostWalker          EnumsEnchantType = 25
+	EnumsEnchantTypeMending              EnumsEnchantType = 26
+	EnumsEnchantTypeCurseOfBinding       EnumsEnchantType = 27
+	EnumsEnchantTypeCurseOfVanishing     EnumsEnchantType = 28
+	EnumsEnchantTypeImpaling             EnumsEnchantType = 29
+	EnumsEnchantTypeRiptide              EnumsEnchantType = 30
+	EnumsEnchantTypeLoyalty              EnumsEnchantType = 31
+	EnumsEnchantTypeChanneling           EnumsEnchantType = 32
+	EnumsEnchantTypeMultishot            EnumsEnchantType = 33
+	EnumsEnchantTypePiercing             EnumsEnchantType = 34
+	EnumsEnchantTypeQuickCharge          EnumsEnchantType = 35
+	EnumsEnchantTypeSoulSpeed            EnumsEnchantType = 36
+	EnumsEnchantTypeSwiftSneak           EnumsEnchantType = 37
+	EnumsEnchantTypeWindBurst            EnumsEnchantType = 38
+	EnumsEnchantTypeDensity              EnumsEnchantType = 39
+	EnumsEnchantTypeBreach               EnumsEnchantType = 40
+	EnumsEnchantTypeLunge                EnumsEnchantType = 41
+	EnumsEnchantTypeNumEnchantments      EnumsEnchantType = 42
+	EnumsEnchantTypeInvalidEnchantment   EnumsEnchantType = 43
+)
+
+type EnumsGameType int32
+
+const (
+	EnumsGameTypeUndefined EnumsGameType = -1
+	EnumsGameTypeSurvival  EnumsGameType = 0
+	EnumsGameTypeCreative  EnumsGameType = 1
+	EnumsGameTypeAdventure EnumsGameType = 2
+	EnumsGameTypeDefault   EnumsGameType = 5
+	EnumsGameTypeSpectator EnumsGameType = 6
+)
+
+type EnumsGeneratorType int32
+
+const (
+	EnumsGeneratorTypeLegacy    EnumsGeneratorType = 0
+	EnumsGeneratorTypeOverworld EnumsGeneratorType = 1
+	EnumsGeneratorTypeFlat      EnumsGeneratorType = 2
+	EnumsGeneratorTypeNether    EnumsGeneratorType = 3
+	EnumsGeneratorTypeTheEnd    EnumsGeneratorType = 4
+	EnumsGeneratorTypeVoid      EnumsGeneratorType = 5
+	EnumsGeneratorTypeUndefined EnumsGeneratorType = 6
+)
+
+type EnumsGraphicsMode uint8
+
+const (
+	EnumsGraphicsModeSimple    EnumsGraphicsMode = 0
+	EnumsGraphicsModeFancy     EnumsGraphicsMode = 1
+	EnumsGraphicsModeAdvanced  EnumsGraphicsMode = 2
+	EnumsGraphicsModeRayTraced EnumsGraphicsMode = 3
+)
+
+type EnumsGraphicsOverrideParameterType uint8
+
+const (
+	EnumsGraphicsOverrideParameterTypeSkyZenithColor          EnumsGraphicsOverrideParameterType = 0
+	EnumsGraphicsOverrideParameterTypeSkyHorizonColor         EnumsGraphicsOverrideParameterType = 1
+	EnumsGraphicsOverrideParameterTypeHorizonBlendMin         EnumsGraphicsOverrideParameterType = 2
+	EnumsGraphicsOverrideParameterTypeHorizonBlendMax         EnumsGraphicsOverrideParameterType = 3
+	EnumsGraphicsOverrideParameterTypeHorizonBlendStart       EnumsGraphicsOverrideParameterType = 4
+	EnumsGraphicsOverrideParameterTypeHorizonBlendMieStart    EnumsGraphicsOverrideParameterType = 5
+	EnumsGraphicsOverrideParameterTypeRayleighStrength        EnumsGraphicsOverrideParameterType = 6
+	EnumsGraphicsOverrideParameterTypeSunMieStrength          EnumsGraphicsOverrideParameterType = 7
+	EnumsGraphicsOverrideParameterTypeMoonMieStrength         EnumsGraphicsOverrideParameterType = 8
+	EnumsGraphicsOverrideParameterTypeSunGlareShape           EnumsGraphicsOverrideParameterType = 9
+	EnumsGraphicsOverrideParameterTypeChlorophyll             EnumsGraphicsOverrideParameterType = 10
+	EnumsGraphicsOverrideParameterTypeCDOM                    EnumsGraphicsOverrideParameterType = 11
+	EnumsGraphicsOverrideParameterTypeSuspendedSediment       EnumsGraphicsOverrideParameterType = 12
+	EnumsGraphicsOverrideParameterTypeWavesDepth              EnumsGraphicsOverrideParameterType = 13
+	EnumsGraphicsOverrideParameterTypeWavesFrequency          EnumsGraphicsOverrideParameterType = 14
+	EnumsGraphicsOverrideParameterTypeWavesFrequencyScaling   EnumsGraphicsOverrideParameterType = 15
+	EnumsGraphicsOverrideParameterTypeWavesSpeed              EnumsGraphicsOverrideParameterType = 16
+	EnumsGraphicsOverrideParameterTypeWavesSpeedScaling       EnumsGraphicsOverrideParameterType = 17
+	EnumsGraphicsOverrideParameterTypeWavesShape              EnumsGraphicsOverrideParameterType = 18
+	EnumsGraphicsOverrideParameterTypeWavesOctaves            EnumsGraphicsOverrideParameterType = 19
+	EnumsGraphicsOverrideParameterTypeWavesMix                EnumsGraphicsOverrideParameterType = 20
+	EnumsGraphicsOverrideParameterTypeWavesPull               EnumsGraphicsOverrideParameterType = 21
+	EnumsGraphicsOverrideParameterTypeWavesDirectionIncrement EnumsGraphicsOverrideParameterType = 22
+	EnumsGraphicsOverrideParameterTypeMidtonesContrast        EnumsGraphicsOverrideParameterType = 23
+	EnumsGraphicsOverrideParameterTypeHighlightsContrast      EnumsGraphicsOverrideParameterType = 24
+	EnumsGraphicsOverrideParameterTypeShadowsContrast         EnumsGraphicsOverrideParameterType = 25
+	EnumsGraphicsOverrideParameterTypeHighlightsGain          EnumsGraphicsOverrideParameterType = 26
+	EnumsGraphicsOverrideParameterTypeHighlightsGamma         EnumsGraphicsOverrideParameterType = 27
+	EnumsGraphicsOverrideParameterTypeHighlightsOffset        EnumsGraphicsOverrideParameterType = 28
+	EnumsGraphicsOverrideParameterTypeHighlightsSaturation    EnumsGraphicsOverrideParameterType = 29
+	EnumsGraphicsOverrideParameterTypeMidtonesGain            EnumsGraphicsOverrideParameterType = 30
+	EnumsGraphicsOverrideParameterTypeMidtonesGamma           EnumsGraphicsOverrideParameterType = 31
+	EnumsGraphicsOverrideParameterTypeMidtonesOffset          EnumsGraphicsOverrideParameterType = 32
+	EnumsGraphicsOverrideParameterTypeMidtonesSaturation      EnumsGraphicsOverrideParameterType = 33
+	EnumsGraphicsOverrideParameterTypeShadowsGain             EnumsGraphicsOverrideParameterType = 34
+	EnumsGraphicsOverrideParameterTypeShadowsGamma            EnumsGraphicsOverrideParameterType = 35
+	EnumsGraphicsOverrideParameterTypeShadowsOffset           EnumsGraphicsOverrideParameterType = 36
+	EnumsGraphicsOverrideParameterTypeShadowsSaturation       EnumsGraphicsOverrideParameterType = 37
+	EnumsGraphicsOverrideParameterTypeHighlightsMin           EnumsGraphicsOverrideParameterType = 38
+	EnumsGraphicsOverrideParameterTypeShadowsMax              EnumsGraphicsOverrideParameterType = 39
+	EnumsGraphicsOverrideParameterTypeTemperature             EnumsGraphicsOverrideParameterType = 40
+	EnumsGraphicsOverrideParameterTypeSunColor                EnumsGraphicsOverrideParameterType = 41
+	EnumsGraphicsOverrideParameterTypeSunIlluminance          EnumsGraphicsOverrideParameterType = 42
+	EnumsGraphicsOverrideParameterTypeMoonColor               EnumsGraphicsOverrideParameterType = 43
+	EnumsGraphicsOverrideParameterTypeMoonIlluminance         EnumsGraphicsOverrideParameterType = 44
+	EnumsGraphicsOverrideParameterTypeFlashColor              EnumsGraphicsOverrideParameterType = 45
+	EnumsGraphicsOverrideParameterTypeFlashIlluminance        EnumsGraphicsOverrideParameterType = 46
+	EnumsGraphicsOverrideParameterTypeAmbientColor            EnumsGraphicsOverrideParameterType = 47
+	EnumsGraphicsOverrideParameterTypeAmbientIlluminance      EnumsGraphicsOverrideParameterType = 48
+	EnumsGraphicsOverrideParameterTypeEmissiveDesaturation    EnumsGraphicsOverrideParameterType = 49
+	EnumsGraphicsOverrideParameterTypeSkyIntensity            EnumsGraphicsOverrideParameterType = 50
+	EnumsGraphicsOverrideParameterTypeOrbitalOffsetDegrees    EnumsGraphicsOverrideParameterType = 51
+)
+
+type EnumsHudElement int32
+
+const (
+	EnumsHudElementPaperDoll     EnumsHudElement = 0
+	EnumsHudElementArmor         EnumsHudElement = 1
+	EnumsHudElementToolTips      EnumsHudElement = 2
+	EnumsHudElementTouchControls EnumsHudElement = 3
+	EnumsHudElementCrosshair     EnumsHudElement = 4
+	EnumsHudElementHotBar        EnumsHudElement = 5
+	EnumsHudElementHealth        EnumsHudElement = 6
+	EnumsHudElementProgressBar   EnumsHudElement = 7
+	EnumsHudElementHunger        EnumsHudElement = 8
+	EnumsHudElementAirBubbles    EnumsHudElement = 9
+	EnumsHudElementHorseHealth   EnumsHudElement = 10
+	EnumsHudElementStatusEffects EnumsHudElement = 11
+	EnumsHudElementItemText      EnumsHudElement = 12
+)
+
+type EnumsHudVisibility int32
+
+const (
+	EnumsHudVisibilityHide  EnumsHudVisibility = 0
+	EnumsHudVisibilityReset EnumsHudVisibility = 1
+)
+
+type EnumsInputMode uint32
+
+const (
+	EnumsInputModeUndefined        EnumsInputMode = 0
+	EnumsInputModeMouse            EnumsInputMode = 1
+	EnumsInputModeTouch            EnumsInputMode = 2
+	EnumsInputModeGamePad          EnumsInputMode = 3
+	EnumsInputModeMotionController EnumsInputMode = 4
+	EnumsInputModeCount            EnumsInputMode = 5
+)
+
+type EnumsInteractPacketPayloadAction uint8
+
+const (
+	EnumsInteractPacketPayloadActionInvalid        EnumsInteractPacketPayloadAction = 0
+	EnumsInteractPacketPayloadActionStopRiding     EnumsInteractPacketPayloadAction = 3
+	EnumsInteractPacketPayloadActionInteractUpdate EnumsInteractPacketPayloadAction = 4
+	EnumsInteractPacketPayloadActionNpcOpen        EnumsInteractPacketPayloadAction = 5
+	EnumsInteractPacketPayloadActionOpenInventory  EnumsInteractPacketPayloadAction = 6
+)
+
+type EnumsInventoryLayout int32
+
+const (
+	EnumsInventoryLayoutNone           EnumsInventoryLayout = 0
+	EnumsInventoryLayoutInventoryOnly  EnumsInventoryLayout = 1
+	EnumsInventoryLayoutDefault        EnumsInventoryLayout = 2
+	EnumsInventoryLayoutRecipeBookOnly EnumsInventoryLayout = 3
+)
+
+type EnumsInventoryLeftTabIndex int32
+
+const (
+	EnumsInventoryLeftTabIndexNone               EnumsInventoryLeftTabIndex = 0
+	EnumsInventoryLeftTabIndexRecipeConstruction EnumsInventoryLeftTabIndex = 1
+	EnumsInventoryLeftTabIndexRecipeEquipment    EnumsInventoryLeftTabIndex = 2
+	EnumsInventoryLeftTabIndexRecipeItems        EnumsInventoryLeftTabIndex = 3
+	EnumsInventoryLeftTabIndexRecipeNature       EnumsInventoryLeftTabIndex = 4
+	EnumsInventoryLeftTabIndexRecipeSearch       EnumsInventoryLeftTabIndex = 5
+	EnumsInventoryLeftTabIndexSurvival           EnumsInventoryLeftTabIndex = 6
+)
+
+type EnumsInventoryRightTabIndex int32
+
+const (
+	EnumsInventoryRightTabIndexNone       EnumsInventoryRightTabIndex = 0
+	EnumsInventoryRightTabIndexFullScreen EnumsInventoryRightTabIndex = 1
+	EnumsInventoryRightTabIndexCrafting   EnumsInventoryRightTabIndex = 2
+	EnumsInventoryRightTabIndexArmor      EnumsInventoryRightTabIndex = 3
+)
+
+type EnumsInventorySourceInventorySourceFlags uint32
+
+const (
+	EnumsInventorySourceInventorySourceFlagsNoFlag                 EnumsInventorySourceInventorySourceFlags = 0
+	EnumsInventorySourceInventorySourceFlagsWorldInteractionRandom EnumsInventorySourceInventorySourceFlags = 1
+)
+
+type EnumsInventorySourceType uint32
+
+const (
+	EnumsInventorySourceTypeContainerInventory        EnumsInventorySourceType = 0
+	EnumsInventorySourceTypeGlobalInventory           EnumsInventorySourceType = 1
+	EnumsInventorySourceTypeWorldInteraction          EnumsInventorySourceType = 2
+	EnumsInventorySourceTypeCreativeInventory         EnumsInventorySourceType = 3
+	EnumsInventorySourceTypeNonImplementedFeatureTODO EnumsInventorySourceType = 99999
+)
+
+type EnumsItemReleaseInventoryTransactionActionType int32
+
+const (
+	EnumsItemReleaseInventoryTransactionActionTypeRelease EnumsItemReleaseInventoryTransactionActionType = 0
+	EnumsItemReleaseInventoryTransactionActionTypeUse     EnumsItemReleaseInventoryTransactionActionType = 1
+)
+
+type EnumsItemStackNetResult uint8
+
+const (
+	EnumsItemStackNetResultSuccess                                          EnumsItemStackNetResult = 0
+	EnumsItemStackNetResultError                                            EnumsItemStackNetResult = 1
+	EnumsItemStackNetResultInvalidRequestActionType                         EnumsItemStackNetResult = 2
+	EnumsItemStackNetResultActionRequestNotAllowed                          EnumsItemStackNetResult = 3
+	EnumsItemStackNetResultScreenHandlerEndRequestFailed                    EnumsItemStackNetResult = 4
+	EnumsItemStackNetResultItemRequestActionHandlerCommitFailed             EnumsItemStackNetResult = 5
+	EnumsItemStackNetResultInvalidRequestCraftActionType                    EnumsItemStackNetResult = 6
+	EnumsItemStackNetResultInvalidCraftRequest                              EnumsItemStackNetResult = 7
+	EnumsItemStackNetResultInvalidCraftRequestScreen                        EnumsItemStackNetResult = 8
+	EnumsItemStackNetResultInvalidCraftResult                               EnumsItemStackNetResult = 9
+	EnumsItemStackNetResultInvalidCraftResultIndex                          EnumsItemStackNetResult = 10
+	EnumsItemStackNetResultInvalidCraftResultItem                           EnumsItemStackNetResult = 11
+	EnumsItemStackNetResultInvalidItemNetId                                 EnumsItemStackNetResult = 12
+	EnumsItemStackNetResultMissingCreatedOutputContainer                    EnumsItemStackNetResult = 13
+	EnumsItemStackNetResultFailedToSetCreatedItemOutputSlot                 EnumsItemStackNetResult = 14
+	EnumsItemStackNetResultRequestAlreadyInProgress                         EnumsItemStackNetResult = 15
+	EnumsItemStackNetResultFailedToInitSparseContainer                      EnumsItemStackNetResult = 16
+	EnumsItemStackNetResultResultTransferFailed                             EnumsItemStackNetResult = 17
+	EnumsItemStackNetResultExpectedItemSlotNotFullyConsumed                 EnumsItemStackNetResult = 18
+	EnumsItemStackNetResultExpectedAnywhereItemNotFullyConsumed             EnumsItemStackNetResult = 19
+	EnumsItemStackNetResultItemAlreadyConsumedFromSlot                      EnumsItemStackNetResult = 20
+	EnumsItemStackNetResultConsumedTooMuchFromSlot                          EnumsItemStackNetResult = 21
+	EnumsItemStackNetResultMismatchSlotExpectedConsumedItem                 EnumsItemStackNetResult = 22
+	EnumsItemStackNetResultMismatchSlotExpectedConsumedItemNetIdVariant     EnumsItemStackNetResult = 23
+	EnumsItemStackNetResultFailedToMatchExpectedSlotConsumedItem            EnumsItemStackNetResult = 24
+	EnumsItemStackNetResultFailedToMatchExpectedAllowedAnywhereConsumedItem EnumsItemStackNetResult = 25
+	EnumsItemStackNetResultConsumedItemOutOfAllowedSlotRange                EnumsItemStackNetResult = 26
+	EnumsItemStackNetResultConsumedItemNotAllowed                           EnumsItemStackNetResult = 27
+	EnumsItemStackNetResultPlayerNotInCreativeMode                          EnumsItemStackNetResult = 28
+	EnumsItemStackNetResultInvalidExperimentalRecipeRequest                 EnumsItemStackNetResult = 29
+	EnumsItemStackNetResultFailedToCraftCreative                            EnumsItemStackNetResult = 30
+	EnumsItemStackNetResultFailedToGetLevelRecipe                           EnumsItemStackNetResult = 31
+	EnumsItemStackNetResultFailedToFindRecipeByNetId                        EnumsItemStackNetResult = 32
+	EnumsItemStackNetResultMismatchedCraftingSize                           EnumsItemStackNetResult = 33
+	EnumsItemStackNetResultMissingInputSparseContainer                      EnumsItemStackNetResult = 34
+	EnumsItemStackNetResultMismatchedRecipeForInputGridItems                EnumsItemStackNetResult = 35
+	EnumsItemStackNetResultEmptyCraftResults                                EnumsItemStackNetResult = 36
+	EnumsItemStackNetResultFailedToEnchant                                  EnumsItemStackNetResult = 37
+	EnumsItemStackNetResultMissingInputItem                                 EnumsItemStackNetResult = 38
+	EnumsItemStackNetResultInsufficientPlayerLevelToEnchant                 EnumsItemStackNetResult = 39
+	EnumsItemStackNetResultMissingMaterialItem                              EnumsItemStackNetResult = 40
+	EnumsItemStackNetResultMissingActor                                     EnumsItemStackNetResult = 41
+	EnumsItemStackNetResultUnknownPrimaryEffect                             EnumsItemStackNetResult = 42
+	EnumsItemStackNetResultPrimaryEffectOutOfRange                          EnumsItemStackNetResult = 43
+	EnumsItemStackNetResultPrimaryEffectUnavailable                         EnumsItemStackNetResult = 44
+	EnumsItemStackNetResultSecondaryEffectOutOfRange                        EnumsItemStackNetResult = 45
+	EnumsItemStackNetResultSecondaryEffectUnavailable                       EnumsItemStackNetResult = 46
+	EnumsItemStackNetResultDstContainerEqualToCreatedOutputContainer        EnumsItemStackNetResult = 47
+	EnumsItemStackNetResultDstContainerAndSlotEqualToSrcContainerAndSlot    EnumsItemStackNetResult = 48
+	EnumsItemStackNetResultFailedToValidateSrcSlot                          EnumsItemStackNetResult = 49
+	EnumsItemStackNetResultFailedToValidateDstSlot                          EnumsItemStackNetResult = 50
+	EnumsItemStackNetResultInvalidAdjustedAmount                            EnumsItemStackNetResult = 51
+	EnumsItemStackNetResultInvalidItemSetType                               EnumsItemStackNetResult = 52
+	EnumsItemStackNetResultInvalidTransferAmount                            EnumsItemStackNetResult = 53
+	EnumsItemStackNetResultCannotSwapItem                                   EnumsItemStackNetResult = 54
+	EnumsItemStackNetResultCannotPlaceItem                                  EnumsItemStackNetResult = 55
+	EnumsItemStackNetResultUnhandledItemSetType                             EnumsItemStackNetResult = 56
+	EnumsItemStackNetResultInvalidRemovedAmount                             EnumsItemStackNetResult = 57
+	EnumsItemStackNetResultInvalidRegion                                    EnumsItemStackNetResult = 58
+	EnumsItemStackNetResultCannotDropItem                                   EnumsItemStackNetResult = 59
+	EnumsItemStackNetResultCannotDestroyItem                                EnumsItemStackNetResult = 60
+	EnumsItemStackNetResultInvalidSourceContainer                           EnumsItemStackNetResult = 61
+	EnumsItemStackNetResultItemNotConsumed                                  EnumsItemStackNetResult = 62
+	EnumsItemStackNetResultInvalidNumCrafts                                 EnumsItemStackNetResult = 63
+	EnumsItemStackNetResultInvalidCraftResultStackSize                      EnumsItemStackNetResult = 64
+	EnumsItemStackNetResultCannotRemoveItem                                 EnumsItemStackNetResult = 65
+	EnumsItemStackNetResultCannotConsumeItem                                EnumsItemStackNetResult = 66
+	EnumsItemStackNetResultScreenStackError                                 EnumsItemStackNetResult = 67
+)
+
+type EnumsItemStackRequestActionType uint8
+
+const (
+	EnumsItemStackRequestActionTypeTake                     EnumsItemStackRequestActionType = 0
+	EnumsItemStackRequestActionTypePlace                    EnumsItemStackRequestActionType = 1
+	EnumsItemStackRequestActionTypeSwap                     EnumsItemStackRequestActionType = 2
+	EnumsItemStackRequestActionTypeDrop                     EnumsItemStackRequestActionType = 3
+	EnumsItemStackRequestActionTypeDestroy                  EnumsItemStackRequestActionType = 4
+	EnumsItemStackRequestActionTypeConsume                  EnumsItemStackRequestActionType = 5
+	EnumsItemStackRequestActionTypeCreate                   EnumsItemStackRequestActionType = 6
+	EnumsItemStackRequestActionTypePlaceInItemContainer     EnumsItemStackRequestActionType = 7
+	EnumsItemStackRequestActionTypeTakeFromItemContainer    EnumsItemStackRequestActionType = 8
+	EnumsItemStackRequestActionTypeScreenLabTableCombine    EnumsItemStackRequestActionType = 9
+	EnumsItemStackRequestActionTypeScreenBeaconPayment      EnumsItemStackRequestActionType = 10
+	EnumsItemStackRequestActionTypeScreenHUDMineBlock       EnumsItemStackRequestActionType = 11
+	EnumsItemStackRequestActionTypeCraftRecipe              EnumsItemStackRequestActionType = 12
+	EnumsItemStackRequestActionTypeCraftRecipeAuto          EnumsItemStackRequestActionType = 13
+	EnumsItemStackRequestActionTypeCraftCreative            EnumsItemStackRequestActionType = 14
+	EnumsItemStackRequestActionTypeCraftRecipeOptional      EnumsItemStackRequestActionType = 15
+	EnumsItemStackRequestActionTypeCraftRepairAndDisenchant EnumsItemStackRequestActionType = 16
+	EnumsItemStackRequestActionTypeCraftLoom                EnumsItemStackRequestActionType = 17
+	EnumsItemStackRequestActionTypeCraftNonImplemented      EnumsItemStackRequestActionType = 18
+	EnumsItemStackRequestActionTypeCraftResults             EnumsItemStackRequestActionType = 19
+)
+
+type EnumsItemStackRequestCerealItemDescriptorType uint8
+
+const (
+	EnumsItemStackRequestCerealItemDescriptorTypeEmpty    EnumsItemStackRequestCerealItemDescriptorType = 0
+	EnumsItemStackRequestCerealItemDescriptorTypeItemName EnumsItemStackRequestCerealItemDescriptorType = 1
+	EnumsItemStackRequestCerealItemDescriptorTypeMolang   EnumsItemStackRequestCerealItemDescriptorType = 2
+	EnumsItemStackRequestCerealItemDescriptorTypeItemTag  EnumsItemStackRequestCerealItemDescriptorType = 3
+)
+
+type EnumsItemUseInventoryTransactionActionType int32
+
+const (
+	EnumsItemUseInventoryTransactionActionTypePlace       EnumsItemUseInventoryTransactionActionType = 0
+	EnumsItemUseInventoryTransactionActionTypeUse         EnumsItemUseInventoryTransactionActionType = 1
+	EnumsItemUseInventoryTransactionActionTypeDestroy     EnumsItemUseInventoryTransactionActionType = 2
+	EnumsItemUseInventoryTransactionActionTypeUseAsAttack EnumsItemUseInventoryTransactionActionType = 3
+)
+
+type EnumsItemUseInventoryTransactionClientCooldownState uint8
+
+const (
+	EnumsItemUseInventoryTransactionClientCooldownStateOff EnumsItemUseInventoryTransactionClientCooldownState = 0
+	EnumsItemUseInventoryTransactionClientCooldownStateOn  EnumsItemUseInventoryTransactionClientCooldownState = 1
+)
+
+type EnumsItemUseInventoryTransactionPredictedResult uint8
+
+const (
+	EnumsItemUseInventoryTransactionPredictedResultFailure EnumsItemUseInventoryTransactionPredictedResult = 0
+	EnumsItemUseInventoryTransactionPredictedResultSuccess EnumsItemUseInventoryTransactionPredictedResult = 1
+)
+
+type EnumsItemUseInventoryTransactionTriggerType uint8
+
+const (
+	EnumsItemUseInventoryTransactionTriggerTypeUnknown        EnumsItemUseInventoryTransactionTriggerType = 0
+	EnumsItemUseInventoryTransactionTriggerTypePlayerInput    EnumsItemUseInventoryTransactionTriggerType = 1
+	EnumsItemUseInventoryTransactionTriggerTypeSimulationTick EnumsItemUseInventoryTransactionTriggerType = 2
+)
+
+type EnumsItemUseOnActorInventoryTransactionActionType int32
+
+const (
+	EnumsItemUseOnActorInventoryTransactionActionTypeInteract     EnumsItemUseOnActorInventoryTransactionActionType = 0
+	EnumsItemUseOnActorInventoryTransactionActionTypeAttack       EnumsItemUseOnActorInventoryTransactionActionType = 1
+	EnumsItemUseOnActorInventoryTransactionActionTypeItemInteract EnumsItemUseOnActorInventoryTransactionActionType = 2
+)
+
+type EnumsItemVersion int32
+
+const (
+	EnumsItemVersionLegacy     EnumsItemVersion = 0
+	EnumsItemVersionDataDriven EnumsItemVersion = 1
+	EnumsItemVersionNone       EnumsItemVersion = 2
+)
+
+type EnumsLabTablePacketPayloadType uint8
+
+const (
+	EnumsLabTablePacketPayloadTypeStartCombine  EnumsLabTablePacketPayloadType = 0
+	EnumsLabTablePacketPayloadTypeStartReaction EnumsLabTablePacketPayloadType = 1
+	EnumsLabTablePacketPayloadTypeReset         EnumsLabTablePacketPayloadType = 2
+)
+
+type EnumsLabTableReactionType uint8
+
+const (
+	EnumsLabTableReactionTypeNone               EnumsLabTableReactionType = 0
+	EnumsLabTableReactionTypeIceBomb            EnumsLabTableReactionType = 1
+	EnumsLabTableReactionTypeBleach             EnumsLabTableReactionType = 2
+	EnumsLabTableReactionTypeElephantToothpaste EnumsLabTableReactionType = 3
+	EnumsLabTableReactionTypeFertilizer         EnumsLabTableReactionType = 4
+	EnumsLabTableReactionTypeHeatBlock          EnumsLabTableReactionType = 5
+	EnumsLabTableReactionTypeMagnesiumSalts     EnumsLabTableReactionType = 6
+	EnumsLabTableReactionTypeMiscFire           EnumsLabTableReactionType = 7
+	EnumsLabTableReactionTypeMiscExplosion      EnumsLabTableReactionType = 8
+	EnumsLabTableReactionTypeMiscLava           EnumsLabTableReactionType = 9
+	EnumsLabTableReactionTypeMiscMystical       EnumsLabTableReactionType = 10
+	EnumsLabTableReactionTypeMiscSmoke          EnumsLabTableReactionType = 11
+	EnumsLabTableReactionTypeMiscLargeSmoke     EnumsLabTableReactionType = 12
+)
+
+type EnumsLegacyTelemetryEventPacketPayloadType int32
+
+const (
+	EnumsLegacyTelemetryEventPacketPayloadTypeAchievement                     EnumsLegacyTelemetryEventPacketPayloadType = 0
+	EnumsLegacyTelemetryEventPacketPayloadTypeInteraction                     EnumsLegacyTelemetryEventPacketPayloadType = 1
+	EnumsLegacyTelemetryEventPacketPayloadTypePortalCreated                   EnumsLegacyTelemetryEventPacketPayloadType = 2
+	EnumsLegacyTelemetryEventPacketPayloadTypePortalUsed                      EnumsLegacyTelemetryEventPacketPayloadType = 3
+	EnumsLegacyTelemetryEventPacketPayloadTypeMobKilled                       EnumsLegacyTelemetryEventPacketPayloadType = 4
+	EnumsLegacyTelemetryEventPacketPayloadTypeCauldronUsed                    EnumsLegacyTelemetryEventPacketPayloadType = 5
+	EnumsLegacyTelemetryEventPacketPayloadTypePlayerDied                      EnumsLegacyTelemetryEventPacketPayloadType = 6
+	EnumsLegacyTelemetryEventPacketPayloadTypeBossKilled                      EnumsLegacyTelemetryEventPacketPayloadType = 7
+	EnumsLegacyTelemetryEventPacketPayloadTypeAgentCommandOBSOLETE            EnumsLegacyTelemetryEventPacketPayloadType = 8
+	EnumsLegacyTelemetryEventPacketPayloadTypeAgentCreated                    EnumsLegacyTelemetryEventPacketPayloadType = 9
+	EnumsLegacyTelemetryEventPacketPayloadTypePatternRemovedOBSOLETE          EnumsLegacyTelemetryEventPacketPayloadType = 10
+	EnumsLegacyTelemetryEventPacketPayloadTypeSlashCommand                    EnumsLegacyTelemetryEventPacketPayloadType = 11
+	EnumsLegacyTelemetryEventPacketPayloadTypeFishBucketedOBSOLETE            EnumsLegacyTelemetryEventPacketPayloadType = 12
+	EnumsLegacyTelemetryEventPacketPayloadTypeMobBorn                         EnumsLegacyTelemetryEventPacketPayloadType = 13
+	EnumsLegacyTelemetryEventPacketPayloadTypePetDiedOBSOLETE                 EnumsLegacyTelemetryEventPacketPayloadType = 14
+	EnumsLegacyTelemetryEventPacketPayloadTypePOICauldronUsed                 EnumsLegacyTelemetryEventPacketPayloadType = 15
+	EnumsLegacyTelemetryEventPacketPayloadTypeComposterUsed                   EnumsLegacyTelemetryEventPacketPayloadType = 16
+	EnumsLegacyTelemetryEventPacketPayloadTypeBellUsed                        EnumsLegacyTelemetryEventPacketPayloadType = 17
+	EnumsLegacyTelemetryEventPacketPayloadTypeActorDefinition                 EnumsLegacyTelemetryEventPacketPayloadType = 18
+	EnumsLegacyTelemetryEventPacketPayloadTypeRaidUpdate                      EnumsLegacyTelemetryEventPacketPayloadType = 19
+	EnumsLegacyTelemetryEventPacketPayloadTypePlayerMovementAnomalyOBSOLETE   EnumsLegacyTelemetryEventPacketPayloadType = 20
+	EnumsLegacyTelemetryEventPacketPayloadTypePlayerMovementCorrectedOBSOLETE EnumsLegacyTelemetryEventPacketPayloadType = 21
+	EnumsLegacyTelemetryEventPacketPayloadTypeHoneyHarvested                  EnumsLegacyTelemetryEventPacketPayloadType = 22
+	EnumsLegacyTelemetryEventPacketPayloadTypeTargetBlockHit                  EnumsLegacyTelemetryEventPacketPayloadType = 23
+	EnumsLegacyTelemetryEventPacketPayloadTypePiglinBarter                    EnumsLegacyTelemetryEventPacketPayloadType = 24
+	EnumsLegacyTelemetryEventPacketPayloadTypePlayerWaxedOrUnwaxedCopper      EnumsLegacyTelemetryEventPacketPayloadType = 25
+	EnumsLegacyTelemetryEventPacketPayloadTypeCodeBuilderRuntimeAction        EnumsLegacyTelemetryEventPacketPayloadType = 26
+	EnumsLegacyTelemetryEventPacketPayloadTypeCodeBuilderScoreboard           EnumsLegacyTelemetryEventPacketPayloadType = 27
+	EnumsLegacyTelemetryEventPacketPayloadTypeStriderRiddenInLavaInOverworld  EnumsLegacyTelemetryEventPacketPayloadType = 28
+	EnumsLegacyTelemetryEventPacketPayloadTypeSneakCloseToSculkSensor         EnumsLegacyTelemetryEventPacketPayloadType = 29
+	EnumsLegacyTelemetryEventPacketPayloadTypeCarefulRestoration              EnumsLegacyTelemetryEventPacketPayloadType = 30
+	EnumsLegacyTelemetryEventPacketPayloadTypeItemUsed                        EnumsLegacyTelemetryEventPacketPayloadType = 31
+)
+
+type EnumsMapDecorationType int8
+
+const (
+	EnumsMapDecorationTypeMarkerWhite      EnumsMapDecorationType = 0
+	EnumsMapDecorationTypeMarkerGreen      EnumsMapDecorationType = 1
+	EnumsMapDecorationTypeMarkerRed        EnumsMapDecorationType = 2
+	EnumsMapDecorationTypeMarkerBlue       EnumsMapDecorationType = 3
+	EnumsMapDecorationTypeXWhite           EnumsMapDecorationType = 4
+	EnumsMapDecorationTypeTriangleRed      EnumsMapDecorationType = 5
+	EnumsMapDecorationTypeSquareWhite      EnumsMapDecorationType = 6
+	EnumsMapDecorationTypeMarkerSign       EnumsMapDecorationType = 7
+	EnumsMapDecorationTypeMarkerPink       EnumsMapDecorationType = 8
+	EnumsMapDecorationTypeMarkerOrange     EnumsMapDecorationType = 9
+	EnumsMapDecorationTypeMarkerYellow     EnumsMapDecorationType = 10
+	EnumsMapDecorationTypeMarkerTeal       EnumsMapDecorationType = 11
+	EnumsMapDecorationTypeTriangleGreen    EnumsMapDecorationType = 12
+	EnumsMapDecorationTypeSmallSquareWhite EnumsMapDecorationType = 13
+	EnumsMapDecorationTypeMansion          EnumsMapDecorationType = 14
+	EnumsMapDecorationTypeMonument         EnumsMapDecorationType = 15
+	EnumsMapDecorationTypeNoDraw           EnumsMapDecorationType = 16
+	EnumsMapDecorationTypeVillageDesert    EnumsMapDecorationType = 17
+	EnumsMapDecorationTypeVillagePlains    EnumsMapDecorationType = 18
+	EnumsMapDecorationTypeVillageSavanna   EnumsMapDecorationType = 19
+	EnumsMapDecorationTypeVillageSnowy     EnumsMapDecorationType = 20
+	EnumsMapDecorationTypeVillageTaiga     EnumsMapDecorationType = 21
+	EnumsMapDecorationTypeJungleTemple     EnumsMapDecorationType = 22
+	EnumsMapDecorationTypeWitchHut         EnumsMapDecorationType = 23
+	EnumsMapDecorationTypeTrialChambers    EnumsMapDecorationType = 24
+	EnumsMapDecorationTypeCount            EnumsMapDecorationType = 25
+)
+
+type EnumsMapItemTrackedActorType int32
+
+const (
+	EnumsMapItemTrackedActorTypeEntity      EnumsMapItemTrackedActorType = 0
+	EnumsMapItemTrackedActorTypeBlockEntity EnumsMapItemTrackedActorType = 1
+	EnumsMapItemTrackedActorTypeOther       EnumsMapItemTrackedActorType = 2
+)
+
+type EnumsMemoryMemoryCategory uint8
+
+const (
+	EnumsMemoryMemoryCategoryUnknown                               EnumsMemoryMemoryCategory = 0
+	EnumsMemoryMemoryCategoryInvalidSizeUnknown                    EnumsMemoryMemoryCategory = 1
+	EnumsMemoryMemoryCategoryActor                                 EnumsMemoryMemoryCategory = 2
+	EnumsMemoryMemoryCategoryActorAnimation                        EnumsMemoryMemoryCategory = 3
+	EnumsMemoryMemoryCategoryActorRendering                        EnumsMemoryMemoryCategory = 4
+	EnumsMemoryMemoryCategoryBlockTickingQueues                    EnumsMemoryMemoryCategory = 5
+	EnumsMemoryMemoryCategoryBiomeStorage                          EnumsMemoryMemoryCategory = 6
+	EnumsMemoryMemoryCategoryBlobs                                 EnumsMemoryMemoryCategory = 7
+	EnumsMemoryMemoryCategoryCereal                                EnumsMemoryMemoryCategory = 8
+	EnumsMemoryMemoryCategoryCircuitSystem                         EnumsMemoryMemoryCategory = 9
+	EnumsMemoryMemoryCategoryClient                                EnumsMemoryMemoryCategory = 10
+	EnumsMemoryMemoryCategoryCommands                              EnumsMemoryMemoryCategory = 11
+	EnumsMemoryMemoryCategoryDBStorage                             EnumsMemoryMemoryCategory = 12
+	EnumsMemoryMemoryCategoryDebug                                 EnumsMemoryMemoryCategory = 13
+	EnumsMemoryMemoryCategoryDocumentation                         EnumsMemoryMemoryCategory = 14
+	EnumsMemoryMemoryCategoryECSSystems                            EnumsMemoryMemoryCategory = 15
+	EnumsMemoryMemoryCategoryFMOD                                  EnumsMemoryMemoryCategory = 16
+	EnumsMemoryMemoryCategoryFonts                                 EnumsMemoryMemoryCategory = 17
+	EnumsMemoryMemoryCategoryImGui                                 EnumsMemoryMemoryCategory = 18
+	EnumsMemoryMemoryCategoryInput                                 EnumsMemoryMemoryCategory = 19
+	EnumsMemoryMemoryCategoryJsonUI                                EnumsMemoryMemoryCategory = 20
+	EnumsMemoryMemoryCategoryJsonUIControlFactoryJson              EnumsMemoryMemoryCategory = 21
+	EnumsMemoryMemoryCategoryJsonUIControlTree                     EnumsMemoryMemoryCategory = 22
+	EnumsMemoryMemoryCategoryJsonUIControlTreeControlElement       EnumsMemoryMemoryCategory = 23
+	EnumsMemoryMemoryCategoryJsonUIControlTreePopulateDataBinding  EnumsMemoryMemoryCategory = 24
+	EnumsMemoryMemoryCategoryJsonUIControlTreePopulateFocus        EnumsMemoryMemoryCategory = 25
+	EnumsMemoryMemoryCategoryJsonUIControlTreePopulateLayout       EnumsMemoryMemoryCategory = 26
+	EnumsMemoryMemoryCategoryJsonUIControlTreePopulateOther        EnumsMemoryMemoryCategory = 27
+	EnumsMemoryMemoryCategoryJsonUIControlTreePopulateSprite       EnumsMemoryMemoryCategory = 28
+	EnumsMemoryMemoryCategoryJsonUIControlTreePopulateText         EnumsMemoryMemoryCategory = 29
+	EnumsMemoryMemoryCategoryJsonUIControlTreePopulateTTS          EnumsMemoryMemoryCategory = 30
+	EnumsMemoryMemoryCategoryJsonUIControlTreeVisibility           EnumsMemoryMemoryCategory = 31
+	EnumsMemoryMemoryCategoryJsonUICreateUI                        EnumsMemoryMemoryCategory = 32
+	EnumsMemoryMemoryCategoryJsonUIDefs                            EnumsMemoryMemoryCategory = 33
+	EnumsMemoryMemoryCategoryJsonUILayoutManager                   EnumsMemoryMemoryCategory = 34
+	EnumsMemoryMemoryCategoryJsonUILayoutManagerRemoveDependencies EnumsMemoryMemoryCategory = 35
+	EnumsMemoryMemoryCategoryJsonUILayoutManagerInitVariable       EnumsMemoryMemoryCategory = 36
+	EnumsMemoryMemoryCategoryLanguages                             EnumsMemoryMemoryCategory = 37
+	EnumsMemoryMemoryCategoryLevel                                 EnumsMemoryMemoryCategory = 38
+	EnumsMemoryMemoryCategoryLevelStructures                       EnumsMemoryMemoryCategory = 39
+	EnumsMemoryMemoryCategoryLevelChunk                            EnumsMemoryMemoryCategory = 40
+	EnumsMemoryMemoryCategoryLevelChunkGen                         EnumsMemoryMemoryCategory = 41
+	EnumsMemoryMemoryCategoryLevelChunkGenThreadLocal              EnumsMemoryMemoryCategory = 42
+	EnumsMemoryMemoryCategoryLightVolumeManager                    EnumsMemoryMemoryCategory = 43
+	EnumsMemoryMemoryCategoryNetwork                               EnumsMemoryMemoryCategory = 44
+	EnumsMemoryMemoryCategoryMarketplace                           EnumsMemoryMemoryCategory = 45
+	EnumsMemoryMemoryCategoryMaterialDragonCompiledDefinition      EnumsMemoryMemoryCategory = 46
+	EnumsMemoryMemoryCategoryMaterialDragonMaterial                EnumsMemoryMemoryCategory = 47
+	EnumsMemoryMemoryCategoryMaterialDragonResource                EnumsMemoryMemoryCategory = 48
+	EnumsMemoryMemoryCategoryMaterialDragonUniformMap              EnumsMemoryMemoryCategory = 49
+	EnumsMemoryMemoryCategoryMaterialRenderMaterial                EnumsMemoryMemoryCategory = 50
+	EnumsMemoryMemoryCategoryMaterialRenderMaterialGroup           EnumsMemoryMemoryCategory = 51
+	EnumsMemoryMemoryCategoryMaterialVariationManager              EnumsMemoryMemoryCategory = 52
+	EnumsMemoryMemoryCategoryMolang                                EnumsMemoryMemoryCategory = 53
+	EnumsMemoryMemoryCategoryOreUI                                 EnumsMemoryMemoryCategory = 54
+	EnumsMemoryMemoryCategoryOreUIClient                           EnumsMemoryMemoryCategory = 55
+	EnumsMemoryMemoryCategoryPersonaPieces                         EnumsMemoryMemoryCategory = 56
+	EnumsMemoryMemoryCategoryPersonaAnimations                     EnumsMemoryMemoryCategory = 57
+	EnumsMemoryMemoryCategoryPersonaTextures                       EnumsMemoryMemoryCategory = 58
+	EnumsMemoryMemoryCategoryPersonaCharacters                     EnumsMemoryMemoryCategory = 59
+	EnumsMemoryMemoryCategoryPersonaSkinPacks                      EnumsMemoryMemoryCategory = 60
+	EnumsMemoryMemoryCategoryPersonaRepo                           EnumsMemoryMemoryCategory = 61
+	EnumsMemoryMemoryCategoryPlayer                                EnumsMemoryMemoryCategory = 62
+	EnumsMemoryMemoryCategoryRenderChunk                           EnumsMemoryMemoryCategory = 63
+	EnumsMemoryMemoryCategoryRenderChunkIndexBuffer                EnumsMemoryMemoryCategory = 64
+	EnumsMemoryMemoryCategoryRenderChunkVertexBuffer               EnumsMemoryMemoryCategory = 65
+	EnumsMemoryMemoryCategoryRendering                             EnumsMemoryMemoryCategory = 66
+	EnumsMemoryMemoryCategoryRenderingBgfxInit                     EnumsMemoryMemoryCategory = 67
+	EnumsMemoryMemoryCategoryRenderingBgfxStartFrame               EnumsMemoryMemoryCategory = 68
+	EnumsMemoryMemoryCategoryRenderingBlockTessellator             EnumsMemoryMemoryCategory = 69
+	EnumsMemoryMemoryCategoryRenderingEndFrame                     EnumsMemoryMemoryCategory = 70
+	EnumsMemoryMemoryCategoryRenderingGraphicsTasksInit            EnumsMemoryMemoryCategory = 71
+	EnumsMemoryMemoryCategoryRenderingLibrary                      EnumsMemoryMemoryCategory = 72
+	EnumsMemoryMemoryCategoryRenderingPolygonOperatorPool          EnumsMemoryMemoryCategory = 73
+	EnumsMemoryMemoryCategoryRenderingPBRTextureData               EnumsMemoryMemoryCategory = 74
+	EnumsMemoryMemoryCategoryRenderingRenderRegistry               EnumsMemoryMemoryCategory = 75
+	EnumsMemoryMemoryCategoryRenderingSetup                        EnumsMemoryMemoryCategory = 76
+	EnumsMemoryMemoryCategoryRenderingVertices                     EnumsMemoryMemoryCategory = 77
+	EnumsMemoryMemoryCategoryRequestLog                            EnumsMemoryMemoryCategory = 78
+	EnumsMemoryMemoryCategoryResourcePacks                         EnumsMemoryMemoryCategory = 79
+	EnumsMemoryMemoryCategorySound                                 EnumsMemoryMemoryCategory = 80
+	EnumsMemoryMemoryCategorySubChunkBiomeData                     EnumsMemoryMemoryCategory = 81
+	EnumsMemoryMemoryCategorySubChunkBlockData                     EnumsMemoryMemoryCategory = 82
+	EnumsMemoryMemoryCategorySubChunkLightData                     EnumsMemoryMemoryCategory = 83
+	EnumsMemoryMemoryCategoryTextures                              EnumsMemoryMemoryCategory = 84
+	EnumsMemoryMemoryCategoryWeatherRenderer                       EnumsMemoryMemoryCategory = 85
+	EnumsMemoryMemoryCategoryWorldGenerator                        EnumsMemoryMemoryCategory = 86
+	EnumsMemoryMemoryCategoryTasks                                 EnumsMemoryMemoryCategory = 87
+	EnumsMemoryMemoryCategoryTest                                  EnumsMemoryMemoryCategory = 88
+	EnumsMemoryMemoryCategoryTestLoadTestTags                      EnumsMemoryMemoryCategory = 89
+	EnumsMemoryMemoryCategoryScripting                             EnumsMemoryMemoryCategory = 90
+	EnumsMemoryMemoryCategoryScriptingRuntime                      EnumsMemoryMemoryCategory = 91
+	EnumsMemoryMemoryCategoryScriptingContext                      EnumsMemoryMemoryCategory = 92
+	EnumsMemoryMemoryCategoryScriptingContextBindingsMC            EnumsMemoryMemoryCategory = 93
+	EnumsMemoryMemoryCategoryScriptingContextBindingsGT            EnumsMemoryMemoryCategory = 94
+	EnumsMemoryMemoryCategoryScriptingContextRun                   EnumsMemoryMemoryCategory = 95
+	EnumsMemoryMemoryCategoryDataDrivenUI                          EnumsMemoryMemoryCategory = 96
+	EnumsMemoryMemoryCategoryDataDrivenUIDefs                      EnumsMemoryMemoryCategory = 97
+	EnumsMemoryMemoryCategoryGameface                              EnumsMemoryMemoryCategory = 98
+	EnumsMemoryMemoryCategoryGamefaceSystem                        EnumsMemoryMemoryCategory = 99
+	EnumsMemoryMemoryCategoryGamefaceDOM                           EnumsMemoryMemoryCategory = 100
+	EnumsMemoryMemoryCategoryGamefaceCSS                           EnumsMemoryMemoryCategory = 101
+	EnumsMemoryMemoryCategoryGamefaceDisplay                       EnumsMemoryMemoryCategory = 102
+	EnumsMemoryMemoryCategoryGamefaceTempAllocator                 EnumsMemoryMemoryCategory = 103
+	EnumsMemoryMemoryCategoryGamefacePoolAllocator                 EnumsMemoryMemoryCategory = 104
+	EnumsMemoryMemoryCategoryGamefaceDump                          EnumsMemoryMemoryCategory = 105
+	EnumsMemoryMemoryCategoryGamefaceMedia                         EnumsMemoryMemoryCategory = 106
+	EnumsMemoryMemoryCategoryGamefaceJSON                          EnumsMemoryMemoryCategory = 107
+	EnumsMemoryMemoryCategoryGamefaceScriptEngine                  EnumsMemoryMemoryCategory = 108
+	EnumsMemoryMemoryCategoryGamefaceScript                        EnumsMemoryMemoryCategory = 109
+	EnumsMemoryMemoryCategoryGamefaceLayout                        EnumsMemoryMemoryCategory = 110
+)
+
+type EnumsMinecraftEventingAchievementIds uint8
+
+const (
+	EnumsMinecraftEventingAchievementIdsChestFullOfCobblestone          EnumsMinecraftEventingAchievementIds = 7
+	EnumsMinecraftEventingAchievementIdsDiamondForYou                   EnumsMinecraftEventingAchievementIds = 10
+	EnumsMinecraftEventingAchievementIdsIronBelly                       EnumsMinecraftEventingAchievementIds = 20
+	EnumsMinecraftEventingAchievementIdsIronMan                         EnumsMinecraftEventingAchievementIds = 21
+	EnumsMinecraftEventingAchievementIdsOnARail                         EnumsMinecraftEventingAchievementIds = 29
+	EnumsMinecraftEventingAchievementIdsOverkill                        EnumsMinecraftEventingAchievementIds = 30
+	EnumsMinecraftEventingAchievementIdsReturnToSender                  EnumsMinecraftEventingAchievementIds = 37
+	EnumsMinecraftEventingAchievementIdsSniperDuel                      EnumsMinecraftEventingAchievementIds = 38
+	EnumsMinecraftEventingAchievementIdsStayinFrosty                    EnumsMinecraftEventingAchievementIds = 39
+	EnumsMinecraftEventingAchievementIdsTakeInventory                   EnumsMinecraftEventingAchievementIds = 40
+	EnumsMinecraftEventingAchievementIdsMapRoom                         EnumsMinecraftEventingAchievementIds = 50
+	EnumsMinecraftEventingAchievementIdsFreightStation                  EnumsMinecraftEventingAchievementIds = 52
+	EnumsMinecraftEventingAchievementIdsSmeltEverything                 EnumsMinecraftEventingAchievementIds = 53
+	EnumsMinecraftEventingAchievementIdsTasteOfYourOwnMedicine          EnumsMinecraftEventingAchievementIds = 54
+	EnumsMinecraftEventingAchievementIdsWhenPigsFly                     EnumsMinecraftEventingAchievementIds = 56
+	EnumsMinecraftEventingAchievementIdsInception                       EnumsMinecraftEventingAchievementIds = 58
+	EnumsMinecraftEventingAchievementIdsArtificialSelection             EnumsMinecraftEventingAchievementIds = 60
+	EnumsMinecraftEventingAchievementIdsFreeDiver                       EnumsMinecraftEventingAchievementIds = 61
+	EnumsMinecraftEventingAchievementIdsSpawnTheWither                  EnumsMinecraftEventingAchievementIds = 62
+	EnumsMinecraftEventingAchievementIdsBeaconator                      EnumsMinecraftEventingAchievementIds = 63
+	EnumsMinecraftEventingAchievementIdsGreatView                       EnumsMinecraftEventingAchievementIds = 64
+	EnumsMinecraftEventingAchievementIdsSuperSonic                      EnumsMinecraftEventingAchievementIds = 65
+	EnumsMinecraftEventingAchievementIdsTheEndAgain                     EnumsMinecraftEventingAchievementIds = 66
+	EnumsMinecraftEventingAchievementIdsTreasureHunter                  EnumsMinecraftEventingAchievementIds = 67
+	EnumsMinecraftEventingAchievementIdsShootingStar                    EnumsMinecraftEventingAchievementIds = 68
+	EnumsMinecraftEventingAchievementIdsFashionShow                     EnumsMinecraftEventingAchievementIds = 69
+	EnumsMinecraftEventingAchievementIdsSelfPublishedAuthor             EnumsMinecraftEventingAchievementIds = 71
+	EnumsMinecraftEventingAchievementIdsAlternativeFuel                 EnumsMinecraftEventingAchievementIds = 72
+	EnumsMinecraftEventingAchievementIdsSleepWithTheFishes              EnumsMinecraftEventingAchievementIds = 73
+	EnumsMinecraftEventingAchievementIdsCastaway                        EnumsMinecraftEventingAchievementIds = 74
+	EnumsMinecraftEventingAchievementIdsImAMarineBiologist              EnumsMinecraftEventingAchievementIds = 75
+	EnumsMinecraftEventingAchievementIdsSailThe7Seas                    EnumsMinecraftEventingAchievementIds = 76
+	EnumsMinecraftEventingAchievementIdsMeGold                          EnumsMinecraftEventingAchievementIds = 77
+	EnumsMinecraftEventingAchievementIdsAhoy                            EnumsMinecraftEventingAchievementIds = 78
+	EnumsMinecraftEventingAchievementIdsAtlantis                        EnumsMinecraftEventingAchievementIds = 79
+	EnumsMinecraftEventingAchievementIdsOnePickleTwoPickleSeaPickleFour EnumsMinecraftEventingAchievementIds = 80
+	EnumsMinecraftEventingAchievementIdsDoaBarrelRoll                   EnumsMinecraftEventingAchievementIds = 81
+	EnumsMinecraftEventingAchievementIdsMoskstraumen                    EnumsMinecraftEventingAchievementIds = 82
+	EnumsMinecraftEventingAchievementIdsEcholocation                    EnumsMinecraftEventingAchievementIds = 83
+	EnumsMinecraftEventingAchievementIdsWhereHaveYouBeen                EnumsMinecraftEventingAchievementIds = 84
+	EnumsMinecraftEventingAchievementIdsTopOfTheWorld                   EnumsMinecraftEventingAchievementIds = 85
+	EnumsMinecraftEventingAchievementIdsFruitOnTheLoom                  EnumsMinecraftEventingAchievementIds = 86
+	EnumsMinecraftEventingAchievementIdsSoundTheAlarm                   EnumsMinecraftEventingAchievementIds = 87
+	EnumsMinecraftEventingAchievementIdsBuyLowSellHigh                  EnumsMinecraftEventingAchievementIds = 88
+	EnumsMinecraftEventingAchievementIdsDisenchanted                    EnumsMinecraftEventingAchievementIds = 89
+	EnumsMinecraftEventingAchievementIdsTimeForStew                     EnumsMinecraftEventingAchievementIds = 90
+	EnumsMinecraftEventingAchievementIdsBeeOurGuest                     EnumsMinecraftEventingAchievementIds = 91
+	EnumsMinecraftEventingAchievementIdsTotalBeeLocation                EnumsMinecraftEventingAchievementIds = 92
+	EnumsMinecraftEventingAchievementIdsStickySituation                 EnumsMinecraftEventingAchievementIds = 93
+	EnumsMinecraftEventingAchievementIdsCoverMeInDebris                 EnumsMinecraftEventingAchievementIds = 94
+	EnumsMinecraftEventingAchievementIdsFloatYourGoat                   EnumsMinecraftEventingAchievementIds = 95
+	EnumsMinecraftEventingAchievementIdsFriend                          EnumsMinecraftEventingAchievementIds = 96
+	EnumsMinecraftEventingAchievementIdsWaxOnWaxOff                     EnumsMinecraftEventingAchievementIds = 97
+	EnumsMinecraftEventingAchievementIdsStriderRiddenInLavaInOverworld  EnumsMinecraftEventingAchievementIds = 98
+	EnumsMinecraftEventingAchievementIdsGoatHornAcquired                EnumsMinecraftEventingAchievementIds = 99
+	EnumsMinecraftEventingAchievementIdsJukeboxUsedInMeadows            EnumsMinecraftEventingAchievementIds = 100
+	EnumsMinecraftEventingAchievementIdsTradedAtWorldHeight             EnumsMinecraftEventingAchievementIds = 101
+	EnumsMinecraftEventingAchievementIdsSurvivedFallFromWorldHeight     EnumsMinecraftEventingAchievementIds = 102
+	EnumsMinecraftEventingAchievementIdsSneakCloseToSculkSensor         EnumsMinecraftEventingAchievementIds = 103
+	EnumsMinecraftEventingAchievementIdsItSpreads                       EnumsMinecraftEventingAchievementIds = 104
+	EnumsMinecraftEventingAchievementIdsBirthdaySong                    EnumsMinecraftEventingAchievementIds = 105
+	EnumsMinecraftEventingAchievementIdsWithOurPowersCombined           EnumsMinecraftEventingAchievementIds = 106
+	EnumsMinecraftEventingAchievementIdsPlantingThePast                 EnumsMinecraftEventingAchievementIds = 107
+	EnumsMinecraftEventingAchievementIdsCarefulRestoration              EnumsMinecraftEventingAchievementIds = 108
+	EnumsMinecraftEventingAchievementIdsRevaulting                      EnumsMinecraftEventingAchievementIds = 109
+	EnumsMinecraftEventingAchievementIdsCraftersCraftingCrafters        EnumsMinecraftEventingAchievementIds = 110
+	EnumsMinecraftEventingAchievementIdsWhoNeedsRockets                 EnumsMinecraftEventingAchievementIds = 111
+	EnumsMinecraftEventingAchievementIdsOverOverkill                    EnumsMinecraftEventingAchievementIds = 112
+	EnumsMinecraftEventingAchievementIdsHeartTransplanter               EnumsMinecraftEventingAchievementIds = 113
+	EnumsMinecraftEventingAchievementIdsStayHydrated                    EnumsMinecraftEventingAchievementIds = 114
+	EnumsMinecraftEventingAchievementIdsMobKabob                        EnumsMinecraftEventingAchievementIds = 115
+	EnumsMinecraftEventingAchievementIdsAdventuringTime                 EnumsMinecraftEventingAchievementIds = 116
+	EnumsMinecraftEventingAchievementIdsUhOh                            EnumsMinecraftEventingAchievementIds = 117
+	EnumsMinecraftEventingAchievementIdsGettingWood                     EnumsMinecraftEventingAchievementIds = 118
+	EnumsMinecraftEventingAchievementIdsBenchMaking                     EnumsMinecraftEventingAchievementIds = 119
+	EnumsMinecraftEventingAchievementIdsTimeToMine                      EnumsMinecraftEventingAchievementIds = 120
+	EnumsMinecraftEventingAchievementIdsHotTopic                        EnumsMinecraftEventingAchievementIds = 121
+	EnumsMinecraftEventingAchievementIdsAcquireHardware                 EnumsMinecraftEventingAchievementIds = 122
+	EnumsMinecraftEventingAchievementIdsGettingAnUpgrade                EnumsMinecraftEventingAchievementIds = 123
+	EnumsMinecraftEventingAchievementIdsMonsterHunter                   EnumsMinecraftEventingAchievementIds = 124
+	EnumsMinecraftEventingAchievementIdsDiamonds                        EnumsMinecraftEventingAchievementIds = 125
+	EnumsMinecraftEventingAchievementIdsPlethoraOfCats                  EnumsMinecraftEventingAchievementIds = 126
+)
+
+type EnumsMinecraftEventingInteractionType uint8
+
+const (
+	EnumsMinecraftEventingInteractionTypeBreeding   EnumsMinecraftEventingInteractionType = 1
+	EnumsMinecraftEventingInteractionTypeTaming     EnumsMinecraftEventingInteractionType = 2
+	EnumsMinecraftEventingInteractionTypeCuring     EnumsMinecraftEventingInteractionType = 3
+	EnumsMinecraftEventingInteractionTypeCrafted    EnumsMinecraftEventingInteractionType = 4
+	EnumsMinecraftEventingInteractionTypeShearing   EnumsMinecraftEventingInteractionType = 5
+	EnumsMinecraftEventingInteractionTypeMilking    EnumsMinecraftEventingInteractionType = 6
+	EnumsMinecraftEventingInteractionTypeTrading    EnumsMinecraftEventingInteractionType = 7
+	EnumsMinecraftEventingInteractionTypeFeeding    EnumsMinecraftEventingInteractionType = 8
+	EnumsMinecraftEventingInteractionTypeIgniting   EnumsMinecraftEventingInteractionType = 9
+	EnumsMinecraftEventingInteractionTypeColoring   EnumsMinecraftEventingInteractionType = 10
+	EnumsMinecraftEventingInteractionTypeNaming     EnumsMinecraftEventingInteractionType = 11
+	EnumsMinecraftEventingInteractionTypeLeashing   EnumsMinecraftEventingInteractionType = 12
+	EnumsMinecraftEventingInteractionTypeUnleashing EnumsMinecraftEventingInteractionType = 13
+	EnumsMinecraftEventingInteractionTypePetSleep   EnumsMinecraftEventingInteractionType = 14
+	EnumsMinecraftEventingInteractionTypeTrusting   EnumsMinecraftEventingInteractionType = 15
+	EnumsMinecraftEventingInteractionTypeCommanding EnumsMinecraftEventingInteractionType = 16
+	EnumsMinecraftEventingInteractionTypeEquipping  EnumsMinecraftEventingInteractionType = 17
+)
+
+type EnumsMinecraftEventingPOIBlockInteractionType uint8
+
+const (
+	EnumsMinecraftEventingPOIBlockInteractionTypeNone                EnumsMinecraftEventingPOIBlockInteractionType = 0
+	EnumsMinecraftEventingPOIBlockInteractionTypeExtend              EnumsMinecraftEventingPOIBlockInteractionType = 1
+	EnumsMinecraftEventingPOIBlockInteractionTypeClone               EnumsMinecraftEventingPOIBlockInteractionType = 2
+	EnumsMinecraftEventingPOIBlockInteractionTypeLock                EnumsMinecraftEventingPOIBlockInteractionType = 3
+	EnumsMinecraftEventingPOIBlockInteractionTypeCreate              EnumsMinecraftEventingPOIBlockInteractionType = 4
+	EnumsMinecraftEventingPOIBlockInteractionTypeCreateLocator       EnumsMinecraftEventingPOIBlockInteractionType = 5
+	EnumsMinecraftEventingPOIBlockInteractionTypeRename              EnumsMinecraftEventingPOIBlockInteractionType = 6
+	EnumsMinecraftEventingPOIBlockInteractionTypeItemPlaced          EnumsMinecraftEventingPOIBlockInteractionType = 7
+	EnumsMinecraftEventingPOIBlockInteractionTypeItemRemoved         EnumsMinecraftEventingPOIBlockInteractionType = 8
+	EnumsMinecraftEventingPOIBlockInteractionTypeCooking             EnumsMinecraftEventingPOIBlockInteractionType = 9
+	EnumsMinecraftEventingPOIBlockInteractionTypeDousing             EnumsMinecraftEventingPOIBlockInteractionType = 10
+	EnumsMinecraftEventingPOIBlockInteractionTypeLighting            EnumsMinecraftEventingPOIBlockInteractionType = 11
+	EnumsMinecraftEventingPOIBlockInteractionTypeHaystack            EnumsMinecraftEventingPOIBlockInteractionType = 12
+	EnumsMinecraftEventingPOIBlockInteractionTypeFilled              EnumsMinecraftEventingPOIBlockInteractionType = 13
+	EnumsMinecraftEventingPOIBlockInteractionTypeEmptied             EnumsMinecraftEventingPOIBlockInteractionType = 14
+	EnumsMinecraftEventingPOIBlockInteractionTypeAddDye              EnumsMinecraftEventingPOIBlockInteractionType = 15
+	EnumsMinecraftEventingPOIBlockInteractionTypeDyeItem             EnumsMinecraftEventingPOIBlockInteractionType = 16
+	EnumsMinecraftEventingPOIBlockInteractionTypeClearItem           EnumsMinecraftEventingPOIBlockInteractionType = 17
+	EnumsMinecraftEventingPOIBlockInteractionTypeEnchantArrow        EnumsMinecraftEventingPOIBlockInteractionType = 18
+	EnumsMinecraftEventingPOIBlockInteractionTypeCompostItemPlaced   EnumsMinecraftEventingPOIBlockInteractionType = 19
+	EnumsMinecraftEventingPOIBlockInteractionTypeRecoveredBonemeal   EnumsMinecraftEventingPOIBlockInteractionType = 20
+	EnumsMinecraftEventingPOIBlockInteractionTypeBookPlaced          EnumsMinecraftEventingPOIBlockInteractionType = 21
+	EnumsMinecraftEventingPOIBlockInteractionTypeBookOpened          EnumsMinecraftEventingPOIBlockInteractionType = 22
+	EnumsMinecraftEventingPOIBlockInteractionTypeDisenchant          EnumsMinecraftEventingPOIBlockInteractionType = 23
+	EnumsMinecraftEventingPOIBlockInteractionTypeRepair              EnumsMinecraftEventingPOIBlockInteractionType = 24
+	EnumsMinecraftEventingPOIBlockInteractionTypeDisenchantAndRepair EnumsMinecraftEventingPOIBlockInteractionType = 25
+)
+
+type EnumsMirror uint8
+
+const (
+	EnumsMirrorNone EnumsMirror = 0
+	EnumsMirrorX    EnumsMirror = 1
+	EnumsMirrorZ    EnumsMirror = 2
+	EnumsMirrorXZ   EnumsMirror = 3
+)
+
+type EnumsMobEffectPacketPayloadEvent uint8
+
+const (
+	EnumsMobEffectPacketPayloadEventInvalid EnumsMobEffectPacketPayloadEvent = 0
+	EnumsMobEffectPacketPayloadEventAdd     EnumsMobEffectPacketPayloadEvent = 1
+	EnumsMobEffectPacketPayloadEventUpdate  EnumsMobEffectPacketPayloadEvent = 2
+	EnumsMobEffectPacketPayloadEventRemove  EnumsMobEffectPacketPayloadEvent = 3
+)
+
+type EnumsModalFormCancelReason uint8
+
+const (
+	EnumsModalFormCancelReasonUserClosed EnumsModalFormCancelReason = 0
+	EnumsModalFormCancelReasonUserBusy   EnumsModalFormCancelReason = 1
+)
+
+type EnumsMolangVersion int16
+
+const (
+	EnumsMolangVersionInvalid                                EnumsMolangVersion = -1
+	EnumsMolangVersionBeforeVersioning                       EnumsMolangVersion = 0
+	EnumsMolangVersionInitial                                EnumsMolangVersion = 1
+	EnumsMolangVersionFixedItemRemainingUseDurationQuery     EnumsMolangVersion = 2
+	EnumsMolangVersionExpressionErrorMessages                EnumsMolangVersion = 3
+	EnumsMolangVersionUnexpectedOperatorErrors               EnumsMolangVersion = 4
+	EnumsMolangVersionConditionalOperatorAssociativity       EnumsMolangVersion = 5
+	EnumsMolangVersionComparisonAndLogicalOperatorPrecedence EnumsMolangVersion = 6
+	EnumsMolangVersionDivideByNegativeValue                  EnumsMolangVersion = 7
+	EnumsMolangVersionFixedCapeFlapAmountQuery               EnumsMolangVersion = 8
+	EnumsMolangVersionQueryBlockPropertyRenamedToState       EnumsMolangVersion = 9
+	EnumsMolangVersionDeprecateOldBlockQueryNames            EnumsMolangVersion = 10
+	EnumsMolangVersionDeprecatedSnifferAndCamelQueries       EnumsMolangVersion = 11
+	EnumsMolangVersionLeafSupportingInFirstSolidBlockBelow   EnumsMolangVersion = 12
+	EnumsMolangVersionLatest                                 EnumsMolangVersion = 13
+	EnumsMolangVersionNumValidVersions                       EnumsMolangVersion = 14
+)
+
+type EnumsMovementEffectType int32
+
+const (
+	EnumsMovementEffectTypeGLIDEBOOST   EnumsMovementEffectType = 0
+	EnumsMovementEffectTypeDOLPHINBOOST EnumsMovementEffectType = 1
+	EnumsMovementEffectTypeGEYSERBOOST  EnumsMovementEffectType = 2
+)
+
+type EnumsMultiplayerSettingsPacketType int32
+
+const (
+	EnumsMultiplayerSettingsPacketTypeEnableMultiplayer  EnumsMultiplayerSettingsPacketType = 0
+	EnumsMultiplayerSettingsPacketTypeDisableMultiplayer EnumsMultiplayerSettingsPacketType = 1
+	EnumsMultiplayerSettingsPacketTypeRefreshJoincode    EnumsMultiplayerSettingsPacketType = 2
+)
+
+type EnumsNewInteractionModel int32
+
+const (
+	EnumsNewInteractionModelTouch     EnumsNewInteractionModel = 0
+	EnumsNewInteractionModelCrosshair EnumsNewInteractionModel = 1
+	EnumsNewInteractionModelClassic   EnumsNewInteractionModel = 2
+	EnumsNewInteractionModelCount     EnumsNewInteractionModel = 3
+)
+
+type EnumsNpcDialoguePacketPayloadNpcDialogueActionType int32
+
+const (
+	EnumsNpcDialoguePacketPayloadNpcDialogueActionTypeOpen  EnumsNpcDialoguePacketPayloadNpcDialogueActionType = 0
+	EnumsNpcDialoguePacketPayloadNpcDialogueActionTypeClose EnumsNpcDialoguePacketPayloadNpcDialogueActionType = 1
+)
+
+type EnumsNpcRequestPacketPayloadRequestType uint8
+
+const (
+	EnumsNpcRequestPacketPayloadRequestTypeSetActions             EnumsNpcRequestPacketPayloadRequestType = 0
+	EnumsNpcRequestPacketPayloadRequestTypeExecuteAction          EnumsNpcRequestPacketPayloadRequestType = 1
+	EnumsNpcRequestPacketPayloadRequestTypeExecuteClosingCommands EnumsNpcRequestPacketPayloadRequestType = 2
+	EnumsNpcRequestPacketPayloadRequestTypeSetName                EnumsNpcRequestPacketPayloadRequestType = 3
+	EnumsNpcRequestPacketPayloadRequestTypeSetSkin                EnumsNpcRequestPacketPayloadRequestType = 4
+	EnumsNpcRequestPacketPayloadRequestTypeSetInteractText        EnumsNpcRequestPacketPayloadRequestType = 5
+	EnumsNpcRequestPacketPayloadRequestTypeExecuteOpeningCommands EnumsNpcRequestPacketPayloadRequestType = 6
+)
+
+type EnumsPacketCompressionAlgorithm uint16
+
+const (
+	EnumsPacketCompressionAlgorithmZLib   EnumsPacketCompressionAlgorithm = 0
+	EnumsPacketCompressionAlgorithmSnappy EnumsPacketCompressionAlgorithm = 1
+	EnumsPacketCompressionAlgorithmNone   EnumsPacketCompressionAlgorithm = 65535
+)
+
+type EnumsPacketViolationSeverity int32
+
+const (
+	EnumsPacketViolationSeverityUnknown               EnumsPacketViolationSeverity = -1
+	EnumsPacketViolationSeverityWarning               EnumsPacketViolationSeverity = 0
+	EnumsPacketViolationSeverityFinalWarning          EnumsPacketViolationSeverity = 1
+	EnumsPacketViolationSeverityTerminatingConnection EnumsPacketViolationSeverity = 2
+)
+
+type EnumsPacketViolationType int32
+
+const (
+	EnumsPacketViolationTypeUnknown         EnumsPacketViolationType = -1
+	EnumsPacketViolationTypePacketMalformed EnumsPacketViolationType = 0
+)
+
+type EnumsPersonaAnimatedTextureType uint32
+
+const (
+	EnumsPersonaAnimatedTextureTypeFace        EnumsPersonaAnimatedTextureType = 1
+	EnumsPersonaAnimatedTextureTypeBody32x32   EnumsPersonaAnimatedTextureType = 2
+	EnumsPersonaAnimatedTextureTypeBody128x128 EnumsPersonaAnimatedTextureType = 3
+)
+
+type EnumsPersonaAnimationExpression uint32
+
+const (
+	EnumsPersonaAnimationExpressionLinear   EnumsPersonaAnimationExpression = 0
+	EnumsPersonaAnimationExpressionBlinking EnumsPersonaAnimationExpression = 1
+)
+
+type EnumsPhotoType uint8
+
+const (
+	EnumsPhotoTypePortfolio EnumsPhotoType = 0
+	EnumsPhotoTypePhotoItem EnumsPhotoType = 1
+	EnumsPhotoTypeBook      EnumsPhotoType = 2
+)
+
+type EnumsPlayStatus int32
+
+const (
+	EnumsPlayStatusLoginSuccess                             EnumsPlayStatus = 0
+	EnumsPlayStatusLoginFailedClientOld                     EnumsPlayStatus = 1
+	EnumsPlayStatusLoginFailedServerOld                     EnumsPlayStatus = 2
+	EnumsPlayStatusPlayerSpawn                              EnumsPlayStatus = 3
+	EnumsPlayStatusLoginFailedInvalidTenant                 EnumsPlayStatus = 4
+	EnumsPlayStatusLoginFailedEditionMismatchEduToVanilla   EnumsPlayStatus = 5
+	EnumsPlayStatusLoginFailedEditionMismatchVanillaToEdu   EnumsPlayStatus = 6
+	EnumsPlayStatusLoginFailedServerFullSubClient           EnumsPlayStatus = 7
+	EnumsPlayStatusLoginFailedEditorMismatchEditorToVanilla EnumsPlayStatus = 8
+	EnumsPlayStatusLoginFailedEditorMismatchVanillaToEditor EnumsPlayStatus = 9
+)
+
+type EnumsPlayerActionType int32
+
+const (
+	EnumsPlayerActionTypeUnknown               EnumsPlayerActionType = -1
+	EnumsPlayerActionTypeStartDestroyBlock     EnumsPlayerActionType = 0
+	EnumsPlayerActionTypeAbortDestroyBlock     EnumsPlayerActionType = 1
+	EnumsPlayerActionTypeStopDestroyBlock      EnumsPlayerActionType = 2
+	EnumsPlayerActionTypeGetUpdatedBlock       EnumsPlayerActionType = 3
+	EnumsPlayerActionTypeDropItem              EnumsPlayerActionType = 4
+	EnumsPlayerActionTypeStartSleeping         EnumsPlayerActionType = 5
+	EnumsPlayerActionTypeStopSleeping          EnumsPlayerActionType = 6
+	EnumsPlayerActionTypeRespawn               EnumsPlayerActionType = 7
+	EnumsPlayerActionTypeStartJump             EnumsPlayerActionType = 8
+	EnumsPlayerActionTypeStartSprinting        EnumsPlayerActionType = 9
+	EnumsPlayerActionTypeStopSprinting         EnumsPlayerActionType = 10
+	EnumsPlayerActionTypeStartSneaking         EnumsPlayerActionType = 11
+	EnumsPlayerActionTypeStopSneaking          EnumsPlayerActionType = 12
+	EnumsPlayerActionTypeCreativeDestroyBlock  EnumsPlayerActionType = 13
+	EnumsPlayerActionTypeChangeDimensionAck    EnumsPlayerActionType = 14
+	EnumsPlayerActionTypeStartGliding          EnumsPlayerActionType = 15
+	EnumsPlayerActionTypeStopGliding           EnumsPlayerActionType = 16
+	EnumsPlayerActionTypeDenyDestroyBlock      EnumsPlayerActionType = 17
+	EnumsPlayerActionTypeCrackBlock            EnumsPlayerActionType = 18
+	EnumsPlayerActionTypeChangeSkin            EnumsPlayerActionType = 19
+	EnumsPlayerActionTypeUpdatedEnchantingSeed EnumsPlayerActionType = 20
+	EnumsPlayerActionTypeStartSwimming         EnumsPlayerActionType = 21
+	EnumsPlayerActionTypeStopSwimming          EnumsPlayerActionType = 22
+	EnumsPlayerActionTypeStartSpinAttack       EnumsPlayerActionType = 23
+	EnumsPlayerActionTypeStopSpinAttack        EnumsPlayerActionType = 24
+	EnumsPlayerActionTypeInteractWithBlock     EnumsPlayerActionType = 25
+	EnumsPlayerActionTypePredictDestroyBlock   EnumsPlayerActionType = 26
+	EnumsPlayerActionTypeContinueDestroyBlock  EnumsPlayerActionType = 27
+	EnumsPlayerActionTypeStartItemUseOn        EnumsPlayerActionType = 28
+	EnumsPlayerActionTypeStopItemUseOn         EnumsPlayerActionType = 29
+	EnumsPlayerActionTypeHandledTeleport       EnumsPlayerActionType = 30
+	EnumsPlayerActionTypeMissedSwing           EnumsPlayerActionType = 31
+	EnumsPlayerActionTypeStartCrawling         EnumsPlayerActionType = 32
+	EnumsPlayerActionTypeStopCrawling          EnumsPlayerActionType = 33
+	EnumsPlayerActionTypeStartFlying           EnumsPlayerActionType = 34
+	EnumsPlayerActionTypeStopFlying            EnumsPlayerActionType = 35
+	EnumsPlayerActionTypeClientAckServerData   EnumsPlayerActionType = 36
+	EnumsPlayerActionTypeStartUsingItem        EnumsPlayerActionType = 37
+	EnumsPlayerActionTypeInternalUpdate        EnumsPlayerActionType = 38
+	EnumsPlayerActionTypeCount                 EnumsPlayerActionType = 39
+)
+
+type EnumsPlayerAuthInputPacketPayloadInputData int32
+
+const (
+	EnumsPlayerAuthInputPacketPayloadInputDataAscend                          EnumsPlayerAuthInputPacketPayloadInputData = 0
+	EnumsPlayerAuthInputPacketPayloadInputDataDescend                         EnumsPlayerAuthInputPacketPayloadInputData = 1
+	EnumsPlayerAuthInputPacketPayloadInputDataNorthJump                       EnumsPlayerAuthInputPacketPayloadInputData = 2
+	EnumsPlayerAuthInputPacketPayloadInputDataJumpDown                        EnumsPlayerAuthInputPacketPayloadInputData = 3
+	EnumsPlayerAuthInputPacketPayloadInputDataSprintDown                      EnumsPlayerAuthInputPacketPayloadInputData = 4
+	EnumsPlayerAuthInputPacketPayloadInputDataChangeHeight                    EnumsPlayerAuthInputPacketPayloadInputData = 5
+	EnumsPlayerAuthInputPacketPayloadInputDataJumping                         EnumsPlayerAuthInputPacketPayloadInputData = 6
+	EnumsPlayerAuthInputPacketPayloadInputDataAutoJumpingInWater              EnumsPlayerAuthInputPacketPayloadInputData = 7
+	EnumsPlayerAuthInputPacketPayloadInputDataSneaking                        EnumsPlayerAuthInputPacketPayloadInputData = 8
+	EnumsPlayerAuthInputPacketPayloadInputDataSneakDown                       EnumsPlayerAuthInputPacketPayloadInputData = 9
+	EnumsPlayerAuthInputPacketPayloadInputDataUp                              EnumsPlayerAuthInputPacketPayloadInputData = 10
+	EnumsPlayerAuthInputPacketPayloadInputDataDown                            EnumsPlayerAuthInputPacketPayloadInputData = 11
+	EnumsPlayerAuthInputPacketPayloadInputDataLeft                            EnumsPlayerAuthInputPacketPayloadInputData = 12
+	EnumsPlayerAuthInputPacketPayloadInputDataRight                           EnumsPlayerAuthInputPacketPayloadInputData = 13
+	EnumsPlayerAuthInputPacketPayloadInputDataUpLeft                          EnumsPlayerAuthInputPacketPayloadInputData = 14
+	EnumsPlayerAuthInputPacketPayloadInputDataUpRight                         EnumsPlayerAuthInputPacketPayloadInputData = 15
+	EnumsPlayerAuthInputPacketPayloadInputDataWantUp                          EnumsPlayerAuthInputPacketPayloadInputData = 16
+	EnumsPlayerAuthInputPacketPayloadInputDataWantDown                        EnumsPlayerAuthInputPacketPayloadInputData = 17
+	EnumsPlayerAuthInputPacketPayloadInputDataWantDownSlow                    EnumsPlayerAuthInputPacketPayloadInputData = 18
+	EnumsPlayerAuthInputPacketPayloadInputDataWantUpSlow                      EnumsPlayerAuthInputPacketPayloadInputData = 19
+	EnumsPlayerAuthInputPacketPayloadInputDataSprinting                       EnumsPlayerAuthInputPacketPayloadInputData = 20
+	EnumsPlayerAuthInputPacketPayloadInputDataAscendBlock                     EnumsPlayerAuthInputPacketPayloadInputData = 21
+	EnumsPlayerAuthInputPacketPayloadInputDataDescendBlock                    EnumsPlayerAuthInputPacketPayloadInputData = 22
+	EnumsPlayerAuthInputPacketPayloadInputDataSneakToggleDown                 EnumsPlayerAuthInputPacketPayloadInputData = 23
+	EnumsPlayerAuthInputPacketPayloadInputDataPersistSneak                    EnumsPlayerAuthInputPacketPayloadInputData = 24
+	EnumsPlayerAuthInputPacketPayloadInputDataStartSprinting                  EnumsPlayerAuthInputPacketPayloadInputData = 25
+	EnumsPlayerAuthInputPacketPayloadInputDataStopSprinting                   EnumsPlayerAuthInputPacketPayloadInputData = 26
+	EnumsPlayerAuthInputPacketPayloadInputDataStartSneaking                   EnumsPlayerAuthInputPacketPayloadInputData = 27
+	EnumsPlayerAuthInputPacketPayloadInputDataStopSneaking                    EnumsPlayerAuthInputPacketPayloadInputData = 28
+	EnumsPlayerAuthInputPacketPayloadInputDataStartSwimming                   EnumsPlayerAuthInputPacketPayloadInputData = 29
+	EnumsPlayerAuthInputPacketPayloadInputDataStopSwimming                    EnumsPlayerAuthInputPacketPayloadInputData = 30
+	EnumsPlayerAuthInputPacketPayloadInputDataStartJumping                    EnumsPlayerAuthInputPacketPayloadInputData = 31
+	EnumsPlayerAuthInputPacketPayloadInputDataStartGliding                    EnumsPlayerAuthInputPacketPayloadInputData = 32
+	EnumsPlayerAuthInputPacketPayloadInputDataStopGliding                     EnumsPlayerAuthInputPacketPayloadInputData = 33
+	EnumsPlayerAuthInputPacketPayloadInputDataPerformItemInteraction          EnumsPlayerAuthInputPacketPayloadInputData = 34
+	EnumsPlayerAuthInputPacketPayloadInputDataPerformBlockActions             EnumsPlayerAuthInputPacketPayloadInputData = 35
+	EnumsPlayerAuthInputPacketPayloadInputDataPerformItemStackRequest         EnumsPlayerAuthInputPacketPayloadInputData = 36
+	EnumsPlayerAuthInputPacketPayloadInputDataHandledTeleport                 EnumsPlayerAuthInputPacketPayloadInputData = 37
+	EnumsPlayerAuthInputPacketPayloadInputDataEmoting                         EnumsPlayerAuthInputPacketPayloadInputData = 38
+	EnumsPlayerAuthInputPacketPayloadInputDataMissedSwing                     EnumsPlayerAuthInputPacketPayloadInputData = 39
+	EnumsPlayerAuthInputPacketPayloadInputDataStartCrawling                   EnumsPlayerAuthInputPacketPayloadInputData = 40
+	EnumsPlayerAuthInputPacketPayloadInputDataStopCrawling                    EnumsPlayerAuthInputPacketPayloadInputData = 41
+	EnumsPlayerAuthInputPacketPayloadInputDataStartFlying                     EnumsPlayerAuthInputPacketPayloadInputData = 42
+	EnumsPlayerAuthInputPacketPayloadInputDataStopFlying                      EnumsPlayerAuthInputPacketPayloadInputData = 43
+	EnumsPlayerAuthInputPacketPayloadInputDataClientAckServerData             EnumsPlayerAuthInputPacketPayloadInputData = 44
+	EnumsPlayerAuthInputPacketPayloadInputDataIsInClientPredictedVehicle      EnumsPlayerAuthInputPacketPayloadInputData = 45
+	EnumsPlayerAuthInputPacketPayloadInputDataPaddlingLeft                    EnumsPlayerAuthInputPacketPayloadInputData = 46
+	EnumsPlayerAuthInputPacketPayloadInputDataPaddlingRight                   EnumsPlayerAuthInputPacketPayloadInputData = 47
+	EnumsPlayerAuthInputPacketPayloadInputDataBlockBreakingDelayEnabled       EnumsPlayerAuthInputPacketPayloadInputData = 48
+	EnumsPlayerAuthInputPacketPayloadInputDataHorizontalCollision             EnumsPlayerAuthInputPacketPayloadInputData = 49
+	EnumsPlayerAuthInputPacketPayloadInputDataVerticalCollision               EnumsPlayerAuthInputPacketPayloadInputData = 50
+	EnumsPlayerAuthInputPacketPayloadInputDataDownLeft                        EnumsPlayerAuthInputPacketPayloadInputData = 51
+	EnumsPlayerAuthInputPacketPayloadInputDataDownRight                       EnumsPlayerAuthInputPacketPayloadInputData = 52
+	EnumsPlayerAuthInputPacketPayloadInputDataStartUsingItem                  EnumsPlayerAuthInputPacketPayloadInputData = 53
+	EnumsPlayerAuthInputPacketPayloadInputDataIsCameraRelativeMovementEnabled EnumsPlayerAuthInputPacketPayloadInputData = 54
+	EnumsPlayerAuthInputPacketPayloadInputDataIsRotControlledByMoveDirection  EnumsPlayerAuthInputPacketPayloadInputData = 55
+	EnumsPlayerAuthInputPacketPayloadInputDataStartSpinAttack                 EnumsPlayerAuthInputPacketPayloadInputData = 56
+	EnumsPlayerAuthInputPacketPayloadInputDataStopSpinAttack                  EnumsPlayerAuthInputPacketPayloadInputData = 57
+	EnumsPlayerAuthInputPacketPayloadInputDataIsHotbarOnlyTouch               EnumsPlayerAuthInputPacketPayloadInputData = 58
+	EnumsPlayerAuthInputPacketPayloadInputDataJumpReleasedRaw                 EnumsPlayerAuthInputPacketPayloadInputData = 59
+	EnumsPlayerAuthInputPacketPayloadInputDataJumpPressedRaw                  EnumsPlayerAuthInputPacketPayloadInputData = 60
+	EnumsPlayerAuthInputPacketPayloadInputDataJumpCurrentRaw                  EnumsPlayerAuthInputPacketPayloadInputData = 61
+	EnumsPlayerAuthInputPacketPayloadInputDataSneakReleasedRaw                EnumsPlayerAuthInputPacketPayloadInputData = 62
+	EnumsPlayerAuthInputPacketPayloadInputDataSneakPressedRaw                 EnumsPlayerAuthInputPacketPayloadInputData = 63
+	EnumsPlayerAuthInputPacketPayloadInputDataSneakCurrentRaw                 EnumsPlayerAuthInputPacketPayloadInputData = 64
+	EnumsPlayerAuthInputPacketPayloadInputDataInternalUpdate                  EnumsPlayerAuthInputPacketPayloadInputData = 65
+)
+
+type EnumsPlayerLocationPacketPayloadType int32
+
+const (
+	EnumsPlayerLocationPacketPayloadTypePLAYERLOCATIONCOORDINATES EnumsPlayerLocationPacketPayloadType = 0
+)
+
+type EnumsPlayerPermissionLevel int8
+
+const (
+	EnumsPlayerPermissionLevelVisitor  EnumsPlayerPermissionLevel = 0
+	EnumsPlayerPermissionLevelMember   EnumsPlayerPermissionLevel = 1
+	EnumsPlayerPermissionLevelOperator EnumsPlayerPermissionLevel = 2
+	EnumsPlayerPermissionLevelCustom   EnumsPlayerPermissionLevel = 3
+)
+
+type EnumsPlayerPositionModeComponentPositionMode uint8
+
+const (
+	EnumsPlayerPositionModeComponentPositionModeNormal      EnumsPlayerPositionModeComponentPositionMode = 0
+	EnumsPlayerPositionModeComponentPositionModeRespawn     EnumsPlayerPositionModeComponentPositionMode = 1
+	EnumsPlayerPositionModeComponentPositionModeTeleport    EnumsPlayerPositionModeComponentPositionMode = 2
+	EnumsPlayerPositionModeComponentPositionModeOnlyHeadRot EnumsPlayerPositionModeComponentPositionMode = 3
+)
+
+type EnumsPlayerRespawnState uint8
+
+const (
+	EnumsPlayerRespawnStateSearchingForSpawn  EnumsPlayerRespawnState = 0
+	EnumsPlayerRespawnStateReadyToSpawn       EnumsPlayerRespawnState = 1
+	EnumsPlayerRespawnStateClientReadyToSpawn EnumsPlayerRespawnState = 2
+)
+
+type EnumsPositionTrackingDBClientRequestPacketPayloadAction uint8
+
+const (
+	EnumsPositionTrackingDBClientRequestPacketPayloadActionQuery EnumsPositionTrackingDBClientRequestPacketPayloadAction = 0
+)
+
+type EnumsPositionTrackingDBServerBroadcastPacketPayloadAction uint8
+
+const (
+	EnumsPositionTrackingDBServerBroadcastPacketPayloadActionUpdate   EnumsPositionTrackingDBServerBroadcastPacketPayloadAction = 0
+	EnumsPositionTrackingDBServerBroadcastPacketPayloadActionDestroy  EnumsPositionTrackingDBServerBroadcastPacketPayloadAction = 1
+	EnumsPositionTrackingDBServerBroadcastPacketPayloadActionNotFound EnumsPositionTrackingDBServerBroadcastPacketPayloadAction = 2
+)
+
+type EnumsRecipeUnlockingRequirementUnlockingContext int32
+
+const (
+	EnumsRecipeUnlockingRequirementUnlockingContextNone               EnumsRecipeUnlockingRequirementUnlockingContext = 0
+	EnumsRecipeUnlockingRequirementUnlockingContextAlwaysUnlocked     EnumsRecipeUnlockingRequirementUnlockingContext = 1
+	EnumsRecipeUnlockingRequirementUnlockingContextPlayerInWater      EnumsRecipeUnlockingRequirementUnlockingContext = 2
+	EnumsRecipeUnlockingRequirementUnlockingContextPlayerHasManyItems EnumsRecipeUnlockingRequirementUnlockingContext = 3
+)
+
+type EnumsRequestAbilityPacketPayloadType uint8
+
+const (
+	EnumsRequestAbilityPacketPayloadTypeUnset EnumsRequestAbilityPacketPayloadType = 0
+	EnumsRequestAbilityPacketPayloadTypeBool  EnumsRequestAbilityPacketPayloadType = 1
+	EnumsRequestAbilityPacketPayloadTypeFloat EnumsRequestAbilityPacketPayloadType = 2
+)
+
+type EnumsRewindType uint8
+
+const (
+	EnumsRewindTypePlayer  EnumsRewindType = 0
+	EnumsRewindTypeVehicle EnumsRewindType = 1
+)
+
+type EnumsRotation uint8
+
+const (
+	EnumsRotationNone      EnumsRotation = 0
+	EnumsRotationRotate90  EnumsRotation = 1
+	EnumsRotationRotate180 EnumsRotation = 2
+	EnumsRotationRotate270 EnumsRotation = 3
+)
+
+type EnumsScoreboardIdentityPacketType uint8
+
+const (
+	EnumsScoreboardIdentityPacketTypeUpdate EnumsScoreboardIdentityPacketType = 0
+	EnumsScoreboardIdentityPacketTypeRemove EnumsScoreboardIdentityPacketType = 1
+)
+
+type EnumsScriptModuleMinecraftScriptPrimitiveShapeType uint8
+
+const (
+	EnumsScriptModuleMinecraftScriptPrimitiveShapeTypeLine      EnumsScriptModuleMinecraftScriptPrimitiveShapeType = 0
+	EnumsScriptModuleMinecraftScriptPrimitiveShapeTypeBox       EnumsScriptModuleMinecraftScriptPrimitiveShapeType = 1
+	EnumsScriptModuleMinecraftScriptPrimitiveShapeTypeSphere    EnumsScriptModuleMinecraftScriptPrimitiveShapeType = 2
+	EnumsScriptModuleMinecraftScriptPrimitiveShapeTypeCircle    EnumsScriptModuleMinecraftScriptPrimitiveShapeType = 3
+	EnumsScriptModuleMinecraftScriptPrimitiveShapeTypeText      EnumsScriptModuleMinecraftScriptPrimitiveShapeType = 4
+	EnumsScriptModuleMinecraftScriptPrimitiveShapeTypeArrow     EnumsScriptModuleMinecraftScriptPrimitiveShapeType = 5
+	EnumsScriptModuleMinecraftScriptPrimitiveShapeTypeCylinder  EnumsScriptModuleMinecraftScriptPrimitiveShapeType = 6
+	EnumsScriptModuleMinecraftScriptPrimitiveShapeTypePyramid   EnumsScriptModuleMinecraftScriptPrimitiveShapeType = 7
+	EnumsScriptModuleMinecraftScriptPrimitiveShapeTypeEllipsoid EnumsScriptModuleMinecraftScriptPrimitiveShapeType = 8
+	EnumsScriptModuleMinecraftScriptPrimitiveShapeTypeCone      EnumsScriptModuleMinecraftScriptPrimitiveShapeType = 9
+)
+
+type EnumsServerEditorConnectionPolicy int32
+
+const (
+	EnumsServerEditorConnectionPolicyMatchWorldType EnumsServerEditorConnectionPolicy = 0
+	EnumsServerEditorConnectionPolicyEditorOnly     EnumsServerEditorConnectionPolicy = 1
+	EnumsServerEditorConnectionPolicyVanillaOnly    EnumsServerEditorConnectionPolicy = 2
+	EnumsServerEditorConnectionPolicyMixed          EnumsServerEditorConnectionPolicy = 3
+)
+
+type EnumsServerWaypointGroupAction uint8
+
+const (
+	EnumsServerWaypointGroupActionNone   EnumsServerWaypointGroupAction = 0
+	EnumsServerWaypointGroupActionAdd    EnumsServerWaypointGroupAction = 1
+	EnumsServerWaypointGroupActionRemove EnumsServerWaypointGroupAction = 2
+	EnumsServerWaypointGroupActionUpdate EnumsServerWaypointGroupAction = 3
+)
+
+type EnumsServerboundLoadingScreenPacketType int32
+
+const (
+	EnumsServerboundLoadingScreenPacketTypeStartLoadingScreen EnumsServerboundLoadingScreenPacketType = 1
+	EnumsServerboundLoadingScreenPacketTypeEndLoadingScreen   EnumsServerboundLoadingScreenPacketType = 2
+)
+
+type EnumsSetTitlePacketPayloadTitleType int32
+
+const (
+	EnumsSetTitlePacketPayloadTitleTypeClear               EnumsSetTitlePacketPayloadTitleType = 0
+	EnumsSetTitlePacketPayloadTitleTypeReset               EnumsSetTitlePacketPayloadTitleType = 1
+	EnumsSetTitlePacketPayloadTitleTypeTitle               EnumsSetTitlePacketPayloadTitleType = 2
+	EnumsSetTitlePacketPayloadTitleTypeSubtitle            EnumsSetTitlePacketPayloadTitleType = 3
+	EnumsSetTitlePacketPayloadTitleTypeActionbar           EnumsSetTitlePacketPayloadTitleType = 4
+	EnumsSetTitlePacketPayloadTitleTypeTimes               EnumsSetTitlePacketPayloadTitleType = 5
+	EnumsSetTitlePacketPayloadTitleTypeTitleTextObject     EnumsSetTitlePacketPayloadTitleType = 6
+	EnumsSetTitlePacketPayloadTitleTypeSubtitleTextObject  EnumsSetTitlePacketPayloadTitleType = 7
+	EnumsSetTitlePacketPayloadTitleTypeActionbarTextObject EnumsSetTitlePacketPayloadTitleType = 8
+)
+
+type EnumsSharedTypesCreativeItemCategory uint8
+
+const (
+	EnumsSharedTypesCreativeItemCategoryConstruction    EnumsSharedTypesCreativeItemCategory = 1
+	EnumsSharedTypesCreativeItemCategoryNature          EnumsSharedTypesCreativeItemCategory = 2
+	EnumsSharedTypesCreativeItemCategoryEquipment       EnumsSharedTypesCreativeItemCategory = 3
+	EnumsSharedTypesCreativeItemCategoryItems           EnumsSharedTypesCreativeItemCategory = 4
+	EnumsSharedTypesCreativeItemCategoryItemCommandOnly EnumsSharedTypesCreativeItemCategory = 5
+)
+
+type EnumsSharedTypesLegacyArmorSlot int32
+
+const (
+	EnumsSharedTypesLegacyArmorSlotHead  EnumsSharedTypesLegacyArmorSlot = 0
+	EnumsSharedTypesLegacyArmorSlotTorso EnumsSharedTypesLegacyArmorSlot = 1
+	EnumsSharedTypesLegacyArmorSlotLegs  EnumsSharedTypesLegacyArmorSlot = 2
+	EnumsSharedTypesLegacyArmorSlotFeet  EnumsSharedTypesLegacyArmorSlot = 3
+	EnumsSharedTypesLegacyArmorSlotBody  EnumsSharedTypesLegacyArmorSlot = 4
+)
+
+type EnumsSharedTypesLegacyDifficulty int32
+
+const (
+	EnumsSharedTypesLegacyDifficultyPeaceful EnumsSharedTypesLegacyDifficulty = 0
+	EnumsSharedTypesLegacyDifficultyEasy     EnumsSharedTypesLegacyDifficulty = 1
+	EnumsSharedTypesLegacyDifficultyNormal   EnumsSharedTypesLegacyDifficulty = 2
+	EnumsSharedTypesLegacyDifficultyHard     EnumsSharedTypesLegacyDifficulty = 3
+	EnumsSharedTypesLegacyDifficultyCount    EnumsSharedTypesLegacyDifficulty = 4
+	EnumsSharedTypesLegacyDifficultyUnknown  EnumsSharedTypesLegacyDifficulty = 5
+)
+
+type EnumsSharedTypesPersonaArmSizeType uint8
+
+const (
+	EnumsSharedTypesPersonaArmSizeTypeSlim EnumsSharedTypesPersonaArmSizeType = 0
+	EnumsSharedTypesPersonaArmSizeTypeWide EnumsSharedTypesPersonaArmSizeType = 1
+)
+
+type EnumsSharedTypesPersonaPieceType uint32
+
+const (
+	EnumsSharedTypesPersonaPieceTypeSkeleton      EnumsSharedTypesPersonaPieceType = 1
+	EnumsSharedTypesPersonaPieceTypeBody          EnumsSharedTypesPersonaPieceType = 2
+	EnumsSharedTypesPersonaPieceTypeSkin          EnumsSharedTypesPersonaPieceType = 3
+	EnumsSharedTypesPersonaPieceTypeBottom        EnumsSharedTypesPersonaPieceType = 4
+	EnumsSharedTypesPersonaPieceTypeFeet          EnumsSharedTypesPersonaPieceType = 5
+	EnumsSharedTypesPersonaPieceTypeDress         EnumsSharedTypesPersonaPieceType = 6
+	EnumsSharedTypesPersonaPieceTypeTop           EnumsSharedTypesPersonaPieceType = 7
+	EnumsSharedTypesPersonaPieceTypeHighPants     EnumsSharedTypesPersonaPieceType = 8
+	EnumsSharedTypesPersonaPieceTypeHands         EnumsSharedTypesPersonaPieceType = 9
+	EnumsSharedTypesPersonaPieceTypeOuterwear     EnumsSharedTypesPersonaPieceType = 10
+	EnumsSharedTypesPersonaPieceTypeFacialHair    EnumsSharedTypesPersonaPieceType = 11
+	EnumsSharedTypesPersonaPieceTypeMouth         EnumsSharedTypesPersonaPieceType = 12
+	EnumsSharedTypesPersonaPieceTypeEyes          EnumsSharedTypesPersonaPieceType = 13
+	EnumsSharedTypesPersonaPieceTypeHair          EnumsSharedTypesPersonaPieceType = 14
+	EnumsSharedTypesPersonaPieceTypeHood          EnumsSharedTypesPersonaPieceType = 15
+	EnumsSharedTypesPersonaPieceTypeBack          EnumsSharedTypesPersonaPieceType = 16
+	EnumsSharedTypesPersonaPieceTypeFaceAccessory EnumsSharedTypesPersonaPieceType = 17
+	EnumsSharedTypesPersonaPieceTypeHead          EnumsSharedTypesPersonaPieceType = 18
+	EnumsSharedTypesPersonaPieceTypeLegs          EnumsSharedTypesPersonaPieceType = 19
+	EnumsSharedTypesPersonaPieceTypeLeftLeg       EnumsSharedTypesPersonaPieceType = 20
+	EnumsSharedTypesPersonaPieceTypeRightLeg      EnumsSharedTypesPersonaPieceType = 21
+	EnumsSharedTypesPersonaPieceTypeArms          EnumsSharedTypesPersonaPieceType = 22
+	EnumsSharedTypesPersonaPieceTypeLeftArm       EnumsSharedTypesPersonaPieceType = 23
+	EnumsSharedTypesPersonaPieceTypeRightArm      EnumsSharedTypesPersonaPieceType = 24
+	EnumsSharedTypesPersonaPieceTypeCapes         EnumsSharedTypesPersonaPieceType = 25
+	EnumsSharedTypesPersonaPieceTypeClassicSkin   EnumsSharedTypesPersonaPieceType = 26
+	EnumsSharedTypesPersonaPieceTypeEmote         EnumsSharedTypesPersonaPieceType = 27
+)
+
+type EnumsSharedTypesV12110CoordinateEvaluationOrder int32
+
+const (
+	EnumsSharedTypesV12110CoordinateEvaluationOrderXYZ EnumsSharedTypesV12110CoordinateEvaluationOrder = 0
+	EnumsSharedTypesV12110CoordinateEvaluationOrderXZY EnumsSharedTypesV12110CoordinateEvaluationOrder = 1
+	EnumsSharedTypesV12110CoordinateEvaluationOrderYXZ EnumsSharedTypesV12110CoordinateEvaluationOrder = 2
+	EnumsSharedTypesV12110CoordinateEvaluationOrderYZX EnumsSharedTypesV12110CoordinateEvaluationOrder = 3
+	EnumsSharedTypesV12110CoordinateEvaluationOrderZXY EnumsSharedTypesV12110CoordinateEvaluationOrder = 4
+	EnumsSharedTypesV12110CoordinateEvaluationOrderZYX EnumsSharedTypesV12110CoordinateEvaluationOrder = 5
+)
+
+type EnumsSharedTypesV12110RandomDistributionType int32
+
+const (
+	EnumsSharedTypesV12110RandomDistributionTypeSingleValued    EnumsSharedTypesV12110RandomDistributionType = 0
+	EnumsSharedTypesV12110RandomDistributionTypeUniform         EnumsSharedTypesV12110RandomDistributionType = 1
+	EnumsSharedTypesV12110RandomDistributionTypeGaussian        EnumsSharedTypesV12110RandomDistributionType = 2
+	EnumsSharedTypesV12110RandomDistributionTypeInverseGaussian EnumsSharedTypesV12110RandomDistributionType = 3
+	EnumsSharedTypesV12110RandomDistributionTypeFixedGrid       EnumsSharedTypesV12110RandomDistributionType = 4
+	EnumsSharedTypesV12110RandomDistributionTypeJitteredGrid    EnumsSharedTypesV12110RandomDistributionType = 5
+	EnumsSharedTypesV12110RandomDistributionTypeTriangle        EnumsSharedTypesV12110RandomDistributionType = 6
+)
+
+type EnumsSharedTypesV12190CameraPresetAudioListener uint8
+
+const (
+	EnumsSharedTypesV12190CameraPresetAudioListenerCamera EnumsSharedTypesV12190CameraPresetAudioListener = 0
+	EnumsSharedTypesV12190CameraPresetAudioListenerPlayer EnumsSharedTypesV12190CameraPresetAudioListener = 1
+)
+
+type EnumsSharedTypesVillageType uint8
+
+const (
+	EnumsSharedTypesVillageTypeDesert  EnumsSharedTypesVillageType = 0
+	EnumsSharedTypesVillageTypeIce     EnumsSharedTypesVillageType = 1
+	EnumsSharedTypesVillageTypeSavanna EnumsSharedTypesVillageType = 2
+	EnumsSharedTypesVillageTypeTaiga   EnumsSharedTypesVillageType = 3
+	EnumsSharedTypesVillageTypeDefault EnumsSharedTypesVillageType = 4
+)
+
+type EnumsShowStoreOfferRedirectType uint8
+
+const (
+	EnumsShowStoreOfferRedirectTypeMarketplaceOffer     EnumsShowStoreOfferRedirectType = 0
+	EnumsShowStoreOfferRedirectTypeDressingRoomOffer    EnumsShowStoreOfferRedirectType = 1
+	EnumsShowStoreOfferRedirectTypeThirdPartyServerPage EnumsShowStoreOfferRedirectType = 2
+)
+
+type EnumsSimpleEventPacketPayloadSubtype uint16
+
+const (
+	EnumsSimpleEventPacketPayloadSubtypeUninitializedSubtype        EnumsSimpleEventPacketPayloadSubtype = 0
+	EnumsSimpleEventPacketPayloadSubtypeEnableCommands              EnumsSimpleEventPacketPayloadSubtype = 1
+	EnumsSimpleEventPacketPayloadSubtypeDisableCommands             EnumsSimpleEventPacketPayloadSubtype = 2
+	EnumsSimpleEventPacketPayloadSubtypeUnlockWorldTemplateSettings EnumsSimpleEventPacketPayloadSubtype = 3
+)
+
+type EnumsSimulationType uint8
+
+const (
+	EnumsSimulationTypeGame    EnumsSimulationType = 0
+	EnumsSimulationTypeEditor  EnumsSimulationType = 1
+	EnumsSimulationTypeTest    EnumsSimulationType = 2
+	EnumsSimulationTypeINVALID EnumsSimulationType = 3
+)
+
+type EnumsSocialGamePublishSetting int32
+
+const (
+	EnumsSocialGamePublishSettingNoMultiPlay      EnumsSocialGamePublishSetting = 0
+	EnumsSocialGamePublishSettingInviteOnly       EnumsSocialGamePublishSetting = 1
+	EnumsSocialGamePublishSettingFriendsOnly      EnumsSocialGamePublishSetting = 2
+	EnumsSocialGamePublishSettingFriendsOfFriends EnumsSocialGamePublishSetting = 3
+	EnumsSocialGamePublishSettingPublic           EnumsSocialGamePublishSetting = 4
+)
+
+type EnumsSoftEnumUpdateType uint8
+
+const (
+	EnumsSoftEnumUpdateTypeAdd     EnumsSoftEnumUpdateType = 0
+	EnumsSoftEnumUpdateTypeRemove  EnumsSoftEnumUpdateType = 1
+	EnumsSoftEnumUpdateTypeReplace EnumsSoftEnumUpdateType = 2
+)
+
+type EnumsSpawnBiomeType int16
+
+const (
+	EnumsSpawnBiomeTypeDefault     EnumsSpawnBiomeType = 0
+	EnumsSpawnBiomeTypeUserDefined EnumsSpawnBiomeType = 1
+)
+
+type EnumsSpawnPositionType int32
+
+const (
+	EnumsSpawnPositionTypePlayerRespawn EnumsSpawnPositionType = 0
+	EnumsSpawnPositionTypeWorldSpawn    EnumsSpawnPositionType = 1
+)
+
+type EnumsStructureBlockType int32
+
+const (
+	EnumsStructureBlockTypeData    EnumsStructureBlockType = 0
+	EnumsStructureBlockTypeSave    EnumsStructureBlockType = 1
+	EnumsStructureBlockTypeLoad    EnumsStructureBlockType = 2
+	EnumsStructureBlockTypeCorner  EnumsStructureBlockType = 3
+	EnumsStructureBlockTypeInvalid EnumsStructureBlockType = 4
+	EnumsStructureBlockTypeExport  EnumsStructureBlockType = 5
+)
+
+type EnumsStructureRedstoneSaveMode uint8
+
+const (
+	EnumsStructureRedstoneSaveModeSavesToMemory EnumsStructureRedstoneSaveMode = 0
+	EnumsStructureRedstoneSaveModeSavesToDisk   EnumsStructureRedstoneSaveMode = 1
+)
+
+type EnumsStructureTemplateRequestOperation uint8
+
+const (
+	EnumsStructureTemplateRequestOperationNone                EnumsStructureTemplateRequestOperation = 0
+	EnumsStructureTemplateRequestOperationExportFromSaveMode  EnumsStructureTemplateRequestOperation = 1
+	EnumsStructureTemplateRequestOperationExportFromLoadMode  EnumsStructureTemplateRequestOperation = 2
+	EnumsStructureTemplateRequestOperationQuerySavedStructure EnumsStructureTemplateRequestOperation = 3
+)
+
+type EnumsStructureTemplateResponseType uint8
+
+const (
+	EnumsStructureTemplateResponseTypeNone   EnumsStructureTemplateResponseType = 0
+	EnumsStructureTemplateResponseTypeExport EnumsStructureTemplateResponseType = 1
+	EnumsStructureTemplateResponseTypeQuery  EnumsStructureTemplateResponseType = 2
+)
+
+type EnumsSubChunkPacketPayloadHeightMapDataType uint8
+
+const (
+	EnumsSubChunkPacketPayloadHeightMapDataTypeNoData     EnumsSubChunkPacketPayloadHeightMapDataType = 0
+	EnumsSubChunkPacketPayloadHeightMapDataTypeHasData    EnumsSubChunkPacketPayloadHeightMapDataType = 1
+	EnumsSubChunkPacketPayloadHeightMapDataTypeAllTooHigh EnumsSubChunkPacketPayloadHeightMapDataType = 2
+	EnumsSubChunkPacketPayloadHeightMapDataTypeAllTooLow  EnumsSubChunkPacketPayloadHeightMapDataType = 3
+)
+
+type EnumsSubChunkPacketPayloadSubChunkRequestResult uint8
+
+const (
+	EnumsSubChunkPacketPayloadSubChunkRequestResultSuccess               EnumsSubChunkPacketPayloadSubChunkRequestResult = 1
+	EnumsSubChunkPacketPayloadSubChunkRequestResultLevelChunkDoesntExist EnumsSubChunkPacketPayloadSubChunkRequestResult = 2
+	EnumsSubChunkPacketPayloadSubChunkRequestResultWrongDimension        EnumsSubChunkPacketPayloadSubChunkRequestResult = 3
+	EnumsSubChunkPacketPayloadSubChunkRequestResultPlayerDoesntExist     EnumsSubChunkPacketPayloadSubChunkRequestResult = 4
+	EnumsSubChunkPacketPayloadSubChunkRequestResultIndexOutOfBounds      EnumsSubChunkPacketPayloadSubChunkRequestResult = 5
+	EnumsSubChunkPacketPayloadSubChunkRequestResultSuccessAllAir         EnumsSubChunkPacketPayloadSubChunkRequestResult = 6
+)
+
+type EnumsTextProcessingEventOrigin int32
+
+const (
+	EnumsTextProcessingEventOriginUnknown            EnumsTextProcessingEventOrigin = -1
+	EnumsTextProcessingEventOriginServerChatPublic   EnumsTextProcessingEventOrigin = 0
+	EnumsTextProcessingEventOriginServerChatWhisper  EnumsTextProcessingEventOrigin = 1
+	EnumsTextProcessingEventOriginSignText           EnumsTextProcessingEventOrigin = 2
+	EnumsTextProcessingEventOriginAnvilText          EnumsTextProcessingEventOrigin = 3
+	EnumsTextProcessingEventOriginBookAndQuillText   EnumsTextProcessingEventOrigin = 4
+	EnumsTextProcessingEventOriginCommandBlockText   EnumsTextProcessingEventOrigin = 5
+	EnumsTextProcessingEventOriginBlockActorDataText EnumsTextProcessingEventOrigin = 6
+	EnumsTextProcessingEventOriginJoinEventText      EnumsTextProcessingEventOrigin = 7
+	EnumsTextProcessingEventOriginLeaveEventText     EnumsTextProcessingEventOrigin = 8
+	EnumsTextProcessingEventOriginSlashCommandChat   EnumsTextProcessingEventOrigin = 9
+	EnumsTextProcessingEventOriginCartographyText    EnumsTextProcessingEventOrigin = 10
+	EnumsTextProcessingEventOriginKickCommand        EnumsTextProcessingEventOrigin = 11
+	EnumsTextProcessingEventOriginTitleCommand       EnumsTextProcessingEventOrigin = 12
+	EnumsTextProcessingEventOriginSummonCommand      EnumsTextProcessingEventOrigin = 13
+	EnumsTextProcessingEventOriginServerForm         EnumsTextProcessingEventOrigin = 14
+	EnumsTextProcessingEventOriginDataDrivenUI       EnumsTextProcessingEventOrigin = 15
+)
+
+type EnumsUnlockedRecipesPacketPayloadPacketType uint32
+
+const (
+	EnumsUnlockedRecipesPacketPayloadPacketTypeEmpty                    EnumsUnlockedRecipesPacketPayloadPacketType = 0
+	EnumsUnlockedRecipesPacketPayloadPacketTypeInitiallyUnlockedRecipes EnumsUnlockedRecipesPacketPayloadPacketType = 1
+	EnumsUnlockedRecipesPacketPayloadPacketTypeNewlyUnlockedRecipes     EnumsUnlockedRecipesPacketPayloadPacketType = 2
+	EnumsUnlockedRecipesPacketPayloadPacketTypeRemoveUnlockedRecipes    EnumsUnlockedRecipesPacketPayloadPacketType = 3
+	EnumsUnlockedRecipesPacketPayloadPacketTypeRemoveAllUnlockedRecipes EnumsUnlockedRecipesPacketPayloadPacketType = 4
+)
+
+type Experiments struct {
+	Toggles                []CerealizerExperimentsAnonExperimentToggle
+	ExperimentsEverToggled bool
+}
+
+type ExternalLinkSettings struct {
+	URL         string
+	DisplayName string
+}
+
+type FeatureRegistryFeatureBinaryJsonFormat struct {
+	FeatureName      string
+	BinaryJsonOutput string
+}
+
+type FullContainerName struct {
+	ContainerName EnumsContainerEnumName
+	DynamicID     *uint32
+}
+
+type GameRule struct {
+	RuleName          string
+	RuleCanBeModified bool
+	RuleValue         GameRuleRuleValueUnion
+}
+
+type GameRuleRuleValueUnion interface {
+	isGameRuleRuleValueUnion()
+}
+
+type GameRuleRuleValueUnionBool struct {
+	Value bool
+}
+
+func (GameRuleRuleValueUnionBool) isGameRuleRuleValueUnion() {}
+
+type GameRuleRuleValueUnionEmpty0 struct {
+}
+
+func (GameRuleRuleValueUnionEmpty0) isGameRuleRuleValueUnion() {}
+
+type GameRuleRuleValueUnionFloat struct {
+	Value float32
+}
+
+func (GameRuleRuleValueUnionFloat) isGameRuleRuleValueUnion() {}
+
+type GameRuleRuleValueUnionInt32 struct {
 	Value int32
 }
 
-type SetSpawnPositionPacketSpawnPositionTypeEnum int32
+func (GameRuleRuleValueUnionInt32) isGameRuleRuleValueUnion() {}
 
-const (
-	SetSpawnPositionPacketSpawnPositionTypeEnumPlayerRespawn SetSpawnPositionPacketSpawnPositionTypeEnum = 0
-	SetSpawnPositionPacketSpawnPositionTypeEnumWorldSpawn    SetSpawnPositionPacketSpawnPositionTypeEnum = 1
-)
-
-type SetTitlePacketTitleTypeEnum int32
-
-const (
-	SetTitlePacketTitleTypeEnumClear               SetTitlePacketTitleTypeEnum = 0
-	SetTitlePacketTitleTypeEnumReset               SetTitlePacketTitleTypeEnum = 1
-	SetTitlePacketTitleTypeEnumTitle               SetTitlePacketTitleTypeEnum = 2
-	SetTitlePacketTitleTypeEnumSubtitle            SetTitlePacketTitleTypeEnum = 3
-	SetTitlePacketTitleTypeEnumActionbar           SetTitlePacketTitleTypeEnum = 4
-	SetTitlePacketTitleTypeEnumTimes               SetTitlePacketTitleTypeEnum = 5
-	SetTitlePacketTitleTypeEnumTitleTextObject     SetTitlePacketTitleTypeEnum = 6
-	SetTitlePacketTitleTypeEnumSubtitleTextObject  SetTitlePacketTitleTypeEnum = 7
-	SetTitlePacketTitleTypeEnumActionbarTextObject SetTitlePacketTitleTypeEnum = 8
-)
-
-type ShowStoreOfferPacketRedirectTypeEnum uint8
-
-const (
-	ShowStoreOfferPacketRedirectTypeEnumMarketplaceOffer     ShowStoreOfferPacketRedirectTypeEnum = 0
-	ShowStoreOfferPacketRedirectTypeEnumDressingRoomOffer    ShowStoreOfferPacketRedirectTypeEnum = 1
-	ShowStoreOfferPacketRedirectTypeEnumThirdPartyServerPage ShowStoreOfferPacketRedirectTypeEnum = 2
-)
-
-type SimpleEventPacketTypeEnum uint16
-
-const (
-	SimpleEventPacketTypeEnumUninitializedSubtype        SimpleEventPacketTypeEnum = 0
-	SimpleEventPacketTypeEnumEnableCommands              SimpleEventPacketTypeEnum = 1
-	SimpleEventPacketTypeEnumDisableCommands             SimpleEventPacketTypeEnum = 2
-	SimpleEventPacketTypeEnumUnlockWorldTemplateSettings SimpleEventPacketTypeEnum = 3
-)
-
-type SimulationTypePacketSimTypeEnum uint8
-
-const (
-	SimulationTypePacketSimTypeEnumGame    SimulationTypePacketSimTypeEnum = 0
-	SimulationTypePacketSimTypeEnumEditor  SimulationTypePacketSimTypeEnum = 1
-	SimulationTypePacketSimTypeEnumTest    SimulationTypePacketSimTypeEnum = 2
-	SimulationTypePacketSimTypeEnumINVALID SimulationTypePacketSimTypeEnum = 3
-)
-
-type StartGamePacketBlockPropertiesItemStruct struct {
-	BlockName       string
-	BlockDefinition []byte
+type GameRulesChangedPacketData struct {
+	RulesList []GameRule
 }
 
-type StartGamePacketEntityIDStruct struct {
-	ActorUniqueID int64
+type InventoryAction struct {
+	Source   InventorySource
+	Slot     uint32
+	FromItem CerealizerNetworkItemStackDescriptorSerializedData
+	ToItem   CerealizerNetworkItemStackDescriptorSerializedData
 }
 
-type StartGamePacketGameTypeEnum int32
-
-const (
-	StartGamePacketGameTypeEnumUndefined StartGamePacketGameTypeEnum = -1
-	StartGamePacketGameTypeEnumSurvival  StartGamePacketGameTypeEnum = 0
-	StartGamePacketGameTypeEnumCreative  StartGamePacketGameTypeEnum = 1
-	StartGamePacketGameTypeEnumAdventure StartGamePacketGameTypeEnum = 2
-	StartGamePacketGameTypeEnumDefault   StartGamePacketGameTypeEnum = 5
-	StartGamePacketGameTypeEnumSpectator StartGamePacketGameTypeEnum = 6
-)
-
-type StartGamePacketMovementSettingsStruct struct {
-	RewindHistorySize                int32
-	ServerAuthoritativeBlockBreaking bool
+type InventoryMismatchData struct {
+	Actions InventoryTransaction
 }
 
-type StartGamePacketNetworkPermissionsStruct struct {
-	ServerAuthSoundEnabled bool
+func (InventoryMismatchData) isInventoryTransactionPacketTransactionUnion() {}
+
+type InventoryOptions struct {
+	LeftInventoryTab  EnumsInventoryLeftTabIndex
+	RightInventoryTab EnumsInventoryRightTabIndex
+	Filtering         bool
+	LayoutInv         EnumsInventoryLayout
+	LayoutCraft       EnumsInventoryLayout
 }
 
-type StartGamePacketPositionStruct struct {
-	X float32
-	Y float32
-	Z float32
+type InventorySource struct {
+	SourceType  EnumsInventorySourceType
+	Constant1   bool
+	ContainerID *int8
+	Constant3   bool
+	BitFlags    *EnumsInventorySourceInventorySourceFlags
 }
 
-type StartGamePacketRotationStruct struct {
-	X float32
-	Y float32
+type InventoryTransaction struct {
+	Constant0 bool
+	Actions   []InventoryAction
 }
 
-type StartGamePacketRuntimeIDStruct struct {
-	ActorRuntimeID uint64
+type InventoryTransactionPacketTransactionUnion interface {
+	isInventoryTransactionPacketTransactionUnion()
 }
 
-type StartGamePacketServerConfigurationJoinInfoValueStruct struct {
-	Gathering             *StartGamePacketServerConfigurationJoinInfoValueStructGatheringValueStruct
-	ClientStoreEntryPoint *StartGamePacketServerConfigurationJoinInfoValueStructClientStoreEntryPointValueStruct
-	Presence              *StartGamePacketServerConfigurationJoinInfoValueStructPresenceValueStruct
+type ItemData struct {
+	ItemName          string
+	ItemId            int16
+	IsComponentBased  bool
+	ItemVersion       EnumsItemVersion
+	ItemComponentData []byte
 }
 
-type StartGamePacketServerConfigurationJoinInfoValueStructClientStoreEntryPointValueStruct struct {
-	StoreId   string
-	StoreName string
+type ItemEnchantOption struct {
+	Cost         uint8
+	Enchants     ItemEnchants
+	EnchantName  string
+	EnchantNetId TypedServerNetIdStructRecipeNetIdTag
 }
 
-type StartGamePacketServerConfigurationJoinInfoValueStructGatheringValueStruct struct {
-	ExperienceId   [16]byte
-	ExperienceName string
-	WorldId        *[16]byte
-	WorldName      *string
-	CreatorId      string
-	TargetId       *[16]byte
-	ScenarioId     *string
-	ServerId       *string
+type ItemEnchants struct {
+	Slot         int32
+	ItemEnchants [3][]EnchantmentInstance
 }
 
-type StartGamePacketServerConfigurationJoinInfoValueStructPresenceValueStruct struct {
-	RichPresenceId *string
+type ItemReleaseInventoryTransaction struct {
+	Actions      InventoryTransaction
+	ActionType   EnumsItemReleaseInventoryTransactionActionType
+	Slot         int32
+	Item         CerealizerNetworkItemStackDescriptorSerializedData
+	FromPosition Vec3
 }
 
-type StartGamePacketServerTelemetryDataStruct struct {
-	ServerId   string
-	ScenarioId string
-	WorldId    string
-	OwnerId    string
+func (ItemReleaseInventoryTransaction) isInventoryTransactionPacketTransactionUnion() {}
+
+type ItemStackRequestCereal interface {
+	isItemStackRequestCereal()
 }
 
-type StartGamePacketSettingsStruct struct {
+type ItemStackRequestCereal2 interface {
+	isItemStackRequestCereal2()
+}
+
+type ItemStackRequestCerealBeaconPaymentActionData struct {
+	ActionType        EnumsItemStackRequestActionType
+	PrimaryEffectId   int32
+	SecondaryEffectId int32
+}
+
+func (ItemStackRequestCerealBeaconPaymentActionData) isItemStackRequestCereal() {}
+
+type ItemStackRequestCerealConsumeActionData struct {
+	ActionType EnumsItemStackRequestActionType
+	Amount     uint8
+	Source     ItemStackRequestCerealSlotInfoData
+}
+
+func (ItemStackRequestCerealConsumeActionData) isItemStackRequestCereal() {}
+
+type ItemStackRequestCerealCraftCreativeActionData struct {
+	ActionType              EnumsItemStackRequestActionType
+	CreativeItemNetId       uint32
+	NumberOfRequestedCrafts uint8
+}
+
+func (ItemStackRequestCerealCraftCreativeActionData) isItemStackRequestCereal() {}
+
+type ItemStackRequestCerealCraftLoomActionData struct {
+	ActionType    EnumsItemStackRequestActionType
+	PatternNameId string
+	NumCrafts     uint8
+}
+
+func (ItemStackRequestCerealCraftLoomActionData) isItemStackRequestCereal() {}
+
+type ItemStackRequestCerealCraftNonImplementedActionData struct {
+	ActionType EnumsItemStackRequestActionType
+}
+
+func (ItemStackRequestCerealCraftNonImplementedActionData) isItemStackRequestCereal() {}
+
+type ItemStackRequestCerealCraftRecipeActionData struct {
+	ActionType              EnumsItemStackRequestActionType
+	RecipeNetId             TypedServerNetIdStructRecipeNetIdTag
+	NumberOfRequestedCrafts uint8
+}
+
+func (ItemStackRequestCerealCraftRecipeActionData) isItemStackRequestCereal() {}
+
+type ItemStackRequestCerealCraftRecipeAutoActionData struct {
+	ActionType              EnumsItemStackRequestActionType
+	RecipeNetId             TypedServerNetIdStructRecipeNetIdTag
+	NumberOfRequestedCrafts uint8
+	Ingredients             []ItemStackRequestCerealRecipeIngredientData
+}
+
+func (ItemStackRequestCerealCraftRecipeAutoActionData) isItemStackRequestCereal() {}
+
+type ItemStackRequestCerealCraftRecipeOptionalActionData struct {
+	ActionType          EnumsItemStackRequestActionType
+	RecipeNetId         TypedServerNetIdStructRecipeNetIdTag
+	FilteredStringIndex int32
+}
+
+func (ItemStackRequestCerealCraftRecipeOptionalActionData) isItemStackRequestCereal() {}
+
+type ItemStackRequestCerealCraftRepairAndDisenchantActionData struct {
+	ActionType              EnumsItemStackRequestActionType
+	RecipeNetId             int32
+	NumberOfRequestedCrafts uint8
+	RepairCost              int32
+}
+
+func (ItemStackRequestCerealCraftRepairAndDisenchantActionData) isItemStackRequestCereal() {}
+
+type ItemStackRequestCerealCraftResultsActionData struct {
+	ActionType   EnumsItemStackRequestActionType
+	CraftResults []ItemStackRequestCerealNetworkItemInstanceDescriptorData
+	NumCrafts    uint8
+}
+
+func (ItemStackRequestCerealCraftResultsActionData) isItemStackRequestCereal() {}
+
+type ItemStackRequestCerealCreateActionData struct {
+	ActionType   EnumsItemStackRequestActionType
+	ResultsIndex uint8
+}
+
+func (ItemStackRequestCerealCreateActionData) isItemStackRequestCereal() {}
+
+type ItemStackRequestCerealDestroyActionData struct {
+	ActionType EnumsItemStackRequestActionType
+	Amount     uint8
+	Source     ItemStackRequestCerealSlotInfoData
+}
+
+func (ItemStackRequestCerealDestroyActionData) isItemStackRequestCereal() {}
+
+type ItemStackRequestCerealDropActionData struct {
+	ActionType EnumsItemStackRequestActionType
+	Amount     uint8
+	Source     ItemStackRequestCerealSlotInfoData
+	Randomly   bool
+}
+
+func (ItemStackRequestCerealDropActionData) isItemStackRequestCereal() {}
+
+type ItemStackRequestCerealEmptyItemDescriptorData struct {
+	DescriptorType EnumsItemStackRequestCerealItemDescriptorType
+}
+
+func (ItemStackRequestCerealEmptyItemDescriptorData) isItemStackRequestCereal2() {}
+
+type ItemStackRequestCerealItemNameDescriptorData struct {
+	DescriptorType EnumsItemStackRequestCerealItemDescriptorType
+	FullName       string
+	AuxValue       int32
+}
+
+func (ItemStackRequestCerealItemNameDescriptorData) isItemStackRequestCereal2() {}
+
+type ItemStackRequestCerealItemTagDescriptorData struct {
+	DescriptorType EnumsItemStackRequestCerealItemDescriptorType
+	ItemTag        string
+}
+
+func (ItemStackRequestCerealItemTagDescriptorData) isItemStackRequestCereal2() {}
+
+type ItemStackRequestCerealLabTableCombineActionData struct {
+	ActionType EnumsItemStackRequestActionType
+}
+
+func (ItemStackRequestCerealLabTableCombineActionData) isItemStackRequestCereal() {}
+
+type ItemStackRequestCerealMineBlockActionData struct {
+	ActionType          EnumsItemStackRequestActionType
+	Slot                int32
+	PredictedDurability int32
+	NetIdVariant        int32
+}
+
+func (ItemStackRequestCerealMineBlockActionData) isItemStackRequestCereal() {}
+
+type ItemStackRequestCerealMolangItemDescriptorData struct {
+	DescriptorType EnumsItemStackRequestCerealItemDescriptorType
+	TagExpression  string
+	MolangVersion  EnumsMolangVersion
+}
+
+func (ItemStackRequestCerealMolangItemDescriptorData) isItemStackRequestCereal2() {}
+
+type ItemStackRequestCerealNetworkItemInstanceDescriptorData struct {
+	ItemDescriptor ItemStackRequestCereal2
+	StackSize      uint16
+	BlockRuntimeId uint32
+	UserDataBuffer string
+}
+
+type ItemStackRequestCerealPlaceActionData struct {
+	ActionType  EnumsItemStackRequestActionType
+	Amount      uint8
+	Source      ItemStackRequestCerealSlotInfoData
+	Destination ItemStackRequestCerealSlotInfoData
+}
+
+func (ItemStackRequestCerealPlaceActionData) isItemStackRequestCereal() {}
+
+type ItemStackRequestCerealRecipeIngredientData struct {
+	ItemDescriptor ItemStackRequestCereal2
+	StackSize      uint16
+}
+
+type ItemStackRequestCerealRequestData struct {
+	ClientRequestId       TypedClientNetIdStructItemStackRequestIdTagInt32T0
+	Actions               []ItemStackRequestCereal
+	StringsToFilter       []string
+	StringsToFilterOrigin EnumsTextProcessingEventOrigin
+}
+
+type ItemStackRequestCerealSlotInfoData struct {
+	FullContainerName FullContainerName
+	Slot              uint8
+	NetIdVariant      int32
+}
+
+type ItemStackRequestCerealSwapActionData struct {
+	ActionType  EnumsItemStackRequestActionType
+	Source      ItemStackRequestCerealSlotInfoData
+	Destination ItemStackRequestCerealSlotInfoData
+}
+
+func (ItemStackRequestCerealSwapActionData) isItemStackRequestCereal() {}
+
+type ItemStackRequestCerealTakeActionData struct {
+	ActionType  EnumsItemStackRequestActionType
+	Amount      uint8
+	Source      ItemStackRequestCerealSlotInfoData
+	Destination ItemStackRequestCerealSlotInfoData
+}
+
+func (ItemStackRequestCerealTakeActionData) isItemStackRequestCereal() {}
+
+type ItemStackRequestPacketDataRequestData struct {
+	ClientRequestId       TypedClientNetIdStructItemStackRequestIdTagInt32T0
+	Actions               []ItemStackRequestCereal
+	StringsToFilter       []string
+	StringsToFilterOrigin EnumsTextProcessingEventOrigin
+}
+
+type ItemStackResponseContainerInfo struct {
+	FullContainerName FullContainerName
+	Slots             []ItemStackResponseSlotInfo
+}
+
+type ItemStackResponseInfo struct {
+	Result          EnumsItemStackNetResult
+	ClientRequestId TypedClientNetIdStructItemStackRequestIdTagInt32T0
+	Constant2       bool
+	Containers      *[]ItemStackResponseContainerInfo
+}
+
+type ItemStackResponseSlotInfo struct {
+	RequestedSlot        uint8
+	Slot                 uint8
+	Amount               uint8
+	Constant3            bool
+	ItemStackNetId       *TypedServerNetIdStructItemStackNetIdTagInt32T0
+	CustomName           BedrockSafetyRedactableString
+	DurabilityCorrection int32
+}
+
+type ItemUseInventoryTransaction struct {
+	Actions                  InventoryTransaction
+	ActionType               EnumsItemUseInventoryTransactionActionType
+	TriggerType              EnumsItemUseInventoryTransactionTriggerType
+	Position                 BlockPos
+	Face                     uint8
+	Slot                     int32
+	Item                     CerealizerNetworkItemStackDescriptorSerializedData
+	FromPosition             Vec3
+	ClickPosition            Vec3
+	TargetBlockId            uint32
+	ClientInteractPrediction EnumsItemUseInventoryTransactionPredictedResult
+	ClientCooldownState      EnumsItemUseInventoryTransactionClientCooldownState
+}
+
+func (ItemUseInventoryTransaction) isInventoryTransactionPacketTransactionUnion() {}
+
+type ItemUseOnActorInventoryTransaction struct {
+	Actions      InventoryTransaction
+	RuntimeId    ActorRuntimeID
+	ActionType   EnumsItemUseOnActorInventoryTransactionActionType
+	Slot         int32
+	Item         CerealizerNetworkItemStackDescriptorSerializedData
+	FromPosition Vec3
+	HitPosition  Vec3
+}
+
+func (ItemUseOnActorInventoryTransaction) isInventoryTransactionPacketTransactionUnion() {}
+
+type LegacySetSlot struct {
+	ContainerEnum EnumsContainerEnumName
+	Slots         []uint8
+}
+
+type LegacyTelemetryEventPacketPayload interface {
+	isLegacyTelemetryEventPacketPayload()
+}
+
+type LegacyTelemetryEventPacketPayloadAchievement struct {
+	AchievementID EnumsMinecraftEventingAchievementIds
+}
+
+func (LegacyTelemetryEventPacketPayloadAchievement) isLegacyTelemetryEventPacketPayload() {}
+
+type LegacyTelemetryEventPacketPayloadActorDefinition struct {
+	EventName string
+}
+
+func (LegacyTelemetryEventPacketPayloadActorDefinition) isLegacyTelemetryEventPacketPayload() {}
+
+type LegacyTelemetryEventPacketPayloadBellUsed struct {
+	ItemId int32
+}
+
+func (LegacyTelemetryEventPacketPayloadBellUsed) isLegacyTelemetryEventPacketPayload() {}
+
+type LegacyTelemetryEventPacketPayloadBossKilled struct {
+	BossActorID int64
+	PartySize   int32
+	BossType    int32
+}
+
+func (LegacyTelemetryEventPacketPayloadBossKilled) isLegacyTelemetryEventPacketPayload() {}
+
+type LegacyTelemetryEventPacketPayloadCauldronUsed struct {
+	ContentsColor uint32
+	ContentsType  int32
+	FillLevel     int32
+}
+
+func (LegacyTelemetryEventPacketPayloadCauldronUsed) isLegacyTelemetryEventPacketPayload() {}
+
+type LegacyTelemetryEventPacketPayloadCodeBuilderRuntimeAction struct {
+	CodeBuilderRuntimeAction string
+}
+
+func (LegacyTelemetryEventPacketPayloadCodeBuilderRuntimeAction) isLegacyTelemetryEventPacketPayload() {
+}
+
+type LegacyTelemetryEventPacketPayloadCodeBuilderScoreboard struct {
+	ObjectiveName string
+	Score         int32
+}
+
+func (LegacyTelemetryEventPacketPayloadCodeBuilderScoreboard) isLegacyTelemetryEventPacketPayload() {}
+
+type LegacyTelemetryEventPacketPayloadComposterUsed struct {
+	BlockInteractionType EnumsMinecraftEventingPOIBlockInteractionType
+	ItemId               int32
+}
+
+func (LegacyTelemetryEventPacketPayloadComposterUsed) isLegacyTelemetryEventPacketPayload() {}
+
+type LegacyTelemetryEventPacketPayloadEmpty struct {
+}
+
+func (LegacyTelemetryEventPacketPayloadEmpty) isLegacyTelemetryEventPacketPayload() {}
+
+type LegacyTelemetryEventPacketPayloadInteraction struct {
+	InteractedEntityID      int64
+	InteractionType         EnumsMinecraftEventingInteractionType
+	InteractionActorType    int32
+	InteractionActorVariant int32
+	InteractionActorColor   uint8
+}
+
+func (LegacyTelemetryEventPacketPayloadInteraction) isLegacyTelemetryEventPacketPayload() {}
+
+type LegacyTelemetryEventPacketPayloadItemUsed struct {
+	ItemId    int16
+	ItemAux   int32
+	UseMethod int32
+	Count     int32
+}
+
+func (LegacyTelemetryEventPacketPayloadItemUsed) isLegacyTelemetryEventPacketPayload() {}
+
+type LegacyTelemetryEventPacketPayloadMobBorn struct {
+	BornBabyEntityType    int32
+	BornBabyEntityVariant int32
+	BornBabyColor         uint8
+}
+
+func (LegacyTelemetryEventPacketPayloadMobBorn) isLegacyTelemetryEventPacketPayload() {}
+
+type LegacyTelemetryEventPacketPayloadMobKilled struct {
+	InstigatorActorID         int64
+	TargetActorID             int64
+	InstigatorSChildActorType EnumsActorType
+	DamageSource              int32
+	TradeTier                 int32
+	TraderName                string
+}
+
+func (LegacyTelemetryEventPacketPayloadMobKilled) isLegacyTelemetryEventPacketPayload() {}
+
+type LegacyTelemetryEventPacketPayloadPOICauldronUsed struct {
+	BlockInteractionType EnumsMinecraftEventingPOIBlockInteractionType
+	ItemId               int32
+}
+
+func (LegacyTelemetryEventPacketPayloadPOICauldronUsed) isLegacyTelemetryEventPacketPayload() {}
+
+type LegacyTelemetryEventPacketPayloadPiglinBarter struct {
+	ItemId                      int32
+	WasTargetingBarteringPlayer bool
+}
+
+func (LegacyTelemetryEventPacketPayloadPiglinBarter) isLegacyTelemetryEventPacketPayload() {}
+
+type LegacyTelemetryEventPacketPayloadPlayerDied struct {
+	InstigatorActorID    int32
+	InstigatorMobVariant int32
+	DamageSource         int32
+	DiedInRaid           bool
+}
+
+func (LegacyTelemetryEventPacketPayloadPlayerDied) isLegacyTelemetryEventPacketPayload() {}
+
+type LegacyTelemetryEventPacketPayloadPlayerWaxedOrUnwaxedCopper struct {
+	PlayerWaxedOrUnwaxedCopperBlockID int32
+}
+
+func (LegacyTelemetryEventPacketPayloadPlayerWaxedOrUnwaxedCopper) isLegacyTelemetryEventPacketPayload() {
+}
+
+type LegacyTelemetryEventPacketPayloadPortalCreated struct {
+	DimensionID int32
+}
+
+func (LegacyTelemetryEventPacketPayloadPortalCreated) isLegacyTelemetryEventPacketPayload() {}
+
+type LegacyTelemetryEventPacketPayloadPortalUsed struct {
+	SourceDimensionID int32
+	TargetDimensionID int32
+}
+
+func (LegacyTelemetryEventPacketPayloadPortalUsed) isLegacyTelemetryEventPacketPayload() {}
+
+type LegacyTelemetryEventPacketPayloadRaidUpdate struct {
+	CurrentWave int32
+	TotalWaves  int32
+	Success     bool
+}
+
+func (LegacyTelemetryEventPacketPayloadRaidUpdate) isLegacyTelemetryEventPacketPayload() {}
+
+type LegacyTelemetryEventPacketPayloadSlashCommand struct {
+	SuccessCount int32
+	ErrorCount   int32
+	CommandName  string
+	ErrorList    string
+}
+
+func (LegacyTelemetryEventPacketPayloadSlashCommand) isLegacyTelemetryEventPacketPayload() {}
+
+type LegacyTelemetryEventPacketPayloadTargetBlockHit struct {
+	RedstoneLevel int32
+}
+
+func (LegacyTelemetryEventPacketPayloadTargetBlockHit) isLegacyTelemetryEventPacketPayload() {}
+
+type LevelChunkPacketPayloadSubChunkMetadata struct {
+	BlobId uint64
+}
+
+type LevelSettings struct {
 	Seed                                   uint64
-	SpawnSettings                          StartGamePacketSettingsStructSpawnSettingsStruct
-	GeneratorType                          StartGamePacketSettingsStructGeneratorTypeEnum
-	GameType                               StartGamePacketGameTypeEnum
+	SpawnSettings                          SpawnSettings
+	GeneratorType                          EnumsGeneratorType
+	GameType                               EnumsGameType
 	IsHardcore                             bool
-	GameDifficulty                         StartGamePacketSettingsStructGameDifficultyEnum
-	DefaultSpawnBlockPosition              StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct
+	GameDifficulty                         EnumsSharedTypesLegacyDifficulty
+	DefaultSpawnBlockPosition              BlockPos
 	AchievementsDisabled                   bool
-	EditorWorldType                        StartGamePacketSettingsStructEditorWorldTypeEnum
+	EditorWorldType                        EnumsEditorWorldType
 	IsCreatedInEditor                      bool
 	IsExportedFromEditor                   bool
 	DayCycleStopTime                       int32
-	EducationEditionOffer                  StartGamePacketSettingsStructEducationEditionOfferEnum
+	EducationEditionOffer                  EnumsEducationEditionOffer
 	EducationFeaturesEnabled               bool
 	EducationProductID                     string
 	RainLevel                              float32
@@ -3099,15 +3740,15 @@ type StartGamePacketSettingsStruct struct {
 	HasConfirmedPlatformLockedContent      bool
 	MultiplayerGameIntent                  bool
 	LANBroadcastIntent                     bool
-	XboxLiveBroadcastSetting               StartGamePacketSettingsStructXboxLiveBroadcastSettingEnum
-	PlatformBroadcastSetting               StartGamePacketSettingsStructXboxLiveBroadcastSettingEnum
+	XboxLiveBroadcastSetting               EnumsSocialGamePublishSetting
+	PlatformBroadcastSetting               EnumsSocialGamePublishSetting
 	CommandsEnabled                        bool
 	TexturePacksRequired                   bool
-	RuleData                               StartGamePacketSettingsStructRuleDataStruct
-	Experiments                            ResourcePackStackPacketExperimentsStruct
+	RuleData                               GameRulesChangedPacketData
+	Experiments                            Experiments
 	HasBonusChestEnabled                   bool
 	StartWithMapEnabled                    bool
-	PlayerPermissions                      StartGamePacketSettingsStructPlayerPermissionsEnum
+	PlayerPermissions                      EnumsPlayerPermissionLevel
 	ServerChunkTickRange                   int32
 	HasLockedBehaviorPack                  bool
 	HasLockedResourcePack                  bool
@@ -3123,379 +3764,954 @@ type StartGamePacketSettingsStruct struct {
 	LimitedWorldWidth                      int32
 	LimitedWorldDepth                      int32
 	NetherType                             bool
-	EduSharedUriResource                   StartGamePacketSettingsStructEduSharedUriResourceStruct
+	EduSharedUriResource                   EduSharedUriResource
 	OverrideForceExperimentalGameplay      *bool
-	ChatRestrictionLevel                   StartGamePacketSettingsStructChatRestrictionLevelEnum
+	ChatRestrictionLevel                   EnumsChatRestrictionLevel
 	DisablePlayerInteractions              bool
-	ServerEditorConnectionPolicy           StartGamePacketSettingsStructServerEditorConnectionPolicyEnum
+	ServerEditorConnectionPolicy           EnumsServerEditorConnectionPolicy
 	AllowAnonymousBlockDropsInEditorWorlds bool
 }
 
-type StartGamePacketSettingsStructChatRestrictionLevelEnum uint8
-
-const (
-	StartGamePacketSettingsStructChatRestrictionLevelEnumNone     StartGamePacketSettingsStructChatRestrictionLevelEnum = 0
-	StartGamePacketSettingsStructChatRestrictionLevelEnumDropped  StartGamePacketSettingsStructChatRestrictionLevelEnum = 1
-	StartGamePacketSettingsStructChatRestrictionLevelEnumDisabled StartGamePacketSettingsStructChatRestrictionLevelEnum = 2
-)
-
-type StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct struct {
-	X int32
-	Y int32
-	Z int32
+type LineDataPayload struct {
+	LineEndLocation Vec3
 }
 
-type StartGamePacketSettingsStructEditorWorldTypeEnum int32
+func (LineDataPayload) isPrimitiveShapeDataPayloadExtraShapeDataUnion() {}
 
-const (
-	StartGamePacketSettingsStructEditorWorldTypeEnumNonEditor          StartGamePacketSettingsStructEditorWorldTypeEnum = 0
-	StartGamePacketSettingsStructEditorWorldTypeEnumEditorProject      StartGamePacketSettingsStructEditorWorldTypeEnum = 1
-	StartGamePacketSettingsStructEditorWorldTypeEnumEditorTestLevel    StartGamePacketSettingsStructEditorWorldTypeEnum = 2
-	StartGamePacketSettingsStructEditorWorldTypeEnumEditorRealmsUpload StartGamePacketSettingsStructEditorWorldTypeEnum = 3
-)
-
-type StartGamePacketSettingsStructEduSharedUriResourceStruct struct {
-	ButtonName string
-	LinkUri    string
+type LocatorBarWaypointPayload struct {
+	GroupHandle           WaypointGroupWaypointHandle
+	ServerWaypointPayload ServerWaypointPayload
+	ActionFlag            EnumsServerWaypointGroupAction
 }
 
-type StartGamePacketSettingsStructEducationEditionOfferEnum uint32
-
-const (
-	StartGamePacketSettingsStructEducationEditionOfferEnumNone            StartGamePacketSettingsStructEducationEditionOfferEnum = 0
-	StartGamePacketSettingsStructEducationEditionOfferEnumRestOfWorld     StartGamePacketSettingsStructEducationEditionOfferEnum = 1
-	StartGamePacketSettingsStructEducationEditionOfferEnumChinaDeprecated StartGamePacketSettingsStructEducationEditionOfferEnum = 2
-)
-
-type StartGamePacketSettingsStructGameDifficultyEnum int32
-
-const (
-	StartGamePacketSettingsStructGameDifficultyEnumPeaceful StartGamePacketSettingsStructGameDifficultyEnum = 0
-	StartGamePacketSettingsStructGameDifficultyEnumEasy     StartGamePacketSettingsStructGameDifficultyEnum = 1
-	StartGamePacketSettingsStructGameDifficultyEnumNormal   StartGamePacketSettingsStructGameDifficultyEnum = 2
-	StartGamePacketSettingsStructGameDifficultyEnumHard     StartGamePacketSettingsStructGameDifficultyEnum = 3
-	StartGamePacketSettingsStructGameDifficultyEnumCount    StartGamePacketSettingsStructGameDifficultyEnum = 4
-	StartGamePacketSettingsStructGameDifficultyEnumUnknown  StartGamePacketSettingsStructGameDifficultyEnum = 5
-)
-
-type StartGamePacketSettingsStructGeneratorTypeEnum int32
-
-const (
-	StartGamePacketSettingsStructGeneratorTypeEnumLegacy    StartGamePacketSettingsStructGeneratorTypeEnum = 0
-	StartGamePacketSettingsStructGeneratorTypeEnumOverworld StartGamePacketSettingsStructGeneratorTypeEnum = 1
-	StartGamePacketSettingsStructGeneratorTypeEnumFlat      StartGamePacketSettingsStructGeneratorTypeEnum = 2
-	StartGamePacketSettingsStructGeneratorTypeEnumNether    StartGamePacketSettingsStructGeneratorTypeEnum = 3
-	StartGamePacketSettingsStructGeneratorTypeEnumTheEnd    StartGamePacketSettingsStructGeneratorTypeEnum = 4
-	StartGamePacketSettingsStructGeneratorTypeEnumVoid      StartGamePacketSettingsStructGeneratorTypeEnum = 5
-	StartGamePacketSettingsStructGeneratorTypeEnumUndefined StartGamePacketSettingsStructGeneratorTypeEnum = 6
-)
-
-type StartGamePacketSettingsStructPlayerPermissionsEnum int8
-
-const (
-	StartGamePacketSettingsStructPlayerPermissionsEnumVisitor  StartGamePacketSettingsStructPlayerPermissionsEnum = 0
-	StartGamePacketSettingsStructPlayerPermissionsEnumMember   StartGamePacketSettingsStructPlayerPermissionsEnum = 1
-	StartGamePacketSettingsStructPlayerPermissionsEnumOperator StartGamePacketSettingsStructPlayerPermissionsEnum = 2
-	StartGamePacketSettingsStructPlayerPermissionsEnumCustom   StartGamePacketSettingsStructPlayerPermissionsEnum = 3
-)
-
-type StartGamePacketSettingsStructRuleDataStruct struct {
-	RulesList []StartGamePacketSettingsStructRuleDataStructRulesListItemStruct
+type MapDecoration struct {
+	ImageType EnumsMapDecorationType
+	Rotation  uint8
+	X         uint8
+	Y         uint8
+	Label     string
+	Color     MceColor
 }
 
-type StartGamePacketSettingsStructRuleDataStructRulesListItemStruct struct {
-	RuleName          string
-	RuleCanBeModified bool
-	RuleValue         StartGamePacketSettingsStructRuleDataStructRulesListItemStructRuleValueUnion
+type MapInfoRequestPacketAnonClientPixelsProxy struct {
+	Pixel uint32
+	Index uint16
 }
 
-type StartGamePacketSettingsStructRuleDataStructRulesListItemStructRuleValueUnion struct {
-	Tag   int64
-	Value any
+type MapItemTrackedActorUniqueId struct {
+	Type          EnumsMapItemTrackedActorType
+	EntityID      *ActorUniqueID
+	BlockPosition *BlockPos
 }
 
-type StartGamePacketSettingsStructServerEditorConnectionPolicyEnum int32
+type MaterialReducerDataEntry struct {
+	FromItemKey      int32
+	ItemIdsAndCounts []MaterialReducerEntryOutput
+}
 
-const (
-	StartGamePacketSettingsStructServerEditorConnectionPolicyEnumMatchWorldType StartGamePacketSettingsStructServerEditorConnectionPolicyEnum = 0
-	StartGamePacketSettingsStructServerEditorConnectionPolicyEnumEditorOnly     StartGamePacketSettingsStructServerEditorConnectionPolicyEnum = 1
-	StartGamePacketSettingsStructServerEditorConnectionPolicyEnumVanillaOnly    StartGamePacketSettingsStructServerEditorConnectionPolicyEnum = 2
-	StartGamePacketSettingsStructServerEditorConnectionPolicyEnumMixed          StartGamePacketSettingsStructServerEditorConnectionPolicyEnum = 3
-)
+type MaterialReducerEntryOutput struct {
+	ItemId    int32
+	ItemCount int32
+}
 
-type StartGamePacketSettingsStructSpawnSettingsStruct struct {
-	SpawnBiomeType       StartGamePacketSettingsStructSpawnSettingsStructSpawnBiomeTypeEnum
+type MceColor struct {
+	Color int32
+}
+
+type MemoryMemoryCategoryCounter struct {
+	Category     EnumsMemoryMemoryCategory
+	CurrentBytes uint64
+}
+
+type MissingBlobData struct {
+	BlobId   uint64
+	BlobData string
+}
+
+type MoveActorAbsoluteData struct {
+	ActorRuntimeID ActorRuntimeID
+	Header         uint8
+	Position       Vec3
+	RotationX      uint8
+	RotationY      uint8
+	RotationYHead  uint8
+}
+
+type MoveActorDeltaData struct {
+	ActorRuntimeID       ActorRuntimeID
+	NewPositionX         *float32
+	NewPositionY         *float32
+	NewPositionZ         *float32
+	RotationX            *int8
+	RotationY            *int8
+	RotationYHead        *int8
+	IsOnGround           bool
+	ForceMove            bool
+	ForceMoveLocalEntity bool
+	ForceCompletion      bool
+}
+
+type MovePlayerTeleportData struct {
+	TeleportationCause int32
+	SourceActorType    int32
+}
+
+type MultiRecipePayload struct {
+	MultiRecipeUUID [16]byte
+	NetId           TypedServerNetIdStructRecipeNetIdTag
+}
+
+type NetworkPermissions struct {
+	ServerAuthSoundEnabled bool
+}
+
+type NormalTransactionData struct {
+	Actions InventoryTransaction
+}
+
+func (NormalTransactionData) isInventoryTransactionPacketTransactionUnion() {}
+
+type PackIdVersion struct {
+	PackUUID    [16]byte
+	PackVersion SemVersion
+}
+
+type PackInfoData struct {
+	PackIdVersion       PackIdVersion
+	PackSize            uint64
+	ContentKey          string
+	SubpackName         string
+	ContentIdentity     ContentIdentity
+	HasScripts          bool
+	IsAddonPack         bool
+	IsRayTracingCapable bool
+	CDNURL              string
+}
+
+type PackInstanceId struct {
+	PackID      string
+	Version     string
+	SubPackName string
+}
+
+type PackedItemUseLegacyInventoryTransaction struct {
+	LegacyRequestID    TypedClientNetIdStructItemStackLegacyRequestIdTagInt32T0
+	LegacySetItemSlots *[]LegacySetSlot
+	Constant2          bool
+	ItemUseTransaction ItemUseInventoryTransaction
+}
+
+type PlayerBlockActionData struct {
+	PlayerActionType EnumsPlayerActionType
+	Position         BlockPos
+	Facing           int32
+}
+
+type PlayerInputTick struct {
+	InputTick uint64
+}
+
+type PlayerListPacketPayload interface {
+	isPlayerListPacketPayload()
+}
+
+type PlayerListPacketPayloadAddEntry struct {
+	UUID             [16]byte
+	ActorUniqueID    ActorUniqueID
+	PlayerName       string
+	XBLXUID          string
+	PlatformOnlineID string
+	BuildPlatform    EnumsBuildPlatform
+	SerializedSkin   SerializedSkinRef
+	IsTeacher        bool
+	IsHost           bool
+	IsSubClient      bool
+	PlayerColor      MceColor
+}
+
+func (PlayerListPacketPayloadAddEntry) isPlayerListPacketPayload() {}
+
+type PlayerListPacketPayloadRemoveEntry struct {
+	UUID [16]byte
+}
+
+func (PlayerListPacketPayloadRemoveEntry) isPlayerListPacketPayload() {}
+
+type PlayerLocationPacketPayload interface {
+	isPlayerLocationPacketPayload()
+}
+
+type PlayerLocationPacketPayloadCoordinatesLocation struct {
+	PacketType EnumsPlayerLocationPacketPayloadType
+	Position   Vec3
+}
+
+func (PlayerLocationPacketPayloadCoordinatesLocation) isPlayerLocationPacketPayload() {}
+
+type PlayerLocationPacketPayloadHiddenLocation struct {
+	PacketType EnumsPlayerLocationPacketPayloadType
+}
+
+func (PlayerLocationPacketPayloadHiddenLocation) isPlayerLocationPacketPayload() {}
+
+type PlayerPartyInfo struct {
+	PartyId       string
+	IsPartyLeader bool
+}
+
+type PlayerScoreboardId struct {
+	PlayerUniqueId int64
+}
+
+type PlayerUpdateEntityOverridesPacketPayload interface {
+	isPlayerUpdateEntityOverridesPacketPayload()
+}
+
+type PlayerUpdateEntityOverridesPacketPayloadClearOverride struct {
+	Type string
+}
+
+func (PlayerUpdateEntityOverridesPacketPayloadClearOverride) isPlayerUpdateEntityOverridesPacketPayload() {
+}
+
+type PlayerUpdateEntityOverridesPacketPayloadFloatOverride struct {
+	Type  string
+	Value float32
+}
+
+func (PlayerUpdateEntityOverridesPacketPayloadFloatOverride) isPlayerUpdateEntityOverridesPacketPayload() {
+}
+
+type PlayerUpdateEntityOverridesPacketPayloadIntOverride struct {
+	Type  string
+	Value int32
+}
+
+func (PlayerUpdateEntityOverridesPacketPayloadIntOverride) isPlayerUpdateEntityOverridesPacketPayload() {
+}
+
+type PlayerUpdateEntityOverridesPacketPayloadRemoveOverride struct {
+	Type string
+}
+
+func (PlayerUpdateEntityOverridesPacketPayloadRemoveOverride) isPlayerUpdateEntityOverridesPacketPayload() {
+}
+
+type PlayerVideoCapturePacketPayload interface {
+	isPlayerVideoCapturePacketPayload()
+}
+
+type PlayerVideoCapturePacketPayloadStartVideoCapture struct {
+	FrameRate  uint32
+	FilePrefix string
+}
+
+func (PlayerVideoCapturePacketPayloadStartVideoCapture) isPlayerVideoCapturePacketPayload() {}
+
+type PlayerVideoCapturePacketPayloadStopVideoCapture struct {
+}
+
+func (PlayerVideoCapturePacketPayloadStopVideoCapture) isPlayerVideoCapturePacketPayload() {}
+
+type PositionTrackingId struct {
+	Value int32
+}
+
+type PotionMixDataEntry struct {
+	FromPotionId   int32
+	FromItemAux    int32
+	ReagentItemId  int32
+	ReagentItemAux int32
+	ToPotionId     int32
+	ToItemAux      int32
+}
+
+type PrimitiveShapeDataPayload struct {
+	NetworkId             uint64
+	ShapeType             *EnumsScriptModuleMinecraftScriptPrimitiveShapeType
+	Location              *Vec3
+	Scale                 *float32
+	Rotation              *Vec3
+	TotalTimeLeft         *float32
+	MaximumRenderDistance *float32
+	Color                 *MceColor
+	DimensionID           *DimensionType
+	AttachedToEntityID    *ActorUniqueID
+	ExtraShapeData        PrimitiveShapeDataPayloadExtraShapeDataUnion
+}
+
+type PrimitiveShapeDataPayloadExtraShapeDataUnion interface {
+	isPrimitiveShapeDataPayloadExtraShapeDataUnion()
+}
+
+type PrimitiveShapeDataPayloadExtraShapeDataUnionEmpty0 struct {
+}
+
+func (PrimitiveShapeDataPayloadExtraShapeDataUnionEmpty0) isPrimitiveShapeDataPayloadExtraShapeDataUnion() {
+}
+
+type PropertySyncData struct {
+	IntEntriesList   []PropertySyncDataPropertySyncIntEntry
+	FloatEntriesList []PropertySyncDataPropertySyncFloatEntry
+}
+
+type PropertySyncDataPropertySyncFloatEntry struct {
+	PropertyIndex uint32
+	Data          float32
+}
+
+type PropertySyncDataPropertySyncIntEntry struct {
+	PropertyIndex uint32
+	Data          int32
+}
+
+type PyramidDataPayload struct {
+	Width  float32
+	Depth  *float32
+	Height float32
+}
+
+func (PyramidDataPayload) isPrimitiveShapeDataPayloadExtraShapeDataUnion() {}
+
+type RemoveScore struct {
+	Action        string
+	ScoreboardId  ScoreboardId
+	ObjectiveName *string
+}
+
+func (RemoveScore) isSetScorePacketScoreInfoItemUnion() {}
+
+type ResourcePackClientResponsePacketPayload interface {
+	isResourcePackClientResponsePacketPayload()
+}
+
+type ResourcePackClientResponsePacketPayloadCancel struct {
+	ResponseType string
+}
+
+func (ResourcePackClientResponsePacketPayloadCancel) isResourcePackClientResponsePacketPayload() {}
+
+type ResourcePackClientResponsePacketPayloadDownloading struct {
+	ResponseType     string
+	DownloadingPacks []string
+}
+
+func (ResourcePackClientResponsePacketPayloadDownloading) isResourcePackClientResponsePacketPayload() {
+}
+
+type ResourcePackClientResponsePacketPayloadDownloadingFinished struct {
+	ResponseType string
+}
+
+func (ResourcePackClientResponsePacketPayloadDownloadingFinished) isResourcePackClientResponsePacketPayload() {
+}
+
+type ResourcePackClientResponsePacketPayloadResourcePackStackFinished struct {
+	ResponseType string
+}
+
+func (ResourcePackClientResponsePacketPayloadResourcePackStackFinished) isResourcePackClientResponsePacketPayload() {
+}
+
+type ScoreboardId struct {
+	ScoreboardId int64
+}
+
+type ScoreboardIdentityPacketInfo struct {
+	ScoreboardId   ScoreboardId
+	PlayerUniqueId *int64
+}
+
+type SemVersion struct {
+	Version string
+}
+
+type SerializedAbilitiesData struct {
+	TargetPlayerRawId  int64
+	PlayerPermissions  EnumsPlayerPermissionLevel
+	CommandPermissions EnumsCommandPermissionLevel
+	Layers             []SerializedAbilitiesDataSerializedLayer
+}
+
+type SerializedAbilitiesDataSerializedLayer struct {
+	SerializedLayer  uint16
+	AbilitiesSet     uint32
+	AbilityValues    uint32
+	FlySpeed         float32
+	VerticalFlySpeed float32
+	WalkSpeed        float32
+}
+
+type SerializedNoiseBlockSpecifier struct {
+	Noise     string
+	Threshold float32
+	Range     SharedTypesFloatRange
+	Block     uint32
+}
+
+type SerializedPersonaPieceHandle struct {
+	PieceId        string
+	PieceType      EnumsSharedTypesPersonaPieceType
+	PackId         [16]byte
+	IsDefaultPiece bool
+	ProductId      string
+}
+
+type SerializedSkinRef struct {
+	ID                           string
+	PlayFabID                    string
+	ResourcePatch                string
+	ImageData                    SkinImage
+	AnimatedImageData            []AnimatedImageData
+	CapeImageData                SkinImage
+	GeometryData                 string
+	GeometryDataMinEngineVersion string
+	AnimationData                string
+	CapeID                       string
+	FullID                       string
+	ArmSize                      EnumsSharedTypesPersonaArmSizeType
+	SkinColor                    MceColor
+	PersonaPieces                []SerializedPersonaPieceHandle
+	PieceTintColors              []OrderedEntry[string, TintMapColor]
+	IsPremium                    bool
+	IsPersona                    bool
+	IsPersonaCapeOnClassicSkin   bool
+	IsPrimaryUser                bool
+	OverridesPlayerAppearance    bool
+	TrustedSkinFlag              string
+	ProfileHash                  string
+}
+
+type ServerBlockProperty struct {
+	BlockName       string
+	BlockDefinition []byte
+}
+
+type ServerConfigurationClientStoreEntryPointConfiguration struct {
+	StoreId   string
+	StoreName string
+}
+
+type ServerConfigurationGatheringsConfigurationJoinInfo struct {
+	ExperienceId   [16]byte
+	ExperienceName string
+	WorldId        *[16]byte
+	WorldName      *string
+	CreatorId      string
+	TargetId       *[16]byte
+	ScenarioId     *string
+	ServerId       *string
+}
+
+type ServerConfigurationPresenceConfiguration struct {
+	RichPresenceId *string
+}
+
+type ServerConfigurationServerConfigurationJoinInfo struct {
+	Gathering             *ServerConfigurationGatheringsConfigurationJoinInfo
+	ClientStoreEntryPoint *ServerConfigurationClientStoreEntryPointConfiguration
+	Presence              *ServerConfigurationPresenceConfiguration
+}
+
+type ServerSoundHandle struct {
+	ServerSoundHandle uint64
+}
+
+type ServerWaypointPayload struct {
+	UpdateFlag              uint32
+	IsVisible               *bool
+	WorldPosition           *WorldPosition
+	TexturePath             *string
+	IconSize                *Vec2
+	Color                   *MceColor
+	ClientPositionAuthority *bool
+	ActorUniqueID           *ActorUniqueID
+}
+
+type ServerboundPackSettingChangePacketPackSettingValueUnion interface {
+	isServerboundPackSettingChangePacketPackSettingValueUnion()
+}
+
+type ServerboundPackSettingChangePacketPackSettingValueUnionBool struct {
+	Value bool
+}
+
+func (ServerboundPackSettingChangePacketPackSettingValueUnionBool) isServerboundPackSettingChangePacketPackSettingValueUnion() {
+}
+
+type ServerboundPackSettingChangePacketPackSettingValueUnionFloat struct {
+	Value float32
+}
+
+func (ServerboundPackSettingChangePacketPackSettingValueUnionFloat) isServerboundPackSettingChangePacketPackSettingValueUnion() {
+}
+
+type ServerboundPackSettingChangePacketPackSettingValueUnionString struct {
+	Value string
+}
+
+func (ServerboundPackSettingChangePacketPackSettingValueUnionString) isServerboundPackSettingChangePacketPackSettingValueUnion() {
+}
+
+type SetScorePacketScoreInfoItemUnion interface {
+	isSetScorePacketScoreInfoItemUnion()
+}
+
+type ShapedRecipePayload struct {
+	RecipeId             string
+	Width                int32
+	Height               int32
+	Ingredients          []CerealizerRecipeIngredientSerializedData
+	Results              []CerealizerNetworkItemInstanceDescriptorSerializedData
+	UUID                 [16]byte
+	Tag                  string
+	Priority             int32
+	AssumeSymmetry       bool
+	UnlockingRequirement *CerealizerRecipeUnlockingRequirementSerializedData
+	NetId                TypedServerNetIdStructRecipeNetIdTag
+}
+
+type ShapelessRecipePayload struct {
+	RecipeId             string
+	Ingredients          []CerealizerRecipeIngredientSerializedData
+	Results              []CerealizerNetworkItemInstanceDescriptorSerializedData
+	UUID                 [16]byte
+	Tag                  string
+	Priority             int32
+	UnlockingRequirement *CerealizerRecipeUnlockingRequirementSerializedData
+	NetId                TypedServerNetIdStructRecipeNetIdTag
+}
+
+type SharedTypesFloatRange struct {
+	Min float32
+	Max float32
+}
+
+type SharedTypesV121120CameraAimAssistPresetDefinition struct {
+	Identifier          string
+	ExclusionSettings   SharedTypesV121120CameraAimAssistPresetExclusionDefinition
+	LiquidTargetingList []string
+	ItemSettings        []OrderedEntry[string, string]
+	DefaultItemSettings *string
+	HandSettings        *string
+}
+
+type SharedTypesV121120CameraAimAssistPresetExclusionDefinition struct {
+	Blocks             []string
+	Entities           []string
+	BlockTags          []string
+	EntityTypeFamilies []string
+}
+
+type SharedTypesV12150CameraAimAssistCategoryDefinition struct {
+	Name       string
+	Priorities SharedTypesV12150CameraAimAssistCategoryPriorities
+}
+
+type SharedTypesV12150CameraAimAssistCategoryPriorities struct {
+	Entities           []OrderedEntry[string, int32]
+	Blocks             []OrderedEntry[string, int32]
+	BlockTags          []OrderedEntry[string, int32]
+	EntityTypeFamilies []OrderedEntry[string, int32]
+	EntityDefault      *int32
+	BlockDefault       *int32
+}
+
+type SharedTypesV12150CameraAimAssistCommandPresetDefinition struct {
+	PresetId   *string
+	TargetMode *EnumsCameraAimAssistTargetMode
+	ViewAngle  *Vec2
+	Distance   *float32
+}
+
+type SharedTypesV12190CameraPreset struct {
+	Name                    string
+	InheritFrom             string
+	PosX                    *float32
+	PosY                    *float32
+	PosZ                    *float32
+	RotX                    *float32
+	RotY                    *float32
+	RotationSpeed           *float32
+	SnapToTarget            *bool
+	HorizontalRotationLimit *Vec2
+	VerticalRotationLimit   *Vec2
+	ContinueTargeting       *bool
+	BlockListeningRadius    *float32
+	ViewOffset              *Vec2
+	EntityOffset            *Vec3
+	Radius                  *float32
+	YawLimitMin             *float32
+	YawLimitMax             *float32
+	Listener                *EnumsSharedTypesV12190CameraPresetAudioListener
+	PlayerEffects           *bool
+	AimAssist               *SharedTypesV12150CameraAimAssistCommandPresetDefinition
+	ControlScheme           *EnumsControlSchemeScheme
+}
+
+type SharedTypesV1260CameraSplineControlPoint struct {
+	Position Vec3
+}
+
+type SharedTypesV1260CameraSplineDefinition struct {
+	Name              string
+	TotalTime         float32
+	SplineType        string
+	ControlPoints     []SharedTypesV1260CameraSplineControlPoint
+	ProgressKeyFrames []SharedTypesV1260CameraSplineProgressKeyFrame
+	RotationKeyFrames []SharedTypesV1260CameraSplineRotationKeyFrame
+}
+
+type SharedTypesV1260CameraSplineProgressKeyFrame struct {
+	Progress float32
+	Time     float32
+	Easing   *string
+}
+
+type SharedTypesV1260CameraSplineRotationKeyFrame struct {
+	Rotation Vec3
+	Time     float32
+	Easing   *string
+}
+
+type SharedTypesV12630NoiseDescriptor struct {
+	Name        string
+	FirstOctave int32
+	Amplitudes  []float32
+}
+
+type SkinImage struct {
+	Width      uint32
+	Height     uint32
+	ImageBytes []uint8
+}
+
+type SmithingTransformRecipePayload struct {
+	RecipeId           string
+	TemplateIngredient CerealizerRecipeIngredientSerializedData
+	BaseIngredient     CerealizerRecipeIngredientSerializedData
+	AdditionIngredient CerealizerRecipeIngredientSerializedData
+	Result             CerealizerNetworkItemInstanceDescriptorSerializedData
+	Tag                string
+	NetId              TypedServerNetIdStructRecipeNetIdTag
+}
+
+type SmithingTrimRecipePayload struct {
+	RecipeId           string
+	TemplateIngredient CerealizerRecipeIngredientSerializedData
+	BaseIngredient     CerealizerRecipeIngredientSerializedData
+	AdditionIngredient CerealizerRecipeIngredientSerializedData
+	Tag                string
+	NetId              TypedServerNetIdStructRecipeNetIdTag
+}
+
+type SocialEventsServerTelemetryData struct {
+	ServerId   string
+	ScenarioId string
+	WorldId    string
+	OwnerId    string
+}
+
+type SoundDataEvent interface {
+	isSoundDataEvent()
+}
+
+type SoundDataEventFade struct {
+	Duration     float32
+	TargetVolume float32
+}
+
+func (SoundDataEventFade) isSoundDataEvent() {}
+
+type SoundDataEventPause struct {
+}
+
+func (SoundDataEventPause) isSoundDataEvent() {}
+
+type SoundDataEventResume struct {
+}
+
+func (SoundDataEventResume) isSoundDataEvent() {}
+
+type SoundDataEventSeekTo struct {
+	Seconds float32
+}
+
+func (SoundDataEventSeekTo) isSoundDataEvent() {}
+
+type SoundDataEventSetPitch struct {
+	Pitch float32
+}
+
+func (SoundDataEventSetPitch) isSoundDataEvent() {}
+
+type SoundDataEventSetVolume struct {
+	Volume float32
+}
+
+func (SoundDataEventSetVolume) isSoundDataEvent() {}
+
+type SoundDataEventStop struct {
+}
+
+func (SoundDataEventStop) isSoundDataEvent() {}
+
+type SpawnSettings struct {
+	SpawnBiomeType       EnumsSpawnBiomeType
 	UserDefinedBiomeName string
 	Dimension            int32
 }
 
-type StartGamePacketSettingsStructSpawnSettingsStructSpawnBiomeTypeEnum int16
+type SphereDataPayload struct {
+	NumSegments uint8
+}
 
-const (
-	StartGamePacketSettingsStructSpawnSettingsStructSpawnBiomeTypeEnumDefault     StartGamePacketSettingsStructSpawnSettingsStructSpawnBiomeTypeEnum = 0
-	StartGamePacketSettingsStructSpawnSettingsStructSpawnBiomeTypeEnumUserDefined StartGamePacketSettingsStructSpawnSettingsStructSpawnBiomeTypeEnum = 1
-)
+func (SphereDataPayload) isPrimitiveShapeDataPayloadExtraShapeDataUnion() {}
 
-type StartGamePacketSettingsStructXboxLiveBroadcastSettingEnum int32
-
-const (
-	StartGamePacketSettingsStructXboxLiveBroadcastSettingEnumNoMultiPlay      StartGamePacketSettingsStructXboxLiveBroadcastSettingEnum = 0
-	StartGamePacketSettingsStructXboxLiveBroadcastSettingEnumInviteOnly       StartGamePacketSettingsStructXboxLiveBroadcastSettingEnum = 1
-	StartGamePacketSettingsStructXboxLiveBroadcastSettingEnumFriendsOnly      StartGamePacketSettingsStructXboxLiveBroadcastSettingEnum = 2
-	StartGamePacketSettingsStructXboxLiveBroadcastSettingEnumFriendsOfFriends StartGamePacketSettingsStructXboxLiveBroadcastSettingEnum = 3
-	StartGamePacketSettingsStructXboxLiveBroadcastSettingEnumPublic           StartGamePacketSettingsStructXboxLiveBroadcastSettingEnum = 4
-)
-
-type StructureBlockUpdatePacketStructureDataStruct struct {
-	StructureName         StructureBlockUpdatePacketStructureDataStructStructureNameStruct
+type StructureEditorData struct {
+	StructureName         BedrockSafetyRedactableString
 	DataField             string
 	ShouldIncludePlayers  bool
 	ShouldShowBoundingBox bool
-	StructureBlockType    StructureBlockUpdatePacketStructureDataStructStructureBlockTypeEnum
-	StructureSettings     StructureBlockUpdatePacketStructureDataStructStructureSettingsStruct
-	RedstoneSaveMode      StructureBlockUpdatePacketStructureDataStructRedstoneSaveModeEnum
+	StructureBlockType    EnumsStructureBlockType
+	StructureSettings     StructureSettings
+	RedstoneSaveMode      EnumsStructureRedstoneSaveMode
 }
 
-type StructureBlockUpdatePacketStructureDataStructRedstoneSaveModeEnum uint8
-
-const (
-	StructureBlockUpdatePacketStructureDataStructRedstoneSaveModeEnumSavesToMemory StructureBlockUpdatePacketStructureDataStructRedstoneSaveModeEnum = 0
-	StructureBlockUpdatePacketStructureDataStructRedstoneSaveModeEnumSavesToDisk   StructureBlockUpdatePacketStructureDataStructRedstoneSaveModeEnum = 1
-)
-
-type StructureBlockUpdatePacketStructureDataStructStructureBlockTypeEnum int32
-
-const (
-	StructureBlockUpdatePacketStructureDataStructStructureBlockTypeEnumData    StructureBlockUpdatePacketStructureDataStructStructureBlockTypeEnum = 0
-	StructureBlockUpdatePacketStructureDataStructStructureBlockTypeEnumSave    StructureBlockUpdatePacketStructureDataStructStructureBlockTypeEnum = 1
-	StructureBlockUpdatePacketStructureDataStructStructureBlockTypeEnumLoad    StructureBlockUpdatePacketStructureDataStructStructureBlockTypeEnum = 2
-	StructureBlockUpdatePacketStructureDataStructStructureBlockTypeEnumCorner  StructureBlockUpdatePacketStructureDataStructStructureBlockTypeEnum = 3
-	StructureBlockUpdatePacketStructureDataStructStructureBlockTypeEnumInvalid StructureBlockUpdatePacketStructureDataStructStructureBlockTypeEnum = 4
-	StructureBlockUpdatePacketStructureDataStructStructureBlockTypeEnumExport  StructureBlockUpdatePacketStructureDataStructStructureBlockTypeEnum = 5
-)
-
-type StructureBlockUpdatePacketStructureDataStructStructureNameStruct struct {
-	Unredacted string
-	Redacted   *string
-}
-
-type StructureBlockUpdatePacketStructureDataStructStructureSettingsStruct struct {
+type StructureSettings struct {
 	StructurePaletteName                            string
 	ShouldIgnoreEntities                            bool
 	ShouldIgnoreBlocks                              bool
 	ShouldAllowNonTickingPlayerAndTickingAreaChunks bool
-	StructureSize                                   StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct
-	StructureOffset                                 StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct
-	LastEditPlayer                                  StartGamePacketEntityIDStruct
-	Rotation                                        StructureBlockUpdatePacketStructureDataStructStructureSettingsStructRotationEnum
-	Mirror                                          StructureBlockUpdatePacketStructureDataStructStructureSettingsStructMirrorEnum
-	AnimationMode                                   StructureBlockUpdatePacketStructureDataStructStructureSettingsStructAnimationModeEnum
+	StructureSize                                   BlockPos
+	StructureOffset                                 BlockPos
+	LastEditPlayer                                  ActorUniqueID
+	Rotation                                        EnumsRotation
+	Mirror                                          EnumsMirror
+	AnimationMode                                   EnumsAnimationMode
 	AnimationSeconds                                float32
 	IntegrityValue                                  float32
 	IntegritySeed                                   uint32
-	RotationPivot                                   StartGamePacketPositionStruct
+	RotationPivot                                   Vec3
 }
 
-type StructureBlockUpdatePacketStructureDataStructStructureSettingsStructAnimationModeEnum uint8
-
-const (
-	StructureBlockUpdatePacketStructureDataStructStructureSettingsStructAnimationModeEnumNone   StructureBlockUpdatePacketStructureDataStructStructureSettingsStructAnimationModeEnum = 0
-	StructureBlockUpdatePacketStructureDataStructStructureSettingsStructAnimationModeEnumLayers StructureBlockUpdatePacketStructureDataStructStructureSettingsStructAnimationModeEnum = 1
-	StructureBlockUpdatePacketStructureDataStructStructureSettingsStructAnimationModeEnumBlocks StructureBlockUpdatePacketStructureDataStructStructureSettingsStructAnimationModeEnum = 2
-)
-
-type StructureBlockUpdatePacketStructureDataStructStructureSettingsStructMirrorEnum uint8
-
-const (
-	StructureBlockUpdatePacketStructureDataStructStructureSettingsStructMirrorEnumNone StructureBlockUpdatePacketStructureDataStructStructureSettingsStructMirrorEnum = 0
-	StructureBlockUpdatePacketStructureDataStructStructureSettingsStructMirrorEnumX    StructureBlockUpdatePacketStructureDataStructStructureSettingsStructMirrorEnum = 1
-	StructureBlockUpdatePacketStructureDataStructStructureSettingsStructMirrorEnumZ    StructureBlockUpdatePacketStructureDataStructStructureSettingsStructMirrorEnum = 2
-	StructureBlockUpdatePacketStructureDataStructStructureSettingsStructMirrorEnumXZ   StructureBlockUpdatePacketStructureDataStructStructureSettingsStructMirrorEnum = 3
-)
-
-type StructureBlockUpdatePacketStructureDataStructStructureSettingsStructRotationEnum uint8
-
-const (
-	StructureBlockUpdatePacketStructureDataStructStructureSettingsStructRotationEnumNone      StructureBlockUpdatePacketStructureDataStructStructureSettingsStructRotationEnum = 0
-	StructureBlockUpdatePacketStructureDataStructStructureSettingsStructRotationEnumRotate90  StructureBlockUpdatePacketStructureDataStructStructureSettingsStructRotationEnum = 1
-	StructureBlockUpdatePacketStructureDataStructStructureSettingsStructRotationEnumRotate180 StructureBlockUpdatePacketStructureDataStructStructureSettingsStructRotationEnum = 2
-	StructureBlockUpdatePacketStructureDataStructStructureSettingsStructRotationEnumRotate270 StructureBlockUpdatePacketStructureDataStructStructureSettingsStructRotationEnum = 3
-)
-
-type StructureTemplateDataRequestPacketRequestedOperationEnum uint8
-
-const (
-	StructureTemplateDataRequestPacketRequestedOperationEnumNone                StructureTemplateDataRequestPacketRequestedOperationEnum = 0
-	StructureTemplateDataRequestPacketRequestedOperationEnumExportFromSaveMode  StructureTemplateDataRequestPacketRequestedOperationEnum = 1
-	StructureTemplateDataRequestPacketRequestedOperationEnumExportFromLoadMode  StructureTemplateDataRequestPacketRequestedOperationEnum = 2
-	StructureTemplateDataRequestPacketRequestedOperationEnumQuerySavedStructure StructureTemplateDataRequestPacketRequestedOperationEnum = 3
-)
-
-type StructureTemplateDataResponsePacketResponseTypeEnum uint8
-
-const (
-	StructureTemplateDataResponsePacketResponseTypeEnumNone   StructureTemplateDataResponsePacketResponseTypeEnum = 0
-	StructureTemplateDataResponsePacketResponseTypeEnumExport StructureTemplateDataResponsePacketResponseTypeEnum = 1
-	StructureTemplateDataResponsePacketResponseTypeEnumQuery  StructureTemplateDataResponsePacketResponseTypeEnum = 2
-)
-
-type SubChunkPacketCenterPosStruct struct {
-	SubchunkPositionX int32
-	SubchunkPositionY int32
-	SubchunkPositionZ int32
-}
-
-type SubChunkPacketSubChunkDataItemStruct struct {
-	SubChunkPosOffset     SubChunkPacketSubChunkDataItemStructSubChunkPosOffsetStruct
-	SubChunkRequestResult SubChunkPacketSubChunkDataItemStructSubChunkRequestResultEnum
-	SerializedSubChunk    *string
-	HeightMapData         SubChunkPacketSubChunkDataItemStructHeightMapDataStruct
-	BlobId                *uint64
-}
-
-type SubChunkPacketSubChunkDataItemStructHeightMapDataStruct struct {
-	HeightMapType           SubChunkPacketSubChunkDataItemStructHeightMapDataStructHeightMapTypeEnum
+type SubChunkPacketPayloadHeightmapData struct {
+	HeightMapType           EnumsSubChunkPacketPayloadHeightMapDataType
 	SubchunkHeightMap       *[16][16]int8
-	RenderHeightMapType     SubChunkPacketSubChunkDataItemStructHeightMapDataStructHeightMapTypeEnum
+	RenderHeightMapType     EnumsSubChunkPacketPayloadHeightMapDataType
 	SubchunkRenderHeightMap *[16][16]int8
 }
 
-type SubChunkPacketSubChunkDataItemStructHeightMapDataStructHeightMapTypeEnum uint8
+type SubChunkPacketPayloadSubChunkPacketData struct {
+	SubChunkPosOffset     SubChunkPacketPayloadSubChunkPosOffset
+	SubChunkRequestResult EnumsSubChunkPacketPayloadSubChunkRequestResult
+	SerializedSubChunk    *string
+	HeightMapData         SubChunkPacketPayloadHeightmapData
+	BlobId                *uint64
+}
 
-const (
-	SubChunkPacketSubChunkDataItemStructHeightMapDataStructHeightMapTypeEnumNoData     SubChunkPacketSubChunkDataItemStructHeightMapDataStructHeightMapTypeEnum = 0
-	SubChunkPacketSubChunkDataItemStructHeightMapDataStructHeightMapTypeEnumHasData    SubChunkPacketSubChunkDataItemStructHeightMapDataStructHeightMapTypeEnum = 1
-	SubChunkPacketSubChunkDataItemStructHeightMapDataStructHeightMapTypeEnumAllTooHigh SubChunkPacketSubChunkDataItemStructHeightMapDataStructHeightMapTypeEnum = 2
-	SubChunkPacketSubChunkDataItemStructHeightMapDataStructHeightMapTypeEnumAllTooLow  SubChunkPacketSubChunkDataItemStructHeightMapDataStructHeightMapTypeEnum = 3
-)
-
-type SubChunkPacketSubChunkDataItemStructSubChunkPosOffsetStruct struct {
+type SubChunkPacketPayloadSubChunkPosOffset struct {
 	SubchunkOffsetX int8
 	SubchunkOffsetY int8
 	SubchunkOffsetZ int8
 }
 
-type SubChunkPacketSubChunkDataItemStructSubChunkRequestResultEnum uint8
-
-const (
-	SubChunkPacketSubChunkDataItemStructSubChunkRequestResultEnumSuccess               SubChunkPacketSubChunkDataItemStructSubChunkRequestResultEnum = 1
-	SubChunkPacketSubChunkDataItemStructSubChunkRequestResultEnumLevelChunkDoesntExist SubChunkPacketSubChunkDataItemStructSubChunkRequestResultEnum = 2
-	SubChunkPacketSubChunkDataItemStructSubChunkRequestResultEnumWrongDimension        SubChunkPacketSubChunkDataItemStructSubChunkRequestResultEnum = 3
-	SubChunkPacketSubChunkDataItemStructSubChunkRequestResultEnumPlayerDoesntExist     SubChunkPacketSubChunkDataItemStructSubChunkRequestResultEnum = 4
-	SubChunkPacketSubChunkDataItemStructSubChunkRequestResultEnumIndexOutOfBounds      SubChunkPacketSubChunkDataItemStructSubChunkRequestResultEnum = 5
-	SubChunkPacketSubChunkDataItemStructSubChunkRequestResultEnumSuccessAllAir         SubChunkPacketSubChunkDataItemStructSubChunkRequestResultEnum = 6
-)
-
-type SyncWorldClocksPacketDataUnion struct {
-	Tag   int64
-	Value any
+type SubChunkPos struct {
+	SubchunkPositionX int32
+	SubchunkPositionY int32
+	SubchunkPositionZ int32
 }
 
-type TextPacketBodyUnion struct {
-	Tag   int64
-	Value any
+type SyncWorldClockStateData struct {
+	ClockId  uint64
+	Time     int32
+	IsPaused bool
 }
 
-type TrimDataPacketTrimMaterialListItemStruct struct {
+type SyncWorldClocksPacketPayload interface {
+	isSyncWorldClocksPacketPayload()
+}
+
+type SyncWorldClocksPacketPayloadAddTimeMarkerData struct {
+	ClockId     uint64
+	TimeMarkers []TimeMarkerData
+}
+
+func (SyncWorldClocksPacketPayloadAddTimeMarkerData) isSyncWorldClocksPacketPayload() {}
+
+type SyncWorldClocksPacketPayloadInitializeRegistryData struct {
+	ClockData []WorldClockData
+}
+
+func (SyncWorldClocksPacketPayloadInitializeRegistryData) isSyncWorldClocksPacketPayload() {}
+
+type SyncWorldClocksPacketPayloadRemoveTimeMarkerData struct {
+	ClockId       uint64
+	TimeMarkerIds []uint64
+}
+
+func (SyncWorldClocksPacketPayloadRemoveTimeMarkerData) isSyncWorldClocksPacketPayload() {}
+
+type SyncWorldClocksPacketPayloadSyncStateData struct {
+	ClockData []SyncWorldClockStateData
+}
+
+func (SyncWorldClocksPacketPayloadSyncStateData) isSyncWorldClocksPacketPayload() {}
+
+type SyncedAttribute struct {
+	AttributeName string
+	MinValue      float32
+	CurrentValue  float32
+	MaxValue      float32
+}
+
+type SyncedPlayerMovementSettings struct {
+	RewindHistorySize                int32
+	ServerAuthoritativeBlockBreaking bool
+}
+
+type SynchedActorDataCopyableDataList struct {
+	Data []DataItemEntry
+}
+
+type TextDataPayload struct {
+	Text             string
+	UseRotation      bool
+	BackgroundColor  *MceColor
+	DepthTest        bool
+	ShowBackface     bool
+	ShowTextBackface bool
+}
+
+func (TextDataPayload) isPrimitiveShapeDataPayloadExtraShapeDataUnion() {}
+
+type TextPacketPayload interface {
+	isTextPacketPayload()
+}
+
+type TextPacketPayloadAuthorAndMessage struct {
+	PlayerName string
+	Message    string
+}
+
+func (TextPacketPayloadAuthorAndMessage) isTextPacketPayload() {}
+
+type TextPacketPayloadMessageAndParams struct {
+	Message       string
+	ParameterList []string
+}
+
+func (TextPacketPayloadMessageAndParams) isTextPacketPayload() {}
+
+type TextPacketPayloadMessageOnly struct {
+	Message string
+}
+
+func (TextPacketPayloadMessageOnly) isTextPacketPayload() {}
+
+type TimeMarkerData struct {
+	Id     uint64
+	Name   string
+	Time   int32
+	Period *int32
+}
+
+type TintMapColor struct {
+	Colors [4]MceColor
+}
+
+type TrimMaterial struct {
 	MaterialId string
 	Color      string
 	ItemName   string
 }
 
-type TrimDataPacketTrimPatternListItemStruct struct {
+type TrimPattern struct {
 	ItemName  string
 	PatternId string
 }
 
-type UnlockedRecipesPacketPacketTypeEnum uint32
-
-const (
-	UnlockedRecipesPacketPacketTypeEnumEmpty                    UnlockedRecipesPacketPacketTypeEnum = 0
-	UnlockedRecipesPacketPacketTypeEnumInitiallyUnlockedRecipes UnlockedRecipesPacketPacketTypeEnum = 1
-	UnlockedRecipesPacketPacketTypeEnumNewlyUnlockedRecipes     UnlockedRecipesPacketPacketTypeEnum = 2
-	UnlockedRecipesPacketPacketTypeEnumRemoveUnlockedRecipes    UnlockedRecipesPacketPacketTypeEnum = 3
-	UnlockedRecipesPacketPacketTypeEnumRemoveAllUnlockedRecipes UnlockedRecipesPacketPacketTypeEnum = 4
-)
-
-type UpdateAdventureSettingsPacketAdventureSettingsStruct struct {
-	NoPvM          bool
-	NoMvP          bool
-	ImmutableWorld bool
-	ShowNameTags   bool
-	AutoJump       bool
+type TypedClientNetIdStructItemStackLegacyRequestIdTagInt32T0 struct {
+	ID int32
 }
 
-type UpdateAttributesPacketAttributeListItemStruct struct {
-	MinValue        float32
-	MaxValue        float32
-	CurrentValue    float32
-	DefaultMinValue float32
-	DefaultMaxValue float32
-	DefaultValue    float32
-	Name            string
-	Modifiers       []UpdateAttributesPacketAttributeListItemStructModifiersItemStruct
+type TypedClientNetIdStructItemStackRequestIdTagInt32T0 struct {
+	ID int32
 }
 
-type UpdateAttributesPacketAttributeListItemStructModifiersItemStruct struct {
-	Id             string
-	Name           string
-	Amount         float32
-	Operation      int32
-	Operand        int32
-	IsSerializable bool
+type TypedServerNetIdStructCreativeItemNetIdTag struct {
+	ID uint32
 }
 
-type UpdateClientOptionsPacketGraphicsModeChangeValueEnum uint8
-
-const (
-	UpdateClientOptionsPacketGraphicsModeChangeValueEnumSimple    UpdateClientOptionsPacketGraphicsModeChangeValueEnum = 0
-	UpdateClientOptionsPacketGraphicsModeChangeValueEnumFancy     UpdateClientOptionsPacketGraphicsModeChangeValueEnum = 1
-	UpdateClientOptionsPacketGraphicsModeChangeValueEnumAdvanced  UpdateClientOptionsPacketGraphicsModeChangeValueEnum = 2
-	UpdateClientOptionsPacketGraphicsModeChangeValueEnumRayTraced UpdateClientOptionsPacketGraphicsModeChangeValueEnum = 3
-)
-
-type UpdateSoftEnumPacketUpdateTypeEnum uint8
-
-const (
-	UpdateSoftEnumPacketUpdateTypeEnumAdd     UpdateSoftEnumPacketUpdateTypeEnum = 0
-	UpdateSoftEnumPacketUpdateTypeEnumRemove  UpdateSoftEnumPacketUpdateTypeEnum = 1
-	UpdateSoftEnumPacketUpdateTypeEnumReplace UpdateSoftEnumPacketUpdateTypeEnum = 2
-)
-
-type UpdateSubChunkBlocksPacketBlocksChangedStruct struct {
-	BlocksChangedStandards []UpdateSubChunkBlocksPacketBlocksChangedStructBlocksChangedStandardsItemStruct
-	BlocksChangedExtras    []UpdateSubChunkBlocksPacketBlocksChangedStructBlocksChangedStandardsItemStruct
+type TypedServerNetIdStructItemStackNetIdTagInt32T0 struct {
+	ID int32
 }
 
-type UpdateSubChunkBlocksPacketBlocksChangedStructBlocksChangedStandardsItemStruct struct {
-	Pos                       StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct
+type TypedServerNetIdStructRecipeNetIdTag struct {
+	RawId uint32
+}
+
+type UpdateSubChunkBlocksChangedInfo struct {
+	BlocksChangedStandards []UpdateSubChunkNetworkBlockInfo
+	BlocksChangedExtras    []UpdateSubChunkNetworkBlockInfo
+}
+
+type UpdateSubChunkNetworkBlockInfo struct {
+	Pos                       BlockPos
 	RuntimeId                 uint32
 	UpdateFlags               uint32
 	SyncMessageEntityUniqueID uint64
 	SyncMessageMessage        uint32
 }
 
-type VoxelShapesPacketNameMapEntry struct {
-	Key   string
-	Value VoxelShapesPacketNameMapValueStruct
+type Vec2 struct {
+	X float32
+	Y float32
 }
 
-type VoxelShapesPacketNameMapValueStruct struct {
+type Vec3 struct {
+	X float32
+	Y float32
+	Z float32
+}
+
+type VoxelShapesRegistryHandle struct {
 	Value uint16
 }
 
-type VoxelShapesPacketShapesItemStruct struct {
-	Cells        VoxelShapesPacketShapesItemStructCellsStruct
+type VoxelShapesSerializableCells struct {
+	XSize   uint8
+	YSize   uint8
+	ZSize   uint8
+	Storage []uint8
+}
+
+type VoxelShapesSerializableVoxelShape struct {
+	Cells        VoxelShapesSerializableCells
 	XCoordinates []float32
 	YCoordinates []float32
 	ZCoordinates []float32
 }
 
-type VoxelShapesPacketShapesItemStructCellsStruct struct {
-	XSize   uint8
-	YSize   uint8
-	ZSize   uint8
-	Storage []uint8
+type WaypointGroupWaypointHandle struct {
+	UUID [16]byte
+}
+
+type WebSocketPacketData struct {
+	WebsocketServerURI string
+}
+
+type WorldClockData struct {
+	Id          uint64
+	Name        string
+	Time        int32
+	IsPaused    bool
+	TimeMarkers []TimeMarkerData
+}
+
+type WorldPosition struct {
+	Position      Vec3
+	DimensionType DimensionType
 }
 
 type LoginPacket struct {
@@ -3541,7 +4757,7 @@ func DecodeLoginPacket(r Decoder) (LoginPacket, error) {
 }
 
 type PlayStatusPacket struct {
-	Status PlayStatusPacketStatusEnum
+	Status EnumsPlayStatus
 }
 
 func (p *PlayStatusPacket) Encode(w Encoder) error {
@@ -3558,7 +4774,7 @@ func DecodePlayStatusPacket(r Decoder) (PlayStatusPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(PlayStatusPacketStatusEnum)
+		value, ok := raw.(EnumsPlayStatus)
 		if !ok {
 			return p, fmt.Errorf("field PlayStatusPacket.Status has unexpected decoded type %T", raw)
 		}
@@ -3594,8 +4810,20 @@ func DecodeServerToClientHandshakePacket(r Decoder) (ServerToClientHandshakePack
 	return p, nil
 }
 
+type ClientToServerHandshakePacket struct {
+}
+
+func (p *ClientToServerHandshakePacket) Encode(w Encoder) error {
+	return nil
+}
+
+func DecodeClientToServerHandshakePacket(r Decoder) (ClientToServerHandshakePacket, error) {
+	var p ClientToServerHandshakePacket
+	return p, nil
+}
+
 type DisconnectPacket struct {
-	Reason   DisconnectPacketReasonEnum
+	Reason   EnumsConnectionDisconnectFailReason
 	Messages DisconnectPacketMessagesUnion
 }
 
@@ -3616,7 +4844,7 @@ func DecodeDisconnectPacket(r Decoder) (DisconnectPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(DisconnectPacketReasonEnum)
+		value, ok := raw.(EnumsConnectionDisconnectFailReason)
 		if !ok {
 			return p, fmt.Errorf("field DisconnectPacket.Reason has unexpected decoded type %T", raw)
 		}
@@ -3641,8 +4869,8 @@ type ResourcePacksInfoPacket struct {
 	HasAddonPacks              bool
 	HasScripts                 bool
 	ForceDisableVibrantVisuals bool
-	WorldTemplateIdAndVersion  ResourcePacksInfoPacketWorldTemplateIdAndVersionStruct
-	ResourcePacks              []ResourcePacksInfoPacketResourcePacksItemStruct
+	WorldTemplateIdAndVersion  PackIdVersion
+	ResourcePacks              []PackInfoData
 }
 
 func (p *ResourcePacksInfoPacket) Encode(w Encoder) error {
@@ -3718,7 +4946,7 @@ func DecodeResourcePacksInfoPacket(r Decoder) (ResourcePacksInfoPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(ResourcePacksInfoPacketWorldTemplateIdAndVersionStruct)
+		value, ok := raw.(PackIdVersion)
 		if !ok {
 			return p, fmt.Errorf("field ResourcePacksInfoPacket.World Template Id And Version has unexpected decoded type %T", raw)
 		}
@@ -3729,7 +4957,7 @@ func DecodeResourcePacksInfoPacket(r Decoder) (ResourcePacksInfoPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]ResourcePacksInfoPacketResourcePacksItemStruct)
+		value, ok := raw.([]PackInfoData)
 		if !ok {
 			return p, fmt.Errorf("field ResourcePacksInfoPacket.Resource Packs has unexpected decoded type %T", raw)
 		}
@@ -3740,9 +4968,9 @@ func DecodeResourcePacksInfoPacket(r Decoder) (ResourcePacksInfoPacket, error) {
 
 type ResourcePackStackPacket struct {
 	TexturePackRequired bool
-	TexturePackList     []ResourcePackStackPacketTexturePackListItemStruct
+	TexturePackList     []PackInstanceId
 	BaseGameVersion     string
-	Experiments         ResourcePackStackPacketExperimentsStruct
+	Experiments         Experiments
 	IncludeEditorPacks  bool
 }
 
@@ -3783,7 +5011,7 @@ func DecodeResourcePackStackPacket(r Decoder) (ResourcePackStackPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]ResourcePackStackPacketTexturePackListItemStruct)
+		value, ok := raw.([]PackInstanceId)
 		if !ok {
 			return p, fmt.Errorf("field ResourcePackStackPacket.Texture Pack List has unexpected decoded type %T", raw)
 		}
@@ -3805,7 +5033,7 @@ func DecodeResourcePackStackPacket(r Decoder) (ResourcePackStackPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(ResourcePackStackPacketExperimentsStruct)
+		value, ok := raw.(Experiments)
 		if !ok {
 			return p, fmt.Errorf("field ResourcePackStackPacket.Experiments has unexpected decoded type %T", raw)
 		}
@@ -3826,7 +5054,7 @@ func DecodeResourcePackStackPacket(r Decoder) (ResourcePackStackPacket, error) {
 }
 
 type ResourcePackClientResponsePacket struct {
-	Response ResourcePackClientResponsePacketResponseUnion
+	Response ResourcePackClientResponsePacketPayload
 }
 
 func (p *ResourcePackClientResponsePacket) Encode(w Encoder) error {
@@ -3843,7 +5071,7 @@ func DecodeResourcePackClientResponsePacket(r Decoder) (ResourcePackClientRespon
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(ResourcePackClientResponsePacketResponseUnion)
+		value, ok := raw.(ResourcePackClientResponsePacketPayload)
 		if !ok {
 			return p, fmt.Errorf("field ResourcePackClientResponsePacket.Response has unexpected decoded type %T", raw)
 		}
@@ -3854,7 +5082,7 @@ func DecodeResourcePackClientResponsePacket(r Decoder) (ResourcePackClientRespon
 
 type TextPacket struct {
 	Localize        bool
-	Body            TextPacketBodyUnion
+	Body            TextPacketPayload
 	SenderSXUID     string
 	PlatformId      string
 	FilteredMessage *string
@@ -3897,7 +5125,7 @@ func DecodeTextPacket(r Decoder) (TextPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(TextPacketBodyUnion)
+		value, ok := raw.(TextPacketPayload)
 		if !ok {
 			return p, fmt.Errorf("field TextPacket.Body has unexpected decoded type %T", raw)
 		}
@@ -3967,20 +5195,20 @@ func DecodeSetTimePacket(r Decoder) (SetTimePacket, error) {
 }
 
 type StartGamePacket struct {
-	EntityID                          StartGamePacketEntityIDStruct
-	RuntimeID                         StartGamePacketRuntimeIDStruct
-	GameType                          StartGamePacketGameTypeEnum
-	Position                          StartGamePacketPositionStruct
-	Rotation                          StartGamePacketRotationStruct
-	Settings                          StartGamePacketSettingsStruct
+	EntityID                          ActorUniqueID
+	RuntimeID                         ActorRuntimeID
+	GameType                          EnumsGameType
+	Position                          Vec3
+	Rotation                          Vec2
+	Settings                          LevelSettings
 	LevelID                           string
 	LevelName                         string
 	TemplateContentIdentity           string
 	IsTrial                           bool
-	MovementSettings                  StartGamePacketMovementSettingsStruct
+	MovementSettings                  SyncedPlayerMovementSettings
 	LevelCurrentTime                  uint64
 	EnchantmentSeed                   int32
-	BlockProperties                   []StartGamePacketBlockPropertiesItemStruct
+	BlockProperties                   []ServerBlockProperty
 	MultiplayerCorrelationId          string
 	EnableItemStackNetManager         bool
 	ServerVersion                     string
@@ -3989,9 +5217,9 @@ type StartGamePacket struct {
 	WorldTemplateID                   [16]byte
 	ServerEnabledClientSideGeneration bool
 	BlockNetworkIdsAreHashes          bool
-	NetworkPermissions                StartGamePacketNetworkPermissionsStruct
-	ServerConfigurationJoinInfo       *StartGamePacketServerConfigurationJoinInfoValueStruct
-	ServerTelemetryData               StartGamePacketServerTelemetryDataStruct
+	NetworkPermissions                NetworkPermissions
+	ServerConfigurationJoinInfo       *ServerConfigurationServerConfigurationJoinInfo
+	ServerTelemetryData               SocialEventsServerTelemetryData
 }
 
 func (p *StartGamePacket) Encode(w Encoder) error {
@@ -4080,7 +5308,7 @@ func DecodeStartGamePacket(r Decoder) (StartGamePacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketEntityIDStruct)
+		value, ok := raw.(ActorUniqueID)
 		if !ok {
 			return p, fmt.Errorf("field StartGamePacket.Entity ID has unexpected decoded type %T", raw)
 		}
@@ -4091,7 +5319,7 @@ func DecodeStartGamePacket(r Decoder) (StartGamePacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRuntimeIDStruct)
+		value, ok := raw.(ActorRuntimeID)
 		if !ok {
 			return p, fmt.Errorf("field StartGamePacket.Runtime ID has unexpected decoded type %T", raw)
 		}
@@ -4102,7 +5330,7 @@ func DecodeStartGamePacket(r Decoder) (StartGamePacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketGameTypeEnum)
+		value, ok := raw.(EnumsGameType)
 		if !ok {
 			return p, fmt.Errorf("field StartGamePacket.Game Type has unexpected decoded type %T", raw)
 		}
@@ -4113,7 +5341,7 @@ func DecodeStartGamePacket(r Decoder) (StartGamePacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketPositionStruct)
+		value, ok := raw.(Vec3)
 		if !ok {
 			return p, fmt.Errorf("field StartGamePacket.Position has unexpected decoded type %T", raw)
 		}
@@ -4124,7 +5352,7 @@ func DecodeStartGamePacket(r Decoder) (StartGamePacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRotationStruct)
+		value, ok := raw.(Vec2)
 		if !ok {
 			return p, fmt.Errorf("field StartGamePacket.Rotation has unexpected decoded type %T", raw)
 		}
@@ -4135,7 +5363,7 @@ func DecodeStartGamePacket(r Decoder) (StartGamePacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketSettingsStruct)
+		value, ok := raw.(LevelSettings)
 		if !ok {
 			return p, fmt.Errorf("field StartGamePacket.Settings has unexpected decoded type %T", raw)
 		}
@@ -4190,7 +5418,7 @@ func DecodeStartGamePacket(r Decoder) (StartGamePacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketMovementSettingsStruct)
+		value, ok := raw.(SyncedPlayerMovementSettings)
 		if !ok {
 			return p, fmt.Errorf("field StartGamePacket.Movement Settings has unexpected decoded type %T", raw)
 		}
@@ -4223,7 +5451,7 @@ func DecodeStartGamePacket(r Decoder) (StartGamePacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]StartGamePacketBlockPropertiesItemStruct)
+		value, ok := raw.([]ServerBlockProperty)
 		if !ok {
 			return p, fmt.Errorf("field StartGamePacket.Block Properties has unexpected decoded type %T", raw)
 		}
@@ -4322,7 +5550,7 @@ func DecodeStartGamePacket(r Decoder) (StartGamePacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketNetworkPermissionsStruct)
+		value, ok := raw.(NetworkPermissions)
 		if !ok {
 			return p, fmt.Errorf("field StartGamePacket.NetworkPermissions has unexpected decoded type %T", raw)
 		}
@@ -4333,7 +5561,7 @@ func DecodeStartGamePacket(r Decoder) (StartGamePacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(*StartGamePacketServerConfigurationJoinInfoValueStruct)
+		value, ok := raw.(*ServerConfigurationServerConfigurationJoinInfo)
 		if !ok {
 			return p, fmt.Errorf("field StartGamePacket.Server Configuration Join Info has unexpected decoded type %T", raw)
 		}
@@ -4344,7 +5572,7 @@ func DecodeStartGamePacket(r Decoder) (StartGamePacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketServerTelemetryDataStruct)
+		value, ok := raw.(SocialEventsServerTelemetryData)
 		if !ok {
 			return p, fmt.Errorf("field StartGamePacket.Server Telemetry Data has unexpected decoded type %T", raw)
 		}
@@ -4356,20 +5584,20 @@ func DecodeStartGamePacket(r Decoder) (StartGamePacket, error) {
 type AddPlayerPacket struct {
 	UUID              [16]byte
 	PlayerName        string
-	TargetRuntimeID   StartGamePacketRuntimeIDStruct
+	TargetRuntimeID   ActorRuntimeID
 	PlatformChatId    string
-	Position          StartGamePacketPositionStruct
-	Velocity          StartGamePacketPositionStruct
-	Rotation          StartGamePacketRotationStruct
+	Position          Vec3
+	Velocity          Vec3
+	Rotation          Vec2
 	YHeadRotation     float32
-	CarriedItem       AddPlayerPacketCarriedItemStruct
-	PlayerGameType    StartGamePacketGameTypeEnum
-	EntityData        AddPlayerPacketEntityDataStruct
-	SynchedProperties AddPlayerPacketSynchedPropertiesStruct
-	AbilitiesData     AddPlayerPacketAbilitiesDataStruct
-	ActorLinks        []AddPlayerPacketActorLinksItemStruct
+	CarriedItem       CerealizerNetworkItemStackDescriptorSerializedData
+	PlayerGameType    EnumsGameType
+	EntityData        SynchedActorDataCopyableDataList
+	SynchedProperties PropertySyncData
+	AbilitiesData     SerializedAbilitiesData
+	ActorLinks        []ActorLink
 	DeviceId          string
-	BuildPlatform     AddPlayerPacketBuildPlatformEnum
+	BuildPlatform     EnumsBuildPlatform
 }
 
 func (p *AddPlayerPacket) Encode(w Encoder) error {
@@ -4453,7 +5681,7 @@ func DecodeAddPlayerPacket(r Decoder) (AddPlayerPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRuntimeIDStruct)
+		value, ok := raw.(ActorRuntimeID)
 		if !ok {
 			return p, fmt.Errorf("field AddPlayerPacket.Target Runtime ID has unexpected decoded type %T", raw)
 		}
@@ -4475,7 +5703,7 @@ func DecodeAddPlayerPacket(r Decoder) (AddPlayerPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketPositionStruct)
+		value, ok := raw.(Vec3)
 		if !ok {
 			return p, fmt.Errorf("field AddPlayerPacket.Position has unexpected decoded type %T", raw)
 		}
@@ -4486,7 +5714,7 @@ func DecodeAddPlayerPacket(r Decoder) (AddPlayerPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketPositionStruct)
+		value, ok := raw.(Vec3)
 		if !ok {
 			return p, fmt.Errorf("field AddPlayerPacket.Velocity has unexpected decoded type %T", raw)
 		}
@@ -4497,7 +5725,7 @@ func DecodeAddPlayerPacket(r Decoder) (AddPlayerPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRotationStruct)
+		value, ok := raw.(Vec2)
 		if !ok {
 			return p, fmt.Errorf("field AddPlayerPacket.Rotation has unexpected decoded type %T", raw)
 		}
@@ -4519,7 +5747,7 @@ func DecodeAddPlayerPacket(r Decoder) (AddPlayerPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(AddPlayerPacketCarriedItemStruct)
+		value, ok := raw.(CerealizerNetworkItemStackDescriptorSerializedData)
 		if !ok {
 			return p, fmt.Errorf("field AddPlayerPacket.Carried Item has unexpected decoded type %T", raw)
 		}
@@ -4530,7 +5758,7 @@ func DecodeAddPlayerPacket(r Decoder) (AddPlayerPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketGameTypeEnum)
+		value, ok := raw.(EnumsGameType)
 		if !ok {
 			return p, fmt.Errorf("field AddPlayerPacket.Player Game Type has unexpected decoded type %T", raw)
 		}
@@ -4541,7 +5769,7 @@ func DecodeAddPlayerPacket(r Decoder) (AddPlayerPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(AddPlayerPacketEntityDataStruct)
+		value, ok := raw.(SynchedActorDataCopyableDataList)
 		if !ok {
 			return p, fmt.Errorf("field AddPlayerPacket.Entity Data has unexpected decoded type %T", raw)
 		}
@@ -4552,7 +5780,7 @@ func DecodeAddPlayerPacket(r Decoder) (AddPlayerPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(AddPlayerPacketSynchedPropertiesStruct)
+		value, ok := raw.(PropertySyncData)
 		if !ok {
 			return p, fmt.Errorf("field AddPlayerPacket.Synched Properties has unexpected decoded type %T", raw)
 		}
@@ -4563,7 +5791,7 @@ func DecodeAddPlayerPacket(r Decoder) (AddPlayerPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(AddPlayerPacketAbilitiesDataStruct)
+		value, ok := raw.(SerializedAbilitiesData)
 		if !ok {
 			return p, fmt.Errorf("field AddPlayerPacket.Abilities Data has unexpected decoded type %T", raw)
 		}
@@ -4574,7 +5802,7 @@ func DecodeAddPlayerPacket(r Decoder) (AddPlayerPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]AddPlayerPacketActorLinksItemStruct)
+		value, ok := raw.([]ActorLink)
 		if !ok {
 			return p, fmt.Errorf("field AddPlayerPacket.Actor Links has unexpected decoded type %T", raw)
 		}
@@ -4596,7 +5824,7 @@ func DecodeAddPlayerPacket(r Decoder) (AddPlayerPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(AddPlayerPacketBuildPlatformEnum)
+		value, ok := raw.(EnumsBuildPlatform)
 		if !ok {
 			return p, fmt.Errorf("field AddPlayerPacket.Build Platform has unexpected decoded type %T", raw)
 		}
@@ -4606,18 +5834,18 @@ func DecodeAddPlayerPacket(r Decoder) (AddPlayerPacket, error) {
 }
 
 type AddActorPacket struct {
-	TargetActorID     StartGamePacketEntityIDStruct
-	TargetRuntimeID   StartGamePacketRuntimeIDStruct
+	TargetActorID     ActorUniqueID
+	TargetRuntimeID   ActorRuntimeID
 	ActorType         string
-	Position          StartGamePacketPositionStruct
-	Velocity          StartGamePacketPositionStruct
-	Rotation          StartGamePacketRotationStruct
+	Position          Vec3
+	Velocity          Vec3
+	Rotation          Vec2
 	YHeadRotation     float32
 	YBodyRotation     float32
-	AttributesList    []AddActorPacketAttributesListItemStruct
-	ActorData         AddPlayerPacketEntityDataStruct
-	SynchedProperties AddPlayerPacketSynchedPropertiesStruct
-	ActorLinks        []AddPlayerPacketActorLinksItemStruct
+	AttributesList    []SyncedAttribute
+	ActorData         SynchedActorDataCopyableDataList
+	SynchedProperties PropertySyncData
+	ActorLinks        []ActorLink
 }
 
 func (p *AddActorPacket) Encode(w Encoder) error {
@@ -4667,7 +5895,7 @@ func DecodeAddActorPacket(r Decoder) (AddActorPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketEntityIDStruct)
+		value, ok := raw.(ActorUniqueID)
 		if !ok {
 			return p, fmt.Errorf("field AddActorPacket.Target Actor ID has unexpected decoded type %T", raw)
 		}
@@ -4678,7 +5906,7 @@ func DecodeAddActorPacket(r Decoder) (AddActorPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRuntimeIDStruct)
+		value, ok := raw.(ActorRuntimeID)
 		if !ok {
 			return p, fmt.Errorf("field AddActorPacket.Target Runtime ID has unexpected decoded type %T", raw)
 		}
@@ -4700,7 +5928,7 @@ func DecodeAddActorPacket(r Decoder) (AddActorPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketPositionStruct)
+		value, ok := raw.(Vec3)
 		if !ok {
 			return p, fmt.Errorf("field AddActorPacket.Position has unexpected decoded type %T", raw)
 		}
@@ -4711,7 +5939,7 @@ func DecodeAddActorPacket(r Decoder) (AddActorPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketPositionStruct)
+		value, ok := raw.(Vec3)
 		if !ok {
 			return p, fmt.Errorf("field AddActorPacket.Velocity has unexpected decoded type %T", raw)
 		}
@@ -4722,7 +5950,7 @@ func DecodeAddActorPacket(r Decoder) (AddActorPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRotationStruct)
+		value, ok := raw.(Vec2)
 		if !ok {
 			return p, fmt.Errorf("field AddActorPacket.Rotation has unexpected decoded type %T", raw)
 		}
@@ -4755,7 +5983,7 @@ func DecodeAddActorPacket(r Decoder) (AddActorPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]AddActorPacketAttributesListItemStruct)
+		value, ok := raw.([]SyncedAttribute)
 		if !ok {
 			return p, fmt.Errorf("field AddActorPacket.Attributes List has unexpected decoded type %T", raw)
 		}
@@ -4766,7 +5994,7 @@ func DecodeAddActorPacket(r Decoder) (AddActorPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(AddPlayerPacketEntityDataStruct)
+		value, ok := raw.(SynchedActorDataCopyableDataList)
 		if !ok {
 			return p, fmt.Errorf("field AddActorPacket.Actor Data has unexpected decoded type %T", raw)
 		}
@@ -4777,7 +6005,7 @@ func DecodeAddActorPacket(r Decoder) (AddActorPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(AddPlayerPacketSynchedPropertiesStruct)
+		value, ok := raw.(PropertySyncData)
 		if !ok {
 			return p, fmt.Errorf("field AddActorPacket.Synched Properties has unexpected decoded type %T", raw)
 		}
@@ -4788,7 +6016,7 @@ func DecodeAddActorPacket(r Decoder) (AddActorPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]AddPlayerPacketActorLinksItemStruct)
+		value, ok := raw.([]ActorLink)
 		if !ok {
 			return p, fmt.Errorf("field AddActorPacket.Actor Links has unexpected decoded type %T", raw)
 		}
@@ -4798,7 +6026,7 @@ func DecodeAddActorPacket(r Decoder) (AddActorPacket, error) {
 }
 
 type RemoveActorPacket struct {
-	TargetActorID StartGamePacketEntityIDStruct
+	TargetActorID ActorUniqueID
 }
 
 func (p *RemoveActorPacket) Encode(w Encoder) error {
@@ -4815,7 +6043,7 @@ func DecodeRemoveActorPacket(r Decoder) (RemoveActorPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketEntityIDStruct)
+		value, ok := raw.(ActorUniqueID)
 		if !ok {
 			return p, fmt.Errorf("field RemoveActorPacket.Target Actor ID has unexpected decoded type %T", raw)
 		}
@@ -4825,12 +6053,12 @@ func DecodeRemoveActorPacket(r Decoder) (RemoveActorPacket, error) {
 }
 
 type AddItemActorPacket struct {
-	TargetActorID   StartGamePacketEntityIDStruct
-	TargetRuntimeID StartGamePacketRuntimeIDStruct
-	Item            AddPlayerPacketCarriedItemStruct
-	Position        StartGamePacketPositionStruct
-	Velocity        StartGamePacketPositionStruct
-	EntityData      AddPlayerPacketEntityDataStruct
+	TargetActorID   ActorUniqueID
+	TargetRuntimeID ActorRuntimeID
+	Item            CerealizerNetworkItemStackDescriptorSerializedData
+	Position        Vec3
+	Velocity        Vec3
+	EntityData      SynchedActorDataCopyableDataList
 	IsFromFishing   bool
 }
 
@@ -4866,7 +6094,7 @@ func DecodeAddItemActorPacket(r Decoder) (AddItemActorPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketEntityIDStruct)
+		value, ok := raw.(ActorUniqueID)
 		if !ok {
 			return p, fmt.Errorf("field AddItemActorPacket.Target Actor ID has unexpected decoded type %T", raw)
 		}
@@ -4877,7 +6105,7 @@ func DecodeAddItemActorPacket(r Decoder) (AddItemActorPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRuntimeIDStruct)
+		value, ok := raw.(ActorRuntimeID)
 		if !ok {
 			return p, fmt.Errorf("field AddItemActorPacket.Target Runtime ID has unexpected decoded type %T", raw)
 		}
@@ -4888,7 +6116,7 @@ func DecodeAddItemActorPacket(r Decoder) (AddItemActorPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(AddPlayerPacketCarriedItemStruct)
+		value, ok := raw.(CerealizerNetworkItemStackDescriptorSerializedData)
 		if !ok {
 			return p, fmt.Errorf("field AddItemActorPacket.Item has unexpected decoded type %T", raw)
 		}
@@ -4899,7 +6127,7 @@ func DecodeAddItemActorPacket(r Decoder) (AddItemActorPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketPositionStruct)
+		value, ok := raw.(Vec3)
 		if !ok {
 			return p, fmt.Errorf("field AddItemActorPacket.Position has unexpected decoded type %T", raw)
 		}
@@ -4910,7 +6138,7 @@ func DecodeAddItemActorPacket(r Decoder) (AddItemActorPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketPositionStruct)
+		value, ok := raw.(Vec3)
 		if !ok {
 			return p, fmt.Errorf("field AddItemActorPacket.Velocity has unexpected decoded type %T", raw)
 		}
@@ -4921,7 +6149,7 @@ func DecodeAddItemActorPacket(r Decoder) (AddItemActorPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(AddPlayerPacketEntityDataStruct)
+		value, ok := raw.(SynchedActorDataCopyableDataList)
 		if !ok {
 			return p, fmt.Errorf("field AddItemActorPacket.Entity Data has unexpected decoded type %T", raw)
 		}
@@ -4942,7 +6170,7 @@ func DecodeAddItemActorPacket(r Decoder) (AddItemActorPacket, error) {
 }
 
 type ServerPlayerPostMovePositionPacket struct {
-	Pos StartGamePacketPositionStruct
+	Pos Vec3
 }
 
 func (p *ServerPlayerPostMovePositionPacket) Encode(w Encoder) error {
@@ -4959,7 +6187,7 @@ func DecodeServerPlayerPostMovePositionPacket(r Decoder) (ServerPlayerPostMovePo
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketPositionStruct)
+		value, ok := raw.(Vec3)
 		if !ok {
 			return p, fmt.Errorf("field ServerPlayerPostMovePositionPacket.Pos has unexpected decoded type %T", raw)
 		}
@@ -4969,8 +6197,8 @@ func DecodeServerPlayerPostMovePositionPacket(r Decoder) (ServerPlayerPostMovePo
 }
 
 type TakeItemActorPacket struct {
-	ItemRuntimeID  StartGamePacketRuntimeIDStruct
-	ActorRuntimeID StartGamePacketRuntimeIDStruct
+	ItemRuntimeID  ActorRuntimeID
+	ActorRuntimeID ActorRuntimeID
 }
 
 func (p *TakeItemActorPacket) Encode(w Encoder) error {
@@ -4990,7 +6218,7 @@ func DecodeTakeItemActorPacket(r Decoder) (TakeItemActorPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRuntimeIDStruct)
+		value, ok := raw.(ActorRuntimeID)
 		if !ok {
 			return p, fmt.Errorf("field TakeItemActorPacket.Item Runtime ID has unexpected decoded type %T", raw)
 		}
@@ -5001,7 +6229,7 @@ func DecodeTakeItemActorPacket(r Decoder) (TakeItemActorPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRuntimeIDStruct)
+		value, ok := raw.(ActorRuntimeID)
 		if !ok {
 			return p, fmt.Errorf("field TakeItemActorPacket.Actor Runtime ID has unexpected decoded type %T", raw)
 		}
@@ -5011,7 +6239,7 @@ func DecodeTakeItemActorPacket(r Decoder) (TakeItemActorPacket, error) {
 }
 
 type MoveActorAbsolutePacket struct {
-	MoveData MoveActorAbsolutePacketMoveDataStruct
+	MoveData MoveActorAbsoluteData
 }
 
 func (p *MoveActorAbsolutePacket) Encode(w Encoder) error {
@@ -5028,7 +6256,7 @@ func DecodeMoveActorAbsolutePacket(r Decoder) (MoveActorAbsolutePacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(MoveActorAbsolutePacketMoveDataStruct)
+		value, ok := raw.(MoveActorAbsoluteData)
 		if !ok {
 			return p, fmt.Errorf("field MoveActorAbsolutePacket.Move Data has unexpected decoded type %T", raw)
 		}
@@ -5038,15 +6266,15 @@ func DecodeMoveActorAbsolutePacket(r Decoder) (MoveActorAbsolutePacket, error) {
 }
 
 type MovePlayerPacket struct {
-	PlayerRuntimeID StartGamePacketRuntimeIDStruct
-	Position        StartGamePacketPositionStruct
-	Rotation        StartGamePacketRotationStruct
+	PlayerRuntimeID ActorRuntimeID
+	Position        Vec3
+	Rotation        Vec2
 	YHeadRotation   float32
-	PositionMode    MovePlayerPacketPositionModeEnum
+	PositionMode    EnumsPlayerPositionModeComponentPositionMode
 	OnGround        bool
-	RidingRuntimeID StartGamePacketRuntimeIDStruct
-	TeleportData    *MovePlayerPacketTeleportDataValueStruct
-	Tick            MovePlayerPacketTickStruct
+	RidingRuntimeID ActorRuntimeID
+	TeleportData    *MovePlayerTeleportData
+	Tick            PlayerInputTick
 }
 
 func (p *MovePlayerPacket) Encode(w Encoder) error {
@@ -5087,7 +6315,7 @@ func DecodeMovePlayerPacket(r Decoder) (MovePlayerPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRuntimeIDStruct)
+		value, ok := raw.(ActorRuntimeID)
 		if !ok {
 			return p, fmt.Errorf("field MovePlayerPacket.Player Runtime ID has unexpected decoded type %T", raw)
 		}
@@ -5098,7 +6326,7 @@ func DecodeMovePlayerPacket(r Decoder) (MovePlayerPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketPositionStruct)
+		value, ok := raw.(Vec3)
 		if !ok {
 			return p, fmt.Errorf("field MovePlayerPacket.Position has unexpected decoded type %T", raw)
 		}
@@ -5109,7 +6337,7 @@ func DecodeMovePlayerPacket(r Decoder) (MovePlayerPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRotationStruct)
+		value, ok := raw.(Vec2)
 		if !ok {
 			return p, fmt.Errorf("field MovePlayerPacket.Rotation has unexpected decoded type %T", raw)
 		}
@@ -5131,7 +6359,7 @@ func DecodeMovePlayerPacket(r Decoder) (MovePlayerPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(MovePlayerPacketPositionModeEnum)
+		value, ok := raw.(EnumsPlayerPositionModeComponentPositionMode)
 		if !ok {
 			return p, fmt.Errorf("field MovePlayerPacket.Position Mode has unexpected decoded type %T", raw)
 		}
@@ -5153,7 +6381,7 @@ func DecodeMovePlayerPacket(r Decoder) (MovePlayerPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRuntimeIDStruct)
+		value, ok := raw.(ActorRuntimeID)
 		if !ok {
 			return p, fmt.Errorf("field MovePlayerPacket.Riding Runtime ID has unexpected decoded type %T", raw)
 		}
@@ -5164,7 +6392,7 @@ func DecodeMovePlayerPacket(r Decoder) (MovePlayerPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(*MovePlayerPacketTeleportDataValueStruct)
+		value, ok := raw.(*MovePlayerTeleportData)
 		if !ok {
 			return p, fmt.Errorf("field MovePlayerPacket.Teleport Data has unexpected decoded type %T", raw)
 		}
@@ -5175,7 +6403,7 @@ func DecodeMovePlayerPacket(r Decoder) (MovePlayerPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(MovePlayerPacketTickStruct)
+		value, ok := raw.(PlayerInputTick)
 		if !ok {
 			return p, fmt.Errorf("field MovePlayerPacket.Tick has unexpected decoded type %T", raw)
 		}
@@ -5185,7 +6413,7 @@ func DecodeMovePlayerPacket(r Decoder) (MovePlayerPacket, error) {
 }
 
 type UpdateBlockPacket struct {
-	BlockPosition  StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct
+	BlockPosition  BlockPos
 	BlockRuntimeID uint32
 	Flags          uint32
 	Layer          uint32
@@ -5214,7 +6442,7 @@ func DecodeUpdateBlockPacket(r Decoder) (UpdateBlockPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct)
+		value, ok := raw.(BlockPos)
 		if !ok {
 			return p, fmt.Errorf("field UpdateBlockPacket.Block Position has unexpected decoded type %T", raw)
 		}
@@ -5257,9 +6485,9 @@ func DecodeUpdateBlockPacket(r Decoder) (UpdateBlockPacket, error) {
 }
 
 type AddPaintingPacket struct {
-	TargetActorID   StartGamePacketEntityIDStruct
-	TargetRuntimeID StartGamePacketRuntimeIDStruct
-	Position        StartGamePacketPositionStruct
+	TargetActorID   ActorUniqueID
+	TargetRuntimeID ActorRuntimeID
+	Position        Vec3
 	Direction       int32
 	Motif           string
 }
@@ -5290,7 +6518,7 @@ func DecodeAddPaintingPacket(r Decoder) (AddPaintingPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketEntityIDStruct)
+		value, ok := raw.(ActorUniqueID)
 		if !ok {
 			return p, fmt.Errorf("field AddPaintingPacket.Target Actor ID has unexpected decoded type %T", raw)
 		}
@@ -5301,7 +6529,7 @@ func DecodeAddPaintingPacket(r Decoder) (AddPaintingPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRuntimeIDStruct)
+		value, ok := raw.(ActorRuntimeID)
 		if !ok {
 			return p, fmt.Errorf("field AddPaintingPacket.Target Runtime ID has unexpected decoded type %T", raw)
 		}
@@ -5312,7 +6540,7 @@ func DecodeAddPaintingPacket(r Decoder) (AddPaintingPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketPositionStruct)
+		value, ok := raw.(Vec3)
 		if !ok {
 			return p, fmt.Errorf("field AddPaintingPacket.Position has unexpected decoded type %T", raw)
 		}
@@ -5345,7 +6573,7 @@ func DecodeAddPaintingPacket(r Decoder) (AddPaintingPacket, error) {
 
 type LevelEventPacket struct {
 	EventId  int32
-	Position StartGamePacketPositionStruct
+	Position Vec3
 	Data     int32
 }
 
@@ -5380,7 +6608,7 @@ func DecodeLevelEventPacket(r Decoder) (LevelEventPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketPositionStruct)
+		value, ok := raw.(Vec3)
 		if !ok {
 			return p, fmt.Errorf("field LevelEventPacket.Position has unexpected decoded type %T", raw)
 		}
@@ -5401,7 +6629,7 @@ func DecodeLevelEventPacket(r Decoder) (LevelEventPacket, error) {
 }
 
 type BlockEventPacket struct {
-	BlockPosition StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct
+	BlockPosition BlockPos
 	EventType     int32
 	EventValue    int32
 }
@@ -5426,7 +6654,7 @@ func DecodeBlockEventPacket(r Decoder) (BlockEventPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct)
+		value, ok := raw.(BlockPos)
 		if !ok {
 			return p, fmt.Errorf("field BlockEventPacket.Block Position has unexpected decoded type %T", raw)
 		}
@@ -5458,10 +6686,10 @@ func DecodeBlockEventPacket(r Decoder) (BlockEventPacket, error) {
 }
 
 type ActorEventPacket struct {
-	TargetRuntimeID StartGamePacketRuntimeIDStruct
-	EventID         ActorEventPacketEventIDEnum
+	TargetRuntimeID ActorRuntimeID
+	EventID         EnumsActorEvent
 	Data            int32
-	FireAtPosition  *StartGamePacketPositionStruct
+	FireAtPosition  *Vec3
 }
 
 func (p *ActorEventPacket) Encode(w Encoder) error {
@@ -5487,7 +6715,7 @@ func DecodeActorEventPacket(r Decoder) (ActorEventPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRuntimeIDStruct)
+		value, ok := raw.(ActorRuntimeID)
 		if !ok {
 			return p, fmt.Errorf("field ActorEventPacket.Target Runtime ID has unexpected decoded type %T", raw)
 		}
@@ -5498,7 +6726,7 @@ func DecodeActorEventPacket(r Decoder) (ActorEventPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(ActorEventPacketEventIDEnum)
+		value, ok := raw.(EnumsActorEvent)
 		if !ok {
 			return p, fmt.Errorf("field ActorEventPacket.Event ID has unexpected decoded type %T", raw)
 		}
@@ -5520,7 +6748,7 @@ func DecodeActorEventPacket(r Decoder) (ActorEventPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(*StartGamePacketPositionStruct)
+		value, ok := raw.(*Vec3)
 		if !ok {
 			return p, fmt.Errorf("field ActorEventPacket.Fire At Position has unexpected decoded type %T", raw)
 		}
@@ -5530,13 +6758,13 @@ func DecodeActorEventPacket(r Decoder) (ActorEventPacket, error) {
 }
 
 type MobEffectPacket struct {
-	TargetRuntimeID     StartGamePacketRuntimeIDStruct
-	EventID             MobEffectPacketEventIDEnum
+	TargetRuntimeID     ActorRuntimeID
+	EventID             EnumsMobEffectPacketPayloadEvent
 	EffectID            int32
 	EffectAmplifier     int32
 	ShowParticles       bool
 	EffectDurationTicks int32
-	Tick                MovePlayerPacketTickStruct
+	Tick                PlayerInputTick
 	Ambient             bool
 }
 
@@ -5575,7 +6803,7 @@ func DecodeMobEffectPacket(r Decoder) (MobEffectPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRuntimeIDStruct)
+		value, ok := raw.(ActorRuntimeID)
 		if !ok {
 			return p, fmt.Errorf("field MobEffectPacket.Target Runtime ID has unexpected decoded type %T", raw)
 		}
@@ -5586,7 +6814,7 @@ func DecodeMobEffectPacket(r Decoder) (MobEffectPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(MobEffectPacketEventIDEnum)
+		value, ok := raw.(EnumsMobEffectPacketPayloadEvent)
 		if !ok {
 			return p, fmt.Errorf("field MobEffectPacket.Event ID has unexpected decoded type %T", raw)
 		}
@@ -5641,7 +6869,7 @@ func DecodeMobEffectPacket(r Decoder) (MobEffectPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(MovePlayerPacketTickStruct)
+		value, ok := raw.(PlayerInputTick)
 		if !ok {
 			return p, fmt.Errorf("field MobEffectPacket.Tick has unexpected decoded type %T", raw)
 		}
@@ -5662,9 +6890,9 @@ func DecodeMobEffectPacket(r Decoder) (MobEffectPacket, error) {
 }
 
 type UpdateAttributesPacket struct {
-	TargetRuntimeID StartGamePacketRuntimeIDStruct
-	AttributeList   []UpdateAttributesPacketAttributeListItemStruct
-	Tick            MovePlayerPacketTickStruct
+	TargetRuntimeID ActorRuntimeID
+	AttributeList   []AttributeData
+	Tick            PlayerInputTick
 }
 
 func (p *UpdateAttributesPacket) Encode(w Encoder) error {
@@ -5687,7 +6915,7 @@ func DecodeUpdateAttributesPacket(r Decoder) (UpdateAttributesPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRuntimeIDStruct)
+		value, ok := raw.(ActorRuntimeID)
 		if !ok {
 			return p, fmt.Errorf("field UpdateAttributesPacket.Target Runtime ID has unexpected decoded type %T", raw)
 		}
@@ -5698,7 +6926,7 @@ func DecodeUpdateAttributesPacket(r Decoder) (UpdateAttributesPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]UpdateAttributesPacketAttributeListItemStruct)
+		value, ok := raw.([]AttributeData)
 		if !ok {
 			return p, fmt.Errorf("field UpdateAttributesPacket.Attribute List has unexpected decoded type %T", raw)
 		}
@@ -5709,7 +6937,7 @@ func DecodeUpdateAttributesPacket(r Decoder) (UpdateAttributesPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(MovePlayerPacketTickStruct)
+		value, ok := raw.(PlayerInputTick)
 		if !ok {
 			return p, fmt.Errorf("field UpdateAttributesPacket.Tick has unexpected decoded type %T", raw)
 		}
@@ -5719,8 +6947,8 @@ func DecodeUpdateAttributesPacket(r Decoder) (UpdateAttributesPacket, error) {
 }
 
 type InventoryTransactionPacket struct {
-	LegacyRequestID    InventoryTransactionPacketLegacyRequestIDStruct
-	LegacySetItemSlots *[]InventoryTransactionPacketLegacySetItemSlotsValueItemStruct
+	LegacyRequestID    TypedClientNetIdStructItemStackLegacyRequestIdTagInt32T0
+	LegacySetItemSlots *[]LegacySetSlot
 	Constant2          bool
 	Transaction        InventoryTransactionPacketTransactionUnion
 }
@@ -5748,7 +6976,7 @@ func DecodeInventoryTransactionPacket(r Decoder) (InventoryTransactionPacket, er
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(InventoryTransactionPacketLegacyRequestIDStruct)
+		value, ok := raw.(TypedClientNetIdStructItemStackLegacyRequestIdTagInt32T0)
 		if !ok {
 			return p, fmt.Errorf("field InventoryTransactionPacket.Legacy Request ID has unexpected decoded type %T", raw)
 		}
@@ -5759,7 +6987,7 @@ func DecodeInventoryTransactionPacket(r Decoder) (InventoryTransactionPacket, er
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(*[]InventoryTransactionPacketLegacySetItemSlotsValueItemStruct)
+		value, ok := raw.(*[]LegacySetSlot)
 		if !ok {
 			return p, fmt.Errorf("field InventoryTransactionPacket.Legacy Set Item Slots has unexpected decoded type %T", raw)
 		}
@@ -5791,8 +7019,8 @@ func DecodeInventoryTransactionPacket(r Decoder) (InventoryTransactionPacket, er
 }
 
 type MobEquipmentPacket struct {
-	TargetRuntimeID StartGamePacketRuntimeIDStruct
-	Item            AddPlayerPacketCarriedItemStruct
+	TargetRuntimeID ActorRuntimeID
+	Item            CerealizerNetworkItemStackDescriptorSerializedData
 	Slot            uint8
 	SelectedSlot    uint8
 	ContainerID     uint8
@@ -5824,7 +7052,7 @@ func DecodeMobEquipmentPacket(r Decoder) (MobEquipmentPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRuntimeIDStruct)
+		value, ok := raw.(ActorRuntimeID)
 		if !ok {
 			return p, fmt.Errorf("field MobEquipmentPacket.Target Runtime ID has unexpected decoded type %T", raw)
 		}
@@ -5835,7 +7063,7 @@ func DecodeMobEquipmentPacket(r Decoder) (MobEquipmentPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(AddPlayerPacketCarriedItemStruct)
+		value, ok := raw.(CerealizerNetworkItemStackDescriptorSerializedData)
 		if !ok {
 			return p, fmt.Errorf("field MobEquipmentPacket.Item has unexpected decoded type %T", raw)
 		}
@@ -5878,12 +7106,12 @@ func DecodeMobEquipmentPacket(r Decoder) (MobEquipmentPacket, error) {
 }
 
 type MobArmorEquipmentPacket struct {
-	TargetRuntimeID StartGamePacketRuntimeIDStruct
-	Head            AddPlayerPacketCarriedItemStruct
-	Torso           AddPlayerPacketCarriedItemStruct
-	Legs            AddPlayerPacketCarriedItemStruct
-	Feet            AddPlayerPacketCarriedItemStruct
-	Body            AddPlayerPacketCarriedItemStruct
+	TargetRuntimeID ActorRuntimeID
+	Head            CerealizerNetworkItemStackDescriptorSerializedData
+	Torso           CerealizerNetworkItemStackDescriptorSerializedData
+	Legs            CerealizerNetworkItemStackDescriptorSerializedData
+	Feet            CerealizerNetworkItemStackDescriptorSerializedData
+	Body            CerealizerNetworkItemStackDescriptorSerializedData
 }
 
 func (p *MobArmorEquipmentPacket) Encode(w Encoder) error {
@@ -5915,7 +7143,7 @@ func DecodeMobArmorEquipmentPacket(r Decoder) (MobArmorEquipmentPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRuntimeIDStruct)
+		value, ok := raw.(ActorRuntimeID)
 		if !ok {
 			return p, fmt.Errorf("field MobArmorEquipmentPacket.Target Runtime ID has unexpected decoded type %T", raw)
 		}
@@ -5926,7 +7154,7 @@ func DecodeMobArmorEquipmentPacket(r Decoder) (MobArmorEquipmentPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(AddPlayerPacketCarriedItemStruct)
+		value, ok := raw.(CerealizerNetworkItemStackDescriptorSerializedData)
 		if !ok {
 			return p, fmt.Errorf("field MobArmorEquipmentPacket.Head has unexpected decoded type %T", raw)
 		}
@@ -5937,7 +7165,7 @@ func DecodeMobArmorEquipmentPacket(r Decoder) (MobArmorEquipmentPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(AddPlayerPacketCarriedItemStruct)
+		value, ok := raw.(CerealizerNetworkItemStackDescriptorSerializedData)
 		if !ok {
 			return p, fmt.Errorf("field MobArmorEquipmentPacket.Torso has unexpected decoded type %T", raw)
 		}
@@ -5948,7 +7176,7 @@ func DecodeMobArmorEquipmentPacket(r Decoder) (MobArmorEquipmentPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(AddPlayerPacketCarriedItemStruct)
+		value, ok := raw.(CerealizerNetworkItemStackDescriptorSerializedData)
 		if !ok {
 			return p, fmt.Errorf("field MobArmorEquipmentPacket.Legs has unexpected decoded type %T", raw)
 		}
@@ -5959,7 +7187,7 @@ func DecodeMobArmorEquipmentPacket(r Decoder) (MobArmorEquipmentPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(AddPlayerPacketCarriedItemStruct)
+		value, ok := raw.(CerealizerNetworkItemStackDescriptorSerializedData)
 		if !ok {
 			return p, fmt.Errorf("field MobArmorEquipmentPacket.Feet has unexpected decoded type %T", raw)
 		}
@@ -5970,7 +7198,7 @@ func DecodeMobArmorEquipmentPacket(r Decoder) (MobArmorEquipmentPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(AddPlayerPacketCarriedItemStruct)
+		value, ok := raw.(CerealizerNetworkItemStackDescriptorSerializedData)
 		if !ok {
 			return p, fmt.Errorf("field MobArmorEquipmentPacket.Body has unexpected decoded type %T", raw)
 		}
@@ -5980,9 +7208,9 @@ func DecodeMobArmorEquipmentPacket(r Decoder) (MobArmorEquipmentPacket, error) {
 }
 
 type InteractPacket struct {
-	Action          InteractPacketActionEnum
-	TargetRuntimeID StartGamePacketRuntimeIDStruct
-	Position        *StartGamePacketPositionStruct
+	Action          EnumsInteractPacketPayloadAction
+	TargetRuntimeID ActorRuntimeID
+	Position        *Vec3
 }
 
 func (p *InteractPacket) Encode(w Encoder) error {
@@ -6005,7 +7233,7 @@ func DecodeInteractPacket(r Decoder) (InteractPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(InteractPacketActionEnum)
+		value, ok := raw.(EnumsInteractPacketPayloadAction)
 		if !ok {
 			return p, fmt.Errorf("field InteractPacket.Action has unexpected decoded type %T", raw)
 		}
@@ -6016,7 +7244,7 @@ func DecodeInteractPacket(r Decoder) (InteractPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRuntimeIDStruct)
+		value, ok := raw.(ActorRuntimeID)
 		if !ok {
 			return p, fmt.Errorf("field InteractPacket.Target Runtime ID has unexpected decoded type %T", raw)
 		}
@@ -6027,7 +7255,7 @@ func DecodeInteractPacket(r Decoder) (InteractPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(*StartGamePacketPositionStruct)
+		value, ok := raw.(*Vec3)
 		if !ok {
 			return p, fmt.Errorf("field InteractPacket.Position has unexpected decoded type %T", raw)
 		}
@@ -6037,7 +7265,7 @@ func DecodeInteractPacket(r Decoder) (InteractPacket, error) {
 }
 
 type BlockPickRequestPacket struct {
-	Position StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct
+	Position BlockPos
 	WithData bool
 	MaxSlots uint8
 }
@@ -6062,7 +7290,7 @@ func DecodeBlockPickRequestPacket(r Decoder) (BlockPickRequestPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct)
+		value, ok := raw.(BlockPos)
 		if !ok {
 			return p, fmt.Errorf("field BlockPickRequestPacket.Position has unexpected decoded type %T", raw)
 		}
@@ -6151,10 +7379,10 @@ func DecodeActorPickRequestPacket(r Decoder) (ActorPickRequestPacket, error) {
 }
 
 type PlayerActionPacket struct {
-	PlayerRuntimeID StartGamePacketRuntimeIDStruct
-	Action          PlayerActionPacketActionEnum
-	BlockPosition   StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct
-	ResultPos       StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct
+	PlayerRuntimeID ActorRuntimeID
+	Action          EnumsPlayerActionType
+	BlockPosition   BlockPos
+	ResultPos       BlockPos
 	Face            int32
 }
 
@@ -6184,7 +7412,7 @@ func DecodePlayerActionPacket(r Decoder) (PlayerActionPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRuntimeIDStruct)
+		value, ok := raw.(ActorRuntimeID)
 		if !ok {
 			return p, fmt.Errorf("field PlayerActionPacket.Player Runtime ID has unexpected decoded type %T", raw)
 		}
@@ -6195,7 +7423,7 @@ func DecodePlayerActionPacket(r Decoder) (PlayerActionPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(PlayerActionPacketActionEnum)
+		value, ok := raw.(EnumsPlayerActionType)
 		if !ok {
 			return p, fmt.Errorf("field PlayerActionPacket.Action has unexpected decoded type %T", raw)
 		}
@@ -6206,7 +7434,7 @@ func DecodePlayerActionPacket(r Decoder) (PlayerActionPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct)
+		value, ok := raw.(BlockPos)
 		if !ok {
 			return p, fmt.Errorf("field PlayerActionPacket.Block Position has unexpected decoded type %T", raw)
 		}
@@ -6217,7 +7445,7 @@ func DecodePlayerActionPacket(r Decoder) (PlayerActionPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct)
+		value, ok := raw.(BlockPos)
 		if !ok {
 			return p, fmt.Errorf("field PlayerActionPacket.Result Pos has unexpected decoded type %T", raw)
 		}
@@ -6295,10 +7523,10 @@ func DecodeHurtArmorPacket(r Decoder) (HurtArmorPacket, error) {
 }
 
 type SetActorDataPacket struct {
-	TargetRuntimeID   StartGamePacketRuntimeIDStruct
-	ActorData         AddPlayerPacketEntityDataStruct
-	SynchedProperties AddPlayerPacketSynchedPropertiesStruct
-	Tick              MovePlayerPacketTickStruct
+	TargetRuntimeID   ActorRuntimeID
+	ActorData         SynchedActorDataCopyableDataList
+	SynchedProperties PropertySyncData
+	Tick              PlayerInputTick
 }
 
 func (p *SetActorDataPacket) Encode(w Encoder) error {
@@ -6324,7 +7552,7 @@ func DecodeSetActorDataPacket(r Decoder) (SetActorDataPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRuntimeIDStruct)
+		value, ok := raw.(ActorRuntimeID)
 		if !ok {
 			return p, fmt.Errorf("field SetActorDataPacket.Target Runtime ID has unexpected decoded type %T", raw)
 		}
@@ -6335,7 +7563,7 @@ func DecodeSetActorDataPacket(r Decoder) (SetActorDataPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(AddPlayerPacketEntityDataStruct)
+		value, ok := raw.(SynchedActorDataCopyableDataList)
 		if !ok {
 			return p, fmt.Errorf("field SetActorDataPacket.Actor Data has unexpected decoded type %T", raw)
 		}
@@ -6346,7 +7574,7 @@ func DecodeSetActorDataPacket(r Decoder) (SetActorDataPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(AddPlayerPacketSynchedPropertiesStruct)
+		value, ok := raw.(PropertySyncData)
 		if !ok {
 			return p, fmt.Errorf("field SetActorDataPacket.Synched Properties has unexpected decoded type %T", raw)
 		}
@@ -6357,7 +7585,7 @@ func DecodeSetActorDataPacket(r Decoder) (SetActorDataPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(MovePlayerPacketTickStruct)
+		value, ok := raw.(PlayerInputTick)
 		if !ok {
 			return p, fmt.Errorf("field SetActorDataPacket.Tick has unexpected decoded type %T", raw)
 		}
@@ -6367,9 +7595,9 @@ func DecodeSetActorDataPacket(r Decoder) (SetActorDataPacket, error) {
 }
 
 type SetActorMotionPacket struct {
-	TargetRuntimeID StartGamePacketRuntimeIDStruct
-	Motion          StartGamePacketPositionStruct
-	Tick            MovePlayerPacketTickStruct
+	TargetRuntimeID ActorRuntimeID
+	Motion          Vec3
+	Tick            PlayerInputTick
 }
 
 func (p *SetActorMotionPacket) Encode(w Encoder) error {
@@ -6392,7 +7620,7 @@ func DecodeSetActorMotionPacket(r Decoder) (SetActorMotionPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRuntimeIDStruct)
+		value, ok := raw.(ActorRuntimeID)
 		if !ok {
 			return p, fmt.Errorf("field SetActorMotionPacket.Target Runtime ID has unexpected decoded type %T", raw)
 		}
@@ -6403,7 +7631,7 @@ func DecodeSetActorMotionPacket(r Decoder) (SetActorMotionPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketPositionStruct)
+		value, ok := raw.(Vec3)
 		if !ok {
 			return p, fmt.Errorf("field SetActorMotionPacket.Motion has unexpected decoded type %T", raw)
 		}
@@ -6414,7 +7642,7 @@ func DecodeSetActorMotionPacket(r Decoder) (SetActorMotionPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(MovePlayerPacketTickStruct)
+		value, ok := raw.(PlayerInputTick)
 		if !ok {
 			return p, fmt.Errorf("field SetActorMotionPacket.Tick has unexpected decoded type %T", raw)
 		}
@@ -6424,7 +7652,7 @@ func DecodeSetActorMotionPacket(r Decoder) (SetActorMotionPacket, error) {
 }
 
 type SetActorLinkPacket struct {
-	Link AddPlayerPacketActorLinksItemStruct
+	Link ActorLink
 }
 
 func (p *SetActorLinkPacket) Encode(w Encoder) error {
@@ -6441,7 +7669,7 @@ func DecodeSetActorLinkPacket(r Decoder) (SetActorLinkPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(AddPlayerPacketActorLinksItemStruct)
+		value, ok := raw.(ActorLink)
 		if !ok {
 			return p, fmt.Errorf("field SetActorLinkPacket.Link has unexpected decoded type %T", raw)
 		}
@@ -6478,10 +7706,10 @@ func DecodeSetHealthPacket(r Decoder) (SetHealthPacket, error) {
 }
 
 type SetSpawnPositionPacket struct {
-	SpawnPositionType SetSpawnPositionPacketSpawnPositionTypeEnum
-	BlockPosition     StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct
-	DimensionType     SetSpawnPositionPacketDimensionTypeStruct
-	SpawnBlockPos     StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct
+	SpawnPositionType EnumsSpawnPositionType
+	BlockPosition     BlockPos
+	DimensionType     DimensionType
+	SpawnBlockPos     BlockPos
 }
 
 func (p *SetSpawnPositionPacket) Encode(w Encoder) error {
@@ -6507,7 +7735,7 @@ func DecodeSetSpawnPositionPacket(r Decoder) (SetSpawnPositionPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(SetSpawnPositionPacketSpawnPositionTypeEnum)
+		value, ok := raw.(EnumsSpawnPositionType)
 		if !ok {
 			return p, fmt.Errorf("field SetSpawnPositionPacket.Spawn Position Type has unexpected decoded type %T", raw)
 		}
@@ -6518,7 +7746,7 @@ func DecodeSetSpawnPositionPacket(r Decoder) (SetSpawnPositionPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct)
+		value, ok := raw.(BlockPos)
 		if !ok {
 			return p, fmt.Errorf("field SetSpawnPositionPacket.Block Position has unexpected decoded type %T", raw)
 		}
@@ -6529,7 +7757,7 @@ func DecodeSetSpawnPositionPacket(r Decoder) (SetSpawnPositionPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(SetSpawnPositionPacketDimensionTypeStruct)
+		value, ok := raw.(DimensionType)
 		if !ok {
 			return p, fmt.Errorf("field SetSpawnPositionPacket.Dimension type has unexpected decoded type %T", raw)
 		}
@@ -6540,7 +7768,7 @@ func DecodeSetSpawnPositionPacket(r Decoder) (SetSpawnPositionPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct)
+		value, ok := raw.(BlockPos)
 		if !ok {
 			return p, fmt.Errorf("field SetSpawnPositionPacket.Spawn Block Pos has unexpected decoded type %T", raw)
 		}
@@ -6550,8 +7778,8 @@ func DecodeSetSpawnPositionPacket(r Decoder) (SetSpawnPositionPacket, error) {
 }
 
 type AnimatePacket struct {
-	Action               AnimatePacketActionEnum
-	TargetActorRuntimeID StartGamePacketRuntimeIDStruct
+	Action               EnumsAnimatePacketPayloadAction
+	TargetActorRuntimeID ActorRuntimeID
 	Data                 float32
 	SwingSource          *string
 }
@@ -6579,7 +7807,7 @@ func DecodeAnimatePacket(r Decoder) (AnimatePacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(AnimatePacketActionEnum)
+		value, ok := raw.(EnumsAnimatePacketPayloadAction)
 		if !ok {
 			return p, fmt.Errorf("field AnimatePacket.Action has unexpected decoded type %T", raw)
 		}
@@ -6590,7 +7818,7 @@ func DecodeAnimatePacket(r Decoder) (AnimatePacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRuntimeIDStruct)
+		value, ok := raw.(ActorRuntimeID)
 		if !ok {
 			return p, fmt.Errorf("field AnimatePacket.Target Actor Runtime ID has unexpected decoded type %T", raw)
 		}
@@ -6622,9 +7850,9 @@ func DecodeAnimatePacket(r Decoder) (AnimatePacket, error) {
 }
 
 type RespawnPacket struct {
-	Position        StartGamePacketPositionStruct
-	State           RespawnPacketStateEnum
-	PlayerRuntimeId StartGamePacketRuntimeIDStruct
+	Position        Vec3
+	State           EnumsPlayerRespawnState
+	PlayerRuntimeId ActorRuntimeID
 }
 
 func (p *RespawnPacket) Encode(w Encoder) error {
@@ -6647,7 +7875,7 @@ func DecodeRespawnPacket(r Decoder) (RespawnPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketPositionStruct)
+		value, ok := raw.(Vec3)
 		if !ok {
 			return p, fmt.Errorf("field RespawnPacket.Position has unexpected decoded type %T", raw)
 		}
@@ -6658,7 +7886,7 @@ func DecodeRespawnPacket(r Decoder) (RespawnPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(RespawnPacketStateEnum)
+		value, ok := raw.(EnumsPlayerRespawnState)
 		if !ok {
 			return p, fmt.Errorf("field RespawnPacket.State has unexpected decoded type %T", raw)
 		}
@@ -6669,7 +7897,7 @@ func DecodeRespawnPacket(r Decoder) (RespawnPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRuntimeIDStruct)
+		value, ok := raw.(ActorRuntimeID)
 		if !ok {
 			return p, fmt.Errorf("field RespawnPacket.Player Runtime Id has unexpected decoded type %T", raw)
 		}
@@ -6681,8 +7909,8 @@ func DecodeRespawnPacket(r Decoder) (RespawnPacket, error) {
 type ContainerOpenPacket struct {
 	ContainerId   uint8
 	ContainerType uint8
-	Position      StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct
-	TargetActorID StartGamePacketEntityIDStruct
+	Position      BlockPos
+	TargetActorID ActorUniqueID
 }
 
 func (p *ContainerOpenPacket) Encode(w Encoder) error {
@@ -6730,7 +7958,7 @@ func DecodeContainerOpenPacket(r Decoder) (ContainerOpenPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct)
+		value, ok := raw.(BlockPos)
 		if !ok {
 			return p, fmt.Errorf("field ContainerOpenPacket.Position has unexpected decoded type %T", raw)
 		}
@@ -6741,7 +7969,7 @@ func DecodeContainerOpenPacket(r Decoder) (ContainerOpenPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketEntityIDStruct)
+		value, ok := raw.(ActorUniqueID)
 		if !ok {
 			return p, fmt.Errorf("field ContainerOpenPacket.Target Actor ID has unexpected decoded type %T", raw)
 		}
@@ -6866,9 +8094,9 @@ func DecodePlayerHotbarPacket(r Decoder) (PlayerHotbarPacket, error) {
 
 type InventoryContentPacket struct {
 	ContainerId       uint32
-	Slots             []AddPlayerPacketCarriedItemStruct
-	FullContainerName InventoryContentPacketFullContainerNameStruct
-	StorageItem       AddPlayerPacketCarriedItemStruct
+	Slots             []CerealizerNetworkItemStackDescriptorSerializedData
+	FullContainerName FullContainerName
+	StorageItem       CerealizerNetworkItemStackDescriptorSerializedData
 }
 
 func (p *InventoryContentPacket) Encode(w Encoder) error {
@@ -6905,7 +8133,7 @@ func DecodeInventoryContentPacket(r Decoder) (InventoryContentPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]AddPlayerPacketCarriedItemStruct)
+		value, ok := raw.([]CerealizerNetworkItemStackDescriptorSerializedData)
 		if !ok {
 			return p, fmt.Errorf("field InventoryContentPacket.Slots has unexpected decoded type %T", raw)
 		}
@@ -6916,7 +8144,7 @@ func DecodeInventoryContentPacket(r Decoder) (InventoryContentPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(InventoryContentPacketFullContainerNameStruct)
+		value, ok := raw.(FullContainerName)
 		if !ok {
 			return p, fmt.Errorf("field InventoryContentPacket.Full Container Name has unexpected decoded type %T", raw)
 		}
@@ -6927,7 +8155,7 @@ func DecodeInventoryContentPacket(r Decoder) (InventoryContentPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(AddPlayerPacketCarriedItemStruct)
+		value, ok := raw.(CerealizerNetworkItemStackDescriptorSerializedData)
 		if !ok {
 			return p, fmt.Errorf("field InventoryContentPacket.Storage Item has unexpected decoded type %T", raw)
 		}
@@ -6939,9 +8167,9 @@ func DecodeInventoryContentPacket(r Decoder) (InventoryContentPacket, error) {
 type InventorySlotPacket struct {
 	ContainerId       uint8
 	Slot              uint32
-	FullContainerName *InventoryContentPacketFullContainerNameStruct
-	StorageItem       *AddPlayerPacketCarriedItemStruct
-	Item              AddPlayerPacketCarriedItemStruct
+	FullContainerName *FullContainerName
+	StorageItem       *CerealizerNetworkItemStackDescriptorSerializedData
+	Item              CerealizerNetworkItemStackDescriptorSerializedData
 }
 
 func (p *InventorySlotPacket) Encode(w Encoder) error {
@@ -6992,7 +8220,7 @@ func DecodeInventorySlotPacket(r Decoder) (InventorySlotPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(*InventoryContentPacketFullContainerNameStruct)
+		value, ok := raw.(*FullContainerName)
 		if !ok {
 			return p, fmt.Errorf("field InventorySlotPacket.Full Container Name has unexpected decoded type %T", raw)
 		}
@@ -7003,7 +8231,7 @@ func DecodeInventorySlotPacket(r Decoder) (InventorySlotPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(*AddPlayerPacketCarriedItemStruct)
+		value, ok := raw.(*CerealizerNetworkItemStackDescriptorSerializedData)
 		if !ok {
 			return p, fmt.Errorf("field InventorySlotPacket.Storage Item has unexpected decoded type %T", raw)
 		}
@@ -7014,7 +8242,7 @@ func DecodeInventorySlotPacket(r Decoder) (InventorySlotPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(AddPlayerPacketCarriedItemStruct)
+		value, ok := raw.(CerealizerNetworkItemStackDescriptorSerializedData)
 		if !ok {
 			return p, fmt.Errorf("field InventorySlotPacket.Item has unexpected decoded type %T", raw)
 		}
@@ -7081,17 +8309,17 @@ func DecodeContainerSetDataPacket(r Decoder) (ContainerSetDataPacket, error) {
 }
 
 type CraftingDataPacket struct {
-	ShapedRecipes             []CraftingDataPacketShapedRecipesItemStruct
-	ShapelessRecipes          []CraftingDataPacketShapelessRecipesItemStruct
-	MultiRecipes              []CraftingDataPacketMultiRecipesItemStruct
-	UserDataShapelessRecipes  []CraftingDataPacketShapelessRecipesItemStruct
-	ShapelessChemistryRecipes []CraftingDataPacketShapelessRecipesItemStruct
-	ShapedChemistryRecipes    []CraftingDataPacketShapedRecipesItemStruct
-	SmithingTransformRecipes  []CraftingDataPacketSmithingTransformRecipesItemStruct
-	SmithingTrimRecipes       []CraftingDataPacketSmithingTrimRecipesItemStruct
-	PotionMixes               []CraftingDataPacketPotionMixesItemStruct
-	ContainerMixes            []CraftingDataPacketContainerMixesItemStruct
-	MaterialReducers          []CraftingDataPacketMaterialReducersItemStruct
+	ShapedRecipes             []ShapedRecipePayload
+	ShapelessRecipes          []ShapelessRecipePayload
+	MultiRecipes              []MultiRecipePayload
+	UserDataShapelessRecipes  []ShapelessRecipePayload
+	ShapelessChemistryRecipes []ShapelessRecipePayload
+	ShapedChemistryRecipes    []ShapedRecipePayload
+	SmithingTransformRecipes  []SmithingTransformRecipePayload
+	SmithingTrimRecipes       []SmithingTrimRecipePayload
+	PotionMixes               []PotionMixDataEntry
+	ContainerMixes            []ContainerMixDataEntry
+	MaterialReducers          []MaterialReducerDataEntry
 	ClearRecipes              bool
 }
 
@@ -7142,7 +8370,7 @@ func DecodeCraftingDataPacket(r Decoder) (CraftingDataPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]CraftingDataPacketShapedRecipesItemStruct)
+		value, ok := raw.([]ShapedRecipePayload)
 		if !ok {
 			return p, fmt.Errorf("field CraftingDataPacket.Shaped Recipes has unexpected decoded type %T", raw)
 		}
@@ -7153,7 +8381,7 @@ func DecodeCraftingDataPacket(r Decoder) (CraftingDataPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]CraftingDataPacketShapelessRecipesItemStruct)
+		value, ok := raw.([]ShapelessRecipePayload)
 		if !ok {
 			return p, fmt.Errorf("field CraftingDataPacket.Shapeless Recipes has unexpected decoded type %T", raw)
 		}
@@ -7164,7 +8392,7 @@ func DecodeCraftingDataPacket(r Decoder) (CraftingDataPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]CraftingDataPacketMultiRecipesItemStruct)
+		value, ok := raw.([]MultiRecipePayload)
 		if !ok {
 			return p, fmt.Errorf("field CraftingDataPacket.Multi Recipes has unexpected decoded type %T", raw)
 		}
@@ -7175,7 +8403,7 @@ func DecodeCraftingDataPacket(r Decoder) (CraftingDataPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]CraftingDataPacketShapelessRecipesItemStruct)
+		value, ok := raw.([]ShapelessRecipePayload)
 		if !ok {
 			return p, fmt.Errorf("field CraftingDataPacket.User Data Shapeless Recipes has unexpected decoded type %T", raw)
 		}
@@ -7186,7 +8414,7 @@ func DecodeCraftingDataPacket(r Decoder) (CraftingDataPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]CraftingDataPacketShapelessRecipesItemStruct)
+		value, ok := raw.([]ShapelessRecipePayload)
 		if !ok {
 			return p, fmt.Errorf("field CraftingDataPacket.Shapeless Chemistry Recipes has unexpected decoded type %T", raw)
 		}
@@ -7197,7 +8425,7 @@ func DecodeCraftingDataPacket(r Decoder) (CraftingDataPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]CraftingDataPacketShapedRecipesItemStruct)
+		value, ok := raw.([]ShapedRecipePayload)
 		if !ok {
 			return p, fmt.Errorf("field CraftingDataPacket.Shaped Chemistry Recipes has unexpected decoded type %T", raw)
 		}
@@ -7208,7 +8436,7 @@ func DecodeCraftingDataPacket(r Decoder) (CraftingDataPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]CraftingDataPacketSmithingTransformRecipesItemStruct)
+		value, ok := raw.([]SmithingTransformRecipePayload)
 		if !ok {
 			return p, fmt.Errorf("field CraftingDataPacket.Smithing Transform Recipes has unexpected decoded type %T", raw)
 		}
@@ -7219,7 +8447,7 @@ func DecodeCraftingDataPacket(r Decoder) (CraftingDataPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]CraftingDataPacketSmithingTrimRecipesItemStruct)
+		value, ok := raw.([]SmithingTrimRecipePayload)
 		if !ok {
 			return p, fmt.Errorf("field CraftingDataPacket.Smithing Trim Recipes has unexpected decoded type %T", raw)
 		}
@@ -7230,7 +8458,7 @@ func DecodeCraftingDataPacket(r Decoder) (CraftingDataPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]CraftingDataPacketPotionMixesItemStruct)
+		value, ok := raw.([]PotionMixDataEntry)
 		if !ok {
 			return p, fmt.Errorf("field CraftingDataPacket.Potion Mixes has unexpected decoded type %T", raw)
 		}
@@ -7241,7 +8469,7 @@ func DecodeCraftingDataPacket(r Decoder) (CraftingDataPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]CraftingDataPacketContainerMixesItemStruct)
+		value, ok := raw.([]ContainerMixDataEntry)
 		if !ok {
 			return p, fmt.Errorf("field CraftingDataPacket.Container Mixes has unexpected decoded type %T", raw)
 		}
@@ -7252,7 +8480,7 @@ func DecodeCraftingDataPacket(r Decoder) (CraftingDataPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]CraftingDataPacketMaterialReducersItemStruct)
+		value, ok := raw.([]MaterialReducerDataEntry)
 		if !ok {
 			return p, fmt.Errorf("field CraftingDataPacket.Material Reducers has unexpected decoded type %T", raw)
 		}
@@ -7330,7 +8558,7 @@ func DecodeGuiDataPickItemPacket(r Decoder) (GuiDataPickItemPacket, error) {
 }
 
 type BlockActorDataPacket struct {
-	BlockPosition StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct
+	BlockPosition BlockPos
 	ActorDataTags []byte
 }
 
@@ -7351,7 +8579,7 @@ func DecodeBlockActorDataPacket(r Decoder) (BlockActorDataPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct)
+		value, ok := raw.(BlockPos)
 		if !ok {
 			return p, fmt.Errorf("field BlockActorDataPacket.Block Position has unexpected decoded type %T", raw)
 		}
@@ -7372,12 +8600,12 @@ func DecodeBlockActorDataPacket(r Decoder) (BlockActorDataPacket, error) {
 }
 
 type LevelChunkPacket struct {
-	ChunkPosition              LevelChunkPacketChunkPositionStruct
-	DimensionId                SetSpawnPositionPacketDimensionTypeStruct
+	ChunkPosition              ChunkPos
+	DimensionId                DimensionType
 	SubChunksCount             uint32
 	ClientRequestSubChunkLimit *int32
 	CacheEnabled               bool
-	CacheMetadata              []LevelChunkPacketCacheMetadataItemStruct
+	CacheMetadata              []LevelChunkPacketPayloadSubChunkMetadata
 	SerializedChunkData        string
 }
 
@@ -7413,7 +8641,7 @@ func DecodeLevelChunkPacket(r Decoder) (LevelChunkPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(LevelChunkPacketChunkPositionStruct)
+		value, ok := raw.(ChunkPos)
 		if !ok {
 			return p, fmt.Errorf("field LevelChunkPacket.Chunk Position has unexpected decoded type %T", raw)
 		}
@@ -7424,7 +8652,7 @@ func DecodeLevelChunkPacket(r Decoder) (LevelChunkPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(SetSpawnPositionPacketDimensionTypeStruct)
+		value, ok := raw.(DimensionType)
 		if !ok {
 			return p, fmt.Errorf("field LevelChunkPacket.Dimension Id has unexpected decoded type %T", raw)
 		}
@@ -7468,7 +8696,7 @@ func DecodeLevelChunkPacket(r Decoder) (LevelChunkPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]LevelChunkPacketCacheMetadataItemStruct)
+		value, ok := raw.([]LevelChunkPacketPayloadSubChunkMetadata)
 		if !ok {
 			return p, fmt.Errorf("field LevelChunkPacket.Cache Metadata has unexpected decoded type %T", raw)
 		}
@@ -7543,8 +8771,8 @@ func DecodeSetDifficultyPacket(r Decoder) (SetDifficultyPacket, error) {
 }
 
 type ChangeDimensionPacket struct {
-	DimensionID     SetSpawnPositionPacketDimensionTypeStruct
-	Position        StartGamePacketPositionStruct
+	DimensionID     DimensionType
+	Position        Vec3
 	Respawn         bool
 	LoadingScreenId *uint32
 }
@@ -7572,7 +8800,7 @@ func DecodeChangeDimensionPacket(r Decoder) (ChangeDimensionPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(SetSpawnPositionPacketDimensionTypeStruct)
+		value, ok := raw.(DimensionType)
 		if !ok {
 			return p, fmt.Errorf("field ChangeDimensionPacket.Dimension ID has unexpected decoded type %T", raw)
 		}
@@ -7583,7 +8811,7 @@ func DecodeChangeDimensionPacket(r Decoder) (ChangeDimensionPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketPositionStruct)
+		value, ok := raw.(Vec3)
 		if !ok {
 			return p, fmt.Errorf("field ChangeDimensionPacket.Position has unexpected decoded type %T", raw)
 		}
@@ -7615,7 +8843,7 @@ func DecodeChangeDimensionPacket(r Decoder) (ChangeDimensionPacket, error) {
 }
 
 type SetPlayerGameTypePacket struct {
-	PlayerGameType StartGamePacketGameTypeEnum
+	PlayerGameType EnumsGameType
 }
 
 func (p *SetPlayerGameTypePacket) Encode(w Encoder) error {
@@ -7632,7 +8860,7 @@ func DecodeSetPlayerGameTypePacket(r Decoder) (SetPlayerGameTypePacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketGameTypeEnum)
+		value, ok := raw.(EnumsGameType)
 		if !ok {
 			return p, fmt.Errorf("field SetPlayerGameTypePacket.Player Game Type has unexpected decoded type %T", raw)
 		}
@@ -7642,7 +8870,7 @@ func DecodeSetPlayerGameTypePacket(r Decoder) (SetPlayerGameTypePacket, error) {
 }
 
 type PlayerListPacket struct {
-	Entries []PlayerListPacketEntriesItemUnion
+	Entries []PlayerListPacketPayload
 }
 
 func (p *PlayerListPacket) Encode(w Encoder) error {
@@ -7659,7 +8887,7 @@ func DecodePlayerListPacket(r Decoder) (PlayerListPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]PlayerListPacketEntriesItemUnion)
+		value, ok := raw.([]PlayerListPacketPayload)
 		if !ok {
 			return p, fmt.Errorf("field PlayerListPacket.Entries has unexpected decoded type %T", raw)
 		}
@@ -7669,7 +8897,7 @@ func DecodePlayerListPacket(r Decoder) (PlayerListPacket, error) {
 }
 
 type SimpleEventPacket struct {
-	Type SimpleEventPacketTypeEnum
+	Type EnumsSimpleEventPacketPayloadSubtype
 }
 
 func (p *SimpleEventPacket) Encode(w Encoder) error {
@@ -7686,7 +8914,7 @@ func DecodeSimpleEventPacket(r Decoder) (SimpleEventPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(SimpleEventPacketTypeEnum)
+		value, ok := raw.(EnumsSimpleEventPacketPayloadSubtype)
 		if !ok {
 			return p, fmt.Errorf("field SimpleEventPacket.Type has unexpected decoded type %T", raw)
 		}
@@ -7696,10 +8924,10 @@ func DecodeSimpleEventPacket(r Decoder) (SimpleEventPacket, error) {
 }
 
 type LegacyTelemetryEventPacket struct {
-	TargetActorID StartGamePacketEntityIDStruct
-	EventType     LegacyTelemetryEventPacketEventTypeEnum
+	TargetActorID ActorUniqueID
+	EventType     EnumsLegacyTelemetryEventPacketPayloadType
 	UsePlayerID   bool
-	EventData     LegacyTelemetryEventPacketEventDataUnion
+	EventData     LegacyTelemetryEventPacketPayload
 }
 
 func (p *LegacyTelemetryEventPacket) Encode(w Encoder) error {
@@ -7725,7 +8953,7 @@ func DecodeLegacyTelemetryEventPacket(r Decoder) (LegacyTelemetryEventPacket, er
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketEntityIDStruct)
+		value, ok := raw.(ActorUniqueID)
 		if !ok {
 			return p, fmt.Errorf("field LegacyTelemetryEventPacket.Target Actor ID has unexpected decoded type %T", raw)
 		}
@@ -7736,7 +8964,7 @@ func DecodeLegacyTelemetryEventPacket(r Decoder) (LegacyTelemetryEventPacket, er
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(LegacyTelemetryEventPacketEventTypeEnum)
+		value, ok := raw.(EnumsLegacyTelemetryEventPacketPayloadType)
 		if !ok {
 			return p, fmt.Errorf("field LegacyTelemetryEventPacket.Event Type has unexpected decoded type %T", raw)
 		}
@@ -7758,7 +8986,7 @@ func DecodeLegacyTelemetryEventPacket(r Decoder) (LegacyTelemetryEventPacket, er
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(LegacyTelemetryEventPacketEventDataUnion)
+		value, ok := raw.(LegacyTelemetryEventPacketPayload)
 		if !ok {
 			return p, fmt.Errorf("field LegacyTelemetryEventPacket.Event Data has unexpected decoded type %T", raw)
 		}
@@ -7768,7 +8996,7 @@ func DecodeLegacyTelemetryEventPacket(r Decoder) (LegacyTelemetryEventPacket, er
 }
 
 type SpawnExperienceOrbPacket struct {
-	Position StartGamePacketPositionStruct
+	Position Vec3
 	XPValue  int32
 }
 
@@ -7789,7 +9017,7 @@ func DecodeSpawnExperienceOrbPacket(r Decoder) (SpawnExperienceOrbPacket, error)
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketPositionStruct)
+		value, ok := raw.(Vec3)
 		if !ok {
 			return p, fmt.Errorf("field SpawnExperienceOrbPacket.Position has unexpected decoded type %T", raw)
 		}
@@ -7810,14 +9038,14 @@ func DecodeSpawnExperienceOrbPacket(r Decoder) (SpawnExperienceOrbPacket, error)
 }
 
 type ClientboundMapItemDataPacket struct {
-	MapID           StartGamePacketEntityIDStruct
+	MapID           ActorUniqueID
 	Dimension       uint8
 	IsLocked        bool
-	MapOrigin       StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct
-	CreationMapIDs  *[]StartGamePacketEntityIDStruct
+	MapOrigin       BlockPos
+	CreationMapIDs  *[]ActorUniqueID
 	Scale           *int8
-	TrackedActorIDs *[]ClientboundMapItemDataPacketTrackedActorIDsValueItemStruct
-	Decorations     *[]ClientboundMapItemDataPacketDecorationsValueItemStruct
+	TrackedActorIDs *[]MapItemTrackedActorUniqueId
+	Decorations     *[]MapDecoration
 	Width           *int32
 	Height          *int32
 	StartX          *int32
@@ -7875,7 +9103,7 @@ func DecodeClientboundMapItemDataPacket(r Decoder) (ClientboundMapItemDataPacket
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketEntityIDStruct)
+		value, ok := raw.(ActorUniqueID)
 		if !ok {
 			return p, fmt.Errorf("field ClientboundMapItemDataPacket.Map ID has unexpected decoded type %T", raw)
 		}
@@ -7908,7 +9136,7 @@ func DecodeClientboundMapItemDataPacket(r Decoder) (ClientboundMapItemDataPacket
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct)
+		value, ok := raw.(BlockPos)
 		if !ok {
 			return p, fmt.Errorf("field ClientboundMapItemDataPacket.Map Origin has unexpected decoded type %T", raw)
 		}
@@ -7919,7 +9147,7 @@ func DecodeClientboundMapItemDataPacket(r Decoder) (ClientboundMapItemDataPacket
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(*[]StartGamePacketEntityIDStruct)
+		value, ok := raw.(*[]ActorUniqueID)
 		if !ok {
 			return p, fmt.Errorf("field ClientboundMapItemDataPacket.Creation Map IDs has unexpected decoded type %T", raw)
 		}
@@ -7941,7 +9169,7 @@ func DecodeClientboundMapItemDataPacket(r Decoder) (ClientboundMapItemDataPacket
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(*[]ClientboundMapItemDataPacketTrackedActorIDsValueItemStruct)
+		value, ok := raw.(*[]MapItemTrackedActorUniqueId)
 		if !ok {
 			return p, fmt.Errorf("field ClientboundMapItemDataPacket.Tracked Actor IDs has unexpected decoded type %T", raw)
 		}
@@ -7952,7 +9180,7 @@ func DecodeClientboundMapItemDataPacket(r Decoder) (ClientboundMapItemDataPacket
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(*[]ClientboundMapItemDataPacketDecorationsValueItemStruct)
+		value, ok := raw.(*[]MapDecoration)
 		if !ok {
 			return p, fmt.Errorf("field ClientboundMapItemDataPacket.Decorations has unexpected decoded type %T", raw)
 		}
@@ -8017,8 +9245,8 @@ func DecodeClientboundMapItemDataPacket(r Decoder) (ClientboundMapItemDataPacket
 }
 
 type MapInfoRequestPacket struct {
-	MapUniqueID      StartGamePacketEntityIDStruct
-	ClientPixelsList []MapInfoRequestPacketClientPixelsListItemStruct
+	MapUniqueID      ActorUniqueID
+	ClientPixelsList []MapInfoRequestPacketAnonClientPixelsProxy
 }
 
 func (p *MapInfoRequestPacket) Encode(w Encoder) error {
@@ -8038,7 +9266,7 @@ func DecodeMapInfoRequestPacket(r Decoder) (MapInfoRequestPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketEntityIDStruct)
+		value, ok := raw.(ActorUniqueID)
 		if !ok {
 			return p, fmt.Errorf("field MapInfoRequestPacket.Map Unique ID has unexpected decoded type %T", raw)
 		}
@@ -8049,7 +9277,7 @@ func DecodeMapInfoRequestPacket(r Decoder) (MapInfoRequestPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]MapInfoRequestPacketClientPixelsListItemStruct)
+		value, ok := raw.([]MapInfoRequestPacketAnonClientPixelsProxy)
 		if !ok {
 			return p, fmt.Errorf("field MapInfoRequestPacket.Client Pixels List has unexpected decoded type %T", raw)
 		}
@@ -8128,7 +9356,7 @@ func DecodeChunkRadiusUpdatedPacket(r Decoder) (ChunkRadiusUpdatedPacket, error)
 }
 
 type GameRulesChangedPacket struct {
-	RuleData StartGamePacketSettingsStructRuleDataStruct
+	RuleData GameRulesChangedPacketData
 }
 
 func (p *GameRulesChangedPacket) Encode(w Encoder) error {
@@ -8145,7 +9373,7 @@ func DecodeGameRulesChangedPacket(r Decoder) (GameRulesChangedPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketSettingsStructRuleDataStruct)
+		value, ok := raw.(GameRulesChangedPacketData)
 		if !ok {
 			return p, fmt.Errorf("field GameRulesChangedPacket.Rule Data has unexpected decoded type %T", raw)
 		}
@@ -8155,8 +9383,8 @@ func DecodeGameRulesChangedPacket(r Decoder) (GameRulesChangedPacket, error) {
 }
 
 type CameraPacket struct {
-	CameraID       StartGamePacketEntityIDStruct
-	TargetPlayerID StartGamePacketEntityIDStruct
+	CameraID       ActorUniqueID
+	TargetPlayerID ActorUniqueID
 }
 
 func (p *CameraPacket) Encode(w Encoder) error {
@@ -8176,7 +9404,7 @@ func DecodeCameraPacket(r Decoder) (CameraPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketEntityIDStruct)
+		value, ok := raw.(ActorUniqueID)
 		if !ok {
 			return p, fmt.Errorf("field CameraPacket.Camera ID has unexpected decoded type %T", raw)
 		}
@@ -8187,7 +9415,7 @@ func DecodeCameraPacket(r Decoder) (CameraPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketEntityIDStruct)
+		value, ok := raw.(ActorUniqueID)
 		if !ok {
 			return p, fmt.Errorf("field CameraPacket.Target Player ID has unexpected decoded type %T", raw)
 		}
@@ -8197,14 +9425,14 @@ func DecodeCameraPacket(r Decoder) (CameraPacket, error) {
 }
 
 type BossEventPacket struct {
-	TargetActorID StartGamePacketEntityIDStruct
-	PlayerID      StartGamePacketEntityIDStruct
-	EventType     BossEventPacketEventTypeEnum
+	TargetActorID ActorUniqueID
+	PlayerID      ActorUniqueID
+	EventType     EnumsBossEventUpdateType
 	Name          string
 	FilteredName  string
 	HealthPercent float32
-	Color         BossEventPacketColorEnum
-	Overlay       BossEventPacketOverlayEnum
+	Color         EnumsBossBarColor
+	Overlay       EnumsBossBarOverlay
 }
 
 func (p *BossEventPacket) Encode(w Encoder) error {
@@ -8242,7 +9470,7 @@ func DecodeBossEventPacket(r Decoder) (BossEventPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketEntityIDStruct)
+		value, ok := raw.(ActorUniqueID)
 		if !ok {
 			return p, fmt.Errorf("field BossEventPacket.Target Actor ID has unexpected decoded type %T", raw)
 		}
@@ -8253,7 +9481,7 @@ func DecodeBossEventPacket(r Decoder) (BossEventPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketEntityIDStruct)
+		value, ok := raw.(ActorUniqueID)
 		if !ok {
 			return p, fmt.Errorf("field BossEventPacket.Player ID has unexpected decoded type %T", raw)
 		}
@@ -8264,7 +9492,7 @@ func DecodeBossEventPacket(r Decoder) (BossEventPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(BossEventPacketEventTypeEnum)
+		value, ok := raw.(EnumsBossEventUpdateType)
 		if !ok {
 			return p, fmt.Errorf("field BossEventPacket.Event Type has unexpected decoded type %T", raw)
 		}
@@ -8308,7 +9536,7 @@ func DecodeBossEventPacket(r Decoder) (BossEventPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(BossEventPacketColorEnum)
+		value, ok := raw.(EnumsBossBarColor)
 		if !ok {
 			return p, fmt.Errorf("field BossEventPacket.Color has unexpected decoded type %T", raw)
 		}
@@ -8319,7 +9547,7 @@ func DecodeBossEventPacket(r Decoder) (BossEventPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(BossEventPacketOverlayEnum)
+		value, ok := raw.(EnumsBossBarOverlay)
 		if !ok {
 			return p, fmt.Errorf("field BossEventPacket.Overlay has unexpected decoded type %T", raw)
 		}
@@ -8329,7 +9557,7 @@ func DecodeBossEventPacket(r Decoder) (BossEventPacket, error) {
 }
 
 type ShowCreditsPacket struct {
-	PlayerRuntimeID StartGamePacketRuntimeIDStruct
+	PlayerRuntimeID ActorRuntimeID
 	CreditsState    int32
 }
 
@@ -8350,7 +9578,7 @@ func DecodeShowCreditsPacket(r Decoder) (ShowCreditsPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRuntimeIDStruct)
+		value, ok := raw.(ActorRuntimeID)
 		if !ok {
 			return p, fmt.Errorf("field ShowCreditsPacket.Player Runtime ID has unexpected decoded type %T", raw)
 		}
@@ -8374,11 +9602,11 @@ type AvailableCommandsPacket struct {
 	EnumValues              []string
 	ChainedSubcommandValues []string
 	PostFixes               []string
-	EnumData                []AvailableCommandsPacketEnumDataItemStruct
-	ChainedSubcommandData   []AvailableCommandsPacketChainedSubcommandDataItemStruct
-	Commands                []AvailableCommandsPacketCommandsItemStruct
-	SoftEnums               []AvailableCommandsPacketSoftEnumsItemStruct
-	Constraints             []AvailableCommandsPacketConstraintsItemStruct
+	EnumData                []AvailableCommandsPacketPayloadEnumData
+	ChainedSubcommandData   []AvailableCommandsPacketPayloadChainedSubcommandData
+	Commands                []AvailableCommandsPacketPayloadCommandData
+	SoftEnums               []AvailableCommandsPacketPayloadSoftEnumData
+	Constraints             []AvailableCommandsPacketPayloadConstrainedValueData
 }
 
 func (p *AvailableCommandsPacket) Encode(w Encoder) error {
@@ -8449,7 +9677,7 @@ func DecodeAvailableCommandsPacket(r Decoder) (AvailableCommandsPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]AvailableCommandsPacketEnumDataItemStruct)
+		value, ok := raw.([]AvailableCommandsPacketPayloadEnumData)
 		if !ok {
 			return p, fmt.Errorf("field AvailableCommandsPacket.Enum Data has unexpected decoded type %T", raw)
 		}
@@ -8460,7 +9688,7 @@ func DecodeAvailableCommandsPacket(r Decoder) (AvailableCommandsPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]AvailableCommandsPacketChainedSubcommandDataItemStruct)
+		value, ok := raw.([]AvailableCommandsPacketPayloadChainedSubcommandData)
 		if !ok {
 			return p, fmt.Errorf("field AvailableCommandsPacket.Chained Subcommand Data has unexpected decoded type %T", raw)
 		}
@@ -8471,7 +9699,7 @@ func DecodeAvailableCommandsPacket(r Decoder) (AvailableCommandsPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]AvailableCommandsPacketCommandsItemStruct)
+		value, ok := raw.([]AvailableCommandsPacketPayloadCommandData)
 		if !ok {
 			return p, fmt.Errorf("field AvailableCommandsPacket.Commands has unexpected decoded type %T", raw)
 		}
@@ -8482,7 +9710,7 @@ func DecodeAvailableCommandsPacket(r Decoder) (AvailableCommandsPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]AvailableCommandsPacketSoftEnumsItemStruct)
+		value, ok := raw.([]AvailableCommandsPacketPayloadSoftEnumData)
 		if !ok {
 			return p, fmt.Errorf("field AvailableCommandsPacket.Soft Enums has unexpected decoded type %T", raw)
 		}
@@ -8493,7 +9721,7 @@ func DecodeAvailableCommandsPacket(r Decoder) (AvailableCommandsPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]AvailableCommandsPacketConstraintsItemStruct)
+		value, ok := raw.([]AvailableCommandsPacketPayloadConstrainedValueData)
 		if !ok {
 			return p, fmt.Errorf("field AvailableCommandsPacket.Constraints has unexpected decoded type %T", raw)
 		}
@@ -8504,7 +9732,7 @@ func DecodeAvailableCommandsPacket(r Decoder) (AvailableCommandsPacket, error) {
 
 type CommandRequestPacket struct {
 	Command    string
-	Origin     CommandRequestPacketOriginStruct
+	Origin     CommandOriginData
 	IsInternal bool
 	Version    string
 }
@@ -8543,7 +9771,7 @@ func DecodeCommandRequestPacket(r Decoder) (CommandRequestPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(CommandRequestPacketOriginStruct)
+		value, ok := raw.(CommandOriginData)
 		if !ok {
 			return p, fmt.Errorf("field CommandRequestPacket.Origin has unexpected decoded type %T", raw)
 		}
@@ -8575,7 +9803,7 @@ func DecodeCommandRequestPacket(r Decoder) (CommandRequestPacket, error) {
 }
 
 type CommandBlockUpdatePacket struct {
-	Target             CommandBlockUpdatePacketTargetUnion
+	Target             CommandBlockUpdatePacketPayload
 	Command            string
 	LastOutput         string
 	Name               string
@@ -8620,7 +9848,7 @@ func DecodeCommandBlockUpdatePacket(r Decoder) (CommandBlockUpdatePacket, error)
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(CommandBlockUpdatePacketTargetUnion)
+		value, ok := raw.(CommandBlockUpdatePacketPayload)
 		if !ok {
 			return p, fmt.Errorf("field CommandBlockUpdatePacket.Target has unexpected decoded type %T", raw)
 		}
@@ -8707,8 +9935,8 @@ func DecodeCommandBlockUpdatePacket(r Decoder) (CommandBlockUpdatePacket, error)
 }
 
 type CommandOutputPacket struct {
-	OriginData CommandRequestPacketOriginStruct
-	Output     CommandOutputPacketOutputStruct
+	OriginData CommandOriginData
+	Output     CommandOutput
 }
 
 func (p *CommandOutputPacket) Encode(w Encoder) error {
@@ -8728,7 +9956,7 @@ func DecodeCommandOutputPacket(r Decoder) (CommandOutputPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(CommandRequestPacketOriginStruct)
+		value, ok := raw.(CommandOriginData)
 		if !ok {
 			return p, fmt.Errorf("field CommandOutputPacket.Origin Data has unexpected decoded type %T", raw)
 		}
@@ -8739,7 +9967,7 @@ func DecodeCommandOutputPacket(r Decoder) (CommandOutputPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(CommandOutputPacketOutputStruct)
+		value, ok := raw.(CommandOutput)
 		if !ok {
 			return p, fmt.Errorf("field CommandOutputPacket.Output has unexpected decoded type %T", raw)
 		}
@@ -8753,8 +9981,8 @@ type UpdateTradePacket struct {
 	Type              uint8
 	Size              int32
 	TraderTier        int32
-	EntityUniqueId    StartGamePacketEntityIDStruct
-	LastTradingPlayer StartGamePacketEntityIDStruct
+	EntityUniqueId    ActorUniqueID
+	LastTradingPlayer ActorUniqueID
 	DisplayName       string
 	UseNewTradeScreen bool
 	UsingEconomyTrade bool
@@ -8846,7 +10074,7 @@ func DecodeUpdateTradePacket(r Decoder) (UpdateTradePacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketEntityIDStruct)
+		value, ok := raw.(ActorUniqueID)
 		if !ok {
 			return p, fmt.Errorf("field UpdateTradePacket.Entity Unique Id has unexpected decoded type %T", raw)
 		}
@@ -8857,7 +10085,7 @@ func DecodeUpdateTradePacket(r Decoder) (UpdateTradePacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketEntityIDStruct)
+		value, ok := raw.(ActorUniqueID)
 		if !ok {
 			return p, fmt.Errorf("field UpdateTradePacket.Last Trading Player has unexpected decoded type %T", raw)
 		}
@@ -8914,7 +10142,7 @@ type UpdateEquipPacket struct {
 	ContainerId    uint8
 	Type           uint8
 	Size           int32
-	EntityUniqueId StartGamePacketEntityIDStruct
+	EntityUniqueId ActorUniqueID
 	Data           []byte
 }
 
@@ -8977,7 +10205,7 @@ func DecodeUpdateEquipPacket(r Decoder) (UpdateEquipPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketEntityIDStruct)
+		value, ok := raw.(ActorUniqueID)
 		if !ok {
 			return p, fmt.Errorf("field UpdateEquipPacket.Entity Unique Id has unexpected decoded type %T", raw)
 		}
@@ -9232,7 +10460,7 @@ type TransferPacket struct {
 	ServerAddress           string
 	ServerPort              uint16
 	ReloadWorld             bool
-	GatheringsConfiguration *StartGamePacketServerConfigurationJoinInfoValueStructGatheringValueStruct
+	GatheringsConfiguration *ServerConfigurationGatheringsConfigurationJoinInfo
 }
 
 func (p *TransferPacket) Encode(w Encoder) error {
@@ -9291,7 +10519,7 @@ func DecodeTransferPacket(r Decoder) (TransferPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(*StartGamePacketServerConfigurationJoinInfoValueStructGatheringValueStruct)
+		value, ok := raw.(*ServerConfigurationGatheringsConfigurationJoinInfo)
 		if !ok {
 			return p, fmt.Errorf("field TransferPacket.Gatherings Configuration has unexpected decoded type %T", raw)
 		}
@@ -9302,11 +10530,11 @@ func DecodeTransferPacket(r Decoder) (TransferPacket, error) {
 
 type PlaySoundPacket struct {
 	Name              string
-	Position          StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct
+	Position          BlockPos
 	Volume            float32
 	Pitch             float32
 	LoopCount         int32
-	ServerSoundHandle *PlaySoundPacketServerSoundHandleValueStruct
+	ServerSoundHandle *ServerSoundHandle
 }
 
 func (p *PlaySoundPacket) Encode(w Encoder) error {
@@ -9349,7 +10577,7 @@ func DecodePlaySoundPacket(r Decoder) (PlaySoundPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct)
+		value, ok := raw.(BlockPos)
 		if !ok {
 			return p, fmt.Errorf("field PlaySoundPacket.Position has unexpected decoded type %T", raw)
 		}
@@ -9393,7 +10621,7 @@ func DecodePlaySoundPacket(r Decoder) (PlaySoundPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(*PlaySoundPacketServerSoundHandleValueStruct)
+		value, ok := raw.(*ServerSoundHandle)
 		if !ok {
 			return p, fmt.Errorf("field PlaySoundPacket.Server Sound Handle has unexpected decoded type %T", raw)
 		}
@@ -9460,7 +10688,7 @@ func DecodeStopSoundPacket(r Decoder) (StopSoundPacket, error) {
 }
 
 type SetTitlePacket struct {
-	TitleType            SetTitlePacketTitleTypeEnum
+	TitleType            EnumsSetTitlePacketPayloadTitleType
 	TitleText            string
 	FadeInTime           int32
 	StayTime             int32
@@ -9505,7 +10733,7 @@ func DecodeSetTitlePacket(r Decoder) (SetTitlePacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(SetTitlePacketTitleTypeEnum)
+		value, ok := raw.(EnumsSetTitlePacketPayloadTitleType)
 		if !ok {
 			return p, fmt.Errorf("field SetTitlePacket.Title Type has unexpected decoded type %T", raw)
 		}
@@ -9619,8 +10847,8 @@ func DecodeAddBehaviorTreePacket(r Decoder) (AddBehaviorTreePacket, error) {
 }
 
 type StructureBlockUpdatePacket struct {
-	BlockPosition StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct
-	StructureData StructureBlockUpdatePacketStructureDataStruct
+	BlockPosition BlockPos
+	StructureData StructureEditorData
 	Trigger       bool
 	IsWaterlogged bool
 }
@@ -9648,7 +10876,7 @@ func DecodeStructureBlockUpdatePacket(r Decoder) (StructureBlockUpdatePacket, er
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct)
+		value, ok := raw.(BlockPos)
 		if !ok {
 			return p, fmt.Errorf("field StructureBlockUpdatePacket.Block Position has unexpected decoded type %T", raw)
 		}
@@ -9659,7 +10887,7 @@ func DecodeStructureBlockUpdatePacket(r Decoder) (StructureBlockUpdatePacket, er
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StructureBlockUpdatePacketStructureDataStruct)
+		value, ok := raw.(StructureEditorData)
 		if !ok {
 			return p, fmt.Errorf("field StructureBlockUpdatePacket.Structure Data has unexpected decoded type %T", raw)
 		}
@@ -9692,7 +10920,7 @@ func DecodeStructureBlockUpdatePacket(r Decoder) (StructureBlockUpdatePacket, er
 
 type ShowStoreOfferPacket struct {
 	OfferId      [16]byte
-	RedirectType ShowStoreOfferPacketRedirectTypeEnum
+	RedirectType EnumsShowStoreOfferRedirectType
 }
 
 func (p *ShowStoreOfferPacket) Encode(w Encoder) error {
@@ -9723,7 +10951,7 @@ func DecodeShowStoreOfferPacket(r Decoder) (ShowStoreOfferPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(ShowStoreOfferPacketRedirectTypeEnum)
+		value, ok := raw.(EnumsShowStoreOfferRedirectType)
 		if !ok {
 			return p, fmt.Errorf("field ShowStoreOfferPacket.Redirect Type has unexpected decoded type %T", raw)
 		}
@@ -9761,7 +10989,7 @@ func DecodePurchaseReceiptPacket(r Decoder) (PurchaseReceiptPacket, error) {
 
 type PlayerSkinPacket struct {
 	UUID                 [16]byte
-	SerializedSkin       PlayerSkinPacketSerializedSkinStruct
+	SerializedSkin       SerializedSkinRef
 	LocalizedNewSkinName string
 	LocalizedOldSkinName string
 }
@@ -9800,7 +11028,7 @@ func DecodePlayerSkinPacket(r Decoder) (PlayerSkinPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(PlayerSkinPacketSerializedSkinStruct)
+		value, ok := raw.(SerializedSkinRef)
 		if !ok {
 			return p, fmt.Errorf("field PlayerSkinPacket.Serialized Skin has unexpected decoded type %T", raw)
 		}
@@ -9859,7 +11087,7 @@ func DecodeSubClientLoginPacket(r Decoder) (SubClientLoginPacket, error) {
 }
 
 type AutomationClientConnectPacket struct {
-	WebSocketData AutomationClientConnectPacketWebSocketDataStruct
+	WebSocketData WebSocketPacketData
 }
 
 func (p *AutomationClientConnectPacket) Encode(w Encoder) error {
@@ -9876,7 +11104,7 @@ func DecodeAutomationClientConnectPacket(r Decoder) (AutomationClientConnectPack
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(AutomationClientConnectPacketWebSocketDataStruct)
+		value, ok := raw.(WebSocketPacketData)
 		if !ok {
 			return p, fmt.Errorf("field AutomationClientConnectPacket.Web Socket Data has unexpected decoded type %T", raw)
 		}
@@ -9886,7 +11114,7 @@ func DecodeAutomationClientConnectPacket(r Decoder) (AutomationClientConnectPack
 }
 
 type SetLastHurtByPacket struct {
-	LastHurtBy SetLastHurtByPacketLastHurtByEnum
+	LastHurtBy EnumsActorType
 }
 
 func (p *SetLastHurtByPacket) Encode(w Encoder) error {
@@ -9903,7 +11131,7 @@ func DecodeSetLastHurtByPacket(r Decoder) (SetLastHurtByPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(SetLastHurtByPacketLastHurtByEnum)
+		value, ok := raw.(EnumsActorType)
 		if !ok {
 			return p, fmt.Errorf("field SetLastHurtByPacket.LastHurtBy has unexpected decoded type %T", raw)
 		}
@@ -9914,7 +11142,7 @@ func DecodeSetLastHurtByPacket(r Decoder) (SetLastHurtByPacket, error) {
 
 type BookEditPacket struct {
 	BookSlot  int32
-	Operation BookEditPacketOperationUnion
+	Operation BookEditAction
 }
 
 func (p *BookEditPacket) Encode(w Encoder) error {
@@ -9945,7 +11173,7 @@ func DecodeBookEditPacket(r Decoder) (BookEditPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(BookEditPacketOperationUnion)
+		value, ok := raw.(BookEditAction)
 		if !ok {
 			return p, fmt.Errorf("field BookEditPacket.Operation has unexpected decoded type %T", raw)
 		}
@@ -9955,8 +11183,8 @@ func DecodeBookEditPacket(r Decoder) (BookEditPacket, error) {
 }
 
 type NpcRequestPacket struct {
-	NPCRuntimeID StartGamePacketRuntimeIDStruct
-	RequestType  NpcRequestPacketRequestTypeEnum
+	NPCRuntimeID ActorRuntimeID
+	RequestType  EnumsNpcRequestPacketPayloadRequestType
 	Actions      string
 	ActionIndex  uint8
 	SceneName    string
@@ -9988,7 +11216,7 @@ func DecodeNpcRequestPacket(r Decoder) (NpcRequestPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRuntimeIDStruct)
+		value, ok := raw.(ActorRuntimeID)
 		if !ok {
 			return p, fmt.Errorf("field NpcRequestPacket.NPC Runtime ID has unexpected decoded type %T", raw)
 		}
@@ -9999,7 +11227,7 @@ func DecodeNpcRequestPacket(r Decoder) (NpcRequestPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(NpcRequestPacketRequestTypeEnum)
+		value, ok := raw.(EnumsNpcRequestPacketPayloadRequestType)
 		if !ok {
 			return p, fmt.Errorf("field NpcRequestPacket.Request Type has unexpected decoded type %T", raw)
 		}
@@ -10045,8 +11273,8 @@ type PhotoTransferPacket struct {
 	PhotoName    string
 	PhotoData    string
 	BookID       string
-	Type         PhotoTransferPacketTypeEnum
-	SourceType   PhotoTransferPacketTypeEnum
+	Type         EnumsPhotoType
+	SourceType   EnumsPhotoType
 	OwnerID      int64
 	NewPhotoName string
 }
@@ -10116,7 +11344,7 @@ func DecodePhotoTransferPacket(r Decoder) (PhotoTransferPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(PhotoTransferPacketTypeEnum)
+		value, ok := raw.(EnumsPhotoType)
 		if !ok {
 			return p, fmt.Errorf("field PhotoTransferPacket.Type has unexpected decoded type %T", raw)
 		}
@@ -10127,7 +11355,7 @@ func DecodePhotoTransferPacket(r Decoder) (PhotoTransferPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(PhotoTransferPacketTypeEnum)
+		value, ok := raw.(EnumsPhotoType)
 		if !ok {
 			return p, fmt.Errorf("field PhotoTransferPacket.Source Type has unexpected decoded type %T", raw)
 		}
@@ -10203,7 +11431,7 @@ func DecodeModalFormRequestPacket(r Decoder) (ModalFormRequestPacket, error) {
 type ModalFormResponsePacket struct {
 	FormID           uint32
 	JSONResponse     *string
-	FormCancelReason *ModalFormResponsePacketFormCancelReasonValueEnum
+	FormCancelReason *EnumsModalFormCancelReason
 }
 
 func (p *ModalFormResponsePacket) Encode(w Encoder) error {
@@ -10248,12 +11476,24 @@ func DecodeModalFormResponsePacket(r Decoder) (ModalFormResponsePacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(*ModalFormResponsePacketFormCancelReasonValueEnum)
+		value, ok := raw.(*EnumsModalFormCancelReason)
 		if !ok {
 			return p, fmt.Errorf("field ModalFormResponsePacket.Form Cancel Reason has unexpected decoded type %T", raw)
 		}
 		p.FormCancelReason = value
 	}
+	return p, nil
+}
+
+type ServerSettingsRequestPacket struct {
+}
+
+func (p *ServerSettingsRequestPacket) Encode(w Encoder) error {
+	return nil
+}
+
+func DecodeServerSettingsRequestPacket(r Decoder) (ServerSettingsRequestPacket, error) {
+	var p ServerSettingsRequestPacket
 	return p, nil
 }
 
@@ -10327,7 +11567,7 @@ func DecodeShowProfilePacket(r Decoder) (ShowProfilePacket, error) {
 }
 
 type SetDefaultGameTypePacket struct {
-	DefaultGameType StartGamePacketGameTypeEnum
+	DefaultGameType EnumsGameType
 }
 
 func (p *SetDefaultGameTypePacket) Encode(w Encoder) error {
@@ -10344,7 +11584,7 @@ func DecodeSetDefaultGameTypePacket(r Decoder) (SetDefaultGameTypePacket, error)
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketGameTypeEnum)
+		value, ok := raw.(EnumsGameType)
 		if !ok {
 			return p, fmt.Errorf("field SetDefaultGameTypePacket.Default Game Type has unexpected decoded type %T", raw)
 		}
@@ -10495,9 +11735,9 @@ func DecodeSetScorePacket(r Decoder) (SetScorePacket, error) {
 }
 
 type LabTablePacket struct {
-	Type     LabTablePacketTypeEnum
-	Position StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct
-	Reaction LabTablePacketReactionEnum
+	Type     EnumsLabTablePacketPayloadType
+	Position BlockPos
+	Reaction EnumsLabTableReactionType
 }
 
 func (p *LabTablePacket) Encode(w Encoder) error {
@@ -10520,7 +11760,7 @@ func DecodeLabTablePacket(r Decoder) (LabTablePacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(LabTablePacketTypeEnum)
+		value, ok := raw.(EnumsLabTablePacketPayloadType)
 		if !ok {
 			return p, fmt.Errorf("field LabTablePacket.Type has unexpected decoded type %T", raw)
 		}
@@ -10531,7 +11771,7 @@ func DecodeLabTablePacket(r Decoder) (LabTablePacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct)
+		value, ok := raw.(BlockPos)
 		if !ok {
 			return p, fmt.Errorf("field LabTablePacket.Position has unexpected decoded type %T", raw)
 		}
@@ -10542,7 +11782,7 @@ func DecodeLabTablePacket(r Decoder) (LabTablePacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(LabTablePacketReactionEnum)
+		value, ok := raw.(EnumsLabTableReactionType)
 		if !ok {
 			return p, fmt.Errorf("field LabTablePacket.Reaction has unexpected decoded type %T", raw)
 		}
@@ -10552,7 +11792,7 @@ func DecodeLabTablePacket(r Decoder) (LabTablePacket, error) {
 }
 
 type UpdateBlockSyncedPacket struct {
-	BlockPosition    StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct
+	BlockPosition    BlockPos
 	BlockRuntimeID   uint32
 	Flags            uint32
 	Layer            uint32
@@ -10589,7 +11829,7 @@ func DecodeUpdateBlockSyncedPacket(r Decoder) (UpdateBlockSyncedPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct)
+		value, ok := raw.(BlockPos)
 		if !ok {
 			return p, fmt.Errorf("field UpdateBlockSyncedPacket.Block Position has unexpected decoded type %T", raw)
 		}
@@ -10654,7 +11894,7 @@ func DecodeUpdateBlockSyncedPacket(r Decoder) (UpdateBlockSyncedPacket, error) {
 }
 
 type MoveActorDeltaPacket struct {
-	MoveData MoveActorDeltaPacketMoveDataStruct
+	MoveData MoveActorDeltaData
 }
 
 func (p *MoveActorDeltaPacket) Encode(w Encoder) error {
@@ -10671,7 +11911,7 @@ func DecodeMoveActorDeltaPacket(r Decoder) (MoveActorDeltaPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(MoveActorDeltaPacketMoveDataStruct)
+		value, ok := raw.(MoveActorDeltaData)
 		if !ok {
 			return p, fmt.Errorf("field MoveActorDeltaPacket.Move Data has unexpected decoded type %T", raw)
 		}
@@ -10681,8 +11921,8 @@ func DecodeMoveActorDeltaPacket(r Decoder) (MoveActorDeltaPacket, error) {
 }
 
 type SetScoreboardIdentityPacket struct {
-	ScoreboardIdentityPacketType SetScoreboardIdentityPacketScoreboardIdentityPacketTypeEnum
-	ScoreboardIdentityInfo       []SetScoreboardIdentityPacketScoreboardIdentityInfoItemStruct
+	ScoreboardIdentityPacketType EnumsScoreboardIdentityPacketType
+	ScoreboardIdentityInfo       []ScoreboardIdentityPacketInfo
 }
 
 func (p *SetScoreboardIdentityPacket) Encode(w Encoder) error {
@@ -10702,7 +11942,7 @@ func DecodeSetScoreboardIdentityPacket(r Decoder) (SetScoreboardIdentityPacket, 
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(SetScoreboardIdentityPacketScoreboardIdentityPacketTypeEnum)
+		value, ok := raw.(EnumsScoreboardIdentityPacketType)
 		if !ok {
 			return p, fmt.Errorf("field SetScoreboardIdentityPacket.Scoreboard Identity Packet Type has unexpected decoded type %T", raw)
 		}
@@ -10713,7 +11953,7 @@ func DecodeSetScoreboardIdentityPacket(r Decoder) (SetScoreboardIdentityPacket, 
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]SetScoreboardIdentityPacketScoreboardIdentityInfoItemStruct)
+		value, ok := raw.([]ScoreboardIdentityPacketInfo)
 		if !ok {
 			return p, fmt.Errorf("field SetScoreboardIdentityPacket.Scoreboard Identity Info has unexpected decoded type %T", raw)
 		}
@@ -10723,7 +11963,7 @@ func DecodeSetScoreboardIdentityPacket(r Decoder) (SetScoreboardIdentityPacket, 
 }
 
 type SetLocalPlayerAsInitializedPacket struct {
-	PlayerID StartGamePacketRuntimeIDStruct
+	PlayerID ActorRuntimeID
 }
 
 func (p *SetLocalPlayerAsInitializedPacket) Encode(w Encoder) error {
@@ -10740,7 +11980,7 @@ func DecodeSetLocalPlayerAsInitializedPacket(r Decoder) (SetLocalPlayerAsInitial
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRuntimeIDStruct)
+		value, ok := raw.(ActorRuntimeID)
 		if !ok {
 			return p, fmt.Errorf("field SetLocalPlayerAsInitializedPacket.Player ID has unexpected decoded type %T", raw)
 		}
@@ -10752,7 +11992,7 @@ func DecodeSetLocalPlayerAsInitializedPacket(r Decoder) (SetLocalPlayerAsInitial
 type UpdateSoftEnumPacket struct {
 	EnumName   string
 	Values     []string
-	UpdateType UpdateSoftEnumPacketUpdateTypeEnum
+	UpdateType EnumsSoftEnumUpdateType
 }
 
 func (p *UpdateSoftEnumPacket) Encode(w Encoder) error {
@@ -10797,7 +12037,7 @@ func DecodeUpdateSoftEnumPacket(r Decoder) (UpdateSoftEnumPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(UpdateSoftEnumPacketUpdateTypeEnum)
+		value, ok := raw.(EnumsSoftEnumUpdateType)
 		if !ok {
 			return p, fmt.Errorf("field UpdateSoftEnumPacket.Update Type has unexpected decoded type %T", raw)
 		}
@@ -10850,8 +12090,8 @@ func DecodeNetworkStackLatencyPacket(r Decoder) (NetworkStackLatencyPacket, erro
 
 type SpawnParticleEffectPacket struct {
 	DimensionId     uint8
-	ActorId         StartGamePacketEntityIDStruct
-	Position        StartGamePacketPositionStruct
+	ActorId         ActorUniqueID
+	Position        Vec3
 	EffectName      string
 	MolangVariables *string
 }
@@ -10893,7 +12133,7 @@ func DecodeSpawnParticleEffectPacket(r Decoder) (SpawnParticleEffectPacket, erro
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketEntityIDStruct)
+		value, ok := raw.(ActorUniqueID)
 		if !ok {
 			return p, fmt.Errorf("field SpawnParticleEffectPacket.Actor Id has unexpected decoded type %T", raw)
 		}
@@ -10904,7 +12144,7 @@ func DecodeSpawnParticleEffectPacket(r Decoder) (SpawnParticleEffectPacket, erro
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketPositionStruct)
+		value, ok := raw.(Vec3)
 		if !ok {
 			return p, fmt.Errorf("field SpawnParticleEffectPacket.Position has unexpected decoded type %T", raw)
 		}
@@ -10963,9 +12203,9 @@ func DecodeAvailableActorIdentifiersPacket(r Decoder) (AvailableActorIdentifiers
 }
 
 type NetworkChunkPublisherUpdatePacket struct {
-	NewPositionForView    StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct
+	NewPositionForView    BlockPos
 	NewRadiusForView      uint32
-	ServerBuiltChunksList []LevelChunkPacketChunkPositionStruct
+	ServerBuiltChunksList []ChunkPos
 }
 
 func (p *NetworkChunkPublisherUpdatePacket) Encode(w Encoder) error {
@@ -10988,7 +12228,7 @@ func DecodeNetworkChunkPublisherUpdatePacket(r Decoder) (NetworkChunkPublisherUp
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct)
+		value, ok := raw.(BlockPos)
 		if !ok {
 			return p, fmt.Errorf("field NetworkChunkPublisherUpdatePacket.New position for view has unexpected decoded type %T", raw)
 		}
@@ -11010,7 +12250,7 @@ func DecodeNetworkChunkPublisherUpdatePacket(r Decoder) (NetworkChunkPublisherUp
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]LevelChunkPacketChunkPositionStruct)
+		value, ok := raw.([]ChunkPos)
 		if !ok {
 			return p, fmt.Errorf("field NetworkChunkPublisherUpdatePacket.Server Built Chunks List has unexpected decoded type %T", raw)
 		}
@@ -11020,8 +12260,8 @@ func DecodeNetworkChunkPublisherUpdatePacket(r Decoder) (NetworkChunkPublisherUp
 }
 
 type BiomeDefinitionListPacket struct {
-	MapOfBiomeNamesToData []BiomeDefinitionListPacketMapOfBiomeNamesToDataEntry
-	StringList            BiomeDefinitionListPacketStringListStruct
+	MapOfBiomeNamesToData []OrderedEntry[uint16, BiomeDefinitionData]
+	StringList            BiomeStringList
 }
 
 func (p *BiomeDefinitionListPacket) Encode(w Encoder) error {
@@ -11041,7 +12281,7 @@ func DecodeBiomeDefinitionListPacket(r Decoder) (BiomeDefinitionListPacket, erro
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]BiomeDefinitionListPacketMapOfBiomeNamesToDataEntry)
+		value, ok := raw.([]OrderedEntry[uint16, BiomeDefinitionData])
 		if !ok {
 			return p, fmt.Errorf("field BiomeDefinitionListPacket.Map of Biome names to data has unexpected decoded type %T", raw)
 		}
@@ -11052,7 +12292,7 @@ func DecodeBiomeDefinitionListPacket(r Decoder) (BiomeDefinitionListPacket, erro
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(BiomeDefinitionListPacketStringListStruct)
+		value, ok := raw.(BiomeStringList)
 		if !ok {
 			return p, fmt.Errorf("field BiomeDefinitionListPacket.String list has unexpected decoded type %T", raw)
 		}
@@ -11063,13 +12303,13 @@ func DecodeBiomeDefinitionListPacket(r Decoder) (BiomeDefinitionListPacket, erro
 
 type LevelSoundEventPacket struct {
 	SoundEvent      string
-	Position        StartGamePacketPositionStruct
+	Position        Vec3
 	Data            int32
 	ActorIdentifier string
 	IsBaby          bool
 	IsGlobal        bool
 	ActorUniqueId   int64
-	FireAtPosition  *StartGamePacketPositionStruct
+	FireAtPosition  *Vec3
 }
 
 func (p *LevelSoundEventPacket) Encode(w Encoder) error {
@@ -11118,7 +12358,7 @@ func DecodeLevelSoundEventPacket(r Decoder) (LevelSoundEventPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketPositionStruct)
+		value, ok := raw.(Vec3)
 		if !ok {
 			return p, fmt.Errorf("field LevelSoundEventPacket.Position has unexpected decoded type %T", raw)
 		}
@@ -11184,7 +12424,7 @@ func DecodeLevelSoundEventPacket(r Decoder) (LevelSoundEventPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(*StartGamePacketPositionStruct)
+		value, ok := raw.(*Vec3)
 		if !ok {
 			return p, fmt.Errorf("field LevelSoundEventPacket.Fire At Position has unexpected decoded type %T", raw)
 		}
@@ -11238,7 +12478,7 @@ func DecodeLevelEventGenericPacket(r Decoder) (LevelEventGenericPacket, error) {
 type LecternUpdatePacket struct {
 	NewPageToShow             uint8
 	TotalPages                uint8
-	PositionOfLecternToUpdate StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct
+	PositionOfLecternToUpdate BlockPos
 }
 
 func (p *LecternUpdatePacket) Encode(w Encoder) error {
@@ -11283,7 +12523,7 @@ func DecodeLecternUpdatePacket(r Decoder) (LecternUpdatePacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct)
+		value, ok := raw.(BlockPos)
 		if !ok {
 			return p, fmt.Errorf("field LecternUpdatePacket.Position of Lectern to update has unexpected decoded type %T", raw)
 		}
@@ -11347,8 +12587,8 @@ func DecodeOnScreenTextureAnimationPacket(r Decoder) (OnScreenTextureAnimationPa
 }
 
 type MapCreateLockedCopyPacket struct {
-	OriginalMapId StartGamePacketEntityIDStruct
-	NewMapId      StartGamePacketEntityIDStruct
+	OriginalMapId ActorUniqueID
+	NewMapId      ActorUniqueID
 }
 
 func (p *MapCreateLockedCopyPacket) Encode(w Encoder) error {
@@ -11368,7 +12608,7 @@ func DecodeMapCreateLockedCopyPacket(r Decoder) (MapCreateLockedCopyPacket, erro
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketEntityIDStruct)
+		value, ok := raw.(ActorUniqueID)
 		if !ok {
 			return p, fmt.Errorf("field MapCreateLockedCopyPacket.Original Map Id has unexpected decoded type %T", raw)
 		}
@@ -11379,7 +12619,7 @@ func DecodeMapCreateLockedCopyPacket(r Decoder) (MapCreateLockedCopyPacket, erro
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketEntityIDStruct)
+		value, ok := raw.(ActorUniqueID)
 		if !ok {
 			return p, fmt.Errorf("field MapCreateLockedCopyPacket.New Map Id has unexpected decoded type %T", raw)
 		}
@@ -11390,9 +12630,9 @@ func DecodeMapCreateLockedCopyPacket(r Decoder) (MapCreateLockedCopyPacket, erro
 
 type StructureTemplateDataRequestPacket struct {
 	StructureName      string
-	StructurePosition  StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct
-	StructureSettings  StructureBlockUpdatePacketStructureDataStructStructureSettingsStruct
-	RequestedOperation StructureTemplateDataRequestPacketRequestedOperationEnum
+	StructurePosition  BlockPos
+	StructureSettings  StructureSettings
+	RequestedOperation EnumsStructureTemplateRequestOperation
 }
 
 func (p *StructureTemplateDataRequestPacket) Encode(w Encoder) error {
@@ -11429,7 +12669,7 @@ func DecodeStructureTemplateDataRequestPacket(r Decoder) (StructureTemplateDataR
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct)
+		value, ok := raw.(BlockPos)
 		if !ok {
 			return p, fmt.Errorf("field StructureTemplateDataRequestPacket.Structure Position has unexpected decoded type %T", raw)
 		}
@@ -11440,7 +12680,7 @@ func DecodeStructureTemplateDataRequestPacket(r Decoder) (StructureTemplateDataR
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StructureBlockUpdatePacketStructureDataStructStructureSettingsStruct)
+		value, ok := raw.(StructureSettings)
 		if !ok {
 			return p, fmt.Errorf("field StructureTemplateDataRequestPacket.Structure Settings has unexpected decoded type %T", raw)
 		}
@@ -11451,7 +12691,7 @@ func DecodeStructureTemplateDataRequestPacket(r Decoder) (StructureTemplateDataR
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StructureTemplateDataRequestPacketRequestedOperationEnum)
+		value, ok := raw.(EnumsStructureTemplateRequestOperation)
 		if !ok {
 			return p, fmt.Errorf("field StructureTemplateDataRequestPacket.Requested Operation has unexpected decoded type %T", raw)
 		}
@@ -11463,7 +12703,7 @@ func DecodeStructureTemplateDataRequestPacket(r Decoder) (StructureTemplateDataR
 type StructureTemplateDataResponsePacket struct {
 	StructureName string
 	StructureSNBT []byte
-	ResponseType  StructureTemplateDataResponsePacketResponseTypeEnum
+	ResponseType  EnumsStructureTemplateResponseType
 }
 
 func (p *StructureTemplateDataResponsePacket) Encode(w Encoder) error {
@@ -11508,7 +12748,7 @@ func DecodeStructureTemplateDataResponsePacket(r Decoder) (StructureTemplateData
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StructureTemplateDataResponsePacketResponseTypeEnum)
+		value, ok := raw.(EnumsStructureTemplateResponseType)
 		if !ok {
 			return p, fmt.Errorf("field StructureTemplateDataResponsePacket.Response Type has unexpected decoded type %T", raw)
 		}
@@ -11560,7 +12800,7 @@ func DecodeClientCacheBlobStatusPacket(r Decoder) (ClientCacheBlobStatusPacket, 
 }
 
 type ClientCacheMissResponsePacket struct {
-	MissingBlobs []ClientCacheMissResponsePacketMissingBlobsItemStruct
+	MissingBlobs []MissingBlobData
 }
 
 func (p *ClientCacheMissResponsePacket) Encode(w Encoder) error {
@@ -11577,7 +12817,7 @@ func DecodeClientCacheMissResponsePacket(r Decoder) (ClientCacheMissResponsePack
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]ClientCacheMissResponsePacketMissingBlobsItemStruct)
+		value, ok := raw.([]MissingBlobData)
 		if !ok {
 			return p, fmt.Errorf("field ClientCacheMissResponsePacket.Missing Blobs has unexpected decoded type %T", raw)
 		}
@@ -11587,7 +12827,7 @@ func DecodeClientCacheMissResponsePacket(r Decoder) (ClientCacheMissResponsePack
 }
 
 type EducationSettingsPacket struct {
-	EducationLevelSettings EducationSettingsPacketEducationLevelSettingsStruct
+	EducationLevelSettings EducationLevelSettings
 }
 
 func (p *EducationSettingsPacket) Encode(w Encoder) error {
@@ -11604,7 +12844,7 @@ func DecodeEducationSettingsPacket(r Decoder) (EducationSettingsPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(EducationSettingsPacketEducationLevelSettingsStruct)
+		value, ok := raw.(EducationLevelSettings)
 		if !ok {
 			return p, fmt.Errorf("field EducationSettingsPacket.Education Level Settings has unexpected decoded type %T", raw)
 		}
@@ -11614,7 +12854,7 @@ func DecodeEducationSettingsPacket(r Decoder) (EducationSettingsPacket, error) {
 }
 
 type EmotePacket struct {
-	ActorRuntimeId   StartGamePacketRuntimeIDStruct
+	ActorRuntimeId   ActorRuntimeID
 	EmoteId          string
 	EmoteLengthTicks uint32
 	Xuid             string
@@ -11651,7 +12891,7 @@ func DecodeEmotePacket(r Decoder) (EmotePacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRuntimeIDStruct)
+		value, ok := raw.(ActorRuntimeID)
 		if !ok {
 			return p, fmt.Errorf("field EmotePacket.Actor Runtime Id has unexpected decoded type %T", raw)
 		}
@@ -11716,7 +12956,7 @@ func DecodeEmotePacket(r Decoder) (EmotePacket, error) {
 }
 
 type MultiplayerSettingsPacket struct {
-	PacketType MultiplayerSettingsPacketPacketTypeEnum
+	PacketType EnumsMultiplayerSettingsPacketType
 }
 
 func (p *MultiplayerSettingsPacket) Encode(w Encoder) error {
@@ -11733,7 +12973,7 @@ func DecodeMultiplayerSettingsPacket(r Decoder) (MultiplayerSettingsPacket, erro
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(MultiplayerSettingsPacketPacketTypeEnum)
+		value, ok := raw.(EnumsMultiplayerSettingsPacketType)
 		if !ok {
 			return p, fmt.Errorf("field MultiplayerSettingsPacket.PacketType has unexpected decoded type %T", raw)
 		}
@@ -11785,7 +13025,7 @@ func DecodeSettingsCommandPacket(r Decoder) (SettingsCommandPacket, error) {
 }
 
 type AnvilDamagePacket struct {
-	BlockPosition StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct
+	BlockPosition BlockPos
 }
 
 func (p *AnvilDamagePacket) Encode(w Encoder) error {
@@ -11802,7 +13042,7 @@ func DecodeAnvilDamagePacket(r Decoder) (AnvilDamagePacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct)
+		value, ok := raw.(BlockPos)
 		if !ok {
 			return p, fmt.Errorf("field AnvilDamagePacket.Block Position has unexpected decoded type %T", raw)
 		}
@@ -11855,7 +13095,7 @@ func DecodeCompletedUsingItemPacket(r Decoder) (CompletedUsingItemPacket, error)
 
 type NetworkSettingsPacket struct {
 	CompressionThreshold    uint16
-	CompressionAlgorithm    NetworkSettingsPacketCompressionAlgorithmEnum
+	CompressionAlgorithm    EnumsPacketCompressionAlgorithm
 	ClientThrottleEnabled   bool
 	ClientThrottleThreshold uint8
 	ClientThrottleScalar    float32
@@ -11898,7 +13138,7 @@ func DecodeNetworkSettingsPacket(r Decoder) (NetworkSettingsPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(NetworkSettingsPacketCompressionAlgorithmEnum)
+		value, ok := raw.(EnumsPacketCompressionAlgorithm)
 		if !ok {
 			return p, fmt.Errorf("field NetworkSettingsPacket.CompressionAlgorithm has unexpected decoded type %T", raw)
 		}
@@ -11941,31 +13181,31 @@ func DecodeNetworkSettingsPacket(r Decoder) (NetworkSettingsPacket, error) {
 }
 
 type PlayerAuthInputPacket struct {
-	PlayerRotation         StartGamePacketRotationStruct
-	Position               StartGamePacketPositionStruct
-	MoveVector             StartGamePacketRotationStruct
+	PlayerRotation         Vec2
+	Position               Vec3
+	MoveVector             Vec2
 	PlayerHeadRotation     float32
 	Constant4              bool
-	InputData              []PlayerAuthInputPacketInputDataItemEnum
-	InputMode              PlayerAuthInputPacketInputModeEnum
-	PlayMode               PlayerAuthInputPacketPlayModeEnum
-	NewInteractionModel    PlayerAuthInputPacketNewInteractionModelEnum
-	InteractRotation       StartGamePacketRotationStruct
-	ClientTick             MovePlayerPacketTickStruct
-	PosDelta               StartGamePacketPositionStruct
+	InputData              []EnumsPlayerAuthInputPacketPayloadInputData
+	InputMode              EnumsInputMode
+	PlayMode               EnumsClientPlayMode
+	NewInteractionModel    EnumsNewInteractionModel
+	InteractRotation       Vec2
+	ClientTick             PlayerInputTick
+	PosDelta               Vec3
 	Constant12             bool
-	ItemUseTransaction     *PlayerAuthInputPacketItemUseTransactionValueStruct
+	ItemUseTransaction     *PackedItemUseLegacyInventoryTransaction
 	Constant14             bool
-	ItemStackRequest       *PlayerAuthInputPacketItemStackRequestValueStruct
+	ItemStackRequest       *ItemStackRequestCerealRequestData
 	Constant16             bool
-	PlayerBlockActions     *[]PlayerAuthInputPacketPlayerBlockActionsValueItemStruct
+	PlayerBlockActions     *[]PlayerBlockActionData
 	Constant18             bool
-	VehicleRotation        *StartGamePacketRotationStruct
+	VehicleRotation        *Vec2
 	Constant20             bool
-	ClientPredictedVehicle *StartGamePacketEntityIDStruct
-	AnalogMoveVector       StartGamePacketRotationStruct
-	CameraOrientation      StartGamePacketPositionStruct
-	RawMoveVector          StartGamePacketRotationStruct
+	ClientPredictedVehicle *ActorUniqueID
+	AnalogMoveVector       Vec2
+	CameraOrientation      Vec3
+	RawMoveVector          Vec2
 }
 
 func (p *PlayerAuthInputPacket) Encode(w Encoder) error {
@@ -12054,7 +13294,7 @@ func DecodePlayerAuthInputPacket(r Decoder) (PlayerAuthInputPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRotationStruct)
+		value, ok := raw.(Vec2)
 		if !ok {
 			return p, fmt.Errorf("field PlayerAuthInputPacket.Player Rotation has unexpected decoded type %T", raw)
 		}
@@ -12065,7 +13305,7 @@ func DecodePlayerAuthInputPacket(r Decoder) (PlayerAuthInputPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketPositionStruct)
+		value, ok := raw.(Vec3)
 		if !ok {
 			return p, fmt.Errorf("field PlayerAuthInputPacket.Position has unexpected decoded type %T", raw)
 		}
@@ -12076,7 +13316,7 @@ func DecodePlayerAuthInputPacket(r Decoder) (PlayerAuthInputPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRotationStruct)
+		value, ok := raw.(Vec2)
 		if !ok {
 			return p, fmt.Errorf("field PlayerAuthInputPacket.Move Vector has unexpected decoded type %T", raw)
 		}
@@ -12109,7 +13349,7 @@ func DecodePlayerAuthInputPacket(r Decoder) (PlayerAuthInputPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]PlayerAuthInputPacketInputDataItemEnum)
+		value, ok := raw.([]EnumsPlayerAuthInputPacketPayloadInputData)
 		if !ok {
 			return p, fmt.Errorf("field PlayerAuthInputPacket.Input Data has unexpected decoded type %T", raw)
 		}
@@ -12120,7 +13360,7 @@ func DecodePlayerAuthInputPacket(r Decoder) (PlayerAuthInputPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(PlayerAuthInputPacketInputModeEnum)
+		value, ok := raw.(EnumsInputMode)
 		if !ok {
 			return p, fmt.Errorf("field PlayerAuthInputPacket.Input Mode has unexpected decoded type %T", raw)
 		}
@@ -12131,7 +13371,7 @@ func DecodePlayerAuthInputPacket(r Decoder) (PlayerAuthInputPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(PlayerAuthInputPacketPlayModeEnum)
+		value, ok := raw.(EnumsClientPlayMode)
 		if !ok {
 			return p, fmt.Errorf("field PlayerAuthInputPacket.Play Mode has unexpected decoded type %T", raw)
 		}
@@ -12142,7 +13382,7 @@ func DecodePlayerAuthInputPacket(r Decoder) (PlayerAuthInputPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(PlayerAuthInputPacketNewInteractionModelEnum)
+		value, ok := raw.(EnumsNewInteractionModel)
 		if !ok {
 			return p, fmt.Errorf("field PlayerAuthInputPacket.New Interaction Model has unexpected decoded type %T", raw)
 		}
@@ -12153,7 +13393,7 @@ func DecodePlayerAuthInputPacket(r Decoder) (PlayerAuthInputPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRotationStruct)
+		value, ok := raw.(Vec2)
 		if !ok {
 			return p, fmt.Errorf("field PlayerAuthInputPacket.Interact Rotation has unexpected decoded type %T", raw)
 		}
@@ -12164,7 +13404,7 @@ func DecodePlayerAuthInputPacket(r Decoder) (PlayerAuthInputPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(MovePlayerPacketTickStruct)
+		value, ok := raw.(PlayerInputTick)
 		if !ok {
 			return p, fmt.Errorf("field PlayerAuthInputPacket.Client Tick has unexpected decoded type %T", raw)
 		}
@@ -12175,7 +13415,7 @@ func DecodePlayerAuthInputPacket(r Decoder) (PlayerAuthInputPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketPositionStruct)
+		value, ok := raw.(Vec3)
 		if !ok {
 			return p, fmt.Errorf("field PlayerAuthInputPacket.Pos Delta has unexpected decoded type %T", raw)
 		}
@@ -12197,7 +13437,7 @@ func DecodePlayerAuthInputPacket(r Decoder) (PlayerAuthInputPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(*PlayerAuthInputPacketItemUseTransactionValueStruct)
+		value, ok := raw.(*PackedItemUseLegacyInventoryTransaction)
 		if !ok {
 			return p, fmt.Errorf("field PlayerAuthInputPacket.Item Use Transaction has unexpected decoded type %T", raw)
 		}
@@ -12219,7 +13459,7 @@ func DecodePlayerAuthInputPacket(r Decoder) (PlayerAuthInputPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(*PlayerAuthInputPacketItemStackRequestValueStruct)
+		value, ok := raw.(*ItemStackRequestCerealRequestData)
 		if !ok {
 			return p, fmt.Errorf("field PlayerAuthInputPacket.Item Stack Request has unexpected decoded type %T", raw)
 		}
@@ -12241,7 +13481,7 @@ func DecodePlayerAuthInputPacket(r Decoder) (PlayerAuthInputPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(*[]PlayerAuthInputPacketPlayerBlockActionsValueItemStruct)
+		value, ok := raw.(*[]PlayerBlockActionData)
 		if !ok {
 			return p, fmt.Errorf("field PlayerAuthInputPacket.Player Block Actions has unexpected decoded type %T", raw)
 		}
@@ -12263,7 +13503,7 @@ func DecodePlayerAuthInputPacket(r Decoder) (PlayerAuthInputPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(*StartGamePacketRotationStruct)
+		value, ok := raw.(*Vec2)
 		if !ok {
 			return p, fmt.Errorf("field PlayerAuthInputPacket.Vehicle Rotation has unexpected decoded type %T", raw)
 		}
@@ -12285,7 +13525,7 @@ func DecodePlayerAuthInputPacket(r Decoder) (PlayerAuthInputPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(*StartGamePacketEntityIDStruct)
+		value, ok := raw.(*ActorUniqueID)
 		if !ok {
 			return p, fmt.Errorf("field PlayerAuthInputPacket.Client Predicted Vehicle has unexpected decoded type %T", raw)
 		}
@@ -12296,7 +13536,7 @@ func DecodePlayerAuthInputPacket(r Decoder) (PlayerAuthInputPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRotationStruct)
+		value, ok := raw.(Vec2)
 		if !ok {
 			return p, fmt.Errorf("field PlayerAuthInputPacket.Analog Move Vector has unexpected decoded type %T", raw)
 		}
@@ -12307,7 +13547,7 @@ func DecodePlayerAuthInputPacket(r Decoder) (PlayerAuthInputPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketPositionStruct)
+		value, ok := raw.(Vec3)
 		if !ok {
 			return p, fmt.Errorf("field PlayerAuthInputPacket.Camera Orientation has unexpected decoded type %T", raw)
 		}
@@ -12318,7 +13558,7 @@ func DecodePlayerAuthInputPacket(r Decoder) (PlayerAuthInputPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRotationStruct)
+		value, ok := raw.(Vec2)
 		if !ok {
 			return p, fmt.Errorf("field PlayerAuthInputPacket.Raw Move Vector has unexpected decoded type %T", raw)
 		}
@@ -12328,8 +13568,8 @@ func DecodePlayerAuthInputPacket(r Decoder) (PlayerAuthInputPacket, error) {
 }
 
 type CreativeContentPacket struct {
-	Groups  []CreativeContentPacketGroupsItemStruct
-	Entries []CreativeContentPacketEntriesItemStruct
+	Groups  []CreativeGroupInfoPayload
+	Entries []CreativeItemEntryPayload
 }
 
 func (p *CreativeContentPacket) Encode(w Encoder) error {
@@ -12349,7 +13589,7 @@ func DecodeCreativeContentPacket(r Decoder) (CreativeContentPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]CreativeContentPacketGroupsItemStruct)
+		value, ok := raw.([]CreativeGroupInfoPayload)
 		if !ok {
 			return p, fmt.Errorf("field CreativeContentPacket.Groups has unexpected decoded type %T", raw)
 		}
@@ -12360,7 +13600,7 @@ func DecodeCreativeContentPacket(r Decoder) (CreativeContentPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]CreativeContentPacketEntriesItemStruct)
+		value, ok := raw.([]CreativeItemEntryPayload)
 		if !ok {
 			return p, fmt.Errorf("field CreativeContentPacket.Entries has unexpected decoded type %T", raw)
 		}
@@ -12370,7 +13610,7 @@ func DecodeCreativeContentPacket(r Decoder) (CreativeContentPacket, error) {
 }
 
 type PlayerEnchantOptionsPacket struct {
-	Options []PlayerEnchantOptionsPacketOptionsItemStruct
+	Options []ItemEnchantOption
 }
 
 func (p *PlayerEnchantOptionsPacket) Encode(w Encoder) error {
@@ -12387,7 +13627,7 @@ func DecodePlayerEnchantOptionsPacket(r Decoder) (PlayerEnchantOptionsPacket, er
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]PlayerEnchantOptionsPacketOptionsItemStruct)
+		value, ok := raw.([]ItemEnchantOption)
 		if !ok {
 			return p, fmt.Errorf("field PlayerEnchantOptionsPacket.Options has unexpected decoded type %T", raw)
 		}
@@ -12397,7 +13637,7 @@ func DecodePlayerEnchantOptionsPacket(r Decoder) (PlayerEnchantOptionsPacket, er
 }
 
 type ItemStackRequestPacket struct {
-	Requests []ItemStackRequestPacketRequestsItemStruct
+	Requests []ItemStackRequestPacketDataRequestData
 }
 
 func (p *ItemStackRequestPacket) Encode(w Encoder) error {
@@ -12414,7 +13654,7 @@ func DecodeItemStackRequestPacket(r Decoder) (ItemStackRequestPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]ItemStackRequestPacketRequestsItemStruct)
+		value, ok := raw.([]ItemStackRequestPacketDataRequestData)
 		if !ok {
 			return p, fmt.Errorf("field ItemStackRequestPacket.Requests has unexpected decoded type %T", raw)
 		}
@@ -12424,7 +13664,7 @@ func DecodeItemStackRequestPacket(r Decoder) (ItemStackRequestPacket, error) {
 }
 
 type ItemStackResponsePacket struct {
-	Responses []ItemStackResponsePacketResponsesItemStruct
+	Responses []ItemStackResponseInfo
 }
 
 func (p *ItemStackResponsePacket) Encode(w Encoder) error {
@@ -12441,7 +13681,7 @@ func DecodeItemStackResponsePacket(r Decoder) (ItemStackResponsePacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]ItemStackResponsePacketResponsesItemStruct)
+		value, ok := raw.([]ItemStackResponseInfo)
 		if !ok {
 			return p, fmt.Errorf("field ItemStackResponsePacket.Responses has unexpected decoded type %T", raw)
 		}
@@ -12451,7 +13691,7 @@ func DecodeItemStackResponsePacket(r Decoder) (ItemStackResponsePacket, error) {
 }
 
 type PlayerArmorDamagePacket struct {
-	ArmorSlotAndDamagePairs []PlayerArmorDamagePacketArmorSlotAndDamagePairsItemStruct
+	ArmorSlotAndDamagePairs []ArmorSlotAndDamagePair
 }
 
 func (p *PlayerArmorDamagePacket) Encode(w Encoder) error {
@@ -12468,7 +13708,7 @@ func DecodePlayerArmorDamagePacket(r Decoder) (PlayerArmorDamagePacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]PlayerArmorDamagePacketArmorSlotAndDamagePairsItemStruct)
+		value, ok := raw.([]ArmorSlotAndDamagePair)
 		if !ok {
 			return p, fmt.Errorf("field PlayerArmorDamagePacket.Armor Slot and Damage Pairs has unexpected decoded type %T", raw)
 		}
@@ -12520,9 +13760,9 @@ func DecodeCodeBuilderPacket(r Decoder) (CodeBuilderPacket, error) {
 }
 
 type UpdatePlayerGameTypePacket struct {
-	PlayerGameType StartGamePacketGameTypeEnum
-	TargetPlayer   StartGamePacketEntityIDStruct
-	Tick           MovePlayerPacketTickStruct
+	PlayerGameType EnumsGameType
+	TargetPlayer   ActorUniqueID
+	Tick           PlayerInputTick
 }
 
 func (p *UpdatePlayerGameTypePacket) Encode(w Encoder) error {
@@ -12545,7 +13785,7 @@ func DecodeUpdatePlayerGameTypePacket(r Decoder) (UpdatePlayerGameTypePacket, er
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketGameTypeEnum)
+		value, ok := raw.(EnumsGameType)
 		if !ok {
 			return p, fmt.Errorf("field UpdatePlayerGameTypePacket.Player Game Type has unexpected decoded type %T", raw)
 		}
@@ -12556,7 +13796,7 @@ func DecodeUpdatePlayerGameTypePacket(r Decoder) (UpdatePlayerGameTypePacket, er
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketEntityIDStruct)
+		value, ok := raw.(ActorUniqueID)
 		if !ok {
 			return p, fmt.Errorf("field UpdatePlayerGameTypePacket.Target player has unexpected decoded type %T", raw)
 		}
@@ -12567,7 +13807,7 @@ func DecodeUpdatePlayerGameTypePacket(r Decoder) (UpdatePlayerGameTypePacket, er
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(MovePlayerPacketTickStruct)
+		value, ok := raw.(PlayerInputTick)
 		if !ok {
 			return p, fmt.Errorf("field UpdatePlayerGameTypePacket.Tick has unexpected decoded type %T", raw)
 		}
@@ -12577,7 +13817,7 @@ func DecodeUpdatePlayerGameTypePacket(r Decoder) (UpdatePlayerGameTypePacket, er
 }
 
 type EmoteListPacket struct {
-	RuntimeId     StartGamePacketRuntimeIDStruct
+	RuntimeId     ActorRuntimeID
 	EmotePieceIds [][16]byte
 }
 
@@ -12598,7 +13838,7 @@ func DecodeEmoteListPacket(r Decoder) (EmoteListPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRuntimeIDStruct)
+		value, ok := raw.(ActorRuntimeID)
 		if !ok {
 			return p, fmt.Errorf("field EmoteListPacket.Runtime id has unexpected decoded type %T", raw)
 		}
@@ -12619,8 +13859,8 @@ func DecodeEmoteListPacket(r Decoder) (EmoteListPacket, error) {
 }
 
 type PositionTrackingDBServerBroadcastPacket struct {
-	Action               PositionTrackingDBServerBroadcastPacketActionEnum
-	Id                   PositionTrackingDBServerBroadcastPacketIdStruct
+	Action               EnumsPositionTrackingDBServerBroadcastPacketPayloadAction
+	Id                   PositionTrackingId
 	PositionTrackingData []byte
 }
 
@@ -12644,7 +13884,7 @@ func DecodePositionTrackingDBServerBroadcastPacket(r Decoder) (PositionTrackingD
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(PositionTrackingDBServerBroadcastPacketActionEnum)
+		value, ok := raw.(EnumsPositionTrackingDBServerBroadcastPacketPayloadAction)
 		if !ok {
 			return p, fmt.Errorf("field PositionTrackingDBServerBroadcastPacket.Action has unexpected decoded type %T", raw)
 		}
@@ -12655,7 +13895,7 @@ func DecodePositionTrackingDBServerBroadcastPacket(r Decoder) (PositionTrackingD
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(PositionTrackingDBServerBroadcastPacketIdStruct)
+		value, ok := raw.(PositionTrackingId)
 		if !ok {
 			return p, fmt.Errorf("field PositionTrackingDBServerBroadcastPacket.Id has unexpected decoded type %T", raw)
 		}
@@ -12676,8 +13916,8 @@ func DecodePositionTrackingDBServerBroadcastPacket(r Decoder) (PositionTrackingD
 }
 
 type PositionTrackingDBClientRequestPacket struct {
-	Action PositionTrackingDBClientRequestPacketActionEnum
-	Id     PositionTrackingDBServerBroadcastPacketIdStruct
+	Action EnumsPositionTrackingDBClientRequestPacketPayloadAction
+	Id     PositionTrackingId
 }
 
 func (p *PositionTrackingDBClientRequestPacket) Encode(w Encoder) error {
@@ -12697,7 +13937,7 @@ func DecodePositionTrackingDBClientRequestPacket(r Decoder) (PositionTrackingDBC
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(PositionTrackingDBClientRequestPacketActionEnum)
+		value, ok := raw.(EnumsPositionTrackingDBClientRequestPacketPayloadAction)
 		if !ok {
 			return p, fmt.Errorf("field PositionTrackingDBClientRequestPacket.Action has unexpected decoded type %T", raw)
 		}
@@ -12708,7 +13948,7 @@ func DecodePositionTrackingDBClientRequestPacket(r Decoder) (PositionTrackingDBC
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(PositionTrackingDBServerBroadcastPacketIdStruct)
+		value, ok := raw.(PositionTrackingId)
 		if !ok {
 			return p, fmt.Errorf("field PositionTrackingDBClientRequestPacket.Id has unexpected decoded type %T", raw)
 		}
@@ -12718,7 +13958,7 @@ func DecodePositionTrackingDBClientRequestPacket(r Decoder) (PositionTrackingDBC
 }
 
 type DebugInfoPacket struct {
-	ActorId StartGamePacketEntityIDStruct
+	ActorId ActorUniqueID
 	Data    string
 }
 
@@ -12739,7 +13979,7 @@ func DecodeDebugInfoPacket(r Decoder) (DebugInfoPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketEntityIDStruct)
+		value, ok := raw.(ActorUniqueID)
 		if !ok {
 			return p, fmt.Errorf("field DebugInfoPacket.Actor Id has unexpected decoded type %T", raw)
 		}
@@ -12760,8 +14000,8 @@ func DecodeDebugInfoPacket(r Decoder) (DebugInfoPacket, error) {
 }
 
 type PacketViolationWarningPacket struct {
-	ViolationType     PacketViolationWarningPacketViolationTypeEnum
-	ViolationSeverity PacketViolationWarningPacketViolationSeverityEnum
+	ViolationType     EnumsPacketViolationType
+	ViolationSeverity EnumsPacketViolationSeverity
 	ViolationPacketId int32
 	ViolationContext  string
 }
@@ -12789,7 +14029,7 @@ func DecodePacketViolationWarningPacket(r Decoder) (PacketViolationWarningPacket
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(PacketViolationWarningPacketViolationTypeEnum)
+		value, ok := raw.(EnumsPacketViolationType)
 		if !ok {
 			return p, fmt.Errorf("field PacketViolationWarningPacket.Violation Type has unexpected decoded type %T", raw)
 		}
@@ -12800,7 +14040,7 @@ func DecodePacketViolationWarningPacket(r Decoder) (PacketViolationWarningPacket
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(PacketViolationWarningPacketViolationSeverityEnum)
+		value, ok := raw.(EnumsPacketViolationSeverity)
 		if !ok {
 			return p, fmt.Errorf("field PacketViolationWarningPacket.Violation Severity has unexpected decoded type %T", raw)
 		}
@@ -12832,8 +14072,8 @@ func DecodePacketViolationWarningPacket(r Decoder) (PacketViolationWarningPacket
 }
 
 type MotionPredictionHintsPacket struct {
-	MRuntimeId StartGamePacketRuntimeIDStruct
-	MMotion    StartGamePacketPositionStruct
+	MRuntimeId ActorRuntimeID
+	MMotion    Vec3
 	MOnGround  bool
 }
 
@@ -12857,7 +14097,7 @@ func DecodeMotionPredictionHintsPacket(r Decoder) (MotionPredictionHintsPacket, 
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRuntimeIDStruct)
+		value, ok := raw.(ActorRuntimeID)
 		if !ok {
 			return p, fmt.Errorf("field MotionPredictionHintsPacket.mRuntimeId has unexpected decoded type %T", raw)
 		}
@@ -12868,7 +14108,7 @@ func DecodeMotionPredictionHintsPacket(r Decoder) (MotionPredictionHintsPacket, 
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketPositionStruct)
+		value, ok := raw.(Vec3)
 		if !ok {
 			return p, fmt.Errorf("field MotionPredictionHintsPacket.mMotion has unexpected decoded type %T", raw)
 		}
@@ -12895,7 +14135,7 @@ type AnimateEntityPacket struct {
 	MStopExpressionVersion int32
 	MController            string
 	MBlendOutTime          float32
-	MRuntimeIds            []StartGamePacketRuntimeIDStruct
+	MRuntimeIds            []ActorRuntimeID
 }
 
 func (p *AnimateEntityPacket) Encode(w Encoder) error {
@@ -12996,7 +14236,7 @@ func DecodeAnimateEntityPacket(r Decoder) (AnimateEntityPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]StartGamePacketRuntimeIDStruct)
+		value, ok := raw.([]ActorRuntimeID)
 		if !ok {
 			return p, fmt.Errorf("field AnimateEntityPacket.mRuntimeIds has unexpected decoded type %T", raw)
 		}
@@ -13008,8 +14248,8 @@ func DecodeAnimateEntityPacket(r Decoder) (AnimateEntityPacket, error) {
 type CameraShakePacket struct {
 	Intensity   float32
 	Seconds     float32
-	ShakeType   CameraShakePacketShakeTypeEnum
-	ShakeAction CameraShakePacketShakeActionEnum
+	ShakeType   EnumsCameraShakeType
+	ShakeAction EnumsCameraShakeAction
 }
 
 func (p *CameraShakePacket) Encode(w Encoder) error {
@@ -13057,7 +14297,7 @@ func DecodeCameraShakePacket(r Decoder) (CameraShakePacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(CameraShakePacketShakeTypeEnum)
+		value, ok := raw.(EnumsCameraShakeType)
 		if !ok {
 			return p, fmt.Errorf("field CameraShakePacket.Shake Type has unexpected decoded type %T", raw)
 		}
@@ -13068,7 +14308,7 @@ func DecodeCameraShakePacket(r Decoder) (CameraShakePacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(CameraShakePacketShakeActionEnum)
+		value, ok := raw.(EnumsCameraShakeAction)
 		if !ok {
 			return p, fmt.Errorf("field CameraShakePacket.Shake Action has unexpected decoded type %T", raw)
 		}
@@ -13105,13 +14345,13 @@ func DecodePlayerFogPacket(r Decoder) (PlayerFogPacket, error) {
 }
 
 type CorrectPlayerMovePredictionPacket struct {
-	PredictionType         CorrectPlayerMovePredictionPacketPredictionTypeEnum
-	Pos                    StartGamePacketPositionStruct
-	PosDelta               StartGamePacketPositionStruct
-	Rotation               StartGamePacketRotationStruct
+	PredictionType         EnumsRewindType
+	Pos                    Vec3
+	PosDelta               Vec3
+	Rotation               Vec2
 	VehicleAngularVelocity *float32
 	OnGround               bool
-	Tick                   MovePlayerPacketTickStruct
+	Tick                   PlayerInputTick
 }
 
 func (p *CorrectPlayerMovePredictionPacket) Encode(w Encoder) error {
@@ -13146,7 +14386,7 @@ func DecodeCorrectPlayerMovePredictionPacket(r Decoder) (CorrectPlayerMovePredic
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(CorrectPlayerMovePredictionPacketPredictionTypeEnum)
+		value, ok := raw.(EnumsRewindType)
 		if !ok {
 			return p, fmt.Errorf("field CorrectPlayerMovePredictionPacket.PredictionType has unexpected decoded type %T", raw)
 		}
@@ -13157,7 +14397,7 @@ func DecodeCorrectPlayerMovePredictionPacket(r Decoder) (CorrectPlayerMovePredic
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketPositionStruct)
+		value, ok := raw.(Vec3)
 		if !ok {
 			return p, fmt.Errorf("field CorrectPlayerMovePredictionPacket.Pos has unexpected decoded type %T", raw)
 		}
@@ -13168,7 +14408,7 @@ func DecodeCorrectPlayerMovePredictionPacket(r Decoder) (CorrectPlayerMovePredic
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketPositionStruct)
+		value, ok := raw.(Vec3)
 		if !ok {
 			return p, fmt.Errorf("field CorrectPlayerMovePredictionPacket.Pos Delta has unexpected decoded type %T", raw)
 		}
@@ -13179,7 +14419,7 @@ func DecodeCorrectPlayerMovePredictionPacket(r Decoder) (CorrectPlayerMovePredic
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRotationStruct)
+		value, ok := raw.(Vec2)
 		if !ok {
 			return p, fmt.Errorf("field CorrectPlayerMovePredictionPacket.Rotation has unexpected decoded type %T", raw)
 		}
@@ -13212,7 +14452,7 @@ func DecodeCorrectPlayerMovePredictionPacket(r Decoder) (CorrectPlayerMovePredic
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(MovePlayerPacketTickStruct)
+		value, ok := raw.(PlayerInputTick)
 		if !ok {
 			return p, fmt.Errorf("field CorrectPlayerMovePredictionPacket.Tick has unexpected decoded type %T", raw)
 		}
@@ -13222,7 +14462,7 @@ func DecodeCorrectPlayerMovePredictionPacket(r Decoder) (CorrectPlayerMovePredic
 }
 
 type ItemRegistryPacket struct {
-	ItemData []ItemRegistryPacketItemDataItemStruct
+	ItemData []ItemData
 }
 
 func (p *ItemRegistryPacket) Encode(w Encoder) error {
@@ -13239,7 +14479,7 @@ func DecodeItemRegistryPacket(r Decoder) (ItemRegistryPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]ItemRegistryPacketItemDataItemStruct)
+		value, ok := raw.([]ItemData)
 		if !ok {
 			return p, fmt.Errorf("field ItemRegistryPacket.Item Data has unexpected decoded type %T", raw)
 		}
@@ -13250,7 +14490,7 @@ func DecodeItemRegistryPacket(r Decoder) (ItemRegistryPacket, error) {
 
 type ClientboundDebugRendererPacket struct {
 	Type            string
-	DebugMarkerData *ClientboundDebugRendererPacketDebugMarkerDataValueStruct
+	DebugMarkerData *ClientboundDebugRendererPacketPayloadDebugMarkerData
 }
 
 func (p *ClientboundDebugRendererPacket) Encode(w Encoder) error {
@@ -13281,7 +14521,7 @@ func DecodeClientboundDebugRendererPacket(r Decoder) (ClientboundDebugRendererPa
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(*ClientboundDebugRendererPacketDebugMarkerDataValueStruct)
+		value, ok := raw.(*ClientboundDebugRendererPacketPayloadDebugMarkerData)
 		if !ok {
 			return p, fmt.Errorf("field ClientboundDebugRendererPacket.DebugMarkerData has unexpected decoded type %T", raw)
 		}
@@ -13318,13 +14558,13 @@ func DecodeSyncActorPropertyPacket(r Decoder) (SyncActorPropertyPacket, error) {
 }
 
 type AddVolumeEntityPacket struct {
-	EntityNetworkId AddVolumeEntityPacketEntityNetworkIdStruct
+	EntityNetworkId EntityNetId
 	Components      []byte
 	JSONIdentifier  string
 	InstanceName    string
-	MinBounds       StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct
-	MaxBounds       StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct
-	DimensionType   SetSpawnPositionPacketDimensionTypeStruct
+	MinBounds       BlockPos
+	MaxBounds       BlockPos
+	DimensionType   DimensionType
 	EngineVersion   string
 }
 
@@ -13363,7 +14603,7 @@ func DecodeAddVolumeEntityPacket(r Decoder) (AddVolumeEntityPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(AddVolumeEntityPacketEntityNetworkIdStruct)
+		value, ok := raw.(EntityNetId)
 		if !ok {
 			return p, fmt.Errorf("field AddVolumeEntityPacket.Entity Network Id has unexpected decoded type %T", raw)
 		}
@@ -13407,7 +14647,7 @@ func DecodeAddVolumeEntityPacket(r Decoder) (AddVolumeEntityPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct)
+		value, ok := raw.(BlockPos)
 		if !ok {
 			return p, fmt.Errorf("field AddVolumeEntityPacket.Min Bounds has unexpected decoded type %T", raw)
 		}
@@ -13418,7 +14658,7 @@ func DecodeAddVolumeEntityPacket(r Decoder) (AddVolumeEntityPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct)
+		value, ok := raw.(BlockPos)
 		if !ok {
 			return p, fmt.Errorf("field AddVolumeEntityPacket.Max Bounds has unexpected decoded type %T", raw)
 		}
@@ -13429,7 +14669,7 @@ func DecodeAddVolumeEntityPacket(r Decoder) (AddVolumeEntityPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(SetSpawnPositionPacketDimensionTypeStruct)
+		value, ok := raw.(DimensionType)
 		if !ok {
 			return p, fmt.Errorf("field AddVolumeEntityPacket.Dimension Type has unexpected decoded type %T", raw)
 		}
@@ -13450,8 +14690,8 @@ func DecodeAddVolumeEntityPacket(r Decoder) (AddVolumeEntityPacket, error) {
 }
 
 type RemoveVolumeEntityPacket struct {
-	EntityNetworkId AddVolumeEntityPacketEntityNetworkIdStruct
-	DimensionType   SetSpawnPositionPacketDimensionTypeStruct
+	EntityNetworkId EntityNetId
+	DimensionType   DimensionType
 }
 
 func (p *RemoveVolumeEntityPacket) Encode(w Encoder) error {
@@ -13471,7 +14711,7 @@ func DecodeRemoveVolumeEntityPacket(r Decoder) (RemoveVolumeEntityPacket, error)
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(AddVolumeEntityPacketEntityNetworkIdStruct)
+		value, ok := raw.(EntityNetId)
 		if !ok {
 			return p, fmt.Errorf("field RemoveVolumeEntityPacket.Entity Network Id has unexpected decoded type %T", raw)
 		}
@@ -13482,7 +14722,7 @@ func DecodeRemoveVolumeEntityPacket(r Decoder) (RemoveVolumeEntityPacket, error)
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(SetSpawnPositionPacketDimensionTypeStruct)
+		value, ok := raw.(DimensionType)
 		if !ok {
 			return p, fmt.Errorf("field RemoveVolumeEntityPacket.Dimension Type has unexpected decoded type %T", raw)
 		}
@@ -13492,7 +14732,7 @@ func DecodeRemoveVolumeEntityPacket(r Decoder) (RemoveVolumeEntityPacket, error)
 }
 
 type SimulationTypePacket struct {
-	SimType SimulationTypePacketSimTypeEnum
+	SimType EnumsSimulationType
 }
 
 func (p *SimulationTypePacket) Encode(w Encoder) error {
@@ -13509,7 +14749,7 @@ func DecodeSimulationTypePacket(r Decoder) (SimulationTypePacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(SimulationTypePacketSimTypeEnum)
+		value, ok := raw.(EnumsSimulationType)
 		if !ok {
 			return p, fmt.Errorf("field SimulationTypePacket.Sim Type has unexpected decoded type %T", raw)
 		}
@@ -13520,7 +14760,7 @@ func DecodeSimulationTypePacket(r Decoder) (SimulationTypePacket, error) {
 
 type NpcDialoguePacket struct {
 	NpcIdRawId            uint64
-	NpcDialogueActionType NpcDialoguePacketNpcDialogueActionTypeEnum
+	NpcDialogueActionType EnumsNpcDialoguePacketPayloadNpcDialogueActionType
 	Dialogue              string
 	SceneName             string
 	NpcName               string
@@ -13567,7 +14807,7 @@ func DecodeNpcDialoguePacket(r Decoder) (NpcDialoguePacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(NpcDialoguePacketNpcDialogueActionTypeEnum)
+		value, ok := raw.(EnumsNpcDialoguePacketPayloadNpcDialogueActionType)
 		if !ok {
 			return p, fmt.Errorf("field NpcDialoguePacket.Npc Dialogue Action Type has unexpected decoded type %T", raw)
 		}
@@ -13621,7 +14861,7 @@ func DecodeNpcDialoguePacket(r Decoder) (NpcDialoguePacket, error) {
 }
 
 type EduUriResourcePacket struct {
-	EduSharedURIResource StartGamePacketSettingsStructEduSharedUriResourceStruct
+	EduSharedURIResource EduSharedUriResource
 }
 
 func (p *EduUriResourcePacket) Encode(w Encoder) error {
@@ -13638,7 +14878,7 @@ func DecodeEduUriResourcePacket(r Decoder) (EduUriResourcePacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketSettingsStructEduSharedUriResourceStruct)
+		value, ok := raw.(EduSharedUriResource)
 		if !ok {
 			return p, fmt.Errorf("field EduUriResourcePacket.Edu Shared URI Resource has unexpected decoded type %T", raw)
 		}
@@ -13705,8 +14945,8 @@ func DecodeCreatePhotoPacket(r Decoder) (CreatePhotoPacket, error) {
 }
 
 type UpdateSubChunkBlocksPacket struct {
-	SubChunkBlockPosition StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct
-	BlocksChanged         UpdateSubChunkBlocksPacketBlocksChangedStruct
+	SubChunkBlockPosition BlockPos
+	BlocksChanged         UpdateSubChunkBlocksChangedInfo
 }
 
 func (p *UpdateSubChunkBlocksPacket) Encode(w Encoder) error {
@@ -13726,7 +14966,7 @@ func DecodeUpdateSubChunkBlocksPacket(r Decoder) (UpdateSubChunkBlocksPacket, er
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct)
+		value, ok := raw.(BlockPos)
 		if !ok {
 			return p, fmt.Errorf("field UpdateSubChunkBlocksPacket.Sub Chunk Block Position has unexpected decoded type %T", raw)
 		}
@@ -13737,7 +14977,7 @@ func DecodeUpdateSubChunkBlocksPacket(r Decoder) (UpdateSubChunkBlocksPacket, er
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(UpdateSubChunkBlocksPacketBlocksChangedStruct)
+		value, ok := raw.(UpdateSubChunkBlocksChangedInfo)
 		if !ok {
 			return p, fmt.Errorf("field UpdateSubChunkBlocksPacket.Blocks Changed has unexpected decoded type %T", raw)
 		}
@@ -13748,9 +14988,9 @@ func DecodeUpdateSubChunkBlocksPacket(r Decoder) (UpdateSubChunkBlocksPacket, er
 
 type SubChunkPacket struct {
 	CacheEnabled  bool
-	DimensionType SetSpawnPositionPacketDimensionTypeStruct
-	CenterPos     SubChunkPacketCenterPosStruct
-	SubChunkData  []SubChunkPacketSubChunkDataItemStruct
+	DimensionType DimensionType
+	CenterPos     SubChunkPos
+	SubChunkData  []SubChunkPacketPayloadSubChunkPacketData
 }
 
 func (p *SubChunkPacket) Encode(w Encoder) error {
@@ -13787,7 +15027,7 @@ func DecodeSubChunkPacket(r Decoder) (SubChunkPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(SetSpawnPositionPacketDimensionTypeStruct)
+		value, ok := raw.(DimensionType)
 		if !ok {
 			return p, fmt.Errorf("field SubChunkPacket.Dimension Type has unexpected decoded type %T", raw)
 		}
@@ -13798,7 +15038,7 @@ func DecodeSubChunkPacket(r Decoder) (SubChunkPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(SubChunkPacketCenterPosStruct)
+		value, ok := raw.(SubChunkPos)
 		if !ok {
 			return p, fmt.Errorf("field SubChunkPacket.Center Pos has unexpected decoded type %T", raw)
 		}
@@ -13809,7 +15049,7 @@ func DecodeSubChunkPacket(r Decoder) (SubChunkPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]SubChunkPacketSubChunkDataItemStruct)
+		value, ok := raw.([]SubChunkPacketPayloadSubChunkPacketData)
 		if !ok {
 			return p, fmt.Errorf("field SubChunkPacket.SubChunk Data has unexpected decoded type %T", raw)
 		}
@@ -13819,9 +15059,9 @@ func DecodeSubChunkPacket(r Decoder) (SubChunkPacket, error) {
 }
 
 type SubChunkRequestPacket struct {
-	DimensionType              SetSpawnPositionPacketDimensionTypeStruct
-	SubChunkPositionOffsetList []SubChunkPacketSubChunkDataItemStructSubChunkPosOffsetStruct
-	CenterPos                  SubChunkPacketCenterPosStruct
+	DimensionType              DimensionType
+	SubChunkPositionOffsetList []SubChunkPacketPayloadSubChunkPosOffset
+	CenterPos                  SubChunkPos
 }
 
 func (p *SubChunkRequestPacket) Encode(w Encoder) error {
@@ -13844,7 +15084,7 @@ func DecodeSubChunkRequestPacket(r Decoder) (SubChunkRequestPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(SetSpawnPositionPacketDimensionTypeStruct)
+		value, ok := raw.(DimensionType)
 		if !ok {
 			return p, fmt.Errorf("field SubChunkRequestPacket.Dimension Type has unexpected decoded type %T", raw)
 		}
@@ -13855,7 +15095,7 @@ func DecodeSubChunkRequestPacket(r Decoder) (SubChunkRequestPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]SubChunkPacketSubChunkDataItemStructSubChunkPosOffsetStruct)
+		value, ok := raw.([]SubChunkPacketPayloadSubChunkPosOffset)
 		if !ok {
 			return p, fmt.Errorf("field SubChunkRequestPacket.SubChunk Position Offset List has unexpected decoded type %T", raw)
 		}
@@ -13866,7 +15106,7 @@ func DecodeSubChunkRequestPacket(r Decoder) (SubChunkRequestPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(SubChunkPacketCenterPosStruct)
+		value, ok := raw.(SubChunkPos)
 		if !ok {
 			return p, fmt.Errorf("field SubChunkRequestPacket.Center Pos has unexpected decoded type %T", raw)
 		}
@@ -13960,9 +15200,9 @@ func DecodeScriptMessagePacket(r Decoder) (ScriptMessagePacket, error) {
 }
 
 type CodeBuilderSourcePacket struct {
-	Operation  CodeBuilderSourcePacketOperationEnum
-	Category   CodeBuilderSourcePacketCategoryEnum
-	CodeStatus CodeBuilderSourcePacketCodeStatusEnum
+	Operation  EnumsCodeBuilderStorageQueryOptionsOperation
+	Category   EnumsCodeBuilderStorageQueryOptionsCategory
+	CodeStatus EnumsCodeBuilderExecutionStateCodeStatus
 }
 
 func (p *CodeBuilderSourcePacket) Encode(w Encoder) error {
@@ -13985,7 +15225,7 @@ func DecodeCodeBuilderSourcePacket(r Decoder) (CodeBuilderSourcePacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(CodeBuilderSourcePacketOperationEnum)
+		value, ok := raw.(EnumsCodeBuilderStorageQueryOptionsOperation)
 		if !ok {
 			return p, fmt.Errorf("field CodeBuilderSourcePacket.Operation has unexpected decoded type %T", raw)
 		}
@@ -13996,7 +15236,7 @@ func DecodeCodeBuilderSourcePacket(r Decoder) (CodeBuilderSourcePacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(CodeBuilderSourcePacketCategoryEnum)
+		value, ok := raw.(EnumsCodeBuilderStorageQueryOptionsCategory)
 		if !ok {
 			return p, fmt.Errorf("field CodeBuilderSourcePacket.Category has unexpected decoded type %T", raw)
 		}
@@ -14007,7 +15247,7 @@ func DecodeCodeBuilderSourcePacket(r Decoder) (CodeBuilderSourcePacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(CodeBuilderSourcePacketCodeStatusEnum)
+		value, ok := raw.(EnumsCodeBuilderExecutionStateCodeStatus)
 		if !ok {
 			return p, fmt.Errorf("field CodeBuilderSourcePacket.CodeStatus has unexpected decoded type %T", raw)
 		}
@@ -14044,7 +15284,7 @@ func DecodeTickingAreasLoadStatusPacket(r Decoder) (TickingAreasLoadStatusPacket
 }
 
 type DimensionDataPacket struct {
-	Definitions []DimensionDataPacketDefinitionsEntry
+	Definitions []OrderedEntry[string, DimensionDefinitionGroupDimensionDefinition]
 }
 
 func (p *DimensionDataPacket) Encode(w Encoder) error {
@@ -14061,7 +15301,7 @@ func DecodeDimensionDataPacket(r Decoder) (DimensionDataPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]DimensionDataPacketDefinitionsEntry)
+		value, ok := raw.([]OrderedEntry[string, DimensionDefinitionGroupDimensionDefinition])
 		if !ok {
 			return p, fmt.Errorf("field DimensionDataPacket.Definitions has unexpected decoded type %T", raw)
 		}
@@ -14072,7 +15312,7 @@ func DecodeDimensionDataPacket(r Decoder) (DimensionDataPacket, error) {
 
 type AgentActionEventPacket struct {
 	RequestId string
-	Action    AgentActionEventPacketActionEnum
+	Action    EnumsAgentActionType
 	Response  string
 }
 
@@ -14107,7 +15347,7 @@ func DecodeAgentActionEventPacket(r Decoder) (AgentActionEventPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(AgentActionEventPacketActionEnum)
+		value, ok := raw.(EnumsAgentActionType)
 		if !ok {
 			return p, fmt.Errorf("field AgentActionEventPacket.Action has unexpected decoded type %T", raw)
 		}
@@ -14128,7 +15368,7 @@ func DecodeAgentActionEventPacket(r Decoder) (AgentActionEventPacket, error) {
 }
 
 type ChangeMobPropertyPacket struct {
-	ActorId              StartGamePacketEntityIDStruct
+	ActorId              ActorUniqueID
 	PropertyName         string
 	BoolComponentValue   bool
 	StringComponentValue string
@@ -14165,7 +15405,7 @@ func DecodeChangeMobPropertyPacket(r Decoder) (ChangeMobPropertyPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketEntityIDStruct)
+		value, ok := raw.(ActorUniqueID)
 		if !ok {
 			return p, fmt.Errorf("field ChangeMobPropertyPacket.Actor Id has unexpected decoded type %T", raw)
 		}
@@ -14288,7 +15528,7 @@ func DecodeLessonProgressPacket(r Decoder) (LessonProgressPacket, error) {
 
 type RequestAbilityPacket struct {
 	Ability   int32
-	ValueType RequestAbilityPacketValueTypeEnum
+	ValueType EnumsRequestAbilityPacketPayloadType
 	Bool      bool
 	Float     float32
 }
@@ -14327,7 +15567,7 @@ func DecodeRequestAbilityPacket(r Decoder) (RequestAbilityPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(RequestAbilityPacketValueTypeEnum)
+		value, ok := raw.(EnumsRequestAbilityPacketPayloadType)
 		if !ok {
 			return p, fmt.Errorf("field RequestAbilityPacket.Value Type has unexpected decoded type %T", raw)
 		}
@@ -14458,7 +15698,7 @@ func DecodeToastRequestPacket(r Decoder) (ToastRequestPacket, error) {
 }
 
 type UpdateAbilitiesPacket struct {
-	Data AddPlayerPacketAbilitiesDataStruct
+	Data SerializedAbilitiesData
 }
 
 func (p *UpdateAbilitiesPacket) Encode(w Encoder) error {
@@ -14475,7 +15715,7 @@ func DecodeUpdateAbilitiesPacket(r Decoder) (UpdateAbilitiesPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(AddPlayerPacketAbilitiesDataStruct)
+		value, ok := raw.(SerializedAbilitiesData)
 		if !ok {
 			return p, fmt.Errorf("field UpdateAbilitiesPacket.Data has unexpected decoded type %T", raw)
 		}
@@ -14485,7 +15725,7 @@ func DecodeUpdateAbilitiesPacket(r Decoder) (UpdateAbilitiesPacket, error) {
 }
 
 type UpdateAdventureSettingsPacket struct {
-	AdventureSettings UpdateAdventureSettingsPacketAdventureSettingsStruct
+	AdventureSettings AdventureSettings
 }
 
 func (p *UpdateAdventureSettingsPacket) Encode(w Encoder) error {
@@ -14502,7 +15742,7 @@ func DecodeUpdateAdventureSettingsPacket(r Decoder) (UpdateAdventureSettingsPack
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(UpdateAdventureSettingsPacketAdventureSettingsStruct)
+		value, ok := raw.(AdventureSettings)
 		if !ok {
 			return p, fmt.Errorf("field UpdateAdventureSettingsPacket.Adventure Settings has unexpected decoded type %T", raw)
 		}
@@ -14611,7 +15851,7 @@ func DecodeEditorNetworkPacket(r Decoder) (EditorNetworkPacket, error) {
 }
 
 type FeatureRegistryPacket struct {
-	FeaturesDataList []FeatureRegistryPacketFeaturesDataListItemStruct
+	FeaturesDataList []FeatureRegistryFeatureBinaryJsonFormat
 }
 
 func (p *FeatureRegistryPacket) Encode(w Encoder) error {
@@ -14628,7 +15868,7 @@ func DecodeFeatureRegistryPacket(r Decoder) (FeatureRegistryPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]FeatureRegistryPacketFeaturesDataListItemStruct)
+		value, ok := raw.([]FeatureRegistryFeatureBinaryJsonFormat)
 		if !ok {
 			return p, fmt.Errorf("field FeatureRegistryPacket.FeaturesDataList has unexpected decoded type %T", raw)
 		}
@@ -14709,9 +15949,9 @@ func DecodeRequestNetworkSettingsPacket(r Decoder) (RequestNetworkSettingsPacket
 type GameTestRequestPacket struct {
 	MaxTestsPerBatch int32
 	RepeatCount      int32
-	Rotation         StructureBlockUpdatePacketStructureDataStructStructureSettingsStructRotationEnum
+	Rotation         EnumsRotation
 	StopOnFailure    bool
-	TestPos          StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct
+	TestPos          BlockPos
 	TestsPerRow      int32
 	TestName         string
 }
@@ -14770,7 +16010,7 @@ func DecodeGameTestRequestPacket(r Decoder) (GameTestRequestPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StructureBlockUpdatePacketStructureDataStructStructureSettingsStructRotationEnum)
+		value, ok := raw.(EnumsRotation)
 		if !ok {
 			return p, fmt.Errorf("field GameTestRequestPacket.Rotation has unexpected decoded type %T", raw)
 		}
@@ -14792,7 +16032,7 @@ func DecodeGameTestRequestPacket(r Decoder) (GameTestRequestPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct)
+		value, ok := raw.(BlockPos)
 		if !ok {
 			return p, fmt.Errorf("field GameTestRequestPacket.TestPos has unexpected decoded type %T", raw)
 		}
@@ -14908,7 +16148,7 @@ func DecodeUpdateClientInputLocksPacket(r Decoder) (UpdateClientInputLocksPacket
 }
 
 type CameraPresetsPacket struct {
-	CameraPresets CameraPresetsPacketCameraPresetsStruct
+	CameraPresets CameraPresets
 }
 
 func (p *CameraPresetsPacket) Encode(w Encoder) error {
@@ -14925,7 +16165,7 @@ func DecodeCameraPresetsPacket(r Decoder) (CameraPresetsPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(CameraPresetsPacketCameraPresetsStruct)
+		value, ok := raw.(CameraPresets)
 		if !ok {
 			return p, fmt.Errorf("field CameraPresetsPacket.Camera Presets has unexpected decoded type %T", raw)
 		}
@@ -14935,7 +16175,7 @@ func DecodeCameraPresetsPacket(r Decoder) (CameraPresetsPacket, error) {
 }
 
 type UnlockedRecipesPacket struct {
-	PacketType          UnlockedRecipesPacketPacketTypeEnum
+	PacketType          EnumsUnlockedRecipesPacketPayloadPacketType
 	UnlockedRecipesList []string
 }
 
@@ -14956,7 +16196,7 @@ func DecodeUnlockedRecipesPacket(r Decoder) (UnlockedRecipesPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(UnlockedRecipesPacketPacketTypeEnum)
+		value, ok := raw.(EnumsUnlockedRecipesPacketPayloadPacketType)
 		if !ok {
 			return p, fmt.Errorf("field UnlockedRecipesPacket.Packet Type has unexpected decoded type %T", raw)
 		}
@@ -14977,7 +16217,7 @@ func DecodeUnlockedRecipesPacket(r Decoder) (UnlockedRecipesPacket, error) {
 }
 
 type CameraInstructionPacket struct {
-	CameraInstruction CameraInstructionPacketCameraInstructionStruct
+	CameraInstruction CameraInstruction
 }
 
 func (p *CameraInstructionPacket) Encode(w Encoder) error {
@@ -14994,7 +16234,7 @@ func DecodeCameraInstructionPacket(r Decoder) (CameraInstructionPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(CameraInstructionPacketCameraInstructionStruct)
+		value, ok := raw.(CameraInstruction)
 		if !ok {
 			return p, fmt.Errorf("field CameraInstructionPacket.Camera Instruction has unexpected decoded type %T", raw)
 		}
@@ -15004,8 +16244,8 @@ func DecodeCameraInstructionPacket(r Decoder) (CameraInstructionPacket, error) {
 }
 
 type TrimDataPacket struct {
-	TrimPatternList  []TrimDataPacketTrimPatternListItemStruct
-	TrimMaterialList []TrimDataPacketTrimMaterialListItemStruct
+	TrimPatternList  []TrimPattern
+	TrimMaterialList []TrimMaterial
 }
 
 func (p *TrimDataPacket) Encode(w Encoder) error {
@@ -15025,7 +16265,7 @@ func DecodeTrimDataPacket(r Decoder) (TrimDataPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]TrimDataPacketTrimPatternListItemStruct)
+		value, ok := raw.([]TrimPattern)
 		if !ok {
 			return p, fmt.Errorf("field TrimDataPacket.TrimPattern List has unexpected decoded type %T", raw)
 		}
@@ -15036,7 +16276,7 @@ func DecodeTrimDataPacket(r Decoder) (TrimDataPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]TrimDataPacketTrimMaterialListItemStruct)
+		value, ok := raw.([]TrimMaterial)
 		if !ok {
 			return p, fmt.Errorf("field TrimDataPacket.TrimMaterial List has unexpected decoded type %T", raw)
 		}
@@ -15046,7 +16286,7 @@ func DecodeTrimDataPacket(r Decoder) (TrimDataPacket, error) {
 }
 
 type OpenSignPacket struct {
-	Pos         StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct
+	Pos         BlockPos
 	IsFrontSide bool
 }
 
@@ -15067,7 +16307,7 @@ func DecodeOpenSignPacket(r Decoder) (OpenSignPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketSettingsStructDefaultSpawnBlockPositionStruct)
+		value, ok := raw.(BlockPos)
 		if !ok {
 			return p, fmt.Errorf("field OpenSignPacket.Pos has unexpected decoded type %T", raw)
 		}
@@ -15088,8 +16328,8 @@ func DecodeOpenSignPacket(r Decoder) (OpenSignPacket, error) {
 }
 
 type AgentAnimationPacket struct {
-	AgentAnimation AgentAnimationPacketAgentAnimationEnum
-	RuntimeId      StartGamePacketRuntimeIDStruct
+	AgentAnimation EnumsAgentAnimation
+	RuntimeId      ActorRuntimeID
 }
 
 func (p *AgentAnimationPacket) Encode(w Encoder) error {
@@ -15109,7 +16349,7 @@ func DecodeAgentAnimationPacket(r Decoder) (AgentAnimationPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(AgentAnimationPacketAgentAnimationEnum)
+		value, ok := raw.(EnumsAgentAnimation)
 		if !ok {
 			return p, fmt.Errorf("field AgentAnimationPacket.Agent Animation has unexpected decoded type %T", raw)
 		}
@@ -15120,12 +16360,24 @@ func DecodeAgentAnimationPacket(r Decoder) (AgentAnimationPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRuntimeIDStruct)
+		value, ok := raw.(ActorRuntimeID)
 		if !ok {
 			return p, fmt.Errorf("field AgentAnimationPacket.Runtime Id has unexpected decoded type %T", raw)
 		}
 		p.RuntimeId = value
 	}
+	return p, nil
+}
+
+type RefreshEntitlementsPacket struct {
+}
+
+func (p *RefreshEntitlementsPacket) Encode(w Encoder) error {
+	return nil
+}
+
+func DecodeRefreshEntitlementsPacket(r Decoder) (RefreshEntitlementsPacket, error) {
+	var p RefreshEntitlementsPacket
 	return p, nil
 }
 
@@ -15217,7 +16469,7 @@ func DecodePlayerToggleCrafterSlotRequestPacket(r Decoder) (PlayerToggleCrafterS
 }
 
 type SetPlayerInventoryOptionsPacket struct {
-	InventoryOptions SetPlayerInventoryOptionsPacketInventoryOptionsStruct
+	InventoryOptions InventoryOptions
 }
 
 func (p *SetPlayerInventoryOptionsPacket) Encode(w Encoder) error {
@@ -15234,7 +16486,7 @@ func DecodeSetPlayerInventoryOptionsPacket(r Decoder) (SetPlayerInventoryOptions
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(SetPlayerInventoryOptionsPacketInventoryOptionsStruct)
+		value, ok := raw.(InventoryOptions)
 		if !ok {
 			return p, fmt.Errorf("field SetPlayerInventoryOptionsPacket.Inventory Options has unexpected decoded type %T", raw)
 		}
@@ -15244,8 +16496,8 @@ func DecodeSetPlayerInventoryOptionsPacket(r Decoder) (SetPlayerInventoryOptions
 }
 
 type SetHudPacket struct {
-	HudElement []SetHudPacketHudElementItemEnum
-	HudVisible SetHudPacketHudVisibleEnum
+	HudElement []EnumsHudElement
+	HudVisible EnumsHudVisibility
 }
 
 func (p *SetHudPacket) Encode(w Encoder) error {
@@ -15265,7 +16517,7 @@ func DecodeSetHudPacket(r Decoder) (SetHudPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]SetHudPacketHudElementItemEnum)
+		value, ok := raw.([]EnumsHudElement)
 		if !ok {
 			return p, fmt.Errorf("field SetHudPacket.Hud Element has unexpected decoded type %T", raw)
 		}
@@ -15276,7 +16528,7 @@ func DecodeSetHudPacket(r Decoder) (SetHudPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(SetHudPacketHudVisibleEnum)
+		value, ok := raw.(EnumsHudVisibility)
 		if !ok {
 			return p, fmt.Errorf("field SetHudPacket.Hud Visible has unexpected decoded type %T", raw)
 		}
@@ -15312,8 +16564,20 @@ func DecodeAwardAchievementPacket(r Decoder) (AwardAchievementPacket, error) {
 	return p, nil
 }
 
+type ClientboundCloseFormPacket struct {
+}
+
+func (p *ClientboundCloseFormPacket) Encode(w Encoder) error {
+	return nil
+}
+
+func DecodeClientboundCloseFormPacket(r Decoder) (ClientboundCloseFormPacket, error) {
+	var p ClientboundCloseFormPacket
+	return p, nil
+}
+
 type ServerboundLoadingScreenPacket struct {
-	LoadingScreenPacketType ServerboundLoadingScreenPacketLoadingScreenPacketTypeEnum
+	LoadingScreenPacketType EnumsServerboundLoadingScreenPacketType
 	LoadingScreenId         *uint32
 }
 
@@ -15334,7 +16598,7 @@ func DecodeServerboundLoadingScreenPacket(r Decoder) (ServerboundLoadingScreenPa
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(ServerboundLoadingScreenPacketLoadingScreenPacketTypeEnum)
+		value, ok := raw.(EnumsServerboundLoadingScreenPacketType)
 		if !ok {
 			return p, fmt.Errorf("field ServerboundLoadingScreenPacket.Loading Screen Packet Type has unexpected decoded type %T", raw)
 		}
@@ -15418,11 +16682,11 @@ type ServerboundDiagnosticsPacket struct {
 	AvgEndFrameTimeMS         float32
 	AvgRemainderTimePercent   float32
 	AvgUnaccountedTimePercent float32
-	MemoryCategoryValues      []ServerboundDiagnosticsPacketMemoryCategoryValuesItemStruct
-	EntityDiagnostics         []ServerboundDiagnosticsPacketEntityDiagnosticsItemStruct
-	SystemDiagnostics         []ServerboundDiagnosticsPacketSystemDiagnosticsItemStruct
-	SystemCategories          *[]ServerboundDiagnosticsPacketSystemCategoriesValueItemStruct
-	WhiskerScopes             []ServerboundDiagnosticsPacketWhiskerScopesItemStruct
+	MemoryCategoryValues      []MemoryMemoryCategoryCounter
+	EntityDiagnostics         []ECSProfilingDiagnosticsEntityDiagnosticTimingInfo
+	SystemDiagnostics         []ECSProfilingDiagnosticsSystemDiagnosticTimingInfo
+	SystemCategories          *[]ECSProfilingDiagnosticsSystemCategory
+	WhiskerScopes             []BedrockProfileWhiskerDiagnosticsScopeDataSummary
 }
 
 func (p *ServerboundDiagnosticsPacket) Encode(w Encoder) error {
@@ -15577,7 +16841,7 @@ func DecodeServerboundDiagnosticsPacket(r Decoder) (ServerboundDiagnosticsPacket
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]ServerboundDiagnosticsPacketMemoryCategoryValuesItemStruct)
+		value, ok := raw.([]MemoryMemoryCategoryCounter)
 		if !ok {
 			return p, fmt.Errorf("field ServerboundDiagnosticsPacket.Memory Category Values has unexpected decoded type %T", raw)
 		}
@@ -15588,7 +16852,7 @@ func DecodeServerboundDiagnosticsPacket(r Decoder) (ServerboundDiagnosticsPacket
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]ServerboundDiagnosticsPacketEntityDiagnosticsItemStruct)
+		value, ok := raw.([]ECSProfilingDiagnosticsEntityDiagnosticTimingInfo)
 		if !ok {
 			return p, fmt.Errorf("field ServerboundDiagnosticsPacket.Entity Diagnostics has unexpected decoded type %T", raw)
 		}
@@ -15599,7 +16863,7 @@ func DecodeServerboundDiagnosticsPacket(r Decoder) (ServerboundDiagnosticsPacket
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]ServerboundDiagnosticsPacketSystemDiagnosticsItemStruct)
+		value, ok := raw.([]ECSProfilingDiagnosticsSystemDiagnosticTimingInfo)
 		if !ok {
 			return p, fmt.Errorf("field ServerboundDiagnosticsPacket.System Diagnostics has unexpected decoded type %T", raw)
 		}
@@ -15610,7 +16874,7 @@ func DecodeServerboundDiagnosticsPacket(r Decoder) (ServerboundDiagnosticsPacket
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(*[]ServerboundDiagnosticsPacketSystemCategoriesValueItemStruct)
+		value, ok := raw.(*[]ECSProfilingDiagnosticsSystemCategory)
 		if !ok {
 			return p, fmt.Errorf("field ServerboundDiagnosticsPacket.System Categories has unexpected decoded type %T", raw)
 		}
@@ -15621,7 +16885,7 @@ func DecodeServerboundDiagnosticsPacket(r Decoder) (ServerboundDiagnosticsPacket
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]ServerboundDiagnosticsPacketWhiskerScopesItemStruct)
+		value, ok := raw.([]BedrockProfileWhiskerDiagnosticsScopeDataSummary)
 		if !ok {
 			return p, fmt.Errorf("field ServerboundDiagnosticsPacket.Whisker Scopes has unexpected decoded type %T", raw)
 		}
@@ -15632,10 +16896,10 @@ func DecodeServerboundDiagnosticsPacket(r Decoder) (ServerboundDiagnosticsPacket
 
 type CameraAimAssistPacket struct {
 	PresetId        string
-	ViewAngle       StartGamePacketRotationStruct
+	ViewAngle       Vec2
 	Distance        float32
-	TargetMode      CameraAimAssistPacketTargetModeEnum
-	Action          CameraAimAssistPacketActionEnum
+	TargetMode      EnumsCameraAimAssistPacketPayloadTargetMode
+	Action          EnumsCameraAimAssistPacketPayloadAction
 	ShowDebugRender bool
 }
 
@@ -15679,7 +16943,7 @@ func DecodeCameraAimAssistPacket(r Decoder) (CameraAimAssistPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRotationStruct)
+		value, ok := raw.(Vec2)
 		if !ok {
 			return p, fmt.Errorf("field CameraAimAssistPacket.View Angle has unexpected decoded type %T", raw)
 		}
@@ -15701,7 +16965,7 @@ func DecodeCameraAimAssistPacket(r Decoder) (CameraAimAssistPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(CameraAimAssistPacketTargetModeEnum)
+		value, ok := raw.(EnumsCameraAimAssistPacketPayloadTargetMode)
 		if !ok {
 			return p, fmt.Errorf("field CameraAimAssistPacket.Target Mode has unexpected decoded type %T", raw)
 		}
@@ -15712,7 +16976,7 @@ func DecodeCameraAimAssistPacket(r Decoder) (CameraAimAssistPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(CameraAimAssistPacketActionEnum)
+		value, ok := raw.(EnumsCameraAimAssistPacketPayloadAction)
 		if !ok {
 			return p, fmt.Errorf("field CameraAimAssistPacket.Action has unexpected decoded type %T", raw)
 		}
@@ -15733,7 +16997,7 @@ func DecodeCameraAimAssistPacket(r Decoder) (CameraAimAssistPacket, error) {
 }
 
 type ContainerRegistryCleanupPacket struct {
-	RemovedContainers []InventoryContentPacketFullContainerNameStruct
+	RemovedContainers []FullContainerName
 }
 
 func (p *ContainerRegistryCleanupPacket) Encode(w Encoder) error {
@@ -15750,7 +17014,7 @@ func DecodeContainerRegistryCleanupPacket(r Decoder) (ContainerRegistryCleanupPa
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]InventoryContentPacketFullContainerNameStruct)
+		value, ok := raw.([]FullContainerName)
 		if !ok {
 			return p, fmt.Errorf("field ContainerRegistryCleanupPacket.Removed Containers has unexpected decoded type %T", raw)
 		}
@@ -15760,10 +17024,10 @@ func DecodeContainerRegistryCleanupPacket(r Decoder) (ContainerRegistryCleanupPa
 }
 
 type MovementEffectPacket struct {
-	TargetRuntimeID StartGamePacketRuntimeIDStruct
-	EffectID        MovementEffectPacketEffectIDEnum
+	TargetRuntimeID ActorRuntimeID
+	EffectID        EnumsMovementEffectType
 	EffectDuration  int32
-	Tick            MovePlayerPacketTickStruct
+	Tick            PlayerInputTick
 }
 
 func (p *MovementEffectPacket) Encode(w Encoder) error {
@@ -15789,7 +17053,7 @@ func DecodeMovementEffectPacket(r Decoder) (MovementEffectPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketRuntimeIDStruct)
+		value, ok := raw.(ActorRuntimeID)
 		if !ok {
 			return p, fmt.Errorf("field MovementEffectPacket.Target Runtime ID has unexpected decoded type %T", raw)
 		}
@@ -15800,7 +17064,7 @@ func DecodeMovementEffectPacket(r Decoder) (MovementEffectPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(MovementEffectPacketEffectIDEnum)
+		value, ok := raw.(EnumsMovementEffectType)
 		if !ok {
 			return p, fmt.Errorf("field MovementEffectPacket.Effect ID has unexpected decoded type %T", raw)
 		}
@@ -15822,7 +17086,7 @@ func DecodeMovementEffectPacket(r Decoder) (MovementEffectPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(MovePlayerPacketTickStruct)
+		value, ok := raw.(PlayerInputTick)
 		if !ok {
 			return p, fmt.Errorf("field MovementEffectPacket.Tick has unexpected decoded type %T", raw)
 		}
@@ -15832,9 +17096,9 @@ func DecodeMovementEffectPacket(r Decoder) (MovementEffectPacket, error) {
 }
 
 type CameraAimAssistPresetsPacket struct {
-	CameraAimAssistPresets    []CameraAimAssistPresetsPacketCameraAimAssistPresetsItemStruct
-	CameraAimAssistCategories []CameraAimAssistPresetsPacketCameraAimAssistCategoriesItemStruct
-	Operation                 CameraAimAssistPresetsPacketOperationEnum
+	CameraAimAssistPresets    []SharedTypesV12150CameraAimAssistCategoryDefinition
+	CameraAimAssistCategories []SharedTypesV121120CameraAimAssistPresetDefinition
+	Operation                 EnumsCameraAimAssistPresetsPacketOperation
 }
 
 func (p *CameraAimAssistPresetsPacket) Encode(w Encoder) error {
@@ -15857,7 +17121,7 @@ func DecodeCameraAimAssistPresetsPacket(r Decoder) (CameraAimAssistPresetsPacket
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]CameraAimAssistPresetsPacketCameraAimAssistPresetsItemStruct)
+		value, ok := raw.([]SharedTypesV12150CameraAimAssistCategoryDefinition)
 		if !ok {
 			return p, fmt.Errorf("field CameraAimAssistPresetsPacket.Camera Aim-Assist Presets has unexpected decoded type %T", raw)
 		}
@@ -15868,7 +17132,7 @@ func DecodeCameraAimAssistPresetsPacket(r Decoder) (CameraAimAssistPresetsPacket
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]CameraAimAssistPresetsPacketCameraAimAssistCategoriesItemStruct)
+		value, ok := raw.([]SharedTypesV121120CameraAimAssistPresetDefinition)
 		if !ok {
 			return p, fmt.Errorf("field CameraAimAssistPresetsPacket.Camera Aim-Assist Categories has unexpected decoded type %T", raw)
 		}
@@ -15879,7 +17143,7 @@ func DecodeCameraAimAssistPresetsPacket(r Decoder) (CameraAimAssistPresetsPacket
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(CameraAimAssistPresetsPacketOperationEnum)
+		value, ok := raw.(EnumsCameraAimAssistPresetsPacketOperation)
 		if !ok {
 			return p, fmt.Errorf("field CameraAimAssistPresetsPacket.Operation has unexpected decoded type %T", raw)
 		}
@@ -15890,7 +17154,7 @@ func DecodeCameraAimAssistPresetsPacket(r Decoder) (CameraAimAssistPresetsPacket
 
 type ClientCameraAimAssistPacket struct {
 	CameraPresetId string
-	Action         ClientCameraAimAssistPacketActionEnum
+	Action         EnumsClientCameraAimAssistPacketAction
 	AllowAimAssist bool
 }
 
@@ -15925,7 +17189,7 @@ func DecodeClientCameraAimAssistPacket(r Decoder) (ClientCameraAimAssistPacket, 
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(ClientCameraAimAssistPacketActionEnum)
+		value, ok := raw.(EnumsClientCameraAimAssistPacketAction)
 		if !ok {
 			return p, fmt.Errorf("field ClientCameraAimAssistPacket.Action has unexpected decoded type %T", raw)
 		}
@@ -15946,10 +17210,10 @@ func DecodeClientCameraAimAssistPacket(r Decoder) (ClientCameraAimAssistPacket, 
 }
 
 type ClientMovementPredictionSyncPacket struct {
-	ActorDataFlag      ClientMovementPredictionSyncPacketActorDataFlagStruct
-	ActorBoundingBox   ClientMovementPredictionSyncPacketActorBoundingBoxStruct
+	ActorDataFlag      ActorDataFlagComponent
+	ActorBoundingBox   ActorDataBoundingBoxComponent
 	MovementAttributes [9]float32
-	ActorUniqueID      StartGamePacketEntityIDStruct
+	ActorUniqueID      ActorUniqueID
 	ActorFlyingState   bool
 }
 
@@ -15979,7 +17243,7 @@ func DecodeClientMovementPredictionSyncPacket(r Decoder) (ClientMovementPredicti
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(ClientMovementPredictionSyncPacketActorDataFlagStruct)
+		value, ok := raw.(ActorDataFlagComponent)
 		if !ok {
 			return p, fmt.Errorf("field ClientMovementPredictionSyncPacket.Actor Data Flag has unexpected decoded type %T", raw)
 		}
@@ -15990,7 +17254,7 @@ func DecodeClientMovementPredictionSyncPacket(r Decoder) (ClientMovementPredicti
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(ClientMovementPredictionSyncPacketActorBoundingBoxStruct)
+		value, ok := raw.(ActorDataBoundingBoxComponent)
 		if !ok {
 			return p, fmt.Errorf("field ClientMovementPredictionSyncPacket.Actor Bounding Box has unexpected decoded type %T", raw)
 		}
@@ -16012,7 +17276,7 @@ func DecodeClientMovementPredictionSyncPacket(r Decoder) (ClientMovementPredicti
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketEntityIDStruct)
+		value, ok := raw.(ActorUniqueID)
 		if !ok {
 			return p, fmt.Errorf("field ClientMovementPredictionSyncPacket.Actor Unique ID has unexpected decoded type %T", raw)
 		}
@@ -16033,7 +17297,7 @@ func DecodeClientMovementPredictionSyncPacket(r Decoder) (ClientMovementPredicti
 }
 
 type UpdateClientOptionsPacket struct {
-	GraphicsModeChange    *UpdateClientOptionsPacketGraphicsModeChangeValueEnum
+	GraphicsModeChange    *EnumsGraphicsMode
 	FilterProfanityChange *bool
 }
 
@@ -16054,7 +17318,7 @@ func DecodeUpdateClientOptionsPacket(r Decoder) (UpdateClientOptionsPacket, erro
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(*UpdateClientOptionsPacketGraphicsModeChangeValueEnum)
+		value, ok := raw.(*EnumsGraphicsMode)
 		if !ok {
 			return p, fmt.Errorf("field UpdateClientOptionsPacket.Graphics Mode Change has unexpected decoded type %T", raw)
 		}
@@ -16075,11 +17339,11 @@ func DecodeUpdateClientOptionsPacket(r Decoder) (UpdateClientOptionsPacket, erro
 }
 
 type PlayerVideoCapturePacket struct {
-	Payload PlayerVideoCapturePacketPayloadUnion
+	Action PlayerVideoCapturePacketPayload
 }
 
 func (p *PlayerVideoCapturePacket) Encode(w Encoder) error {
-	if err := w.Write("PlayerVideoCapturePacket.Payload", Shape{Kind: "union", Control: &Shape{Kind: "primitive", PrimitiveCode: "var_u32"}, Variants: []ShapeVariant{{Value: 0, Name: "PlayerVideoCapturePacketPayload::StartVideoCapture", Shape: Shape{Kind: "struct", Semantic: "PlayerVideoCapturePacketPayload::StartVideoCapture", TypeID: "PlayerVideoCapturePacketPayload::StartVideoCapture", Fields: []ShapeField{{Ordinal: 0, Name: "FrameRate", Shape: Shape{Kind: "primitive", PrimitiveCode: "u32le"}}, {Ordinal: 1, Name: "FilePrefix", Shape: Shape{Kind: "string", Encoding: "utf8", Representation: "text", Prefix: &Shape{Kind: "primitive", PrimitiveCode: "var_u32"}}}}}}, {Value: 1, Name: "PlayerVideoCapturePacketPayload::StopVideoCapture", Shape: Shape{Kind: "struct", Semantic: "PlayerVideoCapturePacketPayload::StopVideoCapture", TypeID: "PlayerVideoCapturePacketPayload::StopVideoCapture"}}}}, p.Payload); err != nil {
+	if err := w.Write("PlayerVideoCapturePacket.Action", Shape{Kind: "union", Control: &Shape{Kind: "primitive", PrimitiveCode: "u8"}, Variants: []ShapeVariant{{Value: 0, Name: "PlayerVideoCapturePacketPayload::StopVideoCapture", Shape: Shape{Kind: "struct", Semantic: "PlayerVideoCapturePacketPayload::StopVideoCapture", TypeID: "PlayerVideoCapturePacketPayload::StopVideoCapture"}}, {Value: 1, Name: "PlayerVideoCapturePacketPayload::StartVideoCapture", Shape: Shape{Kind: "struct", Semantic: "PlayerVideoCapturePacketPayload::StartVideoCapture", TypeID: "PlayerVideoCapturePacketPayload::StartVideoCapture", Fields: []ShapeField{{Ordinal: 0, Name: "FrameRate", Shape: Shape{Kind: "primitive", PrimitiveCode: "u32le"}}, {Ordinal: 1, Name: "FilePrefix", Shape: Shape{Kind: "string", Encoding: "utf8", Representation: "text", Prefix: &Shape{Kind: "primitive", PrimitiveCode: "var_u32"}}}}}}}}, p.Action); err != nil {
 		return err
 	}
 	return nil
@@ -16088,23 +17352,23 @@ func (p *PlayerVideoCapturePacket) Encode(w Encoder) error {
 func DecodePlayerVideoCapturePacket(r Decoder) (PlayerVideoCapturePacket, error) {
 	var p PlayerVideoCapturePacket
 	{
-		raw, err := r.Read("PlayerVideoCapturePacket.Payload", Shape{Kind: "union", Control: &Shape{Kind: "primitive", PrimitiveCode: "var_u32"}, Variants: []ShapeVariant{{Value: 0, Name: "PlayerVideoCapturePacketPayload::StartVideoCapture", Shape: Shape{Kind: "struct", Semantic: "PlayerVideoCapturePacketPayload::StartVideoCapture", TypeID: "PlayerVideoCapturePacketPayload::StartVideoCapture", Fields: []ShapeField{{Ordinal: 0, Name: "FrameRate", Shape: Shape{Kind: "primitive", PrimitiveCode: "u32le"}}, {Ordinal: 1, Name: "FilePrefix", Shape: Shape{Kind: "string", Encoding: "utf8", Representation: "text", Prefix: &Shape{Kind: "primitive", PrimitiveCode: "var_u32"}}}}}}, {Value: 1, Name: "PlayerVideoCapturePacketPayload::StopVideoCapture", Shape: Shape{Kind: "struct", Semantic: "PlayerVideoCapturePacketPayload::StopVideoCapture", TypeID: "PlayerVideoCapturePacketPayload::StopVideoCapture"}}}})
+		raw, err := r.Read("PlayerVideoCapturePacket.Action", Shape{Kind: "union", Control: &Shape{Kind: "primitive", PrimitiveCode: "u8"}, Variants: []ShapeVariant{{Value: 0, Name: "PlayerVideoCapturePacketPayload::StopVideoCapture", Shape: Shape{Kind: "struct", Semantic: "PlayerVideoCapturePacketPayload::StopVideoCapture", TypeID: "PlayerVideoCapturePacketPayload::StopVideoCapture"}}, {Value: 1, Name: "PlayerVideoCapturePacketPayload::StartVideoCapture", Shape: Shape{Kind: "struct", Semantic: "PlayerVideoCapturePacketPayload::StartVideoCapture", TypeID: "PlayerVideoCapturePacketPayload::StartVideoCapture", Fields: []ShapeField{{Ordinal: 0, Name: "FrameRate", Shape: Shape{Kind: "primitive", PrimitiveCode: "u32le"}}, {Ordinal: 1, Name: "FilePrefix", Shape: Shape{Kind: "string", Encoding: "utf8", Representation: "text", Prefix: &Shape{Kind: "primitive", PrimitiveCode: "var_u32"}}}}}}}})
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(PlayerVideoCapturePacketPayloadUnion)
+		value, ok := raw.(PlayerVideoCapturePacketPayload)
 		if !ok {
-			return p, fmt.Errorf("field PlayerVideoCapturePacket.Payload has unexpected decoded type %T", raw)
+			return p, fmt.Errorf("field PlayerVideoCapturePacket.Action has unexpected decoded type %T", raw)
 		}
-		p.Payload = value
+		p.Action = value
 	}
 	return p, nil
 }
 
 type PlayerUpdateEntityOverridesPacket struct {
-	TargetID      StartGamePacketEntityIDStruct
+	TargetID      ActorUniqueID
 	PropertyIndex uint32
-	Update        PlayerUpdateEntityOverridesPacketUpdateUnion
+	Update        PlayerUpdateEntityOverridesPacketPayload
 }
 
 func (p *PlayerUpdateEntityOverridesPacket) Encode(w Encoder) error {
@@ -16127,7 +17391,7 @@ func DecodePlayerUpdateEntityOverridesPacket(r Decoder) (PlayerUpdateEntityOverr
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketEntityIDStruct)
+		value, ok := raw.(ActorUniqueID)
 		if !ok {
 			return p, fmt.Errorf("field PlayerUpdateEntityOverridesPacket.Target ID has unexpected decoded type %T", raw)
 		}
@@ -16149,7 +17413,7 @@ func DecodePlayerUpdateEntityOverridesPacket(r Decoder) (PlayerUpdateEntityOverr
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(PlayerUpdateEntityOverridesPacketUpdateUnion)
+		value, ok := raw.(PlayerUpdateEntityOverridesPacketPayload)
 		if !ok {
 			return p, fmt.Errorf("field PlayerUpdateEntityOverridesPacket.Update has unexpected decoded type %T", raw)
 		}
@@ -16159,15 +17423,15 @@ func DecodePlayerUpdateEntityOverridesPacket(r Decoder) (PlayerUpdateEntityOverr
 }
 
 type PlayerLocationPacket struct {
-	TargetActorID StartGamePacketEntityIDStruct
-	Location      PlayerLocationPacketLocationUnion
+	TargetActorID ActorUniqueID
+	Location      PlayerLocationPacketPayload
 }
 
 func (p *PlayerLocationPacket) Encode(w Encoder) error {
 	if err := w.Write("PlayerLocationPacket.Target Actor ID", Shape{Kind: "struct", Semantic: "ActorUniqueID", TypeID: "ActorUniqueID", Fields: []ShapeField{{Ordinal: 0, Name: "Actor Unique ID", Shape: Shape{Kind: "primitive", PrimitiveCode: "zigzag_i64"}}}}, p.TargetActorID); err != nil {
 		return err
 	}
-	if err := w.Write("PlayerLocationPacket.Location", Shape{Kind: "union", Control: &Shape{Kind: "primitive", PrimitiveCode: "zigzag_i32"}, Variants: []ShapeVariant{{Value: 0, Name: "PLAYER_LOCATION_COORDINATES", Shape: Shape{Kind: "struct", Semantic: "PlayerLocationPacketPayload::CoordinatesLocation", TypeID: "PlayerLocationPacketPayload::CoordinatesLocation", Fields: []ShapeField{{Ordinal: 1, Name: "Position", Shape: Shape{Kind: "struct", Semantic: "Vec3", TypeID: "Vec3", Fields: []ShapeField{{Ordinal: 0, Name: "X", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}, {Ordinal: 1, Name: "Y", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}, {Ordinal: 2, Name: "Z", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}}}}, {Value: 1, Name: "PLAYER_LOCATION_HIDE", Shape: Shape{Kind: "struct", Semantic: "PlayerLocationPacketPayload::HiddenLocation", TypeID: "PlayerLocationPacketPayload::HiddenLocation"}}}}, p.Location); err != nil {
+	if err := w.Write("PlayerLocationPacket.Location", Shape{Kind: "union", Control: &Shape{Kind: "primitive", PrimitiveCode: "var_u32"}, Variants: []ShapeVariant{{Value: 0, Name: "PLAYER_LOCATION_COORDINATES", Shape: Shape{Kind: "struct", Semantic: "PlayerLocationPacketPayload::CoordinatesLocation", TypeID: "PlayerLocationPacketPayload::CoordinatesLocation", Fields: []ShapeField{{Ordinal: 0, Name: "Packet Type", Shape: Shape{Kind: "enum", Semantic: "PlayerLocationPacketPayload::Type", TypeID: "enums/PlayerLocationPacketPayload::Type", PrimitiveCode: "zigzag_i32", Variants: []ShapeVariant{{Value: 0, Name: "PLAYER_LOCATION_COORDINATES", Shape: Shape{Kind: "void"}}}}}, {Ordinal: 1, Name: "Position", Shape: Shape{Kind: "struct", Semantic: "Vec3", TypeID: "Vec3", Fields: []ShapeField{{Ordinal: 0, Name: "X", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}, {Ordinal: 1, Name: "Y", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}, {Ordinal: 2, Name: "Z", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}}}}, {Value: 1, Name: "PLAYER_LOCATION_HIDE", Shape: Shape{Kind: "struct", Semantic: "PlayerLocationPacketPayload::HiddenLocation", TypeID: "PlayerLocationPacketPayload::HiddenLocation", Fields: []ShapeField{{Ordinal: 0, Name: "Packet Type", Shape: Shape{Kind: "enum", Semantic: "PlayerLocationPacketPayload::Type", TypeID: "enums/PlayerLocationPacketPayload::Type", PrimitiveCode: "zigzag_i32", Variants: []ShapeVariant{{Value: 1, Name: "PLAYER_LOCATION_HIDE", Shape: Shape{Kind: "void"}}}}}}}}}}, p.Location); err != nil {
 		return err
 	}
 	return nil
@@ -16180,18 +17444,18 @@ func DecodePlayerLocationPacket(r Decoder) (PlayerLocationPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(StartGamePacketEntityIDStruct)
+		value, ok := raw.(ActorUniqueID)
 		if !ok {
 			return p, fmt.Errorf("field PlayerLocationPacket.Target Actor ID has unexpected decoded type %T", raw)
 		}
 		p.TargetActorID = value
 	}
 	{
-		raw, err := r.Read("PlayerLocationPacket.Location", Shape{Kind: "union", Control: &Shape{Kind: "primitive", PrimitiveCode: "zigzag_i32"}, Variants: []ShapeVariant{{Value: 0, Name: "PLAYER_LOCATION_COORDINATES", Shape: Shape{Kind: "struct", Semantic: "PlayerLocationPacketPayload::CoordinatesLocation", TypeID: "PlayerLocationPacketPayload::CoordinatesLocation", Fields: []ShapeField{{Ordinal: 1, Name: "Position", Shape: Shape{Kind: "struct", Semantic: "Vec3", TypeID: "Vec3", Fields: []ShapeField{{Ordinal: 0, Name: "X", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}, {Ordinal: 1, Name: "Y", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}, {Ordinal: 2, Name: "Z", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}}}}, {Value: 1, Name: "PLAYER_LOCATION_HIDE", Shape: Shape{Kind: "struct", Semantic: "PlayerLocationPacketPayload::HiddenLocation", TypeID: "PlayerLocationPacketPayload::HiddenLocation"}}}})
+		raw, err := r.Read("PlayerLocationPacket.Location", Shape{Kind: "union", Control: &Shape{Kind: "primitive", PrimitiveCode: "var_u32"}, Variants: []ShapeVariant{{Value: 0, Name: "PLAYER_LOCATION_COORDINATES", Shape: Shape{Kind: "struct", Semantic: "PlayerLocationPacketPayload::CoordinatesLocation", TypeID: "PlayerLocationPacketPayload::CoordinatesLocation", Fields: []ShapeField{{Ordinal: 0, Name: "Packet Type", Shape: Shape{Kind: "enum", Semantic: "PlayerLocationPacketPayload::Type", TypeID: "enums/PlayerLocationPacketPayload::Type", PrimitiveCode: "zigzag_i32", Variants: []ShapeVariant{{Value: 0, Name: "PLAYER_LOCATION_COORDINATES", Shape: Shape{Kind: "void"}}}}}, {Ordinal: 1, Name: "Position", Shape: Shape{Kind: "struct", Semantic: "Vec3", TypeID: "Vec3", Fields: []ShapeField{{Ordinal: 0, Name: "X", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}, {Ordinal: 1, Name: "Y", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}, {Ordinal: 2, Name: "Z", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}}}}, {Value: 1, Name: "PLAYER_LOCATION_HIDE", Shape: Shape{Kind: "struct", Semantic: "PlayerLocationPacketPayload::HiddenLocation", TypeID: "PlayerLocationPacketPayload::HiddenLocation", Fields: []ShapeField{{Ordinal: 0, Name: "Packet Type", Shape: Shape{Kind: "enum", Semantic: "PlayerLocationPacketPayload::Type", TypeID: "enums/PlayerLocationPacketPayload::Type", PrimitiveCode: "zigzag_i32", Variants: []ShapeVariant{{Value: 1, Name: "PLAYER_LOCATION_HIDE", Shape: Shape{Kind: "void"}}}}}}}}}})
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(PlayerLocationPacketLocationUnion)
+		value, ok := raw.(PlayerLocationPacketPayload)
 		if !ok {
 			return p, fmt.Errorf("field PlayerLocationPacket.Location has unexpected decoded type %T", raw)
 		}
@@ -16201,7 +17465,7 @@ func DecodePlayerLocationPacket(r Decoder) (PlayerLocationPacket, error) {
 }
 
 type ClientboundControlSchemeSetPacket struct {
-	ControlScheme CameraPresetsPacketCameraPresetsStructPresetsItemStructControlSchemeValueEnum
+	ControlScheme EnumsControlSchemeScheme
 }
 
 func (p *ClientboundControlSchemeSetPacket) Encode(w Encoder) error {
@@ -16218,7 +17482,7 @@ func DecodeClientboundControlSchemeSetPacket(r Decoder) (ClientboundControlSchem
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(CameraPresetsPacketCameraPresetsStructPresetsItemStructControlSchemeValueEnum)
+		value, ok := raw.(EnumsControlSchemeScheme)
 		if !ok {
 			return p, fmt.Errorf("field ClientboundControlSchemeSetPacket.Control Scheme has unexpected decoded type %T", raw)
 		}
@@ -16228,7 +17492,7 @@ func DecodeClientboundControlSchemeSetPacket(r Decoder) (ClientboundControlSchem
 }
 
 type PrimitiveShapesPacket struct {
-	ArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemoved []PrimitiveShapesPacketArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemovedItemStruct
+	ArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemoved []PrimitiveShapeDataPayload
 }
 
 func (p *PrimitiveShapesPacket) Encode(w Encoder) error {
@@ -16245,7 +17509,7 @@ func DecodePrimitiveShapesPacket(r Decoder) (PrimitiveShapesPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]PrimitiveShapesPacketArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemovedItemStruct)
+		value, ok := raw.([]PrimitiveShapeDataPayload)
 		if !ok {
 			return p, fmt.Errorf("field PrimitiveShapesPacket.Array of primitive shapes (can be a mix of new, updated or removed) has unexpected decoded type %T", raw)
 		}
@@ -16312,7 +17576,7 @@ func DecodeServerboundPackSettingChangePacket(r Decoder) (ServerboundPackSetting
 }
 
 type ClientboundDataStorePacket struct {
-	Updates []ClientboundDataStorePacketUpdatesItemUnion
+	Updates []BedrockDDUI
 }
 
 func (p *ClientboundDataStorePacket) Encode(w Encoder) error {
@@ -16329,7 +17593,7 @@ func DecodeClientboundDataStorePacket(r Decoder) (ClientboundDataStorePacket, er
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]ClientboundDataStorePacketUpdatesItemUnion)
+		value, ok := raw.([]BedrockDDUI)
 		if !ok {
 			return p, fmt.Errorf("field ClientboundDataStorePacket.Updates has unexpected decoded type %T", raw)
 		}
@@ -16339,12 +17603,12 @@ func DecodeClientboundDataStorePacket(r Decoder) (ClientboundDataStorePacket, er
 }
 
 type GraphicsOverrideParameterPacket struct {
-	ParameterKeyframeValues []GraphicsOverrideParameterPacketParameterKeyframeValuesEntry
+	ParameterKeyframeValues []OrderedEntry[float32, Vec3]
 	FloatValue              *float32
-	Vec3Value               *StartGamePacketPositionStruct
+	Vec3Value               *Vec3
 	BiomeIdentifier         string
 	PlayerIdentifier        *string
-	IdentifierForParameter  GraphicsOverrideParameterPacketIdentifierForParameterEnum
+	IdentifierForParameter  EnumsGraphicsOverrideParameterType
 	ResetParameter          bool
 }
 
@@ -16380,7 +17644,7 @@ func DecodeGraphicsOverrideParameterPacket(r Decoder) (GraphicsOverrideParameter
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]GraphicsOverrideParameterPacketParameterKeyframeValuesEntry)
+		value, ok := raw.([]OrderedEntry[float32, Vec3])
 		if !ok {
 			return p, fmt.Errorf("field GraphicsOverrideParameterPacket.Parameter Keyframe Values has unexpected decoded type %T", raw)
 		}
@@ -16402,7 +17666,7 @@ func DecodeGraphicsOverrideParameterPacket(r Decoder) (GraphicsOverrideParameter
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(*StartGamePacketPositionStruct)
+		value, ok := raw.(*Vec3)
 		if !ok {
 			return p, fmt.Errorf("field GraphicsOverrideParameterPacket.Vec3 Value has unexpected decoded type %T", raw)
 		}
@@ -16435,7 +17699,7 @@ func DecodeGraphicsOverrideParameterPacket(r Decoder) (GraphicsOverrideParameter
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(GraphicsOverrideParameterPacketIdentifierForParameterEnum)
+		value, ok := raw.(EnumsGraphicsOverrideParameterType)
 		if !ok {
 			return p, fmt.Errorf("field GraphicsOverrideParameterPacket.Identifier for Parameter has unexpected decoded type %T", raw)
 		}
@@ -16456,7 +17720,7 @@ func DecodeGraphicsOverrideParameterPacket(r Decoder) (GraphicsOverrideParameter
 }
 
 type ServerboundDataStorePacket struct {
-	Update ServerboundDataStorePacketUpdateStruct
+	Update BedrockDDUIDataStoreUpdate
 }
 
 func (p *ServerboundDataStorePacket) Encode(w Encoder) error {
@@ -16473,7 +17737,7 @@ func DecodeServerboundDataStorePacket(r Decoder) (ServerboundDataStorePacket, er
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(ServerboundDataStorePacketUpdateStruct)
+		value, ok := raw.(BedrockDDUIDataStoreUpdate)
 		if !ok {
 			return p, fmt.Errorf("field ServerboundDataStorePacket.Update has unexpected decoded type %T", raw)
 		}
@@ -16566,8 +17830,20 @@ func DecodeClientboundDataDrivenUICloseScreenPacket(r Decoder) (ClientboundDataD
 	return p, nil
 }
 
+type ClientboundDataDrivenUIReloadPacket struct {
+}
+
+func (p *ClientboundDataDrivenUIReloadPacket) Encode(w Encoder) error {
+	return nil
+}
+
+func DecodeClientboundDataDrivenUIReloadPacket(r Decoder) (ClientboundDataDrivenUIReloadPacket, error) {
+	var p ClientboundDataDrivenUIReloadPacket
+	return p, nil
+}
+
 type ClientboundTextureShiftPacket struct {
-	ActionID             ClientboundTextureShiftPacketActionIDEnum
+	ActionID             EnumsClientboundTextureShiftPacketPayloadAction
 	CollectionName       string
 	FromStep             string
 	ToStep               string
@@ -16612,7 +17888,7 @@ func DecodeClientboundTextureShiftPacket(r Decoder) (ClientboundTextureShiftPack
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(ClientboundTextureShiftPacketActionIDEnum)
+		value, ok := raw.(EnumsClientboundTextureShiftPacketPayloadAction)
 		if !ok {
 			return p, fmt.Errorf("field ClientboundTextureShiftPacket.Action ID has unexpected decoded type %T", raw)
 		}
@@ -16699,8 +17975,8 @@ func DecodeClientboundTextureShiftPacket(r Decoder) (ClientboundTextureShiftPack
 }
 
 type VoxelShapesPacket struct {
-	Shapes           []VoxelShapesPacketShapesItemStruct
-	NameMap          []VoxelShapesPacketNameMapEntry
+	Shapes           []VoxelShapesSerializableVoxelShape
+	NameMap          []OrderedEntry[string, VoxelShapesRegistryHandle]
 	CustomShapeCount uint16
 }
 
@@ -16724,7 +18000,7 @@ func DecodeVoxelShapesPacket(r Decoder) (VoxelShapesPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]VoxelShapesPacketShapesItemStruct)
+		value, ok := raw.([]VoxelShapesSerializableVoxelShape)
 		if !ok {
 			return p, fmt.Errorf("field VoxelShapesPacket.Shapes has unexpected decoded type %T", raw)
 		}
@@ -16735,7 +18011,7 @@ func DecodeVoxelShapesPacket(r Decoder) (VoxelShapesPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]VoxelShapesPacketNameMapEntry)
+		value, ok := raw.([]OrderedEntry[string, VoxelShapesRegistryHandle])
 		if !ok {
 			return p, fmt.Errorf("field VoxelShapesPacket.Name Map has unexpected decoded type %T", raw)
 		}
@@ -16756,7 +18032,7 @@ func DecodeVoxelShapesPacket(r Decoder) (VoxelShapesPacket, error) {
 }
 
 type CameraSplinePacket struct {
-	CameraDataSplines []CameraSplinePacketCameraDataSplinesItemStruct
+	CameraDataSplines []SharedTypesV1260CameraSplineDefinition
 }
 
 func (p *CameraSplinePacket) Encode(w Encoder) error {
@@ -16773,7 +18049,7 @@ func DecodeCameraSplinePacket(r Decoder) (CameraSplinePacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]CameraSplinePacketCameraDataSplinesItemStruct)
+		value, ok := raw.([]SharedTypesV1260CameraSplineDefinition)
 		if !ok {
 			return p, fmt.Errorf("field CameraSplinePacket.Camera Data Splines has unexpected decoded type %T", raw)
 		}
@@ -16783,7 +18059,7 @@ func DecodeCameraSplinePacket(r Decoder) (CameraSplinePacket, error) {
 }
 
 type CameraAimAssistActorPriorityPacket struct {
-	CameraAimAssistActorPriorityList []CameraAimAssistActorPriorityPacketCameraAimAssistActorPriorityListItemStruct
+	CameraAimAssistActorPriorityList []CameraAimAssistActorPriorityPriorityData
 }
 
 func (p *CameraAimAssistActorPriorityPacket) Encode(w Encoder) error {
@@ -16800,7 +18076,7 @@ func DecodeCameraAimAssistActorPriorityPacket(r Decoder) (CameraAimAssistActorPr
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]CameraAimAssistActorPriorityPacketCameraAimAssistActorPriorityListItemStruct)
+		value, ok := raw.([]CameraAimAssistActorPriorityPriorityData)
 		if !ok {
 			return p, fmt.Errorf("field CameraAimAssistActorPriorityPacket.Camera Aim-Assist Actor Priority List has unexpected decoded type %T", raw)
 		}
@@ -16809,8 +18085,20 @@ func DecodeCameraAimAssistActorPriorityPacket(r Decoder) (CameraAimAssistActorPr
 	return p, nil
 }
 
+type ResourcePacksReadyForValidationPacket struct {
+}
+
+func (p *ResourcePacksReadyForValidationPacket) Encode(w Encoder) error {
+	return nil
+}
+
+func DecodeResourcePacksReadyForValidationPacket(r Decoder) (ResourcePacksReadyForValidationPacket, error) {
+	var p ResourcePacksReadyForValidationPacket
+	return p, nil
+}
+
 type LocatorBarPacket struct {
-	Waypoints []LocatorBarPacketWaypointsItemStruct
+	Waypoints []LocatorBarWaypointPayload
 }
 
 func (p *LocatorBarPacket) Encode(w Encoder) error {
@@ -16827,7 +18115,7 @@ func DecodeLocatorBarPacket(r Decoder) (LocatorBarPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]LocatorBarPacketWaypointsItemStruct)
+		value, ok := raw.([]LocatorBarWaypointPayload)
 		if !ok {
 			return p, fmt.Errorf("field LocatorBarPacket.Waypoints has unexpected decoded type %T", raw)
 		}
@@ -16837,7 +18125,7 @@ func DecodeLocatorBarPacket(r Decoder) (LocatorBarPacket, error) {
 }
 
 type PartyChangedPacket struct {
-	PartyInfo *PartyChangedPacketPartyInfoValueStruct
+	PartyInfo *PlayerPartyInfo
 }
 
 func (p *PartyChangedPacket) Encode(w Encoder) error {
@@ -16854,7 +18142,7 @@ func DecodePartyChangedPacket(r Decoder) (PartyChangedPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(*PartyChangedPacketPartyInfoValueStruct)
+		value, ok := raw.(*PlayerPartyInfo)
 		if !ok {
 			return p, fmt.Errorf("field PartyChangedPacket.party_info has unexpected decoded type %T", raw)
 		}
@@ -16906,7 +18194,7 @@ func DecodeServerboundDataDrivenScreenClosedPacket(r Decoder) (ServerboundDataDr
 }
 
 type SyncWorldClocksPacket struct {
-	Data SyncWorldClocksPacketDataUnion
+	Data SyncWorldClocksPacketPayload
 }
 
 func (p *SyncWorldClocksPacket) Encode(w Encoder) error {
@@ -16923,7 +18211,7 @@ func DecodeSyncWorldClocksPacket(r Decoder) (SyncWorldClocksPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(SyncWorldClocksPacketDataUnion)
+		value, ok := raw.(SyncWorldClocksPacketPayload)
 		if !ok {
 			return p, fmt.Errorf("field SyncWorldClocksPacket.Data has unexpected decoded type %T", raw)
 		}
@@ -16933,7 +18221,7 @@ func DecodeSyncWorldClocksPacket(r Decoder) (SyncWorldClocksPacket, error) {
 }
 
 type ClientboundAttributeLayerSyncPacket struct {
-	Data ClientboundAttributeLayerSyncPacketDataUnion
+	Data AttributeLayerSyncPacketData
 }
 
 func (p *ClientboundAttributeLayerSyncPacket) Encode(w Encoder) error {
@@ -16950,7 +18238,7 @@ func DecodeClientboundAttributeLayerSyncPacket(r Decoder) (ClientboundAttributeL
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(ClientboundAttributeLayerSyncPacketDataUnion)
+		value, ok := raw.(AttributeLayerSyncPacketData)
 		if !ok {
 			return p, fmt.Errorf("field ClientboundAttributeLayerSyncPacket.Data has unexpected decoded type %T", raw)
 		}
@@ -16960,7 +18248,7 @@ func DecodeClientboundAttributeLayerSyncPacket(r Decoder) (ClientboundAttributeL
 }
 
 type ServerStoreInfoPacket struct {
-	ClientStoreEntryPointConfiguration *StartGamePacketServerConfigurationJoinInfoValueStructClientStoreEntryPointValueStruct
+	ClientStoreEntryPointConfiguration *ServerConfigurationClientStoreEntryPointConfiguration
 }
 
 func (p *ServerStoreInfoPacket) Encode(w Encoder) error {
@@ -16977,7 +18265,7 @@ func DecodeServerStoreInfoPacket(r Decoder) (ServerStoreInfoPacket, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(*StartGamePacketServerConfigurationJoinInfoValueStructClientStoreEntryPointValueStruct)
+		value, ok := raw.(*ServerConfigurationClientStoreEntryPointConfiguration)
 		if !ok {
 			return p, fmt.Errorf("field ServerStoreInfoPacket.client_store_entry_point_configuration has unexpected decoded type %T", raw)
 		}
@@ -16987,7 +18275,7 @@ func DecodeServerStoreInfoPacket(r Decoder) (ServerStoreInfoPacket, error) {
 }
 
 type ServerPresenceInfoPacket struct {
-	PresenceConfiguration *StartGamePacketServerConfigurationJoinInfoValueStructPresenceValueStruct
+	PresenceConfiguration *ServerConfigurationPresenceConfiguration
 }
 
 func (p *ServerPresenceInfoPacket) Encode(w Encoder) error {
@@ -17004,7 +18292,7 @@ func DecodeServerPresenceInfoPacket(r Decoder) (ServerPresenceInfoPacket, error)
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(*StartGamePacketServerConfigurationJoinInfoValueStructPresenceValueStruct)
+		value, ok := raw.(*ServerConfigurationPresenceConfiguration)
 		if !ok {
 			return p, fmt.Errorf("field ServerPresenceInfoPacket.presence_configuration has unexpected decoded type %T", raw)
 		}
@@ -17014,15 +18302,39 @@ func DecodeServerPresenceInfoPacket(r Decoder) (ServerPresenceInfoPacket, error)
 }
 
 type ClientboundUpdateSoundDataPacket struct {
-	ServerSoundHandle PlaySoundPacketServerSoundHandleValueStruct
-	Event             ClientboundUpdateSoundDataPacketEventUnion
+	ServerSoundHandle ServerSoundHandle
+	Stop              *SoundDataEvent
+	SetVolume         *SoundDataEvent
+	SetPitch          *SoundDataEvent
+	Fade              *SoundDataEvent
+	SeekTo            *SoundDataEvent
+	Pause             *SoundDataEvent
+	Resume            *SoundDataEvent
 }
 
 func (p *ClientboundUpdateSoundDataPacket) Encode(w Encoder) error {
 	if err := w.Write("ClientboundUpdateSoundDataPacket.Server Sound Handle", Shape{Kind: "struct", Semantic: "ServerSoundHandle", TypeID: "ServerSoundHandle", Fields: []ShapeField{{Ordinal: 0, Name: "Server Sound Handle", Shape: Shape{Kind: "primitive", PrimitiveCode: "u64le"}}}}, p.ServerSoundHandle); err != nil {
 		return err
 	}
-	if err := w.Write("ClientboundUpdateSoundDataPacket.Event", Shape{Kind: "union", Control: &Shape{Kind: "primitive", PrimitiveCode: "var_u32"}, Variants: []ShapeVariant{{Value: 0, Name: "SoundDataEvent::Stop", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Stop", TypeID: "SoundDataEvent::Stop"}}, {Value: 1, Name: "SoundDataEvent::SetVolume", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SetVolume", TypeID: "SoundDataEvent::SetVolume", Fields: []ShapeField{{Ordinal: 0, Name: "Volume", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 2, Name: "SoundDataEvent::SetPitch", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SetPitch", TypeID: "SoundDataEvent::SetPitch", Fields: []ShapeField{{Ordinal: 0, Name: "Pitch", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 3, Name: "SoundDataEvent::Fade", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Fade", TypeID: "SoundDataEvent::Fade", Fields: []ShapeField{{Ordinal: 0, Name: "Duration", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}, {Ordinal: 1, Name: "Target Volume", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 4, Name: "SoundDataEvent::SeekTo", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SeekTo", TypeID: "SoundDataEvent::SeekTo", Fields: []ShapeField{{Ordinal: 0, Name: "Seconds", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 5, Name: "SoundDataEvent::Pause", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Pause", TypeID: "SoundDataEvent::Pause"}}, {Value: 6, Name: "SoundDataEvent::Resume", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Resume", TypeID: "SoundDataEvent::Resume"}}}}, p.Event); err != nil {
+	if err := w.Write("ClientboundUpdateSoundDataPacket.Stop", Shape{Kind: "optional", Value: &Shape{Kind: "union", Control: &Shape{Kind: "primitive", PrimitiveCode: "var_u32"}, Variants: []ShapeVariant{{Value: 0, Name: "SoundDataEvent::Stop", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Stop", TypeID: "SoundDataEvent::Stop"}}, {Value: 1, Name: "SoundDataEvent::SetVolume", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SetVolume", TypeID: "SoundDataEvent::SetVolume", Fields: []ShapeField{{Ordinal: 0, Name: "Volume", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 2, Name: "SoundDataEvent::SetPitch", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SetPitch", TypeID: "SoundDataEvent::SetPitch", Fields: []ShapeField{{Ordinal: 0, Name: "Pitch", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 3, Name: "SoundDataEvent::Fade", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Fade", TypeID: "SoundDataEvent::Fade", Fields: []ShapeField{{Ordinal: 0, Name: "Duration", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}, {Ordinal: 1, Name: "Target Volume", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 4, Name: "SoundDataEvent::SeekTo", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SeekTo", TypeID: "SoundDataEvent::SeekTo", Fields: []ShapeField{{Ordinal: 0, Name: "Seconds", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 5, Name: "SoundDataEvent::Pause", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Pause", TypeID: "SoundDataEvent::Pause"}}, {Value: 6, Name: "SoundDataEvent::Resume", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Resume", TypeID: "SoundDataEvent::Resume"}}}}}, p.Stop); err != nil {
+		return err
+	}
+	if err := w.Write("ClientboundUpdateSoundDataPacket.SetVolume", Shape{Kind: "optional", Value: &Shape{Kind: "union", Control: &Shape{Kind: "primitive", PrimitiveCode: "var_u32"}, Variants: []ShapeVariant{{Value: 0, Name: "SoundDataEvent::Stop", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Stop", TypeID: "SoundDataEvent::Stop"}}, {Value: 1, Name: "SoundDataEvent::SetVolume", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SetVolume", TypeID: "SoundDataEvent::SetVolume", Fields: []ShapeField{{Ordinal: 0, Name: "Volume", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 2, Name: "SoundDataEvent::SetPitch", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SetPitch", TypeID: "SoundDataEvent::SetPitch", Fields: []ShapeField{{Ordinal: 0, Name: "Pitch", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 3, Name: "SoundDataEvent::Fade", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Fade", TypeID: "SoundDataEvent::Fade", Fields: []ShapeField{{Ordinal: 0, Name: "Duration", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}, {Ordinal: 1, Name: "Target Volume", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 4, Name: "SoundDataEvent::SeekTo", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SeekTo", TypeID: "SoundDataEvent::SeekTo", Fields: []ShapeField{{Ordinal: 0, Name: "Seconds", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 5, Name: "SoundDataEvent::Pause", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Pause", TypeID: "SoundDataEvent::Pause"}}, {Value: 6, Name: "SoundDataEvent::Resume", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Resume", TypeID: "SoundDataEvent::Resume"}}}}}, p.SetVolume); err != nil {
+		return err
+	}
+	if err := w.Write("ClientboundUpdateSoundDataPacket.SetPitch", Shape{Kind: "optional", Value: &Shape{Kind: "union", Control: &Shape{Kind: "primitive", PrimitiveCode: "var_u32"}, Variants: []ShapeVariant{{Value: 0, Name: "SoundDataEvent::Stop", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Stop", TypeID: "SoundDataEvent::Stop"}}, {Value: 1, Name: "SoundDataEvent::SetVolume", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SetVolume", TypeID: "SoundDataEvent::SetVolume", Fields: []ShapeField{{Ordinal: 0, Name: "Volume", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 2, Name: "SoundDataEvent::SetPitch", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SetPitch", TypeID: "SoundDataEvent::SetPitch", Fields: []ShapeField{{Ordinal: 0, Name: "Pitch", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 3, Name: "SoundDataEvent::Fade", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Fade", TypeID: "SoundDataEvent::Fade", Fields: []ShapeField{{Ordinal: 0, Name: "Duration", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}, {Ordinal: 1, Name: "Target Volume", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 4, Name: "SoundDataEvent::SeekTo", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SeekTo", TypeID: "SoundDataEvent::SeekTo", Fields: []ShapeField{{Ordinal: 0, Name: "Seconds", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 5, Name: "SoundDataEvent::Pause", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Pause", TypeID: "SoundDataEvent::Pause"}}, {Value: 6, Name: "SoundDataEvent::Resume", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Resume", TypeID: "SoundDataEvent::Resume"}}}}}, p.SetPitch); err != nil {
+		return err
+	}
+	if err := w.Write("ClientboundUpdateSoundDataPacket.Fade", Shape{Kind: "optional", Value: &Shape{Kind: "union", Control: &Shape{Kind: "primitive", PrimitiveCode: "var_u32"}, Variants: []ShapeVariant{{Value: 0, Name: "SoundDataEvent::Stop", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Stop", TypeID: "SoundDataEvent::Stop"}}, {Value: 1, Name: "SoundDataEvent::SetVolume", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SetVolume", TypeID: "SoundDataEvent::SetVolume", Fields: []ShapeField{{Ordinal: 0, Name: "Volume", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 2, Name: "SoundDataEvent::SetPitch", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SetPitch", TypeID: "SoundDataEvent::SetPitch", Fields: []ShapeField{{Ordinal: 0, Name: "Pitch", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 3, Name: "SoundDataEvent::Fade", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Fade", TypeID: "SoundDataEvent::Fade", Fields: []ShapeField{{Ordinal: 0, Name: "Duration", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}, {Ordinal: 1, Name: "Target Volume", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 4, Name: "SoundDataEvent::SeekTo", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SeekTo", TypeID: "SoundDataEvent::SeekTo", Fields: []ShapeField{{Ordinal: 0, Name: "Seconds", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 5, Name: "SoundDataEvent::Pause", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Pause", TypeID: "SoundDataEvent::Pause"}}, {Value: 6, Name: "SoundDataEvent::Resume", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Resume", TypeID: "SoundDataEvent::Resume"}}}}}, p.Fade); err != nil {
+		return err
+	}
+	if err := w.Write("ClientboundUpdateSoundDataPacket.SeekTo", Shape{Kind: "optional", Value: &Shape{Kind: "union", Control: &Shape{Kind: "primitive", PrimitiveCode: "var_u32"}, Variants: []ShapeVariant{{Value: 0, Name: "SoundDataEvent::Stop", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Stop", TypeID: "SoundDataEvent::Stop"}}, {Value: 1, Name: "SoundDataEvent::SetVolume", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SetVolume", TypeID: "SoundDataEvent::SetVolume", Fields: []ShapeField{{Ordinal: 0, Name: "Volume", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 2, Name: "SoundDataEvent::SetPitch", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SetPitch", TypeID: "SoundDataEvent::SetPitch", Fields: []ShapeField{{Ordinal: 0, Name: "Pitch", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 3, Name: "SoundDataEvent::Fade", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Fade", TypeID: "SoundDataEvent::Fade", Fields: []ShapeField{{Ordinal: 0, Name: "Duration", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}, {Ordinal: 1, Name: "Target Volume", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 4, Name: "SoundDataEvent::SeekTo", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SeekTo", TypeID: "SoundDataEvent::SeekTo", Fields: []ShapeField{{Ordinal: 0, Name: "Seconds", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 5, Name: "SoundDataEvent::Pause", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Pause", TypeID: "SoundDataEvent::Pause"}}, {Value: 6, Name: "SoundDataEvent::Resume", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Resume", TypeID: "SoundDataEvent::Resume"}}}}}, p.SeekTo); err != nil {
+		return err
+	}
+	if err := w.Write("ClientboundUpdateSoundDataPacket.Pause", Shape{Kind: "optional", Value: &Shape{Kind: "union", Control: &Shape{Kind: "primitive", PrimitiveCode: "var_u32"}, Variants: []ShapeVariant{{Value: 0, Name: "SoundDataEvent::Stop", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Stop", TypeID: "SoundDataEvent::Stop"}}, {Value: 1, Name: "SoundDataEvent::SetVolume", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SetVolume", TypeID: "SoundDataEvent::SetVolume", Fields: []ShapeField{{Ordinal: 0, Name: "Volume", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 2, Name: "SoundDataEvent::SetPitch", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SetPitch", TypeID: "SoundDataEvent::SetPitch", Fields: []ShapeField{{Ordinal: 0, Name: "Pitch", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 3, Name: "SoundDataEvent::Fade", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Fade", TypeID: "SoundDataEvent::Fade", Fields: []ShapeField{{Ordinal: 0, Name: "Duration", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}, {Ordinal: 1, Name: "Target Volume", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 4, Name: "SoundDataEvent::SeekTo", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SeekTo", TypeID: "SoundDataEvent::SeekTo", Fields: []ShapeField{{Ordinal: 0, Name: "Seconds", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 5, Name: "SoundDataEvent::Pause", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Pause", TypeID: "SoundDataEvent::Pause"}}, {Value: 6, Name: "SoundDataEvent::Resume", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Resume", TypeID: "SoundDataEvent::Resume"}}}}}, p.Pause); err != nil {
+		return err
+	}
+	if err := w.Write("ClientboundUpdateSoundDataPacket.Resume", Shape{Kind: "optional", Value: &Shape{Kind: "union", Control: &Shape{Kind: "primitive", PrimitiveCode: "var_u32"}, Variants: []ShapeVariant{{Value: 0, Name: "SoundDataEvent::Stop", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Stop", TypeID: "SoundDataEvent::Stop"}}, {Value: 1, Name: "SoundDataEvent::SetVolume", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SetVolume", TypeID: "SoundDataEvent::SetVolume", Fields: []ShapeField{{Ordinal: 0, Name: "Volume", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 2, Name: "SoundDataEvent::SetPitch", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SetPitch", TypeID: "SoundDataEvent::SetPitch", Fields: []ShapeField{{Ordinal: 0, Name: "Pitch", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 3, Name: "SoundDataEvent::Fade", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Fade", TypeID: "SoundDataEvent::Fade", Fields: []ShapeField{{Ordinal: 0, Name: "Duration", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}, {Ordinal: 1, Name: "Target Volume", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 4, Name: "SoundDataEvent::SeekTo", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SeekTo", TypeID: "SoundDataEvent::SeekTo", Fields: []ShapeField{{Ordinal: 0, Name: "Seconds", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 5, Name: "SoundDataEvent::Pause", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Pause", TypeID: "SoundDataEvent::Pause"}}, {Value: 6, Name: "SoundDataEvent::Resume", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Resume", TypeID: "SoundDataEvent::Resume"}}}}}, p.Resume); err != nil {
 		return err
 	}
 	return nil
@@ -17035,22 +18347,88 @@ func DecodeClientboundUpdateSoundDataPacket(r Decoder) (ClientboundUpdateSoundDa
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(PlaySoundPacketServerSoundHandleValueStruct)
+		value, ok := raw.(ServerSoundHandle)
 		if !ok {
 			return p, fmt.Errorf("field ClientboundUpdateSoundDataPacket.Server Sound Handle has unexpected decoded type %T", raw)
 		}
 		p.ServerSoundHandle = value
 	}
 	{
-		raw, err := r.Read("ClientboundUpdateSoundDataPacket.Event", Shape{Kind: "union", Control: &Shape{Kind: "primitive", PrimitiveCode: "var_u32"}, Variants: []ShapeVariant{{Value: 0, Name: "SoundDataEvent::Stop", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Stop", TypeID: "SoundDataEvent::Stop"}}, {Value: 1, Name: "SoundDataEvent::SetVolume", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SetVolume", TypeID: "SoundDataEvent::SetVolume", Fields: []ShapeField{{Ordinal: 0, Name: "Volume", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 2, Name: "SoundDataEvent::SetPitch", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SetPitch", TypeID: "SoundDataEvent::SetPitch", Fields: []ShapeField{{Ordinal: 0, Name: "Pitch", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 3, Name: "SoundDataEvent::Fade", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Fade", TypeID: "SoundDataEvent::Fade", Fields: []ShapeField{{Ordinal: 0, Name: "Duration", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}, {Ordinal: 1, Name: "Target Volume", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 4, Name: "SoundDataEvent::SeekTo", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SeekTo", TypeID: "SoundDataEvent::SeekTo", Fields: []ShapeField{{Ordinal: 0, Name: "Seconds", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 5, Name: "SoundDataEvent::Pause", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Pause", TypeID: "SoundDataEvent::Pause"}}, {Value: 6, Name: "SoundDataEvent::Resume", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Resume", TypeID: "SoundDataEvent::Resume"}}}})
+		raw, err := r.Read("ClientboundUpdateSoundDataPacket.Stop", Shape{Kind: "optional", Value: &Shape{Kind: "union", Control: &Shape{Kind: "primitive", PrimitiveCode: "var_u32"}, Variants: []ShapeVariant{{Value: 0, Name: "SoundDataEvent::Stop", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Stop", TypeID: "SoundDataEvent::Stop"}}, {Value: 1, Name: "SoundDataEvent::SetVolume", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SetVolume", TypeID: "SoundDataEvent::SetVolume", Fields: []ShapeField{{Ordinal: 0, Name: "Volume", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 2, Name: "SoundDataEvent::SetPitch", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SetPitch", TypeID: "SoundDataEvent::SetPitch", Fields: []ShapeField{{Ordinal: 0, Name: "Pitch", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 3, Name: "SoundDataEvent::Fade", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Fade", TypeID: "SoundDataEvent::Fade", Fields: []ShapeField{{Ordinal: 0, Name: "Duration", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}, {Ordinal: 1, Name: "Target Volume", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 4, Name: "SoundDataEvent::SeekTo", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SeekTo", TypeID: "SoundDataEvent::SeekTo", Fields: []ShapeField{{Ordinal: 0, Name: "Seconds", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 5, Name: "SoundDataEvent::Pause", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Pause", TypeID: "SoundDataEvent::Pause"}}, {Value: 6, Name: "SoundDataEvent::Resume", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Resume", TypeID: "SoundDataEvent::Resume"}}}}})
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(ClientboundUpdateSoundDataPacketEventUnion)
+		value, ok := raw.(*SoundDataEvent)
 		if !ok {
-			return p, fmt.Errorf("field ClientboundUpdateSoundDataPacket.Event has unexpected decoded type %T", raw)
+			return p, fmt.Errorf("field ClientboundUpdateSoundDataPacket.Stop has unexpected decoded type %T", raw)
 		}
-		p.Event = value
+		p.Stop = value
+	}
+	{
+		raw, err := r.Read("ClientboundUpdateSoundDataPacket.SetVolume", Shape{Kind: "optional", Value: &Shape{Kind: "union", Control: &Shape{Kind: "primitive", PrimitiveCode: "var_u32"}, Variants: []ShapeVariant{{Value: 0, Name: "SoundDataEvent::Stop", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Stop", TypeID: "SoundDataEvent::Stop"}}, {Value: 1, Name: "SoundDataEvent::SetVolume", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SetVolume", TypeID: "SoundDataEvent::SetVolume", Fields: []ShapeField{{Ordinal: 0, Name: "Volume", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 2, Name: "SoundDataEvent::SetPitch", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SetPitch", TypeID: "SoundDataEvent::SetPitch", Fields: []ShapeField{{Ordinal: 0, Name: "Pitch", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 3, Name: "SoundDataEvent::Fade", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Fade", TypeID: "SoundDataEvent::Fade", Fields: []ShapeField{{Ordinal: 0, Name: "Duration", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}, {Ordinal: 1, Name: "Target Volume", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 4, Name: "SoundDataEvent::SeekTo", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SeekTo", TypeID: "SoundDataEvent::SeekTo", Fields: []ShapeField{{Ordinal: 0, Name: "Seconds", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 5, Name: "SoundDataEvent::Pause", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Pause", TypeID: "SoundDataEvent::Pause"}}, {Value: 6, Name: "SoundDataEvent::Resume", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Resume", TypeID: "SoundDataEvent::Resume"}}}}})
+		if err != nil {
+			return p, err
+		}
+		value, ok := raw.(*SoundDataEvent)
+		if !ok {
+			return p, fmt.Errorf("field ClientboundUpdateSoundDataPacket.SetVolume has unexpected decoded type %T", raw)
+		}
+		p.SetVolume = value
+	}
+	{
+		raw, err := r.Read("ClientboundUpdateSoundDataPacket.SetPitch", Shape{Kind: "optional", Value: &Shape{Kind: "union", Control: &Shape{Kind: "primitive", PrimitiveCode: "var_u32"}, Variants: []ShapeVariant{{Value: 0, Name: "SoundDataEvent::Stop", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Stop", TypeID: "SoundDataEvent::Stop"}}, {Value: 1, Name: "SoundDataEvent::SetVolume", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SetVolume", TypeID: "SoundDataEvent::SetVolume", Fields: []ShapeField{{Ordinal: 0, Name: "Volume", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 2, Name: "SoundDataEvent::SetPitch", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SetPitch", TypeID: "SoundDataEvent::SetPitch", Fields: []ShapeField{{Ordinal: 0, Name: "Pitch", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 3, Name: "SoundDataEvent::Fade", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Fade", TypeID: "SoundDataEvent::Fade", Fields: []ShapeField{{Ordinal: 0, Name: "Duration", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}, {Ordinal: 1, Name: "Target Volume", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 4, Name: "SoundDataEvent::SeekTo", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SeekTo", TypeID: "SoundDataEvent::SeekTo", Fields: []ShapeField{{Ordinal: 0, Name: "Seconds", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 5, Name: "SoundDataEvent::Pause", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Pause", TypeID: "SoundDataEvent::Pause"}}, {Value: 6, Name: "SoundDataEvent::Resume", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Resume", TypeID: "SoundDataEvent::Resume"}}}}})
+		if err != nil {
+			return p, err
+		}
+		value, ok := raw.(*SoundDataEvent)
+		if !ok {
+			return p, fmt.Errorf("field ClientboundUpdateSoundDataPacket.SetPitch has unexpected decoded type %T", raw)
+		}
+		p.SetPitch = value
+	}
+	{
+		raw, err := r.Read("ClientboundUpdateSoundDataPacket.Fade", Shape{Kind: "optional", Value: &Shape{Kind: "union", Control: &Shape{Kind: "primitive", PrimitiveCode: "var_u32"}, Variants: []ShapeVariant{{Value: 0, Name: "SoundDataEvent::Stop", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Stop", TypeID: "SoundDataEvent::Stop"}}, {Value: 1, Name: "SoundDataEvent::SetVolume", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SetVolume", TypeID: "SoundDataEvent::SetVolume", Fields: []ShapeField{{Ordinal: 0, Name: "Volume", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 2, Name: "SoundDataEvent::SetPitch", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SetPitch", TypeID: "SoundDataEvent::SetPitch", Fields: []ShapeField{{Ordinal: 0, Name: "Pitch", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 3, Name: "SoundDataEvent::Fade", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Fade", TypeID: "SoundDataEvent::Fade", Fields: []ShapeField{{Ordinal: 0, Name: "Duration", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}, {Ordinal: 1, Name: "Target Volume", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 4, Name: "SoundDataEvent::SeekTo", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SeekTo", TypeID: "SoundDataEvent::SeekTo", Fields: []ShapeField{{Ordinal: 0, Name: "Seconds", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 5, Name: "SoundDataEvent::Pause", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Pause", TypeID: "SoundDataEvent::Pause"}}, {Value: 6, Name: "SoundDataEvent::Resume", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Resume", TypeID: "SoundDataEvent::Resume"}}}}})
+		if err != nil {
+			return p, err
+		}
+		value, ok := raw.(*SoundDataEvent)
+		if !ok {
+			return p, fmt.Errorf("field ClientboundUpdateSoundDataPacket.Fade has unexpected decoded type %T", raw)
+		}
+		p.Fade = value
+	}
+	{
+		raw, err := r.Read("ClientboundUpdateSoundDataPacket.SeekTo", Shape{Kind: "optional", Value: &Shape{Kind: "union", Control: &Shape{Kind: "primitive", PrimitiveCode: "var_u32"}, Variants: []ShapeVariant{{Value: 0, Name: "SoundDataEvent::Stop", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Stop", TypeID: "SoundDataEvent::Stop"}}, {Value: 1, Name: "SoundDataEvent::SetVolume", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SetVolume", TypeID: "SoundDataEvent::SetVolume", Fields: []ShapeField{{Ordinal: 0, Name: "Volume", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 2, Name: "SoundDataEvent::SetPitch", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SetPitch", TypeID: "SoundDataEvent::SetPitch", Fields: []ShapeField{{Ordinal: 0, Name: "Pitch", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 3, Name: "SoundDataEvent::Fade", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Fade", TypeID: "SoundDataEvent::Fade", Fields: []ShapeField{{Ordinal: 0, Name: "Duration", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}, {Ordinal: 1, Name: "Target Volume", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 4, Name: "SoundDataEvent::SeekTo", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SeekTo", TypeID: "SoundDataEvent::SeekTo", Fields: []ShapeField{{Ordinal: 0, Name: "Seconds", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 5, Name: "SoundDataEvent::Pause", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Pause", TypeID: "SoundDataEvent::Pause"}}, {Value: 6, Name: "SoundDataEvent::Resume", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Resume", TypeID: "SoundDataEvent::Resume"}}}}})
+		if err != nil {
+			return p, err
+		}
+		value, ok := raw.(*SoundDataEvent)
+		if !ok {
+			return p, fmt.Errorf("field ClientboundUpdateSoundDataPacket.SeekTo has unexpected decoded type %T", raw)
+		}
+		p.SeekTo = value
+	}
+	{
+		raw, err := r.Read("ClientboundUpdateSoundDataPacket.Pause", Shape{Kind: "optional", Value: &Shape{Kind: "union", Control: &Shape{Kind: "primitive", PrimitiveCode: "var_u32"}, Variants: []ShapeVariant{{Value: 0, Name: "SoundDataEvent::Stop", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Stop", TypeID: "SoundDataEvent::Stop"}}, {Value: 1, Name: "SoundDataEvent::SetVolume", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SetVolume", TypeID: "SoundDataEvent::SetVolume", Fields: []ShapeField{{Ordinal: 0, Name: "Volume", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 2, Name: "SoundDataEvent::SetPitch", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SetPitch", TypeID: "SoundDataEvent::SetPitch", Fields: []ShapeField{{Ordinal: 0, Name: "Pitch", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 3, Name: "SoundDataEvent::Fade", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Fade", TypeID: "SoundDataEvent::Fade", Fields: []ShapeField{{Ordinal: 0, Name: "Duration", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}, {Ordinal: 1, Name: "Target Volume", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 4, Name: "SoundDataEvent::SeekTo", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SeekTo", TypeID: "SoundDataEvent::SeekTo", Fields: []ShapeField{{Ordinal: 0, Name: "Seconds", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 5, Name: "SoundDataEvent::Pause", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Pause", TypeID: "SoundDataEvent::Pause"}}, {Value: 6, Name: "SoundDataEvent::Resume", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Resume", TypeID: "SoundDataEvent::Resume"}}}}})
+		if err != nil {
+			return p, err
+		}
+		value, ok := raw.(*SoundDataEvent)
+		if !ok {
+			return p, fmt.Errorf("field ClientboundUpdateSoundDataPacket.Pause has unexpected decoded type %T", raw)
+		}
+		p.Pause = value
+	}
+	{
+		raw, err := r.Read("ClientboundUpdateSoundDataPacket.Resume", Shape{Kind: "optional", Value: &Shape{Kind: "union", Control: &Shape{Kind: "primitive", PrimitiveCode: "var_u32"}, Variants: []ShapeVariant{{Value: 0, Name: "SoundDataEvent::Stop", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Stop", TypeID: "SoundDataEvent::Stop"}}, {Value: 1, Name: "SoundDataEvent::SetVolume", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SetVolume", TypeID: "SoundDataEvent::SetVolume", Fields: []ShapeField{{Ordinal: 0, Name: "Volume", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 2, Name: "SoundDataEvent::SetPitch", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SetPitch", TypeID: "SoundDataEvent::SetPitch", Fields: []ShapeField{{Ordinal: 0, Name: "Pitch", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 3, Name: "SoundDataEvent::Fade", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Fade", TypeID: "SoundDataEvent::Fade", Fields: []ShapeField{{Ordinal: 0, Name: "Duration", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}, {Ordinal: 1, Name: "Target Volume", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 4, Name: "SoundDataEvent::SeekTo", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::SeekTo", TypeID: "SoundDataEvent::SeekTo", Fields: []ShapeField{{Ordinal: 0, Name: "Seconds", Shape: Shape{Kind: "primitive", PrimitiveCode: "f32le"}}}}}, {Value: 5, Name: "SoundDataEvent::Pause", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Pause", TypeID: "SoundDataEvent::Pause"}}, {Value: 6, Name: "SoundDataEvent::Resume", Shape: Shape{Kind: "struct", Semantic: "SoundDataEvent::Resume", TypeID: "SoundDataEvent::Resume"}}}}})
+		if err != nil {
+			return p, err
+		}
+		value, ok := raw.(*SoundDataEvent)
+		if !ok {
+			return p, fmt.Errorf("field ClientboundUpdateSoundDataPacket.Resume has unexpected decoded type %T", raw)
+		}
+		p.Resume = value
 	}
 	return p, nil
 }

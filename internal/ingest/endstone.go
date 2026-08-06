@@ -4,11 +4,9 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"reflect"
 	"sort"
 	"strconv"
 	"strings"
-	"unicode"
 
 	"protocolgen/internal/claims"
 	"protocolgen/internal/manifest"
@@ -113,7 +111,8 @@ func ParseEndstone(root string, pin manifest.SourcePin, corrections string) (cla
 		if !ok {
 			return claims.Result{}, fmt.Errorf("Endstone packet %s has no fields array", packet.name)
 		}
-		fields = normalizeEndstoneFields(fields)
+		direction := parseDirection(object)
+		result.Packets = append(result.Packets, claims.PacketClaim{SourceID: pin.ID, Locator: "packets/" + packet.name + ".json", ID: packet.id, Name: packet.name, Direction: direction})
 		for index, rawField := range fields {
 			field, ok := asMap(rawField)
 			if !ok {
@@ -136,7 +135,7 @@ func ParseEndstone(root string, pin manifest.SourcePin, corrections string) (cla
 			if ignored {
 				node = manifest.Ignored(node)
 			}
-			claim := makeClaim(pin, packet.id, packet.name, parseDirection(object), index, name, field, node, "packets/"+packet.name+".json#/fields/"+fmt.Sprint(index))
+			claim := makeClaim(pin, packet.id, packet.name, direction, index, name, field, node, "packets/"+packet.name+".json#/fields/"+fmt.Sprint(index))
 			claim.Reserved, claim.Ignored, claim.Compatibility = reserved, ignored, compatibility
 			result.Claims = append(result.Claims, claim)
 		}
@@ -219,7 +218,6 @@ func (l *endstoneLowerer) lowerContainer(object map[string]any, name, context st
 	if !ok {
 		return manifest.Unresolved("Endstone type "+name+" has no fields", true)
 	}
-	values = normalizeEndstoneFields(values)
 	fields := make([]manifest.Field, 0, len(values))
 	for index, rawField := range values {
 		field, ok := asMap(rawField)
@@ -269,7 +267,7 @@ func (l *endstoneLowerer) lowerTypeValue(value any, hint, context string) manife
 		discriminants := l.enumValues(enumName)
 		cases, ok := asArray(object["cases"])
 		if ok {
-			if variants, found := l.constrainedSwitchVariants(cases, asString(switchObject["name"]), enumName, context); found {
+			if variants, found := l.constrainedSwitchVariants(cases, control, asString(switchObject["name"]), enumName, context); found {
 				return manifest.Union(control, variants...)
 			}
 		}
@@ -322,102 +320,7 @@ func (l *endstoneLowerer) lowerTypeValue(value any, hint, context string) manife
 	return manifest.Unresolved("unsupported Endstone type at "+context, true)
 }
 
-// normalizeEndstoneFields collapses Cereal's repeated reflection view of one
-// union into the single wire field represented by its shared switch.
-func normalizeEndstoneFields(fields []any) []any {
-	result := make([]any, 0, len(fields))
-	for index := 0; index < len(fields); {
-		field, ok := asMap(fields[index])
-		if !ok {
-			result = append(result, fields[index])
-			index++
-			continue
-		}
-		typeObject, ok := asMap(field["type"])
-		if !ok {
-			result = append(result, fields[index])
-			index++
-			continue
-		}
-		cases, ok := asArray(typeObject["cases"])
-		if !ok || len(cases) < 2 || index+len(cases) > len(fields) {
-			result = append(result, fields[index])
-			index++
-			continue
-		}
-
-		matches := true
-		for offset, rawCase := range cases {
-			candidate, fieldOK := asMap(fields[index+offset])
-			caseName, caseOK := rawCase.(string)
-			if !fieldOK || !caseOK || !reflect.DeepEqual(candidate["type"], field["type"]) ||
-				normalizeCerealName(asString(candidate["name"])) != normalizeCerealName(shortCerealName(caseName)) {
-				matches = false
-				break
-			}
-		}
-		if !matches {
-			result = append(result, fields[index])
-			index++
-			continue
-		}
-		collapsed := cloneMap(field)
-		if name := cerealUnionFieldName(cases); name != "" {
-			collapsed["name"] = name
-		}
-		result = append(result, collapsed)
-		index += len(cases)
-	}
-	return result
-}
-
-func cerealUnionFieldName(cases []any) string {
-	common := ""
-	for _, rawCase := range cases {
-		caseName, ok := rawCase.(string)
-		if !ok {
-			return ""
-		}
-		position := strings.LastIndex(caseName, "::")
-		if position < 0 {
-			return ""
-		}
-		namespace := caseName[:position]
-		if common == "" {
-			common = namespace
-		} else if common != namespace {
-			return ""
-		}
-	}
-	base := shortCerealName(common)
-	switch {
-	case strings.HasSuffix(base, "PacketPayload"), strings.HasSuffix(base, "Payload"):
-		return "Payload"
-	case strings.HasSuffix(base, "Event"):
-		return "Event"
-	default:
-		return base
-	}
-}
-
-func shortCerealName(name string) string {
-	if position := strings.LastIndex(name, "::"); position >= 0 {
-		return name[position+2:]
-	}
-	return name
-}
-
-func normalizeCerealName(name string) string {
-	var builder strings.Builder
-	for _, r := range name {
-		if unicode.IsLetter(r) || unicode.IsDigit(r) {
-			builder.WriteRune(unicode.ToLower(r))
-		}
-	}
-	return builder.String()
-}
-
-func (l *endstoneLowerer) constrainedSwitchVariants(cases []any, controlField, enumName, context string) ([]manifest.Variant, bool) {
+func (l *endstoneLowerer) constrainedSwitchVariants(cases []any, control manifest.Node, controlField, enumName, context string) ([]manifest.Variant, bool) {
 	names := map[int64]string{}
 	for _, value := range l.enumValuesWithNames(enumName) {
 		names[value.value] = value.name
@@ -457,7 +360,11 @@ func (l *endstoneLowerer) constrainedSwitchVariants(cases []any, controlField, e
 		if payload.Kind != manifest.KindStruct || len(payload.Fields) == 0 {
 			return nil, false
 		}
-		payload.Fields = append([]manifest.Field(nil), payload.Fields[1:]...)
+		discriminatorNode := l.lowerTypeValue(discriminator["type"], caseName+"Discriminator", context+"."+asString(discriminator["name"]))
+		discriminatorNode = l.applyFieldWrappers(discriminatorNode, discriminator, context+"."+asString(discriminator["name"]))
+		if samePrimitiveEncoding(control, discriminatorNode) {
+			payload.Fields = append([]manifest.Field(nil), payload.Fields[1:]...)
+		}
 		for _, rawValue := range values {
 			value, ok := asInt(rawValue)
 			if !ok || seen[value] {
@@ -473,6 +380,16 @@ func (l *endstoneLowerer) constrainedSwitchVariants(cases []any, controlField, e
 	}
 	sort.Slice(variants, func(i, j int) bool { return variants[i].Value < variants[j].Value })
 	return variants, len(variants) != 0
+}
+
+func samePrimitiveEncoding(left, right manifest.Node) bool {
+	if left.Kind == manifest.KindEnum {
+		left.Kind = manifest.KindPrimitive
+	}
+	if right.Kind == manifest.KindEnum {
+		right.Kind = manifest.KindPrimitive
+	}
+	return left.Kind == manifest.KindPrimitive && right.Kind == manifest.KindPrimitive && left.Primitive != nil && right.Primitive != nil && *left.Primitive == *right.Primitive
 }
 
 func (l *endstoneLowerer) lowerEnum(name string, underlying manifest.Node, context string, allowed map[int64]bool) manifest.Node {

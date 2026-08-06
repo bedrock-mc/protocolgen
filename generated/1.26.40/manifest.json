@@ -207,6 +207,12 @@
       ]
     },
     {
+      "id": 4,
+      "name": "ClientToServerHandshakePacket",
+      "direction": "unknown",
+      "fields": null
+    },
+    {
       "id": 5,
       "name": "DisconnectPacket",
       "direction": "unknown",
@@ -49084,6 +49090,12 @@
       ]
     },
     {
+      "id": 102,
+      "name": "ServerSettingsRequestPacket",
+      "direction": "unknown",
+      "fields": null
+    },
+    {
       "id": 103,
       "name": "ServerSettingsResponsePacket",
       "direction": "unknown",
@@ -95808,6 +95820,12 @@
       ]
     },
     {
+      "id": 305,
+      "name": "RefreshEntitlementsPacket",
+      "direction": "unknown",
+      "fields": null
+    },
+    {
       "id": 306,
       "name": "PlayerToggleCrafterSlotRequestPacket",
       "direction": "unknown",
@@ -96402,6 +96420,12 @@
           }
         }
       ]
+    },
+    {
+      "id": 310,
+      "name": "ClientboundCloseFormPacket",
+      "direction": "unknown",
+      "fields": null
     },
     {
       "id": 312,
@@ -100098,13 +100122,22 @@
       "fields": [
         {
           "ordinal": 0,
-          "name": "Payload",
-          "semantic": "Payload",
+          "name": "Action",
+          "semantic": "Action",
           "encode": {
             "kind": "union",
             "variants": [
               {
                 "value": 0,
+                "name": "PlayerVideoCapturePacketPayload::StopVideoCapture",
+                "encode": {
+                  "kind": "struct",
+                  "semantic": "PlayerVideoCapturePacketPayload::StopVideoCapture",
+                  "type_id": "PlayerVideoCapturePacketPayload::StopVideoCapture"
+                }
+              },
+              {
+                "value": 1,
                 "name": "PlayerVideoCapturePacketPayload::StartVideoCapture",
                 "encode": {
                   "kind": "struct",
@@ -100160,22 +100193,13 @@
                     }
                   ]
                 }
-              },
-              {
-                "value": 1,
-                "name": "PlayerVideoCapturePacketPayload::StopVideoCapture",
-                "encode": {
-                  "kind": "struct",
-                  "semantic": "PlayerVideoCapturePacketPayload::StopVideoCapture",
-                  "type_id": "PlayerVideoCapturePacketPayload::StopVideoCapture"
-                }
               }
             ],
             "control": {
               "kind": "primitive",
               "primitive": {
-                "code": "var_u32",
-                "width": 32,
+                "code": "u8",
+                "width": 8,
                 "signed": false,
                 "zigzag": false,
                 "endianness": "none"
@@ -100536,6 +100560,38 @@
                   "type_id": "PlayerLocationPacketPayload::CoordinatesLocation",
                   "fields": [
                     {
+                      "ordinal": 0,
+                      "name": "Packet Type",
+                      "semantic": "Packet Type",
+                      "encode": {
+                        "kind": "enum",
+                        "semantic": "PlayerLocationPacketPayload::Type",
+                        "type_id": "enums/PlayerLocationPacketPayload::Type",
+                        "primitive": {
+                          "code": "zigzag_i32",
+                          "width": 32,
+                          "signed": true,
+                          "zigzag": true,
+                          "endianness": "none"
+                        },
+                        "variants": [
+                          {
+                            "value": 0,
+                            "name": "PLAYER_LOCATION_COORDINATES",
+                            "encode": {
+                              "kind": "void"
+                            }
+                          }
+                        ]
+                      },
+                      "symmetry": "symmetric",
+                      "provenance": {
+                        "pins": [
+                          "endstone"
+                        ]
+                      }
+                    },
+                    {
                       "ordinal": 1,
                       "name": "Position",
                       "semantic": "Position",
@@ -100625,17 +100681,51 @@
                 "encode": {
                   "kind": "struct",
                   "semantic": "PlayerLocationPacketPayload::HiddenLocation",
-                  "type_id": "PlayerLocationPacketPayload::HiddenLocation"
+                  "type_id": "PlayerLocationPacketPayload::HiddenLocation",
+                  "fields": [
+                    {
+                      "ordinal": 0,
+                      "name": "Packet Type",
+                      "semantic": "Packet Type",
+                      "encode": {
+                        "kind": "enum",
+                        "semantic": "PlayerLocationPacketPayload::Type",
+                        "type_id": "enums/PlayerLocationPacketPayload::Type",
+                        "primitive": {
+                          "code": "zigzag_i32",
+                          "width": 32,
+                          "signed": true,
+                          "zigzag": true,
+                          "endianness": "none"
+                        },
+                        "variants": [
+                          {
+                            "value": 1,
+                            "name": "PLAYER_LOCATION_HIDE",
+                            "encode": {
+                              "kind": "void"
+                            }
+                          }
+                        ]
+                      },
+                      "symmetry": "symmetric",
+                      "provenance": {
+                        "pins": [
+                          "endstone"
+                        ]
+                      }
+                    }
+                  ]
                 }
               }
             ],
             "control": {
               "kind": "primitive",
               "primitive": {
-                "code": "zigzag_i32",
+                "code": "var_u32",
                 "width": 32,
-                "signed": true,
-                "zigzag": true,
+                "signed": false,
+                "zigzag": false,
                 "endianness": "none"
               }
             }
@@ -103965,6 +104055,12 @@
       ]
     },
     {
+      "id": 335,
+      "name": "ClientboundDataDrivenUIReloadPacket",
+      "direction": "unknown",
+      "fields": null
+    },
+    {
       "id": 336,
       "name": "ClientboundTextureShiftPacket",
       "direction": "unknown",
@@ -105164,6 +105260,12 @@
           }
         }
       ]
+    },
+    {
+      "id": 340,
+      "name": "ResourcePacksReadyForValidationPacket",
+      "direction": "unknown",
+      "fields": null
     },
     {
       "id": 341,
@@ -109126,196 +109228,1429 @@
         },
         {
           "ordinal": 1,
-          "name": "Event",
-          "semantic": "Event",
+          "name": "Stop",
+          "semantic": "Stop",
           "encode": {
-            "kind": "union",
-            "variants": [
-              {
-                "value": 0,
-                "name": "SoundDataEvent::Stop",
-                "encode": {
-                  "kind": "struct",
-                  "semantic": "SoundDataEvent::Stop",
-                  "type_id": "SoundDataEvent::Stop"
-                }
-              },
-              {
-                "value": 1,
-                "name": "SoundDataEvent::SetVolume",
-                "encode": {
-                  "kind": "struct",
-                  "semantic": "SoundDataEvent::SetVolume",
-                  "type_id": "SoundDataEvent::SetVolume",
-                  "fields": [
-                    {
-                      "ordinal": 0,
-                      "name": "Volume",
-                      "semantic": "Volume",
-                      "encode": {
-                        "kind": "primitive",
-                        "primitive": {
-                          "code": "f32le",
-                          "width": 32,
-                          "signed": false,
-                          "zigzag": false,
-                          "endianness": "little"
+            "kind": "optional",
+            "value": {
+              "kind": "union",
+              "variants": [
+                {
+                  "value": 0,
+                  "name": "SoundDataEvent::Stop",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::Stop",
+                    "type_id": "SoundDataEvent::Stop"
+                  }
+                },
+                {
+                  "value": 1,
+                  "name": "SoundDataEvent::SetVolume",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::SetVolume",
+                    "type_id": "SoundDataEvent::SetVolume",
+                    "fields": [
+                      {
+                        "ordinal": 0,
+                        "name": "Volume",
+                        "semantic": "Volume",
+                        "encode": {
+                          "kind": "primitive",
+                          "primitive": {
+                            "code": "f32le",
+                            "width": 32,
+                            "signed": false,
+                            "zigzag": false,
+                            "endianness": "little"
+                          }
+                        },
+                        "symmetry": "symmetric",
+                        "provenance": {
+                          "pins": [
+                            "endstone"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "value": 2,
+                  "name": "SoundDataEvent::SetPitch",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::SetPitch",
+                    "type_id": "SoundDataEvent::SetPitch",
+                    "fields": [
+                      {
+                        "ordinal": 0,
+                        "name": "Pitch",
+                        "semantic": "Pitch",
+                        "encode": {
+                          "kind": "primitive",
+                          "primitive": {
+                            "code": "f32le",
+                            "width": 32,
+                            "signed": false,
+                            "zigzag": false,
+                            "endianness": "little"
+                          }
+                        },
+                        "symmetry": "symmetric",
+                        "provenance": {
+                          "pins": [
+                            "endstone"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "value": 3,
+                  "name": "SoundDataEvent::Fade",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::Fade",
+                    "type_id": "SoundDataEvent::Fade",
+                    "fields": [
+                      {
+                        "ordinal": 0,
+                        "name": "Duration",
+                        "semantic": "Duration",
+                        "encode": {
+                          "kind": "primitive",
+                          "primitive": {
+                            "code": "f32le",
+                            "width": 32,
+                            "signed": false,
+                            "zigzag": false,
+                            "endianness": "little"
+                          }
+                        },
+                        "symmetry": "symmetric",
+                        "provenance": {
+                          "pins": [
+                            "endstone"
+                          ]
                         }
                       },
-                      "symmetry": "symmetric",
-                      "provenance": {
-                        "pins": [
-                          "endstone"
-                        ]
-                      }
-                    }
-                  ]
-                }
-              },
-              {
-                "value": 2,
-                "name": "SoundDataEvent::SetPitch",
-                "encode": {
-                  "kind": "struct",
-                  "semantic": "SoundDataEvent::SetPitch",
-                  "type_id": "SoundDataEvent::SetPitch",
-                  "fields": [
-                    {
-                      "ordinal": 0,
-                      "name": "Pitch",
-                      "semantic": "Pitch",
-                      "encode": {
-                        "kind": "primitive",
-                        "primitive": {
-                          "code": "f32le",
-                          "width": 32,
-                          "signed": false,
-                          "zigzag": false,
-                          "endianness": "little"
+                      {
+                        "ordinal": 1,
+                        "name": "Target Volume",
+                        "semantic": "Target Volume",
+                        "encode": {
+                          "kind": "primitive",
+                          "primitive": {
+                            "code": "f32le",
+                            "width": 32,
+                            "signed": false,
+                            "zigzag": false,
+                            "endianness": "little"
+                          }
+                        },
+                        "symmetry": "symmetric",
+                        "provenance": {
+                          "pins": [
+                            "endstone"
+                          ]
                         }
-                      },
-                      "symmetry": "symmetric",
-                      "provenance": {
-                        "pins": [
-                          "endstone"
-                        ]
                       }
-                    }
-                  ]
-                }
-              },
-              {
-                "value": 3,
-                "name": "SoundDataEvent::Fade",
-                "encode": {
-                  "kind": "struct",
-                  "semantic": "SoundDataEvent::Fade",
-                  "type_id": "SoundDataEvent::Fade",
-                  "fields": [
-                    {
-                      "ordinal": 0,
-                      "name": "Duration",
-                      "semantic": "Duration",
-                      "encode": {
-                        "kind": "primitive",
-                        "primitive": {
-                          "code": "f32le",
-                          "width": 32,
-                          "signed": false,
-                          "zigzag": false,
-                          "endianness": "little"
+                    ]
+                  }
+                },
+                {
+                  "value": 4,
+                  "name": "SoundDataEvent::SeekTo",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::SeekTo",
+                    "type_id": "SoundDataEvent::SeekTo",
+                    "fields": [
+                      {
+                        "ordinal": 0,
+                        "name": "Seconds",
+                        "semantic": "Seconds",
+                        "encode": {
+                          "kind": "primitive",
+                          "primitive": {
+                            "code": "f32le",
+                            "width": 32,
+                            "signed": false,
+                            "zigzag": false,
+                            "endianness": "little"
+                          }
+                        },
+                        "symmetry": "symmetric",
+                        "provenance": {
+                          "pins": [
+                            "endstone"
+                          ]
                         }
-                      },
-                      "symmetry": "symmetric",
-                      "provenance": {
-                        "pins": [
-                          "endstone"
-                        ]
                       }
-                    },
-                    {
-                      "ordinal": 1,
-                      "name": "Target Volume",
-                      "semantic": "Target Volume",
-                      "encode": {
-                        "kind": "primitive",
-                        "primitive": {
-                          "code": "f32le",
-                          "width": 32,
-                          "signed": false,
-                          "zigzag": false,
-                          "endianness": "little"
-                        }
-                      },
-                      "symmetry": "symmetric",
-                      "provenance": {
-                        "pins": [
-                          "endstone"
-                        ]
-                      }
-                    }
-                  ]
+                    ]
+                  }
+                },
+                {
+                  "value": 5,
+                  "name": "SoundDataEvent::Pause",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::Pause",
+                    "type_id": "SoundDataEvent::Pause"
+                  }
+                },
+                {
+                  "value": 6,
+                  "name": "SoundDataEvent::Resume",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::Resume",
+                    "type_id": "SoundDataEvent::Resume"
+                  }
                 }
-              },
-              {
-                "value": 4,
-                "name": "SoundDataEvent::SeekTo",
-                "encode": {
-                  "kind": "struct",
-                  "semantic": "SoundDataEvent::SeekTo",
-                  "type_id": "SoundDataEvent::SeekTo",
-                  "fields": [
-                    {
-                      "ordinal": 0,
-                      "name": "Seconds",
-                      "semantic": "Seconds",
-                      "encode": {
-                        "kind": "primitive",
-                        "primitive": {
-                          "code": "f32le",
-                          "width": 32,
-                          "signed": false,
-                          "zigzag": false,
-                          "endianness": "little"
-                        }
-                      },
-                      "symmetry": "symmetric",
-                      "provenance": {
-                        "pins": [
-                          "endstone"
-                        ]
-                      }
-                    }
-                  ]
-                }
-              },
-              {
-                "value": 5,
-                "name": "SoundDataEvent::Pause",
-                "encode": {
-                  "kind": "struct",
-                  "semantic": "SoundDataEvent::Pause",
-                  "type_id": "SoundDataEvent::Pause"
-                }
-              },
-              {
-                "value": 6,
-                "name": "SoundDataEvent::Resume",
-                "encode": {
-                  "kind": "struct",
-                  "semantic": "SoundDataEvent::Resume",
-                  "type_id": "SoundDataEvent::Resume"
+              ],
+              "control": {
+                "kind": "primitive",
+                "primitive": {
+                  "code": "var_u32",
+                  "width": 32,
+                  "signed": false,
+                  "zigzag": false,
+                  "endianness": "none"
                 }
               }
-            ],
-            "control": {
-              "kind": "primitive",
-              "primitive": {
-                "code": "var_u32",
-                "width": 32,
-                "signed": false,
-                "zigzag": false,
-                "endianness": "none"
+            }
+          },
+          "symmetry": "symmetric",
+          "provenance": {
+            "pins": [
+              "endstone"
+            ]
+          }
+        },
+        {
+          "ordinal": 2,
+          "name": "SetVolume",
+          "semantic": "SetVolume",
+          "encode": {
+            "kind": "optional",
+            "value": {
+              "kind": "union",
+              "variants": [
+                {
+                  "value": 0,
+                  "name": "SoundDataEvent::Stop",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::Stop",
+                    "type_id": "SoundDataEvent::Stop"
+                  }
+                },
+                {
+                  "value": 1,
+                  "name": "SoundDataEvent::SetVolume",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::SetVolume",
+                    "type_id": "SoundDataEvent::SetVolume",
+                    "fields": [
+                      {
+                        "ordinal": 0,
+                        "name": "Volume",
+                        "semantic": "Volume",
+                        "encode": {
+                          "kind": "primitive",
+                          "primitive": {
+                            "code": "f32le",
+                            "width": 32,
+                            "signed": false,
+                            "zigzag": false,
+                            "endianness": "little"
+                          }
+                        },
+                        "symmetry": "symmetric",
+                        "provenance": {
+                          "pins": [
+                            "endstone"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "value": 2,
+                  "name": "SoundDataEvent::SetPitch",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::SetPitch",
+                    "type_id": "SoundDataEvent::SetPitch",
+                    "fields": [
+                      {
+                        "ordinal": 0,
+                        "name": "Pitch",
+                        "semantic": "Pitch",
+                        "encode": {
+                          "kind": "primitive",
+                          "primitive": {
+                            "code": "f32le",
+                            "width": 32,
+                            "signed": false,
+                            "zigzag": false,
+                            "endianness": "little"
+                          }
+                        },
+                        "symmetry": "symmetric",
+                        "provenance": {
+                          "pins": [
+                            "endstone"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "value": 3,
+                  "name": "SoundDataEvent::Fade",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::Fade",
+                    "type_id": "SoundDataEvent::Fade",
+                    "fields": [
+                      {
+                        "ordinal": 0,
+                        "name": "Duration",
+                        "semantic": "Duration",
+                        "encode": {
+                          "kind": "primitive",
+                          "primitive": {
+                            "code": "f32le",
+                            "width": 32,
+                            "signed": false,
+                            "zigzag": false,
+                            "endianness": "little"
+                          }
+                        },
+                        "symmetry": "symmetric",
+                        "provenance": {
+                          "pins": [
+                            "endstone"
+                          ]
+                        }
+                      },
+                      {
+                        "ordinal": 1,
+                        "name": "Target Volume",
+                        "semantic": "Target Volume",
+                        "encode": {
+                          "kind": "primitive",
+                          "primitive": {
+                            "code": "f32le",
+                            "width": 32,
+                            "signed": false,
+                            "zigzag": false,
+                            "endianness": "little"
+                          }
+                        },
+                        "symmetry": "symmetric",
+                        "provenance": {
+                          "pins": [
+                            "endstone"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "value": 4,
+                  "name": "SoundDataEvent::SeekTo",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::SeekTo",
+                    "type_id": "SoundDataEvent::SeekTo",
+                    "fields": [
+                      {
+                        "ordinal": 0,
+                        "name": "Seconds",
+                        "semantic": "Seconds",
+                        "encode": {
+                          "kind": "primitive",
+                          "primitive": {
+                            "code": "f32le",
+                            "width": 32,
+                            "signed": false,
+                            "zigzag": false,
+                            "endianness": "little"
+                          }
+                        },
+                        "symmetry": "symmetric",
+                        "provenance": {
+                          "pins": [
+                            "endstone"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "value": 5,
+                  "name": "SoundDataEvent::Pause",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::Pause",
+                    "type_id": "SoundDataEvent::Pause"
+                  }
+                },
+                {
+                  "value": 6,
+                  "name": "SoundDataEvent::Resume",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::Resume",
+                    "type_id": "SoundDataEvent::Resume"
+                  }
+                }
+              ],
+              "control": {
+                "kind": "primitive",
+                "primitive": {
+                  "code": "var_u32",
+                  "width": 32,
+                  "signed": false,
+                  "zigzag": false,
+                  "endianness": "none"
+                }
+              }
+            }
+          },
+          "symmetry": "symmetric",
+          "provenance": {
+            "pins": [
+              "endstone"
+            ]
+          }
+        },
+        {
+          "ordinal": 3,
+          "name": "SetPitch",
+          "semantic": "SetPitch",
+          "encode": {
+            "kind": "optional",
+            "value": {
+              "kind": "union",
+              "variants": [
+                {
+                  "value": 0,
+                  "name": "SoundDataEvent::Stop",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::Stop",
+                    "type_id": "SoundDataEvent::Stop"
+                  }
+                },
+                {
+                  "value": 1,
+                  "name": "SoundDataEvent::SetVolume",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::SetVolume",
+                    "type_id": "SoundDataEvent::SetVolume",
+                    "fields": [
+                      {
+                        "ordinal": 0,
+                        "name": "Volume",
+                        "semantic": "Volume",
+                        "encode": {
+                          "kind": "primitive",
+                          "primitive": {
+                            "code": "f32le",
+                            "width": 32,
+                            "signed": false,
+                            "zigzag": false,
+                            "endianness": "little"
+                          }
+                        },
+                        "symmetry": "symmetric",
+                        "provenance": {
+                          "pins": [
+                            "endstone"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "value": 2,
+                  "name": "SoundDataEvent::SetPitch",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::SetPitch",
+                    "type_id": "SoundDataEvent::SetPitch",
+                    "fields": [
+                      {
+                        "ordinal": 0,
+                        "name": "Pitch",
+                        "semantic": "Pitch",
+                        "encode": {
+                          "kind": "primitive",
+                          "primitive": {
+                            "code": "f32le",
+                            "width": 32,
+                            "signed": false,
+                            "zigzag": false,
+                            "endianness": "little"
+                          }
+                        },
+                        "symmetry": "symmetric",
+                        "provenance": {
+                          "pins": [
+                            "endstone"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "value": 3,
+                  "name": "SoundDataEvent::Fade",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::Fade",
+                    "type_id": "SoundDataEvent::Fade",
+                    "fields": [
+                      {
+                        "ordinal": 0,
+                        "name": "Duration",
+                        "semantic": "Duration",
+                        "encode": {
+                          "kind": "primitive",
+                          "primitive": {
+                            "code": "f32le",
+                            "width": 32,
+                            "signed": false,
+                            "zigzag": false,
+                            "endianness": "little"
+                          }
+                        },
+                        "symmetry": "symmetric",
+                        "provenance": {
+                          "pins": [
+                            "endstone"
+                          ]
+                        }
+                      },
+                      {
+                        "ordinal": 1,
+                        "name": "Target Volume",
+                        "semantic": "Target Volume",
+                        "encode": {
+                          "kind": "primitive",
+                          "primitive": {
+                            "code": "f32le",
+                            "width": 32,
+                            "signed": false,
+                            "zigzag": false,
+                            "endianness": "little"
+                          }
+                        },
+                        "symmetry": "symmetric",
+                        "provenance": {
+                          "pins": [
+                            "endstone"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "value": 4,
+                  "name": "SoundDataEvent::SeekTo",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::SeekTo",
+                    "type_id": "SoundDataEvent::SeekTo",
+                    "fields": [
+                      {
+                        "ordinal": 0,
+                        "name": "Seconds",
+                        "semantic": "Seconds",
+                        "encode": {
+                          "kind": "primitive",
+                          "primitive": {
+                            "code": "f32le",
+                            "width": 32,
+                            "signed": false,
+                            "zigzag": false,
+                            "endianness": "little"
+                          }
+                        },
+                        "symmetry": "symmetric",
+                        "provenance": {
+                          "pins": [
+                            "endstone"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "value": 5,
+                  "name": "SoundDataEvent::Pause",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::Pause",
+                    "type_id": "SoundDataEvent::Pause"
+                  }
+                },
+                {
+                  "value": 6,
+                  "name": "SoundDataEvent::Resume",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::Resume",
+                    "type_id": "SoundDataEvent::Resume"
+                  }
+                }
+              ],
+              "control": {
+                "kind": "primitive",
+                "primitive": {
+                  "code": "var_u32",
+                  "width": 32,
+                  "signed": false,
+                  "zigzag": false,
+                  "endianness": "none"
+                }
+              }
+            }
+          },
+          "symmetry": "symmetric",
+          "provenance": {
+            "pins": [
+              "endstone"
+            ]
+          }
+        },
+        {
+          "ordinal": 4,
+          "name": "Fade",
+          "semantic": "Fade",
+          "encode": {
+            "kind": "optional",
+            "value": {
+              "kind": "union",
+              "variants": [
+                {
+                  "value": 0,
+                  "name": "SoundDataEvent::Stop",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::Stop",
+                    "type_id": "SoundDataEvent::Stop"
+                  }
+                },
+                {
+                  "value": 1,
+                  "name": "SoundDataEvent::SetVolume",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::SetVolume",
+                    "type_id": "SoundDataEvent::SetVolume",
+                    "fields": [
+                      {
+                        "ordinal": 0,
+                        "name": "Volume",
+                        "semantic": "Volume",
+                        "encode": {
+                          "kind": "primitive",
+                          "primitive": {
+                            "code": "f32le",
+                            "width": 32,
+                            "signed": false,
+                            "zigzag": false,
+                            "endianness": "little"
+                          }
+                        },
+                        "symmetry": "symmetric",
+                        "provenance": {
+                          "pins": [
+                            "endstone"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "value": 2,
+                  "name": "SoundDataEvent::SetPitch",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::SetPitch",
+                    "type_id": "SoundDataEvent::SetPitch",
+                    "fields": [
+                      {
+                        "ordinal": 0,
+                        "name": "Pitch",
+                        "semantic": "Pitch",
+                        "encode": {
+                          "kind": "primitive",
+                          "primitive": {
+                            "code": "f32le",
+                            "width": 32,
+                            "signed": false,
+                            "zigzag": false,
+                            "endianness": "little"
+                          }
+                        },
+                        "symmetry": "symmetric",
+                        "provenance": {
+                          "pins": [
+                            "endstone"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "value": 3,
+                  "name": "SoundDataEvent::Fade",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::Fade",
+                    "type_id": "SoundDataEvent::Fade",
+                    "fields": [
+                      {
+                        "ordinal": 0,
+                        "name": "Duration",
+                        "semantic": "Duration",
+                        "encode": {
+                          "kind": "primitive",
+                          "primitive": {
+                            "code": "f32le",
+                            "width": 32,
+                            "signed": false,
+                            "zigzag": false,
+                            "endianness": "little"
+                          }
+                        },
+                        "symmetry": "symmetric",
+                        "provenance": {
+                          "pins": [
+                            "endstone"
+                          ]
+                        }
+                      },
+                      {
+                        "ordinal": 1,
+                        "name": "Target Volume",
+                        "semantic": "Target Volume",
+                        "encode": {
+                          "kind": "primitive",
+                          "primitive": {
+                            "code": "f32le",
+                            "width": 32,
+                            "signed": false,
+                            "zigzag": false,
+                            "endianness": "little"
+                          }
+                        },
+                        "symmetry": "symmetric",
+                        "provenance": {
+                          "pins": [
+                            "endstone"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "value": 4,
+                  "name": "SoundDataEvent::SeekTo",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::SeekTo",
+                    "type_id": "SoundDataEvent::SeekTo",
+                    "fields": [
+                      {
+                        "ordinal": 0,
+                        "name": "Seconds",
+                        "semantic": "Seconds",
+                        "encode": {
+                          "kind": "primitive",
+                          "primitive": {
+                            "code": "f32le",
+                            "width": 32,
+                            "signed": false,
+                            "zigzag": false,
+                            "endianness": "little"
+                          }
+                        },
+                        "symmetry": "symmetric",
+                        "provenance": {
+                          "pins": [
+                            "endstone"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "value": 5,
+                  "name": "SoundDataEvent::Pause",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::Pause",
+                    "type_id": "SoundDataEvent::Pause"
+                  }
+                },
+                {
+                  "value": 6,
+                  "name": "SoundDataEvent::Resume",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::Resume",
+                    "type_id": "SoundDataEvent::Resume"
+                  }
+                }
+              ],
+              "control": {
+                "kind": "primitive",
+                "primitive": {
+                  "code": "var_u32",
+                  "width": 32,
+                  "signed": false,
+                  "zigzag": false,
+                  "endianness": "none"
+                }
+              }
+            }
+          },
+          "symmetry": "symmetric",
+          "provenance": {
+            "pins": [
+              "endstone"
+            ]
+          }
+        },
+        {
+          "ordinal": 5,
+          "name": "SeekTo",
+          "semantic": "SeekTo",
+          "encode": {
+            "kind": "optional",
+            "value": {
+              "kind": "union",
+              "variants": [
+                {
+                  "value": 0,
+                  "name": "SoundDataEvent::Stop",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::Stop",
+                    "type_id": "SoundDataEvent::Stop"
+                  }
+                },
+                {
+                  "value": 1,
+                  "name": "SoundDataEvent::SetVolume",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::SetVolume",
+                    "type_id": "SoundDataEvent::SetVolume",
+                    "fields": [
+                      {
+                        "ordinal": 0,
+                        "name": "Volume",
+                        "semantic": "Volume",
+                        "encode": {
+                          "kind": "primitive",
+                          "primitive": {
+                            "code": "f32le",
+                            "width": 32,
+                            "signed": false,
+                            "zigzag": false,
+                            "endianness": "little"
+                          }
+                        },
+                        "symmetry": "symmetric",
+                        "provenance": {
+                          "pins": [
+                            "endstone"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "value": 2,
+                  "name": "SoundDataEvent::SetPitch",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::SetPitch",
+                    "type_id": "SoundDataEvent::SetPitch",
+                    "fields": [
+                      {
+                        "ordinal": 0,
+                        "name": "Pitch",
+                        "semantic": "Pitch",
+                        "encode": {
+                          "kind": "primitive",
+                          "primitive": {
+                            "code": "f32le",
+                            "width": 32,
+                            "signed": false,
+                            "zigzag": false,
+                            "endianness": "little"
+                          }
+                        },
+                        "symmetry": "symmetric",
+                        "provenance": {
+                          "pins": [
+                            "endstone"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "value": 3,
+                  "name": "SoundDataEvent::Fade",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::Fade",
+                    "type_id": "SoundDataEvent::Fade",
+                    "fields": [
+                      {
+                        "ordinal": 0,
+                        "name": "Duration",
+                        "semantic": "Duration",
+                        "encode": {
+                          "kind": "primitive",
+                          "primitive": {
+                            "code": "f32le",
+                            "width": 32,
+                            "signed": false,
+                            "zigzag": false,
+                            "endianness": "little"
+                          }
+                        },
+                        "symmetry": "symmetric",
+                        "provenance": {
+                          "pins": [
+                            "endstone"
+                          ]
+                        }
+                      },
+                      {
+                        "ordinal": 1,
+                        "name": "Target Volume",
+                        "semantic": "Target Volume",
+                        "encode": {
+                          "kind": "primitive",
+                          "primitive": {
+                            "code": "f32le",
+                            "width": 32,
+                            "signed": false,
+                            "zigzag": false,
+                            "endianness": "little"
+                          }
+                        },
+                        "symmetry": "symmetric",
+                        "provenance": {
+                          "pins": [
+                            "endstone"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "value": 4,
+                  "name": "SoundDataEvent::SeekTo",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::SeekTo",
+                    "type_id": "SoundDataEvent::SeekTo",
+                    "fields": [
+                      {
+                        "ordinal": 0,
+                        "name": "Seconds",
+                        "semantic": "Seconds",
+                        "encode": {
+                          "kind": "primitive",
+                          "primitive": {
+                            "code": "f32le",
+                            "width": 32,
+                            "signed": false,
+                            "zigzag": false,
+                            "endianness": "little"
+                          }
+                        },
+                        "symmetry": "symmetric",
+                        "provenance": {
+                          "pins": [
+                            "endstone"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "value": 5,
+                  "name": "SoundDataEvent::Pause",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::Pause",
+                    "type_id": "SoundDataEvent::Pause"
+                  }
+                },
+                {
+                  "value": 6,
+                  "name": "SoundDataEvent::Resume",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::Resume",
+                    "type_id": "SoundDataEvent::Resume"
+                  }
+                }
+              ],
+              "control": {
+                "kind": "primitive",
+                "primitive": {
+                  "code": "var_u32",
+                  "width": 32,
+                  "signed": false,
+                  "zigzag": false,
+                  "endianness": "none"
+                }
+              }
+            }
+          },
+          "symmetry": "symmetric",
+          "provenance": {
+            "pins": [
+              "endstone"
+            ]
+          }
+        },
+        {
+          "ordinal": 6,
+          "name": "Pause",
+          "semantic": "Pause",
+          "encode": {
+            "kind": "optional",
+            "value": {
+              "kind": "union",
+              "variants": [
+                {
+                  "value": 0,
+                  "name": "SoundDataEvent::Stop",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::Stop",
+                    "type_id": "SoundDataEvent::Stop"
+                  }
+                },
+                {
+                  "value": 1,
+                  "name": "SoundDataEvent::SetVolume",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::SetVolume",
+                    "type_id": "SoundDataEvent::SetVolume",
+                    "fields": [
+                      {
+                        "ordinal": 0,
+                        "name": "Volume",
+                        "semantic": "Volume",
+                        "encode": {
+                          "kind": "primitive",
+                          "primitive": {
+                            "code": "f32le",
+                            "width": 32,
+                            "signed": false,
+                            "zigzag": false,
+                            "endianness": "little"
+                          }
+                        },
+                        "symmetry": "symmetric",
+                        "provenance": {
+                          "pins": [
+                            "endstone"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "value": 2,
+                  "name": "SoundDataEvent::SetPitch",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::SetPitch",
+                    "type_id": "SoundDataEvent::SetPitch",
+                    "fields": [
+                      {
+                        "ordinal": 0,
+                        "name": "Pitch",
+                        "semantic": "Pitch",
+                        "encode": {
+                          "kind": "primitive",
+                          "primitive": {
+                            "code": "f32le",
+                            "width": 32,
+                            "signed": false,
+                            "zigzag": false,
+                            "endianness": "little"
+                          }
+                        },
+                        "symmetry": "symmetric",
+                        "provenance": {
+                          "pins": [
+                            "endstone"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "value": 3,
+                  "name": "SoundDataEvent::Fade",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::Fade",
+                    "type_id": "SoundDataEvent::Fade",
+                    "fields": [
+                      {
+                        "ordinal": 0,
+                        "name": "Duration",
+                        "semantic": "Duration",
+                        "encode": {
+                          "kind": "primitive",
+                          "primitive": {
+                            "code": "f32le",
+                            "width": 32,
+                            "signed": false,
+                            "zigzag": false,
+                            "endianness": "little"
+                          }
+                        },
+                        "symmetry": "symmetric",
+                        "provenance": {
+                          "pins": [
+                            "endstone"
+                          ]
+                        }
+                      },
+                      {
+                        "ordinal": 1,
+                        "name": "Target Volume",
+                        "semantic": "Target Volume",
+                        "encode": {
+                          "kind": "primitive",
+                          "primitive": {
+                            "code": "f32le",
+                            "width": 32,
+                            "signed": false,
+                            "zigzag": false,
+                            "endianness": "little"
+                          }
+                        },
+                        "symmetry": "symmetric",
+                        "provenance": {
+                          "pins": [
+                            "endstone"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "value": 4,
+                  "name": "SoundDataEvent::SeekTo",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::SeekTo",
+                    "type_id": "SoundDataEvent::SeekTo",
+                    "fields": [
+                      {
+                        "ordinal": 0,
+                        "name": "Seconds",
+                        "semantic": "Seconds",
+                        "encode": {
+                          "kind": "primitive",
+                          "primitive": {
+                            "code": "f32le",
+                            "width": 32,
+                            "signed": false,
+                            "zigzag": false,
+                            "endianness": "little"
+                          }
+                        },
+                        "symmetry": "symmetric",
+                        "provenance": {
+                          "pins": [
+                            "endstone"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "value": 5,
+                  "name": "SoundDataEvent::Pause",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::Pause",
+                    "type_id": "SoundDataEvent::Pause"
+                  }
+                },
+                {
+                  "value": 6,
+                  "name": "SoundDataEvent::Resume",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::Resume",
+                    "type_id": "SoundDataEvent::Resume"
+                  }
+                }
+              ],
+              "control": {
+                "kind": "primitive",
+                "primitive": {
+                  "code": "var_u32",
+                  "width": 32,
+                  "signed": false,
+                  "zigzag": false,
+                  "endianness": "none"
+                }
+              }
+            }
+          },
+          "symmetry": "symmetric",
+          "provenance": {
+            "pins": [
+              "endstone"
+            ]
+          }
+        },
+        {
+          "ordinal": 7,
+          "name": "Resume",
+          "semantic": "Resume",
+          "encode": {
+            "kind": "optional",
+            "value": {
+              "kind": "union",
+              "variants": [
+                {
+                  "value": 0,
+                  "name": "SoundDataEvent::Stop",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::Stop",
+                    "type_id": "SoundDataEvent::Stop"
+                  }
+                },
+                {
+                  "value": 1,
+                  "name": "SoundDataEvent::SetVolume",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::SetVolume",
+                    "type_id": "SoundDataEvent::SetVolume",
+                    "fields": [
+                      {
+                        "ordinal": 0,
+                        "name": "Volume",
+                        "semantic": "Volume",
+                        "encode": {
+                          "kind": "primitive",
+                          "primitive": {
+                            "code": "f32le",
+                            "width": 32,
+                            "signed": false,
+                            "zigzag": false,
+                            "endianness": "little"
+                          }
+                        },
+                        "symmetry": "symmetric",
+                        "provenance": {
+                          "pins": [
+                            "endstone"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "value": 2,
+                  "name": "SoundDataEvent::SetPitch",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::SetPitch",
+                    "type_id": "SoundDataEvent::SetPitch",
+                    "fields": [
+                      {
+                        "ordinal": 0,
+                        "name": "Pitch",
+                        "semantic": "Pitch",
+                        "encode": {
+                          "kind": "primitive",
+                          "primitive": {
+                            "code": "f32le",
+                            "width": 32,
+                            "signed": false,
+                            "zigzag": false,
+                            "endianness": "little"
+                          }
+                        },
+                        "symmetry": "symmetric",
+                        "provenance": {
+                          "pins": [
+                            "endstone"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "value": 3,
+                  "name": "SoundDataEvent::Fade",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::Fade",
+                    "type_id": "SoundDataEvent::Fade",
+                    "fields": [
+                      {
+                        "ordinal": 0,
+                        "name": "Duration",
+                        "semantic": "Duration",
+                        "encode": {
+                          "kind": "primitive",
+                          "primitive": {
+                            "code": "f32le",
+                            "width": 32,
+                            "signed": false,
+                            "zigzag": false,
+                            "endianness": "little"
+                          }
+                        },
+                        "symmetry": "symmetric",
+                        "provenance": {
+                          "pins": [
+                            "endstone"
+                          ]
+                        }
+                      },
+                      {
+                        "ordinal": 1,
+                        "name": "Target Volume",
+                        "semantic": "Target Volume",
+                        "encode": {
+                          "kind": "primitive",
+                          "primitive": {
+                            "code": "f32le",
+                            "width": 32,
+                            "signed": false,
+                            "zigzag": false,
+                            "endianness": "little"
+                          }
+                        },
+                        "symmetry": "symmetric",
+                        "provenance": {
+                          "pins": [
+                            "endstone"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "value": 4,
+                  "name": "SoundDataEvent::SeekTo",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::SeekTo",
+                    "type_id": "SoundDataEvent::SeekTo",
+                    "fields": [
+                      {
+                        "ordinal": 0,
+                        "name": "Seconds",
+                        "semantic": "Seconds",
+                        "encode": {
+                          "kind": "primitive",
+                          "primitive": {
+                            "code": "f32le",
+                            "width": 32,
+                            "signed": false,
+                            "zigzag": false,
+                            "endianness": "little"
+                          }
+                        },
+                        "symmetry": "symmetric",
+                        "provenance": {
+                          "pins": [
+                            "endstone"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "value": 5,
+                  "name": "SoundDataEvent::Pause",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::Pause",
+                    "type_id": "SoundDataEvent::Pause"
+                  }
+                },
+                {
+                  "value": 6,
+                  "name": "SoundDataEvent::Resume",
+                  "encode": {
+                    "kind": "struct",
+                    "semantic": "SoundDataEvent::Resume",
+                    "type_id": "SoundDataEvent::Resume"
+                  }
+                }
+              ],
+              "control": {
+                "kind": "primitive",
+                "primitive": {
+                  "code": "var_u32",
+                  "width": 32,
+                  "signed": false,
+                  "zigzag": false,
+                  "endianness": "none"
+                }
               }
             }
           },
@@ -109466,6 +110801,153 @@
           }
         }
       ]
+    }
+  ],
+  "overrides": [
+    {
+      "id": "player-location-primary-selector-is-varuint32",
+      "target": "packets/PlayerLocationPacket.json#/fields/1/type/switch/type",
+      "pre_patch_node_sha256": "sha256:bf57c4578db03c6ed5c2459342c47dd9c24965fd6115e2a63b0503445c6ce45d",
+      "pre_patch_context_sha256": "sha256:e4681811c3f289e2135f6f5e52acbaa70511b66446c0f8f43d214613ac370b14",
+      "post_patch_node_sha256": "sha256:5582e89fd2a6de3fa42a276330594bcd524d152a73a2160deea29ff4213ad9fe",
+      "evidence": [
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/CloudburstMC/Protocol/blob/fbbeee7d/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v2168/serializer/PlayerLocationSerializer_v2168.java",
+          "summary": "The v2168 serializer writes an unsigned selector and then a signed selector before the payload."
+        },
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/blob/0e00fe80f4f3c71572ff6429de40146d1f4412fc/PlayerLocationPacketPayload.json",
+          "summary": "The outer Location oneOf declares a compressed uint32 control value."
+        }
+      ],
+      "reason": "PlayerLocation writes a primary unsigned selector followed by the variant's signed compatibility selector."
+    },
+    {
+      "id": "player-video-capture-is-one-byte-action-union",
+      "target": "packets/PlayerVideoCapturePacket.json#/fields",
+      "pre_patch_node_sha256": "sha256:b4ad67c6483453f56b51fb25ec893027817b0baa926a3845b7773400190c16ce",
+      "pre_patch_context_sha256": "sha256:a9290dfa403801de0034d516b40c54299921807111d15b8cad44bb4c2634df0a",
+      "post_patch_node_sha256": "sha256:d7561c50ec90c47e016c0beabe7129bf268d39044383b7b60eaab5e9fc949ba5",
+      "evidence": [
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/CloudburstMC/Protocol/blob/fbbeee7d/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v786/serializer/PlayerVideoCaptureSerializer_v786.java",
+          "summary": "The serializer writes one action byte and conditionally writes the start payload."
+        },
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/Sandertv/gophertunnel/blob/1653b540/minecraft/protocol/packet/player_video_capture.go",
+          "summary": "gophertunnel independently models STOP=0, START=1 with one byte selector."
+        }
+      ],
+      "reason": "PlayerVideoCapture has one fixed-byte action selector; only the start variant carries frame-rate and file-prefix payload fields."
+    },
+    {
+      "id": "sound-fade-slot-is-optional",
+      "target": "packets/ClientboundUpdateSoundDataPacket.json#/fields/4",
+      "pre_patch_node_sha256": "sha256:6c7ee4e9f9d041bb6908225a36f20387f9ccdc14065472a715a52081c6fbcc20",
+      "pre_patch_context_sha256": "sha256:a08142e949a58958a86c98912eb83085f254bbbacff3b72d2a4a4b596e95697c",
+      "post_patch_node_sha256": "sha256:522f486c984d34d5a5cb48c39b0605102f36ccdb4e40a103395535dc9983ed43",
+      "evidence": [
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/blob/0e00fe80f4f3c71572ff6429de40146d1f4412fc/ClientboundUpdateSoundDataPacketPayload.json",
+          "summary": "Fade is omitted from the required field list."
+        }
+      ],
+      "reason": "Each sound update slot has its own presence flag."
+    },
+    {
+      "id": "sound-pause-slot-is-optional",
+      "target": "packets/ClientboundUpdateSoundDataPacket.json#/fields/6",
+      "pre_patch_node_sha256": "sha256:60967f035095cf46d7bf339755f16d499ce7278f13236ce1582f3b53a9afdd9b",
+      "pre_patch_context_sha256": "sha256:06a81296e506c58715eb32e7329575fd7dd36ab2ed11b26339330c721fab7e4e",
+      "post_patch_node_sha256": "sha256:1d36fd3548b60fc3db722d4faeb07dbabb848d74f5ea901da86bc3b3059ef0fa",
+      "evidence": [
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/blob/0e00fe80f4f3c71572ff6429de40146d1f4412fc/ClientboundUpdateSoundDataPacketPayload.json",
+          "summary": "Pause is omitted from the required field list."
+        }
+      ],
+      "reason": "Each sound update slot has its own presence flag."
+    },
+    {
+      "id": "sound-pitch-slot-is-optional",
+      "target": "packets/ClientboundUpdateSoundDataPacket.json#/fields/3",
+      "pre_patch_node_sha256": "sha256:a8ff29af5546bdd47ebc004e7fad9914879ed824e4a9f2bb5f63617c4bf32496",
+      "pre_patch_context_sha256": "sha256:1ab64cc2d1dda67f9fc12cc163a2d91a0125de0f3be6b1fbc8296f62193f6e75",
+      "post_patch_node_sha256": "sha256:38d7cd1bc1607c2677f0a36103dede8ff5aee79b458f295c07d2889487f48713",
+      "evidence": [
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/blob/0e00fe80f4f3c71572ff6429de40146d1f4412fc/ClientboundUpdateSoundDataPacketPayload.json",
+          "summary": "SetPitch is omitted from the required field list."
+        }
+      ],
+      "reason": "Each sound update slot has its own presence flag."
+    },
+    {
+      "id": "sound-resume-slot-is-optional",
+      "target": "packets/ClientboundUpdateSoundDataPacket.json#/fields/7",
+      "pre_patch_node_sha256": "sha256:565c65a60b96ba911a59c24b6119c8f282f249554d5f67571f3ab472951d6604",
+      "pre_patch_context_sha256": "sha256:179ac6b35fc12265429ab9bc4174672615b86936c7bbaafb9c0e7304a39e2e1a",
+      "post_patch_node_sha256": "sha256:7a23afdd6e772c2947f2e76fa381e5ccccc4c7735b7794728f3988c374c575c8",
+      "evidence": [
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/blob/0e00fe80f4f3c71572ff6429de40146d1f4412fc/ClientboundUpdateSoundDataPacketPayload.json",
+          "summary": "Resume is omitted from the required field list."
+        }
+      ],
+      "reason": "Each sound update slot has its own presence flag."
+    },
+    {
+      "id": "sound-seek-slot-is-optional",
+      "target": "packets/ClientboundUpdateSoundDataPacket.json#/fields/5",
+      "pre_patch_node_sha256": "sha256:27fe14dd1038f4e80c7d614273f0618e7f749269b74dec24b15f38958e03af55",
+      "pre_patch_context_sha256": "sha256:d9d5e435a40aee69b534f100e64d0c5bcb255c78087cceda76dc0ec6106abc89",
+      "post_patch_node_sha256": "sha256:5e1ebbd4938877e22f2dba8e7aacca364668faedb701073786cca0e2c729ccf5",
+      "evidence": [
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/blob/0e00fe80f4f3c71572ff6429de40146d1f4412fc/ClientboundUpdateSoundDataPacketPayload.json",
+          "summary": "SeekTo is omitted from the required field list."
+        }
+      ],
+      "reason": "Each sound update slot has its own presence flag."
+    },
+    {
+      "id": "sound-stop-slot-is-optional",
+      "target": "packets/ClientboundUpdateSoundDataPacket.json#/fields/1",
+      "pre_patch_node_sha256": "sha256:6a0564f7ad23d10cd0be3d32b202fbc5e479504f9572275c283a08e5f832b083",
+      "pre_patch_context_sha256": "sha256:b95106e44eb85926971ba05da939b74c0b3ab35b66301b19bb912a738bcb4588",
+      "post_patch_node_sha256": "sha256:ea8a59e7aabf5e3cbdd08b284ce1dbc1d8ccf8d39ea0c143ec69a69b4d401a53",
+      "evidence": [
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/blob/0e00fe80f4f3c71572ff6429de40146d1f4412fc/ClientboundUpdateSoundDataPacketPayload.json",
+          "summary": "Stop is omitted from the required field list."
+        }
+      ],
+      "reason": "Each sound update slot has its own presence flag."
+    },
+    {
+      "id": "sound-volume-slot-is-optional",
+      "target": "packets/ClientboundUpdateSoundDataPacket.json#/fields/2",
+      "pre_patch_node_sha256": "sha256:2dcbc87822c9449eb3610b87aa32b52c852016456387c39c7f95ecb60bebc2b2",
+      "pre_patch_context_sha256": "sha256:41923c919040fa7bbbdd76bbd9da43e6d7eac0101a73ec2c537a4361a1d7fe4d",
+      "post_patch_node_sha256": "sha256:28bcee59ff2e8623cffdc271c85fb6ae8c673a1ffe8388ed3d876a8faa732966",
+      "evidence": [
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/blob/0e00fe80f4f3c71572ff6429de40146d1f4412fc/ClientboundUpdateSoundDataPacketPayload.json",
+          "summary": "SetVolume is omitted from the required field list."
+        }
+      ],
+      "reason": "Each sound update slot has its own presence flag."
     }
   ]
 }

@@ -179,3 +179,27 @@ func mustFingerprint(t *testing.T, claim claims.Claim) string {
 	}
 	return digest
 }
+
+func TestReconcileRetainsEmptyPackets(t *testing.T) {
+	target := manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}
+	result := claims.Result{
+		Pin: sourcePin("endstone"), Target: target,
+		Packets: []claims.PacketClaim{{SourceID: "endstone", Locator: "packets/EmptyPacket.json", ID: 4, Name: "EmptyPacket", Direction: manifest.DirectionUnknown}},
+	}
+	m, err := Reconcile(target, []claims.Result{result}, nil)
+	if err != nil {
+		t.Fatalf("Reconcile: %v", err)
+	}
+	if len(m.Packets) != 1 || m.Packets[0].ID != 4 || len(m.Packets[0].Fields) != 0 {
+		t.Fatalf("packets = %#v, want one empty packet", m.Packets)
+	}
+}
+
+func TestMergeOptionalWrapperAroundComplementaryConcreteShape(t *testing.T) {
+	concrete := manifest.Union(manifest.Primitive("var_u32"), manifest.Variant{Value: 0, Name: "None", Encode: manifest.Void()})
+	partial := manifest.Optional(manifest.Unresolved("published oneOf omitted selectors", true))
+	merged, ok := mergeNode(partial, concrete)
+	if !ok || merged.Kind != manifest.KindOptional || merged.Value == nil || merged.Value.Kind != manifest.KindUnion {
+		t.Fatalf("mergeNode = %#v, %v; want optional concrete union", merged, ok)
+	}
+}

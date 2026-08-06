@@ -19,6 +19,12 @@ type definition struct {
 	Fields     []rustField
 	Underlying string
 	Variants   []manifest.Variant
+	Union      []rustVariant
+}
+
+type rustVariant struct {
+	Name    string
+	Payload string
 }
 
 type rustField struct {
@@ -90,7 +96,15 @@ func Generate(m manifest.Manifest) (string, error) {
 			}
 			b.WriteString("}\n\n")
 		case manifest.KindUnion:
-			fmt.Fprintf(&b, "#[derive(Clone, Debug, PartialEq)]\npub struct %s {\n    pub tag: i64,\n    pub value: Vec<u8>,\n}\n\n", item.Name)
+			fmt.Fprintf(&b, "#[derive(Clone, Debug, PartialEq)]\npub enum %s {\n", item.Name)
+			for _, variant := range item.Union {
+				if variant.Payload == "" {
+					fmt.Fprintf(&b, "    %s,\n", variant.Name)
+				} else {
+					fmt.Fprintf(&b, "    %s(%s),\n", variant.Name, variant.Payload)
+				}
+			}
+			b.WriteString("}\n\n")
 		case manifest.KindEnum:
 			fmt.Fprintf(&b, "#[derive(Clone, Copy, Debug, PartialEq, Eq)]\n#[repr(transparent)]\npub struct %s(pub %s);\n", item.Name, item.Underlying)
 			for _, variant := range item.Variants {
@@ -113,11 +127,15 @@ func Generate(m manifest.Manifest) (string, error) {
 			}
 		}
 		b.WriteString("\n")
-		fmt.Fprintf(&b, "impl %s {\n    pub fn encode<E: WireEncoder>(&self, encoder: &mut E) {\n", info.name)
+		encoderName, decoderName := "encoder", "decoder"
+		if len(info.fields) == 0 {
+			encoderName, decoderName = "_encoder", "_decoder"
+		}
+		fmt.Fprintf(&b, "impl %s {\n    pub fn encode<E: WireEncoder>(&self, %s: &mut E) {\n", info.name, encoderName)
 		for _, field := range info.fields {
 			fmt.Fprintf(&b, "        encoder.field(%s, %s);\n", rustString(info.packet.Name+"."+field.field.Name), shapeConst(info.name, field.name))
 		}
-		b.WriteString("    }\n    pub fn decode<D: WireDecoder>(decoder: &mut D) {\n")
+		fmt.Fprintf(&b, "    }\n    pub fn decode<D: WireDecoder>(%s: &mut D) {\n", decoderName)
 		for _, field := range info.fields {
 			decodeConst := shapeConst(info.name, field.name)
 			if field.field.Decode != nil {
@@ -185,15 +203,28 @@ func (g *generator) rustType(node manifest.Node, hint string) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		entry := g.registerIdentity(node, hint+"Entry")
-		if _, ok := g.definitions[entry]; !ok {
-			g.definitions[entry] = definition{Name: entry, Kind: manifest.KindStruct, Fields: []rustField{{Name: "key", Type: key}, {Name: "value", Type: value}}}
-		}
-		return "Vec<" + entry + ">", nil
+		return "Vec<(" + key + ", " + value + ")>", nil
 	case manifest.KindUnion:
 		name := g.registerIdentity(node, hint+"Union")
 		if _, ok := g.definitions[name]; !ok {
 			g.definitions[name] = definition{Name: name, Kind: manifest.KindUnion}
+			variants := make([]rustVariant, 0, len(node.Variants))
+			used := map[string]bool{}
+			for _, variant := range node.Variants {
+				variantName := uniqueTypeVariant(typeName(shortTypeName(variant.Name)), used)
+				payload := ""
+				if !emptyPayload(variant.Encode) {
+					var err error
+					payload, err = g.rustType(variant.Encode, name+variantName)
+					if err != nil {
+						return "", err
+					}
+				}
+				variants = append(variants, rustVariant{Name: variantName, Payload: payload})
+			}
+			item := g.definitions[name]
+			item.Union = variants
+			g.definitions[name] = item
 		}
 		return name, nil
 	case manifest.KindEnum:
@@ -249,15 +280,99 @@ func (g *generator) registerStruct(node manifest.Node, hint string) (string, err
 
 func (g *generator) registerIdentity(node manifest.Node, hint string) string {
 	key := node.TypeID
+	inferred := inferredTypeName(node)
 	if key == "" {
-		key = fmt.Sprintf("%s/%s/%s", node.Kind, node.Semantic, hint)
+		identityHint := inferred
+		if identityHint == "" {
+			identityHint = hint
+		} else {
+			identityHint += "/" + unionIdentity(node)
+		}
+		key = fmt.Sprintf("%s/%s/%s", node.Kind, node.Semantic, identityHint)
 	}
 	if name, ok := g.identities[key]; ok {
 		return name
 	}
-	name := g.unique(typeName(hint))
+	base := hint
+	if node.TypeID != "" {
+		base = node.TypeID
+	} else if node.Semantic != "" {
+		base = node.Semantic
+	} else if inferred != "" {
+		base = inferred
+	}
+	name := g.unique(typeName(base))
 	g.identities[key] = name
 	return name
+}
+
+func unionIdentity(node manifest.Node) string {
+	type variantIdentity struct {
+		Value  int64  `json:"value"`
+		Name   string `json:"name"`
+		TypeID string `json:"type_id,omitempty"`
+	}
+	identity := struct {
+		Control  string            `json:"control"`
+		Variants []variantIdentity `json:"variants"`
+	}{}
+	if node.Control != nil && node.Control.Primitive != nil {
+		identity.Control = node.Control.Primitive.Code
+	}
+	for _, variant := range node.Variants {
+		identity.Variants = append(identity.Variants, variantIdentity{Value: variant.Value, Name: variant.Name, TypeID: variant.Encode.TypeID})
+	}
+	encoded, _ := json.Marshal(identity)
+	return string(encoded)
+}
+
+func inferredTypeName(node manifest.Node) string {
+	if node.Kind != manifest.KindUnion || len(node.Variants) == 0 {
+		return ""
+	}
+	prefix := ""
+	for _, variant := range node.Variants {
+		qualified := variant.Name
+		if !strings.Contains(qualified, "::") && variant.Encode.TypeID != "" {
+			qualified = variant.Encode.TypeID
+		}
+		position := strings.LastIndex(qualified, "::")
+		if position < 0 {
+			return ""
+		}
+		candidate := qualified[:position]
+		if prefix == "" {
+			prefix = candidate
+		} else if prefix != candidate {
+			return ""
+		}
+	}
+	return prefix
+}
+
+func shortTypeName(name string) string {
+	if position := strings.LastIndex(name, "::"); position >= 0 {
+		return name[position+2:]
+	}
+	return name
+}
+
+func emptyPayload(node manifest.Node) bool {
+	return node.Kind == manifest.KindVoid || node.Kind == manifest.KindStruct && len(node.Fields) == 0
+}
+
+func uniqueTypeVariant(name string, used map[string]bool) string {
+	if !used[name] {
+		used[name] = true
+		return name
+	}
+	for index := 2; ; index++ {
+		candidate := fmt.Sprintf("%s%d", name, index)
+		if !used[candidate] {
+			used[candidate] = true
+			return candidate
+		}
+	}
 }
 
 func (g *generator) unique(base string) string {

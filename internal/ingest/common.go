@@ -232,12 +232,23 @@ func applyCorrections(documents map[string]any, directory string, pin manifest.S
 			if before != pre {
 				return nil, fmt.Errorf("stale correction %s: %s#%s pre-patch fingerprint is %s, current node is %s", id, file, pointer, pre, before)
 			}
-			replacement, ok := operation["replace"]
-			if !ok {
-				return nil, fmt.Errorf("correction %s operation %s has no replace value", name, id)
-			}
-			if err := replaceAt(document, pointer, replacement); err != nil {
-				return nil, fmt.Errorf("apply correction %s: %w", id, err)
+			if replacement, ok := operation["replace"]; ok {
+				if err := replaceAt(document, pointer, replacement); err != nil {
+					return nil, fmt.Errorf("apply correction %s: %w", id, err)
+				}
+			} else if additions, ok := asMap(operation["merge"]); ok {
+				target, targetOK := asMap(node)
+				if !targetOK {
+					return nil, fmt.Errorf("correction %s operation %s cannot merge into a non-object", name, id)
+				}
+				for key, value := range additions {
+					if _, exists := target[key]; exists {
+						return nil, fmt.Errorf("correction %s operation %s merge would overwrite %s; use replace", name, id, key)
+					}
+					target[key] = value
+				}
+			} else {
+				return nil, fmt.Errorf("correction %s operation %s has neither replace nor object merge", name, id)
 			}
 			afterNode, _ := valueAt(document, pointer)
 			after, err := canonicalDigest(afterNode)
