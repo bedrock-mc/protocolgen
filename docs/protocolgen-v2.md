@@ -133,6 +133,15 @@ profile-specific recursive codecs, and asymmetric decode shapes); the command
 reports the exact normalized difference so the next migration slice can pin
 the correction rather than deleting the old generator.
 
+The gate was attempted against Axolotl `origin/main`
+(`781dfcb0ab443476b62df3c983750c0c1527a95a`) in a clean detached worktree. It
+currently stops before parsing with the exact mechanical error
+`crates/valentine_gen/bedrock-protocol-docs/json: No such file or directory`:
+the pinned docs submodule is not initialized in that checkout. Initialize the
+submodule in a disposable Axolotl checkout, or set `AXOLOTL_MOJANG_DOCS` to an
+immutable local docs checkout, then rerun the same script. The older checked-out
+Axolotl feature worktree is not a substitute for `origin/main` in this gate.
+
 The preserved conformance machinery remains runnable at
 `migration/axolotl-protocol/tools/wire-conformance/`. Its accepted divergence
 file is part of the gate: divergence is accepted only when explicitly listed
