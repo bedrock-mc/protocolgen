@@ -1,0 +1,9 @@
+[package]
+name = "valentine_bedrock_core"
+version = "0.1.0"
+edition.workspace = true
+
+[dependencies]
+bytes.workspace = true
+uuid.workspace = true
+thiserror = "1.0"

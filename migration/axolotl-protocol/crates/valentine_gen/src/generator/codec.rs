@@ -1,0 +1,3711 @@
+use crate::generator::analysis::{find_redundant_fields, should_box_variant};
+use crate::generator::context::Context;
+use crate::generator::definitions::resolve_type_to_tokens;
+use crate::generator::primitives::{
+    enum_value_literal, primitive_to_enum_repr_tokens, primitive_to_rust_tokens,
+};
+use crate::generator::resolver::ResolvedContainer;
+use crate::generator::utils::{
+    camel_case, clean_field_name, clean_type_name, derive_field_names, safe_camel_ident,
+};
+use crate::ir::{Container, Primitive, Type};
+use proc_macro2::TokenStream;
+use quote::{format_ident, quote};
+use std::collections::{HashMap, HashSet};
+
+pub fn generate_codec_impl(
+    name: &str,
+    container: &Container,
+    ctx: &mut Context,
+) -> Result<TokenStream, Box<dyn std::error::Error>> {
+    let struct_ident = format_ident!("{}", name);
+
+    // PASS 1: Resolve every type/argument for this container
+    let resolved = ResolvedContainer::analyze(container, name, ctx);
+
+    let args_ident = format_ident!("{}Args", name);
+    let mut args_struct_def = TokenStream::new();
+    let mut args_type_def = quote! { () };
+    let mut args_usage = quote! { _args };
+    let mut from_proto_impl = TokenStream::new();
+    let mut arg_idents: HashMap<String, proc_macro2::Ident> = HashMap::new();
+
+    if !resolved.args.is_empty() {
+        let mut fields = Vec::new();
+        let mut proto_fields = Vec::new();
+        let mut has_local_deps = false;
+
+        for arg in &resolved.args {
+            let fname = arg.name();
+            let f_ident = format_ident!("{}", fname);
+            let hint = format!("{}{}", name, camel_case(fname));
+            if let Type::Reference(r) = &arg.ty {
+                let ident = format_ident!("{}", clean_type_name(r));
+                arg_idents.insert(fname.to_string(), ident);
+            }
+            let f_ty = resolve_type_to_tokens(&arg.ty, &hint, ctx)?;
+
+            fields.push(quote! { pub #f_ident: #f_ty });
+            if arg.is_local() {
+                has_local_deps = true;
+            } else {
+                proto_fields.push(quote! { #f_ident: source.#f_ident });
+            }
+        }
+
+        args_struct_def = quote! {
+            #[derive(Debug, Clone)]
+            pub struct #args_ident {
+                #(#fields),*
+            }
+        };
+        args_type_def = quote! { #args_ident };
+        args_usage = quote! { args };
+
+        if !has_local_deps {
+            from_proto_impl = quote! {
+                impl<'a> From<&'a crate::bedrock::context::BedrockSession> for #args_ident {
+                    fn from(source: &'a crate::bedrock::context::BedrockSession) -> Self {
+                        Self {
+                            #(#proto_fields),*
+                        }
+                    }
+                }
+            };
+        }
+    }
+
+    let size_body = generate_size_body(name, container, ctx)?;
+    let encode_body = generate_encode_body(name, container, ctx)?;
+    let decode_body = generate_decode_body(name, &resolved, ctx, &arg_idents)?;
+
+    Ok(quote! {
+        #args_struct_def
+        #from_proto_impl
+
+        impl crate::bedrock::codec::BedrockSized for #struct_ident {
+            fn encoded_size(&self) -> usize {
+                #size_body
+            }
+        }
+
+        impl crate::bedrock::codec::BedrockCodec for #struct_ident {
+            type Args = #args_type_def;
+
+            fn encode<B: bytes::BufMut>(&self, buf: &mut B) -> Result<(), std::io::Error> {
+                let _ = buf;
+                #encode_body
+                Ok(())
+            }
+
+            fn decode<B: bytes::Buf>(buf: &mut B, #args_usage: Self::Args) -> Result<Self, crate::bedrock::error::DecodeError> {
+                let _ = buf;
+                #decode_body
+            }
+        }
+    })
+}
+
+fn generate_decode_body(
+    name: &str,
+    resolved: &ResolvedContainer,
+    ctx: &mut Context,
+    arg_idents: &HashMap<String, proc_macro2::Ident>,
+) -> Result<TokenStream, Box<dyn std::error::Error>> {
+    let (stmts, field_names) = generate_container_decode_stmts(name, resolved, ctx, arg_idents)?;
+    Ok(quote! {
+        #(#stmts)*
+        Ok(Self {
+            #(#field_names),*
+        })
+    })
+}
+
+fn generate_container_decode_stmts(
+    name: &str,
+    resolved: &ResolvedContainer,
+    ctx: &mut Context,
+    arg_idents: &HashMap<String, proc_macro2::Ident>,
+) -> Result<(Vec<TokenStream>, Vec<proc_macro2::Ident>), Box<dyn std::error::Error>> {
+    let mut stmts = Vec::new();
+    let mut result_fields = Vec::new();
+    let mut locals = HashSet::new();
+
+    let container = &resolved.raw;
+    let redundant_fields = find_redundant_fields(container);
+    let unique_names = derive_field_names(container, name);
+
+    for (idx, field) in container.fields.iter().enumerate() {
+        let var_name = &unique_names[idx];
+        let var_ident = format_ident!("{}", var_name);
+        let field_type = field.type_def.clone();
+
+        let decode_expr = generate_field_decode_expr(
+            name,
+            var_name,
+            &field_type,
+            ctx,
+            &locals,
+            resolved,
+            arg_idents,
+        )?;
+
+        stmts.push(quote! {
+            let #var_ident = #decode_expr;
+        });
+
+        locals.insert(var_name.clone());
+
+        if let Type::Packed { fields, .. } = &field.type_def {
+            for pf in fields {
+                let sub_name = clean_field_name(&pf.name, "");
+                let sub_ident = format_ident!("{}", sub_name);
+                let shift = pf.shift;
+                let mask = proc_macro2::Literal::u64_unsuffixed(pf.mask);
+                stmts.push(quote! {
+                    let #sub_ident = (#var_ident >> #shift) & #mask;
+                });
+                locals.insert(sub_name);
+            }
+        }
+
+        if !redundant_fields.contains(&field.name) {
+            result_fields.push(var_ident);
+        }
+    }
+    Ok((stmts, result_fields))
+}
+
+fn generate_field_decode_expr(
+    container_name: &str,
+    var_name: &str,
+    ty: &Type,
+    ctx: &mut Context,
+    locals: &HashSet<String>,
+    resolved: &ResolvedContainer,
+    arg_idents: &HashMap<String, proc_macro2::Ident>,
+) -> Result<TokenStream, Box<dyn std::error::Error>> {
+    match ty {
+        Type::Primitive(p) => match p {
+            Primitive::VarInt => Ok(
+                quote! { <crate::bedrock::codec::VarInt as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 },
+            ),
+            Primitive::VarLong => Ok(
+                quote! { <crate::bedrock::codec::VarLong as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 },
+            ),
+            Primitive::ZigZag32 => Ok(
+                quote! { <crate::bedrock::codec::ZigZag32 as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 },
+            ),
+            Primitive::ZigZag64 => Ok(
+                quote! { <crate::bedrock::codec::ZigZag64 as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0},
+            ),
+            Primitive::U16LE => Ok(
+                quote! { <crate::bedrock::codec::U16LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 },
+            ),
+            Primitive::I16LE => Ok(
+                quote! { <crate::bedrock::codec::I16LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 },
+            ),
+            Primitive::U32LE => Ok(
+                quote! { <crate::bedrock::codec::U32LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 },
+            ),
+            Primitive::I32LE => Ok(
+                quote! { <crate::bedrock::codec::I32LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 },
+            ),
+            Primitive::U64LE => Ok(
+                quote! { <crate::bedrock::codec::U64LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 },
+            ),
+            Primitive::I64LE => Ok(
+                quote! { <crate::bedrock::codec::I64LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 },
+            ),
+            Primitive::F32LE => Ok(
+                quote! { <crate::bedrock::codec::F32LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 },
+            ),
+            Primitive::F64LE => Ok(
+                quote! { <crate::bedrock::codec::F64LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 },
+            ),
+            _ => {
+                let t = primitive_to_rust_tokens(p);
+                Ok(quote! { <#t as crate::bedrock::codec::BedrockCodec>::decode(buf, ())? })
+            }
+        },
+        Type::Switch { compare_to, .. } => {
+            let (compare_expr, compare_type) = resolve_path(compare_to, locals, resolved, ctx);
+            generate_switch_decode_logic(
+                container_name,
+                var_name,
+                ty,
+                ctx,
+                compare_expr,
+                compare_type,
+                locals,
+                resolved,
+                arg_idents,
+            )
+        }
+        Type::Array {
+            count_type,
+            inner_type,
+        } => {
+            let count_read = match count_type.as_ref() {
+                Type::Primitive(p) => match p {
+                    Primitive::VarInt => {
+                        quote! { <crate::bedrock::codec::VarInt as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 }
+                    }
+                    Primitive::VarLong => {
+                        quote! { <crate::bedrock::codec::VarLong as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 }
+                    }
+                    Primitive::ZigZag32 => {
+                        quote! { <crate::bedrock::codec::ZigZag32 as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 }
+                    }
+                    Primitive::ZigZag64 => {
+                        quote! { <crate::bedrock::codec::ZigZag64 as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 }
+                    }
+                    Primitive::U16LE => {
+                        quote! { <crate::bedrock::codec::U16LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 }
+                    }
+                    Primitive::I16LE => {
+                        quote! { <crate::bedrock::codec::I16LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 }
+                    }
+                    Primitive::U32LE => {
+                        quote! { <crate::bedrock::codec::U32LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 }
+                    }
+                    Primitive::I32LE => {
+                        quote! { <crate::bedrock::codec::I32LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 }
+                    }
+                    Primitive::U64LE => {
+                        quote! { <crate::bedrock::codec::U64LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 }
+                    }
+                    Primitive::I64LE => {
+                        quote! { <crate::bedrock::codec::I64LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 }
+                    }
+                    Primitive::F32LE => {
+                        quote! { <crate::bedrock::codec::F32LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 }
+                    }
+                    Primitive::F64LE => {
+                        quote! { <crate::bedrock::codec::F64LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 }
+                    }
+                    _ => {
+                        let t = primitive_to_rust_tokens(p);
+                        quote! { <#t as crate::bedrock::codec::BedrockCodec>::decode(buf, ())? }
+                    }
+                },
+                _ => quote! { 0 },
+            };
+
+            let inner_var_name = format!("{}Item", var_name);
+            let inner_decode = generate_field_decode_expr(
+                container_name,
+                &inner_var_name,
+                inner_type,
+                ctx,
+                locals,
+                resolved,
+                arg_idents,
+            )?;
+
+            let array_len_signed = matches!(
+                count_type.as_ref(),
+                Type::Primitive(
+                    Primitive::VarInt
+                        | Primitive::VarLong
+                        | Primitive::ZigZag32
+                        | Primitive::ZigZag64
+                        | Primitive::I16LE
+                        | Primitive::I32LE
+                        | Primitive::I64LE
+                )
+            );
+            let len_logic = if array_len_signed {
+                quote! {
+                    let raw = #count_read as i64;
+                    if raw < 0 {
+                        return Err(crate::bedrock::error::DecodeError::NegativeLength { value: raw });
+                    }
+                    let len = raw as usize;
+                }
+            } else {
+                quote! {
+                    let len = (#count_read) as usize;
+                }
+            };
+
+            Ok(quote! {{
+                #len_logic
+                let mut tmp_vec = Vec::with_capacity(len);
+                for _ in 0..len {
+                    tmp_vec.push(#inner_decode);
+                }
+                tmp_vec
+            }})
+        }
+        Type::FixedArray { size, inner_type } => {
+            // Fixed-size arrays: read exactly 'size' bytes without a length prefix
+            let size_lit = proc_macro2::Literal::usize_unsuffixed(*size);
+
+            // For byte arrays (the common case), read directly into a fixed array
+            if matches!(inner_type.as_ref(), Type::Primitive(Primitive::U8)) {
+                Ok(quote! {{
+                    if buf.remaining() < #size_lit {
+                        return Err(crate::bedrock::error::DecodeError::UnexpectedEof {
+                            needed: #size_lit,
+                            available: buf.remaining(),
+                        });
+                    }
+                    let mut arr = [0u8; #size_lit];
+                    buf.copy_to_slice(&mut arr);
+                    arr
+                }})
+            } else {
+                // Generic case: decode each element
+                let inner_var_name = format!("{}Item", var_name);
+                let inner_decode = generate_field_decode_expr(
+                    container_name,
+                    &inner_var_name,
+                    inner_type,
+                    ctx,
+                    locals,
+                    resolved,
+                    arg_idents,
+                )?;
+
+                Ok(quote! {{
+                    let mut values = Vec::with_capacity(#size_lit);
+                    for _ in 0..#size_lit {
+                        values.push(#inner_decode);
+                    }
+                    match values.try_into() {
+                        Ok(array) => array,
+                        Err(_) => unreachable!("fixed-array decoder produced the wrong length"),
+                    }
+                }})
+            }
+        }
+        Type::String {
+            count_type,
+            encoding,
+        } => {
+            let len_read = match count_type.as_ref() {
+                Type::Primitive(p) => match p {
+                    Primitive::VarInt => {
+                        quote! { <crate::bedrock::codec::VarInt as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 }
+                    }
+                    Primitive::VarLong => {
+                        quote! { <crate::bedrock::codec::VarLong as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 }
+                    }
+                    Primitive::ZigZag32 => {
+                        quote! { <crate::bedrock::codec::ZigZag32 as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 }
+                    }
+                    Primitive::ZigZag64 => {
+                        quote! { <crate::bedrock::codec::ZigZag64 as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 }
+                    }
+                    Primitive::U16LE => {
+                        quote! { <crate::bedrock::codec::U16LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 }
+                    }
+                    Primitive::I16LE => {
+                        quote! { <crate::bedrock::codec::I16LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 }
+                    }
+                    Primitive::U32LE => {
+                        quote! { <crate::bedrock::codec::U32LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 }
+                    }
+                    Primitive::I32LE => {
+                        quote! { <crate::bedrock::codec::I32LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 }
+                    }
+                    Primitive::U64LE => {
+                        quote! { <crate::bedrock::codec::U64LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 }
+                    }
+                    Primitive::I64LE => {
+                        quote! { <crate::bedrock::codec::I64LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 }
+                    }
+                    Primitive::F32LE => {
+                        quote! { <crate::bedrock::codec::F32LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 }
+                    }
+                    Primitive::F64LE => {
+                        quote! { <crate::bedrock::codec::F64LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 }
+                    }
+                    _ => {
+                        let t = primitive_to_rust_tokens(p);
+                        quote! { <#t as crate::bedrock::codec::BedrockCodec>::decode(buf, ())? }
+                    }
+                },
+                _ => quote! { 0 },
+            };
+
+            let is_latin1 = encoding
+                .as_deref()
+                .map(|value| value.eq_ignore_ascii_case("latin1"))
+                .unwrap_or(false);
+            let string_len_signed = matches!(
+                count_type.as_ref(),
+                Type::Primitive(
+                    Primitive::VarInt
+                        | Primitive::VarLong
+                        | Primitive::ZigZag32
+                        | Primitive::ZigZag64
+                        | Primitive::I16LE
+                        | Primitive::I32LE
+                        | Primitive::I64LE
+                )
+            );
+            let len_logic = if string_len_signed {
+                quote! {
+                    let len_raw = (#len_read) as i64;
+                    if len_raw < 0 {
+                        return Err(crate::bedrock::error::DecodeError::NegativeLength { value: len_raw });
+                    }
+                    let len = len_raw as usize;
+                }
+            } else {
+                quote! {
+                    let len = (#len_read) as usize;
+                }
+            };
+
+            if is_latin1 {
+                Ok(quote! {{
+                    #len_logic
+                    if buf.remaining() < len {
+                        return Err(crate::bedrock::error::DecodeError::StringLengthExceeded {
+                            declared: len,
+                            available: buf.remaining(),
+                        });
+                    }
+                    let mut bytes = vec![0u8; len];
+                    buf.copy_to_slice(&mut bytes);
+                    bytes.into_iter().map(|b| b as char).collect::<String>()
+                }})
+            } else {
+                Ok(quote! {{
+                    #len_logic
+                    if buf.remaining() < len {
+                        return Err(crate::bedrock::error::DecodeError::StringLengthExceeded {
+                            declared: len,
+                            available: buf.remaining(),
+                        });
+                    }
+                    let mut bytes = vec![0u8; len];
+                    buf.copy_to_slice(&mut bytes);
+                    crate::bedrock::codec::decode_utf8_lossy_owned(bytes)
+                }})
+            }
+        }
+        Type::Encapsulated { length_type, inner } => {
+            let len_read = match length_type.as_ref() {
+                Type::Primitive(p) => match p {
+                    Primitive::VarInt => {
+                        quote! { <crate::bedrock::codec::VarInt as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 }
+                    }
+                    Primitive::VarLong => {
+                        quote! { <crate::bedrock::codec::VarLong as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 }
+                    }
+                    Primitive::ZigZag32 => {
+                        quote! { <crate::bedrock::codec::ZigZag32 as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 }
+                    }
+                    Primitive::ZigZag64 => {
+                        quote! { <crate::bedrock::codec::ZigZag64 as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 }
+                    }
+                    Primitive::U16LE => {
+                        quote! { <crate::bedrock::codec::U16LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 }
+                    }
+                    Primitive::I16LE => {
+                        quote! { <crate::bedrock::codec::I16LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 }
+                    }
+                    Primitive::U32LE => {
+                        quote! { <crate::bedrock::codec::U32LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 }
+                    }
+                    Primitive::I32LE => {
+                        quote! { <crate::bedrock::codec::I32LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 }
+                    }
+                    Primitive::U64LE => {
+                        quote! { <crate::bedrock::codec::U64LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 }
+                    }
+                    Primitive::I64LE => {
+                        quote! { <crate::bedrock::codec::I64LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 }
+                    }
+                    Primitive::F32LE => {
+                        quote! { <crate::bedrock::codec::F32LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 }
+                    }
+                    Primitive::F64LE => {
+                        quote! { <crate::bedrock::codec::F64LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 }
+                    }
+                    _ => {
+                        let t = primitive_to_rust_tokens(p);
+                        quote! { <#t as crate::bedrock::codec::BedrockCodec>::decode(buf, ())? }
+                    }
+                },
+                _ => quote! { 0 },
+            };
+
+            let encap_len_signed = matches!(
+                length_type.as_ref(),
+                Type::Primitive(
+                    Primitive::VarInt
+                        | Primitive::VarLong
+                        | Primitive::ZigZag32
+                        | Primitive::ZigZag64
+                        | Primitive::I16LE
+                        | Primitive::I32LE
+                        | Primitive::I64LE
+                )
+            );
+            let len_logic = if encap_len_signed {
+                quote! {
+                    let len_raw = (#len_read) as i64;
+                    if len_raw < 0 {
+                        return Err(crate::bedrock::error::DecodeError::NegativeLength { value: len_raw });
+                    }
+                    let len = len_raw as usize;
+                }
+            } else {
+                quote! {
+                    let len = (#len_read) as usize;
+                }
+            };
+
+            let inner_var_name = format!("{}Inner", var_name);
+            let inner_decode = generate_field_decode_expr(
+                container_name,
+                &inner_var_name,
+                inner,
+                ctx,
+                locals,
+                resolved,
+                arg_idents,
+            )?;
+
+            Ok(quote! {{
+                #len_logic
+                if buf.remaining() < len {
+                    return Err(crate::bedrock::error::DecodeError::ArrayLengthExceeded {
+                        declared: len,
+                        available: buf.remaining(),
+                    });
+                }
+                let mut slice = bytes::Buf::take(&mut *buf, len);
+                let value = {
+                    let buf = &mut slice;
+                    #inner_decode
+                };
+                // ensure the underlying buffer advances by the declared length
+                let _ = slice.remaining();
+                value
+            }})
+        }
+        Type::Option(inner) => {
+            let inner_var_name = var_name.to_string();
+            let inner_decode = generate_field_decode_expr(
+                container_name,
+                &inner_var_name,
+                inner,
+                ctx,
+                locals,
+                resolved,
+                arg_idents,
+            )?;
+            Ok(quote! {{
+                let present = u8::decode(buf, ())?;
+                if present != 0 {
+                    Some(#inner_decode)
+                } else {
+                    None
+                }
+            }})
+        }
+        Type::Reference(r) => {
+            if r == "enum_size_based_on_values_len" {
+                return Ok(quote! {{
+                    let len = values_len as usize;
+                    let raw_val = if len <= 0xff {
+                        <u8 as crate::bedrock::codec::BedrockCodec>::decode(buf, ())? as i32
+                    } else if len <= 0xffff {
+                        <u16 as crate::bedrock::codec::BedrockCodec>::decode(buf, ())? as i32
+                    } else {
+                        <i32 as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?
+                    };
+                    match raw_val {
+                        0 => EnumSizeBasedOnValuesLen::Byte,
+                        1 => EnumSizeBasedOnValuesLen::Short,
+                        _ => EnumSizeBasedOnValuesLen::Int,
+                    }
+                }});
+            }
+
+            let clean = clean_type_name(r);
+            if clean == "LittleString" {
+                return Ok(quote! {{
+                    let tmp = <LittleString as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?;
+                    tmp.0
+                }});
+            }
+
+            // If the reference points to an Array, FixedArray, String, or Option, we MUST inline the decoding logic
+            // because the typedef (Vec<T> or Option<T> or [T; N]) does not implement BedrockCodec with the specific args we might need.
+            let resolved_ty = resolve_type(ty, ctx);
+            if matches!(
+                resolved_ty,
+                Type::Array { .. }
+                    | Type::FixedArray { .. }
+                    | Type::Option(_)
+                    | Type::String { .. }
+            ) {
+                let hint = format!("{}{}", container_name, camel_case(var_name));
+                let type_tokens = resolve_type_to_tokens(ty, &hint, ctx)?;
+
+                let val = match &resolved_ty {
+                    Type::Array { .. } | Type::FixedArray { .. } => generate_field_decode_expr(
+                        &clean,
+                        "",
+                        &resolved_ty,
+                        ctx,
+                        locals,
+                        resolved,
+                        arg_idents,
+                    )?,
+                    _ => generate_field_decode_expr(
+                        container_name,
+                        var_name,
+                        &resolved_ty,
+                        ctx,
+                        locals,
+                        resolved,
+                        arg_idents,
+                    )?,
+                };
+
+                return Ok(quote! {{
+                    let res: #type_tokens = #val;
+                    res
+                }});
+            }
+
+            let hint = format!("{}{}", container_name, camel_case(var_name));
+            let type_tokens = resolve_type_to_tokens(ty, &hint, ctx)?;
+            let arg_expr = construct_args_expr(ty, container_name, var_name, ctx, locals, resolved);
+
+            Ok(quote! {
+                <#type_tokens as crate::bedrock::codec::BedrockCodec>::decode(buf, #arg_expr)?
+            })
+        }
+        Type::Container(_) => {
+            let hint = format!("{}{}", container_name, camel_case(var_name));
+            let type_tokens = resolve_type_to_tokens(ty, &hint, ctx)?;
+            let arg_expr = construct_args_expr(ty, container_name, var_name, ctx, locals, resolved);
+
+            Ok(quote! {
+                <#type_tokens as crate::bedrock::codec::BedrockCodec>::decode(buf, #arg_expr)?
+            })
+        }
+        Type::Enum {
+            underlying,
+            variants,
+        } => {
+            let has_true = variants.iter().any(|(n, _)| n.eq_ignore_ascii_case("true"));
+            let has_false = variants
+                .iter()
+                .any(|(n, _)| n.eq_ignore_ascii_case("false"));
+
+            // Bool-like enum with a non-bool underlying type (e.g., lu16 => { 0xffff: true, 0: false })
+            // Must decode using the underlying wire type, then compare to the "true" discriminant.
+            if variants.len() == 2
+                && has_true
+                && has_false
+                && !matches!(underlying, Primitive::Bool)
+            {
+                let true_val = variants
+                    .iter()
+                    .find(|(n, _)| n.eq_ignore_ascii_case("true"))
+                    .map(|(_, v)| *v)
+                    .unwrap();
+                let true_lit = proc_macro2::Literal::i64_unsuffixed(true_val);
+
+                let decode_expr = match underlying {
+                    Primitive::U16LE => {
+                        quote! {
+                            <crate::bedrock::codec::U16LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 as i64 == #true_lit
+                        }
+                    }
+                    Primitive::I16LE => {
+                        quote! {
+                            <crate::bedrock::codec::I16LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 as i64 == #true_lit
+                        }
+                    }
+                    Primitive::U8 => {
+                        quote! {
+                            <u8 as crate::bedrock::codec::BedrockCodec>::decode(buf, ())? as i64 == #true_lit
+                        }
+                    }
+                    Primitive::I8 => {
+                        quote! {
+                            <i8 as crate::bedrock::codec::BedrockCodec>::decode(buf, ())? as i64 == #true_lit
+                        }
+                    }
+                    _ => {
+                        // Fallback: decode as bool (1 byte)
+                        quote! {
+                            <bool as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?
+                        }
+                    }
+                };
+                Ok(decode_expr)
+            } else {
+                // Non-bool enum or actual bool underlying: use standard type resolution
+                let type_tokens = resolve_type_to_tokens(
+                    ty,
+                    &format!("{}{}", container_name, camel_case(var_name)),
+                    ctx,
+                )?;
+                Ok(
+                    quote! { <#type_tokens as crate::bedrock::codec::BedrockCodec>::decode(buf, ())? },
+                )
+            }
+        }
+        _ => {
+            let type_tokens = resolve_type_to_tokens(
+                ty,
+                &format!("{}{}", container_name, camel_case(var_name)),
+                ctx,
+            )?;
+            Ok(quote! { <#type_tokens as crate::bedrock::codec::BedrockCodec>::decode(buf, ())? })
+        }
+    }
+}
+
+fn construct_args_expr(
+    ty: &Type,
+    container_name: &str,
+    var_name: &str,
+    ctx: &Context,
+    locals: &HashSet<String>,
+    resolved: &ResolvedContainer,
+) -> TokenStream {
+    let has_args = !resolved.args.is_empty();
+    let type_name = match ty {
+        Type::Reference(r) => clean_type_name(r),
+        Type::Container(c) => {
+            let fp = crate::generator::definitions::fingerprint_type(&Type::Container(c.clone()));
+            if let Some(name) = ctx.inline_cache.get(&fp) {
+                clean_type_name(name)
+            } else {
+                format!("{}{}", container_name, camel_case(var_name))
+            }
+        }
+        _ => "Unknown".to_string(),
+    };
+
+    let resolved_ty = match ty {
+        Type::Reference(r) => ctx
+            .type_lookup
+            .get(r)
+            .cloned()
+            .unwrap_or(Type::Primitive(Primitive::Void)),
+        Type::Container(c) => Type::Container(c.clone()),
+        _ => ty.clone(),
+    };
+
+    let target_resolved = match &resolved_ty {
+        Type::Container(c) => Some(ResolvedContainer::analyze(c, &type_name, ctx)),
+        _ => None,
+    };
+
+    let arg_type_lookup: std::collections::HashMap<_, _> = target_resolved
+        .as_ref()
+        .map(|target| {
+            target
+                .args
+                .iter()
+                .map(|arg| (arg.name().to_string(), arg.ty.clone()))
+                .collect()
+        })
+        .unwrap_or_default();
+
+    let deps = crate::generator::analysis::get_deps(&resolved_ty, ctx);
+
+    if deps.is_empty() {
+        return quote! { () };
+    }
+
+    let args_struct_ident = format_ident!("{}Args", type_name);
+
+    let mut sorted_deps: Vec<_> = deps.into_iter().collect();
+    sorted_deps.sort_by(|a, b| match (&a.0, &b.0) {
+        (
+            crate::generator::analysis::Dependency::LocalField(sa)
+            | crate::generator::analysis::Dependency::Global(sa),
+            crate::generator::analysis::Dependency::LocalField(sb)
+            | crate::generator::analysis::Dependency::Global(sb),
+        ) => sa.cmp(sb),
+    });
+
+    let mut field_assigns = Vec::new();
+
+    // FIX: destructure `target_type` (Type) instead of `target_prim` (Primitive)
+    for (dep, target_type) in sorted_deps {
+        let n = dep.name();
+        let f_ident = format_ident!("{}", n);
+        // Prefer the callee's resolved argument type over the raw dependency default.
+        let final_target_type = arg_type_lookup
+            .get(n)
+            .cloned()
+            .unwrap_or(target_type.clone());
+
+        let value_expr = match dep {
+            crate::generator::analysis::Dependency::LocalField(_) => {
+                if locals.contains(n) {
+                    // Check if we need to cast the local variable
+                    let field_type = resolved.variable_types.get(n).cloned();
+
+                    // FIX: Check the Type enum, not the Primitive enum
+                    let should_cast_to_i32 = matches!(
+                        final_target_type,
+                        Type::Primitive(Primitive::VarInt | Primitive::ZigZag32)
+                    );
+                    let should_cast_to_i64 = matches!(
+                        final_target_type,
+                        Type::Primitive(Primitive::VarLong | Primitive::ZigZag64)
+                    );
+
+                    if let Some(ft) = field_type {
+                        let resolved_ft = resolve_type(&ft, ctx);
+                        match resolved_ft {
+                            // If our local variable is an Enum/Bool/Switch, but the target expects a raw int, we must cast.
+                            Type::Enum { .. }
+                            | Type::Switch { .. }
+                            | Type::Primitive(Primitive::Bool) => {
+                                if should_cast_to_i32 {
+                                    quote! { #f_ident as i32 }
+                                } else if should_cast_to_i64 {
+                                    quote! { #f_ident as i64 }
+                                } else {
+                                    quote! { #f_ident }
+                                }
+                            }
+                            _ => quote! { #f_ident },
+                        }
+                    } else {
+                        quote! { #f_ident }
+                    }
+                } else if has_args {
+                    quote! { args.#f_ident }
+                } else {
+                    quote! { 0 }
+                }
+            }
+            crate::generator::analysis::Dependency::Global(_) => {
+                if has_args {
+                    quote! { args.#f_ident }
+                } else {
+                    quote! { 0 }
+                }
+            }
+        };
+
+        field_assigns.push(quote! { #f_ident: #value_expr });
+    }
+
+    quote! {
+        #args_struct_ident {
+            #(#field_assigns),* }
+    }
+}
+
+fn generate_length_prefix_size_expr(length_type: &Type, len_expr: TokenStream) -> TokenStream {
+    match length_type {
+        Type::Primitive(p) => match p {
+            Primitive::VarInt => {
+                quote! { crate::bedrock::codec::BedrockSized::encoded_size(&crate::bedrock::codec::VarInt(#len_expr as i32)) }
+            }
+            Primitive::VarLong => {
+                quote! { crate::bedrock::codec::BedrockSized::encoded_size(&crate::bedrock::codec::VarLong(#len_expr as i64)) }
+            }
+            Primitive::ZigZag32 => {
+                quote! { crate::bedrock::codec::BedrockSized::encoded_size(&crate::bedrock::codec::ZigZag32(#len_expr as i32)) }
+            }
+            Primitive::ZigZag64 => {
+                quote! { crate::bedrock::codec::BedrockSized::encoded_size(&crate::bedrock::codec::ZigZag64(#len_expr as i64)) }
+            }
+            Primitive::U8 | Primitive::I8 | Primitive::Bool => quote! { 1usize },
+            Primitive::U16 | Primitive::U16LE | Primitive::I16 | Primitive::I16LE => {
+                quote! { 2usize }
+            }
+            Primitive::U32
+            | Primitive::U32LE
+            | Primitive::I32
+            | Primitive::I32LE
+            | Primitive::F32
+            | Primitive::F32LE => quote! { 4usize },
+            Primitive::U64
+            | Primitive::U64LE
+            | Primitive::I64
+            | Primitive::I64LE
+            | Primitive::F64
+            | Primitive::F64LE => quote! { 8usize },
+            _ => {
+                let t = primitive_to_rust_tokens(p);
+                quote! { crate::bedrock::codec::BedrockSized::encoded_size(&(#len_expr as #t)) }
+            }
+        },
+        _ => quote! { crate::bedrock::codec::BedrockSized::encoded_size(&(#len_expr as u32)) },
+    }
+}
+
+fn generate_size_body(
+    name: &str,
+    container: &Container,
+    ctx: &mut Context,
+) -> Result<TokenStream, Box<dyn std::error::Error>> {
+    let mut stmts = Vec::new();
+    let redundant_fields = find_redundant_fields(container);
+    let unique_names = derive_field_names(container, name);
+
+    for (idx, field) in container.fields.iter().enumerate() {
+        let var_name = &unique_names[idx];
+        let var_ident = format_ident!("{}", var_name);
+        let expr = if redundant_fields.contains(&field.name) {
+            generate_redundant_size(name, field, container)
+        } else {
+            generate_field_size_expr(
+                name,
+                var_name,
+                &field.type_def,
+                quote! { self.#var_ident },
+                container,
+                ctx,
+                false,
+            )?
+        };
+        stmts.push(quote! { size += #expr; });
+    }
+
+    if stmts.is_empty() {
+        return Ok(quote! { 0usize });
+    }
+
+    Ok(quote! {
+        let mut size = 0usize;
+        #(#stmts)*
+        size
+    })
+}
+
+fn generate_field_size_expr(
+    container_name: &str,
+    var_name: &str,
+    ty: &Type,
+    access_expr: TokenStream,
+    container: &Container,
+    ctx: &mut Context,
+    is_ref: bool,
+) -> Result<TokenStream, Box<dyn std::error::Error>> {
+    match ty {
+        Type::Switch { .. } => generate_switch_size_logic(
+            container_name,
+            var_name,
+            ty,
+            container,
+            ctx,
+            access_expr,
+            is_ref,
+        ),
+        Type::Array {
+            count_type,
+            inner_type,
+        } => {
+            let len_size = generate_length_prefix_size_expr(count_type.as_ref(), quote! { _len });
+            let items_expr = if is_ref {
+                quote! { #access_expr }
+            } else {
+                quote! { &#access_expr }
+            };
+            let inner_expr = generate_field_size_expr(
+                container_name,
+                &format!("{var_name}Item"),
+                inner_type,
+                quote! { _item },
+                container,
+                ctx,
+                true,
+            )?;
+            Ok(quote! {{
+                let _len = (#items_expr).len();
+                #len_size + (#items_expr).iter().map(|_item| { #inner_expr }).sum::<usize>()
+            }})
+        }
+        Type::FixedArray { inner_type, .. } => {
+            let items_expr = if is_ref {
+                quote! { #access_expr }
+            } else {
+                quote! { &#access_expr }
+            };
+            if matches!(inner_type.as_ref(), Type::Primitive(Primitive::U8)) {
+                Ok(quote! { (#items_expr).len() })
+            } else {
+                let inner_expr = generate_field_size_expr(
+                    container_name,
+                    &format!("{var_name}Item"),
+                    inner_type,
+                    quote! { _item },
+                    container,
+                    ctx,
+                    true,
+                )?;
+                Ok(quote! { (#items_expr).iter().map(|_item| { #inner_expr }).sum::<usize>() })
+            }
+        }
+        Type::String {
+            count_type,
+            encoding,
+        } => {
+            let len_size = generate_length_prefix_size_expr(count_type.as_ref(), quote! { _len });
+            let value_expr = if is_ref {
+                quote! { #access_expr }
+            } else {
+                quote! { &#access_expr }
+            };
+            let is_latin1 = encoding
+                .as_deref()
+                .map(|value| value.eq_ignore_ascii_case("latin1"))
+                .unwrap_or(false);
+            if is_latin1 {
+                Ok(quote! {{
+                    let _len = (#value_expr).chars().count();
+                    #len_size + _len
+                }})
+            } else {
+                Ok(quote! {{
+                    let _len = (#value_expr).as_bytes().len();
+                    #len_size + _len
+                }})
+            }
+        }
+        Type::Encapsulated { length_type, inner } => {
+            let inner_expr = generate_field_size_expr(
+                container_name,
+                &format!("{var_name}Encap"),
+                inner,
+                access_expr,
+                container,
+                ctx,
+                is_ref,
+            )?;
+            let len_size = generate_length_prefix_size_expr(length_type.as_ref(), quote! { _len });
+            Ok(quote! {{
+                let _len = #inner_expr;
+                #len_size + _len
+            }})
+        }
+        Type::Option(inner) => {
+            let match_expr = if is_ref {
+                quote! { #access_expr }
+            } else {
+                quote! { &#access_expr }
+            };
+            let inner_expr = generate_field_size_expr(
+                container_name,
+                &format!("{var_name}Some"),
+                inner,
+                quote! { _v },
+                container,
+                ctx,
+                true,
+            )?;
+            Ok(quote! {{
+                1usize + match #match_expr {
+                    Some(_v) => #inner_expr,
+                    None => 0usize,
+                }
+            }})
+        }
+        Type::Primitive(p) => {
+            let owned_expr = if is_ref {
+                quote! { *#access_expr }
+            } else {
+                access_expr.clone()
+            };
+            Ok(match p {
+                Primitive::VarInt => {
+                    quote! { crate::bedrock::codec::BedrockSized::encoded_size(&crate::bedrock::codec::VarInt(#owned_expr)) }
+                }
+                Primitive::VarLong => {
+                    quote! { crate::bedrock::codec::BedrockSized::encoded_size(&crate::bedrock::codec::VarLong(#owned_expr)) }
+                }
+                Primitive::ZigZag32 => {
+                    quote! { crate::bedrock::codec::BedrockSized::encoded_size(&crate::bedrock::codec::ZigZag32(#owned_expr)) }
+                }
+                Primitive::ZigZag64 => {
+                    quote! { crate::bedrock::codec::BedrockSized::encoded_size(&crate::bedrock::codec::ZigZag64(#owned_expr)) }
+                }
+                Primitive::U8 | Primitive::I8 | Primitive::Bool => quote! { 1usize },
+                Primitive::U16 | Primitive::U16LE | Primitive::I16 | Primitive::I16LE => {
+                    quote! { 2usize }
+                }
+                Primitive::U32
+                | Primitive::U32LE
+                | Primitive::I32
+                | Primitive::I32LE
+                | Primitive::F32
+                | Primitive::F32LE => quote! { 4usize },
+                Primitive::U64
+                | Primitive::U64LE
+                | Primitive::I64
+                | Primitive::I64LE
+                | Primitive::F64
+                | Primitive::F64LE => quote! { 8usize },
+                Primitive::Uuid => quote! { 16usize },
+                Primitive::Void => quote! { 0usize },
+                _ => {
+                    if is_ref {
+                        quote! { crate::bedrock::codec::BedrockSized::encoded_size(#access_expr) }
+                    } else {
+                        quote! { crate::bedrock::codec::BedrockSized::encoded_size(&#access_expr) }
+                    }
+                }
+            })
+        }
+        Type::Reference(r) => {
+            if r == "enum_size_based_on_values_len" {
+                return Ok(quote! {{
+                    let len = self.values_len as usize;
+                    if len <= 0xff {
+                        1usize
+                    } else if len <= 0xffff {
+                        2usize
+                    } else {
+                        4usize
+                    }
+                }});
+            }
+
+            let clean = clean_type_name(r);
+            if clean == "LittleString" {
+                let value_expr = if is_ref {
+                    quote! { #access_expr }
+                } else {
+                    quote! { &#access_expr }
+                };
+                return Ok(quote! { 4usize + (#value_expr).as_bytes().len() });
+            }
+
+            let resolved_ty = resolve_type(ty, ctx);
+            if matches!(
+                resolved_ty,
+                Type::Array { .. }
+                    | Type::FixedArray { .. }
+                    | Type::Option(_)
+                    | Type::String { .. }
+                    | Type::Encapsulated { .. }
+                    | Type::Switch { .. }
+            ) {
+                return generate_field_size_expr(
+                    container_name,
+                    var_name,
+                    &resolved_ty,
+                    access_expr,
+                    container,
+                    ctx,
+                    is_ref,
+                );
+            }
+
+            if is_ref {
+                Ok(quote! { crate::bedrock::codec::BedrockSized::encoded_size(#access_expr) })
+            } else {
+                Ok(quote! { crate::bedrock::codec::BedrockSized::encoded_size(&#access_expr) })
+            }
+        }
+        _ => {
+            if is_ref {
+                Ok(quote! { crate::bedrock::codec::BedrockSized::encoded_size(#access_expr) })
+            } else {
+                Ok(quote! { crate::bedrock::codec::BedrockSized::encoded_size(&#access_expr) })
+            }
+        }
+    }
+}
+
+fn generate_switch_size_logic(
+    name: &str,
+    var_name: &str,
+    switch_def: &Type,
+    container: &Container,
+    ctx: &mut Context,
+    access_expr: TokenStream,
+    is_ref: bool,
+) -> Result<TokenStream, Box<dyn std::error::Error>> {
+    let Type::Switch {
+        fields, default, ..
+    } = switch_def
+    else {
+        return Err("Not a switch".into());
+    };
+
+    let default_is_void = matches!(default.as_ref(), Type::Primitive(Primitive::Void));
+    let all_explicit_void = fields
+        .iter()
+        .all(|(_, t)| matches!(t, Type::Primitive(Primitive::Void)));
+
+    if all_explicit_void && !default_is_void {
+        let inner_access = if is_ref {
+            quote! { #access_expr }
+        } else {
+            quote! { &#access_expr }
+        };
+        let default_expr = generate_field_size_expr(
+            name,
+            &format!("{var_name}Default"),
+            default,
+            quote! { _v },
+            container,
+            ctx,
+            true,
+        )?;
+        return Ok(quote! {
+            match #inner_access {
+                Some(_v) => #default_expr,
+                None => 0usize,
+            }
+        });
+    }
+
+    let enum_name = clean_type_name(&format!("{}{}", name, camel_case(var_name)));
+    let enum_ident = format_ident!("{}", enum_name);
+    let match_target = if is_ref {
+        quote! { #access_expr }
+    } else {
+        quote! { &#access_expr }
+    };
+
+    if default_is_void && fields.len() == 1 {
+        let (_case_name, case_type) = &fields[0];
+        let inner_expr = generate_field_size_expr(
+            name,
+            &format!("{var_name}Some"),
+            case_type,
+            quote! { _v },
+            container,
+            ctx,
+            true,
+        )?;
+        return Ok(quote! {
+            match #match_target {
+                Some(_v) => #inner_expr,
+                None => 0usize,
+            }
+        });
+    }
+
+    let is_bool_switch =
+        fields.len() == 2 && fields.iter().any(|(k, _)| k == "true" || k == "false");
+    let is_bool_switch_with_refs =
+        is_bool_switch && fields.iter().all(|(_, t)| matches!(t, Type::Reference(_)));
+
+    let mut match_arms = Vec::new();
+    for (case_name, case_type) in fields {
+        let variant_ident = if is_bool_switch_with_refs {
+            if let Type::Reference(r) = case_type {
+                format_ident!("{}", clean_type_name(r))
+            } else {
+                format_ident!("{}", safe_camel_ident(case_name))
+            }
+        } else {
+            format_ident!("{}", safe_camel_ident(case_name))
+        };
+
+        if matches!(case_type, Type::Primitive(Primitive::Void)) {
+            match_arms.push(quote! { #enum_ident::#variant_ident => 0usize, });
+        } else {
+            let inner_expr = generate_field_size_expr(
+                name,
+                &format!("{var_name}{case_name}"),
+                case_type,
+                quote! { _v },
+                container,
+                ctx,
+                true,
+            )?;
+            match_arms.push(quote! { #enum_ident::#variant_ident(_v) => #inner_expr, });
+        }
+    }
+
+    if default_is_void {
+        if is_bool_switch
+            && !fields
+                .iter()
+                .any(|(_, t)| matches!(t, Type::Primitive(Primitive::Void)))
+        {
+            Ok(quote! { match #match_target { #(#match_arms)* } })
+        } else {
+            Ok(quote! {
+                match #match_target {
+                    Some(_v) => match _v { #(#match_arms)* },
+                    None => 0usize,
+                }
+            })
+        }
+    } else {
+        let is_boxed = should_box_variant(default.as_ref(), ctx, 0);
+        let inner_access = if is_boxed {
+            quote! { (&**_v) }
+        } else {
+            quote! { _v }
+        };
+        let default_expr = generate_field_size_expr(
+            name,
+            &format!("{var_name}Default"),
+            default,
+            inner_access,
+            container,
+            ctx,
+            true,
+        )?;
+        match_arms.push(quote! { #enum_ident::Default(_v) => #default_expr, });
+        Ok(quote! { match #match_target { #(#match_arms)* } })
+    }
+}
+
+fn generate_encode_body(
+    name: &str,
+    container: &Container,
+    ctx: &mut Context,
+) -> Result<TokenStream, Box<dyn std::error::Error>> {
+    let mut stmts = Vec::new();
+    let redundant_fields = find_redundant_fields(container);
+    let unique_names = derive_field_names(container, name);
+
+    for (idx, field) in container.fields.iter().enumerate() {
+        let var_name = &unique_names[idx];
+        let var_ident = format_ident!("{}", var_name);
+        let is_redundant = redundant_fields.contains(&field.name);
+
+        if is_redundant {
+            stmts.push(generate_redundant_encode(name, field, container));
+        } else {
+            let field_ty = field.type_def.clone();
+            let encode_stmt = generate_field_encode(
+                name,
+                var_name,
+                &field_ty,
+                quote! { self.#var_ident },
+                container,
+                ctx,
+                false,
+            )?;
+            stmts.push(encode_stmt);
+        }
+    }
+    Ok(quote! { #(#stmts)* })
+}
+
+fn generate_field_encode(
+    container_name: &str,
+    var_name: &str,
+    ty: &Type,
+    access_expr: TokenStream,
+    container: &Container,
+    ctx: &mut Context,
+    is_ref: bool,
+) -> Result<TokenStream, Box<dyn std::error::Error>> {
+    match ty {
+        Type::Switch { .. } => generate_switch_encode_logic(
+            container_name,
+            var_name,
+            ty,
+            container,
+            ctx,
+            access_expr,
+            is_ref,
+        ),
+        Type::Array {
+            count_type,
+            inner_type,
+        } => {
+            let len_encode = match count_type.as_ref() {
+                Type::Primitive(p) => match p {
+                    Primitive::VarInt => {
+                        quote! { crate::bedrock::codec::VarInt(len as i32).encode(buf)?; }
+                    }
+                    Primitive::VarLong => {
+                        quote! { crate::bedrock::codec::VarLong(len as i64).encode(buf)?; }
+                    }
+                    Primitive::ZigZag32 => {
+                        quote! { crate::bedrock::codec::ZigZag32(len as i32).encode(buf)?; }
+                    }
+                    Primitive::ZigZag64 => {
+                        quote! { crate::bedrock::codec::ZigZag64(len as i64).encode(buf)?; }
+                    }
+                    Primitive::U16LE => {
+                        quote! { crate::bedrock::codec::U16LE(len as u16).encode(buf)?; }
+                    }
+                    Primitive::I16LE => {
+                        quote! { crate::bedrock::codec::I16LE(len as i16).encode(buf)?; }
+                    }
+                    Primitive::U32LE => {
+                        quote! { crate::bedrock::codec::U32LE(len as u32).encode(buf)?; }
+                    }
+                    Primitive::I32LE => {
+                        quote! { crate::bedrock::codec::I32LE(len as i32).encode(buf)?; }
+                    }
+                    Primitive::U64LE => {
+                        quote! { crate::bedrock::codec::U64LE(len as u64).encode(buf)?; }
+                    }
+                    Primitive::I64LE => {
+                        quote! { crate::bedrock::codec::I64LE(len as i64).encode(buf)?; }
+                    }
+                    Primitive::F32LE => {
+                        quote! { crate::bedrock::codec::F32LE(len as f32).encode(buf)?; }
+                    }
+                    Primitive::F64LE => {
+                        quote! { crate::bedrock::codec::F64LE(len as f64).encode(buf)?; }
+                    }
+                    _ => {
+                        let t = primitive_to_rust_tokens(p);
+                        quote! { (len as #t).encode(buf)?; }
+                    }
+                },
+                _ => quote! { (len as u32).encode(buf)?; },
+            };
+
+            let inner_name = format!("{}Item", var_name);
+            let loop_body = generate_field_encode(
+                container_name,
+                &inner_name,
+                inner_type,
+                quote! { item },
+                container,
+                ctx,
+                true,
+            )?;
+
+            let iter_expr = if is_ref {
+                quote! { #access_expr }
+            } else {
+                quote! { &#access_expr }
+            };
+
+            Ok(quote! {
+                let len = #access_expr.len();
+                #len_encode
+                for item in #iter_expr {
+                    #loop_body
+                }
+            })
+        }
+        Type::FixedArray { size, inner_type } => {
+            // Fixed-size arrays: write exactly 'size' bytes without a length prefix
+            let _size_lit = proc_macro2::Literal::usize_unsuffixed(*size);
+
+            // For byte arrays (the common case), write directly
+            if matches!(inner_type.as_ref(), Type::Primitive(Primitive::U8)) {
+                let access = if is_ref {
+                    quote! { #access_expr }
+                } else {
+                    quote! { &#access_expr }
+                };
+                Ok(quote! {
+                    buf.put_slice(#access);
+                })
+            } else {
+                // Generic case: encode each element
+                let inner_name = format!("{}Item", var_name);
+                let loop_body = generate_field_encode(
+                    container_name,
+                    &inner_name,
+                    inner_type,
+                    quote! { item },
+                    container,
+                    ctx,
+                    true,
+                )?;
+
+                let iter_expr = if is_ref {
+                    quote! { #access_expr }
+                } else {
+                    quote! { &#access_expr }
+                };
+
+                Ok(quote! {
+                    for item in #iter_expr {
+                        #loop_body
+                    }
+                })
+            }
+        }
+        Type::String {
+            count_type,
+            encoding,
+        } => {
+            let len_encode = match count_type.as_ref() {
+                Type::Primitive(p) => match p {
+                    Primitive::VarInt => {
+                        quote! { crate::bedrock::codec::VarInt(len as i32).encode(buf)?; }
+                    }
+                    Primitive::VarLong => {
+                        quote! { crate::bedrock::codec::VarLong(len as i64).encode(buf)?; }
+                    }
+                    Primitive::ZigZag32 => {
+                        quote! { crate::bedrock::codec::ZigZag32(len as i32).encode(buf)?; }
+                    }
+                    Primitive::ZigZag64 => {
+                        quote! { crate::bedrock::codec::ZigZag64(len as i64).encode(buf)?; }
+                    }
+                    Primitive::U16LE => {
+                        quote! { crate::bedrock::codec::U16LE(len as u16).encode(buf)?; }
+                    }
+                    Primitive::I16LE => {
+                        quote! { crate::bedrock::codec::I16LE(len as i16).encode(buf)?; }
+                    }
+                    Primitive::U32LE => {
+                        quote! { crate::bedrock::codec::U32LE(len as u32).encode(buf)?; }
+                    }
+                    Primitive::I32LE => {
+                        quote! { crate::bedrock::codec::I32LE(len as i32).encode(buf)?; }
+                    }
+                    Primitive::U64LE => {
+                        quote! { crate::bedrock::codec::U64LE(len as u64).encode(buf)?; }
+                    }
+                    Primitive::I64LE => {
+                        quote! { crate::bedrock::codec::I64LE(len as i64).encode(buf)?; }
+                    }
+                    Primitive::F32LE => {
+                        quote! { crate::bedrock::codec::F32LE(len as f32).encode(buf)?; }
+                    }
+                    Primitive::F64LE => {
+                        quote! { crate::bedrock::codec::F64LE(len as f64).encode(buf)?; }
+                    }
+                    _ => {
+                        let t = primitive_to_rust_tokens(p);
+                        quote! { (len as #t).encode(buf)?; }
+                    }
+                },
+                _ => quote! { (len as u32).encode(buf)?; },
+            };
+
+            let is_latin1 = encoding
+                .as_deref()
+                .map(|value| value.eq_ignore_ascii_case("latin1"))
+                .unwrap_or(false);
+            let val_expr = if is_ref {
+                quote! { #access_expr }
+            } else {
+                quote! { &#access_expr }
+            };
+
+            if is_latin1 {
+                Ok(quote! {
+                    let bytes: Vec<u8> = (#val_expr)
+                        .chars()
+                        .map(|ch| {
+                            let code = ch as u32;
+                            if code <= 0xFF { code as u8 } else { b'?' }
+                        })
+                        .collect();
+                    let len = bytes.len();
+                    #len_encode
+                    buf.put_slice(&bytes);
+                })
+            } else {
+                Ok(quote! {
+                    let bytes = (#val_expr).as_bytes();
+                    let len = bytes.len();
+                    #len_encode
+                    buf.put_slice(bytes);
+                })
+            }
+        }
+        Type::Encapsulated { length_type, inner } => {
+            let len_encode = match length_type.as_ref() {
+                Type::Primitive(p) => match p {
+                    Primitive::VarInt => {
+                        quote! { crate::bedrock::codec::VarInt(len as i32).encode(buf)?; }
+                    }
+                    Primitive::VarLong => {
+                        quote! { crate::bedrock::codec::VarLong(len as i64).encode(buf)?; }
+                    }
+                    Primitive::ZigZag32 => {
+                        quote! { crate::bedrock::codec::ZigZag32(len as i32).encode(buf)?; }
+                    }
+                    Primitive::ZigZag64 => {
+                        quote! { crate::bedrock::codec::ZigZag64(len as i64).encode(buf)?; }
+                    }
+                    Primitive::U16LE => {
+                        quote! { crate::bedrock::codec::U16LE(len as u16).encode(buf)?; }
+                    }
+                    Primitive::I16LE => {
+                        quote! { crate::bedrock::codec::I16LE(len as i16).encode(buf)?; }
+                    }
+                    Primitive::U32LE => {
+                        quote! { crate::bedrock::codec::U32LE(len as u32).encode(buf)?; }
+                    }
+                    Primitive::I32LE => {
+                        quote! { crate::bedrock::codec::I32LE(len as i32).encode(buf)?; }
+                    }
+                    Primitive::U64LE => {
+                        quote! { crate::bedrock::codec::U64LE(len as u64).encode(buf)?; }
+                    }
+                    Primitive::I64LE => {
+                        quote! { crate::bedrock::codec::I64LE(len as i64).encode(buf)?; }
+                    }
+                    Primitive::F32LE => {
+                        quote! { crate::bedrock::codec::F32LE(len as f32).encode(buf)?; }
+                    }
+                    Primitive::F64LE => {
+                        quote! { crate::bedrock::codec::F64LE(len as f64).encode(buf)?; }
+                    }
+                    _ => {
+                        let t = primitive_to_rust_tokens(p);
+                        quote! { (len as #t).encode(buf)?; }
+                    }
+                },
+                _ => quote! { (len as u32).encode(buf)?; },
+            };
+
+            let inner_name = format!("{}Encap", var_name);
+            let inner_body = generate_field_encode(
+                container_name,
+                &inner_name,
+                inner,
+                access_expr.clone(),
+                container,
+                ctx,
+                is_ref,
+            )?;
+            let inner_size = generate_field_size_expr(
+                container_name,
+                &inner_name,
+                inner,
+                access_expr,
+                container,
+                ctx,
+                is_ref,
+            )?;
+
+            Ok(quote! {
+                let len = #inner_size;
+                #len_encode
+                #inner_body
+            })
+        }
+        Type::Option(inner) => {
+            let inner_name = format!("{}Some", var_name);
+            let inner_body = generate_field_encode(
+                container_name,
+                &inner_name,
+                inner,
+                quote! { v },
+                container,
+                ctx,
+                true,
+            )?;
+
+            let match_expr = if is_ref {
+                quote! { #access_expr }
+            } else {
+                quote! { &#access_expr }
+            };
+
+            Ok(quote! {
+                match #match_expr {
+                    Some(v) => {
+                        buf.put_u8(1);
+                        #inner_body
+                    }
+                    None => buf.put_u8(0),
+                }
+            })
+        }
+        Type::Primitive(p) => {
+            let access_expr = if is_ref {
+                quote! { *#access_expr }
+            } else {
+                access_expr
+            };
+            match p {
+                Primitive::VarInt => {
+                    Ok(quote! { crate::bedrock::codec::VarInt(#access_expr).encode(buf)?; })
+                }
+                Primitive::VarLong => {
+                    Ok(quote! { crate::bedrock::codec::VarLong(#access_expr).encode(buf)?; })
+                }
+                Primitive::ZigZag32 => {
+                    Ok(quote! { crate::bedrock::codec::ZigZag32(#access_expr).encode(buf)?; })
+                }
+                Primitive::ZigZag64 => {
+                    Ok(quote! { crate::bedrock::codec::ZigZag64(#access_expr).encode(buf)?; })
+                }
+                Primitive::U16LE => {
+                    Ok(quote! { crate::bedrock::codec::U16LE(#access_expr).encode(buf)?; })
+                }
+                Primitive::I16LE => {
+                    Ok(quote! { crate::bedrock::codec::I16LE(#access_expr).encode(buf)?; })
+                }
+                Primitive::U32LE => {
+                    Ok(quote! { crate::bedrock::codec::U32LE(#access_expr).encode(buf)?; })
+                }
+                Primitive::I32LE => {
+                    Ok(quote! { crate::bedrock::codec::I32LE(#access_expr).encode(buf)?; })
+                }
+                Primitive::U64LE => {
+                    Ok(quote! { crate::bedrock::codec::U64LE(#access_expr).encode(buf)?; })
+                }
+                Primitive::I64LE => {
+                    Ok(quote! { crate::bedrock::codec::I64LE(#access_expr).encode(buf)?; })
+                }
+                Primitive::F32LE => {
+                    Ok(quote! { crate::bedrock::codec::F32LE(#access_expr).encode(buf)?; })
+                }
+                Primitive::F64LE => {
+                    Ok(quote! { crate::bedrock::codec::F64LE(#access_expr).encode(buf)?; })
+                }
+                _ => {
+                    if is_ref {
+                        Ok(quote! { (#access_expr).encode(buf)?; })
+                    } else {
+                        Ok(quote! { #access_expr.encode(buf)?; })
+                    }
+                }
+            }
+        }
+        Type::Reference(r) => {
+            if r == "enum_size_based_on_values_len" {
+                let val_expr = if is_ref {
+                    quote! { (*#access_expr) }
+                } else {
+                    quote! { #access_expr }
+                };
+
+                return Ok(quote! {{
+                    let len = self.values_len as usize;
+                    let val_i32 = #val_expr as i32;
+                    if len <= 0xff {
+                        (val_i32 as u8).encode(buf)?;
+                    } else if len <= 0xffff {
+                        (val_i32 as u16).encode(buf)?;
+                    } else {
+                        (val_i32 as u32).encode(buf)?;
+                    }
+                }});
+            }
+
+            let clean = clean_type_name(r);
+            if clean == "LittleString" {
+                let owned = if is_ref {
+                    quote! { (#access_expr).to_string() }
+                } else {
+                    quote! { (#access_expr).clone() }
+                };
+                return Ok(quote! {
+                    LittleString(#owned).encode(buf)?;
+                });
+            }
+
+            let resolved_ty = resolve_type(ty, ctx);
+            if matches!(
+                resolved_ty,
+                Type::Array { .. }
+                    | Type::FixedArray { .. }
+                    | Type::Option(_)
+                    | Type::String { .. }
+            ) {
+                // Inline encoding so we honor custom length encodings and argument propagation.
+                return generate_field_encode(
+                    container_name,
+                    var_name,
+                    &resolved_ty,
+                    access_expr,
+                    container,
+                    ctx,
+                    is_ref,
+                );
+            }
+
+            Ok(quote! { #access_expr.encode(buf)?; })
+        }
+        _ => Ok(quote! { #access_expr.encode(buf)?; }),
+    }
+}
+
+fn generate_switch_encode_logic(
+    name: &str,
+    var_name: &str,
+    switch_def: &Type,
+    container: &Container,
+    ctx: &mut Context,
+    access_expr: TokenStream,
+    is_ref: bool,
+) -> Result<TokenStream, Box<dyn std::error::Error>> {
+    if let Type::Switch {
+        fields, default, ..
+    } = switch_def
+    {
+        let default_is_void = matches!(default.as_ref(), Type::Primitive(Primitive::Void));
+        let all_explicit_void = fields
+            .iter()
+            .all(|(_, t)| matches!(t, Type::Primitive(Primitive::Void)));
+
+        if all_explicit_void && !default_is_void {
+            let inner_access = if is_ref {
+                quote! { #access_expr }
+            } else {
+                quote! { &#access_expr }
+            };
+            return Ok(quote! {
+                if let Some(v) = #inner_access {
+                    v.encode(buf)?;
+                }
+            });
+        }
+
+        let enum_name = clean_type_name(&format!("{}{}", name, camel_case(var_name)));
+        let enum_ident = format_ident!("{}", enum_name);
+
+        let match_target = if is_ref {
+            quote! { #access_expr }
+        } else {
+            quote! { &#access_expr }
+        };
+
+        if default_is_void && fields.len() == 1 {
+            // Get the type of the single case to generate proper encode logic
+            let (_case_name, case_type) = &fields[0];
+            let inner_encode = generate_field_encode(
+                name,
+                &format!("{}Some", var_name),
+                case_type,
+                quote! { v },
+                container,
+                ctx,
+                true,
+            )?;
+            return Ok(quote! {
+                if let Some(v) = #match_target {
+                    #inner_encode
+                }
+            });
+        }
+
+        // Is this a bool switch (has true/false keys)?
+        let is_bool_switch =
+            fields.len() == 2 && fields.iter().any(|(k, _)| k == "true" || k == "false");
+
+        // Check if this is a bool-discriminated switch with Reference types
+        // If so, use cleaner variant names derived from the type names (matching definitions.rs)
+        let is_bool_switch_with_refs =
+            is_bool_switch && fields.iter().all(|(_, t)| matches!(t, Type::Reference(_)));
+
+        let mut match_arms = Vec::new();
+        for (case_name, case_type) in fields {
+            // For bool switches with References, derive variant name from type name
+            let variant_ident = if is_bool_switch_with_refs {
+                if let Type::Reference(r) = case_type {
+                    format_ident!("{}", clean_type_name(r))
+                } else {
+                    format_ident!("{}", safe_camel_ident(case_name))
+                }
+            } else {
+                format_ident!("{}", safe_camel_ident(case_name))
+            };
+
+            if matches!(case_type, Type::Primitive(Primitive::Void)) {
+                match_arms.push(quote! { #enum_ident::#variant_ident => {}, });
+            } else {
+                let encode_stmt = generate_field_encode(
+                    name,
+                    &format!("{}{}", var_name, case_name),
+                    case_type,
+                    quote! { v },
+                    container,
+                    ctx,
+                    true,
+                )?;
+                match_arms.push(quote! { #enum_ident::#variant_ident(v) => { #encode_stmt } });
+            }
+        }
+
+        if default_is_void {
+            // Only match directly for bool discriminated enums (both true/false cases have data)
+            // Other switches with void default are Option patterns and need if let Some
+            if is_bool_switch
+                && !fields
+                    .iter()
+                    .any(|(_, t)| matches!(t, Type::Primitive(Primitive::Void)))
+            {
+                // Bool discriminated enum: match directly
+                Ok(quote! { match #match_target { #(#match_arms)* } })
+            } else {
+                // Option pattern: wrap in if let Some
+                Ok(quote! { if let Some(v) = #match_target { match v { #(#match_arms)* } } })
+            }
+        } else {
+            let is_boxed = should_box_variant(default.as_ref(), ctx, 0);
+            let inner_access = if is_boxed {
+                quote! { (&**v) }
+            } else {
+                quote! { v }
+            };
+            let encode_stmt = generate_field_encode(
+                name,
+                &format!("{}Default", var_name),
+                default,
+                inner_access,
+                container,
+                ctx,
+                true,
+            )?;
+            match_arms.push(quote! { #enum_ident::Default(v) => { #encode_stmt } });
+            Ok(quote! { match #match_target { #(#match_arms)* } })
+        }
+    } else {
+        Err("Not a switch".into())
+    }
+}
+
+fn generate_redundant_encode(
+    name: &str,
+    field: &crate::ir::Field,
+    container: &Container,
+) -> TokenStream {
+    let mut target_field_name = None;
+    let mut target_switch: Option<&Type> = None;
+    for other in &container.fields {
+        if let Type::Switch { compare_to, .. } = &other.type_def
+            && compare_to.replace("../", "") == field.name
+        {
+            let other_clean = clean_field_name(&other.name, name);
+            target_field_name = Some(format_ident!("{}", other_clean));
+            target_switch = Some(&other.type_def);
+            break;
+        }
+    }
+
+    let (
+        Some(target),
+        Some(Type::Switch {
+            fields, default, ..
+        }),
+    ) = (target_field_name, target_switch)
+    else {
+        return quote! { false.encode(buf)?; };
+    };
+
+    let is_void = |ty: &Type| matches!(ty, Type::Primitive(Primitive::Void));
+
+    let mut true_ty: Option<&Type> = None;
+    let mut false_ty: Option<&Type> = None;
+    for (case_name, case_ty) in fields {
+        match case_name.to_ascii_lowercase().as_str() {
+            "true" | "1" => true_ty = Some(case_ty),
+            "false" | "0" => false_ty = Some(case_ty),
+            _ => {}
+        }
+    }
+
+    let default_ty = default.as_ref();
+    let true_is_void = is_void(true_ty.unwrap_or(default_ty));
+    let false_is_void = is_void(false_ty.unwrap_or(default_ty));
+
+    // Case 1: Both true and false have data types -> Discriminated enum
+    // Derive the bool from which variant is used
+    if !true_is_void && !false_is_void {
+        // Get the enum type name hint
+        let enum_name = format!("{}{}", name, camel_case(&target.to_string()));
+        let enum_ident = format_ident!("{}", clean_type_name(&enum_name));
+
+        // Get the "true" variant name - derive from type reference if possible
+        let true_variant = if let Some(Type::Reference(r)) = true_ty {
+            format_ident!("{}", clean_type_name(r))
+        } else {
+            format_ident!("True")
+        };
+
+        return quote! {
+            let val = matches!(self.#target, #enum_ident::#true_variant(_));
+            val.encode(buf)?;
+        };
+    }
+
+    // Case 2: Option pattern - one case is void
+    let val_expr = if true_is_void && !false_is_void {
+        quote! { self.#target.is_none() }
+    } else if !true_is_void && false_is_void {
+        quote! { self.#target.is_some() }
+    } else {
+        // Fall back to the common Bedrock convention: "has_*" implies `Some`.
+        quote! { self.#target.is_some() }
+    };
+
+    // Check if the discriminator field has a non-bool underlying type (e.g., lu16 => 0xffff: 'true')
+    // If so, we need to encode with the correct type and discriminant values
+    if let Type::Enum {
+        underlying,
+        variants,
+    } = &field.type_def
+    {
+        // Find the discriminant values for true and false
+        let mut true_val: Option<i64> = None;
+        let mut false_val: Option<i64> = None;
+        for (variant_name, discriminant) in variants {
+            match variant_name.to_ascii_lowercase().as_str() {
+                "true" | "1" => true_val = Some(*discriminant),
+                "false" | "0" => false_val = Some(*discriminant),
+                _ => {}
+            }
+        }
+
+        // If we have explicit discriminant values and a non-bool underlying type
+        if let (Some(true_v), Some(false_v)) = (true_val, false_val) {
+            if !matches!(underlying, Primitive::Bool) {
+                let true_lit = proc_macro2::Literal::i64_unsuffixed(true_v);
+                let false_lit = proc_macro2::Literal::i64_unsuffixed(false_v);
+
+                // Generate encoding based on the underlying primitive type
+                let encode_call = match underlying {
+                    Primitive::U16LE => {
+                        quote! {
+                            let disc: u16 = if #val_expr { #true_lit as u16 } else { #false_lit as u16 };
+                            crate::bedrock::codec::U16LE(disc).encode(buf)?;
+                        }
+                    }
+                    Primitive::I16LE => {
+                        quote! {
+                            let disc: i16 = if #val_expr { #true_lit as i16 } else { #false_lit as i16 };
+                            crate::bedrock::codec::I16LE(disc).encode(buf)?;
+                        }
+                    }
+                    Primitive::U8 => {
+                        quote! {
+                            let disc: u8 = if #val_expr { #true_lit as u8 } else { #false_lit as u8 };
+                            disc.encode(buf)?;
+                        }
+                    }
+                    Primitive::I8 => {
+                        quote! {
+                            let disc: i8 = if #val_expr { #true_lit as i8 } else { #false_lit as i8 };
+                            disc.encode(buf)?;
+                        }
+                    }
+                    _ => {
+                        // For other types, fall back to bool encoding with a warning
+                        quote! {
+                            let val = #val_expr;
+                            val.encode(buf)?;
+                        }
+                    }
+                };
+                return encode_call;
+            }
+        }
+    }
+
+    quote! {
+        let val = #val_expr;
+        val.encode(buf)?;
+    }
+}
+
+fn generate_redundant_size(
+    name: &str,
+    field: &crate::ir::Field,
+    container: &Container,
+) -> TokenStream {
+    let mut target_field_name = None;
+    let mut target_switch: Option<&Type> = None;
+    for other in &container.fields {
+        if let Type::Switch { compare_to, .. } = &other.type_def
+            && compare_to.replace("../", "") == field.name
+        {
+            let other_clean = clean_field_name(&other.name, name);
+            target_field_name = Some(format_ident!("{}", other_clean));
+            target_switch = Some(&other.type_def);
+            break;
+        }
+    }
+
+    let (
+        Some(target),
+        Some(Type::Switch {
+            fields, default, ..
+        }),
+    ) = (target_field_name, target_switch)
+    else {
+        return quote! { 1usize };
+    };
+
+    let is_void = |ty: &Type| matches!(ty, Type::Primitive(Primitive::Void));
+
+    let mut true_ty: Option<&Type> = None;
+    let mut false_ty: Option<&Type> = None;
+    for (case_name, case_ty) in fields {
+        match case_name.to_ascii_lowercase().as_str() {
+            "true" | "1" => true_ty = Some(case_ty),
+            "false" | "0" => false_ty = Some(case_ty),
+            _ => {}
+        }
+    }
+
+    let default_ty = default.as_ref();
+    let true_is_void = is_void(true_ty.unwrap_or(default_ty));
+    let false_is_void = is_void(false_ty.unwrap_or(default_ty));
+
+    if !true_is_void && !false_is_void {
+        let _ = target;
+        return quote! { 1usize };
+    }
+
+    if let Type::Enum {
+        underlying,
+        variants,
+    } = &field.type_def
+    {
+        let mut true_val: Option<i64> = None;
+        let mut false_val: Option<i64> = None;
+        for (variant_name, discriminant) in variants {
+            match variant_name.to_ascii_lowercase().as_str() {
+                "true" | "1" => true_val = Some(*discriminant),
+                "false" | "0" => false_val = Some(*discriminant),
+                _ => {}
+            }
+        }
+
+        if true_val.is_some() && false_val.is_some() && !matches!(underlying, Primitive::Bool) {
+            return match underlying {
+                Primitive::U16LE | Primitive::I16LE | Primitive::U16 | Primitive::I16 => {
+                    quote! { 2usize }
+                }
+                Primitive::U8 | Primitive::I8 => quote! { 1usize },
+                Primitive::U32
+                | Primitive::U32LE
+                | Primitive::I32
+                | Primitive::I32LE
+                | Primitive::F32
+                | Primitive::F32LE => quote! { 4usize },
+                Primitive::U64
+                | Primitive::U64LE
+                | Primitive::I64
+                | Primitive::I64LE
+                | Primitive::F64
+                | Primitive::F64LE => quote! { 8usize },
+                Primitive::VarInt => {
+                    quote! { crate::bedrock::codec::BedrockSized::encoded_size(&crate::bedrock::codec::VarInt(0)) }
+                }
+                Primitive::VarLong => {
+                    quote! { crate::bedrock::codec::BedrockSized::encoded_size(&crate::bedrock::codec::VarLong(0)) }
+                }
+                Primitive::ZigZag32 => {
+                    quote! { crate::bedrock::codec::BedrockSized::encoded_size(&crate::bedrock::codec::ZigZag32(0)) }
+                }
+                Primitive::ZigZag64 => {
+                    quote! { crate::bedrock::codec::BedrockSized::encoded_size(&crate::bedrock::codec::ZigZag64(0)) }
+                }
+                _ => quote! { 1usize },
+            };
+        }
+    }
+
+    quote! { 1usize }
+}
+
+fn resolve_path(
+    path: &str,
+    locals: &HashSet<String>,
+    resolved: &ResolvedContainer,
+    ctx: &Context,
+) -> (TokenStream, Option<Type>) {
+    let has_args = !resolved.args.is_empty();
+    // Heuristic: If it contains parentheses or square brackets, or a dot and looks like a method call (not just a path)
+    // assume it's a direct Rust expression that evaluates to a boolean.
+    let path_looks_like_expression = path.contains('(')
+        || path.contains(')')
+        || path.contains('[')
+        || path.contains(']')
+        || (path.contains('.')
+            && !path.starts_with('.')
+            && path.split('.').count() > 1
+            && path.split('.').last().map_or(false, |s| s.contains('('))); // Heuristic for method calls like `foo.bar()`
+
+    if path_looks_like_expression {
+        if let Ok(expr_tokens) = syn::parse_str(path) {
+            return (
+                expr_tokens,
+                Some(Type::Primitive(crate::ir::Primitive::Bool)),
+            );
+        }
+    }
+
+    if path.contains("||") {
+        let parts: Vec<&str> = path.split("||").collect();
+        let tokens: Vec<TokenStream> = parts
+            .iter()
+            .map(|p| {
+                let (t, ty) = resolve_path(p.trim(), locals, resolved, ctx);
+                if matches!(ty, Some(Type::Primitive(crate::ir::Primitive::Bool))) {
+                    quote! { #t }
+                } else {
+                    quote! { #t != 0 }
+                }
+            })
+            .collect();
+        return (
+            quote! { ( #(#tokens)||* ) },
+            Some(Type::Primitive(crate::ir::Primitive::Bool)),
+        );
+    }
+
+    if path.contains("&&") {
+        let parts: Vec<&str> = path.split("&&").collect();
+        let tokens: Vec<TokenStream> = parts
+            .iter()
+            .map(|p| {
+                let (t, ty) = resolve_path(p.trim(), locals, resolved, ctx);
+                if matches!(ty, Some(Type::Primitive(crate::ir::Primitive::Bool))) {
+                    quote! { #t }
+                } else {
+                    quote! { #t != 0 }
+                }
+            })
+            .collect();
+        return (
+            quote! { ( #(#tokens)&&* ) },
+            Some(Type::Primitive(crate::ir::Primitive::Bool)),
+        );
+    }
+
+    if path.starts_with('/') || path.contains("../") {
+        let clean = if path.starts_with('/') {
+            &path[1..]
+        } else {
+            &path.replace("../", "")
+        };
+        let field_name = crate::generator::utils::clean_field_name(clean, "");
+        let field_ident = format_ident!("{}", field_name);
+
+        let ty = resolved.variable_types.get(&field_name).cloned();
+
+        if locals.contains(&field_name) {
+            return (quote! { #field_ident }, ty);
+        }
+        if has_args {
+            let arg_ty = ty.or_else(|| {
+                resolved
+                    .args
+                    .iter()
+                    .find(|arg| arg.name() == field_name)
+                    .map(|arg| arg.ty.clone())
+            });
+            return (quote! { args.#field_ident }, arg_ty);
+        }
+        return (
+            quote! { 0 },
+            Some(Type::Primitive(crate::ir::Primitive::I32)),
+        );
+    }
+
+    let clean_path = path.replace("../", "");
+    let parts: Vec<&str> = clean_path.split(|c| c == '/' || c == '.').collect();
+    let mut tokens = Vec::new();
+    let mut current_type: Option<Type> = None;
+
+    for (i, part) in parts.iter().enumerate() {
+        let part_name = crate::generator::utils::clean_field_name(part, "");
+        let part_ident = format_ident!("{}", part_name);
+
+        if i == 0 {
+            let s_ident = part_ident.to_string();
+            if locals.contains(&s_ident) {
+                tokens.push(quote! { #part_ident });
+                current_type = resolved.variable_types.get(&s_ident).cloned();
+            } else if has_args {
+                tokens.push(quote! { args.#part_ident });
+                current_type = resolved.variable_types.get(&s_ident).cloned().or_else(|| {
+                    resolved
+                        .args
+                        .iter()
+                        .find(|arg| arg.name() == s_ident)
+                        .map(|arg| arg.ty.clone())
+                });
+            } else {
+                tokens.push(quote! { #part_ident });
+                current_type = None;
+            }
+        } else {
+            let mut is_bitfield_access = false;
+            if let Some(ty) = &current_type {
+                let resolved = resolve_type(ty, ctx);
+                if let Type::Bitfield { name: bf_name, .. } = resolved {
+                    let bf_ident = format_ident!("{}", bf_name);
+                    let flag_const = crate::generator::utils::to_screaming_snake_case(&part_name);
+                    let flag_ident = format_ident!("{}", flag_const);
+
+                    tokens.push(quote! { contains(#bf_ident::#flag_ident) });
+                    is_bitfield_access = true;
+                    current_type = Some(Type::Primitive(crate::ir::Primitive::Bool));
+                }
+            }
+
+            if !is_bitfield_access {
+                tokens.push(quote! { #part_ident });
+                if let Some(ty) = &current_type {
+                    current_type = find_member_type(ty, &part_name, ctx);
+                }
+            }
+        }
+    }
+
+    (quote! { #(#tokens).* }, current_type)
+}
+
+fn resolve_type(ty: &Type, ctx: &Context) -> Type {
+    match ty {
+        Type::Reference(r) => {
+            if let Some(resolved) = ctx.type_lookup.get(r) {
+                resolve_type(resolved, ctx)
+            } else {
+                ty.clone()
+            }
+        }
+        _ => ty.clone(),
+    }
+}
+
+fn find_field_type_in_container(container: &Container, field_name: &str) -> Option<Type> {
+    for field in &container.fields {
+        let clean = crate::generator::utils::clean_field_name(&field.name, "");
+        if clean == field_name {
+            return Some(field.type_def.clone());
+        }
+    }
+    None
+}
+
+fn find_member_type(parent: &Type, member: &str, ctx: &Context) -> Option<Type> {
+    let resolved = resolve_type(parent, ctx);
+    match resolved {
+        Type::Container(c) => find_field_type_in_container(&c, member),
+        Type::Bitfield { .. } => Some(Type::Primitive(crate::ir::Primitive::Bool)),
+        _ => None,
+    }
+}
+
+fn find_discriminator_field<'a>(
+    compare_to: &str,
+    container: &'a Container,
+) -> Option<&'a crate::ir::Field> {
+    let path = compare_to.replace("../", "");
+    let base = path.split('.').next().unwrap_or(&path);
+    let clean_base = crate::generator::utils::clean_field_name(base, "");
+
+    for f in &container.fields {
+        if crate::generator::utils::clean_field_name(&f.name, "") == clean_base {
+            return Some(f);
+        }
+    }
+    None
+}
+
+fn case_value_pattern(
+    case_name: &str,
+    switch_field_name: &str,
+    compare_field_name: &str,
+    discriminator_field: Option<&crate::ir::Field>,
+    container_name: &str,
+    resolved: &ResolvedContainer,
+    compare_type: Option<&Type>,
+    ctx: &mut Context,
+    arg_idents: &HashMap<String, proc_macro2::Ident>,
+) -> TokenStream {
+    if case_name == "_" || case_name.eq_ignore_ascii_case("default") {
+        return quote! { _ };
+    }
+
+    // Try to resolve the discriminator's enum type to an already-known identifier.
+    // We only emit a typed pattern when we can prove the enum was (or will be) emitted;
+    // otherwise we fall back to literal patterns to avoid referencing missing helper types.
+    let mut enum_ident: Option<proc_macro2::Ident> = None;
+    let try_set_enum_ident = |ty: &Type, enum_ident: &mut Option<proc_macro2::Ident>| {
+        if enum_ident.is_some() {
+            return;
+        }
+        let resolved_ty = resolve_type(ty, ctx);
+        let candidate = match resolved_ty {
+            Type::Reference(r) => Some(clean_type_name(&r)),
+            Type::Enum { .. } => Some(clean_type_name(&format!(
+                "{}{}",
+                container_name,
+                camel_case(compare_field_name)
+            ))),
+            _ => None,
+        };
+
+        if let Some(name) = candidate {
+            if ctx.type_lookup.contains_key(&name)
+                || ctx.emitted.contains(&name)
+                || ctx.in_progress.contains(&name)
+            {
+                *enum_ident = Some(format_ident!("{}", name));
+            }
+        }
+    };
+
+    if let Some(enum_type) = resolved.switch_resolutions.get(switch_field_name) {
+        try_set_enum_ident(enum_type, &mut enum_ident);
+    }
+
+    if enum_ident.is_none() {
+        // Prefer the resolved discriminator type if available (strongly typed path).
+        let mut discriminator_keys = Vec::new();
+        discriminator_keys.push(compare_field_name.to_string());
+        if let Some(stripped) = compare_field_name.strip_prefix('_') {
+            discriminator_keys.push(stripped.to_string());
+        } else {
+            discriminator_keys.push(format!("_{}", compare_field_name));
+        }
+
+        for key in discriminator_keys {
+            if let Some(t) = resolved.variable_types.get(&key) {
+                try_set_enum_ident(t, &mut enum_ident);
+            }
+            if enum_ident.is_some() {
+                break;
+            }
+        }
+    }
+
+    if enum_ident.is_none() {
+        if let Some(ct) = compare_type {
+            try_set_enum_ident(ct, &mut enum_ident);
+        }
+    }
+
+    if let Some(enum_ident) = enum_ident {
+        let variant_ident = format_ident!("{}", safe_camel_ident(case_name));
+        return quote! { #enum_ident::#variant_ident };
+    }
+
+    if let Some(enum_ident) = arg_idents.get(compare_field_name).cloned().or_else(|| {
+        compare_field_name
+            .strip_prefix('_')
+            .and_then(|k| arg_idents.get(k).cloned())
+    }) {
+        let variant_ident = format_ident!("{}", safe_camel_ident(case_name));
+        return quote! { #enum_ident::#variant_ident };
+    }
+
+    // If we still don't have a known enum, but the discriminator type is a reference,
+    // prefer using that path over emitting a bare variant (which would not be in scope).
+    if let Some(Type::Reference(r)) = compare_type {
+        let type_ident = format_ident!("{}", clean_type_name(r));
+        let variant_ident = format_ident!("{}", safe_camel_ident(case_name));
+        return quote! { #type_ident::#variant_ident };
+    }
+
+    // Final attempt: check resolved argument metadata for a matching discriminator.
+    if let Some(arg) = resolved.args.iter().find(|arg| {
+        arg.name() == compare_field_name
+            || arg
+                .name()
+                .strip_prefix('_')
+                .map(|s| s == compare_field_name)
+                .unwrap_or(false)
+    }) {
+        let arg_ty = &arg.ty;
+        if matches!(arg_ty, Type::Reference(_) | Type::Enum { .. })
+            && let Ok(type_tokens) = resolve_type_to_tokens(arg_ty, compare_field_name, ctx)
+        {
+            let variant_ident = format_ident!("{}", safe_camel_ident(case_name));
+            return quote! { #type_tokens::#variant_ident };
+        }
+    }
+
+    if case_name.starts_with('/') {
+        let clean = &case_name[1..];
+        let field_name = crate::generator::utils::clean_field_name(clean, "");
+        let field_ident = format_ident!("{}", field_name);
+        // ShieldItemID is supplied by the session as i32, while ItemNew encodes its
+        // network ID as a little-endian i16. Compare in the shared signed domain.
+        if case_name == "/ShieldItemID" {
+            return quote! { x if i32::from(x) == args.#field_ident };
+        }
+        return quote! { x if x == args.#field_ident };
+    }
+
+    if let Some(field) = discriminator_field {
+        if let Type::Option(inner) = &field.type_def
+            && matches!(resolve_type(inner, ctx), Type::Enum { .. })
+        {
+            let type_name = match inner.as_ref() {
+                Type::Reference(name) => clean_type_name(name),
+                _ => clean_type_name(&format!("{}{}", container_name, camel_case(&field.name))),
+            };
+            let type_ident = format_ident!("{}", type_name);
+            let variant_ident = format_ident!("{}", safe_camel_ident(case_name));
+            return quote! { Some(#type_ident::#variant_ident) };
+        }
+
+        let resolved_type = resolve_type(&field.type_def, ctx);
+
+        match resolved_type {
+            Type::Reference(name) => {
+                let type_ident = format_ident!("{}", clean_type_name(&name));
+                let variant_ident = format_ident!("{}", safe_camel_ident(case_name));
+                return quote! { #type_ident::#variant_ident };
+            }
+            Type::Enum { ref variants, .. } => {
+                let variant_name = if let Ok(val) = case_name.parse::<i64>() {
+                    variants
+                        .iter()
+                        .find(|(_, v)| *v == val)
+                        .map(|(n, _)| n.clone())
+                } else {
+                    let target = safe_camel_ident(case_name);
+                    variants
+                        .iter()
+                        .find(|(n, _)| safe_camel_ident(n) == target)
+                        .map(|(n, _)| n.clone())
+                        .or_else(|| Some(case_name.to_string()))
+                };
+
+                if let Some(v_name) = variant_name {
+                    let type_name = match &field.type_def {
+                        Type::Reference(r) => clean_type_name(r),
+                        Type::Enum { .. } => clean_type_name(&format!(
+                            "{}{}",
+                            container_name,
+                            camel_case(&field.name)
+                        )),
+                        _ => "UnknownEnum".to_string(),
+                    };
+
+                    let final_type_name = if let Type::Reference(r) = &field.type_def {
+                        clean_type_name(r)
+                    } else {
+                        type_name
+                    };
+
+                    let type_ident = format_ident!("{}", final_type_name);
+                    let variant_ident = format_ident!("{}", safe_camel_ident(&v_name));
+                    return quote! { #type_ident::#variant_ident };
+                }
+            }
+            Type::Bitfield { .. } | Type::Primitive(Primitive::Bool) => {
+                let cn = case_name.to_lowercase();
+                if cn == "true" || cn == "1" {
+                    return quote! { true };
+                }
+                if cn == "false" || cn == "0" {
+                    return quote! { false };
+                }
+            }
+            Type::Switch { fields, .. } => {
+                // Check if this switch is strictly boolean (all keys are true/false/1/0, ignoring default)
+                let is_bool = fields.iter().all(|(k, _)| {
+                    let k = k.to_lowercase();
+                    k == "true"
+                        || k == "false"
+                        || k == "1"
+                        || k == "0"
+                        || k == "default"
+                        || k == "_"
+                });
+
+                if is_bool {
+                    let cn = case_name.to_lowercase();
+                    if cn == "true" || cn == "1" {
+                        return quote! { true };
+                    }
+                    if cn == "false" || cn == "0" {
+                        return quote! { false };
+                    }
+                    // default/_ are handled at the top of the function
+                } else {
+                    // It's a switch behaving as an Enum
+                    let enum_type_name =
+                        clean_type_name(&format!("{}{}", container_name, camel_case(&field.name)));
+                    if ctx.type_lookup.contains_key(&enum_type_name)
+                        || ctx.emitted.contains(&enum_type_name)
+                        || ctx.in_progress.contains(&enum_type_name)
+                    {
+                        let type_ident = format_ident!("{}", enum_type_name);
+                        let variant_ident = format_ident!("{}", safe_camel_ident(case_name));
+                        return quote! { #type_ident::#variant_ident };
+                    } else {
+                        let variant_ident = format_ident!("{}", safe_camel_ident(case_name));
+                        return quote! { #variant_ident };
+                    }
+                }
+            }
+            _ => {}
+        }
+
+        // Fallback: If case_name is NOT a number/bool, assume it is an Enum Variant (e.g. for References that resolve weirdly)
+        let cn = case_name.to_lowercase();
+        if case_name.parse::<i64>().is_err() && cn != "true" && cn != "false" {
+            let enum_type_name = match &field.type_def {
+                Type::Reference(ref_name) => Some(clean_type_name(ref_name)),
+                _ => None,
+            };
+
+            let variant_ident = format_ident!("{}", safe_camel_ident(case_name));
+            if let Some(name) = enum_type_name {
+                if ctx.type_lookup.contains_key(&name)
+                    || ctx.emitted.contains(&name)
+                    || ctx.in_progress.contains(&name)
+                {
+                    let type_ident = format_ident!("{}", name);
+                    return quote! { #type_ident::#variant_ident };
+                } else {
+                    return quote! { #variant_ident };
+                }
+            } else {
+                // If no reference, but we have a name, emit it as an identifier.
+                // This handles cases where the schema uses string keys for a numeric type (implicit enum).
+                return quote! { #variant_ident };
+            }
+        }
+    }
+
+    let cn = case_name.to_lowercase();
+    if cn == "true" {
+        return quote! { true };
+    }
+    if cn == "false" {
+        return quote! { false };
+    }
+    if let Ok(n) = case_name.parse::<i64>() {
+        let lit = proc_macro2::Literal::i64_unsuffixed(n);
+        return quote! { #lit };
+    }
+
+    let variant_ident = format_ident!("{}", safe_camel_ident(case_name));
+    quote! { #variant_ident }
+}
+
+#[allow(clippy::too_many_arguments)]
+fn generate_switch_decode_logic(
+    name: &str,
+    var_name: &str,
+    switch_def: &Type,
+    ctx: &mut Context,
+    compare_expr: TokenStream,
+    compare_type: Option<Type>,
+    locals: &HashSet<String>,
+    resolved: &ResolvedContainer,
+    arg_idents: &HashMap<String, proc_macro2::Ident>,
+) -> Result<TokenStream, Box<dyn std::error::Error>> {
+    if let Type::Switch {
+        compare_to,
+        fields,
+        default,
+        ..
+    } = switch_def
+    {
+        let discriminator_field = find_discriminator_field(compare_to, &resolved.raw);
+        let compare_ty_hint = {
+            let clean = crate::generator::utils::clean_field_name(
+                &compare_to.replace("../", "").replace('/', "."),
+                "",
+            );
+            let mut keys = Vec::new();
+            keys.push(clean.clone());
+            if let Some(stripped) = clean.strip_prefix('_') {
+                keys.push(stripped.to_string());
+            } else {
+                keys.push(format!("_{}", clean));
+            }
+            let mut ty = keys
+                .iter()
+                .find_map(|k| resolved.variable_types.get(k).cloned())
+                .or(compare_type.clone());
+            if ty.is_none() {
+                // fallback to args map
+                let args_map: std::collections::HashMap<_, _> = resolved
+                    .args
+                    .iter()
+                    .map(|arg| (arg.name().to_string(), arg.ty.clone()))
+                    .collect();
+                ty = keys.iter().find_map(|k| args_map.get(k).cloned());
+            }
+            ty
+        };
+        let compare_field_name = crate::generator::utils::clean_field_name(
+            compare_to
+                .replace("../", "")
+                .split('.')
+                .next()
+                .unwrap_or(compare_to),
+            "",
+        );
+
+        // Helper to check if a type resolves to a Rust bool
+        let check_is_bool = |t: &Type| -> bool {
+            let resolved = resolve_type(t, ctx);
+            match resolved {
+                Type::Primitive(Primitive::Bool) => true,
+                Type::Enum { variants, .. } => {
+                    let has_true = variants.iter().any(|(n, _)| n.eq_ignore_ascii_case("true"));
+                    let has_false = variants
+                        .iter()
+                        .any(|(n, _)| n.eq_ignore_ascii_case("false"));
+                    variants.len() == 2 && has_true && has_false
+                }
+                _ => false,
+            }
+        };
+
+        // Check if boolean optimization is possible
+        // We check compare_type from resolve_path, AND fallback to looking up the field in the container
+        let mut is_bool_type = compare_type.as_ref().is_none_or(check_is_bool)
+            || discriminator_field.is_none_or(|f| check_is_bool(&f.type_def));
+
+        // Also check if keys are boolean-compatible
+        let keys_are_bool = fields.iter().all(|(k, _)| {
+            let k = k.to_lowercase();
+            k == "true" || k == "false" || k == "1" || k == "0" || k == "default" || k == "_"
+        });
+
+        // Check if we have strong evidence it is NOT bool (e.g. it resolved to U8 or Enum)
+        let seems_numeric = compare_type
+            .as_ref()
+            .is_none_or(|t| !matches!(t, Type::Primitive(Primitive::Bool)))
+            || discriminator_field
+                .is_none_or(|f| !matches!(f.type_def, Type::Primitive(Primitive::Bool)));
+
+        // Heuristic: If keys are bool, and the field name sounds boolean, assume it is boolean.
+        // This avoids the ugly cast for fields where we missed the type inference but the name is obvious.
+        if !is_bool_type && keys_are_bool {
+            let path = compare_to.replace("../", "");
+            let name = path.split('.').next_back().unwrap_or(&path);
+
+            if !seems_numeric
+                && (name.starts_with("has_") || name.starts_with("is_") || name.starts_with("can_"))
+            {
+                is_bool_type = true;
+            }
+        }
+
+        // Use bool logic if keys imply it, even if we aren't 100% sure of the compare type (robust check)
+        let use_bool_logic = keys_are_bool;
+
+        let default_is_void = matches!(default.as_ref(), Type::Primitive(Primitive::Void));
+        let all_cases_void = fields
+            .iter()
+            .all(|(_, t)| matches!(t, Type::Primitive(Primitive::Void)));
+
+        // Mapper enums always have an Unknown/UnknownValue fallback variant,
+        // so switch matches are never exhaustive — always emit a `_ =>` arm.
+        fn enum_fully_covered(
+            _ty: Option<&Type>,
+            _fields: &[(String, Type)],
+            _ctx: &Context,
+        ) -> bool {
+            false
+        }
+        let compare_enum_covered = enum_fully_covered(compare_ty_hint.as_ref(), fields, ctx);
+
+        // Helper for robust condition
+        let mk_cond = |expr: &TokenStream| -> TokenStream {
+            if is_bool_type {
+                quote! { #expr }
+            } else if seems_numeric {
+                quote! { (#expr) != 0 }
+            } else {
+                // Robust truthy check for bool/integers
+                quote! { ((#expr) as i64) != 0 }
+            }
+        };
+
+        if all_cases_void && !default_is_void {
+            let inner_expr = generate_field_decode_expr(
+                name, var_name, default, ctx, locals, resolved, arg_idents,
+            )?;
+
+            let construct = if should_box_variant(default, ctx, 0) {
+                quote! { Box::new(#inner_expr) }
+            } else {
+                quote! { #inner_expr }
+            };
+
+            if use_bool_logic {
+                let true_is_void = fields.iter().any(|(k, _)| {
+                    let k = k.to_lowercase();
+                    k == "true" || k == "1"
+                });
+                let false_is_void = fields.iter().any(|(k, _)| {
+                    let k = k.to_lowercase();
+                    k == "false" || k == "0"
+                });
+
+                let cond = mk_cond(&compare_expr);
+
+                if true_is_void && !false_is_void {
+                    return Ok(quote! { if #cond { None } else { Some(#construct) } });
+                } else if !true_is_void && false_is_void {
+                    return Ok(quote! { if #cond { Some(#construct) } else { None } });
+                }
+            }
+
+            let mut match_arms = Vec::new();
+            for (k, _) in fields {
+                let pat = case_value_pattern(
+                    k,
+                    var_name,
+                    &compare_field_name,
+                    discriminator_field,
+                    name,
+                    resolved,
+                    compare_ty_hint.as_ref(),
+                    ctx,
+                    arg_idents,
+                );
+                match_arms.push(quote! { #pat => None, });
+            }
+            if !compare_enum_covered {
+                match_arms.push(quote! { _ => Some(#construct), });
+            }
+            return Ok(quote! { match #compare_expr { #(#match_arms)* } });
+        }
+
+        if default_is_void && fields.len() == 1 {
+            let Some((case_name, case_type)) = fields.first() else {
+                return Err("switch has no fields".into());
+            };
+            let inner_name = format!("{}{}", var_name, camel_case(case_name));
+            let inner = generate_field_decode_expr(
+                name,
+                &inner_name,
+                case_type,
+                ctx,
+                locals,
+                resolved,
+                arg_idents,
+            )?;
+            let construct = if should_box_variant(case_type, ctx, 0) {
+                quote! { Box::new(#inner) }
+            } else {
+                quote! { #inner }
+            };
+
+            if use_bool_logic {
+                let cn = case_name.to_lowercase();
+                let cond = mk_cond(&compare_expr);
+                if cn == "true" || cn == "1" {
+                    return Ok(quote! { if #cond { Some(#construct) } else { None } });
+                } else if cn == "false" || cn == "0" {
+                    return Ok(quote! { if #cond { None } else { Some(#construct) } });
+                }
+            }
+
+            let pat = case_value_pattern(
+                case_name,
+                var_name,
+                &compare_field_name,
+                discriminator_field,
+                name,
+                resolved,
+                compare_ty_hint.as_ref(),
+                ctx,
+                arg_idents,
+            );
+            if compare_enum_covered {
+                return Ok(quote! {
+                    match #compare_expr {
+                        #pat => Some(#construct)
+                    }
+                });
+            } else {
+                return Ok(quote! {
+                    match #compare_expr {
+                        #pat => Some(#construct),
+                        _ => None
+                    }
+                });
+            }
+        }
+
+        let enum_name = clean_type_name(&format!("{}{}", name, camel_case(var_name)));
+        let enum_ident = format_ident!("{}", enum_name);
+
+        if use_bool_logic {
+            // Resolve True branch and False branch
+            let mut true_block = None;
+            let mut false_block = None;
+            let default_block;
+
+            // Check if this is a discriminated enum: all cases have non-void types
+            let is_discriminated_enum = fields.len() == 2
+                && fields
+                    .iter()
+                    .all(|(_, t)| !matches!(t, Type::Primitive(Primitive::Void)));
+
+            // Check if this is a bool switch with References (for type-based variant names)
+            let is_bool_switch_with_refs = fields.len() == 2
+                && fields.iter().any(|(k, _)| k == "true" || k == "false")
+                && fields.iter().all(|(_, t)| matches!(t, Type::Reference(_)));
+
+            // Helper to generate block
+            let mut gen_block = |c_name: &str,
+                                 c_type: &Type,
+                                 is_default: bool|
+             -> Result<TokenStream, Box<dyn std::error::Error>> {
+                // For bool switches with References, derive variant name from type
+                let variant_ident = if is_default {
+                    format_ident!("Default")
+                } else if is_bool_switch_with_refs {
+                    if let Type::Reference(r) = c_type {
+                        format_ident!("{}", clean_type_name(r))
+                    } else {
+                        format_ident!("{}", safe_camel_ident(c_name))
+                    }
+                } else {
+                    format_ident!("{}", safe_camel_ident(c_name))
+                };
+
+                if matches!(c_type, Type::Primitive(Primitive::Void)) {
+                    // Void case - only for Option patterns
+                    if default_is_void && !is_discriminated_enum {
+                        Ok(quote! { Some(#enum_ident::#variant_ident) })
+                    } else {
+                        Ok(quote! { #enum_ident::#variant_ident })
+                    }
+                } else {
+                    let suffix = if is_default {
+                        "Default".to_string()
+                    } else {
+                        c_name.to_string()
+                    };
+                    let inner_name = format!("{}{}", var_name, camel_case(&suffix));
+                    let inner = generate_field_decode_expr(
+                        name,
+                        &inner_name,
+                        c_type,
+                        ctx,
+                        locals,
+                        resolved,
+                        arg_idents,
+                    )?;
+                    let construct = if should_box_variant(c_type, ctx, 0) {
+                        quote! { Box::new(#inner) }
+                    } else {
+                        quote! { #inner }
+                    };
+                    // Only wrap in Some for Option patterns (one case is void), not discriminated enums
+                    if default_is_void && !is_discriminated_enum {
+                        Ok(quote! { Some(#enum_ident::#variant_ident(#construct)) })
+                    } else {
+                        Ok(quote! { #enum_ident::#variant_ident(#construct) })
+                    }
+                }
+            };
+
+            // Process fields
+            for (case_name, case_type) in fields {
+                let block = gen_block(case_name, case_type, false)?;
+                let cn = case_name.to_lowercase();
+                if cn == "true" || cn == "1" {
+                    true_block = Some(block);
+                } else if cn == "false" || cn == "0" {
+                    false_block = Some(block);
+                }
+            }
+
+            // Process default
+            if default_is_void {
+                default_block = Some(quote! { None });
+            } else {
+                default_block = Some(gen_block("Default", default, true)?);
+            }
+
+            let t_block = true_block
+                .or(default_block.clone())
+                .ok_or("missing true_block and default_block")?;
+            let f_block = false_block
+                .or(default_block)
+                .ok_or("missing false_block and default_block")?;
+            let cond = mk_cond(&compare_expr);
+
+            return Ok(quote! {
+                if #cond {
+                    #t_block
+                } else {
+                    #f_block
+                }
+            });
+        }
+
+        let mut match_arms = Vec::new();
+
+        for (case_name, case_type) in fields {
+            let variant_ident = format_ident!("{}", safe_camel_ident(case_name));
+            let val_lit = case_value_pattern(
+                case_name,
+                var_name,
+                &compare_field_name,
+                discriminator_field,
+                name,
+                resolved,
+                compare_ty_hint.as_ref(),
+                ctx,
+                arg_idents,
+            );
+            if matches!(case_type, Type::Primitive(Primitive::Void)) {
+                if default_is_void {
+                    match_arms.push(quote! { #val_lit => Some(#enum_ident::#variant_ident), });
+                } else {
+                    match_arms.push(quote! { #val_lit => #enum_ident::#variant_ident, });
+                }
+            } else {
+                let inner_name = format!("{}{}", var_name, camel_case(case_name));
+                let inner = generate_field_decode_expr(
+                    name,
+                    &inner_name,
+                    case_type,
+                    ctx,
+                    locals,
+                    resolved,
+                    arg_idents,
+                )?;
+                let construct = if should_box_variant(case_type, ctx, 0) {
+                    quote! { Box::new(#inner) }
+                } else {
+                    quote! { #inner }
+                };
+                if default_is_void {
+                    match_arms.push(
+                        quote! { #val_lit => Some(#enum_ident::#variant_ident(#construct)), },
+                    );
+                } else {
+                    match_arms
+                        .push(quote! { #val_lit => #enum_ident::#variant_ident(#construct), });
+                }
+            }
+        }
+
+        if default_is_void {
+            if !compare_enum_covered {
+                match_arms.push(quote! { _ => None, });
+            }
+        } else {
+            let inner_name = format!("{}Default", var_name);
+            let inner = generate_field_decode_expr(
+                name,
+                &inner_name,
+                default,
+                ctx,
+                locals,
+                resolved,
+                arg_idents,
+            )?;
+            let construct = if should_box_variant(default.as_ref(), ctx, 0) {
+                quote! { Box::new(#inner) }
+            } else {
+                quote! { #inner }
+            };
+            match_arms.push(quote! { _ => #enum_ident::Default(#construct), });
+        }
+        Ok(quote! { match #compare_expr { #(#match_arms)* } })
+    } else {
+        Err("Not a switch".into())
+    }
+}
+
+pub fn generate_enum_type_codec(
+    name: &str,
+    underlying: &Primitive,
+    variants: &[(String, i64)],
+    fallback_variant_name: &str,
+) -> Result<TokenStream, Box<dyn std::error::Error>> {
+    let struct_ident = format_ident!("{}", name);
+    let repr_ty = primitive_to_enum_repr_tokens(underlying);
+    let mut match_arms = Vec::new();
+    for (var_name, val) in variants {
+        let variant_ident = format_ident!("{}", var_name);
+        let val_lit = enum_value_literal(underlying, *val)?;
+        match_arms.push(quote! { #val_lit => Ok(#struct_ident::#variant_ident), });
+    }
+
+    let encode_logic = match underlying {
+        Primitive::VarInt => quote! { crate::bedrock::codec::VarInt(val as i32).encode(buf) },
+        Primitive::VarLong => quote! { crate::bedrock::codec::VarLong(val as i64).encode(buf) },
+        Primitive::ZigZag32 => quote! { crate::bedrock::codec::ZigZag32(val as i32).encode(buf) },
+        Primitive::ZigZag64 => quote! { crate::bedrock::codec::ZigZag64(val as i64).encode(buf) },
+        Primitive::U16LE => quote! { crate::bedrock::codec::U16LE(val as u16).encode(buf) },
+        Primitive::I16LE => quote! { crate::bedrock::codec::I16LE(val as i16).encode(buf) },
+        Primitive::U32LE => quote! { crate::bedrock::codec::U32LE(val as u32).encode(buf) },
+        Primitive::I32LE => quote! { crate::bedrock::codec::I32LE(val as i32).encode(buf) },
+        Primitive::U64LE => quote! { crate::bedrock::codec::U64LE(val as u64).encode(buf) },
+        Primitive::I64LE => quote! { crate::bedrock::codec::I64LE(val as i64).encode(buf) },
+        Primitive::F32LE => quote! { crate::bedrock::codec::F32LE(val as f32).encode(buf) },
+        Primitive::F64LE => quote! { crate::bedrock::codec::F64LE(val as f64).encode(buf) },
+        _ => quote! { val.encode(buf) },
+    };
+
+    let decode_logic = match underlying {
+        Primitive::VarInt => quote! {
+            let raw = <crate::bedrock::codec::VarInt as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?;
+            let val = raw.0 as #repr_ty;
+        },
+        Primitive::VarLong => quote! {
+            let raw = <crate::bedrock::codec::VarLong as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?;
+            let val = raw.0 as #repr_ty;
+        },
+        Primitive::ZigZag32 => quote! {
+            let raw = <crate::bedrock::codec::ZigZag32 as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?;
+            let val = raw.0 as #repr_ty;
+        },
+        Primitive::ZigZag64 => quote! {
+            let raw = <crate::bedrock::codec::ZigZag64 as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?;
+            let val = raw.0 as #repr_ty;
+        },
+        Primitive::U16LE => quote! {
+            let raw = <crate::bedrock::codec::U16LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?;
+            let val = raw.0 as #repr_ty;
+        },
+        Primitive::I16LE => quote! {
+            let raw = <crate::bedrock::codec::I16LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?;
+            let val = raw.0 as #repr_ty;
+        },
+        Primitive::U32LE => quote! {
+            let raw = <crate::bedrock::codec::U32LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?;
+            let val = raw.0 as #repr_ty;
+        },
+        Primitive::I32LE => quote! {
+            let raw = <crate::bedrock::codec::I32LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?;
+            let val = raw.0 as #repr_ty;
+        },
+        Primitive::U64LE => quote! {
+            let raw = <crate::bedrock::codec::U64LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?;
+            let val = raw.0 as #repr_ty;
+        },
+        Primitive::I64LE => quote! {
+            let raw = <crate::bedrock::codec::I64LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?;
+            let val = raw.0 as #repr_ty;
+        },
+        Primitive::F32LE => quote! {
+            let raw = <crate::bedrock::codec::F32LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?;
+            let val = raw.0 as #repr_ty;
+        },
+        Primitive::F64LE => quote! {
+            let raw = <crate::bedrock::codec::F64LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?;
+            let val = raw.0 as #repr_ty;
+        },
+        _ => quote! {
+            let val = <#repr_ty as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?;
+        },
+    };
+
+    // Build encode match arms: known variants map to their discriminant, fallback holds raw value
+    let mut encode_arms = Vec::new();
+    for (var_name, val) in variants {
+        let variant_ident = format_ident!("{}", var_name);
+        let val_lit = enum_value_literal(underlying, *val)?;
+        encode_arms.push(quote! { #struct_ident::#variant_ident => #val_lit, });
+    }
+
+    let fallback_ident = format_ident!("{}", fallback_variant_name);
+    let encoded_size = match underlying {
+        Primitive::VarInt => {
+            quote! { crate::bedrock::codec::BedrockSized::encoded_size(&crate::bedrock::codec::VarInt(_val as i32)) }
+        }
+        Primitive::VarLong => {
+            quote! { crate::bedrock::codec::BedrockSized::encoded_size(&crate::bedrock::codec::VarLong(_val as i64)) }
+        }
+        Primitive::ZigZag32 => {
+            quote! { crate::bedrock::codec::BedrockSized::encoded_size(&crate::bedrock::codec::ZigZag32(_val as i32)) }
+        }
+        Primitive::ZigZag64 => {
+            quote! { crate::bedrock::codec::BedrockSized::encoded_size(&crate::bedrock::codec::ZigZag64(_val as i64)) }
+        }
+        Primitive::U8 | Primitive::I8 | Primitive::Bool => quote! { 1usize },
+        Primitive::U16 | Primitive::U16LE | Primitive::I16 | Primitive::I16LE => {
+            quote! { 2usize }
+        }
+        Primitive::U32
+        | Primitive::U32LE
+        | Primitive::I32
+        | Primitive::I32LE
+        | Primitive::F32
+        | Primitive::F32LE => quote! { 4usize },
+        Primitive::U64
+        | Primitive::U64LE
+        | Primitive::I64
+        | Primitive::I64LE
+        | Primitive::F64
+        | Primitive::F64LE => quote! { 8usize },
+        Primitive::Uuid => quote! { 16usize },
+        _ => quote! { crate::bedrock::codec::BedrockSized::encoded_size(&_val) },
+    };
+
+    Ok(quote! {
+        impl crate::bedrock::codec::BedrockSized for #struct_ident {
+            fn encoded_size(&self) -> usize {
+                let _val: #repr_ty = match self {
+                    #(#encode_arms)*
+                    #struct_ident::#fallback_ident(v) => *v,
+                };
+                #encoded_size
+            }
+        }
+
+        impl crate::bedrock::codec::BedrockCodec for #struct_ident {
+            type Args = ();
+            fn encode<B: bytes::BufMut>(&self, buf: &mut B) -> Result<(), std::io::Error> {
+                let val: #repr_ty = match self {
+                    #(#encode_arms)*
+                    #struct_ident::#fallback_ident(v) => *v,
+                };
+                #encode_logic
+            }
+            fn decode<B: bytes::Buf>(buf: &mut B, _args: Self::Args) -> Result<Self, crate::bedrock::error::DecodeError> {
+                #decode_logic
+                match val {
+                    #(#match_arms)*
+                    other => Ok(#struct_ident::#fallback_ident(other))
+                }
+            }
+        }
+    })
+}
+
+/// One variant of a Mojang discriminated union, as the codec emitter needs it.
+pub struct UnionVariantCodec {
+    pub name: String,
+    pub control_value: i64,
+    pub type_tokens: TokenStream,
+    pub boxed: bool,
+    pub is_void: bool,
+    /// Set when the payload is a fixed-size numeric array. Such a payload is
+    /// not a `BedrockCodec`, so it is written element-wise with no length
+    /// prefix (e.g. `Color255RGBA`'s four little-endian components).
+    pub fixed: Option<(usize, Primitive)>,
+    /// Set when the payload is a bare scalar rather than a struct with its own
+    /// codec. The Rust type token cannot carry the wire encoding — `I32LE` and
+    /// `I32` both lower to `i32` — so the primitive has to travel alongside it
+    /// or the variant silently falls back on `bedrock_core`'s big-endian
+    /// blanket impl for the bare Rust type.
+    pub scalar: Option<Primitive>,
+}
+
+/// Generate the codec for a Mojang `oneOf` with an explicit wire discriminator.
+///
+/// Union payloads currently use `Args = ()`. Mojang's discriminated payload
+/// definitions are self-contained in the published schemas; if a future
+/// schema makes a union branch depend on an enclosing container argument, the
+/// parity report should call that out before this assumption is broadened.
+pub fn generate_union_type_codec(
+    name: &str,
+    control_type: &Primitive,
+    variants: &[UnionVariantCodec],
+) -> Result<TokenStream, Box<dyn std::error::Error>> {
+    let struct_ident = format_ident!("{}", name);
+    let mut encode_arms = Vec::new();
+    let mut decode_arms = Vec::new();
+    let mut size_arms = Vec::new();
+
+    for UnionVariantCodec {
+        name: variant_name,
+        control_value,
+        type_tokens,
+        boxed,
+        is_void,
+        fixed,
+        scalar,
+    } in variants
+    {
+        let variant_ident = format_ident!("{}", variant_name);
+        let control_literal = proc_macro2::Literal::i64_unsuffixed(*control_value);
+        let encode_control = union_control_encode(control_type, quote! { control_value })?;
+        let size_control = union_control_size(control_type, quote! { #control_literal })?;
+
+        if let Some((size, element)) = fixed {
+            // Fixed-size numeric array: no length prefix, each element written
+            // with its own wire encoding (little-endian by Bedrock default).
+            let len_lit = proc_macro2::Literal::usize_unsuffixed(*size);
+            let element_encode = union_control_encode(element, quote! { (*item) })?;
+            let element_decode = union_control_decode(element)?;
+            let element_size = union_control_size(element, quote! { (*item) })?;
+            encode_arms.push(quote! {
+                #struct_ident::#variant_ident(value) => {
+                    let control_value = #control_literal as i64;
+                    #encode_control?;
+                    for item in value.iter() {
+                        #element_encode?;
+                    }
+                    Ok(())
+                }
+            });
+            decode_arms.push(quote! {
+                #control_literal => {
+                    let mut array: #type_tokens = Default::default();
+                    for slot in array.iter_mut() {
+                        // union_control_decode emits `let control_value = ...;`
+                        #element_decode
+                        *slot = control_value as _;
+                    }
+                    Ok(#struct_ident::#variant_ident(array))
+                }
+            });
+            size_arms.push(quote! {
+                #struct_ident::#variant_ident(value) => {
+                    debug_assert_eq!(value.len(), #len_lit);
+                    #size_control
+                        + value
+                            .iter()
+                            .map(|item| {
+                                // Constant-width elements ignore `item`.
+                                let _ = item;
+                                #element_size
+                            })
+                            .sum::<usize>()
+                }
+            });
+        } else if *is_void {
+            encode_arms.push(quote! {
+                #struct_ident::#variant_ident => {
+                    let control_value = #control_literal as i64;
+                    #encode_control?;
+                    Ok(())
+                }
+            });
+            decode_arms.push(quote! {
+                #control_literal => Ok(#struct_ident::#variant_ident)
+            });
+            size_arms.push(quote! {
+                #struct_ident::#variant_ident => #size_control
+            });
+        } else if let Some(primitive) = scalar {
+            // Bare scalar payload. It has no codec of its own, so the encoding
+            // has to be chosen here from the IR primitive; leaving it to the
+            // generic arm below picks up `bedrock_core`'s big-endian blanket
+            // impl for `i32`/`f32`/... and silently writes the wrong bytes.
+            let scalar_encode = union_scalar_payload_encode(primitive, quote! { value })?;
+            let scalar_decode = union_scalar_payload_decode(primitive)?;
+            let scalar_size = union_control_size(primitive, quote! { (*value) })?;
+            encode_arms.push(quote! {
+                #struct_ident::#variant_ident(value) => {
+                    let control_value = #control_literal as i64;
+                    #encode_control?;
+                    #scalar_encode?;
+                    Ok(())
+                }
+            });
+            decode_arms.push(quote! {
+                #control_literal => Ok(#struct_ident::#variant_ident(#scalar_decode))
+            });
+            size_arms.push(quote! {
+                #struct_ident::#variant_ident(value) => {
+                    // Constant-width payloads ignore `value`.
+                    let _ = value;
+                    #size_control + #scalar_size
+                }
+            });
+        } else if *boxed {
+            encode_arms.push(quote! {
+                #struct_ident::#variant_ident(value) => {
+                    let control_value = #control_literal as i64;
+                    #encode_control?;
+                    value.as_ref().encode(buf)?;
+                    Ok(())
+                }
+            });
+            decode_arms.push(quote! {
+                #control_literal => Ok(#struct_ident::#variant_ident(Box::new(
+                    <#type_tokens as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?
+                )))
+            });
+            size_arms.push(quote! {
+                #struct_ident::#variant_ident(value) => {
+                    #size_control + crate::bedrock::codec::BedrockSized::encoded_size(value.as_ref())
+                }
+            });
+        } else {
+            encode_arms.push(quote! {
+                #struct_ident::#variant_ident(value) => {
+                    let control_value = #control_literal as i64;
+                    #encode_control?;
+                    value.encode(buf)?;
+                    Ok(())
+                }
+            });
+            decode_arms.push(quote! {
+                #control_literal => Ok(#struct_ident::#variant_ident(
+                    <#type_tokens as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?
+                ))
+            });
+            size_arms.push(quote! {
+                #struct_ident::#variant_ident(value) => {
+                    #size_control + crate::bedrock::codec::BedrockSized::encoded_size(value)
+                }
+            });
+        }
+    }
+
+    let decode_control = union_control_decode(control_type)?;
+    Ok(quote! {
+        impl crate::bedrock::codec::BedrockSized for #struct_ident {
+            fn encoded_size(&self) -> usize {
+                match self {
+                    #(#size_arms),*
+                }
+            }
+        }
+
+        impl crate::bedrock::codec::BedrockCodec for #struct_ident {
+            type Args = ();
+
+            fn encode<B: bytes::BufMut>(&self, buf: &mut B) -> Result<(), std::io::Error> {
+                match self {
+                    #(#encode_arms),*
+                }
+            }
+
+            fn decode<B: bytes::Buf>(buf: &mut B, _args: Self::Args) -> Result<Self, crate::bedrock::error::DecodeError> {
+                #decode_control
+                match control_value {
+                    #(#decode_arms),*,
+                    _ => Err(crate::bedrock::error::DecodeError::InvalidEnumValue {
+                        enum_name: stringify!(#struct_ident),
+                        value: control_value,
+                    }),
+                }
+            }
+        }
+    })
+}
+
+fn union_control_encode(
+    primitive: &Primitive,
+    value: TokenStream,
+) -> Result<TokenStream, Box<dyn std::error::Error>> {
+    Ok(match primitive {
+        Primitive::VarInt => quote! { crate::bedrock::codec::VarInt(#value as i32).encode(buf) },
+        Primitive::VarLong => quote! { crate::bedrock::codec::VarLong(#value as i64).encode(buf) },
+        Primitive::ZigZag32 => {
+            quote! { crate::bedrock::codec::ZigZag32(#value as i32).encode(buf) }
+        }
+        Primitive::ZigZag64 => {
+            quote! { crate::bedrock::codec::ZigZag64(#value as i64).encode(buf) }
+        }
+        Primitive::U16LE => quote! { crate::bedrock::codec::U16LE(#value as u16).encode(buf) },
+        Primitive::I16LE => quote! { crate::bedrock::codec::I16LE(#value as i16).encode(buf) },
+        Primitive::U32LE => quote! { crate::bedrock::codec::U32LE(#value as u32).encode(buf) },
+        Primitive::I32LE => quote! { crate::bedrock::codec::I32LE(#value as i32).encode(buf) },
+        Primitive::U64LE => quote! { crate::bedrock::codec::U64LE(#value as u64).encode(buf) },
+        Primitive::I64LE => quote! { crate::bedrock::codec::I64LE(#value as i64).encode(buf) },
+        Primitive::F32LE => quote! { crate::bedrock::codec::F32LE(#value as f32).encode(buf) },
+        Primitive::F64LE => quote! { crate::bedrock::codec::F64LE(#value as f64).encode(buf) },
+        Primitive::Bool => quote! { (#value != 0).encode(buf) },
+        Primitive::U8 => quote! { (#value as u8).encode(buf) },
+        Primitive::I8 => quote! { (#value as i8).encode(buf) },
+        Primitive::U16 => quote! { (#value as u16).encode(buf) },
+        Primitive::I16 => quote! { (#value as i16).encode(buf) },
+        Primitive::U32 => quote! { (#value as u32).encode(buf) },
+        Primitive::I32 => quote! { (#value as i32).encode(buf) },
+        Primitive::U64 => quote! { (#value as u64).encode(buf) },
+        Primitive::I64 => quote! { (#value as i64).encode(buf) },
+        other => {
+            return Err(format!("unsupported Mojang union control primitive {other:?}").into());
+        }
+    })
+}
+
+fn union_control_decode(primitive: &Primitive) -> Result<TokenStream, Box<dyn std::error::Error>> {
+    Ok(match primitive {
+        Primitive::VarInt => quote! {
+            let control_value = <crate::bedrock::codec::VarInt as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 as i64;
+        },
+        Primitive::VarLong => quote! {
+            let control_value = <crate::bedrock::codec::VarLong as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0;
+        },
+        Primitive::ZigZag32 => quote! {
+            let control_value = <crate::bedrock::codec::ZigZag32 as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 as i64;
+        },
+        Primitive::ZigZag64 => quote! {
+            let control_value = <crate::bedrock::codec::ZigZag64 as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0;
+        },
+        Primitive::U16LE => quote! {
+            let control_value = <crate::bedrock::codec::U16LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 as i64;
+        },
+        Primitive::I16LE => quote! {
+            let control_value = <crate::bedrock::codec::I16LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 as i64;
+        },
+        Primitive::U32LE => quote! {
+            let control_value = <crate::bedrock::codec::U32LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 as i64;
+        },
+        Primitive::I32LE => quote! {
+            let control_value = <crate::bedrock::codec::I32LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 as i64;
+        },
+        Primitive::U64LE => quote! {
+            let control_value = <crate::bedrock::codec::U64LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 as i64;
+        },
+        Primitive::I64LE => quote! {
+            let control_value = <crate::bedrock::codec::I64LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0;
+        },
+        Primitive::F32LE => quote! {
+            let control_value = <crate::bedrock::codec::F32LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 as i64;
+        },
+        Primitive::F64LE => quote! {
+            let control_value = <crate::bedrock::codec::F64LE as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 as i64;
+        },
+        Primitive::Bool => quote! {
+            let control_value = if <bool as crate::bedrock::codec::BedrockCodec>::decode(buf, ())? { 1 } else { 0 };
+        },
+        Primitive::U8 => quote! {
+            let control_value = <u8 as crate::bedrock::codec::BedrockCodec>::decode(buf, ())? as i64;
+        },
+        Primitive::I8 => quote! {
+            let control_value = <i8 as crate::bedrock::codec::BedrockCodec>::decode(buf, ())? as i64;
+        },
+        Primitive::U16 => quote! {
+            let control_value = <u16 as crate::bedrock::codec::BedrockCodec>::decode(buf, ())? as i64;
+        },
+        Primitive::I16 => quote! {
+            let control_value = <i16 as crate::bedrock::codec::BedrockCodec>::decode(buf, ())? as i64;
+        },
+        Primitive::U32 => quote! {
+            let control_value = <u32 as crate::bedrock::codec::BedrockCodec>::decode(buf, ())? as i64;
+        },
+        Primitive::I32 => quote! {
+            let control_value = <i32 as crate::bedrock::codec::BedrockCodec>::decode(buf, ())? as i64;
+        },
+        Primitive::U64 => quote! {
+            let control_value = <u64 as crate::bedrock::codec::BedrockCodec>::decode(buf, ())? as i64;
+        },
+        Primitive::I64 => quote! {
+            let control_value = <i64 as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?;
+        },
+        other => {
+            return Err(format!("unsupported Mojang union control primitive {other:?}").into());
+        }
+    })
+}
+
+/// True when a union variant's payload is a bare scalar whose wire encoding the
+/// union codec has to choose itself.
+///
+/// `Uuid`, `Nbt` and `ByteArray` lower to Rust types that carry a correct
+/// `BedrockCodec` of their own, so they stay on the generic path; `Void` is not
+/// a payload at all. Everything else lowers to a bare Rust primitive
+/// (`i32`, `f32`, ...) whose blanket impl in `bedrock_core` is big-endian.
+pub fn is_union_scalar_payload(primitive: &Primitive) -> bool {
+    !matches!(
+        primitive,
+        Primitive::Void | Primitive::Uuid | Primitive::Nbt | Primitive::ByteArray
+    )
+}
+
+/// Encode a union variant whose payload is a bare scalar.
+///
+/// This cannot reuse `union_control_encode`: a discriminant is always integral,
+/// so that helper normalises through `as i64`/`as i32`, which would truncate a
+/// `float` payload. A payload keeps its own Rust type, so the value is wrapped
+/// in the matching little-endian newtype instead of cast.
+fn union_scalar_payload_encode(
+    primitive: &Primitive,
+    value: TokenStream,
+) -> Result<TokenStream, Box<dyn std::error::Error>> {
+    Ok(match primitive {
+        Primitive::VarInt => quote! { crate::bedrock::codec::VarInt(*#value).encode(buf) },
+        Primitive::VarLong => quote! { crate::bedrock::codec::VarLong(*#value).encode(buf) },
+        Primitive::ZigZag32 => quote! { crate::bedrock::codec::ZigZag32(*#value).encode(buf) },
+        Primitive::ZigZag64 => quote! { crate::bedrock::codec::ZigZag64(*#value).encode(buf) },
+        Primitive::U16LE => quote! { crate::bedrock::codec::U16LE(*#value).encode(buf) },
+        Primitive::I16LE => quote! { crate::bedrock::codec::I16LE(*#value).encode(buf) },
+        Primitive::U32LE => quote! { crate::bedrock::codec::U32LE(*#value).encode(buf) },
+        Primitive::I32LE => quote! { crate::bedrock::codec::I32LE(*#value).encode(buf) },
+        Primitive::U64LE => quote! { crate::bedrock::codec::U64LE(*#value).encode(buf) },
+        Primitive::I64LE => quote! { crate::bedrock::codec::I64LE(*#value).encode(buf) },
+        Primitive::F32LE => quote! { crate::bedrock::codec::F32LE(*#value).encode(buf) },
+        Primitive::F64LE => quote! { crate::bedrock::codec::F64LE(*#value).encode(buf) },
+        // Single-byte or genuinely big-endian on the wire. The bare impl is the
+        // right one here: `int32_be` is a real Bedrock spelling (LoginPacket's
+        // client network version).
+        Primitive::Bool
+        | Primitive::U8
+        | Primitive::I8
+        | Primitive::U16
+        | Primitive::I16
+        | Primitive::U32
+        | Primitive::I32
+        | Primitive::U64
+        | Primitive::I64
+        | Primitive::F32
+        | Primitive::F64 => quote! { #value.encode(buf) },
+        other => {
+            return Err(format!("union payload primitive {other:?} is not a scalar").into());
+        }
+    })
+}
+
+/// Decode a union variant whose payload is a bare scalar. Yields an expression
+/// of the payload's own Rust type, not the `i64` a discriminant decodes to.
+fn union_scalar_payload_decode(
+    primitive: &Primitive,
+) -> Result<TokenStream, Box<dyn std::error::Error>> {
+    let newtype = |wrapper: TokenStream| {
+        quote! { <#wrapper as crate::bedrock::codec::BedrockCodec>::decode(buf, ())?.0 }
+    };
+    Ok(match primitive {
+        Primitive::VarInt => newtype(quote! { crate::bedrock::codec::VarInt }),
+        Primitive::VarLong => newtype(quote! { crate::bedrock::codec::VarLong }),
+        Primitive::ZigZag32 => newtype(quote! { crate::bedrock::codec::ZigZag32 }),
+        Primitive::ZigZag64 => newtype(quote! { crate::bedrock::codec::ZigZag64 }),
+        Primitive::U16LE => newtype(quote! { crate::bedrock::codec::U16LE }),
+        Primitive::I16LE => newtype(quote! { crate::bedrock::codec::I16LE }),
+        Primitive::U32LE => newtype(quote! { crate::bedrock::codec::U32LE }),
+        Primitive::I32LE => newtype(quote! { crate::bedrock::codec::I32LE }),
+        Primitive::U64LE => newtype(quote! { crate::bedrock::codec::U64LE }),
+        Primitive::I64LE => newtype(quote! { crate::bedrock::codec::I64LE }),
+        Primitive::F32LE => newtype(quote! { crate::bedrock::codec::F32LE }),
+        Primitive::F64LE => newtype(quote! { crate::bedrock::codec::F64LE }),
+        Primitive::Bool
+        | Primitive::U8
+        | Primitive::I8
+        | Primitive::U16
+        | Primitive::I16
+        | Primitive::U32
+        | Primitive::I32
+        | Primitive::U64
+        | Primitive::I64
+        | Primitive::F32
+        | Primitive::F64 => {
+            let rust = primitive_to_rust_tokens(primitive);
+            quote! { <#rust as crate::bedrock::codec::BedrockCodec>::decode(buf, ())? }
+        }
+        other => {
+            return Err(format!("union payload primitive {other:?} is not a scalar").into());
+        }
+    })
+}
+
+fn union_control_size(
+    primitive: &Primitive,
+    value: TokenStream,
+) -> Result<TokenStream, Box<dyn std::error::Error>> {
+    Ok(match primitive {
+        Primitive::VarInt => {
+            quote! { crate::bedrock::codec::BedrockSized::encoded_size(&crate::bedrock::codec::VarInt(#value as i32)) }
+        }
+        Primitive::VarLong => {
+            quote! { crate::bedrock::codec::BedrockSized::encoded_size(&crate::bedrock::codec::VarLong(#value as i64)) }
+        }
+        Primitive::ZigZag32 => {
+            quote! { crate::bedrock::codec::BedrockSized::encoded_size(&crate::bedrock::codec::ZigZag32(#value as i32)) }
+        }
+        Primitive::ZigZag64 => {
+            quote! { crate::bedrock::codec::BedrockSized::encoded_size(&crate::bedrock::codec::ZigZag64(#value as i64)) }
+        }
+        Primitive::U8 | Primitive::I8 | Primitive::Bool => quote! { 1usize },
+        Primitive::U16 | Primitive::U16LE | Primitive::I16 | Primitive::I16LE => quote! { 2usize },
+        Primitive::U32
+        | Primitive::U32LE
+        | Primitive::I32
+        | Primitive::I32LE
+        | Primitive::F32
+        | Primitive::F32LE => quote! { 4usize },
+        Primitive::U64
+        | Primitive::U64LE
+        | Primitive::I64
+        | Primitive::I64LE
+        | Primitive::F64
+        | Primitive::F64LE => quote! { 8usize },
+        other => {
+            return Err(format!("unsupported Mojang union control primitive {other:?}").into());
+        }
+    })
+}
