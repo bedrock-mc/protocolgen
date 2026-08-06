@@ -1,10 +1,9 @@
 //! Frontend for Mojang's `bedrock-protocol-docs/json` schemas.
 //!
-//! Mojang's files are JSON Schema documents rather than the compact
-//! PrismarineJS protocol graph.  This module resolves their local and external
-//! references, applies the checked-in correction layer, and lowers the result
-//! to the shared Valentine IR.  The generator after this point is intentionally
-//! source-agnostic.
+//! Mojang's files are JSON Schema documents. This module resolves their local
+//! and external references, applies the checked-in correction layer, and lowers
+//! the result to the shared Valentine IR. The generator after this point is
+//! intentionally source-agnostic.
 
 use super::ParseResult;
 use crate::ir::{Container, Field, Packet, Primitive, Type, UnionVariant};
@@ -77,8 +76,7 @@ pub fn parse(
     };
 
     // Materialize non-packet roots as named definitions. Packet roots are
-    // emitted in the packet pass so their structs remain version-local, just
-    // like the existing Prismarine frontend.
+    // emitted in the packet pass so their structs remain version-local.
     let root_targets = lowerer
         .documents
         .iter()

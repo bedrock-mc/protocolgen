@@ -1,9 +1,12 @@
 # `valentine_gen`
 
-`valentine_gen` generates the Bedrock protocol crates consumed by `valentine`.
-It accepts either PrismarineJS `minecraft-data` or Mojang's official
-`bedrock-protocol-docs`, lowers the selected source into a shared IR, and emits
-the version crate and Valentine workspace wiring.
+This retained Axolotl reference generates the Bedrock protocol crates consumed
+by `valentine` from Mojang's official `bedrock-protocol-docs` or Endstone. The
+PrismarineJS `minecraft-data` frontend, gameplay data generation,
+`src/data_generator`, and their submodules are intentionally excluded from
+the protocolgen lift; Axolotl owns those paths. `protocolgen` v2 is the
+canonical downstream manifest pipeline, while this crate remains an external
+regeneration/parity gate.
 
 ## Setup and sources
 
@@ -11,12 +14,10 @@ the version crate and Valentine workspace wiring.
 git submodule update --init --recursive
 ```
 
-Prismarine remains the default source. Mojang generation is selected explicitly
-and requires a scratch output directory, so it cannot overwrite the checked-in
-version crates:
+Mojang generation is selected explicitly and requires a scratch output
+directory, so it cannot overwrite the checked-in version crates:
 
 ```bash
-cargo run -p valentine_gen -- --source prismarine --latest --proto
 cargo run -p valentine_gen -- \
   --source mojang --versions 1.26.40 --proto \
   --output-dir C:/tmp/valentine-mojang \
@@ -125,18 +126,18 @@ today's dump.
 5. Register canonical definitions for reuse among versions generated in the
    same invocation.
 
-The test suite generates Mojang output in a temporary directory and runs
-`cargo check` on the generated crate.
+The retained unit tests cover the parser, lowering, corrections, and manifest
+shape. The real-docs regeneration and protocolgen parity gate is exposed by
+`scripts/axolotl-parity.sh` at the protocolgen repository root.
 
 ## Common commands
 
 ```bash
-cargo run -p valentine_gen -- --latest
-cargo run -p valentine_gen -- --versions 1.21.120,1.21.124
-cargo run -p valentine_gen -- --latest --proto
-cargo run -p valentine_gen -- --all
-cargo run -p valentine_gen -- --list-versions
-cargo run -p valentine_gen -- --latest --log debug
+cargo run -p valentine_gen -- --source mojang --latest --output-dir /tmp/valentine-mojang
+cargo run -p valentine_gen -- --source mojang --versions 1.26.40 --proto --output-dir /tmp/valentine-mojang
+cargo run -p valentine_gen -- --source endstone --latest --output-dir /tmp/valentine-endstone
+cargo run -p valentine_gen -- --source mojang --list-versions --output-dir /tmp/valentine-mojang
+cargo run -p valentine_gen -- --source mojang --latest --log debug --output-dir /tmp/valentine-mojang
 ```
 
 When behavior must survive regeneration, change the parser, IR analysis, or

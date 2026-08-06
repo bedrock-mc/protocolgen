@@ -41,33 +41,6 @@ fn builtin(name: &str) -> Option<Primitive> {
     }
 }
 
-/// The only two names the corpus references without defining. Everything else
-/// resolves, which is the headline difference from the Mojang frontend. Both
-/// are handled here explicitly rather than guessed at silently.
-fn undefined_reference(name: &str) -> Option<Type> {
-    // A `brstd::bitset<N>` is Bedrock's actor-flag bitset. Mojang models the
-    // same field as a length-prefixed uint8 array and the checked-in crate
-    // already encodes it that way, so keep the two frontends agreeing rather
-    // than inventing a third representation. gophertunnel writes it through
-    // its own `Bitset` helper (7 bits per byte with a continuation flag), which
-    // the conformance comparison cannot read, so this stays unverified.
-    if name.starts_with("brstd::bitset<") {
-        return Some(Type::Array {
-            count_type: Box::new(Type::Primitive(Primitive::VarInt)),
-            inner_type: Box::new(Type::Primitive(Primitive::U8)),
-        });
-    }
-    // `cereal::DynamicValue` is the recursive DataStore property value. The
-    // Mojang frontend cannot express it either and lowers it to a zero-byte
-    // unit with a warning; matching that keeps the corpus inspectable and
-    // keeps the gap in one place. Implementing the dependent
-    // DataStorePropertyValue family is a wire-correctness TODO for both.
-    if name == "cereal::DynamicValue" {
-        return Some(Type::Primitive(Primitive::Void));
-    }
-    None
-}
-
 /// Scalar spellings used by the dumper. `varint*` is zigzag-signed and
 /// `uvarint*` is unsigned; conflating them silently corrupts the wire, which is
 /// exactly the class of bug this frontend exists to avoid.
@@ -185,14 +158,10 @@ impl Lowerer {
         let document = match self.types_src.get(name).cloned() {
             Some(document) => document,
             None => {
-                let fallback = undefined_reference(name)
-                    .ok_or_else(|| format!("{ctx}: unknown endstone type {name}"))?;
-                warn!(
-                    r#type = name,
-                    context = ctx,
-                    "endstone corpus references a type it does not define; using the documented fallback"
-                );
-                return Ok(fallback);
+                return Err(format!(
+                    "{ctx}: unresolved endstone type {name}; adjudication required"
+                )
+                .into());
             }
         };
 
