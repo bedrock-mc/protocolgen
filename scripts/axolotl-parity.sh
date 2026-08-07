@@ -20,9 +20,9 @@ if [[ -n "${AXOLOTL_MOJANG_DOCS:-}" ]]; then
   generator_args+=(--mojang-docs "$AXOLOTL_MOJANG_DOCS")
 fi
 
-cargo run --manifest-path "$axolotl_root/Cargo.toml" -p valentine_gen -- \
+GOCACHE="${GOCACHE:-/tmp/go-build-cache}" cargo run --manifest-path "$axolotl_root/Cargo.toml" -p valentine_gen -- \
   "${generator_args[@]}"
 
-go run ./cmd/protocolgen parity \
+GOCACHE="${GOCACHE:-/tmp/go-build-cache}" go run ./cmd/protocolgen parity \
   -manifest "$canonical_manifest" \
   -axolotl "$work_dir/axolotl-v1.json"

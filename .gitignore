@@ -2,4 +2,4 @@
 *.test
 /pgen
 generated/*/rust/Cargo.lock
-generated/*/rust/target/
+generated/**/rust/target/
