@@ -4,6 +4,9 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// PlayerLocation is sent by the server to the client to either update a player's position on the
+// locator bar, or remove them completely. The client will determine how to render the player on the
+// locator bar based on their own distance to Position.
 type PlayerLocation struct {
 	TargetActorID int64
 	Location      protocol.PlayerLocationData

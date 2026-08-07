@@ -4,6 +4,9 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// ScriptMessage is used to communicate custom messages from the client to the server, or from the
+// server to the client. While the name may suggest this packet is used for the discontinued
+// scripting API, it is likely instead for the GameTest framework.
 type ScriptMessage struct {
 	MessageID    string
 	MessageValue string

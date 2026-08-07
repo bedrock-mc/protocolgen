@@ -4,6 +4,7 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// SubChunkRequest requests specific sub-chunks from the server using a center point.
 type SubChunkRequest struct {
 	DimensionType              protocol.DimensionType
 	SubChunkPositionOffsetList []protocol.SubChunkPosOffset

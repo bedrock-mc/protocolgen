@@ -4,11 +4,16 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// Animate is sent by the server to send a player animation from one player to all viewers of that
+// player. It is used for a couple of actions, such as arm swimming and critical hits.
 type Animate struct {
 	Action               protocol.AnimateAction
 	TargetActorRuntimeID uint64
-	Data                 float32
-	SwingSource          protocol.Optional[string]
+	// Data ...
+	Data float32
+	// SwingSource is the source for swing actions. It is one of the action type constants that may be
+	// found above.
+	SwingSource protocol.Optional[string]
 }
 
 // Marshal reads or writes Animate using its canonical wire layout.

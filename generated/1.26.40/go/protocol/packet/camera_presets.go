@@ -4,6 +4,7 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// CameraPresets gives the client a list of custom camera presets.
 type CameraPresets struct {
 	CameraPresets protocol.CameraPresetList
 }

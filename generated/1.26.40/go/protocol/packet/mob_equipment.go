@@ -4,6 +4,9 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// MobEquipment is sent by the client to the server and the server to the client to make the other
+// side aware of the new item that an entity is holding. It is used to show the item in the hand of
+// entities such as zombies too.
 type MobEquipment struct {
 	TargetRuntimeID uint64
 	Item            protocol.NetworkItemStackDescriptorSerializedData

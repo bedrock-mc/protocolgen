@@ -4,6 +4,8 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// JigsawStructureData is sent by the server to let the client know all the rules for jigsaw
+// structures.
 type JigsawStructureData struct {
 	JigsawStructureDataTag []byte
 }

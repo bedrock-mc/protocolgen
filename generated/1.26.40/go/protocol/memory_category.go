@@ -2,118 +2,15 @@
 
 package protocol
 
-type MemoryCategory uint8
+// MemoryCategoryCounter represents a memory usage counter for a specific category.
+type MemoryCategoryCounter struct {
+	// Category is the memory category. It is one of the MemoryCategory constants above.
+	Category     MemoryCategory
+	CurrentBytes uint64
+}
 
-const (
-	MemoryCategoryUnknown                               MemoryCategory = 0
-	MemoryCategoryInvalidSizeUnknown                    MemoryCategory = 1
-	MemoryCategoryActor                                 MemoryCategory = 2
-	MemoryCategoryActorAnimation                        MemoryCategory = 3
-	MemoryCategoryActorRendering                        MemoryCategory = 4
-	MemoryCategoryBlockTickingQueues                    MemoryCategory = 5
-	MemoryCategoryBiomeStorage                          MemoryCategory = 6
-	MemoryCategoryBlobs                                 MemoryCategory = 7
-	MemoryCategoryCereal                                MemoryCategory = 8
-	MemoryCategoryCircuitSystem                         MemoryCategory = 9
-	MemoryCategoryClient                                MemoryCategory = 10
-	MemoryCategoryCommands                              MemoryCategory = 11
-	MemoryCategoryDBStorage                             MemoryCategory = 12
-	MemoryCategoryDebug                                 MemoryCategory = 13
-	MemoryCategoryDocumentation                         MemoryCategory = 14
-	MemoryCategoryECSSystems                            MemoryCategory = 15
-	MemoryCategoryFmod                                  MemoryCategory = 16
-	MemoryCategoryFonts                                 MemoryCategory = 17
-	MemoryCategoryImGui                                 MemoryCategory = 18
-	MemoryCategoryInput                                 MemoryCategory = 19
-	MemoryCategoryJSONUI                                MemoryCategory = 20
-	MemoryCategoryJSONUIControlFactoryJSON              MemoryCategory = 21
-	MemoryCategoryJSONUIControlTree                     MemoryCategory = 22
-	MemoryCategoryJSONUIControlTreeControlElement       MemoryCategory = 23
-	MemoryCategoryJSONUIControlTreePopulateDataBinding  MemoryCategory = 24
-	MemoryCategoryJSONUIControlTreePopulateFocus        MemoryCategory = 25
-	MemoryCategoryJSONUIControlTreePopulateLayout       MemoryCategory = 26
-	MemoryCategoryJSONUIControlTreePopulateOther        MemoryCategory = 27
-	MemoryCategoryJSONUIControlTreePopulateSprite       MemoryCategory = 28
-	MemoryCategoryJSONUIControlTreePopulateText         MemoryCategory = 29
-	MemoryCategoryJSONUIControlTreePopulateTTS          MemoryCategory = 30
-	MemoryCategoryJSONUIControlTreeVisibility           MemoryCategory = 31
-	MemoryCategoryJSONUICreateUI                        MemoryCategory = 32
-	MemoryCategoryJSONUIDefs                            MemoryCategory = 33
-	MemoryCategoryJSONUILayoutManager                   MemoryCategory = 34
-	MemoryCategoryJSONUILayoutManagerRemoveDependencies MemoryCategory = 35
-	MemoryCategoryJSONUILayoutManagerInitVariable       MemoryCategory = 36
-	MemoryCategoryLanguages                             MemoryCategory = 37
-	MemoryCategoryLevel                                 MemoryCategory = 38
-	MemoryCategoryLevelStructures                       MemoryCategory = 39
-	MemoryCategoryLevelChunk                            MemoryCategory = 40
-	MemoryCategoryLevelChunkGen                         MemoryCategory = 41
-	MemoryCategoryLevelChunkGenThreadLocal              MemoryCategory = 42
-	MemoryCategoryLightVolumeManager                    MemoryCategory = 43
-	MemoryCategoryNetwork                               MemoryCategory = 44
-	MemoryCategoryMarketplace                           MemoryCategory = 45
-	MemoryCategoryMaterialDragonCompiledDefinition      MemoryCategory = 46
-	MemoryCategoryMaterialDragonMaterial                MemoryCategory = 47
-	MemoryCategoryMaterialDragonResource                MemoryCategory = 48
-	MemoryCategoryMaterialDragonUniformMap              MemoryCategory = 49
-	MemoryCategoryMaterialRenderMaterial                MemoryCategory = 50
-	MemoryCategoryMaterialRenderMaterialGroup           MemoryCategory = 51
-	MemoryCategoryMaterialVariationManager              MemoryCategory = 52
-	MemoryCategoryMoLang                                MemoryCategory = 53
-	MemoryCategoryOreUI                                 MemoryCategory = 54
-	MemoryCategoryOreUIClient                           MemoryCategory = 55
-	MemoryCategoryPersonaPieces                         MemoryCategory = 56
-	MemoryCategoryPersonaAnimations                     MemoryCategory = 57
-	MemoryCategoryPersonaTextures                       MemoryCategory = 58
-	MemoryCategoryPersonaCharacters                     MemoryCategory = 59
-	MemoryCategoryPersonaSkinPacks                      MemoryCategory = 60
-	MemoryCategoryPersonaRepo                           MemoryCategory = 61
-	MemoryCategoryPlayer                                MemoryCategory = 62
-	MemoryCategoryRenderChunk                           MemoryCategory = 63
-	MemoryCategoryRenderChunkIndexBuffer                MemoryCategory = 64
-	MemoryCategoryRenderChunkVertexBuffer               MemoryCategory = 65
-	MemoryCategoryRendering                             MemoryCategory = 66
-	MemoryCategoryRenderingBgfxInit                     MemoryCategory = 67
-	MemoryCategoryRenderingBgfxStartFrame               MemoryCategory = 68
-	MemoryCategoryRenderingBlockTessellator             MemoryCategory = 69
-	MemoryCategoryRenderingEndFrame                     MemoryCategory = 70
-	MemoryCategoryRenderingGraphicsTasksInit            MemoryCategory = 71
-	MemoryCategoryRenderingLibrary                      MemoryCategory = 72
-	MemoryCategoryRenderingPolygonOperatorPool          MemoryCategory = 73
-	MemoryCategoryRenderingPBRTextureData               MemoryCategory = 74
-	MemoryCategoryRenderingRenderRegistry               MemoryCategory = 75
-	MemoryCategoryRenderingSetup                        MemoryCategory = 76
-	MemoryCategoryRenderingVertices                     MemoryCategory = 77
-	MemoryCategoryRequestLog                            MemoryCategory = 78
-	MemoryCategoryResourcePacks                         MemoryCategory = 79
-	MemoryCategorySound                                 MemoryCategory = 80
-	MemoryCategorySubChunkBiomeData                     MemoryCategory = 81
-	MemoryCategorySubChunkBlockData                     MemoryCategory = 82
-	MemoryCategorySubChunkLightData                     MemoryCategory = 83
-	MemoryCategoryTextures                              MemoryCategory = 84
-	MemoryCategoryWeatherRenderer                       MemoryCategory = 85
-	MemoryCategoryWorldGenerator                        MemoryCategory = 86
-	MemoryCategoryTasks                                 MemoryCategory = 87
-	MemoryCategoryTest                                  MemoryCategory = 88
-	MemoryCategoryTestLoadTestTags                      MemoryCategory = 89
-	MemoryCategoryScripting                             MemoryCategory = 90
-	MemoryCategoryScriptingRuntime                      MemoryCategory = 91
-	MemoryCategoryScriptingContext                      MemoryCategory = 92
-	MemoryCategoryScriptingContextBindingsMC            MemoryCategory = 93
-	MemoryCategoryScriptingContextBindingsGT            MemoryCategory = 94
-	MemoryCategoryScriptingContextRun                   MemoryCategory = 95
-	MemoryCategoryDataDrivenUI                          MemoryCategory = 96
-	MemoryCategoryDataDrivenUIDefs                      MemoryCategory = 97
-	MemoryCategoryGameface                              MemoryCategory = 98
-	MemoryCategoryGamefaceSystem                        MemoryCategory = 99
-	MemoryCategoryGamefaceDOM                           MemoryCategory = 100
-	MemoryCategoryGamefaceCSS                           MemoryCategory = 101
-	MemoryCategoryGamefaceDisplay                       MemoryCategory = 102
-	MemoryCategoryGamefaceTempAllocator                 MemoryCategory = 103
-	MemoryCategoryGamefacePoolAllocator                 MemoryCategory = 104
-	MemoryCategoryGamefaceDump                          MemoryCategory = 105
-	MemoryCategoryGamefaceMedia                         MemoryCategory = 106
-	MemoryCategoryGamefaceJSON                          MemoryCategory = 107
-	MemoryCategoryGamefaceScriptEngine                  MemoryCategory = 108
-	MemoryCategoryGamefaceScript                        MemoryCategory = 109
-	MemoryCategoryGamefaceLayout                        MemoryCategory = 110
-)
+// Marshal reads or writes MemoryCategoryCounter using its canonical wire layout.
+func (x *MemoryCategoryCounter) Marshal(io IO) {
+	IntegerFunc(&x.Category, io.Uint8)
+	io.Uint64(&x.CurrentBytes)
+}

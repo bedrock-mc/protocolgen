@@ -4,9 +4,13 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// VoxelShapes is sent by the server to send voxel shape data to the client.
 type VoxelShapes struct {
-	Shapes           []protocol.VoxelShapesSerializableVoxelShape
-	NameMap          []protocol.OrderedEntry[string, protocol.VoxelShapesRegistryHandle]
+	// Shapes is a list of voxel shapes.
+	Shapes []protocol.VoxelShapesSerializableVoxelShape
+	// NameMap is a map of shape names to IDs.
+	NameMap []protocol.OrderedEntry[string, protocol.VoxelShapesRegistryHandle]
+	// CustomShapeCount is the number of custom shapes.
 	CustomShapeCount uint16
 }
 

@@ -4,6 +4,7 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// SetHud is sent by the server to set the visibility of individual HUD elements on the client.
 type SetHud struct {
 	HudElement []protocol.HudElement
 	HudVisible protocol.HudVisibility

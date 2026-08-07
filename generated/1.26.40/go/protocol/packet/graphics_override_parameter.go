@@ -8,14 +8,20 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 )
 
+// GraphicsOverrideParameter is sent by the server to override graphics parameters.
 type GraphicsOverrideParameter struct {
 	ParameterKeyframeValues []protocol.OrderedEntry[float32, mgl32.Vec3]
-	FloatValue              protocol.Optional[float32]
-	Vec3Value               protocol.Optional[mgl32.Vec3]
-	BiomeIdentifier         string
-	PlayerIdentifier        protocol.Optional[string]
-	IdentifierForParameter  protocol.GraphicsOverrideParameterType
-	ResetParameter          bool
+	// FloatValue is an optional single float graphics parameter to be overridden.
+	FloatValue protocol.Optional[float32]
+	// Vec3Value is an optional single Vec3 graphics parameter to be overridden.
+	Vec3Value protocol.Optional[mgl32.Vec3]
+	// BiomeIdentifier is the identifier of the biome for which the parameters apply.
+	BiomeIdentifier string
+	// PlayerIdentifier is the optional identifier of the player for which the override parameter
+	// applies.
+	PlayerIdentifier       protocol.Optional[string]
+	IdentifierForParameter protocol.GraphicsOverrideParameterType
+	ResetParameter         bool
 }
 
 // Marshal reads or writes GraphicsOverrideParameter using its canonical wire layout.

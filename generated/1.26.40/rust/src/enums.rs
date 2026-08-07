@@ -1,5 +1,7 @@
 // Code generated from canonical protocol manifest v2. DO NOT EDIT.
 
+// Domain: actor
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum ActorEventType {
     #[default]
@@ -753,6 +755,2078 @@ impl From<ActorType> for i32 {
     }
 }
 
+// Domain: camera
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum CameraAimAssistAction {
+    #[default]
+    Set,
+    Clear,
+    Unknown(u8),
+}
+
+impl From<u8> for CameraAimAssistAction {
+    fn from(value: u8) -> Self {
+        match value {
+            0 => Self::Set,
+            1 => Self::Clear,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl CameraAimAssistAction {
+    pub fn to_raw(self) -> u8 {
+        match self {
+            Self::Set => 0,
+            Self::Clear => 1,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<CameraAimAssistAction> for u8 {
+    fn from(value: CameraAimAssistAction) -> Self {
+        value.to_raw()
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum CameraAimAssistPresetOperation {
+    #[default]
+    Set,
+    AddToExisting,
+    Unknown(u8),
+}
+
+impl From<u8> for CameraAimAssistPresetOperation {
+    fn from(value: u8) -> Self {
+        match value {
+            0 => Self::Set,
+            1 => Self::AddToExisting,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl CameraAimAssistPresetOperation {
+    pub fn to_raw(self) -> u8 {
+        match self {
+            Self::Set => 0,
+            Self::AddToExisting => 1,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<CameraAimAssistPresetOperation> for u8 {
+    fn from(value: CameraAimAssistPresetOperation) -> Self {
+        value.to_raw()
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum CameraAimAssistTargetMode {
+    #[default]
+    Angle,
+    Distance,
+    Unknown(i32),
+}
+
+impl From<i32> for CameraAimAssistTargetMode {
+    fn from(value: i32) -> Self {
+        match value {
+            0 => Self::Angle,
+            1 => Self::Distance,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl CameraAimAssistTargetMode {
+    pub fn to_raw(self) -> i32 {
+        match self {
+            Self::Angle => 0,
+            Self::Distance => 1,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<CameraAimAssistTargetMode> for i32 {
+    fn from(value: CameraAimAssistTargetMode) -> Self {
+        value.to_raw()
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum CameraPresetAudioListener {
+    #[default]
+    Camera,
+    Player,
+    Unknown(u8),
+}
+
+impl From<u8> for CameraPresetAudioListener {
+    fn from(value: u8) -> Self {
+        match value {
+            0 => Self::Camera,
+            1 => Self::Player,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl CameraPresetAudioListener {
+    pub fn to_raw(self) -> u8 {
+        match self {
+            Self::Camera => 0,
+            Self::Player => 1,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<CameraPresetAudioListener> for u8 {
+    fn from(value: CameraPresetAudioListener) -> Self {
+        value.to_raw()
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum CameraShakeAction {
+    #[default]
+    Add,
+    Stop,
+    Unknown(u8),
+}
+
+impl From<u8> for CameraShakeAction {
+    fn from(value: u8) -> Self {
+        match value {
+            0 => Self::Add,
+            1 => Self::Stop,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl CameraShakeAction {
+    pub fn to_raw(self) -> u8 {
+        match self {
+            Self::Add => 0,
+            Self::Stop => 1,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<CameraShakeAction> for u8 {
+    fn from(value: CameraShakeAction) -> Self {
+        value.to_raw()
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum CameraShakeType {
+    #[default]
+    Positional,
+    Rotational,
+    Unknown(u8),
+}
+
+impl From<u8> for CameraShakeType {
+    fn from(value: u8) -> Self {
+        match value {
+            0 => Self::Positional,
+            1 => Self::Rotational,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl CameraShakeType {
+    pub fn to_raw(self) -> u8 {
+        match self {
+            Self::Positional => 0,
+            Self::Rotational => 1,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<CameraShakeType> for u8 {
+    fn from(value: CameraShakeType) -> Self {
+        value.to_raw()
+    }
+}
+
+// Domain: command
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum CommandPermissionLevel {
+    #[default]
+    Any,
+    GameDirectors,
+    Admin,
+    Host,
+    Owner,
+    Internal,
+    Unknown(u8),
+}
+
+impl From<u8> for CommandPermissionLevel {
+    fn from(value: u8) -> Self {
+        match value {
+            0 => Self::Any,
+            1 => Self::GameDirectors,
+            2 => Self::Admin,
+            3 => Self::Host,
+            4 => Self::Owner,
+            5 => Self::Internal,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl CommandPermissionLevel {
+    pub fn to_raw(self) -> u8 {
+        match self {
+            Self::Any => 0,
+            Self::GameDirectors => 1,
+            Self::Admin => 2,
+            Self::Host => 3,
+            Self::Owner => 4,
+            Self::Internal => 5,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<CommandPermissionLevel> for u8 {
+    fn from(value: CommandPermissionLevel) -> Self {
+        value.to_raw()
+    }
+}
+
+// Domain: container
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum ContainerEnumName {
+    #[default]
+    AnvilInputContainer,
+    AnvilMaterialContainer,
+    AnvilResultPreviewContainer,
+    SmithingTableInputContainer,
+    SmithingTableMaterialContainer,
+    SmithingTableResultPreviewContainer,
+    ArmorContainer,
+    LevelEntityContainer,
+    BeaconPaymentContainer,
+    BrewingStandInputContainer,
+    BrewingStandResultContainer,
+    BrewingStandFuelContainer,
+    CombinedHotbarAndInventoryContainer,
+    CraftingInputContainer,
+    CraftingOutputPreviewContainer,
+    RecipeConstructionContainer,
+    RecipeNatureContainer,
+    RecipeItemsContainer,
+    RecipeSearchContainer,
+    RecipeSearchBarContainer,
+    RecipeEquipmentContainer,
+    RecipeBookContainer,
+    EnchantingInputContainer,
+    EnchantingMaterialContainer,
+    FurnaceFuelContainer,
+    FurnaceIngredientContainer,
+    FurnaceResultContainer,
+    HorseEquipContainer,
+    HotbarContainer,
+    InventoryContainer,
+    ShulkerBoxContainer,
+    TradeIngredient1Container,
+    TradeIngredient2Container,
+    TradeResultPreviewContainer,
+    OffhandContainer,
+    CompoundCreatorInput,
+    CompoundCreatorOutputPreview,
+    ElementConstructorOutputPreview,
+    MaterialReducerInput,
+    MaterialReducerOutput,
+    LabTableInput,
+    LoomInputContainer,
+    LoomDyeContainer,
+    LoomMaterialContainer,
+    LoomResultPreviewContainer,
+    BlastFurnaceIngredientContainer,
+    SmokerIngredientContainer,
+    Trade2Ingredient1Container,
+    Trade2Ingredient2Container,
+    Trade2ResultPreviewContainer,
+    GrindstoneInputContainer,
+    GrindstoneAdditionalContainer,
+    GrindstoneResultPreviewContainer,
+    StonecutterInputContainer,
+    StonecutterResultPreviewContainer,
+    CartographyInputContainer,
+    CartographyAdditionalContainer,
+    CartographyResultPreviewContainer,
+    BarrelContainer,
+    CursorContainer,
+    CreatedOutputContainer,
+    SmithingTableTemplateContainer,
+    CrafterLevelEntityContainer,
+    DynamicContainer,
+    RecipeFoodContainer,
+    RecipeBlocksContainer,
+    RecipeFurnaceItemsContainer,
+    Unknown(u8),
+}
+
+impl From<u8> for ContainerEnumName {
+    fn from(value: u8) -> Self {
+        match value {
+            0 => Self::AnvilInputContainer,
+            1 => Self::AnvilMaterialContainer,
+            2 => Self::AnvilResultPreviewContainer,
+            3 => Self::SmithingTableInputContainer,
+            4 => Self::SmithingTableMaterialContainer,
+            5 => Self::SmithingTableResultPreviewContainer,
+            6 => Self::ArmorContainer,
+            7 => Self::LevelEntityContainer,
+            8 => Self::BeaconPaymentContainer,
+            9 => Self::BrewingStandInputContainer,
+            10 => Self::BrewingStandResultContainer,
+            11 => Self::BrewingStandFuelContainer,
+            12 => Self::CombinedHotbarAndInventoryContainer,
+            13 => Self::CraftingInputContainer,
+            14 => Self::CraftingOutputPreviewContainer,
+            15 => Self::RecipeConstructionContainer,
+            16 => Self::RecipeNatureContainer,
+            17 => Self::RecipeItemsContainer,
+            18 => Self::RecipeSearchContainer,
+            19 => Self::RecipeSearchBarContainer,
+            20 => Self::RecipeEquipmentContainer,
+            21 => Self::RecipeBookContainer,
+            22 => Self::EnchantingInputContainer,
+            23 => Self::EnchantingMaterialContainer,
+            24 => Self::FurnaceFuelContainer,
+            25 => Self::FurnaceIngredientContainer,
+            26 => Self::FurnaceResultContainer,
+            27 => Self::HorseEquipContainer,
+            28 => Self::HotbarContainer,
+            29 => Self::InventoryContainer,
+            30 => Self::ShulkerBoxContainer,
+            31 => Self::TradeIngredient1Container,
+            32 => Self::TradeIngredient2Container,
+            33 => Self::TradeResultPreviewContainer,
+            34 => Self::OffhandContainer,
+            35 => Self::CompoundCreatorInput,
+            36 => Self::CompoundCreatorOutputPreview,
+            37 => Self::ElementConstructorOutputPreview,
+            38 => Self::MaterialReducerInput,
+            39 => Self::MaterialReducerOutput,
+            40 => Self::LabTableInput,
+            41 => Self::LoomInputContainer,
+            42 => Self::LoomDyeContainer,
+            43 => Self::LoomMaterialContainer,
+            44 => Self::LoomResultPreviewContainer,
+            45 => Self::BlastFurnaceIngredientContainer,
+            46 => Self::SmokerIngredientContainer,
+            47 => Self::Trade2Ingredient1Container,
+            48 => Self::Trade2Ingredient2Container,
+            49 => Self::Trade2ResultPreviewContainer,
+            50 => Self::GrindstoneInputContainer,
+            51 => Self::GrindstoneAdditionalContainer,
+            52 => Self::GrindstoneResultPreviewContainer,
+            53 => Self::StonecutterInputContainer,
+            54 => Self::StonecutterResultPreviewContainer,
+            55 => Self::CartographyInputContainer,
+            56 => Self::CartographyAdditionalContainer,
+            57 => Self::CartographyResultPreviewContainer,
+            58 => Self::BarrelContainer,
+            59 => Self::CursorContainer,
+            60 => Self::CreatedOutputContainer,
+            61 => Self::SmithingTableTemplateContainer,
+            62 => Self::CrafterLevelEntityContainer,
+            63 => Self::DynamicContainer,
+            64 => Self::RecipeFoodContainer,
+            65 => Self::RecipeBlocksContainer,
+            66 => Self::RecipeFurnaceItemsContainer,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl ContainerEnumName {
+    pub fn to_raw(self) -> u8 {
+        match self {
+            Self::AnvilInputContainer => 0,
+            Self::AnvilMaterialContainer => 1,
+            Self::AnvilResultPreviewContainer => 2,
+            Self::SmithingTableInputContainer => 3,
+            Self::SmithingTableMaterialContainer => 4,
+            Self::SmithingTableResultPreviewContainer => 5,
+            Self::ArmorContainer => 6,
+            Self::LevelEntityContainer => 7,
+            Self::BeaconPaymentContainer => 8,
+            Self::BrewingStandInputContainer => 9,
+            Self::BrewingStandResultContainer => 10,
+            Self::BrewingStandFuelContainer => 11,
+            Self::CombinedHotbarAndInventoryContainer => 12,
+            Self::CraftingInputContainer => 13,
+            Self::CraftingOutputPreviewContainer => 14,
+            Self::RecipeConstructionContainer => 15,
+            Self::RecipeNatureContainer => 16,
+            Self::RecipeItemsContainer => 17,
+            Self::RecipeSearchContainer => 18,
+            Self::RecipeSearchBarContainer => 19,
+            Self::RecipeEquipmentContainer => 20,
+            Self::RecipeBookContainer => 21,
+            Self::EnchantingInputContainer => 22,
+            Self::EnchantingMaterialContainer => 23,
+            Self::FurnaceFuelContainer => 24,
+            Self::FurnaceIngredientContainer => 25,
+            Self::FurnaceResultContainer => 26,
+            Self::HorseEquipContainer => 27,
+            Self::HotbarContainer => 28,
+            Self::InventoryContainer => 29,
+            Self::ShulkerBoxContainer => 30,
+            Self::TradeIngredient1Container => 31,
+            Self::TradeIngredient2Container => 32,
+            Self::TradeResultPreviewContainer => 33,
+            Self::OffhandContainer => 34,
+            Self::CompoundCreatorInput => 35,
+            Self::CompoundCreatorOutputPreview => 36,
+            Self::ElementConstructorOutputPreview => 37,
+            Self::MaterialReducerInput => 38,
+            Self::MaterialReducerOutput => 39,
+            Self::LabTableInput => 40,
+            Self::LoomInputContainer => 41,
+            Self::LoomDyeContainer => 42,
+            Self::LoomMaterialContainer => 43,
+            Self::LoomResultPreviewContainer => 44,
+            Self::BlastFurnaceIngredientContainer => 45,
+            Self::SmokerIngredientContainer => 46,
+            Self::Trade2Ingredient1Container => 47,
+            Self::Trade2Ingredient2Container => 48,
+            Self::Trade2ResultPreviewContainer => 49,
+            Self::GrindstoneInputContainer => 50,
+            Self::GrindstoneAdditionalContainer => 51,
+            Self::GrindstoneResultPreviewContainer => 52,
+            Self::StonecutterInputContainer => 53,
+            Self::StonecutterResultPreviewContainer => 54,
+            Self::CartographyInputContainer => 55,
+            Self::CartographyAdditionalContainer => 56,
+            Self::CartographyResultPreviewContainer => 57,
+            Self::BarrelContainer => 58,
+            Self::CursorContainer => 59,
+            Self::CreatedOutputContainer => 60,
+            Self::SmithingTableTemplateContainer => 61,
+            Self::CrafterLevelEntityContainer => 62,
+            Self::DynamicContainer => 63,
+            Self::RecipeFoodContainer => 64,
+            Self::RecipeBlocksContainer => 65,
+            Self::RecipeFurnaceItemsContainer => 66,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<ContainerEnumName> for u8 {
+    fn from(value: ContainerEnumName) -> Self {
+        value.to_raw()
+    }
+}
+
+// Domain: creative
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum CreativeItemCategory {
+    #[default]
+    Construction,
+    Nature,
+    Equipment,
+    Items,
+    ItemCommandOnly,
+    Unknown(u8),
+}
+
+impl From<u8> for CreativeItemCategory {
+    fn from(value: u8) -> Self {
+        match value {
+            1 => Self::Construction,
+            2 => Self::Nature,
+            3 => Self::Equipment,
+            4 => Self::Items,
+            5 => Self::ItemCommandOnly,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl CreativeItemCategory {
+    pub fn to_raw(self) -> u8 {
+        match self {
+            Self::Construction => 1,
+            Self::Nature => 2,
+            Self::Equipment => 3,
+            Self::Items => 4,
+            Self::ItemCommandOnly => 5,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<CreativeItemCategory> for u8 {
+    fn from(value: CreativeItemCategory) -> Self {
+        value.to_raw()
+    }
+}
+
+// Domain: education
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum EducationEditionOffer {
+    #[default]
+    None,
+    RestOfWorld,
+    ChinaDeprecated,
+    Unknown(u32),
+}
+
+impl From<u32> for EducationEditionOffer {
+    fn from(value: u32) -> Self {
+        match value {
+            0 => Self::None,
+            1 => Self::RestOfWorld,
+            2 => Self::ChinaDeprecated,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl EducationEditionOffer {
+    pub fn to_raw(self) -> u32 {
+        match self {
+            Self::None => 0,
+            Self::RestOfWorld => 1,
+            Self::ChinaDeprecated => 2,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<EducationEditionOffer> for u32 {
+    fn from(value: EducationEditionOffer) -> Self {
+        value.to_raw()
+    }
+}
+
+// Domain: enchant
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum EnchantType {
+    #[default]
+    Protection,
+    FireProtection,
+    FeatherFalling,
+    BlastProtection,
+    ProjectileProtection,
+    Thorns,
+    Respiration,
+    DepthStrider,
+    AquaAffinity,
+    Sharpness,
+    Smite,
+    BaneOfArthropods,
+    Knockback,
+    FireAspect,
+    Looting,
+    Efficiency,
+    SilkTouch,
+    Unbreaking,
+    Fortune,
+    Power,
+    Punch,
+    Flame,
+    Infinity,
+    LuckOfTheSea,
+    Lure,
+    FrostWalker,
+    Mending,
+    CurseOfBinding,
+    CurseOfVanishing,
+    Impaling,
+    Riptide,
+    Loyalty,
+    Channeling,
+    Multishot,
+    Piercing,
+    QuickCharge,
+    SoulSpeed,
+    SwiftSneak,
+    WindBurst,
+    Density,
+    Breach,
+    Lunge,
+    NumEnchantments,
+    InvalidEnchantment,
+    Unknown(u8),
+}
+
+impl From<u8> for EnchantType {
+    fn from(value: u8) -> Self {
+        match value {
+            0 => Self::Protection,
+            1 => Self::FireProtection,
+            2 => Self::FeatherFalling,
+            3 => Self::BlastProtection,
+            4 => Self::ProjectileProtection,
+            5 => Self::Thorns,
+            6 => Self::Respiration,
+            7 => Self::DepthStrider,
+            8 => Self::AquaAffinity,
+            9 => Self::Sharpness,
+            10 => Self::Smite,
+            11 => Self::BaneOfArthropods,
+            12 => Self::Knockback,
+            13 => Self::FireAspect,
+            14 => Self::Looting,
+            15 => Self::Efficiency,
+            16 => Self::SilkTouch,
+            17 => Self::Unbreaking,
+            18 => Self::Fortune,
+            19 => Self::Power,
+            20 => Self::Punch,
+            21 => Self::Flame,
+            22 => Self::Infinity,
+            23 => Self::LuckOfTheSea,
+            24 => Self::Lure,
+            25 => Self::FrostWalker,
+            26 => Self::Mending,
+            27 => Self::CurseOfBinding,
+            28 => Self::CurseOfVanishing,
+            29 => Self::Impaling,
+            30 => Self::Riptide,
+            31 => Self::Loyalty,
+            32 => Self::Channeling,
+            33 => Self::Multishot,
+            34 => Self::Piercing,
+            35 => Self::QuickCharge,
+            36 => Self::SoulSpeed,
+            37 => Self::SwiftSneak,
+            38 => Self::WindBurst,
+            39 => Self::Density,
+            40 => Self::Breach,
+            41 => Self::Lunge,
+            42 => Self::NumEnchantments,
+            43 => Self::InvalidEnchantment,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl EnchantType {
+    pub fn to_raw(self) -> u8 {
+        match self {
+            Self::Protection => 0,
+            Self::FireProtection => 1,
+            Self::FeatherFalling => 2,
+            Self::BlastProtection => 3,
+            Self::ProjectileProtection => 4,
+            Self::Thorns => 5,
+            Self::Respiration => 6,
+            Self::DepthStrider => 7,
+            Self::AquaAffinity => 8,
+            Self::Sharpness => 9,
+            Self::Smite => 10,
+            Self::BaneOfArthropods => 11,
+            Self::Knockback => 12,
+            Self::FireAspect => 13,
+            Self::Looting => 14,
+            Self::Efficiency => 15,
+            Self::SilkTouch => 16,
+            Self::Unbreaking => 17,
+            Self::Fortune => 18,
+            Self::Power => 19,
+            Self::Punch => 20,
+            Self::Flame => 21,
+            Self::Infinity => 22,
+            Self::LuckOfTheSea => 23,
+            Self::Lure => 24,
+            Self::FrostWalker => 25,
+            Self::Mending => 26,
+            Self::CurseOfBinding => 27,
+            Self::CurseOfVanishing => 28,
+            Self::Impaling => 29,
+            Self::Riptide => 30,
+            Self::Loyalty => 31,
+            Self::Channeling => 32,
+            Self::Multishot => 33,
+            Self::Piercing => 34,
+            Self::QuickCharge => 35,
+            Self::SoulSpeed => 36,
+            Self::SwiftSneak => 37,
+            Self::WindBurst => 38,
+            Self::Density => 39,
+            Self::Breach => 40,
+            Self::Lunge => 41,
+            Self::NumEnchantments => 42,
+            Self::InvalidEnchantment => 43,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<EnchantType> for u8 {
+    fn from(value: EnchantType) -> Self {
+        value.to_raw()
+    }
+}
+
+// Domain: inventory
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum InventoryLayout {
+    #[default]
+    None,
+    InventoryOnly,
+    Default,
+    RecipeBookOnly,
+    Unknown(i32),
+}
+
+impl From<i32> for InventoryLayout {
+    fn from(value: i32) -> Self {
+        match value {
+            0 => Self::None,
+            1 => Self::InventoryOnly,
+            2 => Self::Default,
+            3 => Self::RecipeBookOnly,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl InventoryLayout {
+    pub fn to_raw(self) -> i32 {
+        match self {
+            Self::None => 0,
+            Self::InventoryOnly => 1,
+            Self::Default => 2,
+            Self::RecipeBookOnly => 3,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<InventoryLayout> for i32 {
+    fn from(value: InventoryLayout) -> Self {
+        value.to_raw()
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum InventoryLeftTabIndex {
+    #[default]
+    None,
+    RecipeConstruction,
+    RecipeEquipment,
+    RecipeItems,
+    RecipeNature,
+    RecipeSearch,
+    Survival,
+    Unknown(i32),
+}
+
+impl From<i32> for InventoryLeftTabIndex {
+    fn from(value: i32) -> Self {
+        match value {
+            0 => Self::None,
+            1 => Self::RecipeConstruction,
+            2 => Self::RecipeEquipment,
+            3 => Self::RecipeItems,
+            4 => Self::RecipeNature,
+            5 => Self::RecipeSearch,
+            6 => Self::Survival,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl InventoryLeftTabIndex {
+    pub fn to_raw(self) -> i32 {
+        match self {
+            Self::None => 0,
+            Self::RecipeConstruction => 1,
+            Self::RecipeEquipment => 2,
+            Self::RecipeItems => 3,
+            Self::RecipeNature => 4,
+            Self::RecipeSearch => 5,
+            Self::Survival => 6,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<InventoryLeftTabIndex> for i32 {
+    fn from(value: InventoryLeftTabIndex) -> Self {
+        value.to_raw()
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum InventoryRightTabIndex {
+    #[default]
+    None,
+    FullScreen,
+    Crafting,
+    Armor,
+    Unknown(i32),
+}
+
+impl From<i32> for InventoryRightTabIndex {
+    fn from(value: i32) -> Self {
+        match value {
+            0 => Self::None,
+            1 => Self::FullScreen,
+            2 => Self::Crafting,
+            3 => Self::Armor,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl InventoryRightTabIndex {
+    pub fn to_raw(self) -> i32 {
+        match self {
+            Self::None => 0,
+            Self::FullScreen => 1,
+            Self::Crafting => 2,
+            Self::Armor => 3,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<InventoryRightTabIndex> for i32 {
+    fn from(value: InventoryRightTabIndex) -> Self {
+        value.to_raw()
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum InventorySourceInventorySourceFlags {
+    #[default]
+    NoFlag,
+    WorldInteractionRandom,
+    Unknown(u32),
+}
+
+impl From<u32> for InventorySourceInventorySourceFlags {
+    fn from(value: u32) -> Self {
+        match value {
+            0 => Self::NoFlag,
+            1 => Self::WorldInteractionRandom,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl InventorySourceInventorySourceFlags {
+    pub fn to_raw(self) -> u32 {
+        match self {
+            Self::NoFlag => 0,
+            Self::WorldInteractionRandom => 1,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<InventorySourceInventorySourceFlags> for u32 {
+    fn from(value: InventorySourceInventorySourceFlags) -> Self {
+        value.to_raw()
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum InventorySourceType {
+    #[default]
+    ContainerInventory,
+    GlobalInventory,
+    WorldInteraction,
+    CreativeInventory,
+    NonImplementedFeatureTodo,
+    Unknown(u32),
+}
+
+impl From<u32> for InventorySourceType {
+    fn from(value: u32) -> Self {
+        match value {
+            0 => Self::ContainerInventory,
+            1 => Self::GlobalInventory,
+            2 => Self::WorldInteraction,
+            3 => Self::CreativeInventory,
+            99999 => Self::NonImplementedFeatureTodo,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl InventorySourceType {
+    pub fn to_raw(self) -> u32 {
+        match self {
+            Self::ContainerInventory => 0,
+            Self::GlobalInventory => 1,
+            Self::WorldInteraction => 2,
+            Self::CreativeInventory => 3,
+            Self::NonImplementedFeatureTodo => 99999,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<InventorySourceType> for u32 {
+    fn from(value: InventorySourceType) -> Self {
+        value.to_raw()
+    }
+}
+
+// Domain: item
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum ItemReleaseInventoryTransactionActionType {
+    #[default]
+    Release,
+    Use,
+    Unknown(i32),
+}
+
+impl From<i32> for ItemReleaseInventoryTransactionActionType {
+    fn from(value: i32) -> Self {
+        match value {
+            0 => Self::Release,
+            1 => Self::Use,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl ItemReleaseInventoryTransactionActionType {
+    pub fn to_raw(self) -> i32 {
+        match self {
+            Self::Release => 0,
+            Self::Use => 1,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<ItemReleaseInventoryTransactionActionType> for i32 {
+    fn from(value: ItemReleaseInventoryTransactionActionType) -> Self {
+        value.to_raw()
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum ItemUseInventoryTransactionActionType {
+    #[default]
+    Place,
+    Use,
+    Destroy,
+    UseAsAttack,
+    Unknown(i32),
+}
+
+impl From<i32> for ItemUseInventoryTransactionActionType {
+    fn from(value: i32) -> Self {
+        match value {
+            0 => Self::Place,
+            1 => Self::Use,
+            2 => Self::Destroy,
+            3 => Self::UseAsAttack,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl ItemUseInventoryTransactionActionType {
+    pub fn to_raw(self) -> i32 {
+        match self {
+            Self::Place => 0,
+            Self::Use => 1,
+            Self::Destroy => 2,
+            Self::UseAsAttack => 3,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<ItemUseInventoryTransactionActionType> for i32 {
+    fn from(value: ItemUseInventoryTransactionActionType) -> Self {
+        value.to_raw()
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum ItemUseInventoryTransactionClientCooldownState {
+    #[default]
+    Off,
+    On,
+    Unknown(u8),
+}
+
+impl From<u8> for ItemUseInventoryTransactionClientCooldownState {
+    fn from(value: u8) -> Self {
+        match value {
+            0 => Self::Off,
+            1 => Self::On,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl ItemUseInventoryTransactionClientCooldownState {
+    pub fn to_raw(self) -> u8 {
+        match self {
+            Self::Off => 0,
+            Self::On => 1,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<ItemUseInventoryTransactionClientCooldownState> for u8 {
+    fn from(value: ItemUseInventoryTransactionClientCooldownState) -> Self {
+        value.to_raw()
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum ItemUseInventoryTransactionPredictedResult {
+    #[default]
+    Failure,
+    Success,
+    Unknown(u8),
+}
+
+impl From<u8> for ItemUseInventoryTransactionPredictedResult {
+    fn from(value: u8) -> Self {
+        match value {
+            0 => Self::Failure,
+            1 => Self::Success,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl ItemUseInventoryTransactionPredictedResult {
+    pub fn to_raw(self) -> u8 {
+        match self {
+            Self::Failure => 0,
+            Self::Success => 1,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<ItemUseInventoryTransactionPredictedResult> for u8 {
+    fn from(value: ItemUseInventoryTransactionPredictedResult) -> Self {
+        value.to_raw()
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum ItemUseInventoryTransactionTriggerType {
+    #[default]
+    Unknown,
+    PlayerInput,
+    SimulationTick,
+    Unknown2(u8),
+}
+
+impl From<u8> for ItemUseInventoryTransactionTriggerType {
+    fn from(value: u8) -> Self {
+        match value {
+            0 => Self::Unknown,
+            1 => Self::PlayerInput,
+            2 => Self::SimulationTick,
+            value => Self::Unknown2(value),
+        }
+    }
+}
+
+impl ItemUseInventoryTransactionTriggerType {
+    pub fn to_raw(self) -> u8 {
+        match self {
+            Self::Unknown => 0,
+            Self::PlayerInput => 1,
+            Self::SimulationTick => 2,
+            Self::Unknown2(value) => value,
+        }
+    }
+}
+
+impl From<ItemUseInventoryTransactionTriggerType> for u8 {
+    fn from(value: ItemUseInventoryTransactionTriggerType) -> Self {
+        value.to_raw()
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum ItemUseOnActorInventoryTransactionActionType {
+    #[default]
+    Interact,
+    Attack,
+    ItemInteract,
+    Unknown(i32),
+}
+
+impl From<i32> for ItemUseOnActorInventoryTransactionActionType {
+    fn from(value: i32) -> Self {
+        match value {
+            0 => Self::Interact,
+            1 => Self::Attack,
+            2 => Self::ItemInteract,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl ItemUseOnActorInventoryTransactionActionType {
+    pub fn to_raw(self) -> i32 {
+        match self {
+            Self::Interact => 0,
+            Self::Attack => 1,
+            Self::ItemInteract => 2,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<ItemUseOnActorInventoryTransactionActionType> for i32 {
+    fn from(value: ItemUseOnActorInventoryTransactionActionType) -> Self {
+        value.to_raw()
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum ItemVersion {
+    #[default]
+    Legacy,
+    DataDriven,
+    None,
+    Unknown(i32),
+}
+
+impl From<i32> for ItemVersion {
+    fn from(value: i32) -> Self {
+        match value {
+            0 => Self::Legacy,
+            1 => Self::DataDriven,
+            2 => Self::None,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl ItemVersion {
+    pub fn to_raw(self) -> i32 {
+        match self {
+            Self::Legacy => 0,
+            Self::DataDriven => 1,
+            Self::None => 2,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<ItemVersion> for i32 {
+    fn from(value: ItemVersion) -> Self {
+        value.to_raw()
+    }
+}
+
+// Domain: item_descriptor
+
+/// ItemDescriptor represents a type of item descriptor. This is one of the concrete types below. It
+/// is an alias of Marshaler.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum ItemDescriptorType {
+    #[default]
+    Empty,
+    ItemName,
+    MoLang,
+    ItemTag,
+    Unknown(u8),
+}
+
+impl From<u8> for ItemDescriptorType {
+    fn from(value: u8) -> Self {
+        match value {
+            0 => Self::Empty,
+            1 => Self::ItemName,
+            2 => Self::MoLang,
+            3 => Self::ItemTag,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl ItemDescriptorType {
+    pub fn to_raw(self) -> u8 {
+        match self {
+            Self::Empty => 0,
+            Self::ItemName => 1,
+            Self::MoLang => 2,
+            Self::ItemTag => 3,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<ItemDescriptorType> for u8 {
+    fn from(value: ItemDescriptorType) -> Self {
+        value.to_raw()
+    }
+}
+
+// Domain: item_stack
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum ItemStackNetResult {
+    #[default]
+    Success,
+    Error,
+    InvalidRequestActionType,
+    ActionRequestNotAllowed,
+    ScreenHandlerEndRequestFailed,
+    ItemRequestActionHandlerCommitFailed,
+    InvalidRequestCraftActionType,
+    InvalidCraftRequest,
+    InvalidCraftRequestScreen,
+    InvalidCraftResult,
+    InvalidCraftResultIndex,
+    InvalidCraftResultItem,
+    InvalidItemNetId,
+    MissingCreatedOutputContainer,
+    FailedToSetCreatedItemOutputSlot,
+    RequestAlreadyInProgress,
+    FailedToInitSparseContainer,
+    ResultTransferFailed,
+    ExpectedItemSlotNotFullyConsumed,
+    ExpectedAnywhereItemNotFullyConsumed,
+    ItemAlreadyConsumedFromSlot,
+    ConsumedTooMuchFromSlot,
+    MismatchSlotExpectedConsumedItem,
+    MismatchSlotExpectedConsumedItemNetIdVariant,
+    FailedToMatchExpectedSlotConsumedItem,
+    FailedToMatchExpectedAllowedAnywhereConsumedItem,
+    ConsumedItemOutOfAllowedSlotRange,
+    ConsumedItemNotAllowed,
+    PlayerNotInCreativeMode,
+    InvalidExperimentalRecipeRequest,
+    FailedToCraftCreative,
+    FailedToGetLevelRecipe,
+    FailedToFindRecipeByNetId,
+    MismatchedCraftingSize,
+    MissingInputSparseContainer,
+    MismatchedRecipeForInputGridItems,
+    EmptyCraftResults,
+    FailedToEnchant,
+    MissingInputItem,
+    InsufficientPlayerLevelToEnchant,
+    MissingMaterialItem,
+    MissingActor,
+    UnknownPrimaryEffect,
+    PrimaryEffectOutOfRange,
+    PrimaryEffectUnavailable,
+    SecondaryEffectOutOfRange,
+    SecondaryEffectUnavailable,
+    DstContainerEqualToCreatedOutputContainer,
+    DstContainerAndSlotEqualToSrcContainerAndSlot,
+    FailedToValidateSrcSlot,
+    FailedToValidateDstSlot,
+    InvalidAdjustedAmount,
+    InvalidItemSetType,
+    InvalidTransferAmount,
+    CannotSwapItem,
+    CannotPlaceItem,
+    UnhandledItemSetType,
+    InvalidRemovedAmount,
+    InvalidRegion,
+    CannotDropItem,
+    CannotDestroyItem,
+    InvalidSourceContainer,
+    ItemNotConsumed,
+    InvalidNumCrafts,
+    InvalidCraftResultStackSize,
+    CannotRemoveItem,
+    CannotConsumeItem,
+    ScreenStackError,
+    Unknown(u8),
+}
+
+impl From<u8> for ItemStackNetResult {
+    fn from(value: u8) -> Self {
+        match value {
+            0 => Self::Success,
+            1 => Self::Error,
+            2 => Self::InvalidRequestActionType,
+            3 => Self::ActionRequestNotAllowed,
+            4 => Self::ScreenHandlerEndRequestFailed,
+            5 => Self::ItemRequestActionHandlerCommitFailed,
+            6 => Self::InvalidRequestCraftActionType,
+            7 => Self::InvalidCraftRequest,
+            8 => Self::InvalidCraftRequestScreen,
+            9 => Self::InvalidCraftResult,
+            10 => Self::InvalidCraftResultIndex,
+            11 => Self::InvalidCraftResultItem,
+            12 => Self::InvalidItemNetId,
+            13 => Self::MissingCreatedOutputContainer,
+            14 => Self::FailedToSetCreatedItemOutputSlot,
+            15 => Self::RequestAlreadyInProgress,
+            16 => Self::FailedToInitSparseContainer,
+            17 => Self::ResultTransferFailed,
+            18 => Self::ExpectedItemSlotNotFullyConsumed,
+            19 => Self::ExpectedAnywhereItemNotFullyConsumed,
+            20 => Self::ItemAlreadyConsumedFromSlot,
+            21 => Self::ConsumedTooMuchFromSlot,
+            22 => Self::MismatchSlotExpectedConsumedItem,
+            23 => Self::MismatchSlotExpectedConsumedItemNetIdVariant,
+            24 => Self::FailedToMatchExpectedSlotConsumedItem,
+            25 => Self::FailedToMatchExpectedAllowedAnywhereConsumedItem,
+            26 => Self::ConsumedItemOutOfAllowedSlotRange,
+            27 => Self::ConsumedItemNotAllowed,
+            28 => Self::PlayerNotInCreativeMode,
+            29 => Self::InvalidExperimentalRecipeRequest,
+            30 => Self::FailedToCraftCreative,
+            31 => Self::FailedToGetLevelRecipe,
+            32 => Self::FailedToFindRecipeByNetId,
+            33 => Self::MismatchedCraftingSize,
+            34 => Self::MissingInputSparseContainer,
+            35 => Self::MismatchedRecipeForInputGridItems,
+            36 => Self::EmptyCraftResults,
+            37 => Self::FailedToEnchant,
+            38 => Self::MissingInputItem,
+            39 => Self::InsufficientPlayerLevelToEnchant,
+            40 => Self::MissingMaterialItem,
+            41 => Self::MissingActor,
+            42 => Self::UnknownPrimaryEffect,
+            43 => Self::PrimaryEffectOutOfRange,
+            44 => Self::PrimaryEffectUnavailable,
+            45 => Self::SecondaryEffectOutOfRange,
+            46 => Self::SecondaryEffectUnavailable,
+            47 => Self::DstContainerEqualToCreatedOutputContainer,
+            48 => Self::DstContainerAndSlotEqualToSrcContainerAndSlot,
+            49 => Self::FailedToValidateSrcSlot,
+            50 => Self::FailedToValidateDstSlot,
+            51 => Self::InvalidAdjustedAmount,
+            52 => Self::InvalidItemSetType,
+            53 => Self::InvalidTransferAmount,
+            54 => Self::CannotSwapItem,
+            55 => Self::CannotPlaceItem,
+            56 => Self::UnhandledItemSetType,
+            57 => Self::InvalidRemovedAmount,
+            58 => Self::InvalidRegion,
+            59 => Self::CannotDropItem,
+            60 => Self::CannotDestroyItem,
+            61 => Self::InvalidSourceContainer,
+            62 => Self::ItemNotConsumed,
+            63 => Self::InvalidNumCrafts,
+            64 => Self::InvalidCraftResultStackSize,
+            65 => Self::CannotRemoveItem,
+            66 => Self::CannotConsumeItem,
+            67 => Self::ScreenStackError,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl ItemStackNetResult {
+    pub fn to_raw(self) -> u8 {
+        match self {
+            Self::Success => 0,
+            Self::Error => 1,
+            Self::InvalidRequestActionType => 2,
+            Self::ActionRequestNotAllowed => 3,
+            Self::ScreenHandlerEndRequestFailed => 4,
+            Self::ItemRequestActionHandlerCommitFailed => 5,
+            Self::InvalidRequestCraftActionType => 6,
+            Self::InvalidCraftRequest => 7,
+            Self::InvalidCraftRequestScreen => 8,
+            Self::InvalidCraftResult => 9,
+            Self::InvalidCraftResultIndex => 10,
+            Self::InvalidCraftResultItem => 11,
+            Self::InvalidItemNetId => 12,
+            Self::MissingCreatedOutputContainer => 13,
+            Self::FailedToSetCreatedItemOutputSlot => 14,
+            Self::RequestAlreadyInProgress => 15,
+            Self::FailedToInitSparseContainer => 16,
+            Self::ResultTransferFailed => 17,
+            Self::ExpectedItemSlotNotFullyConsumed => 18,
+            Self::ExpectedAnywhereItemNotFullyConsumed => 19,
+            Self::ItemAlreadyConsumedFromSlot => 20,
+            Self::ConsumedTooMuchFromSlot => 21,
+            Self::MismatchSlotExpectedConsumedItem => 22,
+            Self::MismatchSlotExpectedConsumedItemNetIdVariant => 23,
+            Self::FailedToMatchExpectedSlotConsumedItem => 24,
+            Self::FailedToMatchExpectedAllowedAnywhereConsumedItem => 25,
+            Self::ConsumedItemOutOfAllowedSlotRange => 26,
+            Self::ConsumedItemNotAllowed => 27,
+            Self::PlayerNotInCreativeMode => 28,
+            Self::InvalidExperimentalRecipeRequest => 29,
+            Self::FailedToCraftCreative => 30,
+            Self::FailedToGetLevelRecipe => 31,
+            Self::FailedToFindRecipeByNetId => 32,
+            Self::MismatchedCraftingSize => 33,
+            Self::MissingInputSparseContainer => 34,
+            Self::MismatchedRecipeForInputGridItems => 35,
+            Self::EmptyCraftResults => 36,
+            Self::FailedToEnchant => 37,
+            Self::MissingInputItem => 38,
+            Self::InsufficientPlayerLevelToEnchant => 39,
+            Self::MissingMaterialItem => 40,
+            Self::MissingActor => 41,
+            Self::UnknownPrimaryEffect => 42,
+            Self::PrimaryEffectOutOfRange => 43,
+            Self::PrimaryEffectUnavailable => 44,
+            Self::SecondaryEffectOutOfRange => 45,
+            Self::SecondaryEffectUnavailable => 46,
+            Self::DstContainerEqualToCreatedOutputContainer => 47,
+            Self::DstContainerAndSlotEqualToSrcContainerAndSlot => 48,
+            Self::FailedToValidateSrcSlot => 49,
+            Self::FailedToValidateDstSlot => 50,
+            Self::InvalidAdjustedAmount => 51,
+            Self::InvalidItemSetType => 52,
+            Self::InvalidTransferAmount => 53,
+            Self::CannotSwapItem => 54,
+            Self::CannotPlaceItem => 55,
+            Self::UnhandledItemSetType => 56,
+            Self::InvalidRemovedAmount => 57,
+            Self::InvalidRegion => 58,
+            Self::CannotDropItem => 59,
+            Self::CannotDestroyItem => 60,
+            Self::InvalidSourceContainer => 61,
+            Self::ItemNotConsumed => 62,
+            Self::InvalidNumCrafts => 63,
+            Self::InvalidCraftResultStackSize => 64,
+            Self::CannotRemoveItem => 65,
+            Self::CannotConsumeItem => 66,
+            Self::ScreenStackError => 67,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<ItemStackNetResult> for u8 {
+    fn from(value: ItemStackNetResult) -> Self {
+        value.to_raw()
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum ItemStackRequestActionType {
+    #[default]
+    Take,
+    Place,
+    Swap,
+    Drop,
+    Destroy,
+    Consume,
+    Create,
+    PlaceInItemContainer,
+    TakeFromItemContainer,
+    ScreenLabTableCombine,
+    ScreenBeaconPayment,
+    ScreenHudMineBlock,
+    CraftRecipe,
+    CraftRecipeAuto,
+    CraftCreative,
+    CraftRecipeOptional,
+    CraftRepairAndDisenchant,
+    CraftLoom,
+    CraftNonImplemented,
+    CraftResults,
+    Unknown(u8),
+}
+
+impl From<u8> for ItemStackRequestActionType {
+    fn from(value: u8) -> Self {
+        match value {
+            0 => Self::Take,
+            1 => Self::Place,
+            2 => Self::Swap,
+            3 => Self::Drop,
+            4 => Self::Destroy,
+            5 => Self::Consume,
+            6 => Self::Create,
+            7 => Self::PlaceInItemContainer,
+            8 => Self::TakeFromItemContainer,
+            9 => Self::ScreenLabTableCombine,
+            10 => Self::ScreenBeaconPayment,
+            11 => Self::ScreenHudMineBlock,
+            12 => Self::CraftRecipe,
+            13 => Self::CraftRecipeAuto,
+            14 => Self::CraftCreative,
+            15 => Self::CraftRecipeOptional,
+            16 => Self::CraftRepairAndDisenchant,
+            17 => Self::CraftLoom,
+            18 => Self::CraftNonImplemented,
+            19 => Self::CraftResults,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl ItemStackRequestActionType {
+    pub fn to_raw(self) -> u8 {
+        match self {
+            Self::Take => 0,
+            Self::Place => 1,
+            Self::Swap => 2,
+            Self::Drop => 3,
+            Self::Destroy => 4,
+            Self::Consume => 5,
+            Self::Create => 6,
+            Self::PlaceInItemContainer => 7,
+            Self::TakeFromItemContainer => 8,
+            Self::ScreenLabTableCombine => 9,
+            Self::ScreenBeaconPayment => 10,
+            Self::ScreenHudMineBlock => 11,
+            Self::CraftRecipe => 12,
+            Self::CraftRecipeAuto => 13,
+            Self::CraftCreative => 14,
+            Self::CraftRecipeOptional => 15,
+            Self::CraftRepairAndDisenchant => 16,
+            Self::CraftLoom => 17,
+            Self::CraftNonImplemented => 18,
+            Self::CraftResults => 19,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<ItemStackRequestActionType> for u8 {
+    fn from(value: ItemStackRequestActionType) -> Self {
+        value.to_raw()
+    }
+}
+
+// Domain: map
+
+/// MapDecoration is a fixed decoration on a map: Its position or other properties do not change
+/// automatically client-side.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum MapDecorationType {
+    #[default]
+    MarkerWhite,
+    MarkerGreen,
+    MarkerRed,
+    MarkerBlue,
+    XWhite,
+    TriangleRed,
+    SquareWhite,
+    MarkerSign,
+    MarkerPink,
+    MarkerOrange,
+    MarkerYellow,
+    MarkerTeal,
+    TriangleGreen,
+    SmallSquareWhite,
+    Mansion,
+    Monument,
+    NoDraw,
+    VillageDesert,
+    VillagePlains,
+    VillageSavanna,
+    VillageSnowy,
+    VillageTaiga,
+    JungleTemple,
+    WitchHut,
+    TrialChambers,
+    Count,
+    Unknown(i8),
+}
+
+impl From<i8> for MapDecorationType {
+    fn from(value: i8) -> Self {
+        match value {
+            0 => Self::MarkerWhite,
+            1 => Self::MarkerGreen,
+            2 => Self::MarkerRed,
+            3 => Self::MarkerBlue,
+            4 => Self::XWhite,
+            5 => Self::TriangleRed,
+            6 => Self::SquareWhite,
+            7 => Self::MarkerSign,
+            8 => Self::MarkerPink,
+            9 => Self::MarkerOrange,
+            10 => Self::MarkerYellow,
+            11 => Self::MarkerTeal,
+            12 => Self::TriangleGreen,
+            13 => Self::SmallSquareWhite,
+            14 => Self::Mansion,
+            15 => Self::Monument,
+            16 => Self::NoDraw,
+            17 => Self::VillageDesert,
+            18 => Self::VillagePlains,
+            19 => Self::VillageSavanna,
+            20 => Self::VillageSnowy,
+            21 => Self::VillageTaiga,
+            22 => Self::JungleTemple,
+            23 => Self::WitchHut,
+            24 => Self::TrialChambers,
+            25 => Self::Count,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl MapDecorationType {
+    pub fn to_raw(self) -> i8 {
+        match self {
+            Self::MarkerWhite => 0,
+            Self::MarkerGreen => 1,
+            Self::MarkerRed => 2,
+            Self::MarkerBlue => 3,
+            Self::XWhite => 4,
+            Self::TriangleRed => 5,
+            Self::SquareWhite => 6,
+            Self::MarkerSign => 7,
+            Self::MarkerPink => 8,
+            Self::MarkerOrange => 9,
+            Self::MarkerYellow => 10,
+            Self::MarkerTeal => 11,
+            Self::TriangleGreen => 12,
+            Self::SmallSquareWhite => 13,
+            Self::Mansion => 14,
+            Self::Monument => 15,
+            Self::NoDraw => 16,
+            Self::VillageDesert => 17,
+            Self::VillagePlains => 18,
+            Self::VillageSavanna => 19,
+            Self::VillageSnowy => 20,
+            Self::VillageTaiga => 21,
+            Self::JungleTemple => 22,
+            Self::WitchHut => 23,
+            Self::TrialChambers => 24,
+            Self::Count => 25,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<MapDecorationType> for i8 {
+    fn from(value: MapDecorationType) -> Self {
+        value.to_raw()
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum MapItemTrackedActorType {
+    #[default]
+    Entity,
+    BlockEntity,
+    Other,
+    Unknown(i32),
+}
+
+impl From<i32> for MapItemTrackedActorType {
+    fn from(value: i32) -> Self {
+        match value {
+            0 => Self::Entity,
+            1 => Self::BlockEntity,
+            2 => Self::Other,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl MapItemTrackedActorType {
+    pub fn to_raw(self) -> i32 {
+        match self {
+            Self::Entity => 0,
+            Self::BlockEntity => 1,
+            Self::Other => 2,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<MapItemTrackedActorType> for i32 {
+    fn from(value: MapItemTrackedActorType) -> Self {
+        value.to_raw()
+    }
+}
+
+// Domain: memory
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum MemoryCategory {
+    #[default]
+    Unknown,
+    InvalidSizeUnknown,
+    Actor,
+    ActorAnimation,
+    ActorRendering,
+    BlockTickingQueues,
+    BiomeStorage,
+    Blobs,
+    Cereal,
+    CircuitSystem,
+    Client,
+    Commands,
+    DbStorage,
+    Debug,
+    Documentation,
+    EcsSystems,
+    Fmod,
+    Fonts,
+    ImGui,
+    Input,
+    JsonUi,
+    JsonUiControlFactoryJson,
+    JsonUiControlTree,
+    JsonUiControlTreeControlElement,
+    JsonUiControlTreePopulateDataBinding,
+    JsonUiControlTreePopulateFocus,
+    JsonUiControlTreePopulateLayout,
+    JsonUiControlTreePopulateOther,
+    JsonUiControlTreePopulateSprite,
+    JsonUiControlTreePopulateText,
+    JsonUiControlTreePopulateTts,
+    JsonUiControlTreeVisibility,
+    JsonUiCreateUi,
+    JsonUiDefs,
+    JsonUiLayoutManager,
+    JsonUiLayoutManagerRemoveDependencies,
+    JsonUiLayoutManagerInitVariable,
+    Languages,
+    Level,
+    LevelStructures,
+    LevelChunk,
+    LevelChunkGen,
+    LevelChunkGenThreadLocal,
+    LightVolumeManager,
+    Network,
+    Marketplace,
+    MaterialDragonCompiledDefinition,
+    MaterialDragonMaterial,
+    MaterialDragonResource,
+    MaterialDragonUniformMap,
+    MaterialRenderMaterial,
+    MaterialRenderMaterialGroup,
+    MaterialVariationManager,
+    MoLang,
+    OreUi,
+    OreUiClient,
+    PersonaPieces,
+    PersonaAnimations,
+    PersonaTextures,
+    PersonaCharacters,
+    PersonaSkinPacks,
+    PersonaRepo,
+    Player,
+    RenderChunk,
+    RenderChunkIndexBuffer,
+    RenderChunkVertexBuffer,
+    Rendering,
+    RenderingBgfxInit,
+    RenderingBgfxStartFrame,
+    RenderingBlockTessellator,
+    RenderingEndFrame,
+    RenderingGraphicsTasksInit,
+    RenderingLibrary,
+    RenderingPolygonOperatorPool,
+    RenderingPbrTextureData,
+    RenderingRenderRegistry,
+    RenderingSetup,
+    RenderingVertices,
+    RequestLog,
+    ResourcePacks,
+    Sound,
+    SubChunkBiomeData,
+    SubChunkBlockData,
+    SubChunkLightData,
+    Textures,
+    WeatherRenderer,
+    WorldGenerator,
+    Tasks,
+    Test,
+    TestLoadTestTags,
+    Scripting,
+    ScriptingRuntime,
+    ScriptingContext,
+    ScriptingContextBindingsMc,
+    ScriptingContextBindingsGt,
+    ScriptingContextRun,
+    DataDrivenUi,
+    DataDrivenUiDefs,
+    Gameface,
+    GamefaceSystem,
+    GamefaceDom,
+    GamefaceCss,
+    GamefaceDisplay,
+    GamefaceTempAllocator,
+    GamefacePoolAllocator,
+    GamefaceDump,
+    GamefaceMedia,
+    GamefaceJson,
+    GamefaceScriptEngine,
+    GamefaceScript,
+    GamefaceLayout,
+    Unknown2(u8),
+}
+
+impl From<u8> for MemoryCategory {
+    fn from(value: u8) -> Self {
+        match value {
+            0 => Self::Unknown,
+            1 => Self::InvalidSizeUnknown,
+            2 => Self::Actor,
+            3 => Self::ActorAnimation,
+            4 => Self::ActorRendering,
+            5 => Self::BlockTickingQueues,
+            6 => Self::BiomeStorage,
+            7 => Self::Blobs,
+            8 => Self::Cereal,
+            9 => Self::CircuitSystem,
+            10 => Self::Client,
+            11 => Self::Commands,
+            12 => Self::DbStorage,
+            13 => Self::Debug,
+            14 => Self::Documentation,
+            15 => Self::EcsSystems,
+            16 => Self::Fmod,
+            17 => Self::Fonts,
+            18 => Self::ImGui,
+            19 => Self::Input,
+            20 => Self::JsonUi,
+            21 => Self::JsonUiControlFactoryJson,
+            22 => Self::JsonUiControlTree,
+            23 => Self::JsonUiControlTreeControlElement,
+            24 => Self::JsonUiControlTreePopulateDataBinding,
+            25 => Self::JsonUiControlTreePopulateFocus,
+            26 => Self::JsonUiControlTreePopulateLayout,
+            27 => Self::JsonUiControlTreePopulateOther,
+            28 => Self::JsonUiControlTreePopulateSprite,
+            29 => Self::JsonUiControlTreePopulateText,
+            30 => Self::JsonUiControlTreePopulateTts,
+            31 => Self::JsonUiControlTreeVisibility,
+            32 => Self::JsonUiCreateUi,
+            33 => Self::JsonUiDefs,
+            34 => Self::JsonUiLayoutManager,
+            35 => Self::JsonUiLayoutManagerRemoveDependencies,
+            36 => Self::JsonUiLayoutManagerInitVariable,
+            37 => Self::Languages,
+            38 => Self::Level,
+            39 => Self::LevelStructures,
+            40 => Self::LevelChunk,
+            41 => Self::LevelChunkGen,
+            42 => Self::LevelChunkGenThreadLocal,
+            43 => Self::LightVolumeManager,
+            44 => Self::Network,
+            45 => Self::Marketplace,
+            46 => Self::MaterialDragonCompiledDefinition,
+            47 => Self::MaterialDragonMaterial,
+            48 => Self::MaterialDragonResource,
+            49 => Self::MaterialDragonUniformMap,
+            50 => Self::MaterialRenderMaterial,
+            51 => Self::MaterialRenderMaterialGroup,
+            52 => Self::MaterialVariationManager,
+            53 => Self::MoLang,
+            54 => Self::OreUi,
+            55 => Self::OreUiClient,
+            56 => Self::PersonaPieces,
+            57 => Self::PersonaAnimations,
+            58 => Self::PersonaTextures,
+            59 => Self::PersonaCharacters,
+            60 => Self::PersonaSkinPacks,
+            61 => Self::PersonaRepo,
+            62 => Self::Player,
+            63 => Self::RenderChunk,
+            64 => Self::RenderChunkIndexBuffer,
+            65 => Self::RenderChunkVertexBuffer,
+            66 => Self::Rendering,
+            67 => Self::RenderingBgfxInit,
+            68 => Self::RenderingBgfxStartFrame,
+            69 => Self::RenderingBlockTessellator,
+            70 => Self::RenderingEndFrame,
+            71 => Self::RenderingGraphicsTasksInit,
+            72 => Self::RenderingLibrary,
+            73 => Self::RenderingPolygonOperatorPool,
+            74 => Self::RenderingPbrTextureData,
+            75 => Self::RenderingRenderRegistry,
+            76 => Self::RenderingSetup,
+            77 => Self::RenderingVertices,
+            78 => Self::RequestLog,
+            79 => Self::ResourcePacks,
+            80 => Self::Sound,
+            81 => Self::SubChunkBiomeData,
+            82 => Self::SubChunkBlockData,
+            83 => Self::SubChunkLightData,
+            84 => Self::Textures,
+            85 => Self::WeatherRenderer,
+            86 => Self::WorldGenerator,
+            87 => Self::Tasks,
+            88 => Self::Test,
+            89 => Self::TestLoadTestTags,
+            90 => Self::Scripting,
+            91 => Self::ScriptingRuntime,
+            92 => Self::ScriptingContext,
+            93 => Self::ScriptingContextBindingsMc,
+            94 => Self::ScriptingContextBindingsGt,
+            95 => Self::ScriptingContextRun,
+            96 => Self::DataDrivenUi,
+            97 => Self::DataDrivenUiDefs,
+            98 => Self::Gameface,
+            99 => Self::GamefaceSystem,
+            100 => Self::GamefaceDom,
+            101 => Self::GamefaceCss,
+            102 => Self::GamefaceDisplay,
+            103 => Self::GamefaceTempAllocator,
+            104 => Self::GamefacePoolAllocator,
+            105 => Self::GamefaceDump,
+            106 => Self::GamefaceMedia,
+            107 => Self::GamefaceJson,
+            108 => Self::GamefaceScriptEngine,
+            109 => Self::GamefaceScript,
+            110 => Self::GamefaceLayout,
+            value => Self::Unknown2(value),
+        }
+    }
+}
+
+impl MemoryCategory {
+    pub fn to_raw(self) -> u8 {
+        match self {
+            Self::Unknown => 0,
+            Self::InvalidSizeUnknown => 1,
+            Self::Actor => 2,
+            Self::ActorAnimation => 3,
+            Self::ActorRendering => 4,
+            Self::BlockTickingQueues => 5,
+            Self::BiomeStorage => 6,
+            Self::Blobs => 7,
+            Self::Cereal => 8,
+            Self::CircuitSystem => 9,
+            Self::Client => 10,
+            Self::Commands => 11,
+            Self::DbStorage => 12,
+            Self::Debug => 13,
+            Self::Documentation => 14,
+            Self::EcsSystems => 15,
+            Self::Fmod => 16,
+            Self::Fonts => 17,
+            Self::ImGui => 18,
+            Self::Input => 19,
+            Self::JsonUi => 20,
+            Self::JsonUiControlFactoryJson => 21,
+            Self::JsonUiControlTree => 22,
+            Self::JsonUiControlTreeControlElement => 23,
+            Self::JsonUiControlTreePopulateDataBinding => 24,
+            Self::JsonUiControlTreePopulateFocus => 25,
+            Self::JsonUiControlTreePopulateLayout => 26,
+            Self::JsonUiControlTreePopulateOther => 27,
+            Self::JsonUiControlTreePopulateSprite => 28,
+            Self::JsonUiControlTreePopulateText => 29,
+            Self::JsonUiControlTreePopulateTts => 30,
+            Self::JsonUiControlTreeVisibility => 31,
+            Self::JsonUiCreateUi => 32,
+            Self::JsonUiDefs => 33,
+            Self::JsonUiLayoutManager => 34,
+            Self::JsonUiLayoutManagerRemoveDependencies => 35,
+            Self::JsonUiLayoutManagerInitVariable => 36,
+            Self::Languages => 37,
+            Self::Level => 38,
+            Self::LevelStructures => 39,
+            Self::LevelChunk => 40,
+            Self::LevelChunkGen => 41,
+            Self::LevelChunkGenThreadLocal => 42,
+            Self::LightVolumeManager => 43,
+            Self::Network => 44,
+            Self::Marketplace => 45,
+            Self::MaterialDragonCompiledDefinition => 46,
+            Self::MaterialDragonMaterial => 47,
+            Self::MaterialDragonResource => 48,
+            Self::MaterialDragonUniformMap => 49,
+            Self::MaterialRenderMaterial => 50,
+            Self::MaterialRenderMaterialGroup => 51,
+            Self::MaterialVariationManager => 52,
+            Self::MoLang => 53,
+            Self::OreUi => 54,
+            Self::OreUiClient => 55,
+            Self::PersonaPieces => 56,
+            Self::PersonaAnimations => 57,
+            Self::PersonaTextures => 58,
+            Self::PersonaCharacters => 59,
+            Self::PersonaSkinPacks => 60,
+            Self::PersonaRepo => 61,
+            Self::Player => 62,
+            Self::RenderChunk => 63,
+            Self::RenderChunkIndexBuffer => 64,
+            Self::RenderChunkVertexBuffer => 65,
+            Self::Rendering => 66,
+            Self::RenderingBgfxInit => 67,
+            Self::RenderingBgfxStartFrame => 68,
+            Self::RenderingBlockTessellator => 69,
+            Self::RenderingEndFrame => 70,
+            Self::RenderingGraphicsTasksInit => 71,
+            Self::RenderingLibrary => 72,
+            Self::RenderingPolygonOperatorPool => 73,
+            Self::RenderingPbrTextureData => 74,
+            Self::RenderingRenderRegistry => 75,
+            Self::RenderingSetup => 76,
+            Self::RenderingVertices => 77,
+            Self::RequestLog => 78,
+            Self::ResourcePacks => 79,
+            Self::Sound => 80,
+            Self::SubChunkBiomeData => 81,
+            Self::SubChunkBlockData => 82,
+            Self::SubChunkLightData => 83,
+            Self::Textures => 84,
+            Self::WeatherRenderer => 85,
+            Self::WorldGenerator => 86,
+            Self::Tasks => 87,
+            Self::Test => 88,
+            Self::TestLoadTestTags => 89,
+            Self::Scripting => 90,
+            Self::ScriptingRuntime => 91,
+            Self::ScriptingContext => 92,
+            Self::ScriptingContextBindingsMc => 93,
+            Self::ScriptingContextBindingsGt => 94,
+            Self::ScriptingContextRun => 95,
+            Self::DataDrivenUi => 96,
+            Self::DataDrivenUiDefs => 97,
+            Self::Gameface => 98,
+            Self::GamefaceSystem => 99,
+            Self::GamefaceDom => 100,
+            Self::GamefaceCss => 101,
+            Self::GamefaceDisplay => 102,
+            Self::GamefaceTempAllocator => 103,
+            Self::GamefacePoolAllocator => 104,
+            Self::GamefaceDump => 105,
+            Self::GamefaceMedia => 106,
+            Self::GamefaceJson => 107,
+            Self::GamefaceScriptEngine => 108,
+            Self::GamefaceScript => 109,
+            Self::GamefaceLayout => 110,
+            Self::Unknown2(value) => value,
+        }
+    }
+}
+
+impl From<MemoryCategory> for u8 {
+    fn from(value: MemoryCategory) -> Self {
+        value.to_raw()
+    }
+}
+
+// Domain: misc
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum AgentActionType {
     #[default]
@@ -1173,210 +3247,6 @@ impl From<BuildPlatform> for i32 {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum CameraAimAssistAction {
-    #[default]
-    Set,
-    Clear,
-    Unknown(u8),
-}
-
-impl From<u8> for CameraAimAssistAction {
-    fn from(value: u8) -> Self {
-        match value {
-            0 => Self::Set,
-            1 => Self::Clear,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl CameraAimAssistAction {
-    pub fn to_raw(self) -> u8 {
-        match self {
-            Self::Set => 0,
-            Self::Clear => 1,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<CameraAimAssistAction> for u8 {
-    fn from(value: CameraAimAssistAction) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum CameraAimAssistPresetOperation {
-    #[default]
-    Set,
-    AddToExisting,
-    Unknown(u8),
-}
-
-impl From<u8> for CameraAimAssistPresetOperation {
-    fn from(value: u8) -> Self {
-        match value {
-            0 => Self::Set,
-            1 => Self::AddToExisting,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl CameraAimAssistPresetOperation {
-    pub fn to_raw(self) -> u8 {
-        match self {
-            Self::Set => 0,
-            Self::AddToExisting => 1,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<CameraAimAssistPresetOperation> for u8 {
-    fn from(value: CameraAimAssistPresetOperation) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum CameraAimAssistTargetMode {
-    #[default]
-    Angle,
-    Distance,
-    Unknown(i32),
-}
-
-impl From<i32> for CameraAimAssistTargetMode {
-    fn from(value: i32) -> Self {
-        match value {
-            0 => Self::Angle,
-            1 => Self::Distance,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl CameraAimAssistTargetMode {
-    pub fn to_raw(self) -> i32 {
-        match self {
-            Self::Angle => 0,
-            Self::Distance => 1,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<CameraAimAssistTargetMode> for i32 {
-    fn from(value: CameraAimAssistTargetMode) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum CameraPresetAudioListener {
-    #[default]
-    Camera,
-    Player,
-    Unknown(u8),
-}
-
-impl From<u8> for CameraPresetAudioListener {
-    fn from(value: u8) -> Self {
-        match value {
-            0 => Self::Camera,
-            1 => Self::Player,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl CameraPresetAudioListener {
-    pub fn to_raw(self) -> u8 {
-        match self {
-            Self::Camera => 0,
-            Self::Player => 1,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<CameraPresetAudioListener> for u8 {
-    fn from(value: CameraPresetAudioListener) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum CameraShakeAction {
-    #[default]
-    Add,
-    Stop,
-    Unknown(u8),
-}
-
-impl From<u8> for CameraShakeAction {
-    fn from(value: u8) -> Self {
-        match value {
-            0 => Self::Add,
-            1 => Self::Stop,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl CameraShakeAction {
-    pub fn to_raw(self) -> u8 {
-        match self {
-            Self::Add => 0,
-            Self::Stop => 1,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<CameraShakeAction> for u8 {
-    fn from(value: CameraShakeAction) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum CameraShakeType {
-    #[default]
-    Positional,
-    Rotational,
-    Unknown(u8),
-}
-
-impl From<u8> for CameraShakeType {
-    fn from(value: u8) -> Self {
-        match value {
-            0 => Self::Positional,
-            1 => Self::Rotational,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl CameraShakeType {
-    pub fn to_raw(self) -> u8 {
-        match self {
-            Self::Positional => 0,
-            Self::Rotational => 1,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<CameraShakeType> for u8 {
-    fn from(value: CameraShakeType) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum ChatRestrictionLevel {
     #[default]
     None,
@@ -1667,52 +3537,6 @@ impl CodeBuilderStorageQueryOptionsOperation {
 
 impl From<CodeBuilderStorageQueryOptionsOperation> for u8 {
     fn from(value: CodeBuilderStorageQueryOptionsOperation) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum CommandPermissionLevel {
-    #[default]
-    Any,
-    GameDirectors,
-    Admin,
-    Host,
-    Owner,
-    Internal,
-    Unknown(u8),
-}
-
-impl From<u8> for CommandPermissionLevel {
-    fn from(value: u8) -> Self {
-        match value {
-            0 => Self::Any,
-            1 => Self::GameDirectors,
-            2 => Self::Admin,
-            3 => Self::Host,
-            4 => Self::Owner,
-            5 => Self::Internal,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl CommandPermissionLevel {
-    pub fn to_raw(self) -> u8 {
-        match self {
-            Self::Any => 0,
-            Self::GameDirectors => 1,
-            Self::Admin => 2,
-            Self::Host => 3,
-            Self::Owner => 4,
-            Self::Internal => 5,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<CommandPermissionLevel> for u8 {
-    fn from(value: CommandPermissionLevel) -> Self {
         value.to_raw()
     }
 }
@@ -2190,235 +4014,6 @@ impl From<ConnectionDisconnectFailReason> for i32 {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum ContainerEnumName {
-    #[default]
-    AnvilInputContainer,
-    AnvilMaterialContainer,
-    AnvilResultPreviewContainer,
-    SmithingTableInputContainer,
-    SmithingTableMaterialContainer,
-    SmithingTableResultPreviewContainer,
-    ArmorContainer,
-    LevelEntityContainer,
-    BeaconPaymentContainer,
-    BrewingStandInputContainer,
-    BrewingStandResultContainer,
-    BrewingStandFuelContainer,
-    CombinedHotbarAndInventoryContainer,
-    CraftingInputContainer,
-    CraftingOutputPreviewContainer,
-    RecipeConstructionContainer,
-    RecipeNatureContainer,
-    RecipeItemsContainer,
-    RecipeSearchContainer,
-    RecipeSearchBarContainer,
-    RecipeEquipmentContainer,
-    RecipeBookContainer,
-    EnchantingInputContainer,
-    EnchantingMaterialContainer,
-    FurnaceFuelContainer,
-    FurnaceIngredientContainer,
-    FurnaceResultContainer,
-    HorseEquipContainer,
-    HotbarContainer,
-    InventoryContainer,
-    ShulkerBoxContainer,
-    TradeIngredient1Container,
-    TradeIngredient2Container,
-    TradeResultPreviewContainer,
-    OffhandContainer,
-    CompoundCreatorInput,
-    CompoundCreatorOutputPreview,
-    ElementConstructorOutputPreview,
-    MaterialReducerInput,
-    MaterialReducerOutput,
-    LabTableInput,
-    LoomInputContainer,
-    LoomDyeContainer,
-    LoomMaterialContainer,
-    LoomResultPreviewContainer,
-    BlastFurnaceIngredientContainer,
-    SmokerIngredientContainer,
-    Trade2Ingredient1Container,
-    Trade2Ingredient2Container,
-    Trade2ResultPreviewContainer,
-    GrindstoneInputContainer,
-    GrindstoneAdditionalContainer,
-    GrindstoneResultPreviewContainer,
-    StonecutterInputContainer,
-    StonecutterResultPreviewContainer,
-    CartographyInputContainer,
-    CartographyAdditionalContainer,
-    CartographyResultPreviewContainer,
-    BarrelContainer,
-    CursorContainer,
-    CreatedOutputContainer,
-    SmithingTableTemplateContainer,
-    CrafterLevelEntityContainer,
-    DynamicContainer,
-    RecipeFoodContainer,
-    RecipeBlocksContainer,
-    RecipeFurnaceItemsContainer,
-    Unknown(u8),
-}
-
-impl From<u8> for ContainerEnumName {
-    fn from(value: u8) -> Self {
-        match value {
-            0 => Self::AnvilInputContainer,
-            1 => Self::AnvilMaterialContainer,
-            2 => Self::AnvilResultPreviewContainer,
-            3 => Self::SmithingTableInputContainer,
-            4 => Self::SmithingTableMaterialContainer,
-            5 => Self::SmithingTableResultPreviewContainer,
-            6 => Self::ArmorContainer,
-            7 => Self::LevelEntityContainer,
-            8 => Self::BeaconPaymentContainer,
-            9 => Self::BrewingStandInputContainer,
-            10 => Self::BrewingStandResultContainer,
-            11 => Self::BrewingStandFuelContainer,
-            12 => Self::CombinedHotbarAndInventoryContainer,
-            13 => Self::CraftingInputContainer,
-            14 => Self::CraftingOutputPreviewContainer,
-            15 => Self::RecipeConstructionContainer,
-            16 => Self::RecipeNatureContainer,
-            17 => Self::RecipeItemsContainer,
-            18 => Self::RecipeSearchContainer,
-            19 => Self::RecipeSearchBarContainer,
-            20 => Self::RecipeEquipmentContainer,
-            21 => Self::RecipeBookContainer,
-            22 => Self::EnchantingInputContainer,
-            23 => Self::EnchantingMaterialContainer,
-            24 => Self::FurnaceFuelContainer,
-            25 => Self::FurnaceIngredientContainer,
-            26 => Self::FurnaceResultContainer,
-            27 => Self::HorseEquipContainer,
-            28 => Self::HotbarContainer,
-            29 => Self::InventoryContainer,
-            30 => Self::ShulkerBoxContainer,
-            31 => Self::TradeIngredient1Container,
-            32 => Self::TradeIngredient2Container,
-            33 => Self::TradeResultPreviewContainer,
-            34 => Self::OffhandContainer,
-            35 => Self::CompoundCreatorInput,
-            36 => Self::CompoundCreatorOutputPreview,
-            37 => Self::ElementConstructorOutputPreview,
-            38 => Self::MaterialReducerInput,
-            39 => Self::MaterialReducerOutput,
-            40 => Self::LabTableInput,
-            41 => Self::LoomInputContainer,
-            42 => Self::LoomDyeContainer,
-            43 => Self::LoomMaterialContainer,
-            44 => Self::LoomResultPreviewContainer,
-            45 => Self::BlastFurnaceIngredientContainer,
-            46 => Self::SmokerIngredientContainer,
-            47 => Self::Trade2Ingredient1Container,
-            48 => Self::Trade2Ingredient2Container,
-            49 => Self::Trade2ResultPreviewContainer,
-            50 => Self::GrindstoneInputContainer,
-            51 => Self::GrindstoneAdditionalContainer,
-            52 => Self::GrindstoneResultPreviewContainer,
-            53 => Self::StonecutterInputContainer,
-            54 => Self::StonecutterResultPreviewContainer,
-            55 => Self::CartographyInputContainer,
-            56 => Self::CartographyAdditionalContainer,
-            57 => Self::CartographyResultPreviewContainer,
-            58 => Self::BarrelContainer,
-            59 => Self::CursorContainer,
-            60 => Self::CreatedOutputContainer,
-            61 => Self::SmithingTableTemplateContainer,
-            62 => Self::CrafterLevelEntityContainer,
-            63 => Self::DynamicContainer,
-            64 => Self::RecipeFoodContainer,
-            65 => Self::RecipeBlocksContainer,
-            66 => Self::RecipeFurnaceItemsContainer,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl ContainerEnumName {
-    pub fn to_raw(self) -> u8 {
-        match self {
-            Self::AnvilInputContainer => 0,
-            Self::AnvilMaterialContainer => 1,
-            Self::AnvilResultPreviewContainer => 2,
-            Self::SmithingTableInputContainer => 3,
-            Self::SmithingTableMaterialContainer => 4,
-            Self::SmithingTableResultPreviewContainer => 5,
-            Self::ArmorContainer => 6,
-            Self::LevelEntityContainer => 7,
-            Self::BeaconPaymentContainer => 8,
-            Self::BrewingStandInputContainer => 9,
-            Self::BrewingStandResultContainer => 10,
-            Self::BrewingStandFuelContainer => 11,
-            Self::CombinedHotbarAndInventoryContainer => 12,
-            Self::CraftingInputContainer => 13,
-            Self::CraftingOutputPreviewContainer => 14,
-            Self::RecipeConstructionContainer => 15,
-            Self::RecipeNatureContainer => 16,
-            Self::RecipeItemsContainer => 17,
-            Self::RecipeSearchContainer => 18,
-            Self::RecipeSearchBarContainer => 19,
-            Self::RecipeEquipmentContainer => 20,
-            Self::RecipeBookContainer => 21,
-            Self::EnchantingInputContainer => 22,
-            Self::EnchantingMaterialContainer => 23,
-            Self::FurnaceFuelContainer => 24,
-            Self::FurnaceIngredientContainer => 25,
-            Self::FurnaceResultContainer => 26,
-            Self::HorseEquipContainer => 27,
-            Self::HotbarContainer => 28,
-            Self::InventoryContainer => 29,
-            Self::ShulkerBoxContainer => 30,
-            Self::TradeIngredient1Container => 31,
-            Self::TradeIngredient2Container => 32,
-            Self::TradeResultPreviewContainer => 33,
-            Self::OffhandContainer => 34,
-            Self::CompoundCreatorInput => 35,
-            Self::CompoundCreatorOutputPreview => 36,
-            Self::ElementConstructorOutputPreview => 37,
-            Self::MaterialReducerInput => 38,
-            Self::MaterialReducerOutput => 39,
-            Self::LabTableInput => 40,
-            Self::LoomInputContainer => 41,
-            Self::LoomDyeContainer => 42,
-            Self::LoomMaterialContainer => 43,
-            Self::LoomResultPreviewContainer => 44,
-            Self::BlastFurnaceIngredientContainer => 45,
-            Self::SmokerIngredientContainer => 46,
-            Self::Trade2Ingredient1Container => 47,
-            Self::Trade2Ingredient2Container => 48,
-            Self::Trade2ResultPreviewContainer => 49,
-            Self::GrindstoneInputContainer => 50,
-            Self::GrindstoneAdditionalContainer => 51,
-            Self::GrindstoneResultPreviewContainer => 52,
-            Self::StonecutterInputContainer => 53,
-            Self::StonecutterResultPreviewContainer => 54,
-            Self::CartographyInputContainer => 55,
-            Self::CartographyAdditionalContainer => 56,
-            Self::CartographyResultPreviewContainer => 57,
-            Self::BarrelContainer => 58,
-            Self::CursorContainer => 59,
-            Self::CreatedOutputContainer => 60,
-            Self::SmithingTableTemplateContainer => 61,
-            Self::CrafterLevelEntityContainer => 62,
-            Self::DynamicContainer => 63,
-            Self::RecipeFoodContainer => 64,
-            Self::RecipeBlocksContainer => 65,
-            Self::RecipeFurnaceItemsContainer => 66,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<ContainerEnumName> for u8 {
-    fn from(value: ContainerEnumName) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum ControlScheme {
     #[default]
     LockedPlayerRelativeStrafe,
@@ -2508,49 +4103,6 @@ impl From<CoordinateEvaluationOrder> for i32 {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum CreativeItemCategory {
-    #[default]
-    Construction,
-    Nature,
-    Equipment,
-    Items,
-    ItemCommandOnly,
-    Unknown(u8),
-}
-
-impl From<u8> for CreativeItemCategory {
-    fn from(value: u8) -> Self {
-        match value {
-            1 => Self::Construction,
-            2 => Self::Nature,
-            3 => Self::Equipment,
-            4 => Self::Items,
-            5 => Self::ItemCommandOnly,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl CreativeItemCategory {
-    pub fn to_raw(self) -> u8 {
-        match self {
-            Self::Construction => 1,
-            Self::Nature => 2,
-            Self::Equipment => 3,
-            Self::Items => 4,
-            Self::ItemCommandOnly => 5,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<CreativeItemCategory> for u8 {
-    fn from(value: CreativeItemCategory) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum EditorWorldType {
     #[default]
     NonEditor,
@@ -2586,203 +4138,6 @@ impl EditorWorldType {
 
 impl From<EditorWorldType> for i32 {
     fn from(value: EditorWorldType) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum EducationEditionOffer {
-    #[default]
-    None,
-    RestOfWorld,
-    ChinaDeprecated,
-    Unknown(u32),
-}
-
-impl From<u32> for EducationEditionOffer {
-    fn from(value: u32) -> Self {
-        match value {
-            0 => Self::None,
-            1 => Self::RestOfWorld,
-            2 => Self::ChinaDeprecated,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl EducationEditionOffer {
-    pub fn to_raw(self) -> u32 {
-        match self {
-            Self::None => 0,
-            Self::RestOfWorld => 1,
-            Self::ChinaDeprecated => 2,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<EducationEditionOffer> for u32 {
-    fn from(value: EducationEditionOffer) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum EnchantType {
-    #[default]
-    Protection,
-    FireProtection,
-    FeatherFalling,
-    BlastProtection,
-    ProjectileProtection,
-    Thorns,
-    Respiration,
-    DepthStrider,
-    AquaAffinity,
-    Sharpness,
-    Smite,
-    BaneOfArthropods,
-    Knockback,
-    FireAspect,
-    Looting,
-    Efficiency,
-    SilkTouch,
-    Unbreaking,
-    Fortune,
-    Power,
-    Punch,
-    Flame,
-    Infinity,
-    LuckOfTheSea,
-    Lure,
-    FrostWalker,
-    Mending,
-    CurseOfBinding,
-    CurseOfVanishing,
-    Impaling,
-    Riptide,
-    Loyalty,
-    Channeling,
-    Multishot,
-    Piercing,
-    QuickCharge,
-    SoulSpeed,
-    SwiftSneak,
-    WindBurst,
-    Density,
-    Breach,
-    Lunge,
-    NumEnchantments,
-    InvalidEnchantment,
-    Unknown(u8),
-}
-
-impl From<u8> for EnchantType {
-    fn from(value: u8) -> Self {
-        match value {
-            0 => Self::Protection,
-            1 => Self::FireProtection,
-            2 => Self::FeatherFalling,
-            3 => Self::BlastProtection,
-            4 => Self::ProjectileProtection,
-            5 => Self::Thorns,
-            6 => Self::Respiration,
-            7 => Self::DepthStrider,
-            8 => Self::AquaAffinity,
-            9 => Self::Sharpness,
-            10 => Self::Smite,
-            11 => Self::BaneOfArthropods,
-            12 => Self::Knockback,
-            13 => Self::FireAspect,
-            14 => Self::Looting,
-            15 => Self::Efficiency,
-            16 => Self::SilkTouch,
-            17 => Self::Unbreaking,
-            18 => Self::Fortune,
-            19 => Self::Power,
-            20 => Self::Punch,
-            21 => Self::Flame,
-            22 => Self::Infinity,
-            23 => Self::LuckOfTheSea,
-            24 => Self::Lure,
-            25 => Self::FrostWalker,
-            26 => Self::Mending,
-            27 => Self::CurseOfBinding,
-            28 => Self::CurseOfVanishing,
-            29 => Self::Impaling,
-            30 => Self::Riptide,
-            31 => Self::Loyalty,
-            32 => Self::Channeling,
-            33 => Self::Multishot,
-            34 => Self::Piercing,
-            35 => Self::QuickCharge,
-            36 => Self::SoulSpeed,
-            37 => Self::SwiftSneak,
-            38 => Self::WindBurst,
-            39 => Self::Density,
-            40 => Self::Breach,
-            41 => Self::Lunge,
-            42 => Self::NumEnchantments,
-            43 => Self::InvalidEnchantment,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl EnchantType {
-    pub fn to_raw(self) -> u8 {
-        match self {
-            Self::Protection => 0,
-            Self::FireProtection => 1,
-            Self::FeatherFalling => 2,
-            Self::BlastProtection => 3,
-            Self::ProjectileProtection => 4,
-            Self::Thorns => 5,
-            Self::Respiration => 6,
-            Self::DepthStrider => 7,
-            Self::AquaAffinity => 8,
-            Self::Sharpness => 9,
-            Self::Smite => 10,
-            Self::BaneOfArthropods => 11,
-            Self::Knockback => 12,
-            Self::FireAspect => 13,
-            Self::Looting => 14,
-            Self::Efficiency => 15,
-            Self::SilkTouch => 16,
-            Self::Unbreaking => 17,
-            Self::Fortune => 18,
-            Self::Power => 19,
-            Self::Punch => 20,
-            Self::Flame => 21,
-            Self::Infinity => 22,
-            Self::LuckOfTheSea => 23,
-            Self::Lure => 24,
-            Self::FrostWalker => 25,
-            Self::Mending => 26,
-            Self::CurseOfBinding => 27,
-            Self::CurseOfVanishing => 28,
-            Self::Impaling => 29,
-            Self::Riptide => 30,
-            Self::Loyalty => 31,
-            Self::Channeling => 32,
-            Self::Multishot => 33,
-            Self::Piercing => 34,
-            Self::QuickCharge => 35,
-            Self::SoulSpeed => 36,
-            Self::SwiftSneak => 37,
-            Self::WindBurst => 38,
-            Self::Density => 39,
-            Self::Breach => 40,
-            Self::Lunge => 41,
-            Self::NumEnchantments => 42,
-            Self::InvalidEnchantment => 43,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<EnchantType> for u8 {
-    fn from(value: EnchantType) -> Self {
         value.to_raw()
     }
 }
@@ -3563,825 +4918,6 @@ impl From<InteractAction> for u8 {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum InventoryLayout {
-    #[default]
-    None,
-    InventoryOnly,
-    Default,
-    RecipeBookOnly,
-    Unknown(i32),
-}
-
-impl From<i32> for InventoryLayout {
-    fn from(value: i32) -> Self {
-        match value {
-            0 => Self::None,
-            1 => Self::InventoryOnly,
-            2 => Self::Default,
-            3 => Self::RecipeBookOnly,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl InventoryLayout {
-    pub fn to_raw(self) -> i32 {
-        match self {
-            Self::None => 0,
-            Self::InventoryOnly => 1,
-            Self::Default => 2,
-            Self::RecipeBookOnly => 3,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<InventoryLayout> for i32 {
-    fn from(value: InventoryLayout) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum InventoryLeftTabIndex {
-    #[default]
-    None,
-    RecipeConstruction,
-    RecipeEquipment,
-    RecipeItems,
-    RecipeNature,
-    RecipeSearch,
-    Survival,
-    Unknown(i32),
-}
-
-impl From<i32> for InventoryLeftTabIndex {
-    fn from(value: i32) -> Self {
-        match value {
-            0 => Self::None,
-            1 => Self::RecipeConstruction,
-            2 => Self::RecipeEquipment,
-            3 => Self::RecipeItems,
-            4 => Self::RecipeNature,
-            5 => Self::RecipeSearch,
-            6 => Self::Survival,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl InventoryLeftTabIndex {
-    pub fn to_raw(self) -> i32 {
-        match self {
-            Self::None => 0,
-            Self::RecipeConstruction => 1,
-            Self::RecipeEquipment => 2,
-            Self::RecipeItems => 3,
-            Self::RecipeNature => 4,
-            Self::RecipeSearch => 5,
-            Self::Survival => 6,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<InventoryLeftTabIndex> for i32 {
-    fn from(value: InventoryLeftTabIndex) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum InventoryRightTabIndex {
-    #[default]
-    None,
-    FullScreen,
-    Crafting,
-    Armor,
-    Unknown(i32),
-}
-
-impl From<i32> for InventoryRightTabIndex {
-    fn from(value: i32) -> Self {
-        match value {
-            0 => Self::None,
-            1 => Self::FullScreen,
-            2 => Self::Crafting,
-            3 => Self::Armor,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl InventoryRightTabIndex {
-    pub fn to_raw(self) -> i32 {
-        match self {
-            Self::None => 0,
-            Self::FullScreen => 1,
-            Self::Crafting => 2,
-            Self::Armor => 3,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<InventoryRightTabIndex> for i32 {
-    fn from(value: InventoryRightTabIndex) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum InventorySourceInventorySourceFlags {
-    #[default]
-    NoFlag,
-    WorldInteractionRandom,
-    Unknown(u32),
-}
-
-impl From<u32> for InventorySourceInventorySourceFlags {
-    fn from(value: u32) -> Self {
-        match value {
-            0 => Self::NoFlag,
-            1 => Self::WorldInteractionRandom,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl InventorySourceInventorySourceFlags {
-    pub fn to_raw(self) -> u32 {
-        match self {
-            Self::NoFlag => 0,
-            Self::WorldInteractionRandom => 1,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<InventorySourceInventorySourceFlags> for u32 {
-    fn from(value: InventorySourceInventorySourceFlags) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum InventorySourceType {
-    #[default]
-    ContainerInventory,
-    GlobalInventory,
-    WorldInteraction,
-    CreativeInventory,
-    NonImplementedFeatureTodo,
-    Unknown(u32),
-}
-
-impl From<u32> for InventorySourceType {
-    fn from(value: u32) -> Self {
-        match value {
-            0 => Self::ContainerInventory,
-            1 => Self::GlobalInventory,
-            2 => Self::WorldInteraction,
-            3 => Self::CreativeInventory,
-            99999 => Self::NonImplementedFeatureTodo,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl InventorySourceType {
-    pub fn to_raw(self) -> u32 {
-        match self {
-            Self::ContainerInventory => 0,
-            Self::GlobalInventory => 1,
-            Self::WorldInteraction => 2,
-            Self::CreativeInventory => 3,
-            Self::NonImplementedFeatureTodo => 99999,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<InventorySourceType> for u32 {
-    fn from(value: InventorySourceType) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum ItemDescriptorType {
-    #[default]
-    Empty,
-    ItemName,
-    MoLang,
-    ItemTag,
-    Unknown(u8),
-}
-
-impl From<u8> for ItemDescriptorType {
-    fn from(value: u8) -> Self {
-        match value {
-            0 => Self::Empty,
-            1 => Self::ItemName,
-            2 => Self::MoLang,
-            3 => Self::ItemTag,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl ItemDescriptorType {
-    pub fn to_raw(self) -> u8 {
-        match self {
-            Self::Empty => 0,
-            Self::ItemName => 1,
-            Self::MoLang => 2,
-            Self::ItemTag => 3,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<ItemDescriptorType> for u8 {
-    fn from(value: ItemDescriptorType) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum ItemReleaseInventoryTransactionActionType {
-    #[default]
-    Release,
-    Use,
-    Unknown(i32),
-}
-
-impl From<i32> for ItemReleaseInventoryTransactionActionType {
-    fn from(value: i32) -> Self {
-        match value {
-            0 => Self::Release,
-            1 => Self::Use,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl ItemReleaseInventoryTransactionActionType {
-    pub fn to_raw(self) -> i32 {
-        match self {
-            Self::Release => 0,
-            Self::Use => 1,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<ItemReleaseInventoryTransactionActionType> for i32 {
-    fn from(value: ItemReleaseInventoryTransactionActionType) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum ItemStackNetResult {
-    #[default]
-    Success,
-    Error,
-    InvalidRequestActionType,
-    ActionRequestNotAllowed,
-    ScreenHandlerEndRequestFailed,
-    ItemRequestActionHandlerCommitFailed,
-    InvalidRequestCraftActionType,
-    InvalidCraftRequest,
-    InvalidCraftRequestScreen,
-    InvalidCraftResult,
-    InvalidCraftResultIndex,
-    InvalidCraftResultItem,
-    InvalidItemNetId,
-    MissingCreatedOutputContainer,
-    FailedToSetCreatedItemOutputSlot,
-    RequestAlreadyInProgress,
-    FailedToInitSparseContainer,
-    ResultTransferFailed,
-    ExpectedItemSlotNotFullyConsumed,
-    ExpectedAnywhereItemNotFullyConsumed,
-    ItemAlreadyConsumedFromSlot,
-    ConsumedTooMuchFromSlot,
-    MismatchSlotExpectedConsumedItem,
-    MismatchSlotExpectedConsumedItemNetIdVariant,
-    FailedToMatchExpectedSlotConsumedItem,
-    FailedToMatchExpectedAllowedAnywhereConsumedItem,
-    ConsumedItemOutOfAllowedSlotRange,
-    ConsumedItemNotAllowed,
-    PlayerNotInCreativeMode,
-    InvalidExperimentalRecipeRequest,
-    FailedToCraftCreative,
-    FailedToGetLevelRecipe,
-    FailedToFindRecipeByNetId,
-    MismatchedCraftingSize,
-    MissingInputSparseContainer,
-    MismatchedRecipeForInputGridItems,
-    EmptyCraftResults,
-    FailedToEnchant,
-    MissingInputItem,
-    InsufficientPlayerLevelToEnchant,
-    MissingMaterialItem,
-    MissingActor,
-    UnknownPrimaryEffect,
-    PrimaryEffectOutOfRange,
-    PrimaryEffectUnavailable,
-    SecondaryEffectOutOfRange,
-    SecondaryEffectUnavailable,
-    DstContainerEqualToCreatedOutputContainer,
-    DstContainerAndSlotEqualToSrcContainerAndSlot,
-    FailedToValidateSrcSlot,
-    FailedToValidateDstSlot,
-    InvalidAdjustedAmount,
-    InvalidItemSetType,
-    InvalidTransferAmount,
-    CannotSwapItem,
-    CannotPlaceItem,
-    UnhandledItemSetType,
-    InvalidRemovedAmount,
-    InvalidRegion,
-    CannotDropItem,
-    CannotDestroyItem,
-    InvalidSourceContainer,
-    ItemNotConsumed,
-    InvalidNumCrafts,
-    InvalidCraftResultStackSize,
-    CannotRemoveItem,
-    CannotConsumeItem,
-    ScreenStackError,
-    Unknown(u8),
-}
-
-impl From<u8> for ItemStackNetResult {
-    fn from(value: u8) -> Self {
-        match value {
-            0 => Self::Success,
-            1 => Self::Error,
-            2 => Self::InvalidRequestActionType,
-            3 => Self::ActionRequestNotAllowed,
-            4 => Self::ScreenHandlerEndRequestFailed,
-            5 => Self::ItemRequestActionHandlerCommitFailed,
-            6 => Self::InvalidRequestCraftActionType,
-            7 => Self::InvalidCraftRequest,
-            8 => Self::InvalidCraftRequestScreen,
-            9 => Self::InvalidCraftResult,
-            10 => Self::InvalidCraftResultIndex,
-            11 => Self::InvalidCraftResultItem,
-            12 => Self::InvalidItemNetId,
-            13 => Self::MissingCreatedOutputContainer,
-            14 => Self::FailedToSetCreatedItemOutputSlot,
-            15 => Self::RequestAlreadyInProgress,
-            16 => Self::FailedToInitSparseContainer,
-            17 => Self::ResultTransferFailed,
-            18 => Self::ExpectedItemSlotNotFullyConsumed,
-            19 => Self::ExpectedAnywhereItemNotFullyConsumed,
-            20 => Self::ItemAlreadyConsumedFromSlot,
-            21 => Self::ConsumedTooMuchFromSlot,
-            22 => Self::MismatchSlotExpectedConsumedItem,
-            23 => Self::MismatchSlotExpectedConsumedItemNetIdVariant,
-            24 => Self::FailedToMatchExpectedSlotConsumedItem,
-            25 => Self::FailedToMatchExpectedAllowedAnywhereConsumedItem,
-            26 => Self::ConsumedItemOutOfAllowedSlotRange,
-            27 => Self::ConsumedItemNotAllowed,
-            28 => Self::PlayerNotInCreativeMode,
-            29 => Self::InvalidExperimentalRecipeRequest,
-            30 => Self::FailedToCraftCreative,
-            31 => Self::FailedToGetLevelRecipe,
-            32 => Self::FailedToFindRecipeByNetId,
-            33 => Self::MismatchedCraftingSize,
-            34 => Self::MissingInputSparseContainer,
-            35 => Self::MismatchedRecipeForInputGridItems,
-            36 => Self::EmptyCraftResults,
-            37 => Self::FailedToEnchant,
-            38 => Self::MissingInputItem,
-            39 => Self::InsufficientPlayerLevelToEnchant,
-            40 => Self::MissingMaterialItem,
-            41 => Self::MissingActor,
-            42 => Self::UnknownPrimaryEffect,
-            43 => Self::PrimaryEffectOutOfRange,
-            44 => Self::PrimaryEffectUnavailable,
-            45 => Self::SecondaryEffectOutOfRange,
-            46 => Self::SecondaryEffectUnavailable,
-            47 => Self::DstContainerEqualToCreatedOutputContainer,
-            48 => Self::DstContainerAndSlotEqualToSrcContainerAndSlot,
-            49 => Self::FailedToValidateSrcSlot,
-            50 => Self::FailedToValidateDstSlot,
-            51 => Self::InvalidAdjustedAmount,
-            52 => Self::InvalidItemSetType,
-            53 => Self::InvalidTransferAmount,
-            54 => Self::CannotSwapItem,
-            55 => Self::CannotPlaceItem,
-            56 => Self::UnhandledItemSetType,
-            57 => Self::InvalidRemovedAmount,
-            58 => Self::InvalidRegion,
-            59 => Self::CannotDropItem,
-            60 => Self::CannotDestroyItem,
-            61 => Self::InvalidSourceContainer,
-            62 => Self::ItemNotConsumed,
-            63 => Self::InvalidNumCrafts,
-            64 => Self::InvalidCraftResultStackSize,
-            65 => Self::CannotRemoveItem,
-            66 => Self::CannotConsumeItem,
-            67 => Self::ScreenStackError,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl ItemStackNetResult {
-    pub fn to_raw(self) -> u8 {
-        match self {
-            Self::Success => 0,
-            Self::Error => 1,
-            Self::InvalidRequestActionType => 2,
-            Self::ActionRequestNotAllowed => 3,
-            Self::ScreenHandlerEndRequestFailed => 4,
-            Self::ItemRequestActionHandlerCommitFailed => 5,
-            Self::InvalidRequestCraftActionType => 6,
-            Self::InvalidCraftRequest => 7,
-            Self::InvalidCraftRequestScreen => 8,
-            Self::InvalidCraftResult => 9,
-            Self::InvalidCraftResultIndex => 10,
-            Self::InvalidCraftResultItem => 11,
-            Self::InvalidItemNetId => 12,
-            Self::MissingCreatedOutputContainer => 13,
-            Self::FailedToSetCreatedItemOutputSlot => 14,
-            Self::RequestAlreadyInProgress => 15,
-            Self::FailedToInitSparseContainer => 16,
-            Self::ResultTransferFailed => 17,
-            Self::ExpectedItemSlotNotFullyConsumed => 18,
-            Self::ExpectedAnywhereItemNotFullyConsumed => 19,
-            Self::ItemAlreadyConsumedFromSlot => 20,
-            Self::ConsumedTooMuchFromSlot => 21,
-            Self::MismatchSlotExpectedConsumedItem => 22,
-            Self::MismatchSlotExpectedConsumedItemNetIdVariant => 23,
-            Self::FailedToMatchExpectedSlotConsumedItem => 24,
-            Self::FailedToMatchExpectedAllowedAnywhereConsumedItem => 25,
-            Self::ConsumedItemOutOfAllowedSlotRange => 26,
-            Self::ConsumedItemNotAllowed => 27,
-            Self::PlayerNotInCreativeMode => 28,
-            Self::InvalidExperimentalRecipeRequest => 29,
-            Self::FailedToCraftCreative => 30,
-            Self::FailedToGetLevelRecipe => 31,
-            Self::FailedToFindRecipeByNetId => 32,
-            Self::MismatchedCraftingSize => 33,
-            Self::MissingInputSparseContainer => 34,
-            Self::MismatchedRecipeForInputGridItems => 35,
-            Self::EmptyCraftResults => 36,
-            Self::FailedToEnchant => 37,
-            Self::MissingInputItem => 38,
-            Self::InsufficientPlayerLevelToEnchant => 39,
-            Self::MissingMaterialItem => 40,
-            Self::MissingActor => 41,
-            Self::UnknownPrimaryEffect => 42,
-            Self::PrimaryEffectOutOfRange => 43,
-            Self::PrimaryEffectUnavailable => 44,
-            Self::SecondaryEffectOutOfRange => 45,
-            Self::SecondaryEffectUnavailable => 46,
-            Self::DstContainerEqualToCreatedOutputContainer => 47,
-            Self::DstContainerAndSlotEqualToSrcContainerAndSlot => 48,
-            Self::FailedToValidateSrcSlot => 49,
-            Self::FailedToValidateDstSlot => 50,
-            Self::InvalidAdjustedAmount => 51,
-            Self::InvalidItemSetType => 52,
-            Self::InvalidTransferAmount => 53,
-            Self::CannotSwapItem => 54,
-            Self::CannotPlaceItem => 55,
-            Self::UnhandledItemSetType => 56,
-            Self::InvalidRemovedAmount => 57,
-            Self::InvalidRegion => 58,
-            Self::CannotDropItem => 59,
-            Self::CannotDestroyItem => 60,
-            Self::InvalidSourceContainer => 61,
-            Self::ItemNotConsumed => 62,
-            Self::InvalidNumCrafts => 63,
-            Self::InvalidCraftResultStackSize => 64,
-            Self::CannotRemoveItem => 65,
-            Self::CannotConsumeItem => 66,
-            Self::ScreenStackError => 67,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<ItemStackNetResult> for u8 {
-    fn from(value: ItemStackNetResult) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum ItemStackRequestActionType {
-    #[default]
-    Take,
-    Place,
-    Swap,
-    Drop,
-    Destroy,
-    Consume,
-    Create,
-    PlaceInItemContainer,
-    TakeFromItemContainer,
-    ScreenLabTableCombine,
-    ScreenBeaconPayment,
-    ScreenHudMineBlock,
-    CraftRecipe,
-    CraftRecipeAuto,
-    CraftCreative,
-    CraftRecipeOptional,
-    CraftRepairAndDisenchant,
-    CraftLoom,
-    CraftNonImplemented,
-    CraftResults,
-    Unknown(u8),
-}
-
-impl From<u8> for ItemStackRequestActionType {
-    fn from(value: u8) -> Self {
-        match value {
-            0 => Self::Take,
-            1 => Self::Place,
-            2 => Self::Swap,
-            3 => Self::Drop,
-            4 => Self::Destroy,
-            5 => Self::Consume,
-            6 => Self::Create,
-            7 => Self::PlaceInItemContainer,
-            8 => Self::TakeFromItemContainer,
-            9 => Self::ScreenLabTableCombine,
-            10 => Self::ScreenBeaconPayment,
-            11 => Self::ScreenHudMineBlock,
-            12 => Self::CraftRecipe,
-            13 => Self::CraftRecipeAuto,
-            14 => Self::CraftCreative,
-            15 => Self::CraftRecipeOptional,
-            16 => Self::CraftRepairAndDisenchant,
-            17 => Self::CraftLoom,
-            18 => Self::CraftNonImplemented,
-            19 => Self::CraftResults,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl ItemStackRequestActionType {
-    pub fn to_raw(self) -> u8 {
-        match self {
-            Self::Take => 0,
-            Self::Place => 1,
-            Self::Swap => 2,
-            Self::Drop => 3,
-            Self::Destroy => 4,
-            Self::Consume => 5,
-            Self::Create => 6,
-            Self::PlaceInItemContainer => 7,
-            Self::TakeFromItemContainer => 8,
-            Self::ScreenLabTableCombine => 9,
-            Self::ScreenBeaconPayment => 10,
-            Self::ScreenHudMineBlock => 11,
-            Self::CraftRecipe => 12,
-            Self::CraftRecipeAuto => 13,
-            Self::CraftCreative => 14,
-            Self::CraftRecipeOptional => 15,
-            Self::CraftRepairAndDisenchant => 16,
-            Self::CraftLoom => 17,
-            Self::CraftNonImplemented => 18,
-            Self::CraftResults => 19,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<ItemStackRequestActionType> for u8 {
-    fn from(value: ItemStackRequestActionType) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum ItemUseInventoryTransactionActionType {
-    #[default]
-    Place,
-    Use,
-    Destroy,
-    UseAsAttack,
-    Unknown(i32),
-}
-
-impl From<i32> for ItemUseInventoryTransactionActionType {
-    fn from(value: i32) -> Self {
-        match value {
-            0 => Self::Place,
-            1 => Self::Use,
-            2 => Self::Destroy,
-            3 => Self::UseAsAttack,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl ItemUseInventoryTransactionActionType {
-    pub fn to_raw(self) -> i32 {
-        match self {
-            Self::Place => 0,
-            Self::Use => 1,
-            Self::Destroy => 2,
-            Self::UseAsAttack => 3,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<ItemUseInventoryTransactionActionType> for i32 {
-    fn from(value: ItemUseInventoryTransactionActionType) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum ItemUseInventoryTransactionClientCooldownState {
-    #[default]
-    Off,
-    On,
-    Unknown(u8),
-}
-
-impl From<u8> for ItemUseInventoryTransactionClientCooldownState {
-    fn from(value: u8) -> Self {
-        match value {
-            0 => Self::Off,
-            1 => Self::On,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl ItemUseInventoryTransactionClientCooldownState {
-    pub fn to_raw(self) -> u8 {
-        match self {
-            Self::Off => 0,
-            Self::On => 1,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<ItemUseInventoryTransactionClientCooldownState> for u8 {
-    fn from(value: ItemUseInventoryTransactionClientCooldownState) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum ItemUseInventoryTransactionPredictedResult {
-    #[default]
-    Failure,
-    Success,
-    Unknown(u8),
-}
-
-impl From<u8> for ItemUseInventoryTransactionPredictedResult {
-    fn from(value: u8) -> Self {
-        match value {
-            0 => Self::Failure,
-            1 => Self::Success,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl ItemUseInventoryTransactionPredictedResult {
-    pub fn to_raw(self) -> u8 {
-        match self {
-            Self::Failure => 0,
-            Self::Success => 1,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<ItemUseInventoryTransactionPredictedResult> for u8 {
-    fn from(value: ItemUseInventoryTransactionPredictedResult) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum ItemUseInventoryTransactionTriggerType {
-    #[default]
-    Unknown,
-    PlayerInput,
-    SimulationTick,
-    Unknown2(u8),
-}
-
-impl From<u8> for ItemUseInventoryTransactionTriggerType {
-    fn from(value: u8) -> Self {
-        match value {
-            0 => Self::Unknown,
-            1 => Self::PlayerInput,
-            2 => Self::SimulationTick,
-            value => Self::Unknown2(value),
-        }
-    }
-}
-
-impl ItemUseInventoryTransactionTriggerType {
-    pub fn to_raw(self) -> u8 {
-        match self {
-            Self::Unknown => 0,
-            Self::PlayerInput => 1,
-            Self::SimulationTick => 2,
-            Self::Unknown2(value) => value,
-        }
-    }
-}
-
-impl From<ItemUseInventoryTransactionTriggerType> for u8 {
-    fn from(value: ItemUseInventoryTransactionTriggerType) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum ItemUseOnActorInventoryTransactionActionType {
-    #[default]
-    Interact,
-    Attack,
-    ItemInteract,
-    Unknown(i32),
-}
-
-impl From<i32> for ItemUseOnActorInventoryTransactionActionType {
-    fn from(value: i32) -> Self {
-        match value {
-            0 => Self::Interact,
-            1 => Self::Attack,
-            2 => Self::ItemInteract,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl ItemUseOnActorInventoryTransactionActionType {
-    pub fn to_raw(self) -> i32 {
-        match self {
-            Self::Interact => 0,
-            Self::Attack => 1,
-            Self::ItemInteract => 2,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<ItemUseOnActorInventoryTransactionActionType> for i32 {
-    fn from(value: ItemUseOnActorInventoryTransactionActionType) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum ItemVersion {
-    #[default]
-    Legacy,
-    DataDriven,
-    None,
-    Unknown(i32),
-}
-
-impl From<i32> for ItemVersion {
-    fn from(value: i32) -> Self {
-        match value {
-            0 => Self::Legacy,
-            1 => Self::DataDriven,
-            2 => Self::None,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl ItemVersion {
-    pub fn to_raw(self) -> i32 {
-        match self {
-            Self::Legacy => 0,
-            Self::DataDriven => 1,
-            Self::None => 2,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<ItemVersion> for i32 {
-    fn from(value: ItemVersion) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum LabTableReactionType {
     #[default]
     None,
@@ -4570,634 +5106,6 @@ impl LegacyDifficulty {
 
 impl From<LegacyDifficulty> for i32 {
     fn from(value: LegacyDifficulty) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum LegacyTelemetryType {
-    #[default]
-    Achievement,
-    Interaction,
-    PortalCreated,
-    PortalUsed,
-    MobKilled,
-    CauldronUsed,
-    PlayerDied,
-    BossKilled,
-    AgentCommandObsolete,
-    AgentCreated,
-    PatternRemovedObsolete,
-    SlashCommand,
-    FishBucketedObsolete,
-    MobBorn,
-    PetDiedObsolete,
-    PoiCauldronUsed,
-    ComposterUsed,
-    BellUsed,
-    ActorDefinition,
-    RaidUpdate,
-    PlayerMovementAnomalyObsolete,
-    PlayerMovementCorrectedObsolete,
-    HoneyHarvested,
-    TargetBlockHit,
-    PiglinBarter,
-    PlayerWaxedOrUnwaxedCopper,
-    CodeBuilderRuntimeAction,
-    CodeBuilderScoreboard,
-    StriderRiddenInLavaInOverworld,
-    SneakCloseToSculkSensor,
-    CarefulRestoration,
-    ItemUsed,
-    Unknown(i32),
-}
-
-impl From<i32> for LegacyTelemetryType {
-    fn from(value: i32) -> Self {
-        match value {
-            0 => Self::Achievement,
-            1 => Self::Interaction,
-            2 => Self::PortalCreated,
-            3 => Self::PortalUsed,
-            4 => Self::MobKilled,
-            5 => Self::CauldronUsed,
-            6 => Self::PlayerDied,
-            7 => Self::BossKilled,
-            8 => Self::AgentCommandObsolete,
-            9 => Self::AgentCreated,
-            10 => Self::PatternRemovedObsolete,
-            11 => Self::SlashCommand,
-            12 => Self::FishBucketedObsolete,
-            13 => Self::MobBorn,
-            14 => Self::PetDiedObsolete,
-            15 => Self::PoiCauldronUsed,
-            16 => Self::ComposterUsed,
-            17 => Self::BellUsed,
-            18 => Self::ActorDefinition,
-            19 => Self::RaidUpdate,
-            20 => Self::PlayerMovementAnomalyObsolete,
-            21 => Self::PlayerMovementCorrectedObsolete,
-            22 => Self::HoneyHarvested,
-            23 => Self::TargetBlockHit,
-            24 => Self::PiglinBarter,
-            25 => Self::PlayerWaxedOrUnwaxedCopper,
-            26 => Self::CodeBuilderRuntimeAction,
-            27 => Self::CodeBuilderScoreboard,
-            28 => Self::StriderRiddenInLavaInOverworld,
-            29 => Self::SneakCloseToSculkSensor,
-            30 => Self::CarefulRestoration,
-            31 => Self::ItemUsed,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl LegacyTelemetryType {
-    pub fn to_raw(self) -> i32 {
-        match self {
-            Self::Achievement => 0,
-            Self::Interaction => 1,
-            Self::PortalCreated => 2,
-            Self::PortalUsed => 3,
-            Self::MobKilled => 4,
-            Self::CauldronUsed => 5,
-            Self::PlayerDied => 6,
-            Self::BossKilled => 7,
-            Self::AgentCommandObsolete => 8,
-            Self::AgentCreated => 9,
-            Self::PatternRemovedObsolete => 10,
-            Self::SlashCommand => 11,
-            Self::FishBucketedObsolete => 12,
-            Self::MobBorn => 13,
-            Self::PetDiedObsolete => 14,
-            Self::PoiCauldronUsed => 15,
-            Self::ComposterUsed => 16,
-            Self::BellUsed => 17,
-            Self::ActorDefinition => 18,
-            Self::RaidUpdate => 19,
-            Self::PlayerMovementAnomalyObsolete => 20,
-            Self::PlayerMovementCorrectedObsolete => 21,
-            Self::HoneyHarvested => 22,
-            Self::TargetBlockHit => 23,
-            Self::PiglinBarter => 24,
-            Self::PlayerWaxedOrUnwaxedCopper => 25,
-            Self::CodeBuilderRuntimeAction => 26,
-            Self::CodeBuilderScoreboard => 27,
-            Self::StriderRiddenInLavaInOverworld => 28,
-            Self::SneakCloseToSculkSensor => 29,
-            Self::CarefulRestoration => 30,
-            Self::ItemUsed => 31,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<LegacyTelemetryType> for i32 {
-    fn from(value: LegacyTelemetryType) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum MapDecorationType {
-    #[default]
-    MarkerWhite,
-    MarkerGreen,
-    MarkerRed,
-    MarkerBlue,
-    XWhite,
-    TriangleRed,
-    SquareWhite,
-    MarkerSign,
-    MarkerPink,
-    MarkerOrange,
-    MarkerYellow,
-    MarkerTeal,
-    TriangleGreen,
-    SmallSquareWhite,
-    Mansion,
-    Monument,
-    NoDraw,
-    VillageDesert,
-    VillagePlains,
-    VillageSavanna,
-    VillageSnowy,
-    VillageTaiga,
-    JungleTemple,
-    WitchHut,
-    TrialChambers,
-    Count,
-    Unknown(i8),
-}
-
-impl From<i8> for MapDecorationType {
-    fn from(value: i8) -> Self {
-        match value {
-            0 => Self::MarkerWhite,
-            1 => Self::MarkerGreen,
-            2 => Self::MarkerRed,
-            3 => Self::MarkerBlue,
-            4 => Self::XWhite,
-            5 => Self::TriangleRed,
-            6 => Self::SquareWhite,
-            7 => Self::MarkerSign,
-            8 => Self::MarkerPink,
-            9 => Self::MarkerOrange,
-            10 => Self::MarkerYellow,
-            11 => Self::MarkerTeal,
-            12 => Self::TriangleGreen,
-            13 => Self::SmallSquareWhite,
-            14 => Self::Mansion,
-            15 => Self::Monument,
-            16 => Self::NoDraw,
-            17 => Self::VillageDesert,
-            18 => Self::VillagePlains,
-            19 => Self::VillageSavanna,
-            20 => Self::VillageSnowy,
-            21 => Self::VillageTaiga,
-            22 => Self::JungleTemple,
-            23 => Self::WitchHut,
-            24 => Self::TrialChambers,
-            25 => Self::Count,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl MapDecorationType {
-    pub fn to_raw(self) -> i8 {
-        match self {
-            Self::MarkerWhite => 0,
-            Self::MarkerGreen => 1,
-            Self::MarkerRed => 2,
-            Self::MarkerBlue => 3,
-            Self::XWhite => 4,
-            Self::TriangleRed => 5,
-            Self::SquareWhite => 6,
-            Self::MarkerSign => 7,
-            Self::MarkerPink => 8,
-            Self::MarkerOrange => 9,
-            Self::MarkerYellow => 10,
-            Self::MarkerTeal => 11,
-            Self::TriangleGreen => 12,
-            Self::SmallSquareWhite => 13,
-            Self::Mansion => 14,
-            Self::Monument => 15,
-            Self::NoDraw => 16,
-            Self::VillageDesert => 17,
-            Self::VillagePlains => 18,
-            Self::VillageSavanna => 19,
-            Self::VillageSnowy => 20,
-            Self::VillageTaiga => 21,
-            Self::JungleTemple => 22,
-            Self::WitchHut => 23,
-            Self::TrialChambers => 24,
-            Self::Count => 25,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<MapDecorationType> for i8 {
-    fn from(value: MapDecorationType) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum MapItemTrackedActorType {
-    #[default]
-    Entity,
-    BlockEntity,
-    Other,
-    Unknown(i32),
-}
-
-impl From<i32> for MapItemTrackedActorType {
-    fn from(value: i32) -> Self {
-        match value {
-            0 => Self::Entity,
-            1 => Self::BlockEntity,
-            2 => Self::Other,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl MapItemTrackedActorType {
-    pub fn to_raw(self) -> i32 {
-        match self {
-            Self::Entity => 0,
-            Self::BlockEntity => 1,
-            Self::Other => 2,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<MapItemTrackedActorType> for i32 {
-    fn from(value: MapItemTrackedActorType) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum MemoryCategory {
-    #[default]
-    Unknown,
-    InvalidSizeUnknown,
-    Actor,
-    ActorAnimation,
-    ActorRendering,
-    BlockTickingQueues,
-    BiomeStorage,
-    Blobs,
-    Cereal,
-    CircuitSystem,
-    Client,
-    Commands,
-    DbStorage,
-    Debug,
-    Documentation,
-    EcsSystems,
-    Fmod,
-    Fonts,
-    ImGui,
-    Input,
-    JsonUi,
-    JsonUiControlFactoryJson,
-    JsonUiControlTree,
-    JsonUiControlTreeControlElement,
-    JsonUiControlTreePopulateDataBinding,
-    JsonUiControlTreePopulateFocus,
-    JsonUiControlTreePopulateLayout,
-    JsonUiControlTreePopulateOther,
-    JsonUiControlTreePopulateSprite,
-    JsonUiControlTreePopulateText,
-    JsonUiControlTreePopulateTts,
-    JsonUiControlTreeVisibility,
-    JsonUiCreateUi,
-    JsonUiDefs,
-    JsonUiLayoutManager,
-    JsonUiLayoutManagerRemoveDependencies,
-    JsonUiLayoutManagerInitVariable,
-    Languages,
-    Level,
-    LevelStructures,
-    LevelChunk,
-    LevelChunkGen,
-    LevelChunkGenThreadLocal,
-    LightVolumeManager,
-    Network,
-    Marketplace,
-    MaterialDragonCompiledDefinition,
-    MaterialDragonMaterial,
-    MaterialDragonResource,
-    MaterialDragonUniformMap,
-    MaterialRenderMaterial,
-    MaterialRenderMaterialGroup,
-    MaterialVariationManager,
-    MoLang,
-    OreUi,
-    OreUiClient,
-    PersonaPieces,
-    PersonaAnimations,
-    PersonaTextures,
-    PersonaCharacters,
-    PersonaSkinPacks,
-    PersonaRepo,
-    Player,
-    RenderChunk,
-    RenderChunkIndexBuffer,
-    RenderChunkVertexBuffer,
-    Rendering,
-    RenderingBgfxInit,
-    RenderingBgfxStartFrame,
-    RenderingBlockTessellator,
-    RenderingEndFrame,
-    RenderingGraphicsTasksInit,
-    RenderingLibrary,
-    RenderingPolygonOperatorPool,
-    RenderingPbrTextureData,
-    RenderingRenderRegistry,
-    RenderingSetup,
-    RenderingVertices,
-    RequestLog,
-    ResourcePacks,
-    Sound,
-    SubChunkBiomeData,
-    SubChunkBlockData,
-    SubChunkLightData,
-    Textures,
-    WeatherRenderer,
-    WorldGenerator,
-    Tasks,
-    Test,
-    TestLoadTestTags,
-    Scripting,
-    ScriptingRuntime,
-    ScriptingContext,
-    ScriptingContextBindingsMc,
-    ScriptingContextBindingsGt,
-    ScriptingContextRun,
-    DataDrivenUi,
-    DataDrivenUiDefs,
-    Gameface,
-    GamefaceSystem,
-    GamefaceDom,
-    GamefaceCss,
-    GamefaceDisplay,
-    GamefaceTempAllocator,
-    GamefacePoolAllocator,
-    GamefaceDump,
-    GamefaceMedia,
-    GamefaceJson,
-    GamefaceScriptEngine,
-    GamefaceScript,
-    GamefaceLayout,
-    Unknown2(u8),
-}
-
-impl From<u8> for MemoryCategory {
-    fn from(value: u8) -> Self {
-        match value {
-            0 => Self::Unknown,
-            1 => Self::InvalidSizeUnknown,
-            2 => Self::Actor,
-            3 => Self::ActorAnimation,
-            4 => Self::ActorRendering,
-            5 => Self::BlockTickingQueues,
-            6 => Self::BiomeStorage,
-            7 => Self::Blobs,
-            8 => Self::Cereal,
-            9 => Self::CircuitSystem,
-            10 => Self::Client,
-            11 => Self::Commands,
-            12 => Self::DbStorage,
-            13 => Self::Debug,
-            14 => Self::Documentation,
-            15 => Self::EcsSystems,
-            16 => Self::Fmod,
-            17 => Self::Fonts,
-            18 => Self::ImGui,
-            19 => Self::Input,
-            20 => Self::JsonUi,
-            21 => Self::JsonUiControlFactoryJson,
-            22 => Self::JsonUiControlTree,
-            23 => Self::JsonUiControlTreeControlElement,
-            24 => Self::JsonUiControlTreePopulateDataBinding,
-            25 => Self::JsonUiControlTreePopulateFocus,
-            26 => Self::JsonUiControlTreePopulateLayout,
-            27 => Self::JsonUiControlTreePopulateOther,
-            28 => Self::JsonUiControlTreePopulateSprite,
-            29 => Self::JsonUiControlTreePopulateText,
-            30 => Self::JsonUiControlTreePopulateTts,
-            31 => Self::JsonUiControlTreeVisibility,
-            32 => Self::JsonUiCreateUi,
-            33 => Self::JsonUiDefs,
-            34 => Self::JsonUiLayoutManager,
-            35 => Self::JsonUiLayoutManagerRemoveDependencies,
-            36 => Self::JsonUiLayoutManagerInitVariable,
-            37 => Self::Languages,
-            38 => Self::Level,
-            39 => Self::LevelStructures,
-            40 => Self::LevelChunk,
-            41 => Self::LevelChunkGen,
-            42 => Self::LevelChunkGenThreadLocal,
-            43 => Self::LightVolumeManager,
-            44 => Self::Network,
-            45 => Self::Marketplace,
-            46 => Self::MaterialDragonCompiledDefinition,
-            47 => Self::MaterialDragonMaterial,
-            48 => Self::MaterialDragonResource,
-            49 => Self::MaterialDragonUniformMap,
-            50 => Self::MaterialRenderMaterial,
-            51 => Self::MaterialRenderMaterialGroup,
-            52 => Self::MaterialVariationManager,
-            53 => Self::MoLang,
-            54 => Self::OreUi,
-            55 => Self::OreUiClient,
-            56 => Self::PersonaPieces,
-            57 => Self::PersonaAnimations,
-            58 => Self::PersonaTextures,
-            59 => Self::PersonaCharacters,
-            60 => Self::PersonaSkinPacks,
-            61 => Self::PersonaRepo,
-            62 => Self::Player,
-            63 => Self::RenderChunk,
-            64 => Self::RenderChunkIndexBuffer,
-            65 => Self::RenderChunkVertexBuffer,
-            66 => Self::Rendering,
-            67 => Self::RenderingBgfxInit,
-            68 => Self::RenderingBgfxStartFrame,
-            69 => Self::RenderingBlockTessellator,
-            70 => Self::RenderingEndFrame,
-            71 => Self::RenderingGraphicsTasksInit,
-            72 => Self::RenderingLibrary,
-            73 => Self::RenderingPolygonOperatorPool,
-            74 => Self::RenderingPbrTextureData,
-            75 => Self::RenderingRenderRegistry,
-            76 => Self::RenderingSetup,
-            77 => Self::RenderingVertices,
-            78 => Self::RequestLog,
-            79 => Self::ResourcePacks,
-            80 => Self::Sound,
-            81 => Self::SubChunkBiomeData,
-            82 => Self::SubChunkBlockData,
-            83 => Self::SubChunkLightData,
-            84 => Self::Textures,
-            85 => Self::WeatherRenderer,
-            86 => Self::WorldGenerator,
-            87 => Self::Tasks,
-            88 => Self::Test,
-            89 => Self::TestLoadTestTags,
-            90 => Self::Scripting,
-            91 => Self::ScriptingRuntime,
-            92 => Self::ScriptingContext,
-            93 => Self::ScriptingContextBindingsMc,
-            94 => Self::ScriptingContextBindingsGt,
-            95 => Self::ScriptingContextRun,
-            96 => Self::DataDrivenUi,
-            97 => Self::DataDrivenUiDefs,
-            98 => Self::Gameface,
-            99 => Self::GamefaceSystem,
-            100 => Self::GamefaceDom,
-            101 => Self::GamefaceCss,
-            102 => Self::GamefaceDisplay,
-            103 => Self::GamefaceTempAllocator,
-            104 => Self::GamefacePoolAllocator,
-            105 => Self::GamefaceDump,
-            106 => Self::GamefaceMedia,
-            107 => Self::GamefaceJson,
-            108 => Self::GamefaceScriptEngine,
-            109 => Self::GamefaceScript,
-            110 => Self::GamefaceLayout,
-            value => Self::Unknown2(value),
-        }
-    }
-}
-
-impl MemoryCategory {
-    pub fn to_raw(self) -> u8 {
-        match self {
-            Self::Unknown => 0,
-            Self::InvalidSizeUnknown => 1,
-            Self::Actor => 2,
-            Self::ActorAnimation => 3,
-            Self::ActorRendering => 4,
-            Self::BlockTickingQueues => 5,
-            Self::BiomeStorage => 6,
-            Self::Blobs => 7,
-            Self::Cereal => 8,
-            Self::CircuitSystem => 9,
-            Self::Client => 10,
-            Self::Commands => 11,
-            Self::DbStorage => 12,
-            Self::Debug => 13,
-            Self::Documentation => 14,
-            Self::EcsSystems => 15,
-            Self::Fmod => 16,
-            Self::Fonts => 17,
-            Self::ImGui => 18,
-            Self::Input => 19,
-            Self::JsonUi => 20,
-            Self::JsonUiControlFactoryJson => 21,
-            Self::JsonUiControlTree => 22,
-            Self::JsonUiControlTreeControlElement => 23,
-            Self::JsonUiControlTreePopulateDataBinding => 24,
-            Self::JsonUiControlTreePopulateFocus => 25,
-            Self::JsonUiControlTreePopulateLayout => 26,
-            Self::JsonUiControlTreePopulateOther => 27,
-            Self::JsonUiControlTreePopulateSprite => 28,
-            Self::JsonUiControlTreePopulateText => 29,
-            Self::JsonUiControlTreePopulateTts => 30,
-            Self::JsonUiControlTreeVisibility => 31,
-            Self::JsonUiCreateUi => 32,
-            Self::JsonUiDefs => 33,
-            Self::JsonUiLayoutManager => 34,
-            Self::JsonUiLayoutManagerRemoveDependencies => 35,
-            Self::JsonUiLayoutManagerInitVariable => 36,
-            Self::Languages => 37,
-            Self::Level => 38,
-            Self::LevelStructures => 39,
-            Self::LevelChunk => 40,
-            Self::LevelChunkGen => 41,
-            Self::LevelChunkGenThreadLocal => 42,
-            Self::LightVolumeManager => 43,
-            Self::Network => 44,
-            Self::Marketplace => 45,
-            Self::MaterialDragonCompiledDefinition => 46,
-            Self::MaterialDragonMaterial => 47,
-            Self::MaterialDragonResource => 48,
-            Self::MaterialDragonUniformMap => 49,
-            Self::MaterialRenderMaterial => 50,
-            Self::MaterialRenderMaterialGroup => 51,
-            Self::MaterialVariationManager => 52,
-            Self::MoLang => 53,
-            Self::OreUi => 54,
-            Self::OreUiClient => 55,
-            Self::PersonaPieces => 56,
-            Self::PersonaAnimations => 57,
-            Self::PersonaTextures => 58,
-            Self::PersonaCharacters => 59,
-            Self::PersonaSkinPacks => 60,
-            Self::PersonaRepo => 61,
-            Self::Player => 62,
-            Self::RenderChunk => 63,
-            Self::RenderChunkIndexBuffer => 64,
-            Self::RenderChunkVertexBuffer => 65,
-            Self::Rendering => 66,
-            Self::RenderingBgfxInit => 67,
-            Self::RenderingBgfxStartFrame => 68,
-            Self::RenderingBlockTessellator => 69,
-            Self::RenderingEndFrame => 70,
-            Self::RenderingGraphicsTasksInit => 71,
-            Self::RenderingLibrary => 72,
-            Self::RenderingPolygonOperatorPool => 73,
-            Self::RenderingPbrTextureData => 74,
-            Self::RenderingRenderRegistry => 75,
-            Self::RenderingSetup => 76,
-            Self::RenderingVertices => 77,
-            Self::RequestLog => 78,
-            Self::ResourcePacks => 79,
-            Self::Sound => 80,
-            Self::SubChunkBiomeData => 81,
-            Self::SubChunkBlockData => 82,
-            Self::SubChunkLightData => 83,
-            Self::Textures => 84,
-            Self::WeatherRenderer => 85,
-            Self::WorldGenerator => 86,
-            Self::Tasks => 87,
-            Self::Test => 88,
-            Self::TestLoadTestTags => 89,
-            Self::Scripting => 90,
-            Self::ScriptingRuntime => 91,
-            Self::ScriptingContext => 92,
-            Self::ScriptingContextBindingsMc => 93,
-            Self::ScriptingContextBindingsGt => 94,
-            Self::ScriptingContextRun => 95,
-            Self::DataDrivenUi => 96,
-            Self::DataDrivenUiDefs => 97,
-            Self::Gameface => 98,
-            Self::GamefaceSystem => 99,
-            Self::GamefaceDom => 100,
-            Self::GamefaceCss => 101,
-            Self::GamefaceDisplay => 102,
-            Self::GamefaceTempAllocator => 103,
-            Self::GamefacePoolAllocator => 104,
-            Self::GamefaceDump => 105,
-            Self::GamefaceMedia => 106,
-            Self::GamefaceJson => 107,
-            Self::GamefaceScriptEngine => 108,
-            Self::GamefaceScript => 109,
-            Self::GamefaceLayout => 110,
-            Self::Unknown2(value) => value,
-        }
-    }
-}
-
-impl From<MemoryCategory> for u8 {
-    fn from(value: MemoryCategory) -> Self {
         value.to_raw()
     }
 }
@@ -5966,40 +5874,6 @@ impl From<NewInteractionModel> for i32 {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum NpcDialogueActionType {
-    #[default]
-    Open,
-    Close,
-    Unknown(i32),
-}
-
-impl From<i32> for NpcDialogueActionType {
-    fn from(value: i32) -> Self {
-        match value {
-            0 => Self::Open,
-            1 => Self::Close,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl NpcDialogueActionType {
-    pub fn to_raw(self) -> i32 {
-        match self {
-            Self::Open => 0,
-            Self::Close => 1,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<NpcDialogueActionType> for i32 {
-    fn from(value: NpcDialogueActionType) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum PacketCompressionAlgorithm {
     #[default]
     ZLib,
@@ -6259,115 +6133,6 @@ impl From<PersonaArmSizeType> for u8 {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum PersonaPieceType {
-    #[default]
-    Skeleton,
-    Body,
-    Skin,
-    Bottom,
-    Feet,
-    Dress,
-    Top,
-    HighPants,
-    Hands,
-    Outerwear,
-    FacialHair,
-    Mouth,
-    Eyes,
-    Hair,
-    Hood,
-    Back,
-    FaceAccessory,
-    Head,
-    Legs,
-    LeftLeg,
-    RightLeg,
-    Arms,
-    LeftArm,
-    RightArm,
-    Capes,
-    ClassicSkin,
-    Emote,
-    Unknown(u32),
-}
-
-impl From<u32> for PersonaPieceType {
-    fn from(value: u32) -> Self {
-        match value {
-            1 => Self::Skeleton,
-            2 => Self::Body,
-            3 => Self::Skin,
-            4 => Self::Bottom,
-            5 => Self::Feet,
-            6 => Self::Dress,
-            7 => Self::Top,
-            8 => Self::HighPants,
-            9 => Self::Hands,
-            10 => Self::Outerwear,
-            11 => Self::FacialHair,
-            12 => Self::Mouth,
-            13 => Self::Eyes,
-            14 => Self::Hair,
-            15 => Self::Hood,
-            16 => Self::Back,
-            17 => Self::FaceAccessory,
-            18 => Self::Head,
-            19 => Self::Legs,
-            20 => Self::LeftLeg,
-            21 => Self::RightLeg,
-            22 => Self::Arms,
-            23 => Self::LeftArm,
-            24 => Self::RightArm,
-            25 => Self::Capes,
-            26 => Self::ClassicSkin,
-            27 => Self::Emote,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl PersonaPieceType {
-    pub fn to_raw(self) -> u32 {
-        match self {
-            Self::Skeleton => 1,
-            Self::Body => 2,
-            Self::Skin => 3,
-            Self::Bottom => 4,
-            Self::Feet => 5,
-            Self::Dress => 6,
-            Self::Top => 7,
-            Self::HighPants => 8,
-            Self::Hands => 9,
-            Self::Outerwear => 10,
-            Self::FacialHair => 11,
-            Self::Mouth => 12,
-            Self::Eyes => 13,
-            Self::Hair => 14,
-            Self::Hood => 15,
-            Self::Back => 16,
-            Self::FaceAccessory => 17,
-            Self::Head => 18,
-            Self::Legs => 19,
-            Self::LeftLeg => 20,
-            Self::RightLeg => 21,
-            Self::Arms => 22,
-            Self::LeftArm => 23,
-            Self::RightArm => 24,
-            Self::Capes => 25,
-            Self::ClassicSkin => 26,
-            Self::Emote => 27,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<PersonaPieceType> for u32 {
-    fn from(value: PersonaPieceType) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum PhotoType {
     #[default]
     Portfolio,
@@ -6463,373 +6228,6 @@ impl From<PlayStatusType> for i32 {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum PlayerActionType {
-    #[default]
-    Unknown,
-    StartDestroyBlock,
-    AbortDestroyBlock,
-    StopDestroyBlock,
-    GetUpdatedBlock,
-    DropItem,
-    StartSleeping,
-    StopSleeping,
-    Respawn,
-    StartJump,
-    StartSprinting,
-    StopSprinting,
-    StartSneaking,
-    StopSneaking,
-    CreativeDestroyBlock,
-    ChangeDimensionAck,
-    StartGliding,
-    StopGliding,
-    DenyDestroyBlock,
-    CrackBlock,
-    ChangeSkin,
-    UpdatedEnchantingSeed,
-    StartSwimming,
-    StopSwimming,
-    StartSpinAttack,
-    StopSpinAttack,
-    InteractWithBlock,
-    PredictDestroyBlock,
-    ContinueDestroyBlock,
-    StartItemUseOn,
-    StopItemUseOn,
-    HandledTeleport,
-    MissedSwing,
-    StartCrawling,
-    StopCrawling,
-    StartFlying,
-    StopFlying,
-    ClientAckServerData,
-    StartUsingItem,
-    InternalUpdate,
-    Count,
-    Unknown2(i32),
-}
-
-impl From<i32> for PlayerActionType {
-    fn from(value: i32) -> Self {
-        match value {
-            -1 => Self::Unknown,
-            0 => Self::StartDestroyBlock,
-            1 => Self::AbortDestroyBlock,
-            2 => Self::StopDestroyBlock,
-            3 => Self::GetUpdatedBlock,
-            4 => Self::DropItem,
-            5 => Self::StartSleeping,
-            6 => Self::StopSleeping,
-            7 => Self::Respawn,
-            8 => Self::StartJump,
-            9 => Self::StartSprinting,
-            10 => Self::StopSprinting,
-            11 => Self::StartSneaking,
-            12 => Self::StopSneaking,
-            13 => Self::CreativeDestroyBlock,
-            14 => Self::ChangeDimensionAck,
-            15 => Self::StartGliding,
-            16 => Self::StopGliding,
-            17 => Self::DenyDestroyBlock,
-            18 => Self::CrackBlock,
-            19 => Self::ChangeSkin,
-            20 => Self::UpdatedEnchantingSeed,
-            21 => Self::StartSwimming,
-            22 => Self::StopSwimming,
-            23 => Self::StartSpinAttack,
-            24 => Self::StopSpinAttack,
-            25 => Self::InteractWithBlock,
-            26 => Self::PredictDestroyBlock,
-            27 => Self::ContinueDestroyBlock,
-            28 => Self::StartItemUseOn,
-            29 => Self::StopItemUseOn,
-            30 => Self::HandledTeleport,
-            31 => Self::MissedSwing,
-            32 => Self::StartCrawling,
-            33 => Self::StopCrawling,
-            34 => Self::StartFlying,
-            35 => Self::StopFlying,
-            36 => Self::ClientAckServerData,
-            37 => Self::StartUsingItem,
-            38 => Self::InternalUpdate,
-            39 => Self::Count,
-            value => Self::Unknown2(value),
-        }
-    }
-}
-
-impl PlayerActionType {
-    pub fn to_raw(self) -> i32 {
-        match self {
-            Self::Unknown => -1,
-            Self::StartDestroyBlock => 0,
-            Self::AbortDestroyBlock => 1,
-            Self::StopDestroyBlock => 2,
-            Self::GetUpdatedBlock => 3,
-            Self::DropItem => 4,
-            Self::StartSleeping => 5,
-            Self::StopSleeping => 6,
-            Self::Respawn => 7,
-            Self::StartJump => 8,
-            Self::StartSprinting => 9,
-            Self::StopSprinting => 10,
-            Self::StartSneaking => 11,
-            Self::StopSneaking => 12,
-            Self::CreativeDestroyBlock => 13,
-            Self::ChangeDimensionAck => 14,
-            Self::StartGliding => 15,
-            Self::StopGliding => 16,
-            Self::DenyDestroyBlock => 17,
-            Self::CrackBlock => 18,
-            Self::ChangeSkin => 19,
-            Self::UpdatedEnchantingSeed => 20,
-            Self::StartSwimming => 21,
-            Self::StopSwimming => 22,
-            Self::StartSpinAttack => 23,
-            Self::StopSpinAttack => 24,
-            Self::InteractWithBlock => 25,
-            Self::PredictDestroyBlock => 26,
-            Self::ContinueDestroyBlock => 27,
-            Self::StartItemUseOn => 28,
-            Self::StopItemUseOn => 29,
-            Self::HandledTeleport => 30,
-            Self::MissedSwing => 31,
-            Self::StartCrawling => 32,
-            Self::StopCrawling => 33,
-            Self::StartFlying => 34,
-            Self::StopFlying => 35,
-            Self::ClientAckServerData => 36,
-            Self::StartUsingItem => 37,
-            Self::InternalUpdate => 38,
-            Self::Count => 39,
-            Self::Unknown2(value) => value,
-        }
-    }
-}
-
-impl From<PlayerActionType> for i32 {
-    fn from(value: PlayerActionType) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum PlayerLocationType {
-    #[default]
-    PlayerLocationCoordinates,
-    Unknown(i32),
-}
-
-impl From<i32> for PlayerLocationType {
-    fn from(value: i32) -> Self {
-        match value {
-            0 => Self::PlayerLocationCoordinates,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl PlayerLocationType {
-    pub fn to_raw(self) -> i32 {
-        match self {
-            Self::PlayerLocationCoordinates => 0,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<PlayerLocationType> for i32 {
-    fn from(value: PlayerLocationType) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum PlayerPermissionLevel {
-    #[default]
-    Visitor,
-    Member,
-    Operator,
-    Custom,
-    Unknown(i8),
-}
-
-impl From<i8> for PlayerPermissionLevel {
-    fn from(value: i8) -> Self {
-        match value {
-            0 => Self::Visitor,
-            1 => Self::Member,
-            2 => Self::Operator,
-            3 => Self::Custom,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl PlayerPermissionLevel {
-    pub fn to_raw(self) -> i8 {
-        match self {
-            Self::Visitor => 0,
-            Self::Member => 1,
-            Self::Operator => 2,
-            Self::Custom => 3,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<PlayerPermissionLevel> for i8 {
-    fn from(value: PlayerPermissionLevel) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum PlayerPositionModeComponentPositionMode {
-    #[default]
-    Normal,
-    Respawn,
-    Teleport,
-    OnlyHeadRot,
-    Unknown(u8),
-}
-
-impl From<u8> for PlayerPositionModeComponentPositionMode {
-    fn from(value: u8) -> Self {
-        match value {
-            0 => Self::Normal,
-            1 => Self::Respawn,
-            2 => Self::Teleport,
-            3 => Self::OnlyHeadRot,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl PlayerPositionModeComponentPositionMode {
-    pub fn to_raw(self) -> u8 {
-        match self {
-            Self::Normal => 0,
-            Self::Respawn => 1,
-            Self::Teleport => 2,
-            Self::OnlyHeadRot => 3,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<PlayerPositionModeComponentPositionMode> for u8 {
-    fn from(value: PlayerPositionModeComponentPositionMode) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum PlayerRespawnState {
-    #[default]
-    SearchingForSpawn,
-    ReadyToSpawn,
-    ClientReadyToSpawn,
-    Unknown(u8),
-}
-
-impl From<u8> for PlayerRespawnState {
-    fn from(value: u8) -> Self {
-        match value {
-            0 => Self::SearchingForSpawn,
-            1 => Self::ReadyToSpawn,
-            2 => Self::ClientReadyToSpawn,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl PlayerRespawnState {
-    pub fn to_raw(self) -> u8 {
-        match self {
-            Self::SearchingForSpawn => 0,
-            Self::ReadyToSpawn => 1,
-            Self::ClientReadyToSpawn => 2,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<PlayerRespawnState> for u8 {
-    fn from(value: PlayerRespawnState) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum PositionTrackingDBClientRequestAction {
-    #[default]
-    Query,
-    Unknown(u8),
-}
-
-impl From<u8> for PositionTrackingDBClientRequestAction {
-    fn from(value: u8) -> Self {
-        match value {
-            0 => Self::Query,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl PositionTrackingDBClientRequestAction {
-    pub fn to_raw(self) -> u8 {
-        match self {
-            Self::Query => 0,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<PositionTrackingDBClientRequestAction> for u8 {
-    fn from(value: PositionTrackingDBClientRequestAction) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum PositionTrackingDBServerBroadcastAction {
-    #[default]
-    Update,
-    Destroy,
-    NotFound,
-    Unknown(u8),
-}
-
-impl From<u8> for PositionTrackingDBServerBroadcastAction {
-    fn from(value: u8) -> Self {
-        match value {
-            0 => Self::Update,
-            1 => Self::Destroy,
-            2 => Self::NotFound,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl PositionTrackingDBServerBroadcastAction {
-    pub fn to_raw(self) -> u8 {
-        match self {
-            Self::Update => 0,
-            Self::Destroy => 1,
-            Self::NotFound => 2,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<PositionTrackingDBServerBroadcastAction> for u8 {
-    fn from(value: PositionTrackingDBServerBroadcastAction) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum RandomDistributionType {
     #[default]
     SingleValued,
@@ -6874,46 +6272,6 @@ impl RandomDistributionType {
 
 impl From<RandomDistributionType> for i32 {
     fn from(value: RandomDistributionType) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum RecipeUnlockingRequirementUnlockingContext {
-    #[default]
-    None,
-    AlwaysUnlocked,
-    PlayerInWater,
-    PlayerHasManyItems,
-    Unknown(i32),
-}
-
-impl From<i32> for RecipeUnlockingRequirementUnlockingContext {
-    fn from(value: i32) -> Self {
-        match value {
-            0 => Self::None,
-            1 => Self::AlwaysUnlocked,
-            2 => Self::PlayerInWater,
-            3 => Self::PlayerHasManyItems,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl RecipeUnlockingRequirementUnlockingContext {
-    pub fn to_raw(self) -> i32 {
-        match self {
-            Self::None => 0,
-            Self::AlwaysUnlocked => 1,
-            Self::PlayerInWater => 2,
-            Self::PlayerHasManyItems => 3,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<RecipeUnlockingRequirementUnlockingContext> for i32 {
-    fn from(value: RecipeUnlockingRequirementUnlockingContext) -> Self {
         value.to_raw()
     }
 }
@@ -7074,40 +6432,6 @@ impl Rotation {
 
 impl From<Rotation> for u8 {
     fn from(value: Rotation) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum ScoreboardIdentityPacketType {
-    #[default]
-    Update,
-    Remove,
-    Unknown(u8),
-}
-
-impl From<u8> for ScoreboardIdentityPacketType {
-    fn from(value: u8) -> Self {
-        match value {
-            0 => Self::Update,
-            1 => Self::Remove,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl ScoreboardIdentityPacketType {
-    pub fn to_raw(self) -> u8 {
-        match self {
-            Self::Update => 0,
-            Self::Remove => 1,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<ScoreboardIdentityPacketType> for u8 {
-    fn from(value: ScoreboardIdentityPacketType) -> Self {
         value.to_raw()
     }
 }
@@ -7510,6 +6834,777 @@ impl From<SpawnPositionType> for i32 {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum Subtype {
+    #[default]
+    Uninitialized,
+    EnableCommands,
+    DisableCommands,
+    UnlockWorldTemplateSettings,
+    Unknown(u16),
+}
+
+impl From<u16> for Subtype {
+    fn from(value: u16) -> Self {
+        match value {
+            0 => Self::Uninitialized,
+            1 => Self::EnableCommands,
+            2 => Self::DisableCommands,
+            3 => Self::UnlockWorldTemplateSettings,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl Subtype {
+    pub fn to_raw(self) -> u16 {
+        match self {
+            Self::Uninitialized => 0,
+            Self::EnableCommands => 1,
+            Self::DisableCommands => 2,
+            Self::UnlockWorldTemplateSettings => 3,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<Subtype> for u16 {
+    fn from(value: Subtype) -> Self {
+        value.to_raw()
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum TargetMode {
+    #[default]
+    Angle,
+    Distance,
+    Unknown(u8),
+}
+
+impl From<u8> for TargetMode {
+    fn from(value: u8) -> Self {
+        match value {
+            0 => Self::Angle,
+            1 => Self::Distance,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl TargetMode {
+    pub fn to_raw(self) -> u8 {
+        match self {
+            Self::Angle => 0,
+            Self::Distance => 1,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<TargetMode> for u8 {
+    fn from(value: TargetMode) -> Self {
+        value.to_raw()
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum TitleType {
+    #[default]
+    Clear,
+    Reset,
+    Title,
+    Subtitle,
+    Actionbar,
+    Times,
+    TitleTextObject,
+    SubtitleTextObject,
+    ActionbarTextObject,
+    Unknown(i32),
+}
+
+impl From<i32> for TitleType {
+    fn from(value: i32) -> Self {
+        match value {
+            0 => Self::Clear,
+            1 => Self::Reset,
+            2 => Self::Title,
+            3 => Self::Subtitle,
+            4 => Self::Actionbar,
+            5 => Self::Times,
+            6 => Self::TitleTextObject,
+            7 => Self::SubtitleTextObject,
+            8 => Self::ActionbarTextObject,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl TitleType {
+    pub fn to_raw(self) -> i32 {
+        match self {
+            Self::Clear => 0,
+            Self::Reset => 1,
+            Self::Title => 2,
+            Self::Subtitle => 3,
+            Self::Actionbar => 4,
+            Self::Times => 5,
+            Self::TitleTextObject => 6,
+            Self::SubtitleTextObject => 7,
+            Self::ActionbarTextObject => 8,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<TitleType> for i32 {
+    fn from(value: TitleType) -> Self {
+        value.to_raw()
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum VillageType {
+    #[default]
+    Desert,
+    Ice,
+    Savanna,
+    Taiga,
+    Default,
+    Unknown(u8),
+}
+
+impl From<u8> for VillageType {
+    fn from(value: u8) -> Self {
+        match value {
+            0 => Self::Desert,
+            1 => Self::Ice,
+            2 => Self::Savanna,
+            3 => Self::Taiga,
+            4 => Self::Default,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl VillageType {
+    pub fn to_raw(self) -> u8 {
+        match self {
+            Self::Desert => 0,
+            Self::Ice => 1,
+            Self::Savanna => 2,
+            Self::Taiga => 3,
+            Self::Default => 4,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<VillageType> for u8 {
+    fn from(value: VillageType) -> Self {
+        value.to_raw()
+    }
+}
+
+// Domain: npc
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum NpcDialogueActionType {
+    #[default]
+    Open,
+    Close,
+    Unknown(i32),
+}
+
+impl From<i32> for NpcDialogueActionType {
+    fn from(value: i32) -> Self {
+        match value {
+            0 => Self::Open,
+            1 => Self::Close,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl NpcDialogueActionType {
+    pub fn to_raw(self) -> i32 {
+        match self {
+            Self::Open => 0,
+            Self::Close => 1,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<NpcDialogueActionType> for i32 {
+    fn from(value: NpcDialogueActionType) -> Self {
+        value.to_raw()
+    }
+}
+
+// Domain: player
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum PlayerActionType {
+    #[default]
+    Unknown,
+    StartDestroyBlock,
+    AbortDestroyBlock,
+    StopDestroyBlock,
+    GetUpdatedBlock,
+    DropItem,
+    StartSleeping,
+    StopSleeping,
+    Respawn,
+    StartJump,
+    StartSprinting,
+    StopSprinting,
+    StartSneaking,
+    StopSneaking,
+    CreativeDestroyBlock,
+    ChangeDimensionAck,
+    StartGliding,
+    StopGliding,
+    DenyDestroyBlock,
+    CrackBlock,
+    ChangeSkin,
+    UpdatedEnchantingSeed,
+    StartSwimming,
+    StopSwimming,
+    StartSpinAttack,
+    StopSpinAttack,
+    InteractWithBlock,
+    PredictDestroyBlock,
+    ContinueDestroyBlock,
+    StartItemUseOn,
+    StopItemUseOn,
+    HandledTeleport,
+    MissedSwing,
+    StartCrawling,
+    StopCrawling,
+    StartFlying,
+    StopFlying,
+    ClientAckServerData,
+    StartUsingItem,
+    InternalUpdate,
+    Count,
+    Unknown2(i32),
+}
+
+impl From<i32> for PlayerActionType {
+    fn from(value: i32) -> Self {
+        match value {
+            -1 => Self::Unknown,
+            0 => Self::StartDestroyBlock,
+            1 => Self::AbortDestroyBlock,
+            2 => Self::StopDestroyBlock,
+            3 => Self::GetUpdatedBlock,
+            4 => Self::DropItem,
+            5 => Self::StartSleeping,
+            6 => Self::StopSleeping,
+            7 => Self::Respawn,
+            8 => Self::StartJump,
+            9 => Self::StartSprinting,
+            10 => Self::StopSprinting,
+            11 => Self::StartSneaking,
+            12 => Self::StopSneaking,
+            13 => Self::CreativeDestroyBlock,
+            14 => Self::ChangeDimensionAck,
+            15 => Self::StartGliding,
+            16 => Self::StopGliding,
+            17 => Self::DenyDestroyBlock,
+            18 => Self::CrackBlock,
+            19 => Self::ChangeSkin,
+            20 => Self::UpdatedEnchantingSeed,
+            21 => Self::StartSwimming,
+            22 => Self::StopSwimming,
+            23 => Self::StartSpinAttack,
+            24 => Self::StopSpinAttack,
+            25 => Self::InteractWithBlock,
+            26 => Self::PredictDestroyBlock,
+            27 => Self::ContinueDestroyBlock,
+            28 => Self::StartItemUseOn,
+            29 => Self::StopItemUseOn,
+            30 => Self::HandledTeleport,
+            31 => Self::MissedSwing,
+            32 => Self::StartCrawling,
+            33 => Self::StopCrawling,
+            34 => Self::StartFlying,
+            35 => Self::StopFlying,
+            36 => Self::ClientAckServerData,
+            37 => Self::StartUsingItem,
+            38 => Self::InternalUpdate,
+            39 => Self::Count,
+            value => Self::Unknown2(value),
+        }
+    }
+}
+
+impl PlayerActionType {
+    pub fn to_raw(self) -> i32 {
+        match self {
+            Self::Unknown => -1,
+            Self::StartDestroyBlock => 0,
+            Self::AbortDestroyBlock => 1,
+            Self::StopDestroyBlock => 2,
+            Self::GetUpdatedBlock => 3,
+            Self::DropItem => 4,
+            Self::StartSleeping => 5,
+            Self::StopSleeping => 6,
+            Self::Respawn => 7,
+            Self::StartJump => 8,
+            Self::StartSprinting => 9,
+            Self::StopSprinting => 10,
+            Self::StartSneaking => 11,
+            Self::StopSneaking => 12,
+            Self::CreativeDestroyBlock => 13,
+            Self::ChangeDimensionAck => 14,
+            Self::StartGliding => 15,
+            Self::StopGliding => 16,
+            Self::DenyDestroyBlock => 17,
+            Self::CrackBlock => 18,
+            Self::ChangeSkin => 19,
+            Self::UpdatedEnchantingSeed => 20,
+            Self::StartSwimming => 21,
+            Self::StopSwimming => 22,
+            Self::StartSpinAttack => 23,
+            Self::StopSpinAttack => 24,
+            Self::InteractWithBlock => 25,
+            Self::PredictDestroyBlock => 26,
+            Self::ContinueDestroyBlock => 27,
+            Self::StartItemUseOn => 28,
+            Self::StopItemUseOn => 29,
+            Self::HandledTeleport => 30,
+            Self::MissedSwing => 31,
+            Self::StartCrawling => 32,
+            Self::StopCrawling => 33,
+            Self::StartFlying => 34,
+            Self::StopFlying => 35,
+            Self::ClientAckServerData => 36,
+            Self::StartUsingItem => 37,
+            Self::InternalUpdate => 38,
+            Self::Count => 39,
+            Self::Unknown2(value) => value,
+        }
+    }
+}
+
+impl From<PlayerActionType> for i32 {
+    fn from(value: PlayerActionType) -> Self {
+        value.to_raw()
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum PlayerLocationType {
+    #[default]
+    PlayerLocationCoordinates,
+    Unknown(i32),
+}
+
+impl From<i32> for PlayerLocationType {
+    fn from(value: i32) -> Self {
+        match value {
+            0 => Self::PlayerLocationCoordinates,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl PlayerLocationType {
+    pub fn to_raw(self) -> i32 {
+        match self {
+            Self::PlayerLocationCoordinates => 0,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<PlayerLocationType> for i32 {
+    fn from(value: PlayerLocationType) -> Self {
+        value.to_raw()
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum PlayerPermissionLevel {
+    #[default]
+    Visitor,
+    Member,
+    Operator,
+    Custom,
+    Unknown(i8),
+}
+
+impl From<i8> for PlayerPermissionLevel {
+    fn from(value: i8) -> Self {
+        match value {
+            0 => Self::Visitor,
+            1 => Self::Member,
+            2 => Self::Operator,
+            3 => Self::Custom,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl PlayerPermissionLevel {
+    pub fn to_raw(self) -> i8 {
+        match self {
+            Self::Visitor => 0,
+            Self::Member => 1,
+            Self::Operator => 2,
+            Self::Custom => 3,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<PlayerPermissionLevel> for i8 {
+    fn from(value: PlayerPermissionLevel) -> Self {
+        value.to_raw()
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum PlayerPositionModeComponentPositionMode {
+    #[default]
+    Normal,
+    Respawn,
+    Teleport,
+    OnlyHeadRot,
+    Unknown(u8),
+}
+
+impl From<u8> for PlayerPositionModeComponentPositionMode {
+    fn from(value: u8) -> Self {
+        match value {
+            0 => Self::Normal,
+            1 => Self::Respawn,
+            2 => Self::Teleport,
+            3 => Self::OnlyHeadRot,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl PlayerPositionModeComponentPositionMode {
+    pub fn to_raw(self) -> u8 {
+        match self {
+            Self::Normal => 0,
+            Self::Respawn => 1,
+            Self::Teleport => 2,
+            Self::OnlyHeadRot => 3,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<PlayerPositionModeComponentPositionMode> for u8 {
+    fn from(value: PlayerPositionModeComponentPositionMode) -> Self {
+        value.to_raw()
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum PlayerRespawnState {
+    #[default]
+    SearchingForSpawn,
+    ReadyToSpawn,
+    ClientReadyToSpawn,
+    Unknown(u8),
+}
+
+impl From<u8> for PlayerRespawnState {
+    fn from(value: u8) -> Self {
+        match value {
+            0 => Self::SearchingForSpawn,
+            1 => Self::ReadyToSpawn,
+            2 => Self::ClientReadyToSpawn,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl PlayerRespawnState {
+    pub fn to_raw(self) -> u8 {
+        match self {
+            Self::SearchingForSpawn => 0,
+            Self::ReadyToSpawn => 1,
+            Self::ClientReadyToSpawn => 2,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<PlayerRespawnState> for u8 {
+    fn from(value: PlayerRespawnState) -> Self {
+        value.to_raw()
+    }
+}
+
+// Domain: position_tracking
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum PositionTrackingDBClientRequestAction {
+    #[default]
+    Query,
+    Unknown(u8),
+}
+
+impl From<u8> for PositionTrackingDBClientRequestAction {
+    fn from(value: u8) -> Self {
+        match value {
+            0 => Self::Query,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl PositionTrackingDBClientRequestAction {
+    pub fn to_raw(self) -> u8 {
+        match self {
+            Self::Query => 0,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<PositionTrackingDBClientRequestAction> for u8 {
+    fn from(value: PositionTrackingDBClientRequestAction) -> Self {
+        value.to_raw()
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum PositionTrackingDBServerBroadcastAction {
+    #[default]
+    Update,
+    Destroy,
+    NotFound,
+    Unknown(u8),
+}
+
+impl From<u8> for PositionTrackingDBServerBroadcastAction {
+    fn from(value: u8) -> Self {
+        match value {
+            0 => Self::Update,
+            1 => Self::Destroy,
+            2 => Self::NotFound,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl PositionTrackingDBServerBroadcastAction {
+    pub fn to_raw(self) -> u8 {
+        match self {
+            Self::Update => 0,
+            Self::Destroy => 1,
+            Self::NotFound => 2,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<PositionTrackingDBServerBroadcastAction> for u8 {
+    fn from(value: PositionTrackingDBServerBroadcastAction) -> Self {
+        value.to_raw()
+    }
+}
+
+// Domain: recipe
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum RecipeUnlockingRequirementUnlockingContext {
+    #[default]
+    None,
+    AlwaysUnlocked,
+    PlayerInWater,
+    PlayerHasManyItems,
+    Unknown(i32),
+}
+
+impl From<i32> for RecipeUnlockingRequirementUnlockingContext {
+    fn from(value: i32) -> Self {
+        match value {
+            0 => Self::None,
+            1 => Self::AlwaysUnlocked,
+            2 => Self::PlayerInWater,
+            3 => Self::PlayerHasManyItems,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl RecipeUnlockingRequirementUnlockingContext {
+    pub fn to_raw(self) -> i32 {
+        match self {
+            Self::None => 0,
+            Self::AlwaysUnlocked => 1,
+            Self::PlayerInWater => 2,
+            Self::PlayerHasManyItems => 3,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<RecipeUnlockingRequirementUnlockingContext> for i32 {
+    fn from(value: RecipeUnlockingRequirementUnlockingContext) -> Self {
+        value.to_raw()
+    }
+}
+
+// Domain: scoreboard
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum ScoreboardIdentityPacketType {
+    #[default]
+    Update,
+    Remove,
+    Unknown(u8),
+}
+
+impl From<u8> for ScoreboardIdentityPacketType {
+    fn from(value: u8) -> Self {
+        match value {
+            0 => Self::Update,
+            1 => Self::Remove,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl ScoreboardIdentityPacketType {
+    pub fn to_raw(self) -> u8 {
+        match self {
+            Self::Update => 0,
+            Self::Remove => 1,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<ScoreboardIdentityPacketType> for u8 {
+    fn from(value: ScoreboardIdentityPacketType) -> Self {
+        value.to_raw()
+    }
+}
+
+// Domain: skin
+
+/// PersonaPiece represents a piece of a persona skin. All pieces are sent separately.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum PersonaPieceType {
+    #[default]
+    Skeleton,
+    Body,
+    Skin,
+    Bottom,
+    Feet,
+    Dress,
+    Top,
+    HighPants,
+    Hands,
+    Outerwear,
+    FacialHair,
+    Mouth,
+    Eyes,
+    Hair,
+    Hood,
+    Back,
+    FaceAccessory,
+    Head,
+    Legs,
+    LeftLeg,
+    RightLeg,
+    Arms,
+    LeftArm,
+    RightArm,
+    Capes,
+    ClassicSkin,
+    Emote,
+    Unknown(u32),
+}
+
+impl From<u32> for PersonaPieceType {
+    fn from(value: u32) -> Self {
+        match value {
+            1 => Self::Skeleton,
+            2 => Self::Body,
+            3 => Self::Skin,
+            4 => Self::Bottom,
+            5 => Self::Feet,
+            6 => Self::Dress,
+            7 => Self::Top,
+            8 => Self::HighPants,
+            9 => Self::Hands,
+            10 => Self::Outerwear,
+            11 => Self::FacialHair,
+            12 => Self::Mouth,
+            13 => Self::Eyes,
+            14 => Self::Hair,
+            15 => Self::Hood,
+            16 => Self::Back,
+            17 => Self::FaceAccessory,
+            18 => Self::Head,
+            19 => Self::Legs,
+            20 => Self::LeftLeg,
+            21 => Self::RightLeg,
+            22 => Self::Arms,
+            23 => Self::LeftArm,
+            24 => Self::RightArm,
+            25 => Self::Capes,
+            26 => Self::ClassicSkin,
+            27 => Self::Emote,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl PersonaPieceType {
+    pub fn to_raw(self) -> u32 {
+        match self {
+            Self::Skeleton => 1,
+            Self::Body => 2,
+            Self::Skin => 3,
+            Self::Bottom => 4,
+            Self::Feet => 5,
+            Self::Dress => 6,
+            Self::Top => 7,
+            Self::HighPants => 8,
+            Self::Hands => 9,
+            Self::Outerwear => 10,
+            Self::FacialHair => 11,
+            Self::Mouth => 12,
+            Self::Eyes => 13,
+            Self::Hair => 14,
+            Self::Hood => 15,
+            Self::Back => 16,
+            Self::FaceAccessory => 17,
+            Self::Head => 18,
+            Self::Legs => 19,
+            Self::LeftLeg => 20,
+            Self::RightLeg => 21,
+            Self::Arms => 22,
+            Self::LeftArm => 23,
+            Self::RightArm => 24,
+            Self::Capes => 25,
+            Self::ClassicSkin => 26,
+            Self::Emote => 27,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<PersonaPieceType> for u32 {
+    fn from(value: PersonaPieceType) -> Self {
+        value.to_raw()
+    }
+}
+
+// Domain: structure
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum StructureBlockType {
     #[default]
     Data,
@@ -7666,6 +7761,8 @@ impl From<StructureTemplateResponseType> for u8 {
     }
 }
 
+// Domain: sub_chunk
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum SubChunkRequestResult {
     #[default]
@@ -7712,79 +7809,133 @@ impl From<SubChunkRequestResult> for u8 {
     }
 }
 
+// Domain: telemetry
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum Subtype {
+pub enum LegacyTelemetryType {
     #[default]
-    Uninitialized,
-    EnableCommands,
-    DisableCommands,
-    UnlockWorldTemplateSettings,
-    Unknown(u16),
+    Achievement,
+    Interaction,
+    PortalCreated,
+    PortalUsed,
+    MobKilled,
+    CauldronUsed,
+    PlayerDied,
+    BossKilled,
+    AgentCommandObsolete,
+    AgentCreated,
+    PatternRemovedObsolete,
+    SlashCommand,
+    FishBucketedObsolete,
+    MobBorn,
+    PetDiedObsolete,
+    PoiCauldronUsed,
+    ComposterUsed,
+    BellUsed,
+    ActorDefinition,
+    RaidUpdate,
+    PlayerMovementAnomalyObsolete,
+    PlayerMovementCorrectedObsolete,
+    HoneyHarvested,
+    TargetBlockHit,
+    PiglinBarter,
+    PlayerWaxedOrUnwaxedCopper,
+    CodeBuilderRuntimeAction,
+    CodeBuilderScoreboard,
+    StriderRiddenInLavaInOverworld,
+    SneakCloseToSculkSensor,
+    CarefulRestoration,
+    ItemUsed,
+    Unknown(i32),
 }
 
-impl From<u16> for Subtype {
-    fn from(value: u16) -> Self {
+impl From<i32> for LegacyTelemetryType {
+    fn from(value: i32) -> Self {
         match value {
-            0 => Self::Uninitialized,
-            1 => Self::EnableCommands,
-            2 => Self::DisableCommands,
-            3 => Self::UnlockWorldTemplateSettings,
+            0 => Self::Achievement,
+            1 => Self::Interaction,
+            2 => Self::PortalCreated,
+            3 => Self::PortalUsed,
+            4 => Self::MobKilled,
+            5 => Self::CauldronUsed,
+            6 => Self::PlayerDied,
+            7 => Self::BossKilled,
+            8 => Self::AgentCommandObsolete,
+            9 => Self::AgentCreated,
+            10 => Self::PatternRemovedObsolete,
+            11 => Self::SlashCommand,
+            12 => Self::FishBucketedObsolete,
+            13 => Self::MobBorn,
+            14 => Self::PetDiedObsolete,
+            15 => Self::PoiCauldronUsed,
+            16 => Self::ComposterUsed,
+            17 => Self::BellUsed,
+            18 => Self::ActorDefinition,
+            19 => Self::RaidUpdate,
+            20 => Self::PlayerMovementAnomalyObsolete,
+            21 => Self::PlayerMovementCorrectedObsolete,
+            22 => Self::HoneyHarvested,
+            23 => Self::TargetBlockHit,
+            24 => Self::PiglinBarter,
+            25 => Self::PlayerWaxedOrUnwaxedCopper,
+            26 => Self::CodeBuilderRuntimeAction,
+            27 => Self::CodeBuilderScoreboard,
+            28 => Self::StriderRiddenInLavaInOverworld,
+            29 => Self::SneakCloseToSculkSensor,
+            30 => Self::CarefulRestoration,
+            31 => Self::ItemUsed,
             value => Self::Unknown(value),
         }
     }
 }
 
-impl Subtype {
-    pub fn to_raw(self) -> u16 {
+impl LegacyTelemetryType {
+    pub fn to_raw(self) -> i32 {
         match self {
-            Self::Uninitialized => 0,
-            Self::EnableCommands => 1,
-            Self::DisableCommands => 2,
-            Self::UnlockWorldTemplateSettings => 3,
+            Self::Achievement => 0,
+            Self::Interaction => 1,
+            Self::PortalCreated => 2,
+            Self::PortalUsed => 3,
+            Self::MobKilled => 4,
+            Self::CauldronUsed => 5,
+            Self::PlayerDied => 6,
+            Self::BossKilled => 7,
+            Self::AgentCommandObsolete => 8,
+            Self::AgentCreated => 9,
+            Self::PatternRemovedObsolete => 10,
+            Self::SlashCommand => 11,
+            Self::FishBucketedObsolete => 12,
+            Self::MobBorn => 13,
+            Self::PetDiedObsolete => 14,
+            Self::PoiCauldronUsed => 15,
+            Self::ComposterUsed => 16,
+            Self::BellUsed => 17,
+            Self::ActorDefinition => 18,
+            Self::RaidUpdate => 19,
+            Self::PlayerMovementAnomalyObsolete => 20,
+            Self::PlayerMovementCorrectedObsolete => 21,
+            Self::HoneyHarvested => 22,
+            Self::TargetBlockHit => 23,
+            Self::PiglinBarter => 24,
+            Self::PlayerWaxedOrUnwaxedCopper => 25,
+            Self::CodeBuilderRuntimeAction => 26,
+            Self::CodeBuilderScoreboard => 27,
+            Self::StriderRiddenInLavaInOverworld => 28,
+            Self::SneakCloseToSculkSensor => 29,
+            Self::CarefulRestoration => 30,
+            Self::ItemUsed => 31,
             Self::Unknown(value) => value,
         }
     }
 }
 
-impl From<Subtype> for u16 {
-    fn from(value: Subtype) -> Self {
+impl From<LegacyTelemetryType> for i32 {
+    fn from(value: LegacyTelemetryType) -> Self {
         value.to_raw()
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum TargetMode {
-    #[default]
-    Angle,
-    Distance,
-    Unknown(u8),
-}
-
-impl From<u8> for TargetMode {
-    fn from(value: u8) -> Self {
-        match value {
-            0 => Self::Angle,
-            1 => Self::Distance,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl TargetMode {
-    pub fn to_raw(self) -> u8 {
-        match self {
-            Self::Angle => 0,
-            Self::Distance => 1,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<TargetMode> for u8 {
-    fn from(value: TargetMode) -> Self {
-        value.to_raw()
-    }
-}
+// Domain: text
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum TextProcessingEventOrigin {
@@ -7861,104 +8012,6 @@ impl TextProcessingEventOrigin {
 
 impl From<TextProcessingEventOrigin> for i32 {
     fn from(value: TextProcessingEventOrigin) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum TitleType {
-    #[default]
-    Clear,
-    Reset,
-    Title,
-    Subtitle,
-    Actionbar,
-    Times,
-    TitleTextObject,
-    SubtitleTextObject,
-    ActionbarTextObject,
-    Unknown(i32),
-}
-
-impl From<i32> for TitleType {
-    fn from(value: i32) -> Self {
-        match value {
-            0 => Self::Clear,
-            1 => Self::Reset,
-            2 => Self::Title,
-            3 => Self::Subtitle,
-            4 => Self::Actionbar,
-            5 => Self::Times,
-            6 => Self::TitleTextObject,
-            7 => Self::SubtitleTextObject,
-            8 => Self::ActionbarTextObject,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl TitleType {
-    pub fn to_raw(self) -> i32 {
-        match self {
-            Self::Clear => 0,
-            Self::Reset => 1,
-            Self::Title => 2,
-            Self::Subtitle => 3,
-            Self::Actionbar => 4,
-            Self::Times => 5,
-            Self::TitleTextObject => 6,
-            Self::SubtitleTextObject => 7,
-            Self::ActionbarTextObject => 8,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<TitleType> for i32 {
-    fn from(value: TitleType) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum VillageType {
-    #[default]
-    Desert,
-    Ice,
-    Savanna,
-    Taiga,
-    Default,
-    Unknown(u8),
-}
-
-impl From<u8> for VillageType {
-    fn from(value: u8) -> Self {
-        match value {
-            0 => Self::Desert,
-            1 => Self::Ice,
-            2 => Self::Savanna,
-            3 => Self::Taiga,
-            4 => Self::Default,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl VillageType {
-    pub fn to_raw(self) -> u8 {
-        match self {
-            Self::Desert => 0,
-            Self::Ice => 1,
-            Self::Savanna => 2,
-            Self::Taiga => 3,
-            Self::Default => 4,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<VillageType> for u8 {
-    fn from(value: VillageType) -> Self {
         value.to_raw()
     }
 }

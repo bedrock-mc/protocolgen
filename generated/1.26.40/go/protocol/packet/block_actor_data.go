@@ -4,6 +4,8 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// BlockActorData is sent by the server to update data of a block entity client-side, for example
+// the data of a chest.
 type BlockActorData struct {
 	BlockPosition protocol.BlockPos
 	ActorDataTags []byte

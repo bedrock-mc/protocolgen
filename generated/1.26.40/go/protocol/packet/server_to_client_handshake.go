@@ -4,6 +4,9 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// ServerToClientHandshake is sent by the server to the client to complete the key exchange in order
+// to initialise encryption on client and server side. It is followed up by a
+// ClientToServerHandshake packet from the client.
 type ServerToClientHandshake struct {
 	HandshakeWebToken string
 }

@@ -4,6 +4,7 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// SyncWorldClocks is sent by the server to initialise and synchronise world clocks with the client.
 type SyncWorldClocks struct {
 	Data protocol.SyncWorldClocksData
 }

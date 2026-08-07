@@ -4,6 +4,9 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// SimpleEvent is used for enabling or disabling commands and for unlocking world template settings
+// (both unlocking UI buttons on client and the actual setting on the server). This is fired from
+// the client to the server and a SetCommandsEnabled is sent back when enabling commands.
 type SimpleEvent struct {
 	Type protocol.Subtype
 }

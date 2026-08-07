@@ -4,10 +4,14 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// UpdateAttributes is sent by the server to update an amount of attributes of any entity in the
+// world. These attributes include ones such as the health or the movement speed of the entity.
 type UpdateAttributes struct {
 	TargetRuntimeID uint64
 	AttributeList   []protocol.AttributeData
-	Tick            uint64
+	// Tick is the server tick at which the packet was sent. It is used in relation to
+	// CorrectPlayerMovePrediction.
+	Tick uint64
 }
 
 // Marshal reads or writes UpdateAttributes using its canonical wire layout.

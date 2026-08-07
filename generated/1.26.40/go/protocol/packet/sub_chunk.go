@@ -4,7 +4,9 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// SubChunk sends data about multiple sub-chunks around a center point.
 type SubChunk struct {
+	// CacheEnabled is whether the sub-chunk caching is enabled or not.
 	CacheEnabled  bool
 	DimensionType protocol.DimensionType
 	CenterPos     protocol.SubChunkPos

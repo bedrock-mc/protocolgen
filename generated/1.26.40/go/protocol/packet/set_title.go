@@ -4,13 +4,19 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// SetTitle is sent by the server to make a title, subtitle or action bar shown to a player. It has
+// several fields that allow setting the duration of the titles.
 type SetTitle struct {
-	TitleType            protocol.TitleType
-	TitleText            string
-	FadeInTime           int32
-	StayTime             int32
-	FadeOutTime          int32
-	Xuid                 string
+	TitleType   protocol.TitleType
+	TitleText   string
+	FadeInTime  int32
+	StayTime    int32
+	FadeOutTime int32
+	// XUID is the XBOX Live user ID of the player, which will remain consistent as long as the player
+	// is logged in with the XBOX Live account. It is empty if the user is not logged into its XBL
+	// account.
+	Xuid string
+	// PlatformOnlineID is either a uint64 or an empty string.
 	PlatformOnlineID     string
 	FilteredTitleMessage string
 }

@@ -8,11 +8,20 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 )
 
+// SpawnParticleEffect is sent by the server to spawn a particle effect client-side. Unlike other
+// packets that result in the appearing of particles, this packet can show particles that are not
+// hardcoded in the client. They can be added and changed through behaviour packs to implement
+// custom particles.
 type SpawnParticleEffect struct {
-	DimensionID     uint8
-	ActorID         int64
-	Position        mgl32.Vec3
-	EffectName      string
+	DimensionID uint8
+	ActorID     int64
+	// Position is the position that the particle should be spawned at. If the position is too far away
+	// from the player, it will not show up. If EntityUniqueID is not -1, the position will be relative
+	// to the position of the entity.
+	Position   mgl32.Vec3
+	EffectName string
+	// MoLangVariables is an encoded JSON map of MoLang variables that may be applicable to the particle
+	// spawn. This can just be left empty in most cases.
 	MoLangVariables protocol.Optional[string]
 }
 

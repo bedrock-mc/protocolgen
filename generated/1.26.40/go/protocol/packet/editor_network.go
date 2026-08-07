@@ -4,9 +4,14 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// EditorNetwork is a packet sent from the server to the client and vise-versa to communicate
+// editor-mode related information. It carries a single compound tag containing the relevant
+// information.
 type EditorNetwork struct {
+	// RouteToManager ...
 	RouteToManager bool
-	Payload        []byte
+	// Payload is a network little endian compound tag holding data relevant to the editor.
+	Payload []byte
 }
 
 // Marshal reads or writes EditorNetwork using its canonical wire layout.

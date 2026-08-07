@@ -8,11 +8,17 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 )
 
+// AddActor is sent by the server to the client to spawn an entity to the player. It is used for
+// every entity except other players, for which the AddPlayer packet is used.
 type AddActor struct {
-	TargetActorID     int64
-	TargetRuntimeID   uint64
-	ActorType         string
-	Position          mgl32.Vec3
+	TargetActorID   int64
+	TargetRuntimeID uint64
+	ActorType       string
+	// Position is the position to spawn the entity on. If the entity is on a distance that the player
+	// cannot see it, the entity will still show up if the player moves closer.
+	Position mgl32.Vec3
+	// Velocity is the initial velocity the entity spawns with. This velocity will initiate client side
+	// movement of the entity.
 	Velocity          mgl32.Vec3
 	Rotation          mgl32.Vec2
 	YHeadRotation     float32

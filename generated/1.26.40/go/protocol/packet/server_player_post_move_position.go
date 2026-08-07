@@ -8,7 +8,10 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 )
 
+// ServerPlayerPostMovePosition is sent by the server with the player's position after movement
+// processing.
 type ServerPlayerPostMovePosition struct {
+	// Position is the player's position after the server has processed movement.
 	Pos mgl32.Vec3
 }
 

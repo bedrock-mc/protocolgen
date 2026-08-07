@@ -4,9 +4,14 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// PlayerToggleCrafterSlotRequest is sent by the client when it tries to toggle the state of a slot
+// within a Crafter.
 type PlayerToggleCrafterSlotRequest struct {
-	PosX       int32
-	PosY       int32
+	// PosX is the X position of the Crafter that is being modified.
+	PosX int32
+	// PosY is the Y position of the Crafter that is being modified.
+	PosY int32
+	// PosZ is the Z position of the Crafter that is being modified.
 	PosZ       int32
 	SlotIndex  uint8
 	IsDisabled bool

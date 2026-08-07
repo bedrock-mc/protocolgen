@@ -2,10 +2,16 @@
 
 package protocol
 
+// GameRule contains game rule data.
 type GameRule struct {
-	RuleName          string
+	// Name is the name of the game rule.
+	RuleName string
+	// CanBeModifiedByPlayer specifies if the game rule can be modified by the player through the
+	// in-game UI.
 	RuleCanBeModified bool
-	RuleValue         GameRuleValue
+	// Value is the new value of the game rule. This is either a bool, uint32 or float32, or nil for the
+	// null variant, which carries no value at all.
+	RuleValue GameRuleValue
 }
 
 // Marshal reads or writes GameRule using its canonical wire layout.

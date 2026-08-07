@@ -9,26 +9,39 @@ import (
 	"github.com/google/uuid"
 )
 
+// StartGame is sent by the server to send information about the world the player will be spawned
+// in. It contains information about the position the player spawns in, and information about the
+// world in general such as its game rules.
 type StartGame struct {
-	EntityID                          int64
-	RuntimeID                         uint64
-	GameType                          protocol.GameType
-	Position                          mgl32.Vec3
-	Rotation                          mgl32.Vec2
-	Settings                          protocol.LevelSettings
-	LevelID                           string
-	LevelName                         string
-	TemplateContentIdentity           string
-	IsTrial                           bool
-	MovementSettings                  protocol.SyncedPlayerMovementSettings
-	LevelCurrentTime                  uint64
-	EnchantmentSeed                   int32
-	BlockProperties                   []protocol.ServerBlockProperty
-	MultiplayerCorrelationID          string
-	EnableItemStackNetManager         bool
-	ServerVersion                     string
-	PlayerPropertyData                []byte
-	ServerBlockTypeRegistryChecksum   uint64
+	EntityID  int64
+	RuntimeID uint64
+	GameType  protocol.GameType
+	Position  mgl32.Vec3
+	Rotation  mgl32.Vec2
+	Settings  protocol.LevelSettings
+	// LevelID is a base64 encoded world ID that is used to identify the world.
+	LevelID   string
+	LevelName string
+	// TemplateContentIdentity is a UUID specific to the premium world template that might have been
+	// used to generate the world. Servers should always fill out an empty string for this.
+	TemplateContentIdentity string
+	IsTrial                 bool
+	MovementSettings        protocol.SyncedPlayerMovementSettings
+	LevelCurrentTime        uint64
+	// EnchantmentSeed is the seed used to seed the random used to produce enchantments in the
+	// enchantment table. Note that the exact correct random implementation must be used to produce the
+	// correct results both client- and server-side.
+	EnchantmentSeed int32
+	BlockProperties []protocol.ServerBlockProperty
+	// MultiPlayerCorrelationID is a unique ID specifying the multi-player session of the player. A
+	// random UUID should be filled out for this field.
+	MultiplayerCorrelationID        string
+	EnableItemStackNetManager       bool
+	ServerVersion                   string
+	PlayerPropertyData              []byte
+	ServerBlockTypeRegistryChecksum uint64
+	// WorldTemplateID is a UUID that identifies the template that was used to generate the world.
+	// Servers that do not use a world based off of a template can set this to an empty UUID.
 	WorldTemplateID                   uuid.UUID
 	ServerEnabledClientSideGeneration bool
 	BlockNetworkIdsAreHashes          bool

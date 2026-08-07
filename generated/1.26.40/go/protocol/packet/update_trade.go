@@ -4,13 +4,20 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// UpdateTrade is sent by the server to update the trades offered by a villager to a player. It is
+// sent at the moment that a player interacts with a villager.
 type UpdateTrade struct {
-	ContainerID       uint8
-	Type              uint8
-	Size              int32
-	TraderTier        int32
+	ContainerID uint8
+	Type        uint8
+	// Size is the amount of trading options that the villager has.
+	Size       int32
+	TraderTier int32
+	// EntityUniqueID is the unique ID of the entity (usually a player) for which the trades are
+	// updated. The updated trades may apply only to this entity.
 	EntityUniqueID    int64
 	LastTradingPlayer int64
+	// DisplayName is the name displayed at the top of the trading UI. It is usually used to represent
+	// the profession of the villager in the UI.
 	DisplayName       string
 	UseNewTradeScreen bool
 	UsingEconomyTrade bool

@@ -4,10 +4,18 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// Transfer is sent by the server to transfer a player from the current server to another. Doing so
+// will fully disconnect the client, bring it back to the main menu and make it connect to the next
+// server.
 type Transfer struct {
-	ServerAddress           string
-	ServerPort              uint16
-	ReloadWorld             bool
+	// Address is the address of the new server, which might be either a hostname or an actual IP
+	// address.
+	ServerAddress string
+	// Port is the UDP port of the new server.
+	ServerPort uint16
+	// ReloadWorld currently has an unknown usage.
+	ReloadWorld bool
+	// GatheringJoinInfo optionally identifies the gathering being joined on the target server.
 	GatheringsConfiguration protocol.Optional[protocol.ServerConfigurationGatheringsConfigurationJoinInfo]
 }
 

@@ -4,6 +4,8 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// AgentAnimation is an Education Edition packet sent from the server to the client to make an agent
+// perform an animation.
 type AgentAnimation struct {
 	AgentAnimation protocol.AgentAnimationType
 	RuntimeID      uint64

@@ -4,7 +4,9 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// SyncActorProperty is an alternative to synced actor data.
 type SyncActorProperty struct {
+	// PropertyData ...
 	PropertyData []byte
 }
 

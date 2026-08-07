@@ -8,11 +8,16 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 )
 
+// ActorEvent is sent by the server when a particular event happens that has to do with an entity.
+// Some of these events are entity-specific, for example a wolf shaking itself dry, but others are
+// used for each entity, such as dying.
 type ActorEvent struct {
 	TargetRuntimeID uint64
 	EventID         protocol.ActorEventType
 	Data            int32
-	FireAtPosition  protocol.Optional[mgl32.Vec3]
+	// FireAtPosition is the position in the same world at which the event should fire. If this is not
+	// present, the position entity will be used instead.
+	FireAtPosition protocol.Optional[mgl32.Vec3]
 }
 
 // Marshal reads or writes ActorEvent using its canonical wire layout.

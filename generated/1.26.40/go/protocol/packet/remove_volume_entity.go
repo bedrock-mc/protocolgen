@@ -4,6 +4,7 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// RemoveVolumeEntity indicates a volume entity to be removed from server to client.
 type RemoveVolumeEntity struct {
 	EntityNetworkID protocol.EntityNetID
 	DimensionType   protocol.DimensionType

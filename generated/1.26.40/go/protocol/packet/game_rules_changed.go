@@ -4,6 +4,8 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// GameRulesChanged is sent by the server to the client to update client-side game rules, such as
+// game rules like the 'showCoordinates' game rule.
 type GameRulesChanged struct {
 	RuleData protocol.GameRulesChangedData
 }

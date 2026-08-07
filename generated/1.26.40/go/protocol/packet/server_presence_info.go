@@ -4,7 +4,9 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// ServerPresenceInfo is sent by the server to provide the client with presence info.
 type ServerPresenceInfo struct {
+	// PresenceInfo is the presence info to set, or nothing to fall back to the default.
 	PresenceConfiguration protocol.Optional[protocol.ServerConfigurationPresenceConfiguration]
 }
 

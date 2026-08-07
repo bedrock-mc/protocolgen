@@ -4,9 +4,13 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// SendPartyDestinationCookie is sent by the server to a client with a party destination cookie.
 type SendPartyDestinationCookie struct {
-	Cookie          string
-	Intent          string
+	// Cookie is the opaque party destination cookie.
+	Cookie string
+	// Intent is the intent of the cookie. It is one of the PartyDestinationCookieIntent constants.
+	Intent string
+	// DestinationName is the name of the destination the cookie refers to.
 	DestinationName string
 }
 

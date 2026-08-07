@@ -4,6 +4,9 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// MoveActorDelta is sent by the server to move an entity. The packet is specifically optimised to
+// save as much space as possible, by only writing non-zero fields. As of 1.16.100, this packet no
+// longer actually contains any deltas.
 type MoveActorDelta struct {
 	MoveData protocol.MoveActorDeltaData
 }

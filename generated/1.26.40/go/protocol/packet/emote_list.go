@@ -8,6 +8,10 @@ import (
 	"github.com/google/uuid"
 )
 
+// EmoteList is sent by the client every time it joins the server and when it equips new emotes. It
+// may be used by the server to find out which emotes the client has available. If the player has no
+// emotes equipped, this packet is not sent. Under certain circumstances, this packet is also sent
+// from the server to the client, but I was unable to find when this is done.
 type EmoteList struct {
 	RuntimeID     uint64
 	EmotePieceIds []uuid.UUID
