@@ -205,6 +205,7 @@ func GenerateFiles(m manifest.Manifest) (map[string]string, error) {
 		fmt.Fprintf(&modules, "mod %s;\npub use %s::*;\n", moduleName, moduleName)
 		files["src/packets/"+fileName] = emitRustPacket(info)
 	}
+	emitPacketRegistry(&modules, infos)
 	files["src/packets/mod.rs"] = strings.TrimSpace(modules.String()) + "\n"
 	return files, nil
 }
@@ -474,6 +475,40 @@ func emitRustPacket(info packetInfo) string {
 	}
 	fmt.Fprintf(&b, "}\n\nimpl %s {\n    pub const ID: u32 = %d;\n}\n", info.name, info.packet.ID)
 	return b.String()
+}
+
+func emitPacketRegistry(b *strings.Builder, infos []packetInfo) {
+	b.WriteString("\n#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]\n#[repr(u32)]\npub enum PacketId {\n")
+	for _, info := range infos {
+		fmt.Fprintf(b, "    %s = %d,\n", info.name, info.packet.ID)
+	}
+	b.WriteString("}\n\nimpl PacketId {\n    pub fn from_raw(raw: u32) -> Option<Self> {\n        match raw {\n")
+	for _, info := range infos {
+		fmt.Fprintf(b, "            %d => Some(Self::%s),\n", info.packet.ID, info.name)
+	}
+	b.WriteString("            _ => None,\n        }\n    }\n}\n\n")
+	b.WriteString("#[derive(Clone, Debug, PartialEq)]\npub enum Packet {\n")
+	for _, info := range infos {
+		if packetNeedsBox(info) {
+			fmt.Fprintf(b, "    %s(Box<%s>),\n", info.name, info.name)
+		} else {
+			fmt.Fprintf(b, "    %s(%s),\n", info.name, info.name)
+		}
+	}
+	b.WriteString("}\n\n")
+	for _, info := range infos {
+		fmt.Fprintf(b, "impl From<%s> for Packet {\n    fn from(value: %s) -> Self {\n", info.name, info.name)
+		if packetNeedsBox(info) {
+			fmt.Fprintf(b, "        Self::%s(Box::new(value))\n", info.name)
+		} else {
+			fmt.Fprintf(b, "        Self::%s(value)\n", info.name)
+		}
+		b.WriteString("    }\n}\n\n")
+	}
+}
+
+func packetNeedsBox(info packetInfo) bool {
+	return len(info.fields) >= 8
 }
 
 func fieldDocs(field manifest.Field) []string {

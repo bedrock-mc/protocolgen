@@ -209,6 +209,27 @@ func TestGenerateRustEmitsUnionDiscriminantMapping(t *testing.T) {
 	}
 }
 
+func TestGenerateRustEmitsPacketRegistryAndSum(t *testing.T) {
+	fields := make([]manifest.Field, 8)
+	for index := range fields {
+		fields[index] = manifest.Field{Ordinal: index, Name: "Value" + string(rune('A'+index)), Encode: manifest.Primitive("u8"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}
+	}
+	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:packet-registry", MinecraftVersion: "fixture", ProtocolVersion: 2168}}, Packets: []manifest.Packet{
+		{ID: 1, Name: "SmallPacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{Ordinal: 0, Name: "Value", Encode: manifest.Primitive("u8"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}},
+		{ID: 9, Name: "LargePacket", Direction: manifest.DirectionServerbound, Fields: fields},
+	}}
+	files, err := GenerateFiles(m)
+	if err != nil {
+		t.Fatal(err)
+	}
+	packets := files["src/packets/mod.rs"]
+	for _, want := range []string{"#[repr(u32)]\npub enum PacketId", "Small = 1", "Large = 9", "pub fn from_raw(raw: u32) -> Option<Self>", "pub enum Packet", "Small(Small)", "Large(Box<Large>)", "impl From<Small> for Packet", "impl From<Large> for Packet"} {
+		if !strings.Contains(packets, want) {
+			t.Fatalf("packet registry omitted %q:\n%s", want, packets)
+		}
+	}
+}
+
 func TestGenerateRustKeepsSharedUnionPayloadNamed(t *testing.T) {
 	shared := manifest.Node{Kind: manifest.KindStruct, Semantic: "SharedRecord", TypeID: "SharedRecord", Fields: []manifest.Field{{Ordinal: 0, Name: "Value", Encode: manifest.Primitive("u8"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}
 	union := manifest.Union(manifest.Primitive("u8"), manifest.Variant{Value: 0, Name: "Choice::Shared", Encode: shared})
