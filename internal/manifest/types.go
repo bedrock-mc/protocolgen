@@ -26,6 +26,13 @@ const (
 	Asymmetric Symmetry = "asymmetric"
 )
 
+type NBTEncoding string
+
+const (
+	NBTNetwork    NBTEncoding = "network"
+	NBTPersistent NBTEncoding = "persistent"
+)
+
 type NodeKind string
 
 const (
@@ -201,6 +208,26 @@ func Primitive(code string) Node {
 		return Node{Kind: KindUnresolved, Reason: err.Error(), Reachable: true}
 	}
 	return Node{Kind: KindPrimitive, Primitive: &shape}
+}
+
+// NBT returns an NBT node with its wire encoding explicitly recorded.
+func NBT(encoding NBTEncoding) Node {
+	node := Primitive("nbt_le")
+	node.Encoding = string(encoding)
+	return node
+}
+
+func IsNBT(node Node) bool {
+	return node.Kind == KindPrimitive && node.Primitive != nil && node.Primitive.Code == "nbt_le"
+}
+
+func ValidNBTEncoding(value string) bool {
+	switch NBTEncoding(value) {
+	case NBTNetwork, NBTPersistent:
+		return true
+	default:
+		return false
+	}
 }
 
 func PrimitiveForCode(code string) (PrimitiveShape, error) {

@@ -4,19 +4,29 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// InventoryContent is sent by the server to update the full content of a particular inventory. It
+// is usually sent for the main inventory of the player, but also works for other inventories that
+// are currently opened by the player.
 type InventoryContent struct {
-	ContainerId       uint32
-	Slots             []protocol.CerealizerNetworkItemStackDescriptorSerializedData
+	// ContainerID is the ID that identifies one of the windows that the client currently has opened, or
+	// one of the consistent windows such as the main inventory.
+	ContainerID uint32
+	// Slots is the new content of the inventory. The length of this slice must be equal to the full
+	// size of the inventory window updated.
+	Slots []protocol.NetworkItemStackDescriptorSerializedData
+	// FullContainerName is the protocol.FullContainerName that describes the container that the content
+	// is for.
 	FullContainerName protocol.FullContainerName
-	StorageItem       protocol.CerealizerNetworkItemStackDescriptorSerializedData
+	// StorageItem is the item that is acting as the storage container for the inventory. If the
+	// inventory is not a dynamic container then this field should be left empty. When set, only the
+	// item type is used by the client and none of the other stack info.
+	StorageItem protocol.NetworkItemStackDescriptorSerializedData
 }
 
 // Marshal reads or writes InventoryContent using its canonical wire layout.
 func (x *InventoryContent) Marshal(io protocol.IO) {
-	io.Varuint32(&x.ContainerId)
-	protocol.FuncSlice(io, &x.Slots, io.Varuint32, func(value *protocol.CerealizerNetworkItemStackDescriptorSerializedData) {
-		value.Marshal(io)
-	})
+	io.Varuint32(&x.ContainerID)
+	protocol.Slice(io, &x.Slots)
 	x.FullContainerName.Marshal(io)
 	x.StorageItem.Marshal(io)
 }

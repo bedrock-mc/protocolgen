@@ -4,6 +4,9 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// SetLastHurtBy is sent by the server to let the client know what entity type it was last hurt by.
+// At this moment, the packet is useless and should not be used. There is no behaviour that depends
+// on if this packet is sent or not.
 type SetLastHurtBy struct {
 	LastHurtBy protocol.ActorType
 }

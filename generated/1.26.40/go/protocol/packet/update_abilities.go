@@ -4,7 +4,12 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// UpdateAbilities is a packet sent from the server to the client to update the abilities of the
+// player. It, along with the UpdateAdventureSettings packet, are replacements of the
+// AdventureSettings packet since v1.19.10.
 type UpdateAbilities struct {
+	// Data represents various data about the abilities of a player, such as ability layers or
+	// permissions.
 	Data protocol.SerializedAbilitiesData
 }
 

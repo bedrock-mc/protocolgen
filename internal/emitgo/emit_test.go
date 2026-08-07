@@ -2,11 +2,30 @@ package emitgo
 
 import (
 	"go/format"
+	"os"
 	"strings"
 	"testing"
 
+	"protocolgen/internal/docs"
+	"protocolgen/internal/domains"
 	"protocolgen/internal/manifest"
 )
+
+func TestMarshalEmitterUsesOneAddressParameterizedWalk(t *testing.T) {
+	source, err := os.ReadFile("emit.go")
+	if err != nil {
+		t.Fatal(err)
+	}
+	text := string(source)
+	if strings.Count(text, "func (e *marshalEmitter) node(") != 1 {
+		t.Fatalf("marshal emitter has more than one node walk")
+	}
+	for _, duplicate := range []string{"nodePointer", "optionalCallPointer", "collectionPointer", "mapEntriesPointer"} {
+		if strings.Contains(text, duplicate) {
+			t.Fatalf("marshal emitter retains duplicate helper %q", duplicate)
+		}
+	}
+}
 
 func TestGenerateConsumesOnlyCanonicalManifest(t *testing.T) {
 	m := manifest.Manifest{
@@ -31,6 +50,10 @@ func TestGenerateConsumesOnlyCanonicalManifest(t *testing.T) {
 		}
 	}
 	packet := files["protocol/packet/vocabulary.go"]
+	version := files["protocol/version.go"]
+	if !strings.Contains(version, `GAME_VERSION     = "fixture"`) || !strings.Contains(version, "PROTOCOL_VERSION = 2168") {
+		t.Fatalf("generated version constants are incomplete:\n%s", version)
+	}
 	if !strings.Contains(packet, "type Vocabulary struct") || !strings.Contains(packet, "Maybe protocol.Optional[string]") || !strings.Contains(files["protocol/packet/ids.go"], "IDVocabulary uint32 = 1") {
 		t.Fatalf("generated output omitted packet definition or ID:\n%s\n%s", packet, files["protocol/packet/ids.go"])
 	}
@@ -41,6 +64,66 @@ func TestGenerateConsumesOnlyCanonicalManifest(t *testing.T) {
 	}
 	if strings.Contains(packet, "Shape{") || strings.Contains(packet, "func (p *Vocabulary) Encode") {
 		t.Fatalf("generated packet exposed runtime schema or placeholder codecs:\n%s", packet)
+	}
+}
+
+func TestGenerateGroupsSharedDefinitionsByReviewedDomain(t *testing.T) {
+	alpha := manifest.Node{Kind: manifest.KindStruct, TypeID: "Alpha", Fields: []manifest.Field{{Name: "Value", Encode: manifest.Primitive("u8"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}
+	beta := manifest.Node{Kind: manifest.KindStruct, TypeID: "Beta", Fields: []manifest.Field{{Name: "Value", Encode: manifest.Primitive("u8"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}
+	m := manifest.Manifest{
+		SchemaVersion: 2,
+		Target:        manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 1},
+		Sources:       []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "1", Digest: "fixture", MinecraftVersion: "fixture", ProtocolVersion: 1}},
+		Packets: []manifest.Packet{{ID: 1, Name: "FixturePacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{
+			{Ordinal: 0, Name: "Beta", Encode: beta, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+			{Ordinal: 1, Name: "Alpha", Encode: alpha, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		}}},
+	}
+	files, err := GenerateWithOptions(m, Options{
+		ProtocolImportPath: "fixture",
+		NativeTypes:        false,
+		EmitPacketRuntime:  true,
+		EmitPacketPools:    true,
+		Domains: domains.Overlay{Domains: map[string]string{
+			"Alpha": "shared",
+			"Beta":  "shared",
+		}},
+	})
+	if err != nil {
+		t.Fatalf("GenerateWithOptions: %v", err)
+	}
+	source := files["protocol/shared.go"]
+	if !strings.Contains(source, "type Alpha struct") || !strings.Contains(source, "type Beta struct") {
+		t.Fatalf("shared domain file omitted definitions:\n%s", source)
+	}
+	if strings.Index(source, "type Alpha struct") > strings.Index(source, "type Beta struct") {
+		t.Fatalf("definitions are not sorted by name within domain:\n%s", source)
+	}
+	if _, ok := files["protocol/alpha.go"]; ok {
+		t.Fatalf("domain grouping retained per-type file")
+	}
+}
+
+func TestGenerateEmitsReviewedGoDocs(t *testing.T) {
+	shared := manifest.Node{Kind: manifest.KindStruct, TypeID: "Shared", Fields: []manifest.Field{{Name: "Value", Encode: manifest.Primitive("u8"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}
+	m := manifest.Manifest{
+		SchemaVersion: 2,
+		Target:        manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 1},
+		Sources:       []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "1", Digest: "fixture", MinecraftVersion: "fixture", ProtocolVersion: 1}},
+		Packets:       []manifest.Packet{{ID: 1, Name: "FixturePacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{Name: "Shared Value", Encode: shared, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}},
+	}
+	files, err := GenerateWithOptions(m, Options{ProtocolImportPath: "fixture", NativeTypes: false, Docs: docs.Overlay{
+		Types:  map[string]string{"Shared": "Shared docs.", "FixturePacket": "Packet docs."},
+		Fields: map[string]string{docs.FieldKey("Shared", "Value"): "Value docs.", docs.FieldKey("FixturePacket", "Shared Value"): "Packet value docs."},
+	}})
+	if err != nil {
+		t.Fatalf("GenerateWithOptions: %v", err)
+	}
+	if !strings.Contains(files["protocol/shared.go"], "// Shared docs.") || !strings.Contains(files["protocol/shared.go"], "// Value docs.") {
+		t.Fatalf("shared docs were not emitted:\n%s", files["protocol/shared.go"])
+	}
+	if !strings.Contains(files["protocol/packet/fixture.go"], "// Packet docs.") || !strings.Contains(files["protocol/packet/fixture.go"], "// Packet value docs.") {
+		t.Fatalf("packet docs were not emitted:\n%s", files["protocol/packet/fixture.go"])
 	}
 }
 
@@ -74,7 +157,7 @@ func TestGenerateUsesRuntimeHelpersForEnumsAndOptionals(t *testing.T) {
 		"protocol.IntegerFunc(&x.Kind, io.Uint8)",
 		"protocol.OptionalFunc(io, &x.Maybe, io.Int32)",
 		"protocol.IntegerFunc(value, io.Uint8)",
-		"value.Marshal(io)",
+		"protocol.Slice(io, &x.Entries)",
 	} {
 		if !strings.Contains(source, want) {
 			t.Fatalf("generated packet omitted runtime helper %q:\n%s", want, source)
@@ -88,6 +171,9 @@ func TestGenerateUsesRuntimeHelpersForEnumsAndOptionals(t *testing.T) {
 	}
 	if !strings.Contains(source, "FuncSlice(io, value, io.Varuint32") {
 		t.Fatalf("nested collection callback did not retain the supplied slice pointer:\n%s", source)
+	}
+	if strings.Contains(source, "FuncSlice(io, &x.Entries") {
+		t.Fatalf("struct slice still emits an escaping callback:\n%s", source)
 	}
 }
 
@@ -129,9 +215,11 @@ func TestGenerateIncludesConcreteCodecRuntime(t *testing.T) {
 		t.Fatal(err)
 	}
 	for name, wants := range map[string][]string{
-		"protocol/codec.go":  {"type IO interface", "func IntegerFunc", "func OptionalFunc", "func UnionFunc", "func FuncSlice"},
-		"protocol/reader.go": {"type Reader struct", "func NewReader", "func (r *Reader) NBT", "func (r *Reader) SliceLength"},
-		"protocol/writer.go": {"type Writer struct", "func NewWriter", "func (w *Writer) NBT", "func (w *Writer) Data"},
+		"protocol/codec.go":   {"type IO interface"},
+		"protocol/helpers.go": {"func IntegerFunc", "func OptionalFunc", "func UnionFunc", "func FuncSlice"},
+		"protocol/reader.go":  {"type Reader struct", "func NewReader", "func (r *Reader) NBT", "func (r *Reader) SliceLength"},
+		"protocol/writer.go":  {"type Writer struct", "func NewWriter", "func (w *Writer) NBT", "func (w *Writer) Data"},
+		"protocol/types.go":   {"type Optional", "type OrderedEntry"},
 	} {
 		source, ok := files[name]
 		if !ok {
@@ -141,6 +229,12 @@ func TestGenerateIncludesConcreteCodecRuntime(t *testing.T) {
 			if !strings.Contains(source, want) {
 				t.Fatalf("%s omits %q:\n%s", name, want, source)
 			}
+		}
+	}
+	packetRuntime := files["protocol/packet/packet.go"]
+	for _, want := range []string{"func Decode(data []byte, pk Packet) error", "func Encode(pk Packet) ([]byte, error)"} {
+		if !strings.Contains(packetRuntime, want) {
+			t.Fatalf("packet runtime omits %q:\n%s", want, packetRuntime)
 		}
 	}
 }
@@ -153,14 +247,17 @@ func TestGenerateWrapsRepeatedUnionPayloadTypes(t *testing.T) {
 		manifest.Variant{Value: 1, Name: "Second", Encode: message},
 	)
 	union.TypeID = "Choice"
-	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 1}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "1", Digest: "fixture", MinecraftVersion: "fixture", ProtocolVersion: 1}}, Packets: []manifest.Packet{{ID: 1, Name: "ChoicePacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{Ordinal: 0, Name: "Choice", Encode: union, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}}}
+	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 1}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "1", Digest: "fixture", MinecraftVersion: "fixture", ProtocolVersion: 1}}, Packets: []manifest.Packet{{ID: 1, Name: "EnvelopePacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{Ordinal: 0, Name: "Choice", Encode: union, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}}}
 	files, err := Generate(m, "fixture")
 	if err != nil {
 		t.Fatal(err)
 	}
 	marshal := generatedSource(files)
-	if strings.Count(marshal, "case Message:") != 1 || !strings.Contains(marshal, "case ChoiceChoiceSecond:") {
+	if strings.Count(marshal, "case *Message:") != 1 || !strings.Contains(marshal, "case *ChoiceSecond:") {
 		t.Fatalf("repeated union payloads were not made tag-distinct:\n%s", marshal)
+	}
+	if !strings.Contains(marshal, "value := new(Message)") || !strings.Contains(marshal, "*x = value") {
+		t.Fatalf("union decode does not allocate pointer payloads:\n%s", marshal)
 	}
 }
 
@@ -242,7 +339,7 @@ func TestGenerateUsesTypedUnionInterface(t *testing.T) {
 		t.Fatalf("Generate: %v", err)
 	}
 	source := generatedSource(files)
-	if !strings.Contains(source, "type SoundDataEvent interface") || !strings.Contains(source, "func (SoundDataEventSetVolume) isSoundDataEvent()") || strings.Contains(source, "Tag int64") {
+	if !strings.Contains(source, "type SoundDataEvent interface") || !strings.Contains(source, "func (*SoundDataEventSetVolume) isSoundDataEvent()") || strings.Contains(source, "Tag int64") {
 		t.Fatalf("generated Go did not emit a typed union interface:\n%s", source)
 	}
 }
@@ -287,7 +384,7 @@ func TestPublicNamesDropSchemaScaffolding(t *testing.T) {
 	tests := map[string]string{
 		"enums/MoLangVersion":                           "MoLangVersion",
 		"enums/MolangVersion":                           "MoLangVersion",
-		"PlayerVideoCapturePacketPayload::Action":       "PlayerVideoCaptureAction",
+		"PlayerVideoCapturePacketPayload::Action":       "Action",
 		"DataItemEntryPayloadUnion":                     "DataItemEntryValue",
 		"DimensionDefinitionGroup::DimensionDefinition": "DimensionDefinition",
 		"ServerWaypointGroup::Action":                   "ServerWaypointGroupAction",
@@ -297,6 +394,21 @@ func TestPublicNamesDropSchemaScaffolding(t *testing.T) {
 		if got := publicTypeName(input); got != want {
 			t.Fatalf("publicTypeName(%q) = %q, want %q", input, got, want)
 		}
+	}
+}
+
+func TestGoNamesUseCommonInitialisms(t *testing.T) {
+	for input, want := range map[string]string{
+		"Container Id":   "ContainerID",
+		"Json Uri Xz Ui": "JSONURIXZUI",
+		"Identifier":     "Identifier",
+	} {
+		if got := exportName(input); got != want {
+			t.Errorf("exportName(%q) = %q, want %q", input, got, want)
+		}
+	}
+	if got := enumVariantName("VALUE_ID"); got != "ValueID" {
+		t.Fatalf("enumVariantName initialism = %q, want ValueID", got)
 	}
 }
 
@@ -335,7 +447,7 @@ func TestGenerateMapsCanonicalSemanticsToNativeGoTypes(t *testing.T) {
 		{Ordinal: 0, Name: "ID", Encode: manifest.Primitive("uuid"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
 		{Ordinal: 1, Name: "Position", Encode: vec3, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
 		{Ordinal: 2, Name: "Colour", Encode: colour, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
-		{Ordinal: 3, Name: "Data", Encode: manifest.Primitive("nbt_le"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		{Ordinal: 3, Name: "Data", Encode: manifest.NBT(manifest.NBTNetwork), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
 		{Ordinal: 4, Name: "Runtime", Encode: runtimeID, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
 		{Ordinal: 5, Name: "Unique", Encode: uniqueID, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
 	}}}}
@@ -488,5 +600,30 @@ func TestGenerateWithoutNativeTypesUsesFixedUUIDBytes(t *testing.T) {
 	}
 	if !strings.Contains(packet, "UUID [16]byte") || !strings.Contains(packet, "io.UUIDBytes(&x.UUID)") {
 		t.Fatalf("disabled native profile did not emit fixed UUID bytes:\n%s", packet)
+	}
+}
+
+func TestGenerateGoPreservesNBTEncodingOnIOCalls(t *testing.T) {
+	m := manifest.Manifest{
+		SchemaVersion: manifest.SchemaVersion,
+		Target:        manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168},
+		Sources:       []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "sha256:fixture"}},
+		Packets: []manifest.Packet{{ID: 1, Name: "NBTPacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{
+			{Ordinal: 0, Name: "Network", Encode: manifest.NBT(manifest.NBTNetwork), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+			{Ordinal: 1, Name: "Persistent", Encode: manifest.NBT(manifest.NBTPersistent), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		}}},
+	}
+	files, err := Generate(m, "example.com/protocol")
+	if err != nil {
+		t.Fatal(err)
+	}
+	packet := files["protocol/packet/nbt.go"]
+	for _, want := range []string{"io.NBT(&x.Network, protocol.NBTNetwork)", "io.NBT(&x.Persistent, protocol.NBTPersistent)"} {
+		if !strings.Contains(packet, want) {
+			t.Fatalf("packet omitted %q:\n%s", want, packet)
+		}
+	}
+	if !strings.Contains(files["protocol/codec.go"], "NBT(*[]byte, NBTEncoding)") {
+		t.Fatalf("runtime IO did not expose format-aware NBT:\n%s", files["protocol/codec.go"])
 	}
 }

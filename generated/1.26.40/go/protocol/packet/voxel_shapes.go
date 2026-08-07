@@ -4,17 +4,19 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// VoxelShapes is sent by the server to send voxel shape data to the client.
 type VoxelShapes struct {
-	Shapes           []protocol.VoxelShapesSerializableVoxelShape
-	NameMap          []protocol.OrderedEntry[string, protocol.VoxelShapesRegistryHandle]
+	// Shapes is a list of voxel shapes.
+	Shapes []protocol.VoxelShapesSerializableVoxelShape
+	// NameMap is a map of shape names to IDs.
+	NameMap []protocol.OrderedEntry[string, protocol.VoxelShapesRegistryHandle]
+	// CustomShapeCount is the number of custom shapes.
 	CustomShapeCount uint16
 }
 
 // Marshal reads or writes VoxelShapes using its canonical wire layout.
 func (x *VoxelShapes) Marshal(io protocol.IO) {
-	protocol.FuncSlice(io, &x.Shapes, io.Varuint32, func(value *protocol.VoxelShapesSerializableVoxelShape) {
-		value.Marshal(io)
-	})
+	protocol.Slice(io, &x.Shapes)
 	protocol.OrderedMap(io, &x.NameMap, io.Varuint32, io.String, func(value *protocol.VoxelShapesRegistryHandle) {
 		value.Marshal(io)
 	})

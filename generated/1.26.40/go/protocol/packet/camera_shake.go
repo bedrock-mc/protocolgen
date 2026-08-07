@@ -4,7 +4,11 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// CameraShake is sent by the server to make the camera shake client-side. This feature was added
+// for map- making partners.
 type CameraShake struct {
+	// Intensity is the intensity of the shaking. The client limits this value to 4, so anything higher
+	// may not work.
 	Intensity   float32
 	Seconds     float32
 	ShakeType   protocol.CameraShakeType

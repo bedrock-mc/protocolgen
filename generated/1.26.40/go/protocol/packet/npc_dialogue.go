@@ -5,8 +5,8 @@ package packet
 import "protocolgen/generated/1.26.40/go/protocol"
 
 type NpcDialogue struct {
-	NpcIdRawId            uint64
-	NpcDialogueActionType protocol.NpcDialogueNpcDialogueActionType
+	NpcIDRawID            uint64
+	NpcDialogueActionType protocol.NpcDialogueActionType
 	Dialogue              string
 	SceneName             string
 	NpcName               string
@@ -15,7 +15,7 @@ type NpcDialogue struct {
 
 // Marshal reads or writes NpcDialogue using its canonical wire layout.
 func (x *NpcDialogue) Marshal(io protocol.IO) {
-	io.Uint64(&x.NpcIdRawId)
+	io.Uint64(&x.NpcIDRawID)
 	protocol.IntegerFunc(&x.NpcDialogueActionType, io.Varint32)
 	io.String(&x.Dialogue)
 	io.String(&x.SceneName)

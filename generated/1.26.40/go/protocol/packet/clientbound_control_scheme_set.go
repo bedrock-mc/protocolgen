@@ -5,7 +5,7 @@ package packet
 import "protocolgen/generated/1.26.40/go/protocol"
 
 type ClientboundControlSchemeSet struct {
-	ControlScheme protocol.ControlSchemeScheme
+	ControlScheme protocol.ControlScheme
 }
 
 // Marshal reads or writes ClientboundControlSchemeSet using its canonical wire layout.

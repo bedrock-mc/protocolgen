@@ -4,15 +4,18 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// PrimitiveShapes is a packet sent by the server to instruct the client to render one or more
+// shapes in the world. Shapes can be added, removed or updated based on the data provided
+// individually.
 type PrimitiveShapes struct {
-	ArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemoved []protocol.PrimitiveShapeData
+	// ArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemoved is a list of shapes to draw on the
+	// client-side.
+	ArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemoved []protocol.PrimitiveShape
 }
 
 // Marshal reads or writes PrimitiveShapes using its canonical wire layout.
 func (x *PrimitiveShapes) Marshal(io protocol.IO) {
-	protocol.FuncSlice(io, &x.ArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemoved, io.Varuint32, func(value *protocol.PrimitiveShapeData) {
-		value.Marshal(io)
-	})
+	protocol.Slice(io, &x.ArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemoved)
 }
 
 // ID returns the protocol ID for PrimitiveShapes.

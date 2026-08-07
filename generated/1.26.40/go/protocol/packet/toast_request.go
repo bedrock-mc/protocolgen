@@ -4,8 +4,13 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// ToastRequest is a packet sent from the server to the client to display a toast to the top of the
+// screen. These toasts are the same as the ones seen when, for example, loading a new resource pack
+// or obtaining an achievement.
 type ToastRequest struct {
-	Title   string
+	// Title is the title of the toast.
+	Title string
+	// Content is the message that the toast may contain alongside the title.
 	Content string
 }
 

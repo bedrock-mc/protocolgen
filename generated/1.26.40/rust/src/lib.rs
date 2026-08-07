@@ -1,10 +1,9 @@
 // Code generated from canonical protocol manifest v2. DO NOT EDIT.
 
-#![allow(dead_code)]
+pub const GAME_VERSION: &str = "1.26.40";
+pub const PROTOCOL_VERSION: i32 = 2168;
 
-mod enums;
-pub use enums::*;
-mod types;
-pub use types::*;
-mod packets;
-pub use packets::*;
+pub mod enums;
+pub mod types;
+pub mod packets;
+pub mod wire;

@@ -4,6 +4,9 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// SetDefaultGameType is sent by the client when it toggles the default game type in the settings
+// UI, and is sent by the server when it actually changes the default game type, resulting in the
+// toggle being changed in the settings UI.
 type SetDefaultGameType struct {
 	DefaultGameType protocol.GameType
 }

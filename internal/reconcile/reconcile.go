@@ -9,7 +9,9 @@ import (
 	"sort"
 
 	"protocolgen/internal/claims"
+	"protocolgen/internal/direction"
 	"protocolgen/internal/manifest"
+	"protocolgen/internal/nbtencoding"
 )
 
 type fieldKey struct {
@@ -23,6 +25,18 @@ type packetMetadata struct {
 }
 
 func Reconcile(target manifest.Target, results []claims.Result, adjudications []manifest.Adjudication) (manifest.Manifest, error) {
+	return reconcile(target, results, adjudications, nil, nil)
+}
+
+func ReconcileWithDirections(target manifest.Target, results []claims.Result, adjudications []manifest.Adjudication, table direction.Table) (manifest.Manifest, error) {
+	return reconcile(target, results, adjudications, &table, nil)
+}
+
+func ReconcileWithDirectionsAndNBT(target manifest.Target, results []claims.Result, adjudications []manifest.Adjudication, directions direction.Table, encodings nbtencoding.Table) (manifest.Manifest, error) {
+	return reconcile(target, results, adjudications, &directions, &encodings)
+}
+
+func reconcile(target manifest.Target, results []claims.Result, adjudications []manifest.Adjudication, table *direction.Table, encodings *nbtencoding.Table) (manifest.Manifest, error) {
 	if len(results) == 0 {
 		return manifest.Manifest{}, fmt.Errorf("reconcile has no source results")
 	}
@@ -144,6 +158,16 @@ func Reconcile(target manifest.Target, results []claims.Result, adjudications []
 	}
 	sort.Slice(proofs, func(i, j int) bool { return proofs[i].ID < proofs[j].ID })
 	result := manifest.Manifest{SchemaVersion: manifest.SchemaVersion, Target: target, Sources: allPins, Packets: packetsOut, Adjudications: used, Overrides: proofs}
+	if table != nil {
+		if err := table.Apply(&result); err != nil {
+			return manifest.Manifest{}, err
+		}
+	}
+	if encodings != nil {
+		if err := encodings.Apply(&result); err != nil {
+			return manifest.Manifest{}, err
+		}
+	}
 	if err := manifest.Validate(result); err != nil {
 		return manifest.Manifest{}, err
 	}

@@ -14,7 +14,7 @@ type ServerboundDiagnostics struct {
 	AvgEndFrameTimeMS         float32
 	AvgRemainderTimePercent   float32
 	AvgUnaccountedTimePercent float32
-	MemoryCategoryValues      []protocol.MemoryMemoryCategoryCounter
+	MemoryCategoryValues      []protocol.MemoryCategoryCounter
 	EntityDiagnostics         []protocol.ECSProfilingDiagnosticsEntityDiagnosticTimingInfo
 	SystemDiagnostics         []protocol.ECSProfilingDiagnosticsSystemDiagnosticTimingInfo
 	SystemCategories          []protocol.ECSProfilingDiagnosticsSystemCategory
@@ -32,21 +32,11 @@ func (x *ServerboundDiagnostics) Marshal(io protocol.IO) {
 	io.Float32(&x.AvgEndFrameTimeMS)
 	io.Float32(&x.AvgRemainderTimePercent)
 	io.Float32(&x.AvgUnaccountedTimePercent)
-	protocol.FuncSlice(io, &x.MemoryCategoryValues, io.Varuint32, func(value *protocol.MemoryMemoryCategoryCounter) {
-		value.Marshal(io)
-	})
-	protocol.FuncSlice(io, &x.EntityDiagnostics, io.Varuint32, func(value *protocol.ECSProfilingDiagnosticsEntityDiagnosticTimingInfo) {
-		value.Marshal(io)
-	})
-	protocol.FuncSlice(io, &x.SystemDiagnostics, io.Varuint32, func(value *protocol.ECSProfilingDiagnosticsSystemDiagnosticTimingInfo) {
-		value.Marshal(io)
-	})
-	protocol.FuncSlice(io, &x.SystemCategories, io.Varuint32, func(value *protocol.ECSProfilingDiagnosticsSystemCategory) {
-		value.Marshal(io)
-	})
-	protocol.FuncSlice(io, &x.WhiskerScopes, io.Varuint32, func(value *protocol.BedrockProfileWhiskerDiagnosticsScopeDataSummary) {
-		value.Marshal(io)
-	})
+	protocol.Slice(io, &x.MemoryCategoryValues)
+	protocol.Slice(io, &x.EntityDiagnostics)
+	protocol.Slice(io, &x.SystemDiagnostics)
+	protocol.Slice(io, &x.SystemCategories)
+	protocol.Slice(io, &x.WhiskerScopes)
 }
 
 // ID returns the protocol ID for ServerboundDiagnostics.

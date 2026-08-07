@@ -4,8 +4,13 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// PartyDestinationCookieResponse is sent by the client to the server in response to a
+// SendPartyDestinationCookie packet.
 type PartyDestinationCookieResponse struct {
-	Cookie   string
+	// Cookie is the opaque party destination cookie echoed back from the SendPartyDestinationCookie
+	// packet.
+	Cookie string
+	// Accepted is true if the client accepted the party destination.
 	Accepted bool
 }
 

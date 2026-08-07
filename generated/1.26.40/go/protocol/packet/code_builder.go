@@ -4,8 +4,14 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// CodeBuilder is an Education Edition packet sent by the server to the client to open the URL to a
+// Code Builder (websocket) server.
 type CodeBuilder struct {
-	URL                   string
+	// URL is the url to the Code Builder (websocket) server.
+	URL string
+	// ShouldOpenCodeBuilder specifies if the client should automatically open the Code Builder app. If
+	// set to true, the client will attempt to use the Code Builder app to connect to and interface with
+	// the server running at the URL above.
 	ShouldOpenCodeBuilder bool
 }
 

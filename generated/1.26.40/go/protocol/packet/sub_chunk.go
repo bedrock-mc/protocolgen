@@ -4,11 +4,13 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// SubChunk sends data about multiple sub-chunks around a center point.
 type SubChunk struct {
+	// CacheEnabled is whether the sub-chunk caching is enabled or not.
 	CacheEnabled  bool
 	DimensionType protocol.DimensionType
 	CenterPos     protocol.SubChunkPos
-	SubChunkData  []protocol.SubChunkSubChunkPacketData
+	SubChunkData  []protocol.SubChunkData
 }
 
 // Marshal reads or writes SubChunk using its canonical wire layout.
@@ -16,9 +18,7 @@ func (x *SubChunk) Marshal(io protocol.IO) {
 	io.Bool(&x.CacheEnabled)
 	x.DimensionType.Marshal(io)
 	x.CenterPos.Marshal(io)
-	protocol.FuncSlice(io, &x.SubChunkData, io.Varuint32, func(value *protocol.SubChunkSubChunkPacketData) {
-		value.Marshal(io)
-	})
+	protocol.Slice(io, &x.SubChunkData)
 }
 
 // ID returns the protocol ID for SubChunk.

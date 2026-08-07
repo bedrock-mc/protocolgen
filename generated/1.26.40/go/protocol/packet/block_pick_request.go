@@ -4,7 +4,11 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// BlockPickRequest is sent by the client when it requests to pick a block in the world and place
+// its item in their inventory.
 type BlockPickRequest struct {
+	// Position is the position at which the client requested to pick the block. The block at that
+	// position should have its item put in HotBarSlot if it is empty.
 	Position protocol.BlockPos
 	WithData bool
 	MaxSlots uint8

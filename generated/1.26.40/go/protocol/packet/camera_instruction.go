@@ -4,6 +4,7 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// CameraInstruction gives a custom camera specific instructions to operate.
 type CameraInstruction struct {
 	CameraInstruction protocol.CameraInstructionData
 }

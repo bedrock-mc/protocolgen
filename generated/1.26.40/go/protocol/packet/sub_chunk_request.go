@@ -4,18 +4,17 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// SubChunkRequest requests specific sub-chunks from the server using a center point.
 type SubChunkRequest struct {
 	DimensionType              protocol.DimensionType
-	SubChunkPositionOffsetList []protocol.SubChunkSubChunkPosOffset
+	SubChunkPositionOffsetList []protocol.SubChunkPosOffset
 	CenterPos                  protocol.SubChunkPos
 }
 
 // Marshal reads or writes SubChunkRequest using its canonical wire layout.
 func (x *SubChunkRequest) Marshal(io protocol.IO) {
 	x.DimensionType.Marshal(io)
-	protocol.FuncSlice(io, &x.SubChunkPositionOffsetList, io.Varuint32, func(value *protocol.SubChunkSubChunkPosOffset) {
-		value.Marshal(io)
-	})
+	protocol.Slice(io, &x.SubChunkPositionOffsetList)
 	x.CenterPos.Marshal(io)
 }
 

@@ -4,15 +4,22 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// MapCreateLockedCopy is sent by the client to create a locked copy of one map into another map. In
+// vanilla, it is used in the cartography table to create a map that is locked and cannot be
+// modified.
 type MapCreateLockedCopy struct {
-	OriginalMapId int64
-	NewMapId      int64
+	// OriginalMapID is the ID of the map that is being copied. The locked copy will obtain all content
+	// that is visible on this map, except the content will not change.
+	OriginalMapID int64
+	// NewMapID is the ID of the map that holds the locked copy of the map that OriginalMapID points to.
+	// Its contents will be impossible to change.
+	NewMapID int64
 }
 
 // Marshal reads or writes MapCreateLockedCopy using its canonical wire layout.
 func (x *MapCreateLockedCopy) Marshal(io protocol.IO) {
-	io.ActorUniqueID(&x.OriginalMapId)
-	io.ActorUniqueID(&x.NewMapId)
+	io.ActorUniqueID(&x.OriginalMapID)
+	io.ActorUniqueID(&x.NewMapID)
 }
 
 // ID returns the protocol ID for MapCreateLockedCopy.

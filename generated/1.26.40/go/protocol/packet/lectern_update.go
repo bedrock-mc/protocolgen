@@ -4,6 +4,8 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// LecternUpdate is sent by the client to update the server on which page was opened in a book on a
+// lectern, or if the book should be removed from it.
 type LecternUpdate struct {
 	NewPageToShow             uint8
 	TotalPages                uint8

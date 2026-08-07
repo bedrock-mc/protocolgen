@@ -4,7 +4,10 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// TickingAreasLoadStatus is sent by the server to the client to notify the client of a ticking
+// area's loading status.
 type TickingAreasLoadStatus struct {
+	// WaitingForPreload is true if the server is waiting for the area's preload.
 	WaitingForPreload bool
 }
 

@@ -45,6 +45,7 @@ go run ./cmd/protocolgen reconcile \
   -lock testdata/source-lock.json \
   -mojang testdata/sources/mojang-v2168 \
   -endstone testdata/sources/endstone-v2168 \
+  -directions /path/to/reviewed-directions.json \
   -out /tmp/protocol-2168.json
 
 go run ./cmd/protocolgen validate \
@@ -52,11 +53,13 @@ go run ./cmd/protocolgen validate \
 
 go run ./cmd/protocolgen emit-go \
   -manifest /tmp/protocol-2168.json \
+  -naming /path/to/naming.json \
   -out /tmp/protocol-go \
   -protocol-import example.com/project/protocol
 
 go run ./cmd/protocolgen emit-rust \
   -manifest /tmp/protocol-2168.json \
+  -naming /path/to/naming.json \
   -out /tmp/protocol-rust
 
 # Verify the canonical manifest against the pinned gophertunnel source oracle.
@@ -138,17 +141,38 @@ go run ./cmd/protocolgen reconcile \
   -endstone /path/to/endstone-protocol-docs \
   -endstone-corrections generated/1.26.40/corrections/endstone \
   -adjudications generated/1.26.40/adjudications.json \
+  -directions generated/1.26.40/directions.json \
   -out generated/1.26.40/manifest.json
 
 go run ./cmd/protocolgen emit-go \
   -manifest generated/1.26.40/manifest.json \
+  -naming generated/1.26.40/naming.json \
   -out generated/1.26.40/go \
   -protocol-import protocolgen/generated/1.26.40/go/protocol
 
 go run ./cmd/protocolgen emit-rust \
   -manifest generated/1.26.40/manifest.json \
+  -naming generated/1.26.40/naming.json \
   -out generated/1.26.40/rust
 ```
+
+The checked-in snapshot can be regenerated and checked for drift with the
+same commands through the Makefile. Set the local Mojang and Endstone checkout
+paths; the Go commands use `/tmp/go-build-cache` locally.
+
+```sh
+MOJANG_DIR=/private/tmp/claude-501/-Users-hashim-Coding-Go-Lunar/a6989ec5-1fd8-4136-ad72-5e4a0665aca1/scratchpad/mojang-docs/json \
+ENDSTONE_DIR=/private/tmp/endstone-protocol-docs.nTILn9 \
+GOCACHE=/tmp/go-build-cache make regen
+
+MOJANG_DIR=/private/tmp/claude-501/-Users-hashim-Coding-Go-Lunar/a6989ec5-1fd8-4136-ad72-5e4a0665aca1/scratchpad/mojang-docs/json \
+ENDSTONE_DIR=/private/tmp/endstone-protocol-docs.nTILn9 \
+GOCACHE=/tmp/go-build-cache make verify
+```
+
+`make regen` omits `GOPHERTUNNEL_DIR` intentionally; the oracle clones the
+locked full SHA into its cache. The checked-in `naming.json` is passed to both
+emitters.
 
 The raw Mojang side can be inspected independently with:
 
@@ -262,8 +286,8 @@ scanner, direction-aware packet registration, and codebase-specific merge rules
 remain future backend work. The generator fails instead of emitting generic
 fallback types for unsupported sequence or unresolved nodes.
 
-The older `cmd/gophertunnel` and `cmd/raw` experiments remain available, but
-they are not inputs to the canonical pipeline and cannot weaken its validation.
+The superseded v1 experiments are not inputs to the canonical pipeline; the
+historical Axolotl protocol work remains under `migration/`.
 
 See [docs/protocolgen-v2.md](docs/protocolgen-v2.md) for the manifest model,
 source policy, adjudication format, Axolotl migration gate, and known gaps.

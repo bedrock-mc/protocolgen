@@ -4,6 +4,10 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// SubClientLogin is sent when a sub-client joins the server while another client is already
+// connected to it. The packet is sent as a result of split-screen game play, and allows up to four
+// players to play using the same network connection. After an initial Login packet from the 'main'
+// client, each sub-client that connects sends a SubClientLogin to request their own login.
 type SubClientLogin struct {
 	SubClientConnectionRequest string
 }

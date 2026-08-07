@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"protocolgen/internal/claims"
+	"protocolgen/internal/direction"
 	"protocolgen/internal/manifest"
 )
 
@@ -51,6 +52,31 @@ func TestReconcileMergesIdenticalClaimsAndOnlyPinsSources(t *testing.T) {
 	field := m.Packets[0].Fields[0]
 	if len(field.Provenance.Pins) != 2 || len(field.Provenance.Evidence) != 0 {
 		t.Fatalf("provenance = %+v, want two pins and no detailed evidence", field.Provenance)
+	}
+}
+
+func TestReconcileWithDirectionsAppliesReviewedOverlay(t *testing.T) {
+	target := manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}
+	table := direction.Table{
+		SchemaVersion: direction.SchemaVersion,
+		Target:        target,
+		Source: direction.Source{
+			Repository: "https://github.com/example/gophertunnel",
+			Revision:   "0123456789012345678901234567890123456789",
+			Locator:    "https://github.com/example/gophertunnel/blob/0123456789012345678901234567890123456789/minecraft/protocol/packet/pool.go",
+			SHA256:     "sha256:0123456789012345678901234567890123456789012345678901234567890123",
+		},
+		Packets: []direction.Entry{{
+			ID: 1, Name: "Vocabulary", Direction: direction.DirectionBoth,
+			Evidence: direction.Evidence{Locator: "https://github.com/example/gophertunnel/blob/0123456789012345678901234567890123456789/minecraft/protocol/packet/pool.go", Summary: "The packet ID is registered in both direction pools."},
+		}},
+	}
+	m, err := ReconcileWithDirections(target, []claims.Result{{Pin: sourcePin("endstone"), Target: target, Claims: []claims.Claim{testClaim("endstone", manifest.Primitive("u8"))}}}, nil, table)
+	if err != nil {
+		t.Fatalf("ReconcileWithDirections: %v", err)
+	}
+	if got := m.Packets[0].Direction; got != manifest.DirectionBidirectional {
+		t.Fatalf("direction = %q, want %q", got, manifest.DirectionBidirectional)
 	}
 }
 
@@ -195,7 +221,7 @@ func TestReconcileRetainsEmptyPackets(t *testing.T) {
 	target := manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}
 	result := claims.Result{
 		Pin: sourcePin("endstone"), Target: target,
-		Packets: []claims.PacketClaim{{SourceID: "endstone", Locator: "packets/EmptyPacket.json", ID: 4, Name: "EmptyPacket", Direction: manifest.DirectionUnknown}},
+		Packets: []claims.PacketClaim{{SourceID: "endstone", Locator: "packets/EmptyPacket.json", ID: 4, Name: "EmptyPacket", Direction: manifest.DirectionClientbound}},
 	}
 	m, err := Reconcile(target, []claims.Result{result}, nil)
 	if err != nil {

@@ -4,7 +4,11 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// CurrentStructureFeature is sent by the server to let the client know the name of the structure
+// feature that the player is currently occupying.
 type CurrentStructureFeature struct {
+	// CurrentStructureFeature is the identifier of the structure feature that the player is currently
+	// occupying. If the player is not occupying any structure feature, this field is empty.
 	CurrentStructureFeature string
 }
 

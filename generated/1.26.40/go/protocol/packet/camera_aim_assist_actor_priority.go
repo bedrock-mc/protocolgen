@@ -4,15 +4,16 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// CameraAimAssistActorPriority is sent by the server to define actor-specific aim assist
+// priorities.
 type CameraAimAssistActorPriority struct {
-	CameraAimAssistActorPriorityList []protocol.CameraAimAssistActorPriorityPriorityData
+	// CameraAimAssistActorPriorityList is a list of aim assist actor priority entries.
+	CameraAimAssistActorPriorityList []protocol.CameraAimAssistActorPriorityData
 }
 
 // Marshal reads or writes CameraAimAssistActorPriority using its canonical wire layout.
 func (x *CameraAimAssistActorPriority) Marshal(io protocol.IO) {
-	protocol.FuncSlice(io, &x.CameraAimAssistActorPriorityList, io.Varuint32, func(value *protocol.CameraAimAssistActorPriorityPriorityData) {
-		value.Marshal(io)
-	})
+	protocol.Slice(io, &x.CameraAimAssistActorPriorityList)
 }
 
 // ID returns the protocol ID for CameraAimAssistActorPriority.

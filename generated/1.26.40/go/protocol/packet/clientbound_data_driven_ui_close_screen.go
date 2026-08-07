@@ -5,12 +5,12 @@ package packet
 import "protocolgen/generated/1.26.40/go/protocol"
 
 type ClientboundDataDrivenUICloseScreen struct {
-	FormId protocol.Optional[uint32]
+	FormID protocol.Optional[uint32]
 }
 
 // Marshal reads or writes ClientboundDataDrivenUICloseScreen using its canonical wire layout.
 func (x *ClientboundDataDrivenUICloseScreen) Marshal(io protocol.IO) {
-	protocol.OptionalFunc(io, &x.FormId, io.Uint32)
+	protocol.OptionalFunc(io, &x.FormID, io.Uint32)
 }
 
 // ID returns the protocol ID for ClientboundDataDrivenUICloseScreen.

@@ -4,9 +4,12 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// ActorPickRequest is sent by the client when it tries to pick an entity, so that it gets a spawn
+// egg which can spawn that entity.
 type ActorPickRequest struct {
 	ActorID  int64
 	MaxSlots uint8
+	// WithData is true if the pick request requests the entity metadata.
 	WithData bool
 }
 

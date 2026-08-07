@@ -1,0 +1,95 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  differential:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.26.x'
+          cache: true
+          cache-dependency-path: differential/go.sum
+
+      - name: Differential codec tests
+        run: make differential
+
+  go:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.26.x'
+          cache: true
+          cache-dependency-path: go.sum
+
+      - name: Fetch pinned protocol sources
+        run: |
+          git clone --filter=blob:none --no-checkout https://github.com/Mojang/bedrock-protocol-docs.git "$RUNNER_TEMP/protocolgen-mojang"
+          git -C "$RUNNER_TEMP/protocolgen-mojang" checkout --detach 0e00fe80f4f3c71572ff6429de40146d1f4412fc
+          git clone --filter=blob:none --no-checkout https://github.com/EndstoneMC/protocol-docs.git "$RUNNER_TEMP/protocolgen-endstone"
+          git -C "$RUNNER_TEMP/protocolgen-endstone" checkout --detach a25dea184832f8b0911d669bad400f43bedde1dd
+
+      - name: Regenerate and verify
+        run: |
+          make verify \
+            GO_CACHE="$RUNNER_TEMP/protocolgen-go-cache" \
+            MOJANG_DIR="$RUNNER_TEMP/protocolgen-mojang/json" \
+            ENDSTONE_DIR="$RUNNER_TEMP/protocolgen-endstone"
+
+      - name: Build
+        run: go build ./...
+
+      - name: Test
+        run: go test ./...
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Check formatting
+        run: test -z "$(gofmt -l $(git ls-files '*.go' ':!generated/**'))"
+
+  rust:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: generated/1.26.40/rust
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: cargo-${{ runner.os }}-${{ hashFiles('generated/1.26.40/rust/Cargo.lock', 'generated/1.26.40/rust/Cargo.toml') }}
+          restore-keys: cargo-${{ runner.os }}-
+
+      - name: Select crate toolchain
+        run: rustup show active-toolchain
+
+      - name: Cargo check
+        run: |
+          if [ -f Cargo.lock ]; then
+            cargo check --locked
+          else
+            cargo check
+          fi
+
+      - name: Cargo clippy
+        run: |
+          if [ -f Cargo.lock ]; then
+            cargo clippy --locked -- -D warnings
+          else
+            cargo clippy -- -D warnings
+          fi

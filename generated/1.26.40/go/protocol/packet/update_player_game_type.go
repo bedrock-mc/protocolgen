@@ -4,10 +4,14 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// UpdatePlayerGameType is sent by the server to change the game mode of a player. It is
+// functionally identical to the SetPlayerGameType packet.
 type UpdatePlayerGameType struct {
 	PlayerGameType protocol.GameType
 	TargetPlayer   int64
-	Tick           uint64
+	// Tick is the server tick at which the packet was sent. It is used in relation to
+	// CorrectPlayerMovePrediction.
+	Tick uint64
 }
 
 // Marshal reads or writes UpdatePlayerGameType using its canonical wire layout.

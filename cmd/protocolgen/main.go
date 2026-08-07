@@ -13,11 +13,16 @@ import (
 	"strings"
 
 	"protocolgen/internal/claims"
+	"protocolgen/internal/direction"
+	"protocolgen/internal/docs"
+	"protocolgen/internal/domains"
 	"protocolgen/internal/emitgo"
 	"protocolgen/internal/emitrust"
 	"protocolgen/internal/gophertunneloracle"
 	"protocolgen/internal/ingest"
 	"protocolgen/internal/manifest"
+	"protocolgen/internal/naming"
+	"protocolgen/internal/nbtencoding"
 	"protocolgen/internal/parity"
 	"protocolgen/internal/reconcile"
 	"protocolgen/internal/sourcelock"
@@ -78,14 +83,24 @@ func runReconcile(args []string) error {
 	endstoneID := fs.String("endstone-id", "endstone", "source-lock id for -endstone")
 	endstoneCorrections := fs.String("endstone-corrections", "", "fingerprinted correction directory for -endstone")
 	adjudicationsPath := fs.String("adjudications", "", "fingerprinted adjudications JSON")
+	directionsPath := fs.String("directions", "", "reviewed packet-direction JSON")
+	nbtEncodingsPath := fs.String("nbt-encodings", "", "reviewed per-field NBT encoding JSON")
 	outPath := fs.String("out", "", "canonical manifest v2 output")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
-	if *lockPath == "" || *outPath == "" {
-		return fmt.Errorf("-lock and -out are required")
+	if *lockPath == "" || *directionsPath == "" || *nbtEncodingsPath == "" || *outPath == "" {
+		return fmt.Errorf("-lock, -directions, -nbt-encodings, and -out are required")
 	}
 	lock, err := sourcelock.Load(*lockPath)
+	if err != nil {
+		return err
+	}
+	directions, err := direction.Load(*directionsPath)
+	if err != nil {
+		return err
+	}
+	nbtEncodings, err := nbtencoding.Load(*nbtEncodingsPath)
 	if err != nil {
 		return err
 	}
@@ -114,7 +129,7 @@ func runReconcile(args []string) error {
 			return err
 		}
 	}
-	result, err := reconcile.Reconcile(lock.Target, results, adjudications)
+	result, err := reconcile.ReconcileWithDirectionsAndNBT(lock.Target, results, adjudications, directions, nbtEncodings)
 	if err != nil {
 		return err
 	}
@@ -206,6 +221,9 @@ func runEmitGo(args []string) error {
 	fs := flag.NewFlagSet("emit-go", flag.ContinueOnError)
 	manifestPath := fs.String("manifest", "", "canonical manifest v2 JSON")
 	out := fs.String("out", "", "generated Go source directory")
+	namingPath := fs.String("naming", "", "reviewed naming overlay JSON; defaults to naming.json beside the manifest")
+	domainsPath := fs.String("domains", "", "reviewed domain overlay JSON; defaults to domains.json beside the manifest")
+	docsPath := fs.String("docs", "", "reviewed documentation overlay JSON; defaults to docs.json beside the manifest")
 	protocolImport := fs.String("protocol-import", "", "import path of the generated protocol package")
 	nativeTypes := fs.Bool("native-types", true, "map canonical semantic shapes to established Go types such as uuid.UUID and mgl32 vectors")
 	packetRuntime := fs.Bool("packet-runtime", true, "emit the packet interface and ID methods")
@@ -223,8 +241,23 @@ func runEmitGo(args []string) error {
 	if err != nil {
 		return err
 	}
+	overlay, err := loadNamingOverlay(*manifestPath, *namingPath, m)
+	if err != nil {
+		return err
+	}
+	domainOverlay, err := loadDomainsOverlay(*manifestPath, *domainsPath, m)
+	if err != nil {
+		return err
+	}
+	docOverlay, err := loadDocsOverlay(*manifestPath, *docsPath, m)
+	if err != nil {
+		return err
+	}
 	files, err := emitgo.GenerateWithOptions(m, emitgo.Options{
 		ProtocolImportPath: *protocolImport,
+		Naming:             overlay,
+		Domains:            domainOverlay,
+		Docs:               docOverlay,
 		NativeTypes:        *nativeTypes,
 		EmitPacketRuntime:  *packetRuntime,
 		EmitPacketPools:    *packetPools,
@@ -236,6 +269,7 @@ func runEmitGo(args []string) error {
 		return err
 	}
 	fmt.Printf("Go emitter: %d files -> %s\n", len(files), *out)
+	fmt.Printf("Go docs coverage: types %d/%d, fields %d/%d\n", docs.CoverageOf(m, docOverlay).TypesDocumented, docs.CoverageOf(m, docOverlay).TypesTotal, docs.CoverageOf(m, docOverlay).FieldsDocumented, docs.CoverageOf(m, docOverlay).FieldsTotal)
 	return nil
 }
 
@@ -243,6 +277,9 @@ func runEmitRust(args []string) error {
 	fs := flag.NewFlagSet("emit-rust", flag.ContinueOnError)
 	manifestPath := fs.String("manifest", "", "canonical manifest v2 JSON")
 	out := fs.String("out", "", "generated Rust source directory")
+	namingPath := fs.String("naming", "", "reviewed naming overlay JSON; defaults to naming.json beside the manifest")
+	domainsPath := fs.String("domains", "", "reviewed domain overlay JSON; defaults to domains.json beside the manifest")
+	docsPath := fs.String("docs", "", "reviewed documentation overlay JSON; defaults to docs.json beside the manifest")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
@@ -253,7 +290,19 @@ func runEmitRust(args []string) error {
 	if err != nil {
 		return err
 	}
-	files, err := emitrust.GenerateFiles(m)
+	overlay, err := loadNamingOverlay(*manifestPath, *namingPath, m)
+	if err != nil {
+		return err
+	}
+	domainOverlay, err := loadDomainsOverlay(*manifestPath, *domainsPath, m)
+	if err != nil {
+		return err
+	}
+	docOverlay, err := loadDocsOverlay(*manifestPath, *docsPath, m)
+	if err != nil {
+		return err
+	}
+	files, err := emitrust.GenerateFilesWithOptions(m, emitrust.Options{Naming: overlay, Domains: domainOverlay, Docs: docOverlay})
 	if err != nil {
 		return err
 	}
@@ -261,7 +310,50 @@ func runEmitRust(args []string) error {
 		return err
 	}
 	fmt.Printf("Rust emitter: %d files -> %s\n", len(files), *out)
+	fmt.Printf("Rust docs coverage: types %d/%d, fields %d/%d\n", docs.CoverageOf(m, docOverlay).TypesDocumented, docs.CoverageOf(m, docOverlay).TypesTotal, docs.CoverageOf(m, docOverlay).FieldsDocumented, docs.CoverageOf(m, docOverlay).FieldsTotal)
 	return nil
+}
+
+func loadNamingOverlay(manifestPath, explicitPath string, m manifest.Manifest) (naming.Overlay, error) {
+	path := explicitPath
+	if path == "" {
+		path = filepath.Join(filepath.Dir(manifestPath), "naming.json")
+	}
+	if _, err := os.Stat(path); err != nil {
+		if os.IsNotExist(err) && explicitPath == "" {
+			return naming.Overlay{}, nil
+		}
+		return naming.Overlay{}, fmt.Errorf("stat naming overlay: %w", err)
+	}
+	return naming.LoadOverlay(path, m)
+}
+
+func loadDomainsOverlay(manifestPath, explicitPath string, m manifest.Manifest) (domains.Overlay, error) {
+	path := explicitPath
+	if path == "" {
+		path = filepath.Join(filepath.Dir(manifestPath), "domains.json")
+	}
+	if _, err := os.Stat(path); err != nil {
+		if os.IsNotExist(err) && explicitPath == "" {
+			return domains.Overlay{}, nil
+		}
+		return domains.Overlay{}, fmt.Errorf("stat domains overlay: %w", err)
+	}
+	return domains.LoadOverlay(path, m)
+}
+
+func loadDocsOverlay(manifestPath, explicitPath string, m manifest.Manifest) (docs.Overlay, error) {
+	path := explicitPath
+	if path == "" {
+		path = filepath.Join(filepath.Dir(manifestPath), "docs.json")
+	}
+	if _, err := os.Stat(path); err != nil {
+		if os.IsNotExist(err) && explicitPath == "" {
+			return docs.Overlay{}, nil
+		}
+		return docs.Overlay{}, fmt.Errorf("stat docs overlay: %w", err)
+	}
+	return docs.LoadOverlay(path, m)
 }
 
 func runParity(args []string) error {

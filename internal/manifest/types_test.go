@@ -64,6 +64,18 @@ func TestValidateRejectsReachableUnresolvedNode(t *testing.T) {
 	}
 }
 
+func TestValidateRejectsUnknownPacketDirection(t *testing.T) {
+	value := Manifest{
+		SchemaVersion: SchemaVersion,
+		Target:        Target{MinecraftVersion: "fixture", ProtocolVersion: 2168},
+		Sources:       []SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture-2168", Digest: "sha256:fixture"}},
+		Packets:       []Packet{{ID: 1, Name: "UnknownDirection", Direction: DirectionUnknown}},
+	}
+	if err := Validate(value); err == nil || !strings.Contains(err.Error(), "unknown direction") {
+		t.Fatalf("Validate error = %v, want unknown direction failure", err)
+	}
+}
+
 func TestPrimitiveVarintAndZigZagRemainDistinct(t *testing.T) {
 	varint, err := PrimitiveForCode("var_i32")
 	if err != nil {
@@ -75,6 +87,30 @@ func TestPrimitiveVarintAndZigZagRemainDistinct(t *testing.T) {
 	}
 	if varint.Signed != zigzag.Signed || varint.Width != zigzag.Width || varint.ZigZag || !zigzag.ZigZag {
 		t.Fatalf("varint=%+v zigzag=%+v", varint, zigzag)
+	}
+}
+
+func TestValidateRequiresExplicitNBTEncoding(t *testing.T) {
+	base := Manifest{
+		SchemaVersion: SchemaVersion,
+		Target:        Target{MinecraftVersion: "fixture", ProtocolVersion: 2168},
+		Sources:       []SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "sha256:fixture"}},
+		Packets: []Packet{{ID: 1, Name: "NBT", Direction: DirectionClientbound, Fields: []Field{{
+			Ordinal: 0, Name: "Value", Encode: Primitive("nbt_le"), Symmetry: Symmetric,
+			Provenance: Provenance{Pins: []string{"fixture"}},
+		}}}},
+	}
+	if err := Validate(base); err == nil || !strings.Contains(err.Error(), "NBT encoding") {
+		t.Fatalf("Validate error = %v, want missing NBT encoding", err)
+	}
+
+	base.Packets[0].Fields[0].Encode = NBT(NBTNetwork)
+	if err := Validate(base); err != nil {
+		t.Fatalf("Validate network NBT: %v", err)
+	}
+	base.Packets[0].Fields[0].Encode = NBT(NBTPersistent)
+	if err := Validate(base); err != nil {
+		t.Fatalf("Validate persistent NBT: %v", err)
 	}
 }
 

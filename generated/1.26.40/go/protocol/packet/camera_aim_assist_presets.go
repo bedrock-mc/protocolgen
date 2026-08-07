@@ -4,20 +4,23 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// CameraAimAssistPresets is sent by the server to the client to provide a list of categories and
+// presets that can be used when sending a CameraAimAssist packet or a CameraInstruction including
+// aim assist.
 type CameraAimAssistPresets struct {
-	CameraAimAssistPresets    []protocol.CameraAimAssistCategoryDefinition
+	// CameraAimAssistPresets is a list of categories which can be referenced by one of the Presets.
+	CameraAimAssistPresets []protocol.CameraAimAssistCategoryDefinition
+	// CameraAimAssistCategories is a list of presets which define a base for how aim assist should
+	// behave
 	CameraAimAssistCategories []protocol.CameraAimAssistPresetDefinition
-	Operation                 protocol.CameraAimAssistPresetsPacketOperation
+	// Operation is the operation to perform with the presets. It is one of the constants above.
+	Operation protocol.CameraAimAssistPresetOperation
 }
 
 // Marshal reads or writes CameraAimAssistPresets using its canonical wire layout.
 func (x *CameraAimAssistPresets) Marshal(io protocol.IO) {
-	protocol.FuncSlice(io, &x.CameraAimAssistPresets, io.Varuint32, func(value *protocol.CameraAimAssistCategoryDefinition) {
-		value.Marshal(io)
-	})
-	protocol.FuncSlice(io, &x.CameraAimAssistCategories, io.Varuint32, func(value *protocol.CameraAimAssistPresetDefinition) {
-		value.Marshal(io)
-	})
+	protocol.Slice(io, &x.CameraAimAssistPresets)
+	protocol.Slice(io, &x.CameraAimAssistCategories)
 	protocol.IntegerFunc(&x.Operation, io.Uint8)
 }
 

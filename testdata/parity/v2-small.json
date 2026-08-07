@@ -8,7 +8,7 @@
     {
       "id": 7,
       "name": "Fixture",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,

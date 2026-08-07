@@ -4,6 +4,8 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// ResourcePacksReadyForValidation is sent by the client to inform the server that the client has
+// finished loading resource packs and is ready for validation.
 type ResourcePacksReadyForValidation struct {
 }
 

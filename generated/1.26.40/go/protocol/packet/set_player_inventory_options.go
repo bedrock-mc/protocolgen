@@ -4,6 +4,8 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// SetPlayerInventoryOptions is a bidirectional packet that can be used to update the inventory
+// options of a player.
 type SetPlayerInventoryOptions struct {
 	InventoryOptions protocol.InventoryOptions
 }

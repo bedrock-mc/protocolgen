@@ -1,0 +1,301 @@
+{
+  "schema_version": 1,
+  "minecraft_version": "1.26.40",
+  "protocol_version": 2168,
+  "entries": [
+    {
+      "packet": 8,
+      "direction": "client",
+      "input_hex": "",
+      "kind": "decode-success",
+      "rationale": "Pinned fork bug: its response enum is 0-based (SendPacks=1) while Cloudburst (Status ordinal: REFUSED=1, SEND_PACKS=2), PocketMine, and the reconciled Mojang+Endstone docs all place the pack list at wire value 2. The manifest layout is corroborated; the fork reads the list at the wrong tag. Fix belongs in the fork."
+    },
+    {
+      "packet": 8,
+      "direction": "client",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle derives the response name string from the response enum on encode (resource_pack_client_response.go Marshal: resourcePackResponseToString), discarding the wire string; generated preserves it."
+    },
+    {
+      "packet": 8,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "decode-success",
+      "rationale": "Pinned fork bug: its response enum is 0-based (SendPacks=1) while Cloudburst (Status ordinal: REFUSED=1, SEND_PACKS=2), PocketMine, and the reconciled Mojang+Endstone docs all place the pack list at wire value 2. The manifest layout is corroborated; the fork reads the list at the wrong tag. Fix belongs in the fork."
+    },
+    {
+      "packet": 8,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle derives the response name string from the response enum on encode (resource_pack_client_response.go Marshal: resourcePackResponseToString), discarding the wire string; generated preserves it."
+    },
+    {
+      "packet": 9,
+      "direction": "client",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle derives the text category byte from TextType on encode (packet/text.go Marshal), discarding the wire byte; generated preserves it."
+    },
+    {
+      "packet": 9,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle derives the text category byte from TextType on encode (packet/text.go Marshal), discarding the wire byte; generated preserves it."
+    },
+    {
+      "packet": 11,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle re-encodes absent trailing network NBT (StartGame PropertyData) as an explicit empty compound 0a0000; generated preserves wire bytes."
+    },
+    {
+      "packet": 12,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle re-encodes empty item user-data / entity-data NBT as an explicit empty compound; generated preserves wire bytes."
+    },
+    {
+      "packet": 15,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle re-encodes empty item user-data NBT as an explicit empty compound; generated preserves wire bytes."
+    },
+    {
+      "packet": 30,
+      "direction": "client",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle derives the legacy-slots presence bool from LegacyRequestID on encode (packet/inventory_transaction.go Marshal), discarding the wire bool; generated preserves it."
+    },
+    {
+      "packet": 30,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle derives the legacy-slots presence bool from LegacyRequestID on encode (packet/inventory_transaction.go Marshal), discarding the wire bool; generated preserves it."
+    },
+    {
+      "packet": 31,
+      "direction": "client",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle re-encodes empty item user-data NBT as an explicit empty compound; generated preserves wire bytes."
+    },
+    {
+      "packet": 31,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle re-encodes empty item user-data NBT as an explicit empty compound; generated preserves wire bytes."
+    },
+    {
+      "packet": 32,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle re-encodes empty item user-data NBT as an explicit empty compound; generated preserves wire bytes."
+    },
+    {
+      "packet": 49,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle re-encodes empty item user-data NBT as an explicit empty compound; generated preserves wire bytes."
+    },
+    {
+      "packet": 50,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle re-encodes empty item user-data NBT as an explicit empty compound; generated preserves wire bytes."
+    },
+    {
+      "packet": 52,
+      "direction": "client",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle packs MaterialReducer as a single varint mix of (InputItem.NetworkID << 16) | MetadataValue and re-derives it on encode (writer.go MaterialReducer), a length-changing round trip; generated preserves the wire fields. Combined with bool canonicalization the encodings differ in length."
+    },
+    {
+      "packet": 52,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle packs MaterialReducer as a single varint mix of (InputItem.NetworkID << 16) | MetadataValue and re-derives it on encode (writer.go MaterialReducer), a length-changing round trip; generated preserves the wire fields. Combined with bool canonicalization the encodings differ in length."
+    },
+    {
+      "packet": 56,
+      "direction": "client",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle decodes BlockActorData NBT to a map and re-encodes an explicit empty compound 0a0000 for empty input; generated preserves wire bytes (block_actor_data.go:27)."
+    },
+    {
+      "packet": 56,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle decodes BlockActorData NBT to a map and re-encodes an explicit empty compound 0a0000 for empty input; generated preserves wire bytes (block_actor_data.go:27)."
+    },
+    {
+      "packet": 65,
+      "direction": "client",
+      "input_hex": "",
+      "kind": "decode-success",
+      "rationale": "LegacyTelemetryEvent carries the event twice on the wire: a zigzag type and a varuint ordinal. The oracle selects the body by type and re-derives the ordinal on encode (writer.go EventOrdinal); the generated union selects by the ordinal tag. Well-formed traffic always agrees on both \u2014 the oracle itself derives one from the other \u2014 so a different body is only selectable with fuzzed input whose type and ordinal disagree."
+    },
+    {
+      "packet": 65,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "decode-success",
+      "rationale": "LegacyTelemetryEvent carries the event twice on the wire: a zigzag type and a varuint ordinal. The oracle selects the body by type and re-derives the ordinal on encode (writer.go EventOrdinal); the generated union selects by the ordinal tag. Well-formed traffic always agrees on both \u2014 the oracle itself derives one from the other \u2014 so a different body is only selectable with fuzzed input whose type and ordinal disagree."
+    },
+    {
+      "packet": 65,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle re-derives the event ordinal from the event type on encode (writer.go EventOrdinal: lookupEventOrdinal), discarding the wire ordinal; generated preserves it."
+    },
+    {
+      "packet": 80,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "decode-success",
+      "rationale": "Oracle reads this packet's NBT payload as rest-of-buffer raw bytes (io.Bytes), consuming any trailing garbage; generated scans NBT structure and rejects bytes past the NBT boundary. Well-formed payloads fill the remainder exactly."
+    },
+    {
+      "packet": 81,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "decode-success",
+      "rationale": "Oracle reads this packet's NBT payload as rest-of-buffer raw bytes (io.Bytes), consuming any trailing garbage; generated scans NBT structure and rejects bytes past the NBT boundary. Well-formed payloads fill the remainder exactly."
+    },
+    {
+      "packet": 86,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle SoundPos converts the block position through a lossy /8*8 float round-trip on decode+encode; generated preserves the raw coordinate varint."
+    },
+    {
+      "packet": 93,
+      "direction": "client",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle Skin writer normalizes an empty Trusted string to the literal 'false'; generated preserves the decoded wire string."
+    },
+    {
+      "packet": 93,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle Skin writer normalizes an empty Trusted string to the literal 'false'; generated preserves the decoded wire string."
+    },
+    {
+      "packet": 108,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle derives the scoreboard entry type-name string from the variant on encode (scoreboard.go:44 typeNames), discarding the wire string; generated preserves it."
+    },
+    {
+      "packet": 119,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "decode-success",
+      "rationale": "Oracle reads this packet's NBT payload as rest-of-buffer raw bytes (io.Bytes), consuming any trailing garbage; generated scans NBT structure and rejects bytes past the NBT boundary. Well-formed payloads fill the remainder exactly."
+    },
+    {
+      "packet": 124,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "decode-success",
+      "rationale": "Oracle reads this packet's NBT payload as rest-of-buffer raw bytes (io.Bytes), consuming any trailing garbage; generated scans NBT structure and rejects bytes past the NBT boundary. Well-formed payloads fill the remainder exactly."
+    },
+    {
+      "packet": 148,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle derives ContainerInfo presence from slice emptiness on encode (item_stack.go ItemStackResponse Marshal DoubleOptionalFunc); a present-but-empty wire optional re-encodes as absent; generated preserves it."
+    },
+    {
+      "packet": 153,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle re-encodes absent network NBT payload as an explicit empty compound; generated preserves wire bytes."
+    },
+    {
+      "packet": 162,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle re-encodes empty per-item network NBT as explicit empty compounds; generated preserves wire bytes."
+    },
+    {
+      "packet": 165,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle re-encodes absent network NBT payload as an explicit empty compound; generated preserves wire bytes."
+    },
+    {
+      "packet": 166,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle re-encodes absent network NBT payload as an explicit empty compound; generated preserves wire bytes."
+    },
+    {
+      "packet": 184,
+      "direction": "client",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle AbilityValue zero-fills the inactive union arm on encode (writer.go:441); the wire always carries both bool and float arms and generated preserves both."
+    },
+    {
+      "packet": 190,
+      "direction": "client",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle re-encodes absent network NBT payload as an explicit empty compound; generated preserves wire bytes."
+    },
+    {
+      "packet": 190,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle re-encodes absent network NBT payload as an explicit empty compound; generated preserves wire bytes."
+    },
+    {
+      "packet": 313,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle re-encodes absent network NBT payload as an explicit empty compound; generated preserves wire bytes."
+    },
+    {
+      "packet": 326,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle reads PlayerLocation's reserved varint into a discarded local and always re-encodes zero (player_location.go Marshal); generated preserves the wire value."
+    },
+    {
+      "packet": 347,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "decode-success",
+      "rationale": "Pinned fork carries a stale PresenceInfo shape (ExperienceName, WorldName, RichPresenceID in server_join_information.go:52) while both pinned sources independently describe ServerConfiguration::PresenceConfiguration as a single optional richPresenceId (Mojang presenceConfig.json, Endstone ServerConfiguration__PresenceConfiguration.json). The manifest layout is corroborated; the fork reads extra fields. Fix belongs in the fork."
+    }
+  ]
+}

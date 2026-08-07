@@ -4,14 +4,17 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// DebugInfo is a packet sent by the server to the client. It does not seem to do anything when sent
+// to the normal client in 1.16.
 type DebugInfo struct {
-	ActorId int64
-	Data    string
+	ActorID int64
+	// Data is the debug data.
+	Data string
 }
 
 // Marshal reads or writes DebugInfo using its canonical wire layout.
 func (x *DebugInfo) Marshal(io protocol.IO) {
-	io.ActorUniqueID(&x.ActorId)
+	io.ActorUniqueID(&x.ActorID)
 	io.String(&x.Data)
 }
 

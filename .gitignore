@@ -2,4 +2,7 @@
 *.test
 /pgen
 generated/*/rust/Cargo.lock
-generated/*/rust/target/
+generated/**/rust/target/
+
+# Go fuzz crashers are reproduction artifacts, not corpus entries.
+differential/testdata/fuzz/

@@ -4,8 +4,14 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// ContainerOpen is sent by the server to open a container client-side. This container must be
+// physically present in the world, for the packet to have any effect. Unlike Java Edition, Bedrock
+// Edition requires that chests for example must be present and in range to open its inventory.
 type ContainerOpen struct {
-	ContainerId   uint8
+	ContainerID uint8
+	// ContainerType is the type ID of the container that is being opened when opening the container at
+	// the position of the packet. It depends on the block/entity, and could, for example, be the window
+	// type of a chest or a hopper, but also a horse inventory.
 	ContainerType uint8
 	Position      protocol.BlockPos
 	TargetActorID int64
@@ -13,7 +19,7 @@ type ContainerOpen struct {
 
 // Marshal reads or writes ContainerOpen using its canonical wire layout.
 func (x *ContainerOpen) Marshal(io protocol.IO) {
-	io.Uint8(&x.ContainerId)
+	io.Uint8(&x.ContainerID)
 	io.Uint8(&x.ContainerType)
 	x.Position.Marshal(io)
 	io.ActorUniqueID(&x.TargetActorID)

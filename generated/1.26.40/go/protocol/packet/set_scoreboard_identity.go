@@ -4,17 +4,25 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// SetScoreboardIdentity is sent by the server to change the identity type of one of the entries on
+// a scoreboard. This is used to change, for example, an entry pointing to a player, to a fake
+// player when it leaves the server, and to change it back to a real player when it joins again. In
+// non-vanilla situations, the packet is quite useless.
 type SetScoreboardIdentity struct {
+	// ScoreboardIdentityPacketType is the type of the action to execute. The action is either
+	// ScoreboardIdentityActionRegister to associate an identity with the entry, or
+	// ScoreboardIdentityActionClear to remove associations with an entity.
 	ScoreboardIdentityPacketType protocol.ScoreboardIdentityPacketType
-	ScoreboardIdentityInfo       []protocol.ScoreboardIdentityPacketInfo
+	// ScoreboardIdentityInfo is a list of all entries in the packet. Each of these entries points to
+	// one of the entries on a scoreboard. Depending on ActionType, their identity will either be
+	// registered or cleared.
+	ScoreboardIdentityInfo []protocol.ScoreboardIdentityPacketInfo
 }
 
 // Marshal reads or writes SetScoreboardIdentity using its canonical wire layout.
 func (x *SetScoreboardIdentity) Marshal(io protocol.IO) {
 	protocol.IntegerFunc(&x.ScoreboardIdentityPacketType, io.Uint8)
-	protocol.FuncSlice(io, &x.ScoreboardIdentityInfo, io.Varuint32, func(value *protocol.ScoreboardIdentityPacketInfo) {
-		value.Marshal(io)
-	})
+	protocol.Slice(io, &x.ScoreboardIdentityInfo)
 }
 
 // ID returns the protocol ID for SetScoreboardIdentity.

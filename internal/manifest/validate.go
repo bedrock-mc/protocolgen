@@ -50,6 +50,9 @@ func Validate(m Manifest) error {
 		if !validDirection(packet.Direction) {
 			return fmt.Errorf("packet %s has invalid direction %q", packet.Name, packet.Direction)
 		}
+		if packet.Direction == DirectionUnknown {
+			return fmt.Errorf("packet %s has unknown direction", packet.Name)
+		}
 		previous := -1
 		for fieldIndex, field := range packet.Fields {
 			path := fmt.Sprintf("packet %s field[%d]", packet.Name, fieldIndex)
@@ -128,6 +131,9 @@ func validateNode(node Node, path string, sourceIDs map[string]bool) error {
 		canonical, ok := primitiveTable[node.Primitive.Code]
 		if !ok || !reflect.DeepEqual(canonical, *node.Primitive) {
 			return fmt.Errorf("%s primitive %q has incomplete or invented signedness/width/endianness", path, node.Primitive.Code)
+		}
+		if node.Primitive.Code == "nbt_le" && !ValidNBTEncoding(node.Encoding) {
+			return fmt.Errorf("%s NBT encoding must be %q or %q", path, NBTNetwork, NBTPersistent)
 		}
 	case KindString, KindBytes:
 		if node.Prefix == nil {

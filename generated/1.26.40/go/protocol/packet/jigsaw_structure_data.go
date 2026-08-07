@@ -4,13 +4,15 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// JigsawStructureData is sent by the server to let the client know all the rules for jigsaw
+// structures.
 type JigsawStructureData struct {
 	JigsawStructureDataTag []byte
 }
 
 // Marshal reads or writes JigsawStructureData using its canonical wire layout.
 func (x *JigsawStructureData) Marshal(io protocol.IO) {
-	io.NBT(&x.JigsawStructureDataTag)
+	io.NBT(&x.JigsawStructureDataTag, protocol.NBTNetwork)
 }
 
 // ID returns the protocol ID for JigsawStructureData.

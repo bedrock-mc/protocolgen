@@ -4,14 +4,18 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// GameTestRequest ...
 type GameTestRequest struct {
+	// MaxTestsPerBatch ...
 	MaxTestsPerBatch int32
 	RepeatCount      int32
-	Rotation         protocol.Rotation
-	StopOnFailure    bool
-	TestPos          protocol.BlockPos
-	TestsPerRow      int32
-	TestName         string
+	// Rotation represents the rotation of the test. It is one of the constants above.
+	Rotation      protocol.Rotation
+	StopOnFailure bool
+	TestPos       protocol.BlockPos
+	// TestsPerRow ...
+	TestsPerRow int32
+	TestName    string
 }
 
 // Marshal reads or writes GameTestRequest using its canonical wire layout.

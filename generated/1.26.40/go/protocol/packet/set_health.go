@@ -4,7 +4,11 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// SetHealth is sent by the server. It sets the health of the player it is sent to. The SetHealth
+// packet should no longer be used. Instead, the health attribute should be used so that the health
+// and maximum health may be changed directly.
 type SetHealth struct {
+	// Health is the new health of the player.
 	Health int32
 }
 

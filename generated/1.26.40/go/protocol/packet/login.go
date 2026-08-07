@@ -4,9 +4,14 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// Login is sent when the client initially tries to join the server. It is the first packet sent and
+// contains information specific to the player.
 type Login struct {
 	ClientNetworkVersion int32
-	ConnectionRequest    string
+	// ConnectionRequest is a string containing information about the player and JWTs that may be used
+	// to verify if the player is connected to XBOX Live. The connection request also contains the
+	// necessary client public key to initiate encryption.
+	ConnectionRequest string
 }
 
 // Marshal reads or writes Login using its canonical wire layout.

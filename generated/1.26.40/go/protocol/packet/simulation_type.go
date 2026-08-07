@@ -4,8 +4,10 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// SimulationType is an in-progress packet. We currently do not know the use case.
 type SimulationType struct {
-	SimType protocol.SimulationTypeType
+	// SimType is the simulation type selected.
+	SimType protocol.SimulationTypeEnum
 }
 
 // Marshal reads or writes SimulationType using its canonical wire layout.

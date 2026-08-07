@@ -4,6 +4,8 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// UpdateSubChunkBlocks is essentially just UpdateBlock packet, however for a set of blocks in a
+// sub-chunk.
 type UpdateSubChunkBlocks struct {
 	SubChunkBlockPosition protocol.BlockPos
 	BlocksChanged         protocol.UpdateSubChunkBlocksChangedInfo

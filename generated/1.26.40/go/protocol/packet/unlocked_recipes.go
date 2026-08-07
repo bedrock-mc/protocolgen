@@ -4,8 +4,10 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
+// UnlockedRecipes gives the client a list of recipes that have been unlocked, restricting the
+// recipes that appear in the recipe book.
 type UnlockedRecipes struct {
-	PacketType          protocol.UnlockedRecipesPacketType
+	PacketType          protocol.PacketType
 	UnlockedRecipesList []string
 }
 
