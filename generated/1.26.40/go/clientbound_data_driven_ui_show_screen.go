@@ -5,5 +5,5 @@ package protocol2168
 type ClientboundDataDrivenUIShowScreen struct {
 	ScreenId       string
 	FormId         uint32
-	DataInstanceId *uint32
+	DataInstanceId Optional[uint32]
 }

@@ -8,5 +8,5 @@ type ActorEvent struct {
 	TargetRuntimeID ActorRuntimeID
 	EventID         ActorEventType
 	Data            int32
-	FireAtPosition  *mgl32.Vec3
+	FireAtPosition  Optional[mgl32.Vec3]
 }

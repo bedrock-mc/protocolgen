@@ -106,14 +106,21 @@ func (g *generator) goType(node manifest.Node, hint string) (string, error) {
 		if node.Value == nil {
 			return "", fmt.Errorf("optional has no value")
 		}
-		value, err := g.goType(*node.Value, hint+"Value")
+		valueNode := *node.Value
+		// Cereal double optionals carry an always-present outer marker. Keep both
+		// nodes in the manifest for codec generation, but expose only the
+		// meaningful inner presence state, matching gophertunnel's Optional[T].
+		if valueNode.Kind == manifest.KindOptional {
+			if valueNode.Value == nil {
+				return "", fmt.Errorf("nested optional has no value")
+			}
+			valueNode = *valueNode.Value
+		}
+		value, err := g.goType(valueNode, hint+"Value")
 		if err != nil {
 			return "", err
 		}
-		if strings.HasPrefix(value, "[]") || strings.HasPrefix(value, "map[") || strings.HasPrefix(value, "*") {
-			return "*" + value, nil
-		}
-		return "*" + value, nil
+		return "Optional[" + value + "]", nil
 	case manifest.KindStruct:
 		return g.registerStruct(node, hint)
 	case manifest.KindMap:
@@ -393,6 +400,12 @@ func emitTypeDefinitions(packageName string, definitions []typeDefinition) (stri
 	var b strings.Builder
 	fmt.Fprintf(&b, "// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\npackage %s\n\n", packageName)
 	writeGoImports(&b, goImportsForDefinitions(definitions))
+	b.WriteString("// Optional holds a value that may be absent from the wire.\n")
+	b.WriteString("type Optional[T any] struct {\n\tset bool\n\tval T\n}\n\n")
+	b.WriteString("// Option creates a present Optional containing value.\n")
+	b.WriteString("func Option[T any](value T) Optional[T] {\n\treturn Optional[T]{set: true, val: value}\n}\n\n")
+	b.WriteString("// Value returns the optional value and whether it is present.\n")
+	b.WriteString("func (o Optional[T]) Value() (T, bool) {\n\treturn o.val, o.set\n}\n\n")
 	b.WriteString("// OrderedEntry preserves the source order and duplicate keys of a wire map.\n")
 	b.WriteString("type OrderedEntry[K, V any] struct {\n\tKey K\n\tValue V\n}\n\n")
 	for _, definition := range definitions {

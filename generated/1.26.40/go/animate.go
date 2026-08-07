@@ -6,5 +6,5 @@ type Animate struct {
 	Action               AnimateAction
 	TargetActorRuntimeID ActorRuntimeID
 	Data                 float32
-	SwingSource          *string
+	SwingSource          Optional[string]
 }

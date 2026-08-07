@@ -4,5 +4,5 @@ package protocol2168
 
 type ServerboundLoadingScreen struct {
 	LoadingScreenPacketType ServerboundLoadingScreenPacketType
-	LoadingScreenId         *uint32
+	LoadingScreenId         Optional[uint32]
 }

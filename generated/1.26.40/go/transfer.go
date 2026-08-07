@@ -6,5 +6,5 @@ type Transfer struct {
 	ServerAddress           string
 	ServerPort              uint16
 	ReloadWorld             bool
-	GatheringsConfiguration *ServerConfigurationGatheringsConfigurationJoinInfo
+	GatheringsConfiguration Optional[ServerConfigurationGatheringsConfigurationJoinInfo]
 }

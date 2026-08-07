@@ -3,5 +3,5 @@
 package protocol2168
 
 type ServerPresenceInfo struct {
-	PresenceConfiguration *ServerConfigurationPresenceConfiguration
+	PresenceConfiguration Optional[ServerConfigurationPresenceConfiguration]
 }

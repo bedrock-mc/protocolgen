@@ -9,7 +9,7 @@ type CorrectPlayerMovePrediction struct {
 	Pos                    mgl32.Vec3
 	PosDelta               mgl32.Vec3
 	Rotation               mgl32.Vec2
-	VehicleAngularVelocity *float32
+	VehicleAngularVelocity Optional[float32]
 	OnGround               bool
 	Tick                   PlayerInputTick
 }

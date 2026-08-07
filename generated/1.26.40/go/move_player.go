@@ -12,6 +12,6 @@ type MovePlayer struct {
 	PositionMode    PlayerPositionModeComponentPositionMode
 	OnGround        bool
 	RidingRuntimeID ActorRuntimeID
-	TeleportData    *MovePlayerTeleportData
+	TeleportData    Optional[MovePlayerTeleportData]
 	Tick            PlayerInputTick
 }

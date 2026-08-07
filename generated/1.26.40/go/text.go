@@ -7,5 +7,5 @@ type Text struct {
 	Body            TextBody
 	SenderSXUID     string
 	PlatformId      string
-	FilteredMessage *string
+	FilteredMessage Optional[string]
 }

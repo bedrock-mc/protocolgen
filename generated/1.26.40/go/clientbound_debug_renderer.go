@@ -4,5 +4,5 @@ package protocol2168
 
 type ClientboundDebugRenderer struct {
 	Type            string
-	DebugMarkerData *ClientboundDebugRendererDebugMarkerData
+	DebugMarkerData Optional[ClientboundDebugRendererDebugMarkerData]
 }

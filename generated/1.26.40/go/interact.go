@@ -7,5 +7,5 @@ import "github.com/go-gl/mathgl/mgl32"
 type Interact struct {
 	Action          InteractAction
 	TargetRuntimeID ActorRuntimeID
-	Position        *mgl32.Vec3
+	Position        Optional[mgl32.Vec3]
 }

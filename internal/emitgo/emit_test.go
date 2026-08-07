@@ -30,11 +30,35 @@ func TestGenerateConsumesOnlyCanonicalManifest(t *testing.T) {
 			t.Errorf("%s contains source/profile lookup text", name)
 		}
 	}
-	if !strings.Contains(files["vocabulary.go"], "type Vocabulary struct") || !strings.Contains(files["ids.go"], "IDVocabulary uint32 = 1") {
+	if !strings.Contains(files["vocabulary.go"], "type Vocabulary struct") || !strings.Contains(files["vocabulary.go"], "Maybe Optional[string]") || !strings.Contains(files["ids.go"], "IDVocabulary uint32 = 1") {
 		t.Fatalf("generated output omitted packet definition or ID:\n%s\n%s", files["vocabulary.go"], files["ids.go"])
 	}
 	if strings.Contains(files["vocabulary.go"], "Shape{") || strings.Contains(files["vocabulary.go"], "func (p *Vocabulary) Encode") {
 		t.Fatalf("generated packet exposed runtime schema or placeholder codecs:\n%s", files["vocabulary.go"])
+	}
+}
+
+func TestGenerateCollapsesCerealDoubleOptionalToOnePublicOptional(t *testing.T) {
+	doubleOptional := manifest.Optional(manifest.Optional(manifest.Primitive("i32le")))
+	m := manifest.Manifest{
+		SchemaVersion: 2,
+		Target:        manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168},
+		Sources:       []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:optional", MinecraftVersion: "fixture", ProtocolVersion: 2168}},
+		Packets:       []manifest.Packet{{ID: 1, Name: "OptionalPacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{Ordinal: 0, Name: "Value", Encode: doubleOptional, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}},
+	}
+	files, err := Generate(m, "wiregen")
+	if err != nil {
+		t.Fatal(err)
+	}
+	packet := files["optional.go"]
+	if !strings.Contains(packet, "Value Optional[int32]") || strings.Contains(packet, "**int32") || strings.Contains(packet, "Optional[Optional[") {
+		t.Fatalf("double optional did not use one public Optional:\n%s", packet)
+	}
+	types := files["types.go"]
+	for _, want := range []string{"type Optional[T any] struct", "func Option[T any]", "func (o Optional[T]) Value() (T, bool)"} {
+		if !strings.Contains(types, want) {
+			t.Fatalf("generated optional support omits %q:\n%s", want, types)
+		}
 	}
 }
 

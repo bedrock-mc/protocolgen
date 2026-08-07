@@ -3,6 +3,6 @@
 package protocol2168
 
 type UpdateClientOptions struct {
-	GraphicsModeChange    *GraphicsMode
-	FilterProfanityChange *bool
+	GraphicsModeChange    Optional[GraphicsMode]
+	FilterProfanityChange Optional[bool]
 }

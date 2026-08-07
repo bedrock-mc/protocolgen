@@ -12,5 +12,5 @@ type LevelSoundEvent struct {
 	IsBaby          bool
 	IsGlobal        bool
 	ActorUniqueId   int64
-	FireAtPosition  *mgl32.Vec3
+	FireAtPosition  Optional[mgl32.Vec3]
 }

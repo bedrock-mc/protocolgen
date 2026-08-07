@@ -6,10 +6,10 @@ import "github.com/go-gl/mathgl/mgl32"
 
 type GraphicsOverrideParameter struct {
 	ParameterKeyframeValues []OrderedEntry[float32, mgl32.Vec3]
-	FloatValue              *float32
-	Vec3Value               *mgl32.Vec3
+	FloatValue              Optional[float32]
+	Vec3Value               Optional[mgl32.Vec3]
 	BiomeIdentifier         string
-	PlayerIdentifier        *string
+	PlayerIdentifier        Optional[string]
 	IdentifierForParameter  GraphicsOverrideParameterType
 	ResetParameter          bool
 }

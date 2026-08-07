@@ -9,5 +9,5 @@ type SpawnParticleEffect struct {
 	ActorId         ActorUniqueID
 	Position        mgl32.Vec3
 	EffectName      string
-	MolangVariables *string
+	MolangVariables Optional[string]
 }

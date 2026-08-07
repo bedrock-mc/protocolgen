@@ -3,5 +3,5 @@
 package protocol2168
 
 type ServerStoreInfo struct {
-	ClientStoreEntryPointConfiguration *ServerConfigurationClientStoreEntryPointConfiguration
+	ClientStoreEntryPointConfiguration Optional[ServerConfigurationClientStoreEntryPointConfiguration]
 }

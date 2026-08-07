@@ -9,6 +9,22 @@ import (
 	"github.com/google/uuid"
 )
 
+// Optional holds a value that may be absent from the wire.
+type Optional[T any] struct {
+	set bool
+	val T
+}
+
+// Option creates a present Optional containing value.
+func Option[T any](value T) Optional[T] {
+	return Optional[T]{set: true, val: value}
+}
+
+// Value returns the optional value and whether it is present.
+func (o Optional[T]) Value() (T, bool) {
+	return o.val, o.set
+}
+
 // OrderedEntry preserves the source order and duplicate keys of a wire map.
 type OrderedEntry[K, V any] struct {
 	Key   K
@@ -49,7 +65,7 @@ type AdventureSettings struct {
 }
 
 type AgentCapabilities struct {
-	CanModifyBlocks *bool
+	CanModifyBlocks Optional[bool]
 }
 
 type AnimatedImageData struct {
@@ -65,10 +81,10 @@ type ArmorSlotAndDamagePair struct {
 }
 
 type ArrowData struct {
-	ArrowEndLocation *mgl32.Vec3
-	ArrowHeadLength  *float32
-	ArrowHeadRadius  *float32
-	NumSegments      *uint8
+	ArrowEndLocation Optional[mgl32.Vec3]
+	ArrowHeadLength  Optional[float32]
+	ArrowHeadRadius  Optional[float32]
+	NumSegments      Optional[uint8]
 }
 
 func (ArrowData) isPrimitiveShapeDataExtraShapeData() {}
@@ -238,15 +254,15 @@ type BedrockProfileWhiskerDiagnosticsScopeDataSummary struct {
 
 type BedrockSafetyRedactableString struct {
 	Unredacted string
-	Redacted   *string
+	Redacted   Optional[string]
 }
 
 type BiomeCappedSurfaceData struct {
 	FloorBlocks     []uint32
 	CeilingBlocks   []uint32
-	SeaBlock        *uint32
-	FoundationBlock *uint32
-	BeachBlock      *uint32
+	SeaBlock        Optional[uint32]
+	FoundationBlock Optional[uint32]
+	BeachBlock      Optional[uint32]
 }
 
 type BiomeClimateData struct {
@@ -285,17 +301,17 @@ type BiomeCoordinateData struct {
 }
 
 type BiomeDefinitionChunkGenData struct {
-	Climate                    *BiomeClimateData
-	ConsolidatedFeatures       *BiomeConsolidatedFeaturesData
-	MountainParams             *BiomeMountainParamsData
-	SurfaceMaterialAdjustments *BiomeSurfaceMaterialAdjustmentData
-	OverworldGenRules          *BiomeOverworldGenRulesData
-	MultinoiseGenRules         *BiomeMultinoiseGenRulesData
-	LegacyWorldGenRules        *BiomeLegacyWorldGenRulesData
-	ReplacementBiomes          *BiomeReplacementsData
-	VillageType                *VillageType
-	SurfaceBuilderData         *BiomeSurfaceBuilderData
-	SubsurfaceBuilderData      *BiomeSurfaceBuilderData
+	Climate                    Optional[BiomeClimateData]
+	ConsolidatedFeatures       Optional[BiomeConsolidatedFeaturesData]
+	MountainParams             Optional[BiomeMountainParamsData]
+	SurfaceMaterialAdjustments Optional[BiomeSurfaceMaterialAdjustmentData]
+	OverworldGenRules          Optional[BiomeOverworldGenRulesData]
+	MultinoiseGenRules         Optional[BiomeMultinoiseGenRulesData]
+	LegacyWorldGenRules        Optional[BiomeLegacyWorldGenRulesData]
+	ReplacementBiomes          Optional[BiomeReplacementsData]
+	VillageType                Optional[VillageType]
+	SurfaceBuilderData         Optional[BiomeSurfaceBuilderData]
+	SubsurfaceBuilderData      Optional[BiomeSurfaceBuilderData]
 }
 
 type BiomeDefinitionData struct {
@@ -307,8 +323,8 @@ type BiomeDefinitionData struct {
 	Scale             float32
 	MapWaterColorARGB int32
 	Rain              bool
-	Tags              *BiomeTagsData
-	ChunkGenData      *BiomeDefinitionChunkGenData
+	Tags              Optional[BiomeTagsData]
+	ChunkGenData      Optional[BiomeDefinitionChunkGenData]
 }
 
 type BiomeElementData struct {
@@ -395,14 +411,14 @@ type BiomeStringList struct {
 }
 
 type BiomeSurfaceBuilderData struct {
-	SurfaceMaterials           *BiomeSurfaceMaterialData
+	SurfaceMaterials           Optional[BiomeSurfaceMaterialData]
 	HasDefaultOverworldSurface bool
 	HasSwampSurface            bool
 	HasFrozenOceanSurface      bool
 	HasTheEndSurface           bool
-	MesaSurface                *BiomeMesaSurfaceData
-	CappedSurface              *BiomeCappedSurfaceData
-	NoiseGradientSurface       *BiomeNoiseGradientSurfaceData
+	MesaSurface                Optional[BiomeMesaSurfaceData]
+	CappedSurface              Optional[BiomeCappedSurfaceData]
+	NoiseGradientSurface       Optional[BiomeNoiseGradientSurfaceData]
 }
 
 type BiomeSurfaceMaterialAdjustmentData struct {
@@ -502,15 +518,15 @@ type CameraAimAssistCategoryPriorities struct {
 	Blocks             []OrderedEntry[string, int32]
 	BlockTags          []OrderedEntry[string, int32]
 	EntityTypeFamilies []OrderedEntry[string, int32]
-	EntityDefault      *int32
-	BlockDefault       *int32
+	EntityDefault      Optional[int32]
+	BlockDefault       Optional[int32]
 }
 
 type CameraAimAssistCommandPresetDefinition struct {
-	PresetId   *string
-	TargetMode *CameraAimAssistTargetMode
-	ViewAngle  *mgl32.Vec2
-	Distance   *float32
+	PresetId   Optional[string]
+	TargetMode Optional[CameraAimAssistTargetMode]
+	ViewAngle  Optional[mgl32.Vec2]
+	Distance   Optional[float32]
 }
 
 type CameraAimAssistPresetDefinition struct {
@@ -518,8 +534,8 @@ type CameraAimAssistPresetDefinition struct {
 	ExclusionSettings   CameraAimAssistPresetExclusionDefinition
 	LiquidTargetingList []string
 	ItemSettings        []OrderedEntry[string, string]
-	DefaultItemSettings *string
-	HandSettings        *string
+	DefaultItemSettings Optional[string]
+	HandSettings        Optional[string]
 }
 
 type CameraAimAssistPresetExclusionDefinition struct {
@@ -530,15 +546,15 @@ type CameraAimAssistPresetExclusionDefinition struct {
 }
 
 type CameraInstructionData struct {
-	Set              *CameraInstructionOptionsSetInstruction
-	Clear            *bool
-	Fade             *CameraInstructionOptionsFadeInstruction
-	Target           *CameraInstructionOptionsTargetInstruction
-	RemoveTarget     *bool
-	FieldOfView      *CameraInstructionOptionsFovInstruction
-	Spline           *CameraInstructionOptionsSplineInstruction
-	AttachToEntity   *CameraInstructionOptionsAttachToEntityInstruction
-	DetachFromEntity *bool
+	Set              Optional[CameraInstructionOptionsSetInstruction]
+	Clear            Optional[bool]
+	Fade             Optional[CameraInstructionOptionsFadeInstruction]
+	Target           Optional[CameraInstructionOptionsTargetInstruction]
+	RemoveTarget     Optional[bool]
+	FieldOfView      Optional[CameraInstructionOptionsFovInstruction]
+	Spline           Optional[CameraInstructionOptionsSplineInstruction]
+	AttachToEntity   Optional[CameraInstructionOptionsAttachToEntityInstruction]
+	DetachFromEntity Optional[bool]
 }
 
 type CameraInstructionOptionsAttachToEntityInstruction struct {
@@ -546,8 +562,8 @@ type CameraInstructionOptionsAttachToEntityInstruction struct {
 }
 
 type CameraInstructionOptionsFadeInstruction struct {
-	Time  *CameraInstructionOptionsFadeInstructionTimeOption
-	Color *CameraInstructionOptionsFadeInstructionColorOption
+	Time  Optional[CameraInstructionOptionsFadeInstructionTimeOption]
+	Color Optional[CameraInstructionOptionsFadeInstructionColorOption]
 }
 
 type CameraInstructionOptionsFadeInstructionColorOption struct {
@@ -571,13 +587,13 @@ type CameraInstructionOptionsFovInstruction struct {
 
 type CameraInstructionOptionsSetInstruction struct {
 	Preset                              uint32
-	Ease                                *CameraInstructionOptionsSetInstructionEaseOption
-	Pos                                 *CameraInstructionOptionsSetInstructionPosOption
-	Rot                                 *CameraInstructionOptionsSetInstructionRotOption
-	Facing                              *CameraInstructionOptionsSetInstructionFacingOption
-	ViewOffset                          *CameraInstructionOptionsSetInstructionViewOffsetOption
-	EntityOffset                        *CameraInstructionOptionsSetInstructionEntityOffsetOption
-	Default                             *bool
+	Ease                                Optional[CameraInstructionOptionsSetInstructionEaseOption]
+	Pos                                 Optional[CameraInstructionOptionsSetInstructionPosOption]
+	Rot                                 Optional[CameraInstructionOptionsSetInstructionRotOption]
+	Facing                              Optional[CameraInstructionOptionsSetInstructionFacingOption]
+	ViewOffset                          Optional[CameraInstructionOptionsSetInstructionViewOffsetOption]
+	EntityOffset                        Optional[CameraInstructionOptionsSetInstructionEntityOffsetOption]
+	Default                             Optional[bool]
 	RemoveIgnoreStartingValuesComponent bool
 }
 
@@ -633,33 +649,33 @@ type CameraInstructionOptionsSplineInstructionSplineRotationOption struct {
 }
 
 type CameraInstructionOptionsTargetInstruction struct {
-	TargetCenterOffset *mgl32.Vec3
+	TargetCenterOffset Optional[mgl32.Vec3]
 	TargetActorID      int64
 }
 
 type CameraPreset struct {
 	Name                    string
 	InheritFrom             string
-	PosX                    *float32
-	PosY                    *float32
-	PosZ                    *float32
-	RotX                    *float32
-	RotY                    *float32
-	RotationSpeed           *float32
-	SnapToTarget            *bool
-	HorizontalRotationLimit *mgl32.Vec2
-	VerticalRotationLimit   *mgl32.Vec2
-	ContinueTargeting       *bool
-	BlockListeningRadius    *float32
-	ViewOffset              *mgl32.Vec2
-	EntityOffset            *mgl32.Vec3
-	Radius                  *float32
-	YawLimitMin             *float32
-	YawLimitMax             *float32
-	Listener                *CameraPresetAudioListener
-	PlayerEffects           *bool
-	AimAssist               *CameraAimAssistCommandPresetDefinition
-	ControlScheme           *ControlSchemeScheme
+	PosX                    Optional[float32]
+	PosY                    Optional[float32]
+	PosZ                    Optional[float32]
+	RotX                    Optional[float32]
+	RotY                    Optional[float32]
+	RotationSpeed           Optional[float32]
+	SnapToTarget            Optional[bool]
+	HorizontalRotationLimit Optional[mgl32.Vec2]
+	VerticalRotationLimit   Optional[mgl32.Vec2]
+	ContinueTargeting       Optional[bool]
+	BlockListeningRadius    Optional[float32]
+	ViewOffset              Optional[mgl32.Vec2]
+	EntityOffset            Optional[mgl32.Vec3]
+	Radius                  Optional[float32]
+	YawLimitMin             Optional[float32]
+	YawLimitMax             Optional[float32]
+	Listener                Optional[CameraPresetAudioListener]
+	PlayerEffects           Optional[bool]
+	AimAssist               Optional[CameraAimAssistCommandPresetDefinition]
+	ControlScheme           Optional[ControlSchemeScheme]
 }
 
 type CameraPresetsData struct {
@@ -682,13 +698,13 @@ type CameraSplineDefinition struct {
 type CameraSplineProgressKeyFrame struct {
 	Progress float32
 	Time     float32
-	Easing   *string
+	Easing   Optional[string]
 }
 
 type CameraSplineRotationKeyFrame struct {
 	Rotation mgl32.Vec3
 	Time     float32
-	Easing   *string
+	Easing   Optional[string]
 }
 
 type CerealDynamicValue interface {
@@ -753,7 +769,7 @@ type CerealizerNetworkItemStackDescriptorSerializedData struct {
 	Id             int16
 	StackSize      uint16
 	AuxValue       uint32
-	NetIdVariant   *int32
+	NetIdVariant   Optional[int32]
 	BlockRuntimeId uint32
 	UserDataBuffer string
 }
@@ -766,7 +782,7 @@ type CerealizerRecipeIngredientSerializedData struct {
 
 type CerealizerRecipeUnlockingRequirementSerializedData struct {
 	UnlockingContext     RecipeUnlockingRequirementUnlockingContext
-	UnlockingIngredients *[]CerealizerRecipeIngredientSerializedData
+	UnlockingIngredients Optional[[]CerealizerRecipeIngredientSerializedData]
 }
 
 type ChangeEntityScore struct {
@@ -841,7 +857,7 @@ type CommandOutputData struct {
 	OutputType     string
 	SuccessCount   uint32
 	OutputMessages []CommandOutputMessage
-	DataSet        *string
+	DataSet        Optional[string]
 }
 
 type CommandOutputMessage struct {
@@ -995,7 +1011,7 @@ type EAS interface {
 
 type EASAttributeLayerData struct {
 	Name       string
-	NoiseName  *string
+	NoiseName  Optional[string]
 	Dimension  DimensionType
 	Settings   EASAttributeLayerSettings
 	Attributes []EASEnvironmentAttributeData
@@ -1024,9 +1040,9 @@ func (EASColorAttributeData) isEAS() {}
 
 type EASEnvironmentAttributeData struct {
 	AttributeName          string
-	FromAttribute          *EAS
+	FromAttribute          Optional[EAS]
 	Attribute              EAS
-	ToAttribute            *EAS
+	ToAttribute            Optional[EAS]
 	CurrentTransitionTicks uint32
 	TotalTransitionTicks   uint32
 	Easing                 string
@@ -1037,8 +1053,8 @@ type EASEnvironmentAttributeData struct {
 type EASFloatAttributeData struct {
 	Value         float32
 	Operation     string
-	ConstraintMin *float32
-	ConstraintMax *float32
+	ConstraintMin Optional[float32]
+	ConstraintMax Optional[float32]
 }
 
 func (EASFloatAttributeData) isEAS() {}
@@ -1074,14 +1090,14 @@ type EducationLevelSettings struct {
 	DisableLegacyTitleBar        bool
 	PostProcessFilter            string
 	ScreenshotBorderResourcePath string
-	AgentCapabilities            *AgentCapabilities
+	AgentCapabilities            Optional[AgentCapabilities]
 	LocalSettings                EducationLocalLevelSettings
 	DeprecatedAlwaysFalse        bool
-	ExternalLinkSettings         *ExternalLinkSettings
+	ExternalLinkSettings         Optional[ExternalLinkSettings]
 }
 
 type EducationLocalLevelSettings struct {
-	CodeBuilderOverrideUri *string
+	CodeBuilderOverrideUri Optional[string]
 }
 
 type EllipsoidData struct {
@@ -1122,7 +1138,7 @@ type FloatRange struct {
 
 type FullContainerName struct {
 	ContainerName ContainerEnumName
-	DynamicID     *uint32
+	DynamicID     Optional[uint32]
 }
 
 type GameRule struct {
@@ -1185,12 +1201,12 @@ type InventoryOptions struct {
 
 type InventorySource struct {
 	SourceType  InventorySourceType
-	ContainerID **int8
-	BitFlags    **InventorySourceInventorySourceFlags
+	ContainerID Optional[int8]
+	BitFlags    Optional[InventorySourceInventorySourceFlags]
 }
 
 type InventoryTransactionData struct {
-	Actions *[]InventoryAction
+	Actions Optional[[]InventoryAction]
 }
 
 type InventoryTransactionTransactionValue interface {
@@ -1453,14 +1469,14 @@ type ItemStackResponseContainerInfo struct {
 type ItemStackResponseInfo struct {
 	Result          ItemStackNetResult
 	ClientRequestId TypedClientNetIdStructItemStackRequestIdTagInt32T0
-	Containers      **[]ItemStackResponseContainerInfo
+	Containers      Optional[[]ItemStackResponseContainerInfo]
 }
 
 type ItemStackResponseSlotInfo struct {
 	RequestedSlot        uint8
 	Slot                 uint8
 	Amount               uint8
-	ItemStackNetId       **TypedServerNetIdStructItemStackNetIdTagInt32T0
+	ItemStackNetId       Optional[TypedServerNetIdStructItemStackNetIdTagInt32T0]
 	CustomName           BedrockSafetyRedactableString
 	DurabilityCorrection int32
 }
@@ -1715,7 +1731,7 @@ type LevelSettings struct {
 	LimitedWorldDepth                      int32
 	NetherType                             bool
 	EduSharedUriResource                   EduSharedUriResource
-	OverrideForceExperimentalGameplay      *bool
+	OverrideForceExperimentalGameplay      Optional[bool]
 	ChatRestrictionLevel                   ChatRestrictionLevel
 	DisablePlayerInteractions              bool
 	ServerEditorConnectionPolicy           ServerEditorConnectionPolicy
@@ -1750,8 +1766,8 @@ type MapInfoRequestPacketAnonClientPixelsProxy struct {
 
 type MapItemTrackedActorUniqueId struct {
 	Type          MapItemTrackedActorType
-	EntityID      *ActorUniqueID
-	BlockPosition *BlockPos
+	EntityID      Optional[ActorUniqueID]
+	BlockPosition Optional[BlockPos]
 }
 
 type MaterialReducerDataEntry struct {
@@ -1785,12 +1801,12 @@ type MoveActorAbsoluteData struct {
 
 type MoveActorDeltaData struct {
 	ActorRuntimeID       ActorRuntimeID
-	NewPositionX         *float32
-	NewPositionY         *float32
-	NewPositionZ         *float32
-	RotationX            *int8
-	RotationY            *int8
-	RotationYHead        *int8
+	NewPositionX         Optional[float32]
+	NewPositionY         Optional[float32]
+	NewPositionZ         Optional[float32]
+	RotationX            Optional[int8]
+	RotationY            Optional[int8]
+	RotationYHead        Optional[int8]
 	IsOnGround           bool
 	ForceMove            bool
 	ForceMoveLocalEntity bool
@@ -1853,8 +1869,8 @@ type PackInstanceId struct {
 
 type PackedItemUseLegacyInventoryTransaction struct {
 	LegacyRequestID    TypedClientNetIdStructItemStackLegacyRequestIdTagInt32T0
-	LegacySetItemSlots *[]LegacySetSlot
-	ItemUseTransaction *ItemUseInventoryTransaction
+	LegacySetItemSlots Optional[[]LegacySetSlot]
+	ItemUseTransaction Optional[ItemUseInventoryTransaction]
 }
 
 type PlayerBlockActionData struct {
@@ -1980,15 +1996,15 @@ type PotionMixDataEntry struct {
 
 type PrimitiveShapeData struct {
 	NetworkId             uint64
-	ShapeType             *ScriptModuleMinecraftScriptPrimitiveShapeType
-	Location              *mgl32.Vec3
-	Scale                 *float32
-	Rotation              *mgl32.Vec3
-	TotalTimeLeft         *float32
-	MaximumRenderDistance *float32
-	Color                 *color.RGBA
-	DimensionID           *DimensionType
-	AttachedToEntityID    *ActorUniqueID
+	ShapeType             Optional[ScriptModuleMinecraftScriptPrimitiveShapeType]
+	Location              Optional[mgl32.Vec3]
+	Scale                 Optional[float32]
+	Rotation              Optional[mgl32.Vec3]
+	TotalTimeLeft         Optional[float32]
+	MaximumRenderDistance Optional[float32]
+	Color                 Optional[color.RGBA]
+	DimensionID           Optional[DimensionType]
+	AttachedToEntityID    Optional[ActorUniqueID]
 	ExtraShapeData        PrimitiveShapeDataExtraShapeData
 }
 
@@ -2018,7 +2034,7 @@ type PropertySyncDataPropertySyncIntEntry struct {
 
 type PyramidData struct {
 	Width  float32
-	Depth  *float32
+	Depth  Optional[float32]
 	Height float32
 }
 
@@ -2027,7 +2043,7 @@ func (PyramidData) isPrimitiveShapeDataExtraShapeData() {}
 type RemoveScore struct {
 	Action        string
 	ScoreboardId  ScoreboardId
-	ObjectiveName *string
+	ObjectiveName Optional[string]
 }
 
 func (RemoveScore) isSetScoreScoreInfoItem() {}
@@ -2067,7 +2083,7 @@ type ScoreboardId struct {
 
 type ScoreboardIdentityPacketInfo struct {
 	ScoreboardId   ScoreboardId
-	PlayerUniqueId *int64
+	PlayerUniqueId Optional[int64]
 }
 
 type SemVersion struct {
@@ -2147,22 +2163,22 @@ type ServerConfigurationClientStoreEntryPointConfiguration struct {
 type ServerConfigurationGatheringsConfigurationJoinInfo struct {
 	ExperienceId   uuid.UUID
 	ExperienceName string
-	WorldId        *uuid.UUID
-	WorldName      *string
+	WorldId        Optional[uuid.UUID]
+	WorldName      Optional[string]
 	CreatorId      string
-	TargetId       *uuid.UUID
-	ScenarioId     *string
-	ServerId       *string
+	TargetId       Optional[uuid.UUID]
+	ScenarioId     Optional[string]
+	ServerId       Optional[string]
 }
 
 type ServerConfigurationPresenceConfiguration struct {
-	RichPresenceId *string
+	RichPresenceId Optional[string]
 }
 
 type ServerConfigurationServerConfigurationJoinInfo struct {
-	Gathering             *ServerConfigurationGatheringsConfigurationJoinInfo
-	ClientStoreEntryPoint *ServerConfigurationClientStoreEntryPointConfiguration
-	Presence              *ServerConfigurationPresenceConfiguration
+	Gathering             Optional[ServerConfigurationGatheringsConfigurationJoinInfo]
+	ClientStoreEntryPoint Optional[ServerConfigurationClientStoreEntryPointConfiguration]
+	Presence              Optional[ServerConfigurationPresenceConfiguration]
 }
 
 type ServerSoundHandle struct {
@@ -2171,13 +2187,13 @@ type ServerSoundHandle struct {
 
 type ServerWaypoint struct {
 	UpdateFlag              uint32
-	IsVisible               *bool
-	WorldPosition           *WorldPosition
-	TexturePath             *string
-	IconSize                *mgl32.Vec2
-	Color                   *color.RGBA
-	ClientPositionAuthority *bool
-	ActorUniqueID           *ActorUniqueID
+	IsVisible               Optional[bool]
+	WorldPosition           Optional[WorldPosition]
+	TexturePath             Optional[string]
+	IconSize                Optional[mgl32.Vec2]
+	Color                   Optional[color.RGBA]
+	ClientPositionAuthority Optional[bool]
+	ActorUniqueID           Optional[ActorUniqueID]
 }
 
 type ServerboundPackSettingChangePackSettingValue interface {
@@ -2219,7 +2235,7 @@ type ShapedRecipe struct {
 	Tag                  string
 	Priority             int32
 	AssumeSymmetry       bool
-	UnlockingRequirement *CerealizerRecipeUnlockingRequirementSerializedData
+	UnlockingRequirement Optional[CerealizerRecipeUnlockingRequirementSerializedData]
 	NetId                TypedServerNetIdStructRecipeNetIdTag
 }
 
@@ -2230,7 +2246,7 @@ type ShapelessRecipe struct {
 	UUID                 uuid.UUID
 	Tag                  string
 	Priority             int32
-	UnlockingRequirement *CerealizerRecipeUnlockingRequirementSerializedData
+	UnlockingRequirement Optional[CerealizerRecipeUnlockingRequirementSerializedData]
 	NetId                TypedServerNetIdStructRecipeNetIdTag
 }
 
@@ -2351,9 +2367,9 @@ type StructureSettings struct {
 
 type SubChunkHeightmapData struct {
 	HeightMapType           SubChunkHeightMapDataType
-	SubchunkHeightMap       *[16][16]int8
+	SubchunkHeightMap       Optional[[16][16]int8]
 	RenderHeightMapType     SubChunkHeightMapDataType
-	SubchunkRenderHeightMap *[16][16]int8
+	SubchunkRenderHeightMap Optional[[16][16]int8]
 }
 
 type SubChunkPos struct {
@@ -2365,9 +2381,9 @@ type SubChunkPos struct {
 type SubChunkSubChunkPacketData struct {
 	SubChunkPosOffset     SubChunkSubChunkPosOffset
 	SubChunkRequestResult SubChunkSubChunkRequestResult
-	SerializedSubChunk    *string
+	SerializedSubChunk    Optional[string]
 	HeightMapData         SubChunkHeightmapData
-	BlobId                *uint64
+	BlobId                Optional[uint64]
 }
 
 type SubChunkSubChunkPosOffset struct {
@@ -2442,7 +2458,7 @@ type TextBody interface {
 type TextData struct {
 	Text             string
 	UseRotation      bool
-	BackgroundColor  *color.RGBA
+	BackgroundColor  Optional[color.RGBA]
 	DepthTest        bool
 	ShowBackface     bool
 	ShowTextBackface bool
@@ -2467,7 +2483,7 @@ type TimeMarkerData struct {
 	Id     uint64
 	Name   string
 	Time   int32
-	Period *int32
+	Period Optional[int32]
 }
 
 type TintMapColor struct {

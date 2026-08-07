@@ -6,7 +6,7 @@ type LevelChunk struct {
 	ChunkPosition              ChunkPos
 	DimensionId                DimensionType
 	SubChunksCount             uint32
-	ClientRequestSubChunkLimit *int32
+	ClientRequestSubChunkLimit Optional[int32]
 	CacheEnabled               bool
 	CacheMetadata              []LevelChunkSubChunkMetadata
 	SerializedChunkData        string

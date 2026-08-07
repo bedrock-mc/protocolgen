@@ -3,5 +3,5 @@
 package protocol2168
 
 type PartyChanged struct {
-	PartyInfo *PlayerPartyInfo
+	PartyInfo Optional[PlayerPartyInfo]
 }

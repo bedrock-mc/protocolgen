@@ -5,7 +5,7 @@ package protocol2168
 type InventorySlot struct {
 	ContainerId       uint8
 	Slot              uint32
-	FullContainerName *FullContainerName
-	StorageItem       *CerealizerNetworkItemStackDescriptorSerializedData
+	FullContainerName Optional[FullContainerName]
+	StorageItem       Optional[CerealizerNetworkItemStackDescriptorSerializedData]
 	Item              CerealizerNetworkItemStackDescriptorSerializedData
 }

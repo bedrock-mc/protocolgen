@@ -3,5 +3,5 @@
 package protocol2168
 
 type ClientboundDataDrivenUICloseScreen struct {
-	FormId *uint32
+	FormId Optional[uint32]
 }

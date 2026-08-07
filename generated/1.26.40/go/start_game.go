@@ -31,6 +31,6 @@ type StartGame struct {
 	ServerEnabledClientSideGeneration bool
 	BlockNetworkIdsAreHashes          bool
 	NetworkPermissions                NetworkPermissions
-	ServerConfigurationJoinInfo       *ServerConfigurationServerConfigurationJoinInfo
+	ServerConfigurationJoinInfo       Optional[ServerConfigurationServerConfigurationJoinInfo]
 	ServerTelemetryData               SocialEventsServerTelemetryData
 }

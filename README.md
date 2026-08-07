@@ -79,7 +79,10 @@ generated language.
 
 Like sqlc's type overrides, each backend maps well-known wire semantics onto
 types native to its ecosystem without changing the manifest. Go uses
-`uuid.UUID`, `mgl32.Vec2`/`Vec3`, and `color.RGBA`. Rust uses
+`uuid.UUID`, `mgl32.Vec2`/`Vec3`, `color.RGBA`, and a value-based
+`Optional[T]` that preserves absent versus present-zero state without pointer
+nesting. Cereal double optionals retain both markers in the manifest but use
+the same single public `Optional[T]` state as gophertunnel. Rust uses
 `uuid::Uuid`, `glam::Vec2`/`Vec3`, and an explicit `Nbt` byte wrapper. Unknown
 or protocol-specific structures remain generated named types rather than being
 guessed into an unrelated library type. Go likewise leaves undifferentiated

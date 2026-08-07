@@ -8,5 +8,5 @@ type PlaySound struct {
 	Volume            float32
 	Pitch             float32
 	LoopCount         int32
-	ServerSoundHandle *ServerSoundHandle
+	ServerSoundHandle Optional[ServerSoundHandle]
 }

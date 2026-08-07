@@ -8,5 +8,5 @@ type ChangeDimension struct {
 	DimensionID     DimensionType
 	Position        mgl32.Vec3
 	Respawn         bool
-	LoadingScreenId *uint32
+	LoadingScreenId Optional[uint32]
 }

@@ -4,6 +4,6 @@ package protocol2168
 
 type InventoryTransaction struct {
 	LegacyRequestID    TypedClientNetIdStructItemStackLegacyRequestIdTagInt32T0
-	LegacySetItemSlots *[]LegacySetSlot
-	Transaction        *InventoryTransactionTransactionValue
+	LegacySetItemSlots Optional[[]LegacySetSlot]
+	Transaction        Optional[InventoryTransactionTransactionValue]
 }
