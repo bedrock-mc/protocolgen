@@ -13,7 +13,7 @@ type PlayerAuthInput struct {
 	Position               mgl32.Vec3
 	MoveVector             mgl32.Vec2
 	PlayerHeadRotation     float32
-	InputData              protocol.Optional[[]protocol.PlayerAuthInputInputData]
+	InputData              protocol.Optional[[]protocol.InputData]
 	InputMode              protocol.InputMode
 	PlayMode               protocol.ClientPlayMode
 	NewInteractionModel    protocol.NewInteractionModel
@@ -21,7 +21,7 @@ type PlayerAuthInput struct {
 	ClientTick             uint64
 	PosDelta               mgl32.Vec3
 	ItemUseTransaction     protocol.Optional[protocol.PackedItemUseLegacyInventoryTransaction]
-	ItemStackRequest       protocol.Optional[protocol.ItemStackRequestCerealRequestData]
+	ItemStackRequest       protocol.Optional[protocol.ItemStackRequestData]
 	PlayerBlockActions     protocol.Optional[[]protocol.PlayerBlockActionData]
 	VehicleRotation        protocol.Optional[mgl32.Vec2]
 	ClientPredictedVehicle protocol.Optional[int64]
@@ -36,8 +36,8 @@ func (x *PlayerAuthInput) Marshal(io protocol.IO) {
 	io.Vec3(&x.Position)
 	io.Vec2(&x.MoveVector)
 	io.Float32(&x.PlayerHeadRotation)
-	protocol.OptionalFunc(io, &x.InputData, func(value *[]protocol.PlayerAuthInputInputData) {
-		protocol.FuncSlice(io, value, io.Varuint32, func(value *protocol.PlayerAuthInputInputData) {
+	protocol.OptionalFunc(io, &x.InputData, func(value *[]protocol.InputData) {
+		protocol.FuncSlice(io, value, io.Varuint32, func(value *protocol.InputData) {
 			protocol.IntegerFunc(value, io.Varint32)
 		})
 	})
@@ -50,7 +50,7 @@ func (x *PlayerAuthInput) Marshal(io protocol.IO) {
 	protocol.DoubleOptionalFunc(io, &x.ItemUseTransaction, func(value *protocol.PackedItemUseLegacyInventoryTransaction) {
 		value.Marshal(io)
 	})
-	protocol.DoubleOptionalFunc(io, &x.ItemStackRequest, func(value *protocol.ItemStackRequestCerealRequestData) {
+	protocol.DoubleOptionalFunc(io, &x.ItemStackRequest, func(value *protocol.ItemStackRequestData) {
 		value.Marshal(io)
 	})
 	protocol.DoubleOptionalFunc(io, &x.PlayerBlockActions, func(value *[]protocol.PlayerBlockActionData) {

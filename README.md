@@ -53,11 +53,13 @@ go run ./cmd/protocolgen validate \
 
 go run ./cmd/protocolgen emit-go \
   -manifest /tmp/protocol-2168.json \
+  -naming /path/to/naming.json \
   -out /tmp/protocol-go \
   -protocol-import example.com/project/protocol
 
 go run ./cmd/protocolgen emit-rust \
   -manifest /tmp/protocol-2168.json \
+  -naming /path/to/naming.json \
   -out /tmp/protocol-rust
 
 # Verify the canonical manifest against the pinned gophertunnel source oracle.
@@ -144,11 +146,13 @@ go run ./cmd/protocolgen reconcile \
 
 go run ./cmd/protocolgen emit-go \
   -manifest generated/1.26.40/manifest.json \
+  -naming generated/1.26.40/naming.json \
   -out generated/1.26.40/go \
   -protocol-import protocolgen/generated/1.26.40/go/protocol
 
 go run ./cmd/protocolgen emit-rust \
   -manifest generated/1.26.40/manifest.json \
+  -naming generated/1.26.40/naming.json \
   -out generated/1.26.40/rust
 ```
 
@@ -157,14 +161,18 @@ same commands through the Makefile. Set the local Mojang and Endstone checkout
 paths; the Go commands use `/tmp/go-build-cache` locally.
 
 ```sh
-MOJANG_DIR=/path/to/bedrock-protocol-docs/json \
-ENDSTONE_DIR=/path/to/endstone-protocol-docs \
+MOJANG_DIR=/private/tmp/claude-501/-Users-hashim-Coding-Go-Lunar/a6989ec5-1fd8-4136-ad72-5e4a0665aca1/scratchpad/mojang-docs/json \
+ENDSTONE_DIR=/private/tmp/endstone-protocol-docs.nTILn9 \
 GOCACHE=/tmp/go-build-cache make regen
 
-MOJANG_DIR=/path/to/bedrock-protocol-docs/json \
-ENDSTONE_DIR=/path/to/endstone-protocol-docs \
+MOJANG_DIR=/private/tmp/claude-501/-Users-hashim-Coding-Go-Lunar/a6989ec5-1fd8-4136-ad72-5e4a0665aca1/scratchpad/mojang-docs/json \
+ENDSTONE_DIR=/private/tmp/endstone-protocol-docs.nTILn9 \
 GOCACHE=/tmp/go-build-cache make verify
 ```
+
+`make regen` omits `GOPHERTUNNEL_DIR` intentionally; the oracle clones the
+locked full SHA into its cache. The checked-in `naming.json` is passed to both
+emitters.
 
 The raw Mojang side can be inspected independently with:
 

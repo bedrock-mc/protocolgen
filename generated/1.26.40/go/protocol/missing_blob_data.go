@@ -3,12 +3,12 @@
 package protocol
 
 type MissingBlobData struct {
-	BlobId   uint64
+	BlobID   uint64
 	BlobData []byte
 }
 
 // Marshal reads or writes MissingBlobData using its canonical wire layout.
 func (x *MissingBlobData) Marshal(io IO) {
-	io.Uint64(&x.BlobId)
+	io.Uint64(&x.BlobID)
 	io.Bytes(&x.BlobData)
 }

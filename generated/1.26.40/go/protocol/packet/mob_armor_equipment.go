@@ -6,11 +6,11 @@ import "protocolgen/generated/1.26.40/go/protocol"
 
 type MobArmorEquipment struct {
 	TargetRuntimeID uint64
-	Head            protocol.CerealizerNetworkItemStackDescriptorSerializedData
-	Torso           protocol.CerealizerNetworkItemStackDescriptorSerializedData
-	Legs            protocol.CerealizerNetworkItemStackDescriptorSerializedData
-	Feet            protocol.CerealizerNetworkItemStackDescriptorSerializedData
-	Body            protocol.CerealizerNetworkItemStackDescriptorSerializedData
+	Head            protocol.NetworkItemStackDescriptorSerializedData
+	Torso           protocol.NetworkItemStackDescriptorSerializedData
+	Legs            protocol.NetworkItemStackDescriptorSerializedData
+	Feet            protocol.NetworkItemStackDescriptorSerializedData
+	Body            protocol.NetworkItemStackDescriptorSerializedData
 }
 
 // Marshal reads or writes MobArmorEquipment using its canonical wire layout.

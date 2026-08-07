@@ -700,7 +700,7 @@ func emitPacketIDs(packets []manifest.Packet, packetNames map[uint32]string) str
 		fmt.Fprintf(&b, "\tID%s uint32 = %d\n", packetNames[packet.ID], packet.ID)
 	}
 	b.WriteString(")\n")
-	return b.String()
+	return mustFormatGoSource(b.String())
 }
 
 func emitPacketRuntime(protocolImportPath string) string {

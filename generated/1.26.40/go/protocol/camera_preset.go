@@ -26,7 +26,7 @@ type CameraPreset struct {
 	Listener                Optional[CameraPresetAudioListener]
 	PlayerEffects           Optional[bool]
 	AimAssist               Optional[CameraAimAssistCommandPresetDefinition]
-	ControlScheme           Optional[ControlSchemeScheme]
+	ControlScheme           Optional[ControlScheme]
 }
 
 // Marshal reads or writes CameraPreset using its canonical wire layout.
@@ -56,7 +56,7 @@ func (x *CameraPreset) Marshal(io IO) {
 	OptionalFunc(io, &x.AimAssist, func(value *CameraAimAssistCommandPresetDefinition) {
 		value.Marshal(io)
 	})
-	OptionalFunc(io, &x.ControlScheme, func(value *ControlSchemeScheme) {
+	OptionalFunc(io, &x.ControlScheme, func(value *ControlScheme) {
 		IntegerFunc(value, io.Uint8)
 	})
 }

@@ -5,24 +5,24 @@ package protocol
 import "github.com/google/uuid"
 
 type ServerConfigurationGatheringsConfigurationJoinInfo struct {
-	ExperienceId   uuid.UUID
+	ExperienceID   uuid.UUID
 	ExperienceName string
-	WorldId        Optional[uuid.UUID]
+	WorldID        Optional[uuid.UUID]
 	WorldName      Optional[string]
-	CreatorId      string
-	TargetId       Optional[uuid.UUID]
-	ScenarioId     Optional[string]
-	ServerId       Optional[string]
+	CreatorID      string
+	TargetID       Optional[uuid.UUID]
+	ScenarioID     Optional[string]
+	ServerID       Optional[string]
 }
 
 // Marshal reads or writes ServerConfigurationGatheringsConfigurationJoinInfo using its canonical wire layout.
 func (x *ServerConfigurationGatheringsConfigurationJoinInfo) Marshal(io IO) {
-	io.UUID(&x.ExperienceId)
+	io.UUID(&x.ExperienceID)
 	io.String(&x.ExperienceName)
-	OptionalFunc(io, &x.WorldId, io.UUID)
+	OptionalFunc(io, &x.WorldID, io.UUID)
 	OptionalFunc(io, &x.WorldName, io.String)
-	io.String(&x.CreatorId)
-	OptionalFunc(io, &x.TargetId, io.UUID)
-	OptionalFunc(io, &x.ScenarioId, io.String)
-	OptionalFunc(io, &x.ServerId, io.String)
+	io.String(&x.CreatorID)
+	OptionalFunc(io, &x.TargetID, io.UUID)
+	OptionalFunc(io, &x.ScenarioID, io.String)
+	OptionalFunc(io, &x.ServerID, io.String)
 }

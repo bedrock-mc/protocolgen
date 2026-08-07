@@ -13,18 +13,18 @@ type AddPlayer struct {
 	UUID              uuid.UUID
 	PlayerName        string
 	TargetRuntimeID   uint64
-	PlatformChatId    string
+	PlatformChatID    string
 	Position          mgl32.Vec3
 	Velocity          mgl32.Vec3
 	Rotation          mgl32.Vec2
 	YHeadRotation     float32
-	CarriedItem       protocol.CerealizerNetworkItemStackDescriptorSerializedData
+	CarriedItem       protocol.NetworkItemStackDescriptorSerializedData
 	PlayerGameType    protocol.GameType
 	EntityData        protocol.SynchedActorDataCopyableDataList
 	SynchedProperties protocol.PropertySyncData
 	AbilitiesData     protocol.SerializedAbilitiesData
-	ActorLinks        []protocol.ActorLink
-	DeviceId          string
+	ActorLinks        []protocol.EntityLink
+	DeviceID          string
 	BuildPlatform     protocol.BuildPlatform
 }
 
@@ -33,7 +33,7 @@ func (x *AddPlayer) Marshal(io protocol.IO) {
 	io.UUID(&x.UUID)
 	io.String(&x.PlayerName)
 	io.ActorRuntimeID(&x.TargetRuntimeID)
-	io.String(&x.PlatformChatId)
+	io.String(&x.PlatformChatID)
 	io.Vec3(&x.Position)
 	io.Vec3(&x.Velocity)
 	io.Vec2(&x.Rotation)
@@ -44,7 +44,7 @@ func (x *AddPlayer) Marshal(io protocol.IO) {
 	x.SynchedProperties.Marshal(io)
 	x.AbilitiesData.Marshal(io)
 	protocol.Slice(io, &x.ActorLinks)
-	io.String(&x.DeviceId)
+	io.String(&x.DeviceID)
 	protocol.IntegerFunc(&x.BuildPlatform, io.Int32)
 }
 

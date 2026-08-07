@@ -1207,14 +1207,14 @@ impl From<CameraAimAssistAction> for u8 {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum CameraAimAssistPresetsPacketOperation {
+pub enum CameraAimAssistPresetOperation {
     #[default]
     Set,
     AddToExisting,
     Unknown(u8),
 }
 
-impl From<u8> for CameraAimAssistPresetsPacketOperation {
+impl From<u8> for CameraAimAssistPresetOperation {
     fn from(value: u8) -> Self {
         match value {
             0 => Self::Set,
@@ -1224,7 +1224,7 @@ impl From<u8> for CameraAimAssistPresetsPacketOperation {
     }
 }
 
-impl CameraAimAssistPresetsPacketOperation {
+impl CameraAimAssistPresetOperation {
     pub fn to_raw(self) -> u8 {
         match self {
             Self::Set => 0,
@@ -1234,8 +1234,8 @@ impl CameraAimAssistPresetsPacketOperation {
     }
 }
 
-impl From<CameraAimAssistPresetsPacketOperation> for u8 {
-    fn from(value: CameraAimAssistPresetsPacketOperation) -> Self {
+impl From<CameraAimAssistPresetOperation> for u8 {
+    fn from(value: CameraAimAssistPresetOperation) -> Self {
         value.to_raw()
     }
 }
@@ -1270,40 +1270,6 @@ impl CameraAimAssistTargetMode {
 
 impl From<CameraAimAssistTargetMode> for i32 {
     fn from(value: CameraAimAssistTargetMode) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum CameraAimAssistTargetModeType {
-    #[default]
-    Angle,
-    Distance,
-    Unknown(u8),
-}
-
-impl From<u8> for CameraAimAssistTargetModeType {
-    fn from(value: u8) -> Self {
-        match value {
-            0 => Self::Angle,
-            1 => Self::Distance,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl CameraAimAssistTargetModeType {
-    pub fn to_raw(self) -> u8 {
-        match self {
-            Self::Angle => 0,
-            Self::Distance => 1,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<CameraAimAssistTargetModeType> for u8 {
-    fn from(value: CameraAimAssistTargetModeType) -> Self {
         value.to_raw()
     }
 }
@@ -1448,14 +1414,14 @@ impl From<ChatRestrictionLevel> for u8 {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum ClientCameraAimAssistPacketAction {
+pub enum ClientCameraAimAssistAction {
     #[default]
     SetFromCameraPreset,
     Clear,
     Unknown(u8),
 }
 
-impl From<u8> for ClientCameraAimAssistPacketAction {
+impl From<u8> for ClientCameraAimAssistAction {
     fn from(value: u8) -> Self {
         match value {
             0 => Self::SetFromCameraPreset,
@@ -1465,7 +1431,7 @@ impl From<u8> for ClientCameraAimAssistPacketAction {
     }
 }
 
-impl ClientCameraAimAssistPacketAction {
+impl ClientCameraAimAssistAction {
     pub fn to_raw(self) -> u8 {
         match self {
             Self::SetFromCameraPreset => 0,
@@ -1475,8 +1441,8 @@ impl ClientCameraAimAssistPacketAction {
     }
 }
 
-impl From<ClientCameraAimAssistPacketAction> for u8 {
-    fn from(value: ClientCameraAimAssistPacketAction) -> Self {
+impl From<ClientCameraAimAssistAction> for u8 {
+    fn from(value: ClientCameraAimAssistAction) -> Self {
         value.to_raw()
     }
 }
@@ -2453,7 +2419,7 @@ impl From<ContainerEnumName> for u8 {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum ControlSchemeScheme {
+pub enum ControlScheme {
     #[default]
     LockedPlayerRelativeStrafe,
     CameraRelative,
@@ -2463,7 +2429,7 @@ pub enum ControlSchemeScheme {
     Unknown(u8),
 }
 
-impl From<u8> for ControlSchemeScheme {
+impl From<u8> for ControlScheme {
     fn from(value: u8) -> Self {
         match value {
             0 => Self::LockedPlayerRelativeStrafe,
@@ -2476,7 +2442,7 @@ impl From<u8> for ControlSchemeScheme {
     }
 }
 
-impl ControlSchemeScheme {
+impl ControlScheme {
     pub fn to_raw(self) -> u8 {
         match self {
             Self::LockedPlayerRelativeStrafe => 0,
@@ -2489,8 +2455,8 @@ impl ControlSchemeScheme {
     }
 }
 
-impl From<ControlSchemeScheme> for u8 {
-    fn from(value: ControlSchemeScheme) -> Self {
+impl From<ControlScheme> for u8 {
+    fn from(value: ControlScheme) -> Self {
         value.to_raw()
     }
 }
@@ -3141,6 +3107,46 @@ impl From<GraphicsOverrideParameterType> for u8 {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum HeightMapDataType {
+    #[default]
+    NoData,
+    HasData,
+    AllTooHigh,
+    AllTooLow,
+    Unknown(u8),
+}
+
+impl From<u8> for HeightMapDataType {
+    fn from(value: u8) -> Self {
+        match value {
+            0 => Self::NoData,
+            1 => Self::HasData,
+            2 => Self::AllTooHigh,
+            3 => Self::AllTooLow,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl HeightMapDataType {
+    pub fn to_raw(self) -> u8 {
+        match self {
+            Self::NoData => 0,
+            Self::HasData => 1,
+            Self::AllTooHigh => 2,
+            Self::AllTooLow => 3,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<HeightMapDataType> for u8 {
+    fn from(value: HeightMapDataType) -> Self {
+        value.to_raw()
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum HudElement {
     #[default]
     PaperDoll,
@@ -3237,6 +3243,232 @@ impl HudVisibility {
 
 impl From<HudVisibility> for i32 {
     fn from(value: HudVisibility) -> Self {
+        value.to_raw()
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum InputData {
+    #[default]
+    Ascend,
+    Descend,
+    NorthJump,
+    JumpDown,
+    SprintDown,
+    ChangeHeight,
+    Jumping,
+    AutoJumpingInWater,
+    Sneaking,
+    SneakDown,
+    Up,
+    Down,
+    Left,
+    Right,
+    UpLeft,
+    UpRight,
+    WantUp,
+    WantDown,
+    WantDownSlow,
+    WantUpSlow,
+    Sprinting,
+    AscendBlock,
+    DescendBlock,
+    SneakToggleDown,
+    PersistSneak,
+    StartSprinting,
+    StopSprinting,
+    StartSneaking,
+    StopSneaking,
+    StartSwimming,
+    StopSwimming,
+    StartJumping,
+    StartGliding,
+    StopGliding,
+    PerformItemInteraction,
+    PerformBlockActions,
+    PerformItemStackRequest,
+    HandledTeleport,
+    Emoting,
+    MissedSwing,
+    StartCrawling,
+    StopCrawling,
+    StartFlying,
+    StopFlying,
+    ClientAckServerData,
+    IsInClientPredictedVehicle,
+    PaddlingLeft,
+    PaddlingRight,
+    BlockBreakingDelayEnabled,
+    HorizontalCollision,
+    VerticalCollision,
+    DownLeft,
+    DownRight,
+    StartUsingItem,
+    IsCameraRelativeMovementEnabled,
+    IsRotControlledByMoveDirection,
+    StartSpinAttack,
+    StopSpinAttack,
+    IsHotbarOnlyTouch,
+    JumpReleasedRaw,
+    JumpPressedRaw,
+    JumpCurrentRaw,
+    SneakReleasedRaw,
+    SneakPressedRaw,
+    SneakCurrentRaw,
+    InternalUpdate,
+    Unknown(i32),
+}
+
+impl From<i32> for InputData {
+    fn from(value: i32) -> Self {
+        match value {
+            0 => Self::Ascend,
+            1 => Self::Descend,
+            2 => Self::NorthJump,
+            3 => Self::JumpDown,
+            4 => Self::SprintDown,
+            5 => Self::ChangeHeight,
+            6 => Self::Jumping,
+            7 => Self::AutoJumpingInWater,
+            8 => Self::Sneaking,
+            9 => Self::SneakDown,
+            10 => Self::Up,
+            11 => Self::Down,
+            12 => Self::Left,
+            13 => Self::Right,
+            14 => Self::UpLeft,
+            15 => Self::UpRight,
+            16 => Self::WantUp,
+            17 => Self::WantDown,
+            18 => Self::WantDownSlow,
+            19 => Self::WantUpSlow,
+            20 => Self::Sprinting,
+            21 => Self::AscendBlock,
+            22 => Self::DescendBlock,
+            23 => Self::SneakToggleDown,
+            24 => Self::PersistSneak,
+            25 => Self::StartSprinting,
+            26 => Self::StopSprinting,
+            27 => Self::StartSneaking,
+            28 => Self::StopSneaking,
+            29 => Self::StartSwimming,
+            30 => Self::StopSwimming,
+            31 => Self::StartJumping,
+            32 => Self::StartGliding,
+            33 => Self::StopGliding,
+            34 => Self::PerformItemInteraction,
+            35 => Self::PerformBlockActions,
+            36 => Self::PerformItemStackRequest,
+            37 => Self::HandledTeleport,
+            38 => Self::Emoting,
+            39 => Self::MissedSwing,
+            40 => Self::StartCrawling,
+            41 => Self::StopCrawling,
+            42 => Self::StartFlying,
+            43 => Self::StopFlying,
+            44 => Self::ClientAckServerData,
+            45 => Self::IsInClientPredictedVehicle,
+            46 => Self::PaddlingLeft,
+            47 => Self::PaddlingRight,
+            48 => Self::BlockBreakingDelayEnabled,
+            49 => Self::HorizontalCollision,
+            50 => Self::VerticalCollision,
+            51 => Self::DownLeft,
+            52 => Self::DownRight,
+            53 => Self::StartUsingItem,
+            54 => Self::IsCameraRelativeMovementEnabled,
+            55 => Self::IsRotControlledByMoveDirection,
+            56 => Self::StartSpinAttack,
+            57 => Self::StopSpinAttack,
+            58 => Self::IsHotbarOnlyTouch,
+            59 => Self::JumpReleasedRaw,
+            60 => Self::JumpPressedRaw,
+            61 => Self::JumpCurrentRaw,
+            62 => Self::SneakReleasedRaw,
+            63 => Self::SneakPressedRaw,
+            64 => Self::SneakCurrentRaw,
+            65 => Self::InternalUpdate,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl InputData {
+    pub fn to_raw(self) -> i32 {
+        match self {
+            Self::Ascend => 0,
+            Self::Descend => 1,
+            Self::NorthJump => 2,
+            Self::JumpDown => 3,
+            Self::SprintDown => 4,
+            Self::ChangeHeight => 5,
+            Self::Jumping => 6,
+            Self::AutoJumpingInWater => 7,
+            Self::Sneaking => 8,
+            Self::SneakDown => 9,
+            Self::Up => 10,
+            Self::Down => 11,
+            Self::Left => 12,
+            Self::Right => 13,
+            Self::UpLeft => 14,
+            Self::UpRight => 15,
+            Self::WantUp => 16,
+            Self::WantDown => 17,
+            Self::WantDownSlow => 18,
+            Self::WantUpSlow => 19,
+            Self::Sprinting => 20,
+            Self::AscendBlock => 21,
+            Self::DescendBlock => 22,
+            Self::SneakToggleDown => 23,
+            Self::PersistSneak => 24,
+            Self::StartSprinting => 25,
+            Self::StopSprinting => 26,
+            Self::StartSneaking => 27,
+            Self::StopSneaking => 28,
+            Self::StartSwimming => 29,
+            Self::StopSwimming => 30,
+            Self::StartJumping => 31,
+            Self::StartGliding => 32,
+            Self::StopGliding => 33,
+            Self::PerformItemInteraction => 34,
+            Self::PerformBlockActions => 35,
+            Self::PerformItemStackRequest => 36,
+            Self::HandledTeleport => 37,
+            Self::Emoting => 38,
+            Self::MissedSwing => 39,
+            Self::StartCrawling => 40,
+            Self::StopCrawling => 41,
+            Self::StartFlying => 42,
+            Self::StopFlying => 43,
+            Self::ClientAckServerData => 44,
+            Self::IsInClientPredictedVehicle => 45,
+            Self::PaddlingLeft => 46,
+            Self::PaddlingRight => 47,
+            Self::BlockBreakingDelayEnabled => 48,
+            Self::HorizontalCollision => 49,
+            Self::VerticalCollision => 50,
+            Self::DownLeft => 51,
+            Self::DownRight => 52,
+            Self::StartUsingItem => 53,
+            Self::IsCameraRelativeMovementEnabled => 54,
+            Self::IsRotControlledByMoveDirection => 55,
+            Self::StartSpinAttack => 56,
+            Self::StopSpinAttack => 57,
+            Self::IsHotbarOnlyTouch => 58,
+            Self::JumpReleasedRaw => 59,
+            Self::JumpPressedRaw => 60,
+            Self::JumpCurrentRaw => 61,
+            Self::SneakReleasedRaw => 62,
+            Self::SneakPressedRaw => 63,
+            Self::SneakCurrentRaw => 64,
+            Self::InternalUpdate => 65,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<InputData> for i32 {
+    fn from(value: InputData) -> Self {
         value.to_raw()
     }
 }
@@ -3532,6 +3764,46 @@ impl InventorySourceType {
 
 impl From<InventorySourceType> for u32 {
     fn from(value: InventorySourceType) -> Self {
+        value.to_raw()
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum ItemDescriptorType {
+    #[default]
+    Empty,
+    ItemName,
+    MoLang,
+    ItemTag,
+    Unknown(u8),
+}
+
+impl From<u8> for ItemDescriptorType {
+    fn from(value: u8) -> Self {
+        match value {
+            0 => Self::Empty,
+            1 => Self::ItemName,
+            2 => Self::MoLang,
+            3 => Self::ItemTag,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl ItemDescriptorType {
+    pub fn to_raw(self) -> u8 {
+        match self {
+            Self::Empty => 0,
+            Self::ItemName => 1,
+            Self::MoLang => 2,
+            Self::ItemTag => 3,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<ItemDescriptorType> for u8 {
+    fn from(value: ItemDescriptorType) -> Self {
         value.to_raw()
     }
 }
@@ -3886,46 +4158,6 @@ impl ItemStackRequestActionType {
 
 impl From<ItemStackRequestActionType> for u8 {
     fn from(value: ItemStackRequestActionType) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum ItemStackRequestCerealItemDescriptorType {
-    #[default]
-    Empty,
-    ItemName,
-    MoLang,
-    ItemTag,
-    Unknown(u8),
-}
-
-impl From<u8> for ItemStackRequestCerealItemDescriptorType {
-    fn from(value: u8) -> Self {
-        match value {
-            0 => Self::Empty,
-            1 => Self::ItemName,
-            2 => Self::MoLang,
-            3 => Self::ItemTag,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl ItemStackRequestCerealItemDescriptorType {
-    pub fn to_raw(self) -> u8 {
-        match self {
-            Self::Empty => 0,
-            Self::ItemName => 1,
-            Self::MoLang => 2,
-            Self::ItemTag => 3,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<ItemStackRequestCerealItemDescriptorType> for u8 {
-    fn from(value: ItemStackRequestCerealItemDescriptorType) -> Self {
         value.to_raw()
     }
 }
@@ -4343,7 +4575,7 @@ impl From<LegacyDifficulty> for i32 {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum LegacyTelemetryEventType {
+pub enum LegacyTelemetryType {
     #[default]
     Achievement,
     Interaction,
@@ -4380,7 +4612,7 @@ pub enum LegacyTelemetryEventType {
     Unknown(i32),
 }
 
-impl From<i32> for LegacyTelemetryEventType {
+impl From<i32> for LegacyTelemetryType {
     fn from(value: i32) -> Self {
         match value {
             0 => Self::Achievement,
@@ -4420,7 +4652,7 @@ impl From<i32> for LegacyTelemetryEventType {
     }
 }
 
-impl LegacyTelemetryEventType {
+impl LegacyTelemetryType {
     pub fn to_raw(self) -> i32 {
         match self {
             Self::Achievement => 0,
@@ -4460,8 +4692,8 @@ impl LegacyTelemetryEventType {
     }
 }
 
-impl From<LegacyTelemetryEventType> for i32 {
-    fn from(value: LegacyTelemetryEventType) -> Self {
+impl From<LegacyTelemetryType> for i32 {
+    fn from(value: LegacyTelemetryType) -> Self {
         value.to_raw()
     }
 }
@@ -4610,7 +4842,7 @@ impl From<MapItemTrackedActorType> for i32 {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum MemoryMemoryCategory {
+pub enum MemoryCategory {
     #[default]
     Unknown,
     InvalidSizeUnknown,
@@ -4726,7 +4958,7 @@ pub enum MemoryMemoryCategory {
     Unknown2(u8),
 }
 
-impl From<u8> for MemoryMemoryCategory {
+impl From<u8> for MemoryCategory {
     fn from(value: u8) -> Self {
         match value {
             0 => Self::Unknown,
@@ -4845,7 +5077,7 @@ impl From<u8> for MemoryMemoryCategory {
     }
 }
 
-impl MemoryMemoryCategory {
+impl MemoryCategory {
     pub fn to_raw(self) -> u8 {
         match self {
             Self::Unknown => 0,
@@ -4964,8 +5196,8 @@ impl MemoryMemoryCategory {
     }
 }
 
-impl From<MemoryMemoryCategory> for u8 {
-    fn from(value: MemoryMemoryCategory) -> Self {
+impl From<MemoryCategory> for u8 {
+    fn from(value: MemoryCategory) -> Self {
         value.to_raw()
     }
 }
@@ -5657,38 +5889,38 @@ impl From<MovementEffectType> for i32 {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum MultiplayerSettingsPacketType {
+pub enum MultiplayerSettingsType {
     #[default]
-    Enable,
-    Disable,
+    EnableMultiplayer,
+    DisableMultiplayer,
     RefreshJoinCode,
     Unknown(i32),
 }
 
-impl From<i32> for MultiplayerSettingsPacketType {
+impl From<i32> for MultiplayerSettingsType {
     fn from(value: i32) -> Self {
         match value {
-            0 => Self::Enable,
-            1 => Self::Disable,
+            0 => Self::EnableMultiplayer,
+            1 => Self::DisableMultiplayer,
             2 => Self::RefreshJoinCode,
             value => Self::Unknown(value),
         }
     }
 }
 
-impl MultiplayerSettingsPacketType {
+impl MultiplayerSettingsType {
     pub fn to_raw(self) -> i32 {
         match self {
-            Self::Enable => 0,
-            Self::Disable => 1,
+            Self::EnableMultiplayer => 0,
+            Self::DisableMultiplayer => 1,
             Self::RefreshJoinCode => 2,
             Self::Unknown(value) => value,
         }
     }
 }
 
-impl From<MultiplayerSettingsPacketType> for i32 {
-    fn from(value: MultiplayerSettingsPacketType) -> Self {
+impl From<MultiplayerSettingsType> for i32 {
+    fn from(value: MultiplayerSettingsType) -> Self {
         value.to_raw()
     }
 }
@@ -5734,14 +5966,14 @@ impl From<NewInteractionModel> for i32 {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum NpcDialogueNpcDialogueActionType {
+pub enum NpcDialogueActionType {
     #[default]
     Open,
     Close,
     Unknown(i32),
 }
 
-impl From<i32> for NpcDialogueNpcDialogueActionType {
+impl From<i32> for NpcDialogueActionType {
     fn from(value: i32) -> Self {
         match value {
             0 => Self::Open,
@@ -5751,7 +5983,7 @@ impl From<i32> for NpcDialogueNpcDialogueActionType {
     }
 }
 
-impl NpcDialogueNpcDialogueActionType {
+impl NpcDialogueActionType {
     pub fn to_raw(self) -> i32 {
         match self {
             Self::Open => 0,
@@ -5761,57 +5993,8 @@ impl NpcDialogueNpcDialogueActionType {
     }
 }
 
-impl From<NpcDialogueNpcDialogueActionType> for i32 {
-    fn from(value: NpcDialogueNpcDialogueActionType) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum NpcRequestRequestType {
-    #[default]
-    SetActions,
-    ExecuteAction,
-    ExecuteClosingCommands,
-    SetName,
-    SetSkin,
-    SetInteractText,
-    ExecuteOpeningCommands,
-    Unknown(u8),
-}
-
-impl From<u8> for NpcRequestRequestType {
-    fn from(value: u8) -> Self {
-        match value {
-            0 => Self::SetActions,
-            1 => Self::ExecuteAction,
-            2 => Self::ExecuteClosingCommands,
-            3 => Self::SetName,
-            4 => Self::SetSkin,
-            5 => Self::SetInteractText,
-            6 => Self::ExecuteOpeningCommands,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl NpcRequestRequestType {
-    pub fn to_raw(self) -> u8 {
-        match self {
-            Self::SetActions => 0,
-            Self::ExecuteAction => 1,
-            Self::ExecuteClosingCommands => 2,
-            Self::SetName => 3,
-            Self::SetSkin => 4,
-            Self::SetInteractText => 5,
-            Self::ExecuteOpeningCommands => 6,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<NpcRequestRequestType> for u8 {
-    fn from(value: NpcRequestRequestType) -> Self {
+impl From<NpcDialogueActionType> for i32 {
+    fn from(value: NpcDialogueActionType) -> Self {
         value.to_raw()
     }
 }
@@ -5849,6 +6032,49 @@ impl PacketCompressionAlgorithm {
 
 impl From<PacketCompressionAlgorithm> for u16 {
     fn from(value: PacketCompressionAlgorithm) -> Self {
+        value.to_raw()
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum PacketType {
+    #[default]
+    Empty,
+    InitiallyUnlockedRecipes,
+    NewlyUnlockedRecipes,
+    RemoveUnlockedRecipes,
+    RemoveAllUnlockedRecipes,
+    Unknown(u32),
+}
+
+impl From<u32> for PacketType {
+    fn from(value: u32) -> Self {
+        match value {
+            0 => Self::Empty,
+            1 => Self::InitiallyUnlockedRecipes,
+            2 => Self::NewlyUnlockedRecipes,
+            3 => Self::RemoveUnlockedRecipes,
+            4 => Self::RemoveAllUnlockedRecipes,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl PacketType {
+    pub fn to_raw(self) -> u32 {
+        match self {
+            Self::Empty => 0,
+            Self::InitiallyUnlockedRecipes => 1,
+            Self::NewlyUnlockedRecipes => 2,
+            Self::RemoveUnlockedRecipes => 3,
+            Self::RemoveAllUnlockedRecipes => 4,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<PacketType> for u32 {
+    fn from(value: PacketType) -> Self {
         value.to_raw()
     }
 }
@@ -6388,232 +6614,6 @@ impl From<PlayerActionType> for i32 {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum PlayerAuthInputInputData {
-    #[default]
-    Ascend,
-    Descend,
-    NorthJump,
-    JumpDown,
-    SprintDown,
-    ChangeHeight,
-    Jumping,
-    AutoJumpingInWater,
-    Sneaking,
-    SneakDown,
-    Up,
-    Down,
-    Left,
-    Right,
-    UpLeft,
-    UpRight,
-    WantUp,
-    WantDown,
-    WantDownSlow,
-    WantUpSlow,
-    Sprinting,
-    AscendBlock,
-    DescendBlock,
-    SneakToggleDown,
-    PersistSneak,
-    StartSprinting,
-    StopSprinting,
-    StartSneaking,
-    StopSneaking,
-    StartSwimming,
-    StopSwimming,
-    StartJumping,
-    StartGliding,
-    StopGliding,
-    PerformItemInteraction,
-    PerformBlockActions,
-    PerformItemStackRequest,
-    HandledTeleport,
-    Emoting,
-    MissedSwing,
-    StartCrawling,
-    StopCrawling,
-    StartFlying,
-    StopFlying,
-    ClientAckServerData,
-    IsInClientPredictedVehicle,
-    PaddlingLeft,
-    PaddlingRight,
-    BlockBreakingDelayEnabled,
-    HorizontalCollision,
-    VerticalCollision,
-    DownLeft,
-    DownRight,
-    StartUsingItem,
-    IsCameraRelativeMovementEnabled,
-    IsRotControlledByMoveDirection,
-    StartSpinAttack,
-    StopSpinAttack,
-    IsHotbarOnlyTouch,
-    JumpReleasedRaw,
-    JumpPressedRaw,
-    JumpCurrentRaw,
-    SneakReleasedRaw,
-    SneakPressedRaw,
-    SneakCurrentRaw,
-    InternalUpdate,
-    Unknown(i32),
-}
-
-impl From<i32> for PlayerAuthInputInputData {
-    fn from(value: i32) -> Self {
-        match value {
-            0 => Self::Ascend,
-            1 => Self::Descend,
-            2 => Self::NorthJump,
-            3 => Self::JumpDown,
-            4 => Self::SprintDown,
-            5 => Self::ChangeHeight,
-            6 => Self::Jumping,
-            7 => Self::AutoJumpingInWater,
-            8 => Self::Sneaking,
-            9 => Self::SneakDown,
-            10 => Self::Up,
-            11 => Self::Down,
-            12 => Self::Left,
-            13 => Self::Right,
-            14 => Self::UpLeft,
-            15 => Self::UpRight,
-            16 => Self::WantUp,
-            17 => Self::WantDown,
-            18 => Self::WantDownSlow,
-            19 => Self::WantUpSlow,
-            20 => Self::Sprinting,
-            21 => Self::AscendBlock,
-            22 => Self::DescendBlock,
-            23 => Self::SneakToggleDown,
-            24 => Self::PersistSneak,
-            25 => Self::StartSprinting,
-            26 => Self::StopSprinting,
-            27 => Self::StartSneaking,
-            28 => Self::StopSneaking,
-            29 => Self::StartSwimming,
-            30 => Self::StopSwimming,
-            31 => Self::StartJumping,
-            32 => Self::StartGliding,
-            33 => Self::StopGliding,
-            34 => Self::PerformItemInteraction,
-            35 => Self::PerformBlockActions,
-            36 => Self::PerformItemStackRequest,
-            37 => Self::HandledTeleport,
-            38 => Self::Emoting,
-            39 => Self::MissedSwing,
-            40 => Self::StartCrawling,
-            41 => Self::StopCrawling,
-            42 => Self::StartFlying,
-            43 => Self::StopFlying,
-            44 => Self::ClientAckServerData,
-            45 => Self::IsInClientPredictedVehicle,
-            46 => Self::PaddlingLeft,
-            47 => Self::PaddlingRight,
-            48 => Self::BlockBreakingDelayEnabled,
-            49 => Self::HorizontalCollision,
-            50 => Self::VerticalCollision,
-            51 => Self::DownLeft,
-            52 => Self::DownRight,
-            53 => Self::StartUsingItem,
-            54 => Self::IsCameraRelativeMovementEnabled,
-            55 => Self::IsRotControlledByMoveDirection,
-            56 => Self::StartSpinAttack,
-            57 => Self::StopSpinAttack,
-            58 => Self::IsHotbarOnlyTouch,
-            59 => Self::JumpReleasedRaw,
-            60 => Self::JumpPressedRaw,
-            61 => Self::JumpCurrentRaw,
-            62 => Self::SneakReleasedRaw,
-            63 => Self::SneakPressedRaw,
-            64 => Self::SneakCurrentRaw,
-            65 => Self::InternalUpdate,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl PlayerAuthInputInputData {
-    pub fn to_raw(self) -> i32 {
-        match self {
-            Self::Ascend => 0,
-            Self::Descend => 1,
-            Self::NorthJump => 2,
-            Self::JumpDown => 3,
-            Self::SprintDown => 4,
-            Self::ChangeHeight => 5,
-            Self::Jumping => 6,
-            Self::AutoJumpingInWater => 7,
-            Self::Sneaking => 8,
-            Self::SneakDown => 9,
-            Self::Up => 10,
-            Self::Down => 11,
-            Self::Left => 12,
-            Self::Right => 13,
-            Self::UpLeft => 14,
-            Self::UpRight => 15,
-            Self::WantUp => 16,
-            Self::WantDown => 17,
-            Self::WantDownSlow => 18,
-            Self::WantUpSlow => 19,
-            Self::Sprinting => 20,
-            Self::AscendBlock => 21,
-            Self::DescendBlock => 22,
-            Self::SneakToggleDown => 23,
-            Self::PersistSneak => 24,
-            Self::StartSprinting => 25,
-            Self::StopSprinting => 26,
-            Self::StartSneaking => 27,
-            Self::StopSneaking => 28,
-            Self::StartSwimming => 29,
-            Self::StopSwimming => 30,
-            Self::StartJumping => 31,
-            Self::StartGliding => 32,
-            Self::StopGliding => 33,
-            Self::PerformItemInteraction => 34,
-            Self::PerformBlockActions => 35,
-            Self::PerformItemStackRequest => 36,
-            Self::HandledTeleport => 37,
-            Self::Emoting => 38,
-            Self::MissedSwing => 39,
-            Self::StartCrawling => 40,
-            Self::StopCrawling => 41,
-            Self::StartFlying => 42,
-            Self::StopFlying => 43,
-            Self::ClientAckServerData => 44,
-            Self::IsInClientPredictedVehicle => 45,
-            Self::PaddlingLeft => 46,
-            Self::PaddlingRight => 47,
-            Self::BlockBreakingDelayEnabled => 48,
-            Self::HorizontalCollision => 49,
-            Self::VerticalCollision => 50,
-            Self::DownLeft => 51,
-            Self::DownRight => 52,
-            Self::StartUsingItem => 53,
-            Self::IsCameraRelativeMovementEnabled => 54,
-            Self::IsRotControlledByMoveDirection => 55,
-            Self::StartSpinAttack => 56,
-            Self::StopSpinAttack => 57,
-            Self::IsHotbarOnlyTouch => 58,
-            Self::JumpReleasedRaw => 59,
-            Self::JumpPressedRaw => 60,
-            Self::JumpCurrentRaw => 61,
-            Self::SneakReleasedRaw => 62,
-            Self::SneakPressedRaw => 63,
-            Self::SneakCurrentRaw => 64,
-            Self::InternalUpdate => 65,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<PlayerAuthInputInputData> for i32 {
-    fn from(value: PlayerAuthInputInputData) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum PlayerLocationType {
     #[default]
     PlayerLocationCoordinates,
@@ -6956,6 +6956,55 @@ impl From<RequestAbilityType> for u8 {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum RequestType {
+    #[default]
+    SetActions,
+    ExecuteAction,
+    ExecuteClosingCommands,
+    SetName,
+    SetSkin,
+    SetInteractText,
+    ExecuteOpeningCommands,
+    Unknown(u8),
+}
+
+impl From<u8> for RequestType {
+    fn from(value: u8) -> Self {
+        match value {
+            0 => Self::SetActions,
+            1 => Self::ExecuteAction,
+            2 => Self::ExecuteClosingCommands,
+            3 => Self::SetName,
+            4 => Self::SetSkin,
+            5 => Self::SetInteractText,
+            6 => Self::ExecuteOpeningCommands,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl RequestType {
+    pub fn to_raw(self) -> u8 {
+        match self {
+            Self::SetActions => 0,
+            Self::ExecuteAction => 1,
+            Self::ExecuteClosingCommands => 2,
+            Self::SetName => 3,
+            Self::SetSkin => 4,
+            Self::SetInteractText => 5,
+            Self::ExecuteOpeningCommands => 6,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<RequestType> for u8 {
+    fn from(value: RequestType) -> Self {
+        value.to_raw()
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum RewindType {
     #[default]
     Player,
@@ -7202,14 +7251,14 @@ impl From<ServerWaypointGroupAction> for u8 {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum ServerboundLoadingScreenPacketType {
+pub enum ServerboundLoadingScreenType {
     #[default]
     StartLoadingScreen,
     EndLoadingScreen,
     Unknown(i32),
 }
 
-impl From<i32> for ServerboundLoadingScreenPacketType {
+impl From<i32> for ServerboundLoadingScreenType {
     fn from(value: i32) -> Self {
         match value {
             1 => Self::StartLoadingScreen,
@@ -7219,7 +7268,7 @@ impl From<i32> for ServerboundLoadingScreenPacketType {
     }
 }
 
-impl ServerboundLoadingScreenPacketType {
+impl ServerboundLoadingScreenType {
     pub fn to_raw(self) -> i32 {
         match self {
             Self::StartLoadingScreen => 1,
@@ -7229,63 +7278,8 @@ impl ServerboundLoadingScreenPacketType {
     }
 }
 
-impl From<ServerboundLoadingScreenPacketType> for i32 {
-    fn from(value: ServerboundLoadingScreenPacketType) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum SetTitleTitleType {
-    #[default]
-    Clear,
-    Reset,
-    Title,
-    Subtitle,
-    Actionbar,
-    Times,
-    TitleTextObject,
-    SubtitleTextObject,
-    ActionbarTextObject,
-    Unknown(i32),
-}
-
-impl From<i32> for SetTitleTitleType {
-    fn from(value: i32) -> Self {
-        match value {
-            0 => Self::Clear,
-            1 => Self::Reset,
-            2 => Self::Title,
-            3 => Self::Subtitle,
-            4 => Self::Actionbar,
-            5 => Self::Times,
-            6 => Self::TitleTextObject,
-            7 => Self::SubtitleTextObject,
-            8 => Self::ActionbarTextObject,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl SetTitleTitleType {
-    pub fn to_raw(self) -> i32 {
-        match self {
-            Self::Clear => 0,
-            Self::Reset => 1,
-            Self::Title => 2,
-            Self::Subtitle => 3,
-            Self::Actionbar => 4,
-            Self::Times => 5,
-            Self::TitleTextObject => 6,
-            Self::SubtitleTextObject => 7,
-            Self::ActionbarTextObject => 8,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<SetTitleTitleType> for i32 {
-    fn from(value: SetTitleTitleType) -> Self {
+impl From<ServerboundLoadingScreenType> for i32 {
+    fn from(value: ServerboundLoadingScreenType) -> Self {
         value.to_raw()
     }
 }
@@ -7328,47 +7322,7 @@ impl From<ShowStoreOfferRedirectType> for u8 {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum SimpleEventSubtype {
-    #[default]
-    UninitializedSubtype,
-    EnableCommands,
-    DisableCommands,
-    UnlockWorldTemplateSettings,
-    Unknown(u16),
-}
-
-impl From<u16> for SimpleEventSubtype {
-    fn from(value: u16) -> Self {
-        match value {
-            0 => Self::UninitializedSubtype,
-            1 => Self::EnableCommands,
-            2 => Self::DisableCommands,
-            3 => Self::UnlockWorldTemplateSettings,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl SimpleEventSubtype {
-    pub fn to_raw(self) -> u16 {
-        match self {
-            Self::UninitializedSubtype => 0,
-            Self::EnableCommands => 1,
-            Self::DisableCommands => 2,
-            Self::UnlockWorldTemplateSettings => 3,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<SimpleEventSubtype> for u16 {
-    fn from(value: SimpleEventSubtype) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum SimulationTypeType {
+pub enum SimulationTypeEnum {
     #[default]
     Game,
     Editor,
@@ -7377,7 +7331,7 @@ pub enum SimulationTypeType {
     Unknown(u8),
 }
 
-impl From<u8> for SimulationTypeType {
+impl From<u8> for SimulationTypeEnum {
     fn from(value: u8) -> Self {
         match value {
             0 => Self::Game,
@@ -7389,7 +7343,7 @@ impl From<u8> for SimulationTypeType {
     }
 }
 
-impl SimulationTypeType {
+impl SimulationTypeEnum {
     pub fn to_raw(self) -> u8 {
         match self {
             Self::Game => 0,
@@ -7401,8 +7355,8 @@ impl SimulationTypeType {
     }
 }
 
-impl From<SimulationTypeType> for u8 {
-    fn from(value: SimulationTypeType) -> Self {
+impl From<SimulationTypeEnum> for u8 {
+    fn from(value: SimulationTypeEnum) -> Self {
         value.to_raw()
     }
 }
@@ -7713,47 +7667,7 @@ impl From<StructureTemplateResponseType> for u8 {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum SubChunkHeightMapDataType {
-    #[default]
-    NoData,
-    HasData,
-    AllTooHigh,
-    AllTooLow,
-    Unknown(u8),
-}
-
-impl From<u8> for SubChunkHeightMapDataType {
-    fn from(value: u8) -> Self {
-        match value {
-            0 => Self::NoData,
-            1 => Self::HasData,
-            2 => Self::AllTooHigh,
-            3 => Self::AllTooLow,
-            value => Self::Unknown(value),
-        }
-    }
-}
-
-impl SubChunkHeightMapDataType {
-    pub fn to_raw(self) -> u8 {
-        match self {
-            Self::NoData => 0,
-            Self::HasData => 1,
-            Self::AllTooHigh => 2,
-            Self::AllTooLow => 3,
-            Self::Unknown(value) => value,
-        }
-    }
-}
-
-impl From<SubChunkHeightMapDataType> for u8 {
-    fn from(value: SubChunkHeightMapDataType) -> Self {
-        value.to_raw()
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum SubChunkSubChunkRequestResult {
+pub enum SubChunkRequestResult {
     #[default]
     Success,
     LevelChunkDoesntExist,
@@ -7764,7 +7678,7 @@ pub enum SubChunkSubChunkRequestResult {
     Unknown(u8),
 }
 
-impl From<u8> for SubChunkSubChunkRequestResult {
+impl From<u8> for SubChunkRequestResult {
     fn from(value: u8) -> Self {
         match value {
             1 => Self::Success,
@@ -7778,7 +7692,7 @@ impl From<u8> for SubChunkSubChunkRequestResult {
     }
 }
 
-impl SubChunkSubChunkRequestResult {
+impl SubChunkRequestResult {
     pub fn to_raw(self) -> u8 {
         match self {
             Self::Success => 1,
@@ -7792,8 +7706,82 @@ impl SubChunkSubChunkRequestResult {
     }
 }
 
-impl From<SubChunkSubChunkRequestResult> for u8 {
-    fn from(value: SubChunkSubChunkRequestResult) -> Self {
+impl From<SubChunkRequestResult> for u8 {
+    fn from(value: SubChunkRequestResult) -> Self {
+        value.to_raw()
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum Subtype {
+    #[default]
+    Uninitialized,
+    EnableCommands,
+    DisableCommands,
+    UnlockWorldTemplateSettings,
+    Unknown(u16),
+}
+
+impl From<u16> for Subtype {
+    fn from(value: u16) -> Self {
+        match value {
+            0 => Self::Uninitialized,
+            1 => Self::EnableCommands,
+            2 => Self::DisableCommands,
+            3 => Self::UnlockWorldTemplateSettings,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl Subtype {
+    pub fn to_raw(self) -> u16 {
+        match self {
+            Self::Uninitialized => 0,
+            Self::EnableCommands => 1,
+            Self::DisableCommands => 2,
+            Self::UnlockWorldTemplateSettings => 3,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<Subtype> for u16 {
+    fn from(value: Subtype) -> Self {
+        value.to_raw()
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum TargetMode {
+    #[default]
+    Angle,
+    Distance,
+    Unknown(u8),
+}
+
+impl From<u8> for TargetMode {
+    fn from(value: u8) -> Self {
+        match value {
+            0 => Self::Angle,
+            1 => Self::Distance,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl TargetMode {
+    pub fn to_raw(self) -> u8 {
+        match self {
+            Self::Angle => 0,
+            Self::Distance => 1,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<TargetMode> for u8 {
+    fn from(value: TargetMode) -> Self {
         value.to_raw()
     }
 }
@@ -7878,44 +7866,56 @@ impl From<TextProcessingEventOrigin> for i32 {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
-pub enum UnlockedRecipesPacketType {
+pub enum TitleType {
     #[default]
-    Empty,
-    Initially,
-    Newly,
-    Remove,
-    RemoveAll,
-    Unknown(u32),
+    Clear,
+    Reset,
+    Title,
+    Subtitle,
+    Actionbar,
+    Times,
+    TitleTextObject,
+    SubtitleTextObject,
+    ActionbarTextObject,
+    Unknown(i32),
 }
 
-impl From<u32> for UnlockedRecipesPacketType {
-    fn from(value: u32) -> Self {
+impl From<i32> for TitleType {
+    fn from(value: i32) -> Self {
         match value {
-            0 => Self::Empty,
-            1 => Self::Initially,
-            2 => Self::Newly,
-            3 => Self::Remove,
-            4 => Self::RemoveAll,
+            0 => Self::Clear,
+            1 => Self::Reset,
+            2 => Self::Title,
+            3 => Self::Subtitle,
+            4 => Self::Actionbar,
+            5 => Self::Times,
+            6 => Self::TitleTextObject,
+            7 => Self::SubtitleTextObject,
+            8 => Self::ActionbarTextObject,
             value => Self::Unknown(value),
         }
     }
 }
 
-impl UnlockedRecipesPacketType {
-    pub fn to_raw(self) -> u32 {
+impl TitleType {
+    pub fn to_raw(self) -> i32 {
         match self {
-            Self::Empty => 0,
-            Self::Initially => 1,
-            Self::Newly => 2,
-            Self::Remove => 3,
-            Self::RemoveAll => 4,
+            Self::Clear => 0,
+            Self::Reset => 1,
+            Self::Title => 2,
+            Self::Subtitle => 3,
+            Self::Actionbar => 4,
+            Self::Times => 5,
+            Self::TitleTextObject => 6,
+            Self::SubtitleTextObject => 7,
+            Self::ActionbarTextObject => 8,
             Self::Unknown(value) => value,
         }
     }
 }
 
-impl From<UnlockedRecipesPacketType> for u32 {
-    fn from(value: UnlockedRecipesPacketType) -> Self {
+impl From<TitleType> for i32 {
+    fn from(value: TitleType) -> Self {
         value.to_raw()
     }
 }

@@ -5,9 +5,9 @@ package packet
 import "protocolgen/generated/1.26.40/go/protocol"
 
 type InventoryTransaction struct {
-	LegacyRequestID    protocol.TypedClientNetIdStructItemStackLegacyRequestIdTagInt32T0
+	LegacyRequestID    protocol.ItemStackLegacyRequestID
 	LegacySetItemSlots protocol.Optional[[]protocol.LegacySetSlot]
-	Transaction        protocol.Optional[protocol.InventoryTransactionTransactionValue]
+	Transaction        protocol.Optional[protocol.InventoryTransactionValue]
 }
 
 // Marshal reads or writes InventoryTransaction using its canonical wire layout.
@@ -16,8 +16,8 @@ func (x *InventoryTransaction) Marshal(io protocol.IO) {
 	protocol.OptionalFunc(io, &x.LegacySetItemSlots, func(value *[]protocol.LegacySetSlot) {
 		protocol.Slice(io, value)
 	})
-	protocol.OptionalFunc(io, &x.Transaction, func(value *protocol.InventoryTransactionTransactionValue) {
-		protocol.MarshalInventoryTransactionTransactionValue(io, value)
+	protocol.OptionalFunc(io, &x.Transaction, func(value *protocol.InventoryTransactionValue) {
+		protocol.MarshalInventoryTransactionValue(io, value)
 	})
 }
 

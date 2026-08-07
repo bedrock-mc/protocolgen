@@ -7,7 +7,7 @@ import "protocolgen/generated/1.26.40/go/protocol"
 type CameraAimAssistPresets struct {
 	CameraAimAssistPresets    []protocol.CameraAimAssistCategoryDefinition
 	CameraAimAssistCategories []protocol.CameraAimAssistPresetDefinition
-	Operation                 protocol.CameraAimAssistPresetsPacketOperation
+	Operation                 protocol.CameraAimAssistPresetOperation
 }
 
 // Marshal reads or writes CameraAimAssistPresets using its canonical wire layout.

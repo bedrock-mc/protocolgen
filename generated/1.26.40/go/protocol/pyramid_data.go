@@ -8,7 +8,7 @@ type PyramidData struct {
 	Height float32
 }
 
-func (*PyramidData) isPrimitiveShapeDataExtraShapeData() {}
+func (*PyramidData) isPrimitiveShapeExtraShapeData() {}
 
 // Marshal reads or writes PyramidData using its canonical wire layout.
 func (x *PyramidData) Marshal(io IO) {

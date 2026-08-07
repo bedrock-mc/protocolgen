@@ -5,7 +5,7 @@ package packet
 import "protocolgen/generated/1.26.40/go/protocol"
 
 type CommandBlockUpdate struct {
-	Target             protocol.CommandBlockUpdateTarget
+	Target             protocol.CommandBlockUpdateData
 	Command            string
 	LastOutput         string
 	Name               string
@@ -17,7 +17,7 @@ type CommandBlockUpdate struct {
 
 // Marshal reads or writes CommandBlockUpdate using its canonical wire layout.
 func (x *CommandBlockUpdate) Marshal(io protocol.IO) {
-	protocol.MarshalCommandBlockUpdateTarget(io, &x.Target)
+	protocol.MarshalCommandBlockUpdateData(io, &x.Target)
 	io.String(&x.Command)
 	io.String(&x.LastOutput)
 	io.String(&x.Name)

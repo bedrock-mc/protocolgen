@@ -4,19 +4,19 @@ package protocol
 
 type ChangeEntityScore struct {
 	Action        string
-	ScoreboardId  ScoreboardId
+	ScoreboardID  ScoreboardID
 	ObjectiveName string
 	ScoreValue    int32
-	ActorId       int64
+	ActorID       int64
 }
 
-func (*ChangeEntityScore) isSetScoreScoreInfoItem() {}
+func (*ChangeEntityScore) isSetScoreInfoItem() {}
 
 // Marshal reads or writes ChangeEntityScore using its canonical wire layout.
 func (x *ChangeEntityScore) Marshal(io IO) {
 	io.String(&x.Action)
-	x.ScoreboardId.Marshal(io)
+	x.ScoreboardID.Marshal(io)
 	io.String(&x.ObjectiveName)
 	io.Int32(&x.ScoreValue)
-	io.ActorUniqueID(&x.ActorId)
+	io.ActorUniqueID(&x.ActorID)
 }

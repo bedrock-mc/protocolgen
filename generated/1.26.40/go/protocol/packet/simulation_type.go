@@ -5,7 +5,7 @@ package packet
 import "protocolgen/generated/1.26.40/go/protocol"
 
 type SimulationType struct {
-	SimType protocol.SimulationTypeType
+	SimType protocol.SimulationTypeEnum
 }
 
 // Marshal reads or writes SimulationType using its canonical wire layout.

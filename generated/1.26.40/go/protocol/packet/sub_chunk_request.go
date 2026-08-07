@@ -6,7 +6,7 @@ import "protocolgen/generated/1.26.40/go/protocol"
 
 type SubChunkRequest struct {
 	DimensionType              protocol.DimensionType
-	SubChunkPositionOffsetList []protocol.SubChunkSubChunkPosOffset
+	SubChunkPositionOffsetList []protocol.SubChunkPosOffset
 	CenterPos                  protocol.SubChunkPos
 }
 

@@ -3,7 +3,7 @@
 package protocol
 
 type PackInfoData struct {
-	PackIdVersion       PackIdVersionData
+	PackIDVersion       PackIDVersionData
 	PackSize            uint64
 	ContentKey          string
 	SubpackName         string
@@ -16,7 +16,7 @@ type PackInfoData struct {
 
 // Marshal reads or writes PackInfoData using its canonical wire layout.
 func (x *PackInfoData) Marshal(io IO) {
-	x.PackIdVersion.Marshal(io)
+	x.PackIDVersion.Marshal(io)
 	io.Uint64(&x.PackSize)
 	io.String(&x.ContentKey)
 	io.String(&x.SubpackName)

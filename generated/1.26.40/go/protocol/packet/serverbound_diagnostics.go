@@ -14,7 +14,7 @@ type ServerboundDiagnostics struct {
 	AvgEndFrameTimeMS         float32
 	AvgRemainderTimePercent   float32
 	AvgUnaccountedTimePercent float32
-	MemoryCategoryValues      []protocol.MemoryMemoryCategoryCounter
+	MemoryCategoryValues      []protocol.MemoryCategoryCounter
 	EntityDiagnostics         []protocol.ECSProfilingDiagnosticsEntityDiagnosticTimingInfo
 	SystemDiagnostics         []protocol.ECSProfilingDiagnosticsSystemDiagnosticTimingInfo
 	SystemCategories          []protocol.ECSProfilingDiagnosticsSystemCategory

@@ -6,7 +6,7 @@ import "protocolgen/generated/1.26.40/go/protocol"
 
 type NpcRequest struct {
 	NPCRuntimeID uint64
-	RequestType  protocol.NpcRequestRequestType
+	RequestType  protocol.RequestType
 	Actions      string
 	ActionIndex  uint8
 	SceneName    string

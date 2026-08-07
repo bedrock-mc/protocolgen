@@ -5,12 +5,12 @@ package protocol
 type GameRule struct {
 	RuleName          string
 	RuleCanBeModified bool
-	RuleValue         GameRuleRuleValue
+	RuleValue         GameRuleValue
 }
 
 // Marshal reads or writes GameRule using its canonical wire layout.
 func (x *GameRule) Marshal(io IO) {
 	io.String(&x.RuleName)
 	io.Bool(&x.RuleCanBeModified)
-	MarshalGameRuleRuleValue(io, &x.RuleValue)
+	MarshalGameRuleValue(io, &x.RuleValue)
 }

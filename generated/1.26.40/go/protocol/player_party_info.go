@@ -3,12 +3,12 @@
 package protocol
 
 type PlayerPartyInfo struct {
-	PartyId       string
+	PartyID       string
 	IsPartyLeader bool
 }
 
 // Marshal reads or writes PlayerPartyInfo using its canonical wire layout.
 func (x *PlayerPartyInfo) Marshal(io IO) {
-	io.String(&x.PartyId)
+	io.String(&x.PartyID)
 	io.Bool(&x.IsPartyLeader)
 }

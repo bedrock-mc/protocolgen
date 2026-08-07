@@ -6,7 +6,7 @@ type SphereData struct {
 	NumSegments uint8
 }
 
-func (*SphereData) isPrimitiveShapeDataExtraShapeData() {}
+func (*SphereData) isPrimitiveShapeExtraShapeData() {}
 
 // Marshal reads or writes SphereData using its canonical wire layout.
 func (x *SphereData) Marshal(io IO) {

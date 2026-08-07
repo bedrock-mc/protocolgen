@@ -2,13 +2,13 @@
 
 package protocol
 
-type FeatureRegistryFeatureBinaryJsonFormat struct {
+type FeatureRegistryFeatureBinaryJSONFormat struct {
 	FeatureName      string
-	BinaryJsonOutput string
+	BinaryJSONOutput string
 }
 
-// Marshal reads or writes FeatureRegistryFeatureBinaryJsonFormat using its canonical wire layout.
-func (x *FeatureRegistryFeatureBinaryJsonFormat) Marshal(io IO) {
+// Marshal reads or writes FeatureRegistryFeatureBinaryJSONFormat using its canonical wire layout.
+func (x *FeatureRegistryFeatureBinaryJSONFormat) Marshal(io IO) {
 	io.String(&x.FeatureName)
-	io.String(&x.BinaryJsonOutput)
+	io.String(&x.BinaryJSONOutput)
 }

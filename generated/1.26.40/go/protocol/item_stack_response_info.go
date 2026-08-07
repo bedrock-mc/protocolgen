@@ -4,14 +4,14 @@ package protocol
 
 type ItemStackResponseInfo struct {
 	Result          ItemStackNetResult
-	ClientRequestId TypedClientNetIdStructItemStackRequestIdTagInt32T0
+	ClientRequestID ItemStackRequestID
 	Containers      Optional[[]ItemStackResponseContainerInfo]
 }
 
 // Marshal reads or writes ItemStackResponseInfo using its canonical wire layout.
 func (x *ItemStackResponseInfo) Marshal(io IO) {
 	IntegerFunc(&x.Result, io.Uint8)
-	x.ClientRequestId.Marshal(io)
+	x.ClientRequestID.Marshal(io)
 	DoubleOptionalFunc(io, &x.Containers, func(value *[]ItemStackResponseContainerInfo) {
 		Slice(io, value)
 	})

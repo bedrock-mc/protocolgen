@@ -10,7 +10,7 @@ type ConeData struct {
 	NumSegments uint8
 }
 
-func (*ConeData) isPrimitiveShapeDataExtraShapeData() {}
+func (*ConeData) isPrimitiveShapeExtraShapeData() {}
 
 // Marshal reads or writes ConeData using its canonical wire layout.
 func (x *ConeData) Marshal(io IO) {

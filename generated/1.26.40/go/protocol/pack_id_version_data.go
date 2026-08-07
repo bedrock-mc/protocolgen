@@ -4,13 +4,13 @@ package protocol
 
 import "github.com/google/uuid"
 
-type PackIdVersionData struct {
+type PackIDVersionData struct {
 	PackUUID    uuid.UUID
 	PackVersion SemVersionData
 }
 
-// Marshal reads or writes PackIdVersionData using its canonical wire layout.
-func (x *PackIdVersionData) Marshal(io IO) {
+// Marshal reads or writes PackIDVersionData using its canonical wire layout.
+func (x *PackIDVersionData) Marshal(io IO) {
 	io.UUID(&x.PackUUID)
 	x.PackVersion.Marshal(io)
 }

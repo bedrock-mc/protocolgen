@@ -5,7 +5,7 @@ package packet
 import "protocolgen/generated/1.26.40/go/protocol"
 
 type SimpleEvent struct {
-	Type protocol.SimpleEventSubtype
+	Type protocol.Subtype
 }
 
 // Marshal reads or writes SimpleEvent using its canonical wire layout.

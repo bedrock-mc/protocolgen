@@ -3,7 +3,7 @@
 package protocol
 
 type AttributeModifier struct {
-	Id             string
+	ID             string
 	Name           string
 	Amount         float32
 	Operation      int32
@@ -13,7 +13,7 @@ type AttributeModifier struct {
 
 // Marshal reads or writes AttributeModifier using its canonical wire layout.
 func (x *AttributeModifier) Marshal(io IO) {
-	io.String(&x.Id)
+	io.String(&x.ID)
 	io.String(&x.Name)
 	io.Float32(&x.Amount)
 	io.Int32(&x.Operation)

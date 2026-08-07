@@ -15,7 +15,7 @@ type LevelSoundEvent struct {
 	ActorIdentifier string
 	IsBaby          bool
 	IsGlobal        bool
-	ActorUniqueId   int64
+	ActorUniqueID   int64
 	FireAtPosition  protocol.Optional[mgl32.Vec3]
 }
 
@@ -27,7 +27,7 @@ func (x *LevelSoundEvent) Marshal(io protocol.IO) {
 	io.String(&x.ActorIdentifier)
 	io.Bool(&x.IsBaby)
 	io.Bool(&x.IsGlobal)
-	io.Int64(&x.ActorUniqueId)
+	io.Int64(&x.ActorUniqueID)
 	protocol.OptionalFunc(io, &x.FireAtPosition, io.Vec3)
 }
 

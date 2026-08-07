@@ -5,6 +5,7 @@ GO := GOCACHE=$(GO_CACHE) go
 PROTOCOLGEN := $(GO) run ./cmd/protocolgen
 
 MANIFEST := generated/1.26.40/manifest.json
+NAMING := generated/1.26.40/naming.json
 SOURCE_LOCK := generated/1.26.40/source-lock.json
 MOJANG_DIR ?=
 ENDSTONE_DIR ?=
@@ -29,10 +30,12 @@ regen:
 	$(PROTOCOLGEN) validate -manifest $(MANIFEST)
 	$(PROTOCOLGEN) emit-go \
 		-manifest $(MANIFEST) \
+		-naming $(NAMING) \
 		-out generated/1.26.40/go \
 		-protocol-import protocolgen/generated/1.26.40/go/protocol
 	$(PROTOCOLGEN) emit-rust \
 		-manifest $(MANIFEST) \
+		-naming $(NAMING) \
 		-out generated/1.26.40/rust
 	$(PROTOCOLGEN) verify-gophertunnel \
 		-manifest $(MANIFEST) \

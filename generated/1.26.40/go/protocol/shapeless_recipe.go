@@ -5,26 +5,26 @@ package protocol
 import "github.com/google/uuid"
 
 type ShapelessRecipe struct {
-	RecipeId             string
-	Ingredients          []CerealizerRecipeIngredientSerializedData
-	Results              []CerealizerNetworkItemInstanceDescriptorSerializedData
+	RecipeID             string
+	Ingredients          []RecipeIngredientSerializedData
+	Results              []NetworkItemInstanceDescriptorSerializedData
 	UUID                 uuid.UUID
 	Tag                  string
 	Priority             int32
-	UnlockingRequirement Optional[CerealizerRecipeUnlockingRequirementSerializedData]
-	NetId                TypedServerNetIdStructRecipeNetIdTag
+	UnlockingRequirement Optional[RecipeUnlockRequirementSerializedData]
+	NetID                RecipeNetID
 }
 
 // Marshal reads or writes ShapelessRecipe using its canonical wire layout.
 func (x *ShapelessRecipe) Marshal(io IO) {
-	io.String(&x.RecipeId)
+	io.String(&x.RecipeID)
 	Slice(io, &x.Ingredients)
 	Slice(io, &x.Results)
 	io.UUID(&x.UUID)
 	io.String(&x.Tag)
 	io.Varint32(&x.Priority)
-	OptionalFunc(io, &x.UnlockingRequirement, func(value *CerealizerRecipeUnlockingRequirementSerializedData) {
+	OptionalFunc(io, &x.UnlockingRequirement, func(value *RecipeUnlockRequirementSerializedData) {
 		value.Marshal(io)
 	})
-	x.NetId.Marshal(io)
+	x.NetID.Marshal(io)
 }

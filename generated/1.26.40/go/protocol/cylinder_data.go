@@ -11,7 +11,7 @@ type CylinderData struct {
 	NumSegments uint8
 }
 
-func (*CylinderData) isPrimitiveShapeDataExtraShapeData() {}
+func (*CylinderData) isPrimitiveShapeExtraShapeData() {}
 
 // Marshal reads or writes CylinderData using its canonical wire layout.
 func (x *CylinderData) Marshal(io IO) {

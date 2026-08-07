@@ -6,7 +6,7 @@ type InventoryMismatchData struct {
 	Actions InventoryTransactionData
 }
 
-func (*InventoryMismatchData) isInventoryTransactionTransactionValue() {}
+func (*InventoryMismatchData) isInventoryTransactionValue() {}
 
 // Marshal reads or writes InventoryMismatchData using its canonical wire layout.
 func (x *InventoryMismatchData) Marshal(io IO) {

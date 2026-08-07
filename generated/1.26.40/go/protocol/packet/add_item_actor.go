@@ -11,7 +11,7 @@ import (
 type AddItemActor struct {
 	TargetActorID   int64
 	TargetRuntimeID uint64
-	Item            protocol.CerealizerNetworkItemStackDescriptorSerializedData
+	Item            protocol.NetworkItemStackDescriptorSerializedData
 	Position        mgl32.Vec3
 	Velocity        mgl32.Vec3
 	EntityData      protocol.SynchedActorDataCopyableDataList

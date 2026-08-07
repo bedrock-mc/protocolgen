@@ -5,19 +5,19 @@ package packet
 import "protocolgen/generated/1.26.40/go/protocol"
 
 type UpdateEquip struct {
-	ContainerId    uint8
+	ContainerID    uint8
 	Type           uint8
 	Size           int32
-	EntityUniqueId int64
+	EntityUniqueID int64
 	Data           []byte
 }
 
 // Marshal reads or writes UpdateEquip using its canonical wire layout.
 func (x *UpdateEquip) Marshal(io protocol.IO) {
-	io.Uint8(&x.ContainerId)
+	io.Uint8(&x.ContainerID)
 	io.Uint8(&x.Type)
 	io.Varint32(&x.Size)
-	io.ActorUniqueID(&x.EntityUniqueId)
+	io.ActorUniqueID(&x.EntityUniqueID)
 	io.NBT(&x.Data)
 }
 

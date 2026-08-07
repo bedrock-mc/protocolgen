@@ -6,11 +6,11 @@ import "github.com/google/uuid"
 
 type MultiRecipe struct {
 	MultiRecipeUUID uuid.UUID
-	NetId           TypedServerNetIdStructRecipeNetIdTag
+	NetID           RecipeNetID
 }
 
 // Marshal reads or writes MultiRecipe using its canonical wire layout.
 func (x *MultiRecipe) Marshal(io IO) {
 	io.UUID(&x.MultiRecipeUUID)
-	x.NetId.Marshal(io)
+	x.NetID.Marshal(io)
 }

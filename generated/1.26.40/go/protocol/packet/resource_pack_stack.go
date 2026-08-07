@@ -6,7 +6,7 @@ import "protocolgen/generated/1.26.40/go/protocol"
 
 type ResourcePackStack struct {
 	TexturePackRequired bool
-	TexturePackList     []protocol.PackInstanceId
+	TexturePackList     []protocol.PackInstanceID
 	BaseGameVersion     string
 	Experiments         protocol.Experiments
 	IncludeEditorPacks  bool

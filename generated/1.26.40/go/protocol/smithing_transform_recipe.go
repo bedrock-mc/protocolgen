@@ -3,22 +3,22 @@
 package protocol
 
 type SmithingTransformRecipe struct {
-	RecipeId           string
-	TemplateIngredient CerealizerRecipeIngredientSerializedData
-	BaseIngredient     CerealizerRecipeIngredientSerializedData
-	AdditionIngredient CerealizerRecipeIngredientSerializedData
-	Result             CerealizerNetworkItemInstanceDescriptorSerializedData
+	RecipeID           string
+	TemplateIngredient RecipeIngredientSerializedData
+	BaseIngredient     RecipeIngredientSerializedData
+	AdditionIngredient RecipeIngredientSerializedData
+	Result             NetworkItemInstanceDescriptorSerializedData
 	Tag                string
-	NetId              TypedServerNetIdStructRecipeNetIdTag
+	NetID              RecipeNetID
 }
 
 // Marshal reads or writes SmithingTransformRecipe using its canonical wire layout.
 func (x *SmithingTransformRecipe) Marshal(io IO) {
-	io.String(&x.RecipeId)
+	io.String(&x.RecipeID)
 	x.TemplateIngredient.Marshal(io)
 	x.BaseIngredient.Marshal(io)
 	x.AdditionIngredient.Marshal(io)
 	x.Result.Marshal(io)
 	io.String(&x.Tag)
-	x.NetId.Marshal(io)
+	x.NetID.Marshal(io)
 }

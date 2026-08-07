@@ -3,7 +3,7 @@
 package protocol
 
 type BiomeDefinitionData struct {
-	Id                uint16
+	ID                uint16
 	Temperature       float32
 	Downfall          float32
 	FoliageSnow       float32
@@ -17,7 +17,7 @@ type BiomeDefinitionData struct {
 
 // Marshal reads or writes BiomeDefinitionData using its canonical wire layout.
 func (x *BiomeDefinitionData) Marshal(io IO) {
-	io.Uint16(&x.Id)
+	io.Uint16(&x.ID)
 	io.Float32(&x.Temperature)
 	io.Float32(&x.Downfall)
 	io.Float32(&x.FoliageSnow)

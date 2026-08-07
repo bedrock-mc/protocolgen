@@ -3,10 +3,10 @@
 package protocol
 
 type EducationLocalLevelSettings struct {
-	CodeBuilderOverrideUri Optional[string]
+	CodeBuilderOverrideURI Optional[string]
 }
 
 // Marshal reads or writes EducationLocalLevelSettings using its canonical wire layout.
 func (x *EducationLocalLevelSettings) Marshal(io IO) {
-	OptionalFunc(io, &x.CodeBuilderOverrideUri, io.String)
+	OptionalFunc(io, &x.CodeBuilderOverrideURI, io.String)
 }

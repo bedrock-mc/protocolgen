@@ -5,13 +5,13 @@ package packet
 import "protocolgen/generated/1.26.40/go/protocol"
 
 type ScriptMessage struct {
-	MessageId    string
+	MessageID    string
 	MessageValue string
 }
 
 // Marshal reads or writes ScriptMessage using its canonical wire layout.
 func (x *ScriptMessage) Marshal(io protocol.IO) {
-	io.String(&x.MessageId)
+	io.String(&x.MessageID)
 	io.String(&x.MessageValue)
 }
 

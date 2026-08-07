@@ -5,7 +5,7 @@ package packet
 import "protocolgen/generated/1.26.40/go/protocol"
 
 type MultiplayerSettings struct {
-	PacketType protocol.MultiplayerSettingsPacketType
+	PacketType protocol.MultiplayerSettingsType
 }
 
 // Marshal reads or writes MultiplayerSettings using its canonical wire layout.

@@ -6,9 +6,9 @@ import "protocolgen/generated/1.26.40/go/protocol"
 
 type LegacyTelemetryEvent struct {
 	TargetActorID int64
-	EventType     protocol.LegacyTelemetryEventType
+	EventType     protocol.LegacyTelemetryType
 	UsePlayerID   bool
-	EventData     protocol.LegacyTelemetryEventEventData
+	EventData     protocol.Event
 }
 
 // Marshal reads or writes LegacyTelemetryEvent using its canonical wire layout.
@@ -16,7 +16,7 @@ func (x *LegacyTelemetryEvent) Marshal(io protocol.IO) {
 	io.ActorUniqueID(&x.TargetActorID)
 	protocol.IntegerFunc(&x.EventType, io.Varint32)
 	io.Bool(&x.UsePlayerID)
-	protocol.MarshalLegacyTelemetryEventEventData(io, &x.EventData)
+	protocol.MarshalEvent(io, &x.EventData)
 }
 
 // ID returns the protocol ID for LegacyTelemetryEvent.

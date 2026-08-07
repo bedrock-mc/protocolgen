@@ -142,8 +142,8 @@
     },
     {
       "type_id": "GameRulesChangedPacketData.json#",
-      "name": "GameRulesChangedData",
-      "rationale": "Keeps the packet context after filename normalization would otherwise leave the unhelpful Data name."
+      "name": "GameRuleData",
+      "rationale": "Names the individual rule-data payload; the plural packet data container is reviewed separately."
     },
     {
       "type_id": "PrimitiveShapeDataPayload",
@@ -418,7 +418,7 @@
     {
       "type_id": "ItemStackRequestCereal::RequestData",
       "name": "ItemStackRequestData",
-      "rationale": "Uses the gophertunnel ItemStackRequest concept while adding Data to avoid the generated packet collision; the suffix is an uncertain namespace distinction."
+      "rationale": "Uses the gophertunnel ItemStackRequest concept while separating the shared request payload from the packet wrapper."
     },
     {
       "type_id": "ItemStackRequestCereal::SlotInfoData",
@@ -504,6 +504,61 @@
       "type_id": "CameraInstructionOptions::TargetInstruction",
       "name": "CameraInstructionTargetData",
       "rationale": "The source target instruction overlaps the attach-to-entity concept; Data is an uncertain disambiguation."
+    },
+    {
+      "type_id": "GameRulesChangedPacketData",
+      "name": "GameRulesChangedData",
+      "rationale": "Names the plural rules container concisely; the corresponding gophertunnel packet is GameRulesChanged."
+    },
+    {
+      "type_id": "ItemStackRequestPacketData::RequestData",
+      "name": "ItemStackRequestPacketData",
+      "rationale": "Removes the repeated PacketData/RequestData scaffolding while distinguishing this packet-contained request from shared ItemStackRequestData; the suffix is an uncertain namespace distinction."
+    },
+    {
+      "type_id": "WebSocketPacketData",
+      "name": "WebSocketData",
+      "rationale": "Removes packet transport scaffolding from the websocket connection payload; no exact gophertunnel equivalent exists."
+    },
+    {
+      "type_id": "enums/CameraAimAssistPresetsPacketOperation",
+      "name": "CameraAimAssistPresetOperation",
+      "rationale": "Removes packet scaffolding from the camera aim-assist preset operation enum; no exact gophertunnel type exists."
+    },
+    {
+      "type_id": "enums/ClientCameraAimAssistPacketAction",
+      "name": "ClientCameraAimAssistAction",
+      "rationale": "Removes packet scaffolding from the client camera aim-assist action enum."
+    },
+    {
+      "type_id": "DisconnectPacketMessages",
+      "name": "DisconnectMessagesData",
+      "rationale": "Separates the packet-shaped disconnect message payload from the existing DisconnectMessages concept; the Data suffix is an uncertain distinction."
+    },
+    {
+      "type_id": "enums/ItemStackRequestCereal::ItemDescriptorType",
+      "name": "ItemDescriptorType",
+      "rationale": "Removes Cereal scaffolding from the item descriptor discriminator; gophertunnel exposes the corresponding descriptor constants."
+    },
+    {
+      "type_id": "MapInfoRequestPacketAnon::ClientPixelsProxy",
+      "name": "PixelRequest",
+      "rationale": "Matches gophertunnel PixelRequest for a map client-pixel update."
+    },
+    {
+      "type_id": "SubChunkPacketPayload::SubChunkPacketData",
+      "name": "SubChunkData",
+      "rationale": "Removes nested packet scaffolding from the sub-chunk payload; no exact gophertunnel shared type exists."
+    },
+    {
+      "type_id": "enums/MultiplayerSettingsPacketType",
+      "name": "MultiplayerSettingsType",
+      "rationale": "Removes packet scaffolding from the multiplayer-settings discriminator; the suffix is an uncertain distinction because gophertunnel keeps this as packet-local state."
+    },
+    {
+      "type_id": "enums/ServerboundLoadingScreenPacketType",
+      "name": "ServerboundLoadingScreenType",
+      "rationale": "Removes packet scaffolding from the loading-screen discriminator; no exact gophertunnel shared type exists."
     }
   ]
 }

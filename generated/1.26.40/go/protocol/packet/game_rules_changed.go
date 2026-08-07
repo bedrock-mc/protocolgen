@@ -5,7 +5,7 @@ package packet
 import "protocolgen/generated/1.26.40/go/protocol"
 
 type GameRulesChanged struct {
-	RuleData protocol.GameRulesChangedPacketData
+	RuleData protocol.GameRulesChangedData
 }
 
 // Marshal reads or writes GameRulesChanged using its canonical wire layout.

@@ -72,7 +72,7 @@ impl ResourcePackStack {
 }
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ResourcePackClientResponse {
-    pub response: ResourcePackClientResponseResponse,
+    pub response: ResourcePackClientResponseData,
 }
 
 impl ResourcePackClientResponse {
@@ -81,7 +81,7 @@ impl ResourcePackClientResponse {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct Text {
     pub localize: bool,
-    pub body: TextBody,
+    pub body: TextData,
     pub sender_xuid: String,
     pub platform_id: String,
     /// Wire presence: optional value is preceded by a presence marker.
@@ -142,12 +142,12 @@ pub struct AddPlayer {
     pub velocity: glam::Vec3,
     pub rotation: glam::Vec2,
     pub y_head_rotation: wire::F32LE,
-    pub carried_item: CerealizerNetworkItemStackDescriptorSerializedData,
+    pub carried_item: NetworkItemStackDescriptorSerializedData,
     pub player_game_type: GameType,
     pub entity_data: SynchedActorDataCopyableDataList,
     pub synched_properties: PropertySyncData,
     pub abilities_data: SerializedAbilitiesData,
-    pub actor_links: Vec<ActorLink>,
+    pub actor_links: Vec<EntityLink>,
     pub device_id: String,
     pub build_platform: BuildPlatform,
 }
@@ -168,7 +168,7 @@ pub struct AddActor {
     pub attributes_list: Vec<SyncedAttribute>,
     pub actor_data: SynchedActorDataCopyableDataList,
     pub synched_properties: PropertySyncData,
-    pub actor_links: Vec<ActorLink>,
+    pub actor_links: Vec<EntityLink>,
 }
 
 impl AddActor {
@@ -186,7 +186,7 @@ impl RemoveActor {
 pub struct AddItemActor {
     pub target_actor_id: ActorUniqueID,
     pub target_runtime_id: ActorRuntimeID,
-    pub item: CerealizerNetworkItemStackDescriptorSerializedData,
+    pub item: NetworkItemStackDescriptorSerializedData,
     pub position: glam::Vec3,
     pub velocity: glam::Vec3,
     pub entity_data: SynchedActorDataCopyableDataList,
@@ -320,11 +320,11 @@ impl UpdateAttributes {
 }
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct InventoryTransaction {
-    pub legacy_request_id: TypedClientNetIdStructItemStackLegacyRequestIdTagInt32T0,
+    pub legacy_request_id: ItemStackLegacyRequestID,
     /// Wire presence: optional value is preceded by a presence marker.
     pub legacy_set_item_slots: Option<Vec<LegacySetSlot>>,
     /// Wire presence: optional value is preceded by a presence marker.
-    pub transaction: Option<InventoryTransactionTransactionValue>,
+    pub transaction: Option<InventoryTransactionValue>,
 }
 
 impl InventoryTransaction {
@@ -333,7 +333,7 @@ impl InventoryTransaction {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct MobEquipment {
     pub target_runtime_id: ActorRuntimeID,
-    pub item: CerealizerNetworkItemStackDescriptorSerializedData,
+    pub item: NetworkItemStackDescriptorSerializedData,
     pub slot: wire::U8,
     pub selected_slot: wire::U8,
     pub container_id: wire::U8,
@@ -345,11 +345,11 @@ impl MobEquipment {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct MobArmorEquipment {
     pub target_runtime_id: ActorRuntimeID,
-    pub head: CerealizerNetworkItemStackDescriptorSerializedData,
-    pub torso: CerealizerNetworkItemStackDescriptorSerializedData,
-    pub legs: CerealizerNetworkItemStackDescriptorSerializedData,
-    pub feet: CerealizerNetworkItemStackDescriptorSerializedData,
-    pub body: CerealizerNetworkItemStackDescriptorSerializedData,
+    pub head: NetworkItemStackDescriptorSerializedData,
+    pub torso: NetworkItemStackDescriptorSerializedData,
+    pub legs: NetworkItemStackDescriptorSerializedData,
+    pub feet: NetworkItemStackDescriptorSerializedData,
+    pub body: NetworkItemStackDescriptorSerializedData,
 }
 
 impl MobArmorEquipment {
@@ -431,7 +431,7 @@ impl SetActorMotion {
 }
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SetActorLink {
-    pub link: ActorLink,
+    pub link: EntityLink,
 }
 
 impl SetActorLink {
@@ -512,9 +512,9 @@ impl PlayerHotbar {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct InventoryContent {
     pub container_id: wire::VarUInt,
-    pub slots: Vec<CerealizerNetworkItemStackDescriptorSerializedData>,
+    pub slots: Vec<NetworkItemStackDescriptorSerializedData>,
     pub full_container_name: FullContainerName,
-    pub storage_item: CerealizerNetworkItemStackDescriptorSerializedData,
+    pub storage_item: NetworkItemStackDescriptorSerializedData,
 }
 
 impl InventoryContent {
@@ -527,8 +527,8 @@ pub struct InventorySlot {
     /// Wire presence: optional value is preceded by a presence marker.
     pub full_container_name: Option<FullContainerName>,
     /// Wire presence: optional value is preceded by a presence marker.
-    pub storage_item: Option<CerealizerNetworkItemStackDescriptorSerializedData>,
-    pub item: CerealizerNetworkItemStackDescriptorSerializedData,
+    pub storage_item: Option<NetworkItemStackDescriptorSerializedData>,
+    pub item: NetworkItemStackDescriptorSerializedData,
 }
 
 impl InventorySlot {
@@ -590,7 +590,7 @@ pub struct LevelChunk {
     /// Wire presence: optional value is preceded by a presence marker.
     pub client_request_sub_chunk_limit: Option<wire::ZigZag32>,
     pub cache_enabled: bool,
-    pub cache_metadata: Vec<LevelChunkSubChunkMetadata>,
+    pub cache_metadata: Vec<SubChunkMetadata>,
     pub serialized_chunk_data: bytes::Bytes,
 }
 
@@ -635,7 +635,7 @@ impl SetPlayerGameType {
 }
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PlayerList {
-    pub entries: Vec<PlayerListEntriesItem>,
+    pub entries: Vec<PlayerListData>,
 }
 
 impl PlayerList {
@@ -643,7 +643,7 @@ impl PlayerList {
 }
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SimpleEvent {
-    pub type_: SimpleEventSubtype,
+    pub type_: Subtype,
 }
 
 impl SimpleEvent {
@@ -652,9 +652,9 @@ impl SimpleEvent {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct LegacyTelemetryEvent {
     pub target_actor_id: ActorUniqueID,
-    pub event_type: LegacyTelemetryEventType,
+    pub event_type: LegacyTelemetryType,
     pub use_player_id: bool,
-    pub event_data: LegacyTelemetryEventEventData,
+    pub event_data: Event,
 }
 
 impl LegacyTelemetryEvent {
@@ -676,11 +676,11 @@ pub struct ClientboundMapItemData {
     pub is_locked: bool,
     pub map_origin: BlockPos,
     /// Wire presence: optional value is preceded by a presence marker.
-    pub creation_map_i_ds: Option<Vec<ActorUniqueID>>,
+    pub creation_map_ids: Option<Vec<ActorUniqueID>>,
     /// Wire presence: optional value is preceded by a presence marker.
     pub scale: Option<wire::I8>,
     /// Wire presence: optional value is preceded by a presence marker.
-    pub tracked_actor_i_ds: Option<Vec<MapItemTrackedActorUniqueId>>,
+    pub tracked_actor_ids: Option<Vec<MapItemTrackedActorUniqueId>>,
     /// Wire presence: optional value is preceded by a presence marker.
     pub decorations: Option<Vec<MapDecoration>>,
     /// Wire presence: optional value is preceded by a presence marker.
@@ -701,7 +701,7 @@ impl ClientboundMapItemData {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct MapInfoRequest {
     pub map_unique_id: ActorUniqueID,
-    pub client_pixels_list: Vec<MapInfoRequestPacketAnonClientPixelsProxy>,
+    pub client_pixels_list: Vec<PixelRequest>,
 }
 
 impl MapInfoRequest {
@@ -726,7 +726,7 @@ impl ChunkRadiusUpdated {
 }
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct GameRulesChanged {
-    pub rule_data: GameRulesChangedPacketData,
+    pub rule_data: GameRulesChangedData,
 }
 
 impl GameRulesChanged {
@@ -770,11 +770,11 @@ pub struct AvailableCommands {
     pub enum_values: Vec<String>,
     pub chained_subcommand_values: Vec<String>,
     pub post_fixes: Vec<String>,
-    pub enum_data: Vec<AvailableCommandsEnumData>,
-    pub chained_subcommand_data: Vec<AvailableCommandsChainedSubcommandData>,
-    pub commands: Vec<AvailableCommandsPacketCommandData>,
-    pub soft_enums: Vec<AvailableCommandsSoftEnumData>,
-    pub constraints: Vec<AvailableCommandsConstrainedValueData>,
+    pub enum_data: Vec<CommandEnum>,
+    pub chained_subcommand_data: Vec<ChainedSubcommand>,
+    pub commands: Vec<Command>,
+    pub soft_enums: Vec<DynamicEnum>,
+    pub constraints: Vec<CommandEnumConstraint>,
 }
 
 impl AvailableCommands {
@@ -793,7 +793,7 @@ impl CommandRequest {
 }
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CommandBlockUpdate {
-    pub target: CommandBlockUpdateTarget,
+    pub target: CommandBlockUpdateData,
     pub command: String,
     pub last_output: String,
     pub name: String,
@@ -916,7 +916,7 @@ impl StopSound {
 }
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SetTitle {
-    pub title_type: SetTitleTitleType,
+    pub title_type: TitleType,
     pub title_text: String,
     pub fade_in_time: wire::ZigZag32,
     pub stay_time: wire::ZigZag32,
@@ -986,7 +986,7 @@ impl SubClientLogin {
 }
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct AutomationClientConnect {
-    pub web_socket_data: WebSocketPacketData,
+    pub web_socket_data: WebSocketData,
 }
 
 impl AutomationClientConnect {
@@ -1012,7 +1012,7 @@ impl BookEdit {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct NpcRequest {
     pub npc_runtime_id: ActorRuntimeID,
-    pub request_type: NpcRequestRequestType,
+    pub request_type: RequestType,
     pub actions: String,
     pub action_index: wire::U8,
     pub scene_name: String,
@@ -1110,7 +1110,7 @@ impl SetDisplayObjective {
 }
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SetScore {
-    pub score_info: Vec<SetScoreScoreInfoItem>,
+    pub score_info: Vec<SetScoreInfoItem>,
 }
 
 impl SetScore {
@@ -1344,7 +1344,7 @@ impl Emote {
 }
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct MultiplayerSettings {
-    pub packet_type: MultiplayerSettingsPacketType,
+    pub packet_type: MultiplayerSettingsType,
 }
 
 impl MultiplayerSettings {
@@ -1395,7 +1395,7 @@ pub struct PlayerAuthInput {
     pub move_vector: glam::Vec2,
     pub player_head_rotation: wire::F32LE,
     /// Wire presence: optional value is preceded by a presence marker.
-    pub input_data: Option<Vec<PlayerAuthInputInputData>>,
+    pub input_data: Option<Vec<InputData>>,
     pub input_mode: InputMode,
     pub play_mode: ClientPlayMode,
     pub new_interaction_model: NewInteractionModel,
@@ -1405,7 +1405,7 @@ pub struct PlayerAuthInput {
     /// Wire presence: optional value is preceded by a presence marker.
     pub item_use_transaction: Option<PackedItemUseLegacyInventoryTransaction>,
     /// Wire presence: optional value is preceded by a presence marker.
-    pub item_stack_request: Option<ItemStackRequestCerealRequestData>,
+    pub item_stack_request: Option<ItemStackRequestData>,
     /// Wire presence: optional value is preceded by a presence marker.
     pub player_block_actions: Option<Vec<PlayerBlockActionData>>,
     /// Wire presence: optional value is preceded by a presence marker.
@@ -1439,7 +1439,7 @@ impl PlayerEnchantOptions {
 }
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ItemStackRequest {
-    pub requests: Vec<ItemStackRequestPacketDataRequestData>,
+    pub requests: Vec<ItemStackRequestPacketData>,
 }
 
 impl ItemStackRequest {
@@ -1598,7 +1598,7 @@ impl ItemRegistry {
 pub struct ClientboundDebugRenderer {
     pub type_: String,
     /// Wire presence: optional value is preceded by a presence marker.
-    pub debug_marker_data: Option<ClientboundDebugRendererDebugMarkerData>,
+    pub debug_marker_data: Option<DebugMarkerData>,
 }
 
 impl ClientboundDebugRenderer {
@@ -1638,7 +1638,7 @@ impl RemoveVolumeEntity {
 }
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SimulationType {
-    pub sim_type: SimulationTypeType,
+    pub sim_type: SimulationTypeEnum,
 }
 
 impl SimulationType {
@@ -1647,7 +1647,7 @@ impl SimulationType {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct NpcDialogue {
     pub npc_id_raw_id: wire::U64LE,
-    pub npc_dialogue_action_type: NpcDialogueNpcDialogueActionType,
+    pub npc_dialogue_action_type: NpcDialogueActionType,
     pub dialogue: String,
     pub scene_name: String,
     pub npc_name: String,
@@ -1689,7 +1689,7 @@ pub struct SubChunk {
     pub cache_enabled: bool,
     pub dimension_type: DimensionType,
     pub center_pos: SubChunkPos,
-    pub sub_chunk_data: Vec<SubChunkSubChunkPacketData>,
+    pub sub_chunk_data: Vec<SubChunkData>,
 }
 
 impl SubChunk {
@@ -1698,7 +1698,7 @@ impl SubChunk {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SubChunkRequest {
     pub dimension_type: DimensionType,
-    pub sub_chunk_position_offset_list: Vec<SubChunkSubChunkPosOffset>,
+    pub sub_chunk_position_offset_list: Vec<SubChunkPosOffset>,
     pub center_pos: SubChunkPos,
 }
 
@@ -1905,7 +1905,7 @@ impl UpdateClientInputLocks {
 }
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CameraPresets {
-    pub camera_presets: CameraPresetsData,
+    pub camera_presets: CameraPresetList,
 }
 
 impl CameraPresets {
@@ -1913,7 +1913,7 @@ impl CameraPresets {
 }
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct UnlockedRecipes {
-    pub packet_type: UnlockedRecipesPacketType,
+    pub packet_type: PacketType,
     pub unlocked_recipes_list: Vec<String>,
 }
 
@@ -2008,7 +2008,7 @@ impl ClientboundCloseForm {
 }
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ServerboundLoadingScreen {
-    pub loading_screen_packet_type: ServerboundLoadingScreenPacketType,
+    pub loading_screen_packet_type: ServerboundLoadingScreenType,
     /// Wire presence: optional value is preceded by a presence marker.
     pub loading_screen_id: Option<wire::U32LE>,
 }
@@ -2043,7 +2043,7 @@ pub struct ServerboundDiagnostics {
     pub avg_end_frame_time_ms: wire::F32LE,
     pub avg_remainder_time_percent: wire::F32LE,
     pub avg_unaccounted_time_percent: wire::F32LE,
-    pub memory_category_values: Vec<MemoryMemoryCategoryCounter>,
+    pub memory_category_values: Vec<MemoryCategoryCounter>,
     pub entity_diagnostics: Vec<ECSProfilingDiagnosticsEntityDiagnosticTimingInfo>,
     pub system_diagnostics: Vec<ECSProfilingDiagnosticsSystemDiagnosticTimingInfo>,
     pub system_categories: Vec<ECSProfilingDiagnosticsSystemCategory>,
@@ -2058,7 +2058,7 @@ pub struct CameraAimAssist {
     pub preset_id: String,
     pub view_angle: glam::Vec2,
     pub distance: wire::F32LE,
-    pub target_mode: CameraAimAssistTargetModeType,
+    pub target_mode: TargetMode,
     pub action: CameraAimAssistAction,
     pub show_debug_render: bool,
 }
@@ -2089,7 +2089,7 @@ impl MovementEffect {
 pub struct CameraAimAssistPresets {
     pub camera_aim_assist_presets: Vec<CameraAimAssistCategoryDefinition>,
     pub camera_aim_assist_categories: Vec<CameraAimAssistPresetDefinition>,
-    pub operation: CameraAimAssistPresetsPacketOperation,
+    pub operation: CameraAimAssistPresetOperation,
 }
 
 impl CameraAimAssistPresets {
@@ -2098,7 +2098,7 @@ impl CameraAimAssistPresets {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ClientCameraAimAssist {
     pub camera_preset_id: String,
-    pub action: ClientCameraAimAssistPacketAction,
+    pub action: ClientCameraAimAssistAction,
     pub allow_aim_assist: bool,
 }
 
@@ -2130,7 +2130,7 @@ impl UpdateClientOptions {
 }
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PlayerVideoCapture {
-    pub action: PlayerVideoCaptureAction,
+    pub action: PlayerVideoCaptureData,
 }
 
 impl PlayerVideoCapture {
@@ -2140,7 +2140,7 @@ impl PlayerVideoCapture {
 pub struct PlayerUpdateEntityOverrides {
     pub target_id: ActorUniqueID,
     pub property_index: wire::VarUInt,
-    pub update: PlayerUpdateEntityOverridesUpdate,
+    pub update: PlayerUpdateEntityOverridesData,
 }
 
 impl PlayerUpdateEntityOverrides {
@@ -2149,7 +2149,7 @@ impl PlayerUpdateEntityOverrides {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PlayerLocation {
     pub target_actor_id: ActorUniqueID,
-    pub location: PlayerLocationLocation,
+    pub location: PlayerLocationData,
 }
 
 impl PlayerLocation {
@@ -2157,7 +2157,7 @@ impl PlayerLocation {
 }
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ClientboundControlSchemeSet {
-    pub control_scheme: ControlSchemeScheme,
+    pub control_scheme: ControlScheme,
 }
 
 impl ClientboundControlSchemeSet {
@@ -2165,7 +2165,7 @@ impl ClientboundControlSchemeSet {
 }
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PrimitiveShapes {
-    pub array_of_primitive_shapes_can_be_a_mix_of_new_updated_or_removed: Vec<PrimitiveShapeData>,
+    pub array_of_primitive_shapes_can_be_a_mix_of_new_updated_or_removed: Vec<PrimitiveShape>,
 }
 
 impl PrimitiveShapes {
@@ -2276,7 +2276,7 @@ impl CameraSpline {
 }
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CameraAimAssistActorPriority {
-    pub camera_aim_assist_actor_priority_list: Vec<CameraAimAssistActorPriorityPriorityData>,
+    pub camera_aim_assist_actor_priority_list: Vec<CameraAimAssistActorPriorityData>,
 }
 
 impl CameraAimAssistActorPriority {
@@ -2325,7 +2325,7 @@ impl SyncWorldClocks {
 }
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ClientboundAttributeLayerSync {
-    pub data: AttributeLayerSyncPacketData,
+    pub data: AttributeLayerSyncData,
 }
 
 impl ClientboundAttributeLayerSync {

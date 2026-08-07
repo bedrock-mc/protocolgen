@@ -6,7 +6,7 @@ type ItemStackResponseSlotInfo struct {
 	RequestedSlot        uint8
 	Slot                 uint8
 	Amount               uint8
-	ItemStackNetId       Optional[TypedServerNetIdStructItemStackNetIdTagInt32T0]
+	ItemStackNetID       Optional[ItemStackNetID]
 	CustomName           BedrockSafetyRedactableString
 	DurabilityCorrection int32
 }
@@ -16,7 +16,7 @@ func (x *ItemStackResponseSlotInfo) Marshal(io IO) {
 	io.Uint8(&x.RequestedSlot)
 	io.Uint8(&x.Slot)
 	io.Uint8(&x.Amount)
-	DoubleOptionalFunc(io, &x.ItemStackNetId, func(value *TypedServerNetIdStructItemStackNetIdTagInt32T0) {
+	DoubleOptionalFunc(io, &x.ItemStackNetID, func(value *ItemStackNetID) {
 		value.Marshal(io)
 	})
 	x.CustomName.Marshal(io)

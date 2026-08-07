@@ -11,15 +11,15 @@ type ItemUseInventoryTransaction struct {
 	Position                 BlockPos
 	Face                     uint8
 	Slot                     int32
-	Item                     CerealizerNetworkItemStackDescriptorSerializedData
+	Item                     NetworkItemStackDescriptorSerializedData
 	FromPosition             mgl32.Vec3
 	ClickPosition            mgl32.Vec3
-	TargetBlockId            uint32
+	TargetBlockID            uint32
 	ClientInteractPrediction ItemUseInventoryTransactionPredictedResult
 	ClientCooldownState      ItemUseInventoryTransactionClientCooldownState
 }
 
-func (*ItemUseInventoryTransaction) isInventoryTransactionTransactionValue() {}
+func (*ItemUseInventoryTransaction) isInventoryTransactionValue() {}
 
 // Marshal reads or writes ItemUseInventoryTransaction using its canonical wire layout.
 func (x *ItemUseInventoryTransaction) Marshal(io IO) {
@@ -32,7 +32,7 @@ func (x *ItemUseInventoryTransaction) Marshal(io IO) {
 	x.Item.Marshal(io)
 	io.Vec3(&x.FromPosition)
 	io.Vec3(&x.ClickPosition)
-	io.Varuint32(&x.TargetBlockId)
+	io.Varuint32(&x.TargetBlockID)
 	IntegerFunc(&x.ClientInteractPrediction, io.Uint8)
 	IntegerFunc(&x.ClientCooldownState, io.Uint8)
 }

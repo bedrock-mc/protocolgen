@@ -5,7 +5,7 @@ package packet
 import "protocolgen/generated/1.26.40/go/protocol"
 
 type CameraPresets struct {
-	CameraPresets protocol.CameraPresetsData
+	CameraPresets protocol.CameraPresetList
 }
 
 // Marshal reads or writes CameraPresets using its canonical wire layout.

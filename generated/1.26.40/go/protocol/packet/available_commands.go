@@ -8,11 +8,11 @@ type AvailableCommands struct {
 	EnumValues              []string
 	ChainedSubcommandValues []string
 	PostFixes               []string
-	EnumData                []protocol.AvailableCommandsEnumData
-	ChainedSubcommandData   []protocol.AvailableCommandsChainedSubcommandData
-	Commands                []protocol.AvailableCommandsPacketCommandData
-	SoftEnums               []protocol.AvailableCommandsSoftEnumData
-	Constraints             []protocol.AvailableCommandsConstrainedValueData
+	EnumData                []protocol.CommandEnum
+	ChainedSubcommandData   []protocol.ChainedSubcommand
+	Commands                []protocol.Command
+	SoftEnums               []protocol.DynamicEnum
+	Constraints             []protocol.CommandEnumConstraint
 }
 
 // Marshal reads or writes AvailableCommands using its canonical wire layout.

@@ -5,7 +5,7 @@ package packet
 import "protocolgen/generated/1.26.40/go/protocol"
 
 type FeatureRegistry struct {
-	FeaturesDataList []protocol.FeatureRegistryFeatureBinaryJsonFormat
+	FeaturesDataList []protocol.FeatureRegistryFeatureBinaryJSONFormat
 }
 
 // Marshal reads or writes FeatureRegistry using its canonical wire layout.

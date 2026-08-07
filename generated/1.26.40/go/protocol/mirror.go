@@ -8,5 +8,5 @@ const (
 	MirrorNone Mirror = 0
 	MirrorX    Mirror = 1
 	MirrorZ    Mirror = 2
-	MirrorXz   Mirror = 3
+	MirrorXZ   Mirror = 3
 )

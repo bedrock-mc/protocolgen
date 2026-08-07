@@ -9,7 +9,7 @@ type EllipsoidData struct {
 	SegmentsPerAxis uint8
 }
 
-func (*EllipsoidData) isPrimitiveShapeDataExtraShapeData() {}
+func (*EllipsoidData) isPrimitiveShapeExtraShapeData() {}
 
 // Marshal reads or writes EllipsoidData using its canonical wire layout.
 func (x *EllipsoidData) Marshal(io IO) {

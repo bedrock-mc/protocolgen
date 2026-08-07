@@ -9,7 +9,7 @@ type ResourcePacksInfo struct {
 	HasAddonPacks              bool
 	HasScripts                 bool
 	ForceDisableVibrantVisuals bool
-	WorldTemplateIdAndVersion  protocol.PackIdVersion
+	WorldTemplateIDAndVersion  protocol.PackIDVersion
 	ResourcePacks              []protocol.PackInfoData
 }
 
@@ -19,7 +19,7 @@ func (x *ResourcePacksInfo) Marshal(io protocol.IO) {
 	io.Bool(&x.HasAddonPacks)
 	io.Bool(&x.HasScripts)
 	io.Bool(&x.ForceDisableVibrantVisuals)
-	x.WorldTemplateIdAndVersion.Marshal(io)
+	x.WorldTemplateIDAndVersion.Marshal(io)
 	protocol.Slice(io, &x.ResourcePacks)
 }
 

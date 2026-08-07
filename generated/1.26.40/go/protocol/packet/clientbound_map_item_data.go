@@ -11,7 +11,7 @@ type ClientboundMapItemData struct {
 	MapOrigin       protocol.BlockPos
 	CreationMapIDs  protocol.Optional[[]int64]
 	Scale           protocol.Optional[int8]
-	TrackedActorIDs protocol.Optional[[]protocol.MapItemTrackedActorUniqueId]
+	TrackedActorIDs protocol.Optional[[]protocol.MapItemTrackedActorUniqueID]
 	Decorations     protocol.Optional[[]protocol.MapDecoration]
 	Width           protocol.Optional[int32]
 	Height          protocol.Optional[int32]
@@ -30,7 +30,7 @@ func (x *ClientboundMapItemData) Marshal(io protocol.IO) {
 		protocol.FuncSlice(io, value, io.Varuint32, io.ActorUniqueID)
 	})
 	protocol.OptionalFunc(io, &x.Scale, io.Int8)
-	protocol.OptionalFunc(io, &x.TrackedActorIDs, func(value *[]protocol.MapItemTrackedActorUniqueId) {
+	protocol.OptionalFunc(io, &x.TrackedActorIDs, func(value *[]protocol.MapItemTrackedActorUniqueID) {
 		protocol.Slice(io, value)
 	})
 	protocol.OptionalFunc(io, &x.Decorations, func(value *[]protocol.MapDecoration) {

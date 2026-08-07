@@ -5,7 +5,7 @@ package packet
 import "protocolgen/generated/1.26.40/go/protocol"
 
 type ItemStackRequest struct {
-	Requests []protocol.ItemStackRequestPacketDataRequestData
+	Requests []protocol.ItemStackRequestPacketData
 }
 
 // Marshal reads or writes ItemStackRequest using its canonical wire layout.
