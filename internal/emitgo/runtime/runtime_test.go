@@ -141,3 +141,33 @@ func TestReaderErrorsIncludeByteOffset(t *testing.T) {
 		t.Fatalf("error = %v, want byte offset 1", reader.Err())
 	}
 }
+
+func TestWriterResetClearsState(t *testing.T) {
+	writer := NewWriter()
+	value := uint8(1)
+	writer.Uint8(&value)
+	data := writer.Data()
+	writer.InvalidValue(nil, "test")
+	writer.Reset()
+	if writer.Err() != nil || len(writer.Data()) != 0 {
+		t.Fatalf("after Reset: err=%v data=%x", writer.Err(), writer.Data())
+	}
+	value = 2
+	writer.Uint8(&value)
+	if len(data) != 1 || data[0] != 2 {
+		t.Fatalf("Data did not reflect documented buffer reuse: %x", data)
+	}
+}
+
+func TestWriterUUIDDoesNotAllocate(t *testing.T) {
+	value := uuid.MustParse("00112233-4455-6677-8899-aabbccddeeff")
+	writer := NewWriter()
+	writer.data = make([]byte, 0, 16)
+	allocs := testing.AllocsPerRun(100, func() {
+		writer.Reset()
+		writer.UUID(&value)
+	})
+	if allocs != 0 {
+		t.Fatalf("UUID allocations = %v, want zero", allocs)
+	}
+}
