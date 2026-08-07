@@ -30,16 +30,17 @@ func TestGenerateConsumesOnlyCanonicalManifest(t *testing.T) {
 			t.Errorf("%s contains source/profile lookup text", name)
 		}
 	}
-	if !strings.Contains(files["vocabulary.go"], "type Vocabulary struct") || !strings.Contains(files["vocabulary.go"], "Maybe Optional[string]") || !strings.Contains(files["ids.go"], "IDVocabulary uint32 = 1") {
-		t.Fatalf("generated output omitted packet definition or ID:\n%s\n%s", files["vocabulary.go"], files["ids.go"])
+	packet := files["protocol/packet/vocabulary.go"]
+	if !strings.Contains(packet, "type Vocabulary struct") || !strings.Contains(packet, "Maybe protocol.Optional[string]") || !strings.Contains(files["protocol/packet/ids.go"], "IDVocabulary uint32 = 1") {
+		t.Fatalf("generated output omitted packet definition or ID:\n%s\n%s", packet, files["protocol/packet/ids.go"])
 	}
-	for _, want := range []string{"func (x *Vocabulary) Marshal(io IO)", "io.Uint8(&x.Value)", "OptionalFunc(io, &x.Maybe, io.String)"} {
-		if !strings.Contains(files["vocabulary.go"], want) {
-			t.Fatalf("generated packet marshal omits %q:\n%s", want, files["vocabulary.go"])
+	for _, want := range []string{"func (x *Vocabulary) Marshal(io protocol.IO)", "io.Uint8(&x.Value)", "protocol.OptionalFunc(io, &x.Maybe, io.String)"} {
+		if !strings.Contains(packet, want) {
+			t.Fatalf("generated packet marshal omits %q:\n%s", want, packet)
 		}
 	}
-	if strings.Contains(files["vocabulary.go"], "Shape{") || strings.Contains(files["vocabulary.go"], "func (p *Vocabulary) Encode") {
-		t.Fatalf("generated packet exposed runtime schema or placeholder codecs:\n%s", files["vocabulary.go"])
+	if strings.Contains(packet, "Shape{") || strings.Contains(packet, "func (p *Vocabulary) Encode") {
+		t.Fatalf("generated packet exposed runtime schema or placeholder codecs:\n%s", packet)
 	}
 }
 
@@ -68,11 +69,11 @@ func TestGenerateUsesRuntimeHelpersForEnumsAndOptionals(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Generate: %v", err)
 	}
-	source := files["helper.go"]
+	source := files["protocol/packet/helper.go"]
 	for _, want := range []string{
-		"IntegerFunc(&x.Kind, io.Uint8)",
-		"OptionalFunc(io, &x.Maybe, io.Int32)",
-		"IntegerFunc(value, io.Uint8)",
+		"protocol.IntegerFunc(&x.Kind, io.Uint8)",
+		"protocol.OptionalFunc(io, &x.Maybe, io.Int32)",
+		"protocol.IntegerFunc(value, io.Uint8)",
 		"value.Marshal(io)",
 	} {
 		if !strings.Contains(source, want) {
@@ -128,9 +129,9 @@ func TestGenerateIncludesConcreteCodecRuntime(t *testing.T) {
 		t.Fatal(err)
 	}
 	for name, wants := range map[string][]string{
-		"codec.go":  {"type IO interface", "func IntegerFunc", "func OptionalFunc", "func UnionFunc", "func FuncSlice"},
-		"reader.go": {"type Reader struct", "func NewReader", "func (r *Reader) NBT", "func (r *Reader) SliceLength"},
-		"writer.go": {"type Writer struct", "func NewWriter", "func (w *Writer) NBT", "func (w *Writer) Data"},
+		"protocol/codec.go":  {"type IO interface", "func IntegerFunc", "func OptionalFunc", "func UnionFunc", "func FuncSlice"},
+		"protocol/reader.go": {"type Reader struct", "func NewReader", "func (r *Reader) NBT", "func (r *Reader) SliceLength"},
+		"protocol/writer.go": {"type Writer struct", "func NewWriter", "func (w *Writer) NBT", "func (w *Writer) Data"},
 	} {
 		source, ok := files[name]
 		if !ok {
@@ -191,11 +192,11 @@ func TestGenerateCollapsesCerealDoubleOptionalToOnePublicOptional(t *testing.T) 
 	if err != nil {
 		t.Fatal(err)
 	}
-	packet := files["optional.go"]
-	if !strings.Contains(packet, "Value Optional[int32]") || strings.Contains(packet, "**int32") || strings.Contains(packet, "Optional[Optional[") {
+	packet := files["protocol/packet/optional.go"]
+	if !strings.Contains(packet, "Value protocol.Optional[int32]") || strings.Contains(packet, "**int32") || strings.Contains(packet, "Optional[Optional[") {
 		t.Fatalf("double optional did not use one public Optional:\n%s", packet)
 	}
-	types := files["types.go"]
+	types := files["protocol/types.go"]
 	for _, want := range []string{"type Optional[T any] struct", "func Option[T any]", "func (o Optional[T]) Value() (T, bool)"} {
 		if !strings.Contains(types, want) {
 			t.Fatalf("generated optional support omits %q:\n%s", want, types)
@@ -225,7 +226,7 @@ func TestGenerateUsesCanonicalNamedTypesAndOrderedMapEntries(t *testing.T) {
 		t.Fatalf("Generate: %v", err)
 	}
 	source := generatedSource(files)
-	if !strings.Contains(source, "type BiomeDefinitionData struct") || !strings.Contains(source, "[]OrderedEntry[uint16, BiomeDefinitionData]") {
+	if !strings.Contains(source, "type BiomeDefinitionData struct") || !strings.Contains(source, "[]protocol.OrderedEntry[uint16, protocol.BiomeDefinitionData]") {
 		t.Fatalf("generated Go did not use canonical ordered map definitions:\n%s", source)
 	}
 }
@@ -252,19 +253,22 @@ func TestGenerateSplitsPacketsAndSharedDefinitions(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, name := range []string{"ids.go", "types.go", "login.go"} {
+	for _, name := range []string{"protocol/packet/ids.go", "protocol/types.go", "protocol/packet/login.go"} {
 		if _, ok := files[name]; !ok {
 			t.Fatalf("generated files omit %s: %v", name, files)
 		}
 	}
-	if _, ok := files["marshal.go"]; ok {
+	if !strings.Contains(files["protocol/types.go"], "package protocol") || !strings.Contains(files["protocol/packet/login.go"], "package packet") || !strings.Contains(files["protocol/packet/login.go"], `import "wiregen"`) {
+		t.Fatalf("generated packages were not separated or wired together:\n%s", files["protocol/packet/login.go"])
+	}
+	if _, ok := files["protocol/marshal.go"]; ok {
 		t.Fatalf("generated output unexpectedly contains monolithic marshal.go")
 	}
-	if _, ok := files["enums.go"]; ok {
+	if _, ok := files["protocol/enums.go"]; ok {
 		t.Fatalf("generated output unexpectedly contains monolithic enums.go")
 	}
-	if strings.Contains(files["login.go"], "LoginPacket") || !strings.Contains(files["login.go"], "type Login struct") {
-		t.Fatalf("packet name was not cleaned:\n%s", files["login.go"])
+	if strings.Contains(files["protocol/packet/login.go"], "LoginPacket") || !strings.Contains(files["protocol/packet/login.go"], "type Login struct") {
+		t.Fatalf("packet name was not cleaned:\n%s", files["protocol/packet/login.go"])
 	}
 	if _, ok := files["wire.go"]; ok {
 		t.Fatalf("definition-only output unexpectedly contains wire.go")
@@ -339,14 +343,14 @@ func TestGenerateMapsCanonicalSemanticsToNativeGoTypes(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	source := files["native.go"]
+	source := files["protocol/packet/native.go"]
 	for _, want := range []string{"uuid.UUID", "mgl32.Vec3", "color.RGBA", "[]byte", "Runtime  uint64", "Unique   int64", `"github.com/google/uuid"`, `"github.com/go-gl/mathgl/mgl32"`, `"image/color"`} {
 		if !strings.Contains(source, want) {
 			t.Fatalf("native Go output omits %q:\n%s", want, source)
 		}
 	}
-	if strings.Contains(files["types.go"], "type Vec3 struct") || strings.Contains(files["types.go"], "type MceColor struct") {
-		t.Fatalf("native Go types were redundantly regenerated:\n%s", files["types.go"])
+	if strings.Contains(files["protocol/types.go"], "type Vec3 struct") || strings.Contains(files["protocol/types.go"], "type MceColor struct") {
+		t.Fatalf("native Go types were redundantly regenerated:\n%s", files["protocol/types.go"])
 	}
 	if !strings.Contains(source, "io.ActorRuntimeID(&x.Runtime)") || !strings.Contains(source, "io.ActorUniqueID(&x.Unique)") {
 		t.Fatalf("semantic ID IO methods were not used:\n%s", source)
@@ -414,7 +418,7 @@ func TestGenerateUsesNamedRecursiveTypeAndBoundedBitset(t *testing.T) {
 	for _, source := range files {
 		all.WriteString(source)
 	}
-	for _, want := range []string{"[]CerealDynamicValue", "type Bitset131 [3]uint64", "Flags Bitset131"} {
+	for _, want := range []string{"[]CerealDynamicValue", "type Bitset131 [3]uint64", "Flags protocol.Bitset131"} {
 		if !strings.Contains(all.String(), want) {
 			t.Fatalf("generated output missing %q:\n%s", want, all.String())
 		}

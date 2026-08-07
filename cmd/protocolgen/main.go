@@ -205,19 +205,22 @@ func runValidate(args []string) error {
 func runEmitGo(args []string) error {
 	fs := flag.NewFlagSet("emit-go", flag.ContinueOnError)
 	manifestPath := fs.String("manifest", "", "canonical manifest v2 JSON")
-	out := fs.String("out", "", "generated package directory")
-	pkg := fs.String("pkg", "wiregen", "generated Go package name")
+	out := fs.String("out", "", "generated Go source directory")
+	protocolImport := fs.String("protocol-import", "", "import path of the generated protocol package")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
 	if *manifestPath == "" || *out == "" {
 		return fmt.Errorf("-manifest and -out are required")
 	}
+	if *protocolImport == "" {
+		return fmt.Errorf("-protocol-import is required")
+	}
 	m, err := manifest.Load(*manifestPath)
 	if err != nil {
 		return err
 	}
-	files, err := emitgo.Generate(m, *pkg)
+	files, err := emitgo.Generate(m, *protocolImport)
 	if err != nil {
 		return err
 	}

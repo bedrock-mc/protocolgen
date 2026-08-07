@@ -1,0 +1,16 @@
+// Code generated from canonical protocol manifest v2. DO NOT EDIT.
+
+package packet
+
+import "protocolgen/generated/1.26.40/go/protocol"
+
+type UnlockedRecipes struct {
+	PacketType          protocol.UnlockedRecipesPacketType
+	UnlockedRecipesList []string
+}
+
+// Marshal reads or writes UnlockedRecipes using its canonical wire layout.
+func (x *UnlockedRecipes) Marshal(io protocol.IO) {
+	protocol.IntegerFunc(&x.PacketType, io.Uint32)
+	protocol.FuncSlice(io, &x.UnlockedRecipesList, io.Varuint32, io.String)
+}

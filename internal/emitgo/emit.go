@@ -39,19 +39,28 @@ type goUnionMember struct {
 }
 
 type generator struct {
-	definitions map[string]typeDefinition
-	identity    map[string]string
-	usedNames   map[string]bool
+	definitions        map[string]typeDefinition
+	identity           map[string]string
+	usedNames          map[string]bool
+	protocolImportPath string
 }
 
-func Generate(m manifest.Manifest, packageName string) (map[string]string, error) {
+// Generate emits a protocol package and its packet subpackage. The protocol
+// import path is embedded in packet files so the generated tree can be used as
+// an ordinary Go package from any parent module.
+func Generate(m manifest.Manifest, protocolImportPath string) (map[string]string, error) {
 	if err := manifest.Validate(m); err != nil {
 		return nil, err
 	}
-	if !validPackageName(packageName) {
-		return nil, fmt.Errorf("invalid generated package name %q", packageName)
+	if protocolImportPath == "" || strings.ContainsAny(protocolImportPath, " \t\r\n") {
+		return nil, fmt.Errorf("invalid protocol import path %q", protocolImportPath)
 	}
-	g := &generator{definitions: map[string]typeDefinition{}, identity: map[string]string{}, usedNames: map[string]bool{}}
+	g := &generator{
+		definitions:        map[string]typeDefinition{},
+		identity:           map[string]string{},
+		usedNames:          map[string]bool{},
+		protocolImportPath: protocolImportPath,
+	}
 	packets := append([]manifest.Packet(nil), m.Packets...)
 	sort.Slice(packets, func(i, j int) bool { return packets[i].ID < packets[j].ID })
 	packetNames := map[uint32]string{}
@@ -67,7 +76,7 @@ func Generate(m manifest.Manifest, packageName string) (map[string]string, error
 			}
 		}
 	}
-	files, err := g.emitFiles(packageName, packets, packetNames)
+	files, err := g.emitFiles(packets, packetNames)
 	if err != nil {
 		return nil, err
 	}
@@ -479,7 +488,7 @@ func (g *generator) unique(base string) string {
 	}
 }
 
-func (g *generator) emitFiles(packageName string, packets []manifest.Packet, packetNames map[uint32]string) (map[string]string, error) {
+func (g *generator) emitFiles(packets []manifest.Packet, packetNames map[uint32]string) (map[string]string, error) {
 	definitions := make([]typeDefinition, 0, len(g.definitions))
 	for _, definition := range g.definitions {
 		definitions = append(definitions, definition)
@@ -487,42 +496,47 @@ func (g *generator) emitFiles(packageName string, packets []manifest.Packet, pac
 	sort.Slice(definitions, func(i, j int) bool { return definitions[i].Name < definitions[j].Name })
 
 	files := map[string]string{}
-	typesSource, err := emitTypeDefinitions(packageName)
+	typesSource, err := emitTypeDefinitions()
 	if err != nil {
 		return nil, err
 	}
-	files["types.go"] = typesSource
-	files["codec.go"] = emitCodecRuntime(packageName)
-	files["reader.go"] = emitReader(packageName)
-	files["writer.go"] = emitWriter(packageName)
-	files["ids.go"] = emitPacketIDs(packageName, packets, packetNames)
+	files["protocol/types.go"] = typesSource
+	files["protocol/codec.go"] = emitCodecRuntime()
+	files["protocol/reader.go"] = emitReader()
+	files["protocol/writer.go"] = emitWriter()
 	usedFiles := map[string]bool{
-		"types.go": true, "codec.go": true, "reader.go": true, "writer.go": true, "ids.go": true,
+		"types.go": true, "codec.go": true, "reader.go": true, "writer.go": true,
 	}
 	for _, definition := range definitions {
-		source, err := emitDefinition(packageName, g, definition)
+		source, err := emitDefinition(g, definition)
 		if err != nil {
 			return nil, err
 		}
 		name := uniqueFileName(snakeName(definition.Name)+".go", 0, usedFiles)
-		files[name] = source
+		files["protocol/"+name] = source
 	}
+	packetFiles := map[string]string{}
+	packetUsed := map[string]bool{"ids.go": true}
+	packetFiles["ids.go"] = emitPacketIDs(packets, packetNames)
 	for _, packet := range packets {
 		packetName := packetNames[packet.ID]
 		base := snakeName(packetName) + ".go"
-		name := uniqueFileName(base, packet.ID, usedFiles)
-		source, err := g.emitPacket(packageName, packet, packetName)
+		name := uniqueFileName(base, packet.ID, packetUsed)
+		source, err := g.emitPacket(packet, packetName)
 		if err != nil {
 			return nil, err
 		}
-		files[name] = source
+		packetFiles[name] = source
+	}
+	for name, source := range packetFiles {
+		files["protocol/packet/"+name] = source
 	}
 	return files, nil
 }
 
-func emitDefinition(packageName string, g *generator, definition typeDefinition) (string, error) {
+func emitDefinition(g *generator, definition typeDefinition) (string, error) {
 	var b strings.Builder
-	fmt.Fprintf(&b, "// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\npackage %s\n\n", packageName)
+	b.WriteString("// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\npackage protocol\n\n")
 	switch definition.Kind {
 	case manifest.KindStruct:
 		var types []string
@@ -574,9 +588,9 @@ func emitDefinition(packageName string, g *generator, definition typeDefinition)
 	return formatGoSource(b.String())
 }
 
-func emitTypeDefinitions(packageName string) (string, error) {
+func emitTypeDefinitions() (string, error) {
 	var b strings.Builder
-	fmt.Fprintf(&b, "// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\npackage %s\n\n", packageName)
+	b.WriteString("// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\npackage protocol\n\n")
 	b.WriteString("// Optional holds a value that may be absent from the wire.\n")
 	b.WriteString("type Optional[T any] struct {\n\tset bool\n\tval T\n}\n\n")
 	b.WriteString("// Option creates a present Optional containing value.\n")
@@ -594,9 +608,9 @@ type packetField struct {
 	node manifest.Node
 }
 
-func (g *generator) emitPacket(packageName string, packet manifest.Packet, packetName string) (string, error) {
+func (g *generator) emitPacket(packet manifest.Packet, packetName string) (string, error) {
 	var b strings.Builder
-	fmt.Fprintf(&b, "// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\npackage %s\n\n", packageName)
+	b.WriteString("// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\npackage packet\n\n")
 	used := map[string]bool{}
 	fields := make([]packetField, 0, len(packet.Fields))
 	for _, field := range packet.Fields {
@@ -605,9 +619,9 @@ func (g *generator) emitPacket(packageName string, packet manifest.Packet, packe
 		if err != nil {
 			return "", err
 		}
-		fields = append(fields, packetField{name: name, typ: typ, node: field.Encode})
+		fields = append(fields, packetField{name: name, typ: qualifyGoType(typ, g.definitions), node: field.Encode})
 	}
-	imports := goImportsForFields(fields)
+	imports := append([]string{g.protocolImportPath}, goImportsForFields(fields)...)
 	writeGoImports(&b, imports)
 	fmt.Fprintf(&b, "type %s struct {\n", packetName)
 	for _, field := range fields {
@@ -615,8 +629,8 @@ func (g *generator) emitPacket(packageName string, packet manifest.Packet, packe
 	}
 	b.WriteString("}\n\n")
 	fmt.Fprintf(&b, "// Marshal reads or writes %s using its canonical wire layout.\n", packetName)
-	fmt.Fprintf(&b, "func (x *%s) Marshal(io IO) {\n", packetName)
-	emitter := marshalEmitter{g: g}
+	fmt.Fprintf(&b, "func (x *%s) Marshal(io protocol.IO) {\n", packetName)
+	emitter := marshalEmitter{g: g, qualifier: "protocol."}
 	for _, field := range fields {
 		if err := emitter.node(&b, field.node, "x."+field.name, packetName+field.name, "\t"); err != nil {
 			return "", fmt.Errorf("packet %s field %s marshal: %w", packet.Name, field.name, err)
@@ -626,9 +640,9 @@ func (g *generator) emitPacket(packageName string, packet manifest.Packet, packe
 	return formatGoSource(b.String())
 }
 
-func emitPacketIDs(packageName string, packets []manifest.Packet, packetNames map[uint32]string) string {
+func emitPacketIDs(packets []manifest.Packet, packetNames map[uint32]string) string {
 	var b strings.Builder
-	fmt.Fprintf(&b, "// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\npackage %s\n\nconst (\n", packageName)
+	b.WriteString("// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\npackage packet\n\nconst (\n")
 	for _, packet := range packets {
 		fmt.Fprintf(&b, "\tID%s uint32 = %d\n", packetNames[packet.ID], packet.ID)
 	}
@@ -636,10 +650,10 @@ func emitPacketIDs(packageName string, packets []manifest.Packet, packetNames ma
 	return b.String()
 }
 
-func emitCodecRuntime(packageName string) string {
+func emitCodecRuntime() string {
 	return mustFormatGoSource(fmt.Sprintf(`// Code generated from canonical protocol manifest v2. DO NOT EDIT.
 
-package %s
+package protocol
 
 import (
 	"image/color"
@@ -704,10 +718,10 @@ type IO interface {
 	Bitset(words []uint64, bits uint64)
 }
 
-`, packageName) + emitCodecHelpers())
+`) + emitCodecHelpers())
 }
 
-func emitReader(packageName string) string {
+func emitReader() string {
 	const source = `// Code generated from canonical protocol manifest v2. DO NOT EDIT.
 
 package {{PACKAGE}}
@@ -1247,10 +1261,10 @@ func nbtReadInt32(data []byte, pos *int) (int32, error) {
 	return int32(binary.LittleEndian.Uint32(value)), nil
 }
 `
-	return mustFormatGoSource(strings.ReplaceAll(source, "{{PACKAGE}}", packageName))
+	return mustFormatGoSource(strings.ReplaceAll(source, "{{PACKAGE}}", "protocol"))
 }
 
-func emitWriter(packageName string) string {
+func emitWriter() string {
 	const source = `// Code generated from canonical protocol manifest v2. DO NOT EDIT.
 
 package {{PACKAGE}}
@@ -1566,7 +1580,7 @@ func (w *Writer) Bitset(words []uint64, bits uint64) {
 	}
 }
 `
-	return mustFormatGoSource(strings.ReplaceAll(source, "{{PACKAGE}}", packageName))
+	return mustFormatGoSource(strings.ReplaceAll(source, "{{PACKAGE}}", "protocol"))
 }
 
 func mustFormatGoSource(source string) string {
@@ -1796,8 +1810,25 @@ func sliceLength[C integer](io IO, value C) (int, bool) {
 }
 
 type marshalEmitter struct {
-	g       *generator
-	counter int
+	g         *generator
+	qualifier string
+	counter   int
+}
+
+func (e *marshalEmitter) goType(node manifest.Node, hint string) string {
+	typ := mustGoType(e.g, node, hint)
+	if e.qualifier == "" {
+		return typ
+	}
+	return qualifyGoType(typ, e.g.definitions)
+}
+
+func (e *marshalEmitter) runtime(name string) string {
+	return e.qualifier + name
+}
+
+func (e *marshalEmitter) ioType() string {
+	return e.qualifier + "IO"
 }
 
 func (e *marshalEmitter) temporary(prefix string) string {
@@ -1864,7 +1895,7 @@ func (e *marshalEmitter) node(b *strings.Builder, node manifest.Node, expression
 		fmt.Fprintf(b, "%s%s.Marshal(io)\n", indent, expression)
 		return nil
 	case manifest.KindRecursive:
-		fmt.Fprintf(b, "%smarshal%s(io, &%s)\n", indent, e.g.identity[node.Target], expression)
+		fmt.Fprintf(b, "%s%s(io, &%s)\n", indent, e.runtime("Marshal"+e.g.identity[node.Target]), expression)
 		return nil
 	case manifest.KindEnum:
 		return e.enum(b, node, expression, hint, indent)
@@ -1906,7 +1937,7 @@ func (e *marshalEmitter) node(b *strings.Builder, node manifest.Node, expression
 		if err != nil {
 			return err
 		}
-		fmt.Fprintf(b, "%smarshal%s(io, &%s)\n", indent, name, expression)
+		fmt.Fprintf(b, "%s%s(io, &%s)\n", indent, e.runtime("Marshal"+name), expression)
 		return nil
 	case manifest.KindReserved, manifest.KindIgnored:
 		return fmt.Errorf("%s nodes require explicit write/discard codec semantics", node.Kind)
@@ -1982,7 +2013,7 @@ func (e *marshalEmitter) nodePointer(b *strings.Builder, node manifest.Node, exp
 		fmt.Fprintf(b, "%s%s.Marshal(io)\n", indent, pointerMethodReceiver(expression))
 		return nil
 	case manifest.KindRecursive:
-		fmt.Fprintf(b, "%smarshal%s(io, %s)\n", indent, e.g.identity[node.Target], expression)
+		fmt.Fprintf(b, "%s%s(io, %s)\n", indent, e.runtime("Marshal"+e.g.identity[node.Target]), expression)
 		return nil
 	case manifest.KindEnum:
 		if node.Primitive == nil {
@@ -1998,7 +2029,7 @@ func (e *marshalEmitter) nodePointer(b *strings.Builder, node manifest.Node, exp
 		if err != nil {
 			return err
 		}
-		fmt.Fprintf(b, "%sIntegerFunc(%s, io.%s)\n", indent, expression, method)
+		fmt.Fprintf(b, "%s%s(%s, io.%s)\n", indent, e.runtime("IntegerFunc"), expression, method)
 		return nil
 	case manifest.KindOptional:
 		if node.Value == nil {
@@ -2040,7 +2071,7 @@ func (e *marshalEmitter) nodePointer(b *strings.Builder, node manifest.Node, exp
 		if err != nil {
 			return err
 		}
-		fmt.Fprintf(b, "%smarshal%s(io, %s)\n", indent, name, expression)
+		fmt.Fprintf(b, "%s%s(io, %s)\n", indent, e.runtime("Marshal"+name), expression)
 		return nil
 	case manifest.KindReserved, manifest.KindIgnored:
 		return fmt.Errorf("%s nodes require explicit write/discard codec semantics", node.Kind)
@@ -2067,12 +2098,12 @@ func pointerMethodReceiver(expression string) string {
 }
 
 func (e *marshalEmitter) optionalCall(b *strings.Builder, helper string, value manifest.Node, expression, hint, indent string) error {
-	fmt.Fprintf(b, "%s%s(io, &%s, ", indent, helper, expression)
+	fmt.Fprintf(b, "%s%s(io, &%s, ", indent, e.runtime(helper), expression)
 	if method, ok := directIOCall(value); ok {
 		fmt.Fprintf(b, "io.%s)\n", method)
 		return nil
 	}
-	typ := mustGoType(e.g, value, hint)
+	typ := e.goType(value, hint)
 	fmt.Fprintf(b, "func(value *%s) {\n", typ)
 	if err := e.nodePointer(b, value, "value", hint, indent+"\t"); err != nil {
 		return err
@@ -2082,12 +2113,12 @@ func (e *marshalEmitter) optionalCall(b *strings.Builder, helper string, value m
 }
 
 func (e *marshalEmitter) optionalCallPointer(b *strings.Builder, helper string, value manifest.Node, expression, hint, indent string) error {
-	fmt.Fprintf(b, "%s%s(io, %s, ", indent, helper, expression)
+	fmt.Fprintf(b, "%s%s(io, %s, ", indent, e.runtime(helper), expression)
 	if method, ok := directIOCall(value); ok {
 		fmt.Fprintf(b, "io.%s)\n", method)
 		return nil
 	}
-	typ := mustGoType(e.g, value, hint)
+	typ := e.goType(value, hint)
 	fmt.Fprintf(b, "func(value *%s) {\n", typ)
 	if err := e.nodePointer(b, value, "value", hint, indent+"\t"); err != nil {
 		return err
@@ -2104,12 +2135,12 @@ func (e *marshalEmitter) collection(b *strings.Builder, prefix, element manifest
 	if err != nil {
 		return err
 	}
-	fmt.Fprintf(b, "%sFuncSlice(io, &%s, io.%s, ", indent, expression, countMethod)
+	fmt.Fprintf(b, "%s%s(io, &%s, io.%s, ", indent, e.runtime("FuncSlice"), expression, countMethod)
 	if method, ok := directIOCall(element); ok {
 		fmt.Fprintf(b, "io.%s)\n", method)
 		return nil
 	}
-	typ := mustGoType(e.g, element, hint)
+	typ := e.goType(element, hint)
 	fmt.Fprintf(b, "func(value *%s) {\n", typ)
 	if err := e.nodePointer(b, element, "value", hint, indent+"\t"); err != nil {
 		return err
@@ -2126,12 +2157,12 @@ func (e *marshalEmitter) collectionPointer(b *strings.Builder, prefix, element m
 	if err != nil {
 		return err
 	}
-	fmt.Fprintf(b, "%sFuncSlice(io, %s, io.%s, ", indent, expression, countMethod)
+	fmt.Fprintf(b, "%s%s(io, %s, io.%s, ", indent, e.runtime("FuncSlice"), expression, countMethod)
 	if method, ok := directIOCall(element); ok {
 		fmt.Fprintf(b, "io.%s)\n", method)
 		return nil
 	}
-	typ := mustGoType(e.g, element, hint)
+	typ := e.goType(element, hint)
 	fmt.Fprintf(b, "func(value *%s) {\n", typ)
 	if err := e.nodePointer(b, element, "value", hint, indent+"\t"); err != nil {
 		return err
@@ -2148,11 +2179,11 @@ func (e *marshalEmitter) mapEntries(b *strings.Builder, node manifest.Node, expr
 	if err != nil {
 		return err
 	}
-	fmt.Fprintf(b, "%sOrderedMap(io, &%s, io.%s, ", indent, expression, countMethod)
+	fmt.Fprintf(b, "%s%s(io, &%s, io.%s, ", indent, e.runtime("OrderedMap"), expression, countMethod)
 	if method, ok := directIOCall(*node.Key); ok {
 		fmt.Fprintf(b, "io.%s, ", method)
 	} else {
-		typ := mustGoType(e.g, *node.Key, hint+"Key")
+		typ := e.goType(*node.Key, hint+"Key")
 		fmt.Fprintf(b, "func(value *%s) {\n", typ)
 		if err := e.nodePointer(b, *node.Key, "value", hint+"Key", indent+"\t"); err != nil {
 			return err
@@ -2163,7 +2194,7 @@ func (e *marshalEmitter) mapEntries(b *strings.Builder, node manifest.Node, expr
 		fmt.Fprintf(b, "io.%s)\n", method)
 		return nil
 	}
-	typ := mustGoType(e.g, *node.Value, hint+"Value")
+	typ := e.goType(*node.Value, hint+"Value")
 	fmt.Fprintf(b, "func(value *%s) {\n", typ)
 	if err := e.nodePointer(b, *node.Value, "value", hint+"Value", indent+"\t"); err != nil {
 		return err
@@ -2180,11 +2211,11 @@ func (e *marshalEmitter) mapEntriesPointer(b *strings.Builder, node manifest.Nod
 	if err != nil {
 		return err
 	}
-	fmt.Fprintf(b, "%sOrderedMap(io, %s, io.%s, ", indent, expression, countMethod)
+	fmt.Fprintf(b, "%s%s(io, %s, io.%s, ", indent, e.runtime("OrderedMap"), expression, countMethod)
 	if method, ok := directIOCall(*node.Key); ok {
 		fmt.Fprintf(b, "io.%s, ", method)
 	} else {
-		typ := mustGoType(e.g, *node.Key, hint+"Key")
+		typ := e.goType(*node.Key, hint+"Key")
 		fmt.Fprintf(b, "func(value *%s) {\n", typ)
 		if err := e.nodePointer(b, *node.Key, "value", hint+"Key", indent+"\t"); err != nil {
 			return err
@@ -2195,7 +2226,7 @@ func (e *marshalEmitter) mapEntriesPointer(b *strings.Builder, node manifest.Nod
 		fmt.Fprintf(b, "io.%s)\n", method)
 		return nil
 	}
-	typ := mustGoType(e.g, *node.Value, hint+"Value")
+	typ := e.goType(*node.Value, hint+"Value")
 	fmt.Fprintf(b, "func(value *%s) {\n", typ)
 	if err := e.nodePointer(b, *node.Value, "value", hint+"Value", indent+"\t"); err != nil {
 		return err
@@ -2218,7 +2249,7 @@ func (e *marshalEmitter) enum(b *strings.Builder, node manifest.Node, expression
 	if err != nil {
 		return err
 	}
-	fmt.Fprintf(b, "%sIntegerFunc(&%s, io.%s)\n", indent, expression, method)
+	fmt.Fprintf(b, "%s%s(&%s, io.%s)\n", indent, e.runtime("IntegerFunc"), expression, method)
 	return nil
 }
 
@@ -2325,7 +2356,8 @@ func integerTypeMaximum(typ string) string {
 }
 
 func (e *marshalEmitter) union(b *strings.Builder, definition typeDefinition) error {
-	fmt.Fprintf(b, "func marshal%s(io IO, x *%s) {\n", definition.Name, definition.Name)
+	fmt.Fprintf(b, "// Marshal%s reads or writes the %s union using its canonical wire layout.\n", definition.Name, definition.Name)
+	fmt.Fprintf(b, "func Marshal%s(io %s, x *%s) {\n", definition.Name, e.ioType(), definition.Name)
 	if len(definition.Union) == 0 {
 		b.WriteString("\tio.InvalidValue(nil, \"union has no variants\")\n}\n\n")
 		return nil
@@ -2340,7 +2372,7 @@ func (e *marshalEmitter) union(b *strings.Builder, definition typeDefinition) er
 	if err != nil {
 		return err
 	}
-	b.WriteString("\tUnionFunc(io,\n\t\tfunc() {\n")
+	fmt.Fprintf(b, "\t%s(io,\n\t\tfunc() {\n", e.runtime("UnionFunc"))
 	fmt.Fprintf(b, "\t\tvar tag %s\n", tagType)
 	if err := e.node(b, controlNode, "tag", definition.Name+"Tag", "\t\t"); err != nil {
 		return err
@@ -2436,6 +2468,33 @@ func goImportsForFields(fields []packetField) []string {
 		types = append(types, field.typ)
 	}
 	return goImportsForTypes(types)
+}
+
+func qualifyGoType(typ string, definitions map[string]typeDefinition) string {
+	var b strings.Builder
+	for index := 0; index < len(typ); {
+		if !isGoIdentifierByte(typ[index]) {
+			b.WriteByte(typ[index])
+			index++
+			continue
+		}
+		end := index + 1
+		for end < len(typ) && isGoIdentifierByte(typ[end]) {
+			end++
+		}
+		name := typ[index:end]
+		_, generated := definitions[name]
+		if (generated || name == "Optional" || name == "OrderedEntry") && (index == 0 || typ[index-1] != '.') {
+			b.WriteString("protocol.")
+		}
+		b.WriteString(name)
+		index = end
+	}
+	return b.String()
+}
+
+func isGoIdentifierByte(value byte) bool {
+	return value == '_' || value >= 'a' && value <= 'z' || value >= 'A' && value <= 'Z' || value >= '0' && value <= '9'
 }
 
 func goImportsForTypes(types []string) []string {
@@ -2558,18 +2617,6 @@ func primitiveGoType(code string) (string, error) {
 	default:
 		return "", fmt.Errorf("unsupported primitive code %q", code)
 	}
-}
-
-func validPackageName(name string) bool {
-	if name == "" {
-		return false
-	}
-	for index, r := range name {
-		if !(r == '_' || unicode.IsLetter(r) || (index > 0 && unicode.IsDigit(r))) {
-			return false
-		}
-	}
-	return true
 }
 
 func exportName(value string) string {

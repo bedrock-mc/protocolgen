@@ -83,9 +83,13 @@ go run ./cmd/protocolgen reconcile \
   -out /tmp/bedrock-2168-v2.json
 
 go run ./cmd/protocolgen validate -manifest /tmp/bedrock-2168-v2.json
-go run ./cmd/protocolgen emit-go -manifest /tmp/bedrock-2168-v2.json -out /tmp/wire-go -pkg wiregen
+go run ./cmd/protocolgen emit-go -manifest /tmp/bedrock-2168-v2.json -out /tmp/wire-go -protocol-import example.com/project/protocol
 go run ./cmd/protocolgen emit-rust -manifest /tmp/bedrock-2168-v2.json -out /tmp/wire-rust
 ```
+
+Go writes shared codecs and definitions under `protocol/`, and packet structs
+under `protocol/packet/`. `-protocol-import` is the import path packet files
+should use for the generated protocol package in the consuming module.
 
 The reproducible synthetic vertical slice is:
 

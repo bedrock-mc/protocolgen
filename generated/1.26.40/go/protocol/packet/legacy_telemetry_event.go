@@ -1,0 +1,20 @@
+// Code generated from canonical protocol manifest v2. DO NOT EDIT.
+
+package packet
+
+import "protocolgen/generated/1.26.40/go/protocol"
+
+type LegacyTelemetryEvent struct {
+	TargetActorID int64
+	EventType     protocol.LegacyTelemetryEventType
+	UsePlayerID   bool
+	EventData     protocol.LegacyTelemetryEventEventData
+}
+
+// Marshal reads or writes LegacyTelemetryEvent using its canonical wire layout.
+func (x *LegacyTelemetryEvent) Marshal(io protocol.IO) {
+	io.ActorUniqueID(&x.TargetActorID)
+	protocol.IntegerFunc(&x.EventType, io.Varint32)
+	io.Bool(&x.UsePlayerID)
+	protocol.MarshalLegacyTelemetryEventEventData(io, &x.EventData)
+}

@@ -1,0 +1,90 @@
+// Code generated from canonical protocol manifest v2. DO NOT EDIT.
+
+package protocol
+
+type MinecraftEventingAchievementIds uint8
+
+const (
+	MinecraftEventingAchievementIdsChestFullOfCobblestone          MinecraftEventingAchievementIds = 7
+	MinecraftEventingAchievementIdsDiamondForYou                   MinecraftEventingAchievementIds = 10
+	MinecraftEventingAchievementIdsIronBelly                       MinecraftEventingAchievementIds = 20
+	MinecraftEventingAchievementIdsIronMan                         MinecraftEventingAchievementIds = 21
+	MinecraftEventingAchievementIdsOnARail                         MinecraftEventingAchievementIds = 29
+	MinecraftEventingAchievementIdsOverkill                        MinecraftEventingAchievementIds = 30
+	MinecraftEventingAchievementIdsReturnToSender                  MinecraftEventingAchievementIds = 37
+	MinecraftEventingAchievementIdsSniperDuel                      MinecraftEventingAchievementIds = 38
+	MinecraftEventingAchievementIdsStayinFrosty                    MinecraftEventingAchievementIds = 39
+	MinecraftEventingAchievementIdsTakeInventory                   MinecraftEventingAchievementIds = 40
+	MinecraftEventingAchievementIdsMapRoom                         MinecraftEventingAchievementIds = 50
+	MinecraftEventingAchievementIdsFreightStation                  MinecraftEventingAchievementIds = 52
+	MinecraftEventingAchievementIdsSmeltEverything                 MinecraftEventingAchievementIds = 53
+	MinecraftEventingAchievementIdsTasteOfYourOwnMedicine          MinecraftEventingAchievementIds = 54
+	MinecraftEventingAchievementIdsWhenPigsFly                     MinecraftEventingAchievementIds = 56
+	MinecraftEventingAchievementIdsInception                       MinecraftEventingAchievementIds = 58
+	MinecraftEventingAchievementIdsArtificialSelection             MinecraftEventingAchievementIds = 60
+	MinecraftEventingAchievementIdsFreeDiver                       MinecraftEventingAchievementIds = 61
+	MinecraftEventingAchievementIdsSpawnTheWither                  MinecraftEventingAchievementIds = 62
+	MinecraftEventingAchievementIdsBeaconator                      MinecraftEventingAchievementIds = 63
+	MinecraftEventingAchievementIdsGreatView                       MinecraftEventingAchievementIds = 64
+	MinecraftEventingAchievementIdsSuperSonic                      MinecraftEventingAchievementIds = 65
+	MinecraftEventingAchievementIdsTheEndAgain                     MinecraftEventingAchievementIds = 66
+	MinecraftEventingAchievementIdsTreasureHunter                  MinecraftEventingAchievementIds = 67
+	MinecraftEventingAchievementIdsShootingStar                    MinecraftEventingAchievementIds = 68
+	MinecraftEventingAchievementIdsFashionShow                     MinecraftEventingAchievementIds = 69
+	MinecraftEventingAchievementIdsSelfPublishedAuthor             MinecraftEventingAchievementIds = 71
+	MinecraftEventingAchievementIdsAlternativeFuel                 MinecraftEventingAchievementIds = 72
+	MinecraftEventingAchievementIdsSleepWithTheFishes              MinecraftEventingAchievementIds = 73
+	MinecraftEventingAchievementIdsCastaway                        MinecraftEventingAchievementIds = 74
+	MinecraftEventingAchievementIdsImAMarineBiologist              MinecraftEventingAchievementIds = 75
+	MinecraftEventingAchievementIdsSailThe7Seas                    MinecraftEventingAchievementIds = 76
+	MinecraftEventingAchievementIdsMeGold                          MinecraftEventingAchievementIds = 77
+	MinecraftEventingAchievementIdsAhoy                            MinecraftEventingAchievementIds = 78
+	MinecraftEventingAchievementIdsAtlantis                        MinecraftEventingAchievementIds = 79
+	MinecraftEventingAchievementIdsOnePickleTwoPickleSeaPickleFour MinecraftEventingAchievementIds = 80
+	MinecraftEventingAchievementIdsDoaBarrelRoll                   MinecraftEventingAchievementIds = 81
+	MinecraftEventingAchievementIdsMoskstraumen                    MinecraftEventingAchievementIds = 82
+	MinecraftEventingAchievementIdsEcholocation                    MinecraftEventingAchievementIds = 83
+	MinecraftEventingAchievementIdsWhereHaveYouBeen                MinecraftEventingAchievementIds = 84
+	MinecraftEventingAchievementIdsTopOfTheWorld                   MinecraftEventingAchievementIds = 85
+	MinecraftEventingAchievementIdsFruitOnTheLoom                  MinecraftEventingAchievementIds = 86
+	MinecraftEventingAchievementIdsSoundTheAlarm                   MinecraftEventingAchievementIds = 87
+	MinecraftEventingAchievementIdsBuyLowSellHigh                  MinecraftEventingAchievementIds = 88
+	MinecraftEventingAchievementIdsDisenchanted                    MinecraftEventingAchievementIds = 89
+	MinecraftEventingAchievementIdsTimeForStew                     MinecraftEventingAchievementIds = 90
+	MinecraftEventingAchievementIdsBeeOurGuest                     MinecraftEventingAchievementIds = 91
+	MinecraftEventingAchievementIdsTotalBeeLocation                MinecraftEventingAchievementIds = 92
+	MinecraftEventingAchievementIdsStickySituation                 MinecraftEventingAchievementIds = 93
+	MinecraftEventingAchievementIdsCoverMeInDebris                 MinecraftEventingAchievementIds = 94
+	MinecraftEventingAchievementIdsFloatYourGoat                   MinecraftEventingAchievementIds = 95
+	MinecraftEventingAchievementIdsFriend                          MinecraftEventingAchievementIds = 96
+	MinecraftEventingAchievementIdsWaxOnWaxOff                     MinecraftEventingAchievementIds = 97
+	MinecraftEventingAchievementIdsStriderRiddenInLavaInOverworld  MinecraftEventingAchievementIds = 98
+	MinecraftEventingAchievementIdsGoatHornAcquired                MinecraftEventingAchievementIds = 99
+	MinecraftEventingAchievementIdsJukeboxUsedInMeadows            MinecraftEventingAchievementIds = 100
+	MinecraftEventingAchievementIdsTradedAtWorldHeight             MinecraftEventingAchievementIds = 101
+	MinecraftEventingAchievementIdsSurvivedFallFromWorldHeight     MinecraftEventingAchievementIds = 102
+	MinecraftEventingAchievementIdsSneakCloseToSculkSensor         MinecraftEventingAchievementIds = 103
+	MinecraftEventingAchievementIdsItSpreads                       MinecraftEventingAchievementIds = 104
+	MinecraftEventingAchievementIdsBirthdaySong                    MinecraftEventingAchievementIds = 105
+	MinecraftEventingAchievementIdsWithOurPowersCombined           MinecraftEventingAchievementIds = 106
+	MinecraftEventingAchievementIdsPlantingThePast                 MinecraftEventingAchievementIds = 107
+	MinecraftEventingAchievementIdsCarefulRestoration              MinecraftEventingAchievementIds = 108
+	MinecraftEventingAchievementIdsRevaulting                      MinecraftEventingAchievementIds = 109
+	MinecraftEventingAchievementIdsCraftersCraftingCrafters        MinecraftEventingAchievementIds = 110
+	MinecraftEventingAchievementIdsWhoNeedsRockets                 MinecraftEventingAchievementIds = 111
+	MinecraftEventingAchievementIdsOverOverkill                    MinecraftEventingAchievementIds = 112
+	MinecraftEventingAchievementIdsHeartTransplanter               MinecraftEventingAchievementIds = 113
+	MinecraftEventingAchievementIdsStayHydrated                    MinecraftEventingAchievementIds = 114
+	MinecraftEventingAchievementIdsMobKabob                        MinecraftEventingAchievementIds = 115
+	MinecraftEventingAchievementIdsAdventuringTime                 MinecraftEventingAchievementIds = 116
+	MinecraftEventingAchievementIdsUhOh                            MinecraftEventingAchievementIds = 117
+	MinecraftEventingAchievementIdsGettingWood                     MinecraftEventingAchievementIds = 118
+	MinecraftEventingAchievementIdsBenchMaking                     MinecraftEventingAchievementIds = 119
+	MinecraftEventingAchievementIdsTimeToMine                      MinecraftEventingAchievementIds = 120
+	MinecraftEventingAchievementIdsHotTopic                        MinecraftEventingAchievementIds = 121
+	MinecraftEventingAchievementIdsAcquireHardware                 MinecraftEventingAchievementIds = 122
+	MinecraftEventingAchievementIdsGettingAnUpgrade                MinecraftEventingAchievementIds = 123
+	MinecraftEventingAchievementIdsMonsterHunter                   MinecraftEventingAchievementIds = 124
+	MinecraftEventingAchievementIdsDiamonds                        MinecraftEventingAchievementIds = 125
+	MinecraftEventingAchievementIdsPlethoraOfCats                  MinecraftEventingAchievementIds = 126
+)

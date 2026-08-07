@@ -53,7 +53,7 @@ go run ./cmd/protocolgen validate \
 go run ./cmd/protocolgen emit-go \
   -manifest /tmp/protocol-2168.json \
   -out /tmp/protocol-go \
-  -pkg wiregen
+  -protocol-import example.com/project/protocol
 
 go run ./cmd/protocolgen emit-rust \
   -manifest /tmp/protocol-2168.json \
@@ -85,13 +85,13 @@ This produces:
 
 Packet APIs use concise target-language names: the schema's transport-oriented
 `Packet` and `PacketPayload` suffixes do not leak into public type names. Go
-places `Optional`/`OrderedEntry` in `types.go`, the shared codec helpers in
-`codec.go`, the bounded codecs in `reader.go` and `writer.go`, each named
-definition in its own file, and each packet in its own file. Rust keeps its
-shared definitions in `types.rs` and `enums.rs` and its packet modules under
-`src/packets`. The canonical manifest is the sole wire-schema artifact rather
-than being duplicated as large runtime descriptors in every generated
-language.
+emits a reusable `protocol` package under `protocol/` for runtime codecs and
+shared definitions, and a `protocol/packet` subpackage for packet structs and
+IDs. Packet files import the protocol package using the path supplied through
+`-protocol-import`. Rust keeps its shared definitions in `types.rs` and
+`enums.rs` and its packet modules under `src/packets`. The canonical manifest
+is the sole wire-schema artifact rather than being duplicated as large runtime
+descriptors in every generated language.
 
 Like sqlc's type overrides, each backend maps well-known wire semantics onto
 types native to its ecosystem without changing the manifest. Go uses
@@ -136,7 +136,7 @@ go run ./cmd/protocolgen reconcile \
 go run ./cmd/protocolgen emit-go \
   -manifest generated/1.26.40/manifest.json \
   -out generated/1.26.40/go \
-  -pkg protocol2168
+  -protocol-import protocolgen/generated/1.26.40/go/protocol
 
 go run ./cmd/protocolgen emit-rust \
   -manifest generated/1.26.40/manifest.json \
