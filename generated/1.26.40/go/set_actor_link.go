@@ -5,3 +5,8 @@ package protocol2168
 type SetActorLink struct {
 	Link ActorLink
 }
+
+// Marshal reads or writes SetActorLink using its canonical wire layout.
+func (x *SetActorLink) Marshal(io IO) {
+	x.Link.Marshal(io)
+}

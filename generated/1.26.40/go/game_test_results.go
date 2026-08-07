@@ -7,3 +7,10 @@ type GameTestResults struct {
 	Error     string
 	TestName  string
 }
+
+// Marshal reads or writes GameTestResults using its canonical wire layout.
+func (x *GameTestResults) Marshal(io IO) {
+	io.Bool(&x.Succeeded)
+	io.String(&x.Error)
+	io.String(&x.TestName)
+}

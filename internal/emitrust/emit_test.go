@@ -140,8 +140,21 @@ func TestGenerateRustUsesTypedUnionEnum(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Generate: %v", err)
 	}
-	if !strings.Contains(source, "pub enum SoundDataEvent") || !strings.Contains(source, "SetVolume(SoundDataEventSetVolume)") || strings.Contains(source, "pub tag: i64") {
+	if !strings.Contains(source, "pub enum SoundDataEvent") || !strings.Contains(source, "SetVolume {") || !strings.Contains(source, "volume: f32") || strings.Contains(source, "pub struct SoundDataEventSetVolume") || strings.Contains(source, "pub tag: i64") {
 		t.Fatalf("generated Rust did not emit a typed union enum:\n%s", source)
+	}
+}
+
+func TestGenerateRustKeepsSharedUnionPayloadNamed(t *testing.T) {
+	shared := manifest.Node{Kind: manifest.KindStruct, Semantic: "SharedRecord", TypeID: "SharedRecord", Fields: []manifest.Field{{Ordinal: 0, Name: "Value", Encode: manifest.Primitive("u8"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}
+	union := manifest.Union(manifest.Primitive("u8"), manifest.Variant{Value: 0, Name: "Choice::Shared", Encode: shared})
+	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:shared-rust", MinecraftVersion: "fixture", ProtocolVersion: 2168}}, Packets: []manifest.Packet{{ID: 1, Name: "ChoicePacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{Ordinal: 0, Name: "Choice", Encode: union, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}, {Ordinal: 1, Name: "Shared", Encode: shared, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}}}
+	source, err := generatedRustSource(m)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(source, "Shared(SharedRecord)") || !strings.Contains(source, "pub struct SharedRecord") {
+		t.Fatalf("shared union payload was incorrectly inlined:\n%s", source)
 	}
 }
 
@@ -209,13 +222,14 @@ func TestGenerateRustMapsCanonicalSemanticsToNativeTypes(t *testing.T) {
 		{Ordinal: 0, Name: "ID", Encode: manifest.Primitive("uuid"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
 		{Ordinal: 1, Name: "Position", Encode: vec3, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
 		{Ordinal: 2, Name: "Data", Encode: manifest.Primitive("nbt_le"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		{Ordinal: 3, Name: "Payload", Encode: manifest.Bytes(manifest.Primitive("var_u32")), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
 	}}}}
 	files, err := GenerateFiles(m)
 	if err != nil {
 		t.Fatal(err)
 	}
 	packet := files["src/packets/native.rs"]
-	for _, want := range []string{"uuid::Uuid", "glam::Vec3", "Nbt"} {
+	for _, want := range []string{"uuid::Uuid", "glam::Vec3", "Nbt", "bytes::Bytes"} {
 		if !strings.Contains(packet, want) {
 			t.Fatalf("native Rust output omits %q:\n%s", want, packet)
 		}
@@ -223,7 +237,7 @@ func TestGenerateRustMapsCanonicalSemanticsToNativeTypes(t *testing.T) {
 	if !strings.Contains(files["src/types.rs"], "pub struct Nbt(pub Vec<u8>);") || strings.Contains(files["src/types.rs"], "pub struct Vec3") {
 		t.Fatalf("Rust shared types do not reflect native mapping:\n%s", files["src/types.rs"])
 	}
-	for _, dependency := range []string{`glam = "0.30"`, `uuid = "1"`} {
+	for _, dependency := range []string{`bytes = "1"`, `glam = "0.30"`, `uuid = "1"`} {
 		if !strings.Contains(files["Cargo.toml"], dependency) {
 			t.Fatalf("generated Cargo.toml omits %q:\n%s", dependency, files["Cargo.toml"])
 		}
@@ -235,5 +249,48 @@ func TestNativeRustTypeRejectsMislabelledVector(t *testing.T) {
 	node := manifest.Node{Kind: manifest.KindStruct, TypeID: "Vec2", Fields: []manifest.Field{{Encode: manifest.Primitive("f64le")}}}
 	if _, matched, err := g.nativeRustType(node); !matched || err == nil {
 		t.Fatalf("nativeRustType matched=%v error=%v, want a closed failure", matched, err)
+	}
+}
+
+func TestGenerateRustCollapsesDoubleOptionalAndUsesNamedRecursiveType(t *testing.T) {
+	dynamic := manifest.Union(manifest.Primitive("u8"),
+		manifest.Variant{Value: 0, Name: "Empty", Encode: manifest.Void()},
+		manifest.Variant{Value: 1, Name: "List", Encode: manifest.Array(manifest.Primitive("var_u32"), manifest.Recursive("cereal::DynamicValue"))},
+	)
+	dynamic.TypeID = "cereal::DynamicValue"
+	m := manifest.Manifest{
+		SchemaVersion: 2,
+		Target:        manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168},
+		Sources:       []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:rust", MinecraftVersion: "fixture", ProtocolVersion: 2168}},
+		Packets: []manifest.Packet{{ID: 1, Name: "FixturePacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{
+			{Ordinal: 0, Name: "Maybe", Encode: manifest.Optional(manifest.Optional(manifest.Primitive("i32le"))), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+			{Ordinal: 1, Name: "Dynamic", Encode: dynamic, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+			{Ordinal: 2, Name: "Flags", Encode: manifest.Bitset(131), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		}}},
+	}
+	files, err := GenerateFiles(m)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var all strings.Builder
+	for _, source := range files {
+		all.WriteString(source)
+	}
+	for _, want := range []string{"pub maybe: Option<i32>", "Vec<CerealDynamicValue>", "pub struct Bitset131(pub [u64; 3])", "pub flags: Bitset131"} {
+		if !strings.Contains(all.String(), want) {
+			t.Fatalf("generated output missing %q:\n%s", want, all.String())
+		}
+	}
+	if strings.Contains(all.String(), "Option<Option<i32>>") {
+		t.Fatalf("generated Rust retained public double optional:\n%s", all.String())
+	}
+}
+
+func TestGenerateRustFailsClosedForAsymmetricField(t *testing.T) {
+	decode := manifest.Primitive("u16le")
+	field := manifest.Field{Ordinal: 0, Name: "Value", Encode: manifest.Primitive("u8"), Decode: &decode, Symmetry: manifest.Asymmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}
+	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 1}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "1", Digest: "fixture", MinecraftVersion: "fixture", ProtocolVersion: 1}}, Packets: []manifest.Packet{{ID: 1, Name: "AsymmetricPacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{field}}}}
+	if _, err := GenerateFiles(m); err == nil || !strings.Contains(err.Error(), "asymmetric") {
+		t.Fatalf("GenerateFiles error = %v, want asymmetric failure", err)
 	}
 }

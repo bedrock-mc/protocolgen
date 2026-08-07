@@ -8,3 +8,11 @@ type ContainerOpen struct {
 	Position      BlockPos
 	TargetActorID ActorUniqueID
 }
+
+// Marshal reads or writes ContainerOpen using its canonical wire layout.
+func (x *ContainerOpen) Marshal(io IO) {
+	io.Uint8(&x.ContainerId)
+	io.Uint8(&x.ContainerType)
+	x.Position.Marshal(io)
+	x.TargetActorID.Marshal(io)
+}

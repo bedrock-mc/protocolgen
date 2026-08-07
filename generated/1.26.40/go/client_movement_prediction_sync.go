@@ -9,3 +9,14 @@ type ClientMovementPredictionSync struct {
 	ActorUniqueID      ActorUniqueID
 	ActorFlyingState   bool
 }
+
+// Marshal reads or writes ClientMovementPredictionSync using its canonical wire layout.
+func (x *ClientMovementPredictionSync) Marshal(io IO) {
+	x.ActorDataFlag.Marshal(io)
+	x.ActorBoundingBox.Marshal(io)
+	for index1 := range x.MovementAttributes {
+		io.Float32(&x.MovementAttributes[index1])
+	}
+	x.ActorUniqueID.Marshal(io)
+	io.Bool(&x.ActorFlyingState)
+}

@@ -5,3 +5,23 @@ package protocol2168
 type PurchaseReceipt struct {
 	PurchaseReceipts []string
 }
+
+// Marshal reads or writes PurchaseReceipt using its canonical wire layout.
+func (x *PurchaseReceipt) Marshal(io IO) {
+	if !io.Reading() && uint64(len(x.PurchaseReceipts)) > uint64(^uint32(0)) {
+		io.InvalidValue(len(x.PurchaseReceipts), "collection length overflows uint32")
+		return
+	}
+	count1 := uint32(len(x.PurchaseReceipts))
+	io.Varuint32(&count1)
+	if io.Reading() {
+		if uint64(count1) > uint64(^uint(0)>>1) {
+			io.InvalidValue(count1, "collection length overflows int")
+			return
+		}
+		x.PurchaseReceipts = make([]string, int(count1))
+	}
+	for index2 := range x.PurchaseReceipts {
+		io.String(&x.PurchaseReceipts[index2])
+	}
+}

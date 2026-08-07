@@ -9,3 +9,10 @@ type SetActorMotion struct {
 	Motion          mgl32.Vec3
 	Tick            PlayerInputTick
 }
+
+// Marshal reads or writes SetActorMotion using its canonical wire layout.
+func (x *SetActorMotion) Marshal(io IO) {
+	x.TargetRuntimeID.Marshal(io)
+	io.Vec3(&x.Motion)
+	x.Tick.Marshal(io)
+}

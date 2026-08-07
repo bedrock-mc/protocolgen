@@ -11,3 +11,12 @@ type AddPainting struct {
 	Direction       int32
 	Motif           string
 }
+
+// Marshal reads or writes AddPainting using its canonical wire layout.
+func (x *AddPainting) Marshal(io IO) {
+	x.TargetActorID.Marshal(io)
+	x.TargetRuntimeID.Marshal(io)
+	io.Vec3(&x.Position)
+	io.Varint32(&x.Direction)
+	io.String(&x.Motif)
+}

@@ -8,3 +8,9 @@ type SpawnExperienceOrb struct {
 	Position mgl32.Vec3
 	XPValue  int32
 }
+
+// Marshal reads or writes SpawnExperienceOrb using its canonical wire layout.
+func (x *SpawnExperienceOrb) Marshal(io IO) {
+	io.Vec3(&x.Position)
+	io.Varint32(&x.XPValue)
+}

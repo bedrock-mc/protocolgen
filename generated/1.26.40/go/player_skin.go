@@ -10,3 +10,11 @@ type PlayerSkin struct {
 	LocalizedNewSkinName string
 	LocalizedOldSkinName string
 }
+
+// Marshal reads or writes PlayerSkin using its canonical wire layout.
+func (x *PlayerSkin) Marshal(io IO) {
+	io.UUID(&x.UUID)
+	x.SerializedSkin.Marshal(io)
+	io.String(&x.LocalizedNewSkinName)
+	io.String(&x.LocalizedOldSkinName)
+}

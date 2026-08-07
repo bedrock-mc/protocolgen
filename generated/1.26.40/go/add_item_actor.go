@@ -13,3 +13,14 @@ type AddItemActor struct {
 	EntityData      SynchedActorDataCopyableDataList
 	IsFromFishing   bool
 }
+
+// Marshal reads or writes AddItemActor using its canonical wire layout.
+func (x *AddItemActor) Marshal(io IO) {
+	x.TargetActorID.Marshal(io)
+	x.TargetRuntimeID.Marshal(io)
+	x.Item.Marshal(io)
+	io.Vec3(&x.Position)
+	io.Vec3(&x.Velocity)
+	x.EntityData.Marshal(io)
+	io.Bool(&x.IsFromFishing)
+}

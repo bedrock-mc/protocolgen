@@ -30,10 +30,10 @@ unresolved nodes make validation and generation fail.
 
 `schema_version: 2` is the wire vocabulary version. It is not a target profile:
 Cargo layout, borrowed views, lossy strings, naming, and cross-version
-deduplication belong in a downstream profile. The generated Rust and Go output
-in this slice contains profile-neutral definitions and packet IDs. The
-manifest is the only emitted wire-schema artifact, and the language outputs do
-not claim packet codec coverage until they can emit real value serialization.
+deduplication belong in a downstream profile. The generated Rust output
+contains profile-neutral definitions and packet IDs. Go additionally emits
+value-aware symmetric `Marshal(IO)` methods over a small exact-operation
+interface; the manifest remains the only emitted wire-schema artifact.
 
 ## Sources and version pins
 
@@ -157,8 +157,9 @@ with a reason, while unresolved and absent oracle packets remain non-agreement.
 - NBT requires a bounded/profile codec in the synthetic interpreter; recursive
   nodes require a profile codec; conditional decode needs discriminator
   context.
-- The Rust/Go emitters provide canonical shape/API consumers, not the complete
-  Axolotl borrowed codec or gophertunnel profile. The latter remains a narrow
-  `go/ast` assistive adapter in `internal/gophertunnel`.
+- The Rust emitter does not yet provide the complete Axolotl encode/decode
+  runtime. Go emits canonical Marshal logic, but a concrete standalone byte
+  reader/writer or gophertunnel adapter remains downstream work. The older
+  gophertunnel generator remains a narrow `go/ast` assistive adapter.
 - Existing `cmd/raw` and `cmd/gophertunnel` are preserved standalone WIP tools.
   They are not v2 inputs or emitters and do not weaken v2 validation.

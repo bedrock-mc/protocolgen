@@ -9,3 +9,12 @@ type UpdateEquip struct {
 	EntityUniqueId ActorUniqueID
 	Data           []byte
 }
+
+// Marshal reads or writes UpdateEquip using its canonical wire layout.
+func (x *UpdateEquip) Marshal(io IO) {
+	io.Uint8(&x.ContainerId)
+	io.Uint8(&x.Type)
+	io.Varint32(&x.Size)
+	x.EntityUniqueId.Marshal(io)
+	io.NBT(&x.Data)
+}

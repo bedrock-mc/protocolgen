@@ -4,3 +4,7 @@ package protocol2168
 
 type ClientToServerHandshake struct {
 }
+
+// Marshal reads or writes ClientToServerHandshake using its canonical wire layout.
+func (x *ClientToServerHandshake) Marshal(io IO) {
+}

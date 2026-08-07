@@ -7,3 +7,10 @@ type ActorPickRequest struct {
 	MaxSlots uint8
 	WithData bool
 }
+
+// Marshal reads or writes ActorPickRequest using its canonical wire layout.
+func (x *ActorPickRequest) Marshal(io IO) {
+	io.Int64(&x.ActorID)
+	io.Uint8(&x.MaxSlots)
+	io.Bool(&x.WithData)
+}

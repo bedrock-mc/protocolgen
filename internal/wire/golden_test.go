@@ -97,6 +97,45 @@ func TestSignedVarintAndZigZagHaveDistinctWireBytes(t *testing.T) {
 	}
 }
 
+func TestUUIDUsesBedrockLittleEndianHalves(t *testing.T) {
+	value, err := hex.DecodeString("00112233445566778899aabbccddeeff")
+	if err != nil {
+		t.Fatal(err)
+	}
+	encoded, err := Encode(manifest.Primitive("uuid"), value)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := hex.EncodeToString(encoded), "7766554433221100ffeeddccbbaa9988"; got != want {
+		t.Fatalf("UUID wire bytes = %s, want %s", got, want)
+	}
+	decoded, err := DecodeAll(manifest.Primitive("uuid"), encoded)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(decoded.([]byte), value) {
+		t.Fatalf("decoded UUID = %x, want %x", decoded, value)
+	}
+}
+
+func TestBitsetUsesBoundedSevenBitContinuationEncoding(t *testing.T) {
+	value := []uint64{1, 1, 4}
+	encoded, err := Encode(manifest.Bitset(131), value)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := hex.EncodeToString(encoded), "81808080808080808082808080808080808010"; got != want {
+		t.Fatalf("bitset wire bytes = %s, want %s", got, want)
+	}
+	decoded, err := DecodeAll(manifest.Bitset(131), encoded)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(decoded, value) {
+		t.Fatalf("decoded bitset = %#v, want %#v", decoded, value)
+	}
+}
+
 func vocabularyNode() manifest.Node {
 	return manifest.Struct(
 		manifest.Field{Ordinal: 0, Name: "Outer", Encode: manifest.Optional(manifest.Optional(manifest.Primitive("u8"))), Symmetry: manifest.Symmetric},

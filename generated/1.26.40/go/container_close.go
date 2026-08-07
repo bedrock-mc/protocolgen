@@ -7,3 +7,10 @@ type ContainerClose struct {
 	ContainerType        uint8
 	ServerInitiatedClose bool
 }
+
+// Marshal reads or writes ContainerClose using its canonical wire layout.
+func (x *ContainerClose) Marshal(io IO) {
+	io.Uint8(&x.ContainerId)
+	io.Uint8(&x.ContainerType)
+	io.Bool(&x.ServerInitiatedClose)
+}

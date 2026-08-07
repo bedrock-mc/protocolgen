@@ -6985,7 +6985,7 @@
                 "name": "User Data Buffer",
                 "semantic": "User Data Buffer",
                 "encode": {
-                  "kind": "string",
+                  "kind": "bytes",
                   "prefix": {
                     "kind": "primitive",
                     "primitive": {
@@ -6996,8 +6996,7 @@
                       "endianness": "none"
                     }
                   },
-                  "encoding": "utf8",
-                  "representation": "text"
+                  "representation": "bytes"
                 },
                 "symmetry": "symmetric",
                 "provenance": {
@@ -11729,7 +11728,7 @@
                 "name": "User Data Buffer",
                 "semantic": "User Data Buffer",
                 "encode": {
-                  "kind": "string",
+                  "kind": "bytes",
                   "prefix": {
                     "kind": "primitive",
                     "primitive": {
@@ -11740,8 +11739,7 @@
                       "endianness": "none"
                     }
                   },
-                  "encoding": "utf8",
-                  "representation": "text"
+                  "representation": "bytes"
                 },
                 "symmetry": "symmetric",
                 "provenance": {
@@ -17002,7 +17000,7 @@
                                               "name": "User Data Buffer",
                                               "semantic": "User Data Buffer",
                                               "encode": {
-                                                "kind": "string",
+                                                "kind": "bytes",
                                                 "prefix": {
                                                   "kind": "primitive",
                                                   "primitive": {
@@ -17013,8 +17011,7 @@
                                                     "endianness": "none"
                                                   }
                                                 },
-                                                "encoding": "utf8",
-                                                "representation": "text"
+                                                "representation": "bytes"
                                               },
                                               "symmetry": "symmetric",
                                               "provenance": {
@@ -17154,7 +17151,7 @@
                                               "name": "User Data Buffer",
                                               "semantic": "User Data Buffer",
                                               "encode": {
-                                                "kind": "string",
+                                                "kind": "bytes",
                                                 "prefix": {
                                                   "kind": "primitive",
                                                   "primitive": {
@@ -17165,8 +17162,7 @@
                                                     "endianness": "none"
                                                   }
                                                 },
-                                                "encoding": "utf8",
-                                                "representation": "text"
+                                                "representation": "bytes"
                                               },
                                               "symmetry": "symmetric",
                                               "provenance": {
@@ -17540,7 +17536,7 @@
                                               "name": "User Data Buffer",
                                               "semantic": "User Data Buffer",
                                               "encode": {
-                                                "kind": "string",
+                                                "kind": "bytes",
                                                 "prefix": {
                                                   "kind": "primitive",
                                                   "primitive": {
@@ -17551,8 +17547,7 @@
                                                     "endianness": "none"
                                                   }
                                                 },
-                                                "encoding": "utf8",
-                                                "representation": "text"
+                                                "representation": "bytes"
                                               },
                                               "symmetry": "symmetric",
                                               "provenance": {
@@ -17692,7 +17687,7 @@
                                               "name": "User Data Buffer",
                                               "semantic": "User Data Buffer",
                                               "encode": {
-                                                "kind": "string",
+                                                "kind": "bytes",
                                                 "prefix": {
                                                   "kind": "primitive",
                                                   "primitive": {
@@ -17703,8 +17698,7 @@
                                                     "endianness": "none"
                                                   }
                                                 },
-                                                "encoding": "utf8",
-                                                "representation": "text"
+                                                "representation": "bytes"
                                               },
                                               "symmetry": "symmetric",
                                               "provenance": {
@@ -18078,7 +18072,7 @@
                                               "name": "User Data Buffer",
                                               "semantic": "User Data Buffer",
                                               "encode": {
-                                                "kind": "string",
+                                                "kind": "bytes",
                                                 "prefix": {
                                                   "kind": "primitive",
                                                   "primitive": {
@@ -18089,8 +18083,7 @@
                                                     "endianness": "none"
                                                   }
                                                 },
-                                                "encoding": "utf8",
-                                                "representation": "text"
+                                                "representation": "bytes"
                                               },
                                               "symmetry": "symmetric",
                                               "provenance": {
@@ -18230,7 +18223,7 @@
                                               "name": "User Data Buffer",
                                               "semantic": "User Data Buffer",
                                               "encode": {
-                                                "kind": "string",
+                                                "kind": "bytes",
                                                 "prefix": {
                                                   "kind": "primitive",
                                                   "primitive": {
@@ -18241,8 +18234,7 @@
                                                     "endianness": "none"
                                                   }
                                                 },
-                                                "encoding": "utf8",
-                                                "representation": "text"
+                                                "representation": "bytes"
                                               },
                                               "symmetry": "symmetric",
                                               "provenance": {
@@ -18624,7 +18616,7 @@
                               "name": "User Data Buffer",
                               "semantic": "User Data Buffer",
                               "encode": {
-                                "kind": "string",
+                                "kind": "bytes",
                                 "prefix": {
                                   "kind": "primitive",
                                   "primitive": {
@@ -18635,8 +18627,7 @@
                                     "endianness": "none"
                                   }
                                 },
-                                "encoding": "utf8",
-                                "representation": "text"
+                                "representation": "bytes"
                               },
                               "symmetry": "symmetric",
                               "provenance": {
@@ -19251,7 +19242,7 @@
                                               "name": "User Data Buffer",
                                               "semantic": "User Data Buffer",
                                               "encode": {
-                                                "kind": "string",
+                                                "kind": "bytes",
                                                 "prefix": {
                                                   "kind": "primitive",
                                                   "primitive": {
@@ -19262,8 +19253,7 @@
                                                     "endianness": "none"
                                                   }
                                                 },
-                                                "encoding": "utf8",
-                                                "representation": "text"
+                                                "representation": "bytes"
                                               },
                                               "symmetry": "symmetric",
                                               "provenance": {
@@ -19403,7 +19393,7 @@
                                               "name": "User Data Buffer",
                                               "semantic": "User Data Buffer",
                                               "encode": {
-                                                "kind": "string",
+                                                "kind": "bytes",
                                                 "prefix": {
                                                   "kind": "primitive",
                                                   "primitive": {
@@ -19414,8 +19404,7 @@
                                                     "endianness": "none"
                                                   }
                                                 },
-                                                "encoding": "utf8",
-                                                "representation": "text"
+                                                "representation": "bytes"
                                               },
                                               "symmetry": "symmetric",
                                               "provenance": {
@@ -19681,7 +19670,7 @@
                               "name": "User Data Buffer",
                               "semantic": "User Data Buffer",
                               "encode": {
-                                "kind": "string",
+                                "kind": "bytes",
                                 "prefix": {
                                   "kind": "primitive",
                                   "primitive": {
@@ -19692,8 +19681,7 @@
                                     "endianness": "none"
                                   }
                                 },
-                                "encoding": "utf8",
-                                "representation": "text"
+                                "representation": "bytes"
                               },
                               "symmetry": "symmetric",
                               "provenance": {
@@ -20209,7 +20197,7 @@
                                               "name": "User Data Buffer",
                                               "semantic": "User Data Buffer",
                                               "encode": {
-                                                "kind": "string",
+                                                "kind": "bytes",
                                                 "prefix": {
                                                   "kind": "primitive",
                                                   "primitive": {
@@ -20220,8 +20208,7 @@
                                                     "endianness": "none"
                                                   }
                                                 },
-                                                "encoding": "utf8",
-                                                "representation": "text"
+                                                "representation": "bytes"
                                               },
                                               "symmetry": "symmetric",
                                               "provenance": {
@@ -20361,7 +20348,7 @@
                                               "name": "User Data Buffer",
                                               "semantic": "User Data Buffer",
                                               "encode": {
-                                                "kind": "string",
+                                                "kind": "bytes",
                                                 "prefix": {
                                                   "kind": "primitive",
                                                   "primitive": {
@@ -20372,8 +20359,7 @@
                                                     "endianness": "none"
                                                   }
                                                 },
-                                                "encoding": "utf8",
-                                                "representation": "text"
+                                                "representation": "bytes"
                                               },
                                               "symmetry": "symmetric",
                                               "provenance": {
@@ -20593,7 +20579,7 @@
                               "name": "User Data Buffer",
                               "semantic": "User Data Buffer",
                               "encode": {
-                                "kind": "string",
+                                "kind": "bytes",
                                 "prefix": {
                                   "kind": "primitive",
                                   "primitive": {
@@ -20604,8 +20590,7 @@
                                     "endianness": "none"
                                   }
                                 },
-                                "encoding": "utf8",
-                                "representation": "text"
+                                "representation": "bytes"
                               },
                               "symmetry": "symmetric",
                               "provenance": {
@@ -20903,7 +20888,7 @@
                 "name": "User Data Buffer",
                 "semantic": "User Data Buffer",
                 "encode": {
-                  "kind": "string",
+                  "kind": "bytes",
                   "prefix": {
                     "kind": "primitive",
                     "primitive": {
@@ -20914,8 +20899,7 @@
                       "endianness": "none"
                     }
                   },
-                  "encoding": "utf8",
-                  "representation": "text"
+                  "representation": "bytes"
                 },
                 "symmetry": "symmetric",
                 "provenance": {
@@ -21177,7 +21161,7 @@
                 "name": "User Data Buffer",
                 "semantic": "User Data Buffer",
                 "encode": {
-                  "kind": "string",
+                  "kind": "bytes",
                   "prefix": {
                     "kind": "primitive",
                     "primitive": {
@@ -21188,8 +21172,7 @@
                       "endianness": "none"
                     }
                   },
-                  "encoding": "utf8",
-                  "representation": "text"
+                  "representation": "bytes"
                 },
                 "symmetry": "symmetric",
                 "provenance": {
@@ -21337,7 +21320,7 @@
                 "name": "User Data Buffer",
                 "semantic": "User Data Buffer",
                 "encode": {
-                  "kind": "string",
+                  "kind": "bytes",
                   "prefix": {
                     "kind": "primitive",
                     "primitive": {
@@ -21348,8 +21331,7 @@
                       "endianness": "none"
                     }
                   },
-                  "encoding": "utf8",
-                  "representation": "text"
+                  "representation": "bytes"
                 },
                 "symmetry": "symmetric",
                 "provenance": {
@@ -21497,7 +21479,7 @@
                 "name": "User Data Buffer",
                 "semantic": "User Data Buffer",
                 "encode": {
-                  "kind": "string",
+                  "kind": "bytes",
                   "prefix": {
                     "kind": "primitive",
                     "primitive": {
@@ -21508,8 +21490,7 @@
                       "endianness": "none"
                     }
                   },
-                  "encoding": "utf8",
-                  "representation": "text"
+                  "representation": "bytes"
                 },
                 "symmetry": "symmetric",
                 "provenance": {
@@ -21657,7 +21638,7 @@
                 "name": "User Data Buffer",
                 "semantic": "User Data Buffer",
                 "encode": {
-                  "kind": "string",
+                  "kind": "bytes",
                   "prefix": {
                     "kind": "primitive",
                     "primitive": {
@@ -21668,8 +21649,7 @@
                       "endianness": "none"
                     }
                   },
-                  "encoding": "utf8",
-                  "representation": "text"
+                  "representation": "bytes"
                 },
                 "symmetry": "symmetric",
                 "provenance": {
@@ -21817,7 +21797,7 @@
                 "name": "User Data Buffer",
                 "semantic": "User Data Buffer",
                 "encode": {
-                  "kind": "string",
+                  "kind": "bytes",
                   "prefix": {
                     "kind": "primitive",
                     "primitive": {
@@ -21828,8 +21808,7 @@
                       "endianness": "none"
                     }
                   },
-                  "encoding": "utf8",
-                  "representation": "text"
+                  "representation": "bytes"
                 },
                 "symmetry": "symmetric",
                 "provenance": {
@@ -25937,7 +25916,7 @@
                   "name": "User Data Buffer",
                   "semantic": "User Data Buffer",
                   "encode": {
-                    "kind": "string",
+                    "kind": "bytes",
                     "prefix": {
                       "kind": "primitive",
                       "primitive": {
@@ -25948,8 +25927,7 @@
                         "endianness": "none"
                       }
                     },
-                    "encoding": "utf8",
-                    "representation": "text"
+                    "representation": "bytes"
                   },
                   "symmetry": "symmetric",
                   "provenance": {
@@ -26637,7 +26615,7 @@
                 "name": "User Data Buffer",
                 "semantic": "User Data Buffer",
                 "encode": {
-                  "kind": "string",
+                  "kind": "bytes",
                   "prefix": {
                     "kind": "primitive",
                     "primitive": {
@@ -26648,8 +26626,7 @@
                       "endianness": "none"
                     }
                   },
-                  "encoding": "utf8",
-                  "representation": "text"
+                  "representation": "bytes"
                 },
                 "symmetry": "symmetric",
                 "provenance": {
@@ -27392,7 +27369,7 @@
                   "name": "User Data Buffer",
                   "semantic": "User Data Buffer",
                   "encode": {
-                    "kind": "string",
+                    "kind": "bytes",
                     "prefix": {
                       "kind": "primitive",
                       "primitive": {
@@ -27403,8 +27380,7 @@
                         "endianness": "none"
                       }
                     },
-                    "encoding": "utf8",
-                    "representation": "text"
+                    "representation": "bytes"
                   },
                   "symmetry": "symmetric",
                   "provenance": {
@@ -27553,7 +27529,7 @@
                 "name": "User Data Buffer",
                 "semantic": "User Data Buffer",
                 "encode": {
-                  "kind": "string",
+                  "kind": "bytes",
                   "prefix": {
                     "kind": "primitive",
                     "primitive": {
@@ -27564,8 +27540,7 @@
                       "endianness": "none"
                     }
                   },
-                  "encoding": "utf8",
-                  "representation": "text"
+                  "representation": "bytes"
                 },
                 "symmetry": "symmetric",
                 "provenance": {
@@ -27992,7 +27967,7 @@
                           "name": "User Data Buffer",
                           "semantic": "User Data Buffer",
                           "encode": {
-                            "kind": "string",
+                            "kind": "bytes",
                             "prefix": {
                               "kind": "primitive",
                               "primitive": {
@@ -28003,8 +27978,7 @@
                                 "endianness": "none"
                               }
                             },
-                            "encoding": "utf8",
-                            "representation": "text"
+                            "representation": "bytes"
                           },
                           "symmetry": "symmetric",
                           "provenance": {
@@ -28658,7 +28632,7 @@
                           "name": "User Data Buffer",
                           "semantic": "User Data Buffer",
                           "encode": {
-                            "kind": "string",
+                            "kind": "bytes",
                             "prefix": {
                               "kind": "primitive",
                               "primitive": {
@@ -28669,8 +28643,7 @@
                                 "endianness": "none"
                               }
                             },
-                            "encoding": "utf8",
-                            "representation": "text"
+                            "representation": "bytes"
                           },
                           "symmetry": "symmetric",
                           "provenance": {
@@ -29395,7 +29368,7 @@
                           "name": "User Data Buffer",
                           "semantic": "User Data Buffer",
                           "encode": {
-                            "kind": "string",
+                            "kind": "bytes",
                             "prefix": {
                               "kind": "primitive",
                               "primitive": {
@@ -29406,8 +29379,7 @@
                                 "endianness": "none"
                               }
                             },
-                            "encoding": "utf8",
-                            "representation": "text"
+                            "representation": "bytes"
                           },
                           "symmetry": "symmetric",
                           "provenance": {
@@ -30040,7 +30012,7 @@
                           "name": "User Data Buffer",
                           "semantic": "User Data Buffer",
                           "encode": {
-                            "kind": "string",
+                            "kind": "bytes",
                             "prefix": {
                               "kind": "primitive",
                               "primitive": {
@@ -30051,8 +30023,7 @@
                                 "endianness": "none"
                               }
                             },
-                            "encoding": "utf8",
-                            "representation": "text"
+                            "representation": "bytes"
                           },
                           "symmetry": "symmetric",
                           "provenance": {
@@ -30727,7 +30698,7 @@
                           "name": "User Data Buffer",
                           "semantic": "User Data Buffer",
                           "encode": {
-                            "kind": "string",
+                            "kind": "bytes",
                             "prefix": {
                               "kind": "primitive",
                               "primitive": {
@@ -30738,8 +30709,7 @@
                                 "endianness": "none"
                               }
                             },
-                            "encoding": "utf8",
-                            "representation": "text"
+                            "representation": "bytes"
                           },
                           "symmetry": "symmetric",
                           "provenance": {
@@ -31598,7 +31568,7 @@
                         "name": "User Data Buffer",
                         "semantic": "User Data Buffer",
                         "encode": {
-                          "kind": "string",
+                          "kind": "bytes",
                           "prefix": {
                             "kind": "primitive",
                             "primitive": {
@@ -31609,8 +31579,7 @@
                               "endianness": "none"
                             }
                           },
-                          "encoding": "utf8",
-                          "representation": "text"
+                          "representation": "bytes"
                         },
                         "symmetry": "symmetric",
                         "provenance": {
@@ -33016,7 +32985,7 @@
           "name": "Serialized Chunk Data",
           "semantic": "Serialized Chunk Data",
           "encode": {
-            "kind": "string",
+            "kind": "bytes",
             "prefix": {
               "kind": "primitive",
               "primitive": {
@@ -33027,8 +32996,7 @@
                 "endianness": "none"
               }
             },
-            "encoding": "utf8",
-            "representation": "text"
+            "representation": "bytes"
           },
           "symmetry": "symmetric",
           "provenance": {
@@ -43647,7 +43615,7 @@
           "name": "Chunk Data",
           "semantic": "Chunk Data",
           "encode": {
-            "kind": "string",
+            "kind": "bytes",
             "prefix": {
               "kind": "primitive",
               "primitive": {
@@ -43658,8 +43626,7 @@
                 "endianness": "none"
               }
             },
-            "encoding": "utf8",
-            "representation": "text"
+            "representation": "bytes"
           },
           "symmetry": "symmetric",
           "provenance": {
@@ -49096,7 +49063,7 @@
           "name": "Photo Data",
           "semantic": "Photo Data",
           "encode": {
-            "kind": "string",
+            "kind": "bytes",
             "prefix": {
               "kind": "primitive",
               "primitive": {
@@ -49107,8 +49074,7 @@
                 "endianness": "none"
               }
             },
-            "encoding": "utf8",
-            "representation": "text"
+            "representation": "bytes"
           },
           "symmetry": "symmetric",
           "provenance": {
@@ -58043,7 +58009,7 @@
                   "name": "Blob Data",
                   "semantic": "Blob Data",
                   "encode": {
-                    "kind": "string",
+                    "kind": "bytes",
                     "prefix": {
                       "kind": "primitive",
                       "primitive": {
@@ -58054,8 +58020,7 @@
                         "endianness": "none"
                       }
                     },
-                    "encoding": "utf8",
-                    "representation": "text"
+                    "representation": "bytes"
                   },
                   "symmetry": "symmetric",
                   "provenance": {
@@ -61101,7 +61066,7 @@
                                                   "name": "User Data Buffer",
                                                   "semantic": "User Data Buffer",
                                                   "encode": {
-                                                    "kind": "string",
+                                                    "kind": "bytes",
                                                     "prefix": {
                                                       "kind": "primitive",
                                                       "primitive": {
@@ -61112,8 +61077,7 @@
                                                         "endianness": "none"
                                                       }
                                                     },
-                                                    "encoding": "utf8",
-                                                    "representation": "text"
+                                                    "representation": "bytes"
                                                   },
                                                   "symmetry": "symmetric",
                                                   "provenance": {
@@ -61253,7 +61217,7 @@
                                                   "name": "User Data Buffer",
                                                   "semantic": "User Data Buffer",
                                                   "encode": {
-                                                    "kind": "string",
+                                                    "kind": "bytes",
                                                     "prefix": {
                                                       "kind": "primitive",
                                                       "primitive": {
@@ -61264,8 +61228,7 @@
                                                         "endianness": "none"
                                                       }
                                                     },
-                                                    "encoding": "utf8",
-                                                    "representation": "text"
+                                                    "representation": "bytes"
                                                   },
                                                   "symmetry": "symmetric",
                                                   "provenance": {
@@ -61647,7 +61610,7 @@
                                   "name": "User Data Buffer",
                                   "semantic": "User Data Buffer",
                                   "encode": {
-                                    "kind": "string",
+                                    "kind": "bytes",
                                     "prefix": {
                                       "kind": "primitive",
                                       "primitive": {
@@ -61658,8 +61621,7 @@
                                         "endianness": "none"
                                       }
                                     },
-                                    "encoding": "utf8",
-                                    "representation": "text"
+                                    "representation": "bytes"
                                   },
                                   "symmetry": "symmetric",
                                   "provenance": {
@@ -72309,7 +72271,7 @@
                                           "name": "User Data Buffer",
                                           "semantic": "User Data Buffer",
                                           "encode": {
-                                            "kind": "string",
+                                            "kind": "bytes",
                                             "prefix": {
                                               "kind": "primitive",
                                               "primitive": {
@@ -72320,8 +72282,7 @@
                                                 "endianness": "none"
                                               }
                                             },
-                                            "encoding": "utf8",
-                                            "representation": "text"
+                                            "representation": "bytes"
                                           },
                                           "symmetry": "symmetric",
                                           "provenance": {
@@ -73571,7 +73532,7 @@
                         "name": "User Data Buffer",
                         "semantic": "User Data Buffer",
                         "encode": {
-                          "kind": "string",
+                          "kind": "bytes",
                           "prefix": {
                             "kind": "primitive",
                             "primitive": {
@@ -73582,8 +73543,7 @@
                               "endianness": "none"
                             }
                           },
-                          "encoding": "utf8",
-                          "representation": "text"
+                          "representation": "bytes"
                         },
                         "symmetry": "symmetric",
                         "provenance": {
@@ -73771,7 +73731,7 @@
                         "name": "User Data Buffer",
                         "semantic": "User Data Buffer",
                         "encode": {
-                          "kind": "string",
+                          "kind": "bytes",
                           "prefix": {
                             "kind": "primitive",
                             "primitive": {
@@ -73782,8 +73742,7 @@
                               "endianness": "none"
                             }
                           },
-                          "encoding": "utf8",
-                          "representation": "text"
+                          "representation": "bytes"
                         },
                         "symmetry": "symmetric",
                         "provenance": {
@@ -84750,7 +84709,7 @@
                                         "name": "User Data Buffer",
                                         "semantic": "User Data Buffer",
                                         "encode": {
-                                          "kind": "string",
+                                          "kind": "bytes",
                                           "prefix": {
                                             "kind": "primitive",
                                             "primitive": {
@@ -84761,8 +84720,7 @@
                                               "endianness": "none"
                                             }
                                           },
-                                          "encoding": "utf8",
-                                          "representation": "text"
+                                          "representation": "bytes"
                                         },
                                         "symmetry": "symmetric",
                                         "provenance": {
@@ -111440,15 +111398,15 @@
     {
       "id": "protocol-2168-packet-144-field-11",
       "target": "PlayerAuthInputPacket.Item Use Transaction",
-      "pre_patch_context_sha256": "sha256:8cee175f663e9ee2bd6fe61dfa193bcc4cd90f234f6cd276e7f001bc7290da94",
+      "pre_patch_context_sha256": "sha256:3c2ba5f38a1426ba23d49c8fff2cc40d91a520eb9e7197da74532ed9b0a5c6a4",
       "claims": [
         {
           "source_id": "endstone",
-          "digest": "sha256:833c0a3ce8c6680fde1dd1031fe90760f97afb62e4cd6cbdd726055f0d2cd3bb"
+          "digest": "sha256:29f5e9e5165a150afc1a3b9a0a99d3014917fbe5c2364f850ba90040f4fcd5d6"
         },
         {
           "source_id": "mojang",
-          "digest": "sha256:a112d47f77ccaa817eb0a188835565f46020f8204f30f491196fbddbb8138ded"
+          "digest": "sha256:3cc87cbeb8d89e3724599b9fc9185c82e1ad76e7e0ecde43aa82e8ded008df2d"
         }
       ],
       "selected_source": "endstone",
@@ -111560,15 +111518,15 @@
     {
       "id": "protocol-2168-packet-52-field-0",
       "target": "CraftingDataPacket.Shaped Recipes",
-      "pre_patch_context_sha256": "sha256:3e2e5abec01b6961b935e0cbdee1e50c6d4ac613659624ae1a5e15ce48d39cc5",
+      "pre_patch_context_sha256": "sha256:f3e09f4d00180d335cf8fbf966677916606fd765d70930f9f36d784cb2fd04b8",
       "claims": [
         {
           "source_id": "endstone",
-          "digest": "sha256:9d56ae1b0d806312b4c3dabb11d629c1a2ec02d0bfbc9e9fb8f48f927f0e3a72"
+          "digest": "sha256:aed4d8b4820c42b801fc17d27f20c7bf311c98ec50fc1f8a56109cb20ba5aef0"
         },
         {
           "source_id": "mojang",
-          "digest": "sha256:6179a49dfae25b6a9583f41d2ae379be814a87b9661bb8bb4ada0094a29ab514"
+          "digest": "sha256:ed914bb5b51601cda21c4c380e080ffe251780e065ed0ddcf5d1f7142a61b4ba"
         }
       ],
       "selected_source": "endstone",
@@ -111584,15 +111542,15 @@
     {
       "id": "protocol-2168-packet-52-field-1",
       "target": "CraftingDataPacket.Shapeless Recipes",
-      "pre_patch_context_sha256": "sha256:111e8429267e46915f40307ced57d0ad3ed7b79def9182e808ac2f2facf90cda",
+      "pre_patch_context_sha256": "sha256:d9e4d96aa6eb913a5ec9e64ae81cdbb497f6ddb5653b5f2021f950adcdecbf65",
       "claims": [
         {
           "source_id": "endstone",
-          "digest": "sha256:6d0dc2b633f9232c8a90c371aa616f0836d557c43782d7eb848b52955eed42ea"
+          "digest": "sha256:73b551fdbb927192e7bfd8dacbe0a5e212f3e94f207481633e6f52a88be79725"
         },
         {
           "source_id": "mojang",
-          "digest": "sha256:51d7dcd21850f9cef4bfc083973e58ea1446c53764abb9d60a8533b28df3bb03"
+          "digest": "sha256:316a5484ff271375ce034e5b5f5de4df048aefaaddd72006c8d1f45b4c99ac67"
         }
       ],
       "selected_source": "endstone",
@@ -111608,15 +111566,15 @@
     {
       "id": "protocol-2168-packet-52-field-3",
       "target": "CraftingDataPacket.User Data Shapeless Recipes",
-      "pre_patch_context_sha256": "sha256:bb33bb347c6fce949e7b7ede8d22388206012027055b98a169754e7a68fb76b4",
+      "pre_patch_context_sha256": "sha256:203e43cdd6595fc88e0fcf39c3fbc25e2eae337955572a7ae217bfca5a67e8a2",
       "claims": [
         {
           "source_id": "endstone",
-          "digest": "sha256:8df2a290b6138b46afe4a9a4496f92ed080490f53bc6d8084af484c14138d575"
+          "digest": "sha256:e928a470bd14bbb6ab985a19cdb275caa0800fa0729919babe4ef565eda70715"
         },
         {
           "source_id": "mojang",
-          "digest": "sha256:6b53de93b1a7b5975da7c86e18839ea5cb5c25613ed7cbf4623060d4eac26f49"
+          "digest": "sha256:2209a0f9d05ddfed84b6efead8826aa842b5fa9a3c7ee8e24c1c60ba38ebfa53"
         }
       ],
       "selected_source": "endstone",
@@ -111632,15 +111590,15 @@
     {
       "id": "protocol-2168-packet-52-field-4",
       "target": "CraftingDataPacket.Shapeless Chemistry Recipes",
-      "pre_patch_context_sha256": "sha256:d24ae6565f891372eb5a7c218111293a530ba1299a567006c3ee9e553b8ec496",
+      "pre_patch_context_sha256": "sha256:4fb01be3d91849bde84d032d15e82a93b6fab7de4ebbbafb6084d029910432da",
       "claims": [
         {
           "source_id": "endstone",
-          "digest": "sha256:77a0e4624b1e323555a9c24fcf1a59cf2dbfde552cd086dea626781f1ce6c86a"
+          "digest": "sha256:d05cc7bc2f206124828c1f6788e5350b347caf612df2970333fbdd3270511122"
         },
         {
           "source_id": "mojang",
-          "digest": "sha256:e6551d1be227331415a21277d7b92c5739055b8f542b47bc6bc6bc741a1e8f0e"
+          "digest": "sha256:c69d44d74327a1705b5fd8579dfe81dc3dbf06ef4d9f2442de5d88a63e897c2c"
         }
       ],
       "selected_source": "endstone",
@@ -111656,15 +111614,15 @@
     {
       "id": "protocol-2168-packet-52-field-5",
       "target": "CraftingDataPacket.Shaped Chemistry Recipes",
-      "pre_patch_context_sha256": "sha256:a22794047c1e11614e2ec3847785007617beb75a46046d939f0dfe7d68642b8d",
+      "pre_patch_context_sha256": "sha256:be69820f3e63b291bb7aad9b06a86494330b677599dd77dd9d7f0b987ee12227",
       "claims": [
         {
           "source_id": "endstone",
-          "digest": "sha256:2a7ee8ddbd229ae536bf3a46d89c620f01575725638dd7359fe8eadd2789f58c"
+          "digest": "sha256:efe524112e3c1c3ccaa64fb389e23d35171da7c3f74488e0b4bdc67b977757c8"
         },
         {
           "source_id": "mojang",
-          "digest": "sha256:0dfef79d36ccae9eb754f63c811f6c8692bf75db1c17895c7c884b4a20393f7e"
+          "digest": "sha256:23c37c1b18e7d6ecc0d34fa219c9710e443bee5b179d0548cef16f43f96bfab7"
         }
       ],
       "selected_source": "endstone",
@@ -111680,15 +111638,15 @@
     {
       "id": "protocol-2168-packet-52-field-6",
       "target": "CraftingDataPacket.Smithing Transform Recipes",
-      "pre_patch_context_sha256": "sha256:af605f7b2e42ab215d18503d79bdb1c6fd5aa33cfd8254c980d1b6efe99894db",
+      "pre_patch_context_sha256": "sha256:5c9a12e81f3530a2a25b72ca275c8c54090e2743f8aefc2758db79889a42779d",
       "claims": [
         {
           "source_id": "endstone",
-          "digest": "sha256:2063e9101c03afcb53157e1a3402def351a9d3da7e314bc5ea0d8f9f5123f4f0"
+          "digest": "sha256:fe0e767060be9d9bd905b4b4966e01620e6080f3473a748198119955ceb8a555"
         },
         {
           "source_id": "mojang",
-          "digest": "sha256:28f21f0c705cdb31d39c1f1ddb8a89737c0fc12180d2e062c4698ee84c1505b9"
+          "digest": "sha256:a943dd40a1d7920ac81a2bfc5505d1629bec20d529844667cd431ac1019a04ba"
         }
       ],
       "selected_source": "endstone",
@@ -111780,6 +111738,111 @@
         }
       ],
       "reason": "Both directly encoded DeathInfo fields are required."
+    },
+    {
+      "id": "endstone-level-chunk-payload-is-bytes",
+      "target": "packets/LevelChunkPacket.json#/fields/6",
+      "pre_patch_node_sha256": "sha256:c52302f5883de9863aba4c4c3d3a250bd3d69700e8499b58b1c22ea2d299ee22",
+      "pre_patch_context_sha256": "sha256:d02437d46a19023e57491cd35f08ae9bba9feddb54d29cd3fd3f01c5f4ef416f",
+      "post_patch_node_sha256": "sha256:05cf321ec173173d1161463237a9e22fb201b2693300eb6a40abca43ef1ac6ac",
+      "evidence": [
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/CloudburstMC/Protocol/blob/fbbeee7d63f1ea3c586a6d5907bd69196679aee6/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v2168/serializer/LevelChunkSerializer_v2168.java",
+          "summary": "The exact v2168 serializer uses the ByteBuf helper."
+        }
+      ],
+      "reason": "The field is a length-prefixed arbitrary byte buffer, not UTF-8 text."
+    },
+    {
+      "id": "endstone-missing-blob-data-is-bytes",
+      "target": "types/MissingBlobData.json#/fields/1",
+      "pre_patch_node_sha256": "sha256:80c9fb02dc90a77cab40d6bbba59370b4e1bbfccb9c0b9564b53920f16f3ae5d",
+      "pre_patch_context_sha256": "sha256:f74fcb5870af16b400960f3bbc77f028162057a081cf6562064c70ed49581eee",
+      "post_patch_node_sha256": "sha256:195108404a81d1e41fa3a986e40d59af2d5e85dd179a78679c1f50a8b2fdbf74",
+      "evidence": [
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/CloudburstMC/Protocol/blob/fbbeee7d63f1ea3c586a6d5907bd69196679aee6/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v361/serializer/ClientCacheMissResponseSerializer_v361.java",
+          "summary": "The cache-miss serializer delegates blob payloads to the binary codec helper."
+        }
+      ],
+      "reason": "A cache blob is an opaque chunk-data byte buffer, not UTF-8 text."
+    },
+    {
+      "id": "endstone-network-item-instance-user-data-is-bytes",
+      "target": "types/cerealizer_NetworkItemInstanceDescriptor___SerializedData.json#/fields/4",
+      "pre_patch_node_sha256": "sha256:e4bb287a8b7d0cb863c51ebbb8bc9199ca6ba34663bbe5460cb0731a5cb261e6",
+      "pre_patch_context_sha256": "sha256:b247f6b6431dd8c1ada3a591a1e60e4830776fad0258f638f715cbdfce8ac34e",
+      "post_patch_node_sha256": "sha256:8190139401aa6da0f0aae731da1ff0f566524f928437b2f4f379e9d2e45ee9c5",
+      "evidence": [
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/blob/0e00fe80f4f3c71572ff6429de40146d1f4412fc/json/NetworkItemInstanceDescriptorData.json",
+          "summary": "The official description calls the field an item user-data binary blob."
+        }
+      ],
+      "reason": "The pinned official source identifies this as a binary item user-data blob."
+    },
+    {
+      "id": "endstone-network-item-stack-user-data-is-bytes",
+      "target": "types/cerealizer_NetworkItemStackDescriptor___SerializedData.json#/fields/5",
+      "pre_patch_node_sha256": "sha256:e4bb287a8b7d0cb863c51ebbb8bc9199ca6ba34663bbe5460cb0731a5cb261e6",
+      "pre_patch_context_sha256": "sha256:925bfe42ee5cbf35d33f256b7ea415bbb074433554152f24fe0281b9e1d249a7",
+      "post_patch_node_sha256": "sha256:8190139401aa6da0f0aae731da1ff0f566524f928437b2f4f379e9d2e45ee9c5",
+      "evidence": [
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/blob/0e00fe80f4f3c71572ff6429de40146d1f4412fc/json/cerealizer_NetworkItemStackDescriptor___SerializedData.json",
+          "summary": "The official description calls the field a binary NBT and property blob."
+        }
+      ],
+      "reason": "The pinned official source identifies this as a binary item user-data blob."
+    },
+    {
+      "id": "endstone-photo-data-is-bytes",
+      "target": "packets/PhotoTransferPacket.json#/fields/1",
+      "pre_patch_node_sha256": "sha256:ea6b4a2c95a4a11f4d030e3692608a798152be0940e701906c6cc12010938fff",
+      "pre_patch_context_sha256": "sha256:629b2895cdc8a563a94c2b04bb9bfd03651c5472cebc1fd91e01838c98320801",
+      "post_patch_node_sha256": "sha256:3a2a199af1ffe5b4f435125913fc0963dbcb318a4ad0c15a62fd70339e5c393f",
+      "evidence": [
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/CloudburstMC/Protocol/blob/fbbeee7d63f1ea3c586a6d5907bd69196679aee6/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v291/serializer/PhotoTransferSerializer_v291.java",
+          "summary": "The serializer reads and writes Photo Data as byte[]."
+        }
+      ],
+      "reason": "Photo data is an image byte sequence and may not be valid UTF-8."
+    },
+    {
+      "id": "endstone-resource-pack-chunk-data-is-bytes",
+      "target": "packets/ResourcePackChunkDataPacket.json#/fields/3",
+      "pre_patch_node_sha256": "sha256:20e9b6893ae9cdc6233b4294a9b929a78184ce5706d615de769f2341c02248bd",
+      "pre_patch_context_sha256": "sha256:78cf2c3f1c35003f7fd9f44fddc0e662467c77d0817bea01e95f4e19a787e776",
+      "post_patch_node_sha256": "sha256:d471c713d1e5402c495ab8562993a94a79f955325746c63235835daf8fb65505",
+      "evidence": [
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/CloudburstMC/Protocol/blob/fbbeee7d63f1ea3c586a6d5907bd69196679aee6/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v388/serializer/ResourcePackChunkDataSerializer_v388.java",
+          "summary": "The inherited serializer uses the ByteBuf helper."
+        }
+      ],
+      "reason": "A resource-pack chunk contains compressed binary data, not UTF-8 text."
+    },
+    {
+      "id": "endstone-stack-request-item-user-data-is-bytes",
+      "target": "types/ItemStackRequestCereal__NetworkItemInstanceDescriptorData.json#/fields/3",
+      "pre_patch_node_sha256": "sha256:e4bb287a8b7d0cb863c51ebbb8bc9199ca6ba34663bbe5460cb0731a5cb261e6",
+      "pre_patch_context_sha256": "sha256:b4f748d45125e3836d6003ced46841e20f00528af206265ca229d5d0e66cee69",
+      "post_patch_node_sha256": "sha256:8190139401aa6da0f0aae731da1ff0f566524f928437b2f4f379e9d2e45ee9c5",
+      "evidence": [
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/blob/0e00fe80f4f3c71572ff6429de40146d1f4412fc/json/ItemStackRequestNetworkItemInstanceDescriptor.json",
+          "summary": "The official description calls the field a binary NBT and property blob."
+        }
+      ],
+      "reason": "The pinned official source identifies this as a binary item user-data blob."
     },
     {
       "id": "inventory-slot-container-id-is-fixed-u8",
@@ -112102,6 +112165,21 @@
       "reason": "The pinned raw Mojang schema disagrees with the independently extracted Endstone 1.26.40 wire shape; this correction makes that source defect explicit."
     },
     {
+      "id": "mojang-level-chunk-payload-is-bytes",
+      "target": "LevelChunkPacketPayload.json#/properties/Serialized Chunk Data",
+      "pre_patch_node_sha256": "sha256:93c7151f605ac611b7b41d0ca7902b86ea0a0c064b19b1255dfd3e12ed8ec57a",
+      "pre_patch_context_sha256": "sha256:5b4f17c700ae6b28492e8c263def7446a9c3ee832adf5b65925a2c1f091a4a45",
+      "post_patch_node_sha256": "sha256:469f0bad31319d8812b74164ca02052e2b82579aac5eb39254f5971553024b4b",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/CloudburstMC/Protocol/blob/fbbeee7d63f1ea3c586a6d5907bd69196679aee6/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v2168/serializer/LevelChunkSerializer_v2168.java",
+          "summary": "The exact v2168 serializer writes and reads the payload with the ByteBuf helper."
+        }
+      ],
+      "reason": "The field is a length-prefixed arbitrary byte buffer, not UTF-8 text."
+    },
+    {
       "id": "mojang-levelsoundeventpacketpayload-required",
       "target": "LevelSoundEventPacketPayload.json#/required",
       "pre_patch_node_sha256": "sha256:2cacfa055401d042b4f184b402203d12add8c157ed06244ec9c0b3e6e72bb93f",
@@ -112115,6 +112193,21 @@
         }
       ],
       "reason": "The pinned raw Mojang schema disagrees with the independently extracted Endstone 1.26.40 wire shape; this correction makes that source defect explicit."
+    },
+    {
+      "id": "mojang-missing-blob-data-is-bytes",
+      "target": "MissingBlobData.json#/properties/Blob Data",
+      "pre_patch_node_sha256": "sha256:1fbfa1fae875928b41b0d1b2e19103e02f32e3cabab634891c85384922b8b25f",
+      "pre_patch_context_sha256": "sha256:b91942e968075359b0a37338dd1577df327b0db59b70bc13cf7060d1fa10ce15",
+      "post_patch_node_sha256": "sha256:625a97e2048467e18fd966233af340554186961859c4262727cc08751232bfdd",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/CloudburstMC/Protocol/blob/fbbeee7d63f1ea3c586a6d5907bd69196679aee6/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v361/serializer/ClientCacheMissResponseSerializer_v361.java",
+          "summary": "The cache-miss serializer delegates blob payloads to the binary codec helper."
+        }
+      ],
+      "reason": "A cache blob is an opaque chunk-data byte buffer, not UTF-8 text."
     },
     {
       "id": "mojang-modalformresponsepacketpayload-required",
@@ -112132,6 +112225,36 @@
       "reason": "The pinned raw Mojang schema disagrees with the independently extracted Endstone 1.26.40 wire shape; this correction makes that source defect explicit."
     },
     {
+      "id": "mojang-network-item-instance-user-data-is-bytes",
+      "target": "NetworkItemInstanceDescriptorData.json#/properties/User Data Buffer",
+      "pre_patch_node_sha256": "sha256:21564ef4f7249f5098eb75f4e054432e390b000bd487f394132a288c751c9e8e",
+      "pre_patch_context_sha256": "sha256:b7a8b41ea10510dc4971cb697a1fee59bacaae9163984141aae89f78d39284e0",
+      "post_patch_node_sha256": "sha256:becabb04814a51fe944695f6de0eea99585359d43007058903097aa080320906",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/blob/0e00fe80f4f3c71572ff6429de40146d1f4412fc/json/NetworkItemInstanceDescriptorData.json",
+          "summary": "The pinned official description calls the field an item user-data binary blob."
+        }
+      ],
+      "reason": "The source description explicitly identifies this as a binary blob."
+    },
+    {
+      "id": "mojang-network-item-stack-user-data-is-bytes",
+      "target": "cerealizer_NetworkItemStackDescriptor___SerializedData.json#/properties/User Data Buffer",
+      "pre_patch_node_sha256": "sha256:e38d35ebed219463ca18f4d23b5d8f50cb4053283c54969259cb56795a702d2f",
+      "pre_patch_context_sha256": "sha256:bb3595f9f01956bc6dfe0f170c2386afc698066845ba2489e206acb7b7bbc3bb",
+      "post_patch_node_sha256": "sha256:9f7cc47d8cd3674ca392bae0b67f3772b3417c249ae8ac24112d9ec407599706",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/blob/0e00fe80f4f3c71572ff6429de40146d1f4412fc/json/cerealizer_NetworkItemStackDescriptor___SerializedData.json",
+          "summary": "The pinned official description calls the field a binary NBT and property blob."
+        }
+      ],
+      "reason": "The source description explicitly identifies this as a binary blob whose framing happens to match String."
+    },
+    {
       "id": "mojang-partychangedpacketpayload-required",
       "target": "PartyChangedPacketPayload.json#/required",
       "pre_patch_node_sha256": "sha256:5f3b25dc5ae3f9860cfe8d38d0f1430ce01ce586a769185bd898b0f437db3672",
@@ -112145,6 +112268,21 @@
         }
       ],
       "reason": "The pinned raw Mojang schema disagrees with the independently extracted Endstone 1.26.40 wire shape; this correction makes that source defect explicit."
+    },
+    {
+      "id": "mojang-photo-data-is-bytes",
+      "target": "PhotoTransferPacketPayload.json#/properties/Photo Data",
+      "pre_patch_node_sha256": "sha256:3aa8bb29407369367f93ba94813276cc050c81e96679d106d14fac4aef8801d1",
+      "pre_patch_context_sha256": "sha256:fd432cd9c8810f8c8546d7914ef7d6231c0a4c341c5e44ad921da0b09d5dda57",
+      "post_patch_node_sha256": "sha256:e29e6cbbd6bbb7b0a118c7567509c84199222e9def6337630c8e08fc807bce1c",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/CloudburstMC/Protocol/blob/fbbeee7d63f1ea3c586a6d5907bd69196679aee6/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v291/serializer/PhotoTransferSerializer_v291.java",
+          "summary": "The serializer reads and writes Photo Data as byte[]."
+        }
+      ],
+      "reason": "Photo data is an image byte sequence and may not be valid UTF-8."
     },
     {
       "id": "mojang-playerauthinputpacketpayload-properties-client-predicted-vehicle",
@@ -112282,6 +112420,21 @@
       "reason": "The pinned raw Mojang schema disagrees with the independently extracted Endstone 1.26.40 wire shape; this correction makes that source defect explicit."
     },
     {
+      "id": "mojang-resource-pack-chunk-data-is-bytes",
+      "target": "ResourcePackChunkDataPacketPayload.json#/properties/Chunk Data",
+      "pre_patch_node_sha256": "sha256:3c4a03f0f557c9c9b373ee092e9a767ac8c7c05b620a003bdafd690e84761d27",
+      "pre_patch_context_sha256": "sha256:7404c63506f5103d209075ff50bf52d4baccc46f7975d4cbb57a91fedb0a764e",
+      "post_patch_node_sha256": "sha256:71c9b8050fbe2894ad1e3de1af458e83e68c9c55d1d1aea02cd27e993a000289",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/CloudburstMC/Protocol/blob/fbbeee7d63f1ea3c586a6d5907bd69196679aee6/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v388/serializer/ResourcePackChunkDataSerializer_v388.java",
+          "summary": "The inherited serializer uses the ByteBuf helper for the chunk data."
+        }
+      ],
+      "reason": "A resource-pack chunk contains compressed binary data, not UTF-8 text."
+    },
+    {
       "id": "mojang-serverbounddatadrivenscreenclosedpacketpayload-required",
       "target": "ServerboundDataDrivenScreenClosedPacketPayload.json#/required",
       "pre_patch_node_sha256": "sha256:011904b96c7f23ff949e687942116c1f04f79e38d48a6296b2ca35d4b3cbee80",
@@ -112385,6 +112538,21 @@
         }
       ],
       "reason": "The pinned raw Mojang schema disagrees with the independently extracted Endstone 1.26.40 wire shape; this correction makes that source defect explicit."
+    },
+    {
+      "id": "mojang-stack-request-item-user-data-is-bytes",
+      "target": "ItemStackRequestNetworkItemInstanceDescriptor.json#/properties/User Data Buffer",
+      "pre_patch_node_sha256": "sha256:287a95c7e61ea24f3f5f01bc3f175415749c2b0d5ad244b8616bfd637d78a6cf",
+      "pre_patch_context_sha256": "sha256:e95b363a1f80d65f73bc5bf15b93a4db856451d570ddc06dd7ada9e2c30b7f50",
+      "post_patch_node_sha256": "sha256:3d26f68168eee620252512cb873e9bff5f0fd562bb3e980b30f756c4dfb09ea4",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/blob/0e00fe80f4f3c71572ff6429de40146d1f4412fc/json/ItemStackRequestNetworkItemInstanceDescriptor.json",
+          "summary": "The pinned official description calls the field a binary NBT and property blob."
+        }
+      ],
+      "reason": "The source description explicitly identifies this as a binary blob whose framing happens to match String."
     },
     {
       "id": "mojang-textpacketpayload-required",

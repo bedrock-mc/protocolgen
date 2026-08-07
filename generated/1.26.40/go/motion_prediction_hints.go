@@ -9,3 +9,10 @@ type MotionPredictionHints struct {
 	MMotion    mgl32.Vec3
 	MOnGround  bool
 }
+
+// Marshal reads or writes MotionPredictionHints using its canonical wire layout.
+func (x *MotionPredictionHints) Marshal(io IO) {
+	x.MRuntimeId.Marshal(io)
+	io.Vec3(&x.MMotion)
+	io.Bool(&x.MOnGround)
+}

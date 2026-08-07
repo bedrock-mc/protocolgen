@@ -7,3 +7,10 @@ type PlayerUpdateEntityOverrides struct {
 	PropertyIndex uint32
 	Update        PlayerUpdateEntityOverridesUpdate
 }
+
+// Marshal reads or writes PlayerUpdateEntityOverrides using its canonical wire layout.
+func (x *PlayerUpdateEntityOverrides) Marshal(io IO) {
+	x.TargetID.Marshal(io)
+	io.Varuint32(&x.PropertyIndex)
+	marshalPlayerUpdateEntityOverridesUpdate(io, &x.Update)
+}

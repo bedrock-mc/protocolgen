@@ -71,7 +71,8 @@ This produces:
 
 - a deterministic JSON manifest containing the canonical wire protocol;
 - typed Go packet structures, one packet per file, with shared semantic types,
-  enums, closed union interfaces, and ordered map entries;
+  enums, closed union interfaces, ordered map entries, and real symmetric
+  `Marshal(IO)` methods that operate on the packet values;
 - typed Rust packet structures, one packet module per file, with shared types,
   native enums, checked `TryFrom<integer>` decoding, ordered map tuples, and
   payload-bearing enums for Cereal unions; and
@@ -86,8 +87,12 @@ generated language.
 
 Like sqlc's type overrides, each backend maps well-known wire semantics onto
 types native to its ecosystem without changing the manifest. Go uses
-`uuid.UUID`, `mgl32.Vec2`/`Vec3`, and `color.RGBA`. Rust uses
-`uuid::Uuid`, `glam::Vec2`/`Vec3`, and an explicit `Nbt` byte wrapper. Unknown
+`uuid.UUID`, `mgl32.Vec2`/`Vec3`, `color.RGBA`, and a value-based
+`Optional[T]` that preserves absent versus present-zero state without pointer
+nesting. Cereal double optionals retain both markers in the manifest but use
+the same single public `Optional[T]` state as gophertunnel. Rust uses
+`uuid::Uuid`, `glam::Vec2`/`Vec3`, zero-copy-ready `bytes::Bytes` buffers, and
+an explicit `Nbt` byte wrapper. Unknown
 or protocol-specific structures remain generated named types rather than being
 guessed into an unrelated library type. Go likewise leaves undifferentiated
 NBT as `[]byte`, because the manifest's `nbt_le` primitive may be a compound or
@@ -211,15 +216,21 @@ reason, evidence locator, and a concrete `what_would_settle_it` statement.
 The full pipeline—ingestion, reconciliation, validation, and Go/Rust
 emission—is implemented.
 
-The current emitters generate packet definitions, semantic types, enums,
-unions, and packet IDs. They deliberately do **not** expose placeholder codec
-methods. Complete, drop-in
-[gophertunnel](https://github.com/Sandertv/gophertunnel)
-`Marshal(protocol.IO)` implementations and the full borrowed
-[Axolotl](https://github.com/axolotl-stack/axolotl-stack) codec API remain
-future backend work, along with NBT and
-recursive target-specific codecs, conditional decode context, packet
-registration, and codebase-specific merge rules.
+Both emitters generate packet definitions, semantic types, enums, unions, and
+packet IDs. The Go backend also generates a real symmetric `Marshal(IO)` method
+for every packet and reachable shared type. Its small `IO` contract names exact
+wire operations—including UUID half-endianness, NBT, bounded bitsets, strings,
+bytes, collections, and invalid-value handling—so a gophertunnel adapter or a
+standalone reader/writer can supply byte transport without shipping a JSON
+schema interpreter. Union decoding constructs the selected concrete variant;
+repeated payload shapes receive distinct wrappers so their wire tags remain
+representable.
+
+The Rust backend currently generates definitions only. Separate value-aware
+`Encode` and fallible `Decode` traits, a concrete zero-copy runtime, an NBT
+scanner, direction-aware packet registration, and codebase-specific merge rules
+remain future backend work. The generator fails instead of emitting generic
+fallback types for unsupported sequence or unresolved nodes.
 
 The older `cmd/gophertunnel` and `cmd/raw` experiments remain available, but
 they are not inputs to the canonical pipeline and cannot weaken its validation.

@@ -12,7 +12,7 @@ pub struct ActorDataBoundingBoxComponent {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct ActorDataFlagComponent {
-    pub actor_flag_bitset_data: Vec<u8>,
+    pub actor_flag_bitset_data: Bitset131,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -64,14 +64,6 @@ pub struct ArmorSlotAndDamagePair {
 }
 
 #[derive(Clone, Debug, PartialEq)]
-pub struct ArrowData {
-    pub arrow_end_location: Option<glam::Vec3>,
-    pub arrow_head_length: Option<f32>,
-    pub arrow_head_radius: Option<f32>,
-    pub num_segments: Option<u8>,
-}
-
-#[derive(Clone, Debug, PartialEq)]
 pub struct AttributeData {
     pub min_value: f32,
     pub max_value: f32,
@@ -85,36 +77,24 @@ pub struct AttributeData {
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum AttributeLayerSyncPacketData {
-    UpdateAttributeLayersData(AttributeLayerSyncPacketDataUpdateAttributeLayersData),
-    UpdateAttributeLayerSettingsData(AttributeLayerSyncPacketDataUpdateAttributeLayerSettingsData),
-    UpdateEnvironmentAttributesData(AttributeLayerSyncPacketDataUpdateEnvironmentAttributesData),
-    RemoveEnvironmentAttributesData(AttributeLayerSyncPacketDataRemoveEnvironmentAttributesData),
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct AttributeLayerSyncPacketDataRemoveEnvironmentAttributesData {
-    pub attribute_layer_name: String,
-    pub attribute_layer_dimension: DimensionType,
-    pub attributes: Vec<String>,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct AttributeLayerSyncPacketDataUpdateAttributeLayerSettingsData {
-    pub attribute_layer_name: String,
-    pub attribute_layer_dimension: DimensionType,
-    pub attributes_layer_settings: EASAttributeLayerSettings,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct AttributeLayerSyncPacketDataUpdateAttributeLayersData {
-    pub attribute_layers: Vec<EASAttributeLayerData>,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct AttributeLayerSyncPacketDataUpdateEnvironmentAttributesData {
-    pub attribute_layer_name: String,
-    pub attribute_layer_dimension: DimensionType,
-    pub attributes: Vec<EASEnvironmentAttributeData>,
+    UpdateAttributeLayersData {
+        attribute_layers: Vec<EASAttributeLayerData>,
+    },
+    UpdateAttributeLayerSettingsData {
+        attribute_layer_name: String,
+        attribute_layer_dimension: DimensionType,
+        attributes_layer_settings: EASAttributeLayerSettings,
+    },
+    UpdateEnvironmentAttributesData {
+        attribute_layer_name: String,
+        attribute_layer_dimension: DimensionType,
+        attributes: Vec<EASEnvironmentAttributeData>,
+    },
+    RemoveEnvironmentAttributesData {
+        attribute_layer_name: String,
+        attribute_layer_dimension: DimensionType,
+        attributes: Vec<String>,
+    },
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -186,21 +166,15 @@ pub struct AvailableCommandsSoftEnumData {
 #[derive(Clone, Debug, PartialEq)]
 pub enum BedrockDDUI {
     DataStoreUpdate(BedrockDDUIDataStoreUpdate),
-    DataStoreChange(BedrockDDUIDataStoreChange),
-    DataStoreRemoval(BedrockDDUIDataStoreRemoval),
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct BedrockDDUIDataStoreChange {
-    pub data_store_name: String,
-    pub property: String,
-    pub update_count: u32,
-    pub the_new_property_value: CerealDynamicValue,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct BedrockDDUIDataStoreRemoval {
-    pub data_store_name: String,
+    DataStoreChange {
+        data_store_name: String,
+        property: String,
+        update_count: u32,
+        the_new_property_value: CerealDynamicValue,
+    },
+    DataStoreRemoval {
+        data_store_name: String,
+    },
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -451,6 +425,10 @@ pub struct BiomeWeightedTemperatureData {
     pub weight: u32,
 }
 
+/// Stores the 131-bit value used by the wire bitset encoding.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct Bitset131(pub [u64; 3]);
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct BlockPos {
     pub x: i32,
@@ -460,48 +438,28 @@ pub struct BlockPos {
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum BookEditAction {
-    ReplacePage(BookEditActionReplacePage),
-    AddPage(BookEditActionAddPage),
-    DeletePage(BookEditActionDeletePage),
-    SwapPages(BookEditActionSwapPages),
-    Finalize(BookEditActionFinalize),
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct BookEditActionAddPage {
-    pub page_index: i32,
-    pub page_text: String,
-    pub photo_name: String,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct BookEditActionDeletePage {
-    pub page_index: i32,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct BookEditActionFinalize {
-    pub title: String,
-    pub author: String,
-    pub xuid: String,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct BookEditActionReplacePage {
-    pub page_index: i32,
-    pub page_text: String,
-    pub photo_name: String,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct BookEditActionSwapPages {
-    pub page_index: i32,
-    pub swap_with_index: i32,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct BoxData {
-    pub box_bound: glam::Vec3,
+    ReplacePage {
+        page_index: i32,
+        page_text: String,
+        photo_name: String,
+    },
+    AddPage {
+        page_index: i32,
+        page_text: String,
+        photo_name: String,
+    },
+    DeletePage {
+        page_index: i32,
+    },
+    SwapPages {
+        page_index: i32,
+        swap_with_index: i32,
+    },
+    Finalize {
+        title: String,
+        author: String,
+        xuid: String,
+    },
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -746,8 +704,8 @@ pub enum CerealDynamicValue {
     Int64(i64),
     Double(f64),
     String(String),
-    List(Vec<Vec<u8>>),
-    Map(Vec<(String, Vec<u8>)>),
+    List(Vec<CerealDynamicValue>),
+    Map(Vec<(String, CerealDynamicValue)>),
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -762,7 +720,7 @@ pub struct CerealizerNetworkItemInstanceDescriptorSerializedData {
     pub stack_size: u16,
     pub aux_value: u32,
     pub block_runtime_id: i32,
-    pub user_data_buffer: String,
+    pub user_data_buffer: bytes::Bytes,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -772,7 +730,7 @@ pub struct CerealizerNetworkItemStackDescriptorSerializedData {
     pub aux_value: u32,
     pub net_id_variant: Option<i32>,
     pub block_runtime_id: u32,
-    pub user_data_buffer: String,
+    pub user_data_buffer: bytes::Bytes,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -786,33 +744,6 @@ pub struct CerealizerRecipeIngredientSerializedData {
 pub struct CerealizerRecipeUnlockingRequirementSerializedData {
     pub unlocking_context: RecipeUnlockingRequirementUnlockingContext,
     pub unlocking_ingredients: Option<Vec<CerealizerRecipeIngredientSerializedData>>,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct ChangeEntityScore {
-    pub action: String,
-    pub scoreboard_id: ScoreboardId,
-    pub objective_name: String,
-    pub score_value: i32,
-    pub actor_id: ActorUniqueID,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct ChangeFakePlayerScore {
-    pub action: String,
-    pub scoreboard_id: ScoreboardId,
-    pub objective_name: String,
-    pub score_value: i32,
-    pub fake_player_name: String,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct ChangePlayerScore {
-    pub action: String,
-    pub scoreboard_id: ScoreboardId,
-    pub objective_name: String,
-    pub score_value: i32,
-    pub player_unique_id: PlayerScoreboardId,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -830,22 +761,16 @@ pub struct ClientboundDebugRendererDebugMarkerData {
 }
 
 #[derive(Clone, Debug, PartialEq)]
-pub struct CommandBlockUpdateBlockCommandData {
-    pub block_position: BlockPos,
-    pub command_block_mode: u32,
-    pub redstone_mode: bool,
-    pub is_conditional: bool,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct CommandBlockUpdateEntityCommandTarget {
-    pub target_runtime_id: ActorRuntimeID,
-}
-
-#[derive(Clone, Debug, PartialEq)]
 pub enum CommandBlockUpdateTarget {
-    EntityCommandTarget(CommandBlockUpdateEntityCommandTarget),
-    BlockCommandData(CommandBlockUpdateBlockCommandData),
+    EntityCommandTarget {
+        target_runtime_id: ActorRuntimeID,
+    },
+    BlockCommandData {
+        block_position: BlockPos,
+        command_block_mode: u32,
+        redstone_mode: bool,
+        is_conditional: bool,
+    },
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -869,13 +794,6 @@ pub struct CommandOutputMessage {
     pub message_id: String,
     pub successful: bool,
     pub parameters: Vec<String>,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct ConeData {
-    pub radii: glam::Vec2,
-    pub height: f32,
-    pub num_segments: u8,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -905,26 +823,6 @@ pub struct CreativeItemEntry {
 }
 
 #[derive(Clone, Debug, PartialEq)]
-pub struct CylinderData {
-    pub radius_x: glam::Vec2,
-    pub radius_z: glam::Vec2,
-    pub height: f32,
-    pub num_segments: u8,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct DataItemByte {
-    pub r#type: DataItemType,
-    pub value: i8,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct DataItemCompoundTag {
-    pub r#type: DataItemType,
-    pub value: Nbt,
-}
-
-#[derive(Clone, Debug, PartialEq)]
 pub struct DataItemEntry {
     pub id: u32,
     pub payload: DataItemEntryValue,
@@ -932,57 +830,42 @@ pub struct DataItemEntry {
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum DataItemEntryValue {
-    DataItemByte(DataItemByte),
-    DataItemShort(DataItemShort),
-    DataItemInt(DataItemInt),
-    DataItemFloat(DataItemFloat),
-    DataItemString(DataItemString),
-    DataItemCompoundTag(DataItemCompoundTag),
-    DataItemPos(DataItemPos),
-    DataItemInt64(DataItemInt64),
-    DataItemVec3(DataItemVec3),
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct DataItemFloat {
-    pub r#type: DataItemType,
-    pub value: f32,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct DataItemInt {
-    pub r#type: DataItemType,
-    pub value: i32,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct DataItemInt64 {
-    pub r#type: DataItemType,
-    pub value: i64,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct DataItemPos {
-    pub r#type: DataItemType,
-    pub value: BlockPos,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct DataItemShort {
-    pub r#type: DataItemType,
-    pub value: i16,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct DataItemString {
-    pub r#type: DataItemType,
-    pub value: String,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct DataItemVec3 {
-    pub r#type: DataItemType,
-    pub value: glam::Vec3,
+    DataItemByte {
+        r#type: DataItemType,
+        value: i8,
+    },
+    DataItemShort {
+        r#type: DataItemType,
+        value: i16,
+    },
+    DataItemInt {
+        r#type: DataItemType,
+        value: i32,
+    },
+    DataItemFloat {
+        r#type: DataItemType,
+        value: f32,
+    },
+    DataItemString {
+        r#type: DataItemType,
+        value: String,
+    },
+    DataItemCompoundTag {
+        r#type: DataItemType,
+        value: Nbt,
+    },
+    DataItemPos {
+        r#type: DataItemType,
+        value: BlockPos,
+    },
+    DataItemInt64 {
+        r#type: DataItemType,
+        value: i64,
+    },
+    DataItemVec3 {
+        r#type: DataItemType,
+        value: glam::Vec3,
+    },
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -1001,21 +884,29 @@ pub struct DimensionType {
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum DisconnectMessages {
-    DisconnectPacketMessages(DisconnectPacketMessages),
+    DisconnectPacketMessages {
+        message: String,
+        filtered_message: String,
+    },
     Empty1,
 }
 
 #[derive(Clone, Debug, PartialEq)]
-pub struct DisconnectPacketMessages {
-    pub message: String,
-    pub filtered_message: String,
-}
-
-#[derive(Clone, Debug, PartialEq)]
 pub enum EAS {
-    BoolAttributeData(EASBoolAttributeData),
-    FloatAttributeData(EASFloatAttributeData),
-    ColorAttributeData(EASColorAttributeData),
+    BoolAttributeData {
+        value: bool,
+        operation: String,
+    },
+    FloatAttributeData {
+        value: f32,
+        operation: String,
+        constraint_min: Option<f32>,
+        constraint_max: Option<f32>,
+    },
+    ColorAttributeData {
+        value: [i32; 4],
+        operation: String,
+    },
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -1036,18 +927,6 @@ pub struct EASAttributeLayerSettings {
 }
 
 #[derive(Clone, Debug, PartialEq)]
-pub struct EASBoolAttributeData {
-    pub value: bool,
-    pub operation: String,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct EASColorAttributeData {
-    pub value: [i32; 4],
-    pub operation: String,
-}
-
-#[derive(Clone, Debug, PartialEq)]
 pub struct EASEnvironmentAttributeData {
     pub attribute_name: String,
     pub from_attribute: Option<EAS>,
@@ -1058,14 +937,6 @@ pub struct EASEnvironmentAttributeData {
     pub easing: String,
     pub local_transition_ticks: u32,
     pub noise_transition: bool,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct EASFloatAttributeData {
-    pub value: f32,
-    pub operation: String,
-    pub constraint_min: Option<f32>,
-    pub constraint_max: Option<f32>,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -1113,12 +984,6 @@ pub struct EducationLevelSettings {
 #[derive(Clone, Debug, PartialEq)]
 pub struct EducationLocalLevelSettings {
     pub code_builder_override_uri: Option<String>,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct EllipsoidData {
-    pub radii: glam::Vec3,
-    pub segments_per_axis: u8,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -1191,11 +1056,6 @@ pub struct InventoryAction {
 }
 
 #[derive(Clone, Debug, PartialEq)]
-pub struct InventoryMismatchData {
-    pub actions: InventoryTransactionData,
-}
-
-#[derive(Clone, Debug, PartialEq)]
 pub struct InventoryOptions {
     pub left_inventory_tab: InventoryLeftTabIndex,
     pub right_inventory_tab: InventoryRightTabIndex,
@@ -1207,8 +1067,8 @@ pub struct InventoryOptions {
 #[derive(Clone, Debug, PartialEq)]
 pub struct InventorySource {
     pub source_type: InventorySourceType,
-    pub container_id: Option<Option<i8>>,
-    pub bit_flags: Option<Option<InventorySourceInventorySourceFlags>>,
+    pub container_id: Option<i8>,
+    pub bit_flags: Option<InventorySourceInventorySourceFlags>,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -1218,11 +1078,29 @@ pub struct InventoryTransactionData {
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum InventoryTransactionTransactionValue {
-    NormalTransactionData(NormalTransactionData),
-    InventoryMismatchData(InventoryMismatchData),
+    NormalTransactionData {
+        actions: InventoryTransactionData,
+    },
+    InventoryMismatchData {
+        actions: InventoryTransactionData,
+    },
     ItemUseInventoryTransaction(ItemUseInventoryTransaction),
-    ItemUseOnActorInventoryTransaction(ItemUseOnActorInventoryTransaction),
-    ItemReleaseInventoryTransaction(ItemReleaseInventoryTransaction),
+    ItemUseOnActorInventoryTransaction {
+        actions: InventoryTransactionData,
+        runtime_id: ActorRuntimeID,
+        action_type: ItemUseOnActorInventoryTransactionActionType,
+        slot: i32,
+        item: CerealizerNetworkItemStackDescriptorSerializedData,
+        from_position: glam::Vec3,
+        hit_position: glam::Vec3,
+    },
+    ItemReleaseInventoryTransaction {
+        actions: InventoryTransactionData,
+        action_type: ItemReleaseInventoryTransactionActionType,
+        slot: i32,
+        item: CerealizerNetworkItemStackDescriptorSerializedData,
+        from_position: glam::Vec3,
+    },
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -1249,163 +1127,98 @@ pub struct ItemEnchants {
 }
 
 #[derive(Clone, Debug, PartialEq)]
-pub struct ItemReleaseInventoryTransaction {
-    pub actions: InventoryTransactionData,
-    pub action_type: ItemReleaseInventoryTransactionActionType,
-    pub slot: i32,
-    pub item: CerealizerNetworkItemStackDescriptorSerializedData,
-    pub from_position: glam::Vec3,
-}
-
-#[derive(Clone, Debug, PartialEq)]
 pub enum ItemStackRequestCereal {
-    TakeActionData(ItemStackRequestCerealTakeActionData),
-    PlaceActionData(ItemStackRequestCerealPlaceActionData),
-    SwapActionData(ItemStackRequestCerealSwapActionData),
-    DropActionData(ItemStackRequestCerealDropActionData),
-    DestroyActionData(ItemStackRequestCerealDestroyActionData),
-    ConsumeActionData(ItemStackRequestCerealConsumeActionData),
-    CreateActionData(ItemStackRequestCerealCreateActionData),
-    LabTableCombineActionData(ItemStackRequestCerealLabTableCombineActionData),
-    BeaconPaymentActionData(ItemStackRequestCerealBeaconPaymentActionData),
-    MineBlockActionData(ItemStackRequestCerealMineBlockActionData),
-    CraftRecipeActionData(ItemStackRequestCerealCraftRecipeActionData),
-    CraftRecipeAutoActionData(ItemStackRequestCerealCraftRecipeAutoActionData),
-    CraftCreativeActionData(ItemStackRequestCerealCraftCreativeActionData),
-    CraftRecipeOptionalActionData(ItemStackRequestCerealCraftRecipeOptionalActionData),
-    CraftRepairAndDisenchantActionData(ItemStackRequestCerealCraftRepairAndDisenchantActionData),
-    CraftLoomActionData(ItemStackRequestCerealCraftLoomActionData),
-    CraftNonImplementedActionData(ItemStackRequestCerealCraftNonImplementedActionData),
-    CraftResultsActionData(ItemStackRequestCerealCraftResultsActionData),
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct ItemStackRequestCerealBeaconPaymentActionData {
-    pub action_type: ItemStackRequestActionType,
-    pub primary_effect_id: i32,
-    pub secondary_effect_id: i32,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct ItemStackRequestCerealConsumeActionData {
-    pub action_type: ItemStackRequestActionType,
-    pub amount: u8,
-    pub source: ItemStackRequestCerealSlotInfoData,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct ItemStackRequestCerealCraftCreativeActionData {
-    pub action_type: ItemStackRequestActionType,
-    pub creative_item_net_id: u32,
-    pub number_of_requested_crafts: u8,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct ItemStackRequestCerealCraftLoomActionData {
-    pub action_type: ItemStackRequestActionType,
-    pub pattern_name_id: String,
-    pub num_crafts: u8,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct ItemStackRequestCerealCraftNonImplementedActionData {
-    pub action_type: ItemStackRequestActionType,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct ItemStackRequestCerealCraftRecipeActionData {
-    pub action_type: ItemStackRequestActionType,
-    pub recipe_net_id: TypedServerNetIdStructRecipeNetIdTag,
-    pub number_of_requested_crafts: u8,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct ItemStackRequestCerealCraftRecipeAutoActionData {
-    pub action_type: ItemStackRequestActionType,
-    pub recipe_net_id: TypedServerNetIdStructRecipeNetIdTag,
-    pub number_of_requested_crafts: u8,
-    pub ingredients: Vec<ItemStackRequestCerealRecipeIngredientData>,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct ItemStackRequestCerealCraftRecipeOptionalActionData {
-    pub action_type: ItemStackRequestActionType,
-    pub recipe_net_id: TypedServerNetIdStructRecipeNetIdTag,
-    pub filtered_string_index: i32,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct ItemStackRequestCerealCraftRepairAndDisenchantActionData {
-    pub action_type: ItemStackRequestActionType,
-    pub recipe_net_id: i32,
-    pub number_of_requested_crafts: u8,
-    pub repair_cost: i32,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct ItemStackRequestCerealCraftResultsActionData {
-    pub action_type: ItemStackRequestActionType,
-    pub craft_results: Vec<ItemStackRequestCerealNetworkItemInstanceDescriptorData>,
-    pub num_crafts: u8,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct ItemStackRequestCerealCreateActionData {
-    pub action_type: ItemStackRequestActionType,
-    pub results_index: u8,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct ItemStackRequestCerealDestroyActionData {
-    pub action_type: ItemStackRequestActionType,
-    pub amount: u8,
-    pub source: ItemStackRequestCerealSlotInfoData,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct ItemStackRequestCerealDropActionData {
-    pub action_type: ItemStackRequestActionType,
-    pub amount: u8,
-    pub source: ItemStackRequestCerealSlotInfoData,
-    pub randomly: bool,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct ItemStackRequestCerealEmptyItemDescriptorData {
-    pub descriptor_type: ItemStackRequestCerealItemDescriptorType,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct ItemStackRequestCerealItemNameDescriptorData {
-    pub descriptor_type: ItemStackRequestCerealItemDescriptorType,
-    pub full_name: String,
-    pub aux_value: i32,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct ItemStackRequestCerealItemTagDescriptorData {
-    pub descriptor_type: ItemStackRequestCerealItemDescriptorType,
-    pub item_tag: String,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct ItemStackRequestCerealLabTableCombineActionData {
-    pub action_type: ItemStackRequestActionType,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct ItemStackRequestCerealMineBlockActionData {
-    pub action_type: ItemStackRequestActionType,
-    pub slot: i32,
-    pub predicted_durability: i32,
-    pub net_id_variant: i32,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct ItemStackRequestCerealMoLangItemDescriptorData {
-    pub descriptor_type: ItemStackRequestCerealItemDescriptorType,
-    pub tag_expression: String,
-    pub molang_version: MoLangVersion,
+    TakeActionData {
+        action_type: ItemStackRequestActionType,
+        amount: u8,
+        source: ItemStackRequestCerealSlotInfoData,
+        destination: ItemStackRequestCerealSlotInfoData,
+    },
+    PlaceActionData {
+        action_type: ItemStackRequestActionType,
+        amount: u8,
+        source: ItemStackRequestCerealSlotInfoData,
+        destination: ItemStackRequestCerealSlotInfoData,
+    },
+    SwapActionData {
+        action_type: ItemStackRequestActionType,
+        source: ItemStackRequestCerealSlotInfoData,
+        destination: ItemStackRequestCerealSlotInfoData,
+    },
+    DropActionData {
+        action_type: ItemStackRequestActionType,
+        amount: u8,
+        source: ItemStackRequestCerealSlotInfoData,
+        randomly: bool,
+    },
+    DestroyActionData {
+        action_type: ItemStackRequestActionType,
+        amount: u8,
+        source: ItemStackRequestCerealSlotInfoData,
+    },
+    ConsumeActionData {
+        action_type: ItemStackRequestActionType,
+        amount: u8,
+        source: ItemStackRequestCerealSlotInfoData,
+    },
+    CreateActionData {
+        action_type: ItemStackRequestActionType,
+        results_index: u8,
+    },
+    LabTableCombineActionData {
+        action_type: ItemStackRequestActionType,
+    },
+    BeaconPaymentActionData {
+        action_type: ItemStackRequestActionType,
+        primary_effect_id: i32,
+        secondary_effect_id: i32,
+    },
+    MineBlockActionData {
+        action_type: ItemStackRequestActionType,
+        slot: i32,
+        predicted_durability: i32,
+        net_id_variant: i32,
+    },
+    CraftRecipeActionData {
+        action_type: ItemStackRequestActionType,
+        recipe_net_id: TypedServerNetIdStructRecipeNetIdTag,
+        number_of_requested_crafts: u8,
+    },
+    CraftRecipeAutoActionData {
+        action_type: ItemStackRequestActionType,
+        recipe_net_id: TypedServerNetIdStructRecipeNetIdTag,
+        number_of_requested_crafts: u8,
+        ingredients: Vec<ItemStackRequestCerealRecipeIngredientData>,
+    },
+    CraftCreativeActionData {
+        action_type: ItemStackRequestActionType,
+        creative_item_net_id: u32,
+        number_of_requested_crafts: u8,
+    },
+    CraftRecipeOptionalActionData {
+        action_type: ItemStackRequestActionType,
+        recipe_net_id: TypedServerNetIdStructRecipeNetIdTag,
+        filtered_string_index: i32,
+    },
+    CraftRepairAndDisenchantActionData {
+        action_type: ItemStackRequestActionType,
+        recipe_net_id: i32,
+        number_of_requested_crafts: u8,
+        repair_cost: i32,
+    },
+    CraftLoomActionData {
+        action_type: ItemStackRequestActionType,
+        pattern_name_id: String,
+        num_crafts: u8,
+    },
+    CraftNonImplementedActionData {
+        action_type: ItemStackRequestActionType,
+    },
+    CraftResultsActionData {
+        action_type: ItemStackRequestActionType,
+        craft_results: Vec<ItemStackRequestCerealNetworkItemInstanceDescriptorData>,
+        num_crafts: u8,
+    },
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -1413,15 +1226,7 @@ pub struct ItemStackRequestCerealNetworkItemInstanceDescriptorData {
     pub item_descriptor: ItemStackRequestCerealRecipeIngredientDataItemDescriptor,
     pub stack_size: u16,
     pub block_runtime_id: u32,
-    pub user_data_buffer: String,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct ItemStackRequestCerealPlaceActionData {
-    pub action_type: ItemStackRequestActionType,
-    pub amount: u8,
-    pub source: ItemStackRequestCerealSlotInfoData,
-    pub destination: ItemStackRequestCerealSlotInfoData,
+    pub user_data_buffer: bytes::Bytes,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -1432,10 +1237,23 @@ pub struct ItemStackRequestCerealRecipeIngredientData {
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum ItemStackRequestCerealRecipeIngredientDataItemDescriptor {
-    EmptyItemDescriptorData(ItemStackRequestCerealEmptyItemDescriptorData),
-    ItemNameDescriptorData(ItemStackRequestCerealItemNameDescriptorData),
-    MolangItemDescriptorData(ItemStackRequestCerealMoLangItemDescriptorData),
-    ItemTagDescriptorData(ItemStackRequestCerealItemTagDescriptorData),
+    EmptyItemDescriptorData {
+        descriptor_type: ItemStackRequestCerealItemDescriptorType,
+    },
+    ItemNameDescriptorData {
+        descriptor_type: ItemStackRequestCerealItemDescriptorType,
+        full_name: String,
+        aux_value: i32,
+    },
+    MolangItemDescriptorData {
+        descriptor_type: ItemStackRequestCerealItemDescriptorType,
+        tag_expression: String,
+        molang_version: MoLangVersion,
+    },
+    ItemTagDescriptorData {
+        descriptor_type: ItemStackRequestCerealItemDescriptorType,
+        item_tag: String,
+    },
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -1451,21 +1269,6 @@ pub struct ItemStackRequestCerealSlotInfoData {
     pub full_container_name: FullContainerName,
     pub slot: u8,
     pub net_id_variant: i32,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct ItemStackRequestCerealSwapActionData {
-    pub action_type: ItemStackRequestActionType,
-    pub source: ItemStackRequestCerealSlotInfoData,
-    pub destination: ItemStackRequestCerealSlotInfoData,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct ItemStackRequestCerealTakeActionData {
-    pub action_type: ItemStackRequestActionType,
-    pub amount: u8,
-    pub source: ItemStackRequestCerealSlotInfoData,
-    pub destination: ItemStackRequestCerealSlotInfoData,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -1486,7 +1289,7 @@ pub struct ItemStackResponseContainerInfo {
 pub struct ItemStackResponseInfo {
     pub result: ItemStackNetResult,
     pub client_request_id: TypedClientNetIdStructItemStackRequestIdTagInt32T0,
-    pub containers: Option<Option<Vec<ItemStackResponseContainerInfo>>>,
+    pub containers: Option<Vec<ItemStackResponseContainerInfo>>,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -1494,7 +1297,7 @@ pub struct ItemStackResponseSlotInfo {
     pub requested_slot: u8,
     pub slot: u8,
     pub amount: u8,
-    pub item_stack_net_id: Option<Option<TypedServerNetIdStructItemStackNetIdTagInt32T0>>,
+    pub item_stack_net_id: Option<TypedServerNetIdStructItemStackNetIdTagInt32T0>,
     pub custom_name: BedrockSafetyRedactableString,
     pub durability_correction: i32,
 }
@@ -1516,182 +1319,108 @@ pub struct ItemUseInventoryTransaction {
 }
 
 #[derive(Clone, Debug, PartialEq)]
-pub struct ItemUseOnActorInventoryTransaction {
-    pub actions: InventoryTransactionData,
-    pub runtime_id: ActorRuntimeID,
-    pub action_type: ItemUseOnActorInventoryTransactionActionType,
-    pub slot: i32,
-    pub item: CerealizerNetworkItemStackDescriptorSerializedData,
-    pub from_position: glam::Vec3,
-    pub hit_position: glam::Vec3,
-}
-
-#[derive(Clone, Debug, PartialEq)]
 pub struct LegacySetSlot {
     pub container_enum: ContainerEnumName,
     pub slots: Vec<u8>,
 }
 
 #[derive(Clone, Debug, PartialEq)]
-pub struct LegacyTelemetryEventAchievement {
-    pub achievement_id: MinecraftEventingAchievementIds,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct LegacyTelemetryEventActorDefinition {
-    pub event_name: String,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct LegacyTelemetryEventBellUsed {
-    pub item_id: i32,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct LegacyTelemetryEventBossKilled {
-    pub boss_actor_id: i64,
-    pub party_size: i32,
-    pub boss_type: i32,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct LegacyTelemetryEventCauldronUsed {
-    pub contents_color: u32,
-    pub contents_type: i32,
-    pub fill_level: i32,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct LegacyTelemetryEventCodeBuilderRuntimeAction {
-    pub code_builder_runtime_action: String,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct LegacyTelemetryEventCodeBuilderScoreboard {
-    pub objective_name: String,
-    pub score: i32,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct LegacyTelemetryEventComposterUsed {
-    pub block_interaction_type: MinecraftEventingPOIBlockInteractionType,
-    pub item_id: i32,
-}
-
-#[derive(Clone, Debug, PartialEq)]
 pub enum LegacyTelemetryEventEventData {
-    Achievement(LegacyTelemetryEventAchievement),
-    Interaction(LegacyTelemetryEventInteraction),
-    PortalCreated(LegacyTelemetryEventPortalCreated),
-    PortalUsed(LegacyTelemetryEventPortalUsed),
-    MobKilled(LegacyTelemetryEventMobKilled),
-    CauldronUsed(LegacyTelemetryEventCauldronUsed),
-    PlayerDied(LegacyTelemetryEventPlayerDied),
-    BossKilled(LegacyTelemetryEventBossKilled),
-    SlashCommand(LegacyTelemetryEventSlashCommand),
-    MobBorn(LegacyTelemetryEventMobBorn),
-    PoiCauldronUsed(LegacyTelemetryEventPOICauldronUsed),
-    ComposterUsed(LegacyTelemetryEventComposterUsed),
-    BellUsed(LegacyTelemetryEventBellUsed),
-    ActorDefinition(LegacyTelemetryEventActorDefinition),
-    RaidUpdate(LegacyTelemetryEventRaidUpdate),
-    TargetBlockHit(LegacyTelemetryEventTargetBlockHit),
-    PiglinBarter(LegacyTelemetryEventPiglinBarter),
-    PlayerWaxedOrUnwaxedCopper(LegacyTelemetryEventPlayerWaxedOrUnwaxedCopper),
-    CodeBuilderRuntimeAction(LegacyTelemetryEventCodeBuilderRuntimeAction),
-    CodeBuilderScoreboard(LegacyTelemetryEventCodeBuilderScoreboard),
-    ItemUsed(LegacyTelemetryEventItemUsed),
+    Achievement {
+        achievement_id: MinecraftEventingAchievementIds,
+    },
+    Interaction {
+        interacted_entity_id: i64,
+        interaction_type: MinecraftEventingInteractionType,
+        interaction_actor_type: i32,
+        interaction_actor_variant: i32,
+        interaction_actor_color: u8,
+    },
+    PortalCreated {
+        dimension_id: i32,
+    },
+    PortalUsed {
+        source_dimension_id: i32,
+        target_dimension_id: i32,
+    },
+    MobKilled {
+        instigator_actor_id: i64,
+        target_actor_id: i64,
+        instigator_s_child_actor_type: ActorType,
+        damage_source: i32,
+        trade_tier: i32,
+        trader_name: String,
+    },
+    CauldronUsed {
+        contents_color: u32,
+        contents_type: i32,
+        fill_level: i32,
+    },
+    PlayerDied {
+        instigator_actor_id: i32,
+        instigator_mob_variant: i32,
+        damage_source: i32,
+        died_in_raid: bool,
+    },
+    BossKilled {
+        boss_actor_id: i64,
+        party_size: i32,
+        boss_type: i32,
+    },
+    SlashCommand {
+        success_count: i32,
+        error_count: i32,
+        command_name: String,
+        error_list: String,
+    },
+    MobBorn {
+        born_baby_entity_type: i32,
+        born_baby_entity_variant: i32,
+        born_baby_color: u8,
+    },
+    PoiCauldronUsed {
+        block_interaction_type: MinecraftEventingPOIBlockInteractionType,
+        item_id: i32,
+    },
+    ComposterUsed {
+        block_interaction_type: MinecraftEventingPOIBlockInteractionType,
+        item_id: i32,
+    },
+    BellUsed {
+        item_id: i32,
+    },
+    ActorDefinition {
+        event_name: String,
+    },
+    RaidUpdate {
+        current_wave: i32,
+        total_waves: i32,
+        success: bool,
+    },
+    TargetBlockHit {
+        redstone_level: i32,
+    },
+    PiglinBarter {
+        item_id: i32,
+        was_targeting_bartering_player: bool,
+    },
+    PlayerWaxedOrUnwaxedCopper {
+        player_waxed_or_unwaxed_copper_block_id: i32,
+    },
+    CodeBuilderRuntimeAction {
+        code_builder_runtime_action: String,
+    },
+    CodeBuilderScoreboard {
+        objective_name: String,
+        score: i32,
+    },
+    ItemUsed {
+        item_id: i16,
+        item_aux: i32,
+        use_method: i32,
+        count: i32,
+    },
     Empty,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct LegacyTelemetryEventInteraction {
-    pub interacted_entity_id: i64,
-    pub interaction_type: MinecraftEventingInteractionType,
-    pub interaction_actor_type: i32,
-    pub interaction_actor_variant: i32,
-    pub interaction_actor_color: u8,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct LegacyTelemetryEventItemUsed {
-    pub item_id: i16,
-    pub item_aux: i32,
-    pub use_method: i32,
-    pub count: i32,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct LegacyTelemetryEventMobBorn {
-    pub born_baby_entity_type: i32,
-    pub born_baby_entity_variant: i32,
-    pub born_baby_color: u8,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct LegacyTelemetryEventMobKilled {
-    pub instigator_actor_id: i64,
-    pub target_actor_id: i64,
-    pub instigator_s_child_actor_type: ActorType,
-    pub damage_source: i32,
-    pub trade_tier: i32,
-    pub trader_name: String,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct LegacyTelemetryEventPOICauldronUsed {
-    pub block_interaction_type: MinecraftEventingPOIBlockInteractionType,
-    pub item_id: i32,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct LegacyTelemetryEventPiglinBarter {
-    pub item_id: i32,
-    pub was_targeting_bartering_player: bool,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct LegacyTelemetryEventPlayerDied {
-    pub instigator_actor_id: i32,
-    pub instigator_mob_variant: i32,
-    pub damage_source: i32,
-    pub died_in_raid: bool,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct LegacyTelemetryEventPlayerWaxedOrUnwaxedCopper {
-    pub player_waxed_or_unwaxed_copper_block_id: i32,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct LegacyTelemetryEventPortalCreated {
-    pub dimension_id: i32,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct LegacyTelemetryEventPortalUsed {
-    pub source_dimension_id: i32,
-    pub target_dimension_id: i32,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct LegacyTelemetryEventRaidUpdate {
-    pub current_wave: i32,
-    pub total_waves: i32,
-    pub success: bool,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct LegacyTelemetryEventSlashCommand {
-    pub success_count: i32,
-    pub error_count: i32,
-    pub command_name: String,
-    pub error_list: String,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct LegacyTelemetryEventTargetBlockHit {
-    pub redstone_level: i32,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -1754,11 +1483,6 @@ pub struct LevelSettings {
 }
 
 #[derive(Clone, Debug, PartialEq)]
-pub struct LineData {
-    pub line_end_location: glam::Vec3,
-}
-
-#[derive(Clone, Debug, PartialEq)]
 pub struct LocatorBarWaypoint {
     pub group_handle: WaypointGroupWaypointHandle,
     pub server_waypoint_payload: ServerWaypoint,
@@ -1814,7 +1538,7 @@ pub struct MemoryMemoryCategoryCounter {
 #[derive(Clone, Debug, PartialEq)]
 pub struct MissingBlobData {
     pub blob_id: u64,
-    pub blob_data: String,
+    pub blob_data: bytes::Bytes,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -1864,11 +1588,6 @@ pub struct NoiseDescriptor {
     pub name: String,
     pub first_octave: i32,
     pub amplitudes: Vec<f32>,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct NormalTransactionData {
-    pub actions: InventoryTransactionData,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -1923,46 +1642,34 @@ pub struct PlayerInputTick {
 }
 
 #[derive(Clone, Debug, PartialEq)]
-pub struct PlayerListAddEntry {
-    pub uuid: uuid::Uuid,
-    pub actor_unique_id: ActorUniqueID,
-    pub player_name: String,
-    pub xbl_xuid: String,
-    pub platform_online_id: String,
-    pub build_platform: BuildPlatform,
-    pub serialized_skin: SerializedSkinRef,
-    pub is_teacher: bool,
-    pub is_host: bool,
-    pub is_sub_client: bool,
-    pub player_color: MceColor,
-}
-
-#[derive(Clone, Debug, PartialEq)]
 pub enum PlayerListEntriesItem {
-    Add(PlayerListAddEntry),
-    Remove(PlayerListRemoveEntry),
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct PlayerListRemoveEntry {
-    pub uuid: uuid::Uuid,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct PlayerLocationCoordinatesLocation {
-    pub packet_type: PlayerLocationType,
-    pub position: glam::Vec3,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct PlayerLocationHiddenLocation {
-    pub packet_type: PlayerLocationType,
+    Add {
+        uuid: uuid::Uuid,
+        actor_unique_id: ActorUniqueID,
+        player_name: String,
+        xbl_xuid: String,
+        platform_online_id: String,
+        build_platform: BuildPlatform,
+        serialized_skin: SerializedSkinRef,
+        is_teacher: bool,
+        is_host: bool,
+        is_sub_client: bool,
+        player_color: MceColor,
+    },
+    Remove {
+        uuid: uuid::Uuid,
+    },
 }
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum PlayerLocationLocation {
-    PlayerLocationCoordinates(PlayerLocationCoordinatesLocation),
-    PlayerLocationHide(PlayerLocationHiddenLocation),
+    PlayerLocationCoordinates {
+        packet_type: PlayerLocationType,
+        position: glam::Vec3,
+    },
+    PlayerLocationHide {
+        packet_type: PlayerLocationType,
+    },
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -1977,45 +1684,30 @@ pub struct PlayerScoreboardId {
 }
 
 #[derive(Clone, Debug, PartialEq)]
-pub struct PlayerUpdateEntityOverridesClearOverride {
-    pub r#type: String,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct PlayerUpdateEntityOverridesFloatOverride {
-    pub r#type: String,
-    pub value: f32,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct PlayerUpdateEntityOverridesIntOverride {
-    pub r#type: String,
-    pub value: i32,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct PlayerUpdateEntityOverridesRemoveOverride {
-    pub r#type: String,
-}
-
-#[derive(Clone, Debug, PartialEq)]
 pub enum PlayerUpdateEntityOverridesUpdate {
-    ClearOverride(PlayerUpdateEntityOverridesClearOverride),
-    RemoveOverride(PlayerUpdateEntityOverridesRemoveOverride),
-    IntOverride(PlayerUpdateEntityOverridesIntOverride),
-    FloatOverride(PlayerUpdateEntityOverridesFloatOverride),
+    ClearOverride {
+        r#type: String,
+    },
+    RemoveOverride {
+        r#type: String,
+    },
+    IntOverride {
+        r#type: String,
+        value: i32,
+    },
+    FloatOverride {
+        r#type: String,
+        value: f32,
+    },
 }
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum PlayerVideoCaptureAction {
     StopVideoCapture,
-    StartVideoCapture(PlayerVideoCaptureStartVideoCapture),
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct PlayerVideoCaptureStartVideoCapture {
-    pub frame_rate: u32,
-    pub file_prefix: String,
+    StartVideoCapture {
+        frame_rate: u32,
+        file_prefix: String,
+    },
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -2051,15 +1743,49 @@ pub struct PrimitiveShapeData {
 #[derive(Clone, Debug, PartialEq)]
 pub enum PrimitiveShapeDataExtraShapeData {
     Empty0,
-    ArrowData(ArrowData),
-    TextData(TextData),
-    BoxData(BoxData),
-    LineData(LineData),
-    SphereData(SphereData),
-    CylinderData(CylinderData),
-    PyramidData(PyramidData),
-    EllipsoidData(EllipsoidData),
-    ConeData(ConeData),
+    ArrowData {
+        arrow_end_location: Option<glam::Vec3>,
+        arrow_head_length: Option<f32>,
+        arrow_head_radius: Option<f32>,
+        num_segments: Option<u8>,
+    },
+    TextData {
+        text: String,
+        use_rotation: bool,
+        background_color: Option<MceColor>,
+        depth_test: bool,
+        show_backface: bool,
+        show_text_backface: bool,
+    },
+    BoxData {
+        box_bound: glam::Vec3,
+    },
+    LineData {
+        line_end_location: glam::Vec3,
+    },
+    SphereData {
+        num_segments: u8,
+    },
+    CylinderData {
+        radius_x: glam::Vec2,
+        radius_z: glam::Vec2,
+        height: f32,
+        num_segments: u8,
+    },
+    PyramidData {
+        width: f32,
+        depth: Option<f32>,
+        height: f32,
+    },
+    EllipsoidData {
+        radii: glam::Vec3,
+        segments_per_axis: u8,
+    },
+    ConeData {
+        radii: glam::Vec2,
+        height: f32,
+        num_segments: u8,
+    },
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -2081,46 +1807,20 @@ pub struct PropertySyncDataPropertySyncIntEntry {
 }
 
 #[derive(Clone, Debug, PartialEq)]
-pub struct PyramidData {
-    pub width: f32,
-    pub depth: Option<f32>,
-    pub height: f32,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct RemoveScore {
-    pub action: String,
-    pub scoreboard_id: ScoreboardId,
-    pub objective_name: Option<String>,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct ResourcePackClientResponseCancel {
-    pub response_type: String,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct ResourcePackClientResponseDownloading {
-    pub response_type: String,
-    pub downloading_packs: Vec<String>,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct ResourcePackClientResponseDownloadingFinished {
-    pub response_type: String,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct ResourcePackClientResponseResourcePackStackFinished {
-    pub response_type: String,
-}
-
-#[derive(Clone, Debug, PartialEq)]
 pub enum ResourcePackClientResponseResponse {
-    Cancel(ResourcePackClientResponseCancel),
-    Downloading(ResourcePackClientResponseDownloading),
-    DownloadingFinished(ResourcePackClientResponseDownloadingFinished),
-    ResourcePackStackFinished(ResourcePackClientResponseResourcePackStackFinished),
+    Cancel {
+        response_type: String,
+    },
+    Downloading {
+        response_type: String,
+        downloading_packs: Vec<String>,
+    },
+    DownloadingFinished {
+        response_type: String,
+    },
+    ResourcePackStackFinished {
+        response_type: String,
+    },
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -2267,10 +1967,32 @@ pub enum ServerboundPackSettingChangePackSettingValue {
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum SetScoreScoreInfoItem {
-    RemoveScore(RemoveScore),
-    ChangePlayerScore(ChangePlayerScore),
-    ChangeEntityScore(ChangeEntityScore),
-    ChangeFakePlayerScore(ChangeFakePlayerScore),
+    RemoveScore {
+        action: String,
+        scoreboard_id: ScoreboardId,
+        objective_name: Option<String>,
+    },
+    ChangePlayerScore {
+        action: String,
+        scoreboard_id: ScoreboardId,
+        objective_name: String,
+        score_value: i32,
+        player_unique_id: PlayerScoreboardId,
+    },
+    ChangeEntityScore {
+        action: String,
+        scoreboard_id: ScoreboardId,
+        objective_name: String,
+        score_value: i32,
+        actor_id: ActorUniqueID,
+    },
+    ChangeFakePlayerScore {
+        action: String,
+        scoreboard_id: ScoreboardId,
+        objective_name: String,
+        score_value: i32,
+        fake_player_name: String,
+    },
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -2339,33 +2061,21 @@ pub struct SocialEventsServerTelemetryData {
 #[derive(Clone, Debug, PartialEq)]
 pub enum SoundDataEvent {
     Stop,
-    SetVolume(SoundDataEventSetVolume),
-    SetPitch(SoundDataEventSetPitch),
-    Fade(SoundDataEventFade),
-    SeekTo(SoundDataEventSeekTo),
+    SetVolume {
+        volume: f32,
+    },
+    SetPitch {
+        pitch: f32,
+    },
+    Fade {
+        duration: f32,
+        target_volume: f32,
+    },
+    SeekTo {
+        seconds: f32,
+    },
     Pause,
     Resume,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct SoundDataEventFade {
-    pub duration: f32,
-    pub target_volume: f32,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct SoundDataEventSeekTo {
-    pub seconds: f32,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct SoundDataEventSetPitch {
-    pub pitch: f32,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct SoundDataEventSetVolume {
-    pub volume: f32,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -2373,11 +2083,6 @@ pub struct SpawnSettings {
     pub spawn_biome_type: SpawnBiomeType,
     pub user_defined_biome_name: String,
     pub dimension: i32,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct SphereData {
-    pub num_segments: u8,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -2448,33 +2153,21 @@ pub struct SyncWorldClockStateData {
 }
 
 #[derive(Clone, Debug, PartialEq)]
-pub struct SyncWorldClocksAddTimeMarkerData {
-    pub clock_id: u64,
-    pub time_markers: Vec<TimeMarkerData>,
-}
-
-#[derive(Clone, Debug, PartialEq)]
 pub enum SyncWorldClocksData {
-    SyncStateData(SyncWorldClocksSyncStateData),
-    InitializeRegistryData(SyncWorldClocksInitializeRegistryData),
-    AddTimeMarkerData(SyncWorldClocksAddTimeMarkerData),
-    RemoveTimeMarkerData(SyncWorldClocksRemoveTimeMarkerData),
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct SyncWorldClocksInitializeRegistryData {
-    pub clock_data: Vec<WorldClockData>,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct SyncWorldClocksRemoveTimeMarkerData {
-    pub clock_id: u64,
-    pub time_marker_ids: Vec<u64>,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct SyncWorldClocksSyncStateData {
-    pub clock_data: Vec<SyncWorldClockStateData>,
+    SyncStateData {
+        clock_data: Vec<SyncWorldClockStateData>,
+    },
+    InitializeRegistryData {
+        clock_data: Vec<WorldClockData>,
+    },
+    AddTimeMarkerData {
+        clock_id: u64,
+        time_markers: Vec<TimeMarkerData>,
+    },
+    RemoveTimeMarkerData {
+        clock_id: u64,
+        time_marker_ids: Vec<u64>,
+    },
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -2497,46 +2190,49 @@ pub struct SynchedActorDataCopyableDataList {
 }
 
 #[derive(Clone, Debug, PartialEq)]
-pub struct TextAuthorAndMessage {
-    pub player_name: String,
-    pub message: String,
-}
-
-#[derive(Clone, Debug, PartialEq)]
 pub enum TextBody {
-    Raw(TextMessageOnly),
-    Chat(TextAuthorAndMessage),
-    Translate(TextMessageAndParams),
-    Popup(TextMessageAndParams),
-    JukeboxPopup(TextMessageAndParams),
-    Tip(TextMessageOnly),
-    SystemMessage(TextMessageOnly),
-    Whisper(TextAuthorAndMessage),
-    Announcement(TextAuthorAndMessage),
-    TextObjectWhisper(TextMessageOnly),
-    TextObject(TextMessageOnly),
-    TextObjectAnnouncement(TextMessageOnly),
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct TextData {
-    pub text: String,
-    pub use_rotation: bool,
-    pub background_color: Option<MceColor>,
-    pub depth_test: bool,
-    pub show_backface: bool,
-    pub show_text_backface: bool,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct TextMessageAndParams {
-    pub message: String,
-    pub parameter_list: Vec<String>,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct TextMessageOnly {
-    pub message: String,
+    Raw {
+        message: String,
+    },
+    Chat {
+        player_name: String,
+        message: String,
+    },
+    Translate {
+        message: String,
+        parameter_list: Vec<String>,
+    },
+    Popup {
+        message: String,
+        parameter_list: Vec<String>,
+    },
+    JukeboxPopup {
+        message: String,
+        parameter_list: Vec<String>,
+    },
+    Tip {
+        message: String,
+    },
+    SystemMessage {
+        message: String,
+    },
+    Whisper {
+        player_name: String,
+        message: String,
+    },
+    Announcement {
+        player_name: String,
+        message: String,
+    },
+    TextObjectWhisper {
+        message: String,
+    },
+    TextObject {
+        message: String,
+    },
+    TextObjectAnnouncement {
+        message: String,
+    },
 }
 
 #[derive(Clone, Debug, PartialEq)]
