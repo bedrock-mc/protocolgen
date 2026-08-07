@@ -28,7 +28,7 @@
     {
       "id": 1,
       "name": "LoginPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -84,7 +84,7 @@
     {
       "id": 2,
       "name": "PlayStatusPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -187,7 +187,7 @@
     {
       "id": 3,
       "name": "ServerToClientHandshakePacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -220,13 +220,13 @@
     {
       "id": 4,
       "name": "ClientToServerHandshakePacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": null
     },
     {
       "id": 5,
       "name": "DisconnectPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -1392,7 +1392,7 @@
     {
       "id": 6,
       "name": "ResourcePacksInfoPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -1897,7 +1897,7 @@
     {
       "id": 7,
       "name": "ResourcePackStackPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -2204,7 +2204,7 @@
     {
       "id": 8,
       "name": "ResourcePackClientResponsePacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -2424,7 +2424,7 @@
     {
       "id": 9,
       "name": "TextPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -3202,7 +3202,7 @@
     {
       "id": 10,
       "name": "SetTimePacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -3231,7 +3231,7 @@
     {
       "id": 11,
       "name": "StartGamePacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -6485,7 +6485,7 @@
     {
       "id": 12,
       "name": "AddPlayerPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -9263,7 +9263,7 @@
     {
       "id": 13,
       "name": "AddActorPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -11468,7 +11468,7 @@
     {
       "id": 14,
       "name": "RemoveActorPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -11516,7 +11516,7 @@
     {
       "id": 15,
       "name": "AddItemActorPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -13256,7 +13256,7 @@
     {
       "id": 16,
       "name": "ServerPlayerPostMovePositionPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -13346,7 +13346,7 @@
     {
       "id": 17,
       "name": "TakeItemActorPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -13435,7 +13435,7 @@
     {
       "id": 18,
       "name": "MoveActorAbsolutePacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -13666,7 +13666,7 @@
     {
       "id": 19,
       "name": "MovePlayerPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -14104,7 +14104,7 @@
     {
       "id": 21,
       "name": "UpdateBlockPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -14260,7 +14260,7 @@
     {
       "id": 22,
       "name": "AddPaintingPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -14481,7 +14481,7 @@
     {
       "id": 25,
       "name": "LevelEventPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -14615,7 +14615,7 @@
     {
       "id": 26,
       "name": "BlockEventPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -14749,7 +14749,7 @@
     {
       "id": 27,
       "name": "ActorEventPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -15358,7 +15358,7 @@
     {
       "id": 28,
       "name": "MobEffectPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -15611,7 +15611,7 @@
     {
       "id": 29,
       "name": "UpdateAttributesPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -16051,7 +16051,7 @@
     {
       "id": 30,
       "name": "InventoryTransactionPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -20717,7 +20717,7 @@
     {
       "id": 31,
       "name": "MobEquipmentPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -20990,7 +20990,7 @@
     {
       "id": 32,
       "name": "MobArmorEquipmentPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -21833,7 +21833,7 @@
     {
       "id": 33,
       "name": "InteractPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -22028,7 +22028,7 @@
     {
       "id": 34,
       "name": "BlockPickRequestPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -22162,7 +22162,7 @@
     {
       "id": 35,
       "name": "ActorPickRequestPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -22235,7 +22235,7 @@
     {
       "id": 36,
       "name": "PlayerActionPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -22784,7 +22784,7 @@
     {
       "id": 38,
       "name": "HurtArmorPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -22857,7 +22857,7 @@
     {
       "id": 39,
       "name": "SetActorDataPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -24416,7 +24416,7 @@
     {
       "id": 40,
       "name": "SetActorMotionPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -24588,7 +24588,7 @@
     {
       "id": 41,
       "name": "SetActorLinkPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -24809,7 +24809,7 @@
     {
       "id": 42,
       "name": "SetHealthPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -24838,7 +24838,7 @@
     {
       "id": 43,
       "name": "SetSpawnPositionPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -25092,7 +25092,7 @@
     {
       "id": 44,
       "name": "AnimatePacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -25254,7 +25254,7 @@
     {
       "id": 45,
       "name": "RespawnPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -25432,7 +25432,7 @@
     {
       "id": 46,
       "name": "ContainerOpenPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -25607,7 +25607,7 @@
     {
       "id": 47,
       "name": "ContainerClosePacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -25680,7 +25680,7 @@
     {
       "id": 48,
       "name": "PlayerHotbarPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -25753,7 +25753,7 @@
     {
       "id": 49,
       "name": "InventoryContentPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -26651,7 +26651,7 @@
     {
       "id": 50,
       "name": "InventorySlotPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -27565,7 +27565,7 @@
     {
       "id": 51,
       "name": "ContainerSetDataPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -27638,7 +27638,7 @@
     {
       "id": 52,
       "name": "CraftingDataPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -32559,7 +32559,7 @@
     {
       "id": 54,
       "name": "GuiDataPickItemPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -32642,7 +32642,7 @@
     {
       "id": 56,
       "name": "BlockActorDataPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -32753,7 +32753,7 @@
     {
       "id": 58,
       "name": "LevelChunkPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -33011,7 +33011,7 @@
     {
       "id": 59,
       "name": "SetCommandsEnabledPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -33040,7 +33040,7 @@
     {
       "id": 60,
       "name": "SetDifficultyPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -33069,7 +33069,7 @@
     {
       "id": 61,
       "name": "ChangeDimensionPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -33247,7 +33247,7 @@
     {
       "id": 62,
       "name": "SetPlayerGameTypePacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -33322,7 +33322,7 @@
     {
       "id": 63,
       "name": "PlayerListPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -35091,7 +35091,7 @@
     {
       "id": 64,
       "name": "SimpleEventPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -35152,7 +35152,7 @@
     {
       "id": 65,
       "name": "LegacyTelemetryEventPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -39050,7 +39050,7 @@
     {
       "id": 66,
       "name": "SpawnExperienceOrbPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -39162,7 +39162,7 @@
     {
       "id": 67,
       "name": "ClientboundMapItemDataPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -40143,7 +40143,7 @@
     {
       "id": 68,
       "name": "MapInfoRequestPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -40265,7 +40265,7 @@
     {
       "id": 69,
       "name": "RequestChunkRadiusPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -40316,7 +40316,7 @@
     {
       "id": 70,
       "name": "ChunkRadiusUpdatedPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -40345,7 +40345,7 @@
     {
       "id": 72,
       "name": "GameRulesChangedPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -40525,7 +40525,7 @@
     {
       "id": 73,
       "name": "CameraPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -40614,7 +40614,7 @@
     {
       "id": 74,
       "name": "BossEventPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -41011,7 +41011,7 @@
     {
       "id": 75,
       "name": "ShowCreditsPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -41081,7 +41081,7 @@
     {
       "id": 76,
       "name": "AvailableCommandsPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -42001,7 +42001,7 @@
     {
       "id": 77,
       "name": "CommandRequestPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -42204,7 +42204,7 @@
     {
       "id": 78,
       "name": "CommandBlockUpdatePacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -42616,7 +42616,7 @@
     {
       "id": 79,
       "name": "CommandOutputPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -42962,7 +42962,7 @@
     {
       "id": 80,
       "name": "UpdateTradePacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -43231,7 +43231,7 @@
     {
       "id": 81,
       "name": "UpdateEquipPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -43366,7 +43366,7 @@
     {
       "id": 82,
       "name": "ResourcePackDataInfoPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -43537,7 +43537,7 @@
     {
       "id": 83,
       "name": "ResourcePackChunkDataPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -43641,7 +43641,7 @@
     {
       "id": 84,
       "name": "ResourcePackChunkRequestPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -43697,7 +43697,7 @@
     {
       "id": 85,
       "name": "TransferPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -44006,7 +44006,7 @@
     {
       "id": 86,
       "name": "PlaySoundPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -44233,7 +44233,7 @@
     {
       "id": 87,
       "name": "StopSoundPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -44311,7 +44311,7 @@
     {
       "id": 88,
       "name": "SetTitlePacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -44581,7 +44581,7 @@
     {
       "id": 89,
       "name": "AddBehaviorTreePacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -44615,7 +44615,7 @@
     {
       "id": 90,
       "name": "StructureBlockUpdatePacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -45623,7 +45623,7 @@
     {
       "id": 91,
       "name": "ShowStoreOfferPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -45702,7 +45702,7 @@
     {
       "id": 92,
       "name": "PurchaseReceiptPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -45749,7 +45749,7 @@
     {
       "id": 93,
       "name": "PlayerSkinPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -47183,7 +47183,7 @@
     {
       "id": 94,
       "name": "SubClientLoginPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -47217,7 +47217,7 @@
     {
       "id": 95,
       "name": "AutomationClientConnectPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -47270,7 +47270,7 @@
     {
       "id": 96,
       "name": "SetLastHurtByPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -48416,7 +48416,7 @@
     {
       "id": 97,
       "name": "BookEditPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -48813,7 +48813,7 @@
     {
       "id": 98,
       "name": "NpcRequestPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -49012,7 +49012,7 @@
     {
       "id": 99,
       "name": "PhotoTransferPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -49242,7 +49242,7 @@
     {
       "id": 100,
       "name": "ModalFormRequestPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -49298,7 +49298,7 @@
     {
       "id": 101,
       "name": "ModalFormResponsePacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -49404,13 +49404,13 @@
     {
       "id": 102,
       "name": "ServerSettingsRequestPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": null
     },
     {
       "id": 103,
       "name": "ServerSettingsResponsePacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -49466,7 +49466,7 @@
     {
       "id": 104,
       "name": "ShowProfilePacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -49500,7 +49500,7 @@
     {
       "id": 105,
       "name": "SetDefaultGameTypePacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -49568,7 +49568,7 @@
     {
       "id": 106,
       "name": "RemoveObjectivePacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -49602,7 +49602,7 @@
     {
       "id": 107,
       "name": "SetDisplayObjectivePacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -49739,7 +49739,7 @@
     {
       "id": 108,
       "name": "SetScorePacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -50364,7 +50364,7 @@
     {
       "id": 109,
       "name": "LabTablePacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -50618,7 +50618,7 @@
     {
       "id": 110,
       "name": "UpdateBlockSyncedPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -50818,7 +50818,7 @@
     {
       "id": 111,
       "name": "MoveActorDeltaPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -51112,7 +51112,7 @@
     {
       "id": 112,
       "name": "SetScoreboardIdentityPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -51254,7 +51254,7 @@
     {
       "id": 113,
       "name": "SetLocalPlayerAsInitializedPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -51302,7 +51302,7 @@
     {
       "id": 114,
       "name": "UpdateSoftEnumPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -51423,7 +51423,7 @@
     {
       "id": 115,
       "name": "NetworkStackLatencyPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -51474,7 +51474,7 @@
     {
       "id": 118,
       "name": "SpawnParticleEffectPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -51687,7 +51687,7 @@
     {
       "id": 119,
       "name": "AvailableActorIdentifiersPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -51715,7 +51715,7 @@
     {
       "id": 121,
       "name": "NetworkChunkPublisherUpdatePacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -51901,7 +51901,7 @@
     {
       "id": 122,
       "name": "BiomeDefinitionListPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -56320,7 +56320,7 @@
     {
       "id": 123,
       "name": "LevelSoundEventPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -56641,7 +56641,7 @@
     {
       "id": 124,
       "name": "LevelEventGenericPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -56691,7 +56691,7 @@
     {
       "id": 125,
       "name": "LecternUpdatePacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -56825,7 +56825,7 @@
     {
       "id": 129,
       "name": "ClientCacheStatusPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -56854,7 +56854,7 @@
     {
       "id": 130,
       "name": "OnScreenTextureAnimationPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -56883,7 +56883,7 @@
     {
       "id": 131,
       "name": "MapCreateLockedCopyPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -56972,7 +56972,7 @@
     {
       "id": 132,
       "name": "StructureTemplateDataRequestPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -57764,7 +57764,7 @@
     {
       "id": 133,
       "name": "StructureTemplateDataResponsePacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -57866,7 +57866,7 @@
     {
       "id": 135,
       "name": "ClientCacheBlobStatusPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -57943,7 +57943,7 @@
     {
       "id": 136,
       "name": "ClientCacheMissResponsePacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -58028,7 +58028,7 @@
     {
       "id": 137,
       "name": "EducationSettingsPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -58372,7 +58372,7 @@
     {
       "id": 138,
       "name": "EmotePacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -58545,7 +58545,7 @@
     {
       "id": 139,
       "name": "MultiplayerSettingsPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -58599,7 +58599,7 @@
     {
       "id": 140,
       "name": "SettingsCommandPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -58655,7 +58655,7 @@
     {
       "id": 141,
       "name": "AnvilDamagePacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -58745,7 +58745,7 @@
     {
       "id": 142,
       "name": "CompletedUsingItemPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -58796,7 +58796,7 @@
     {
       "id": 143,
       "name": "NetworkSettingsPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -58938,7 +58938,7 @@
     {
       "id": 144,
       "name": "PlayerAuthInputPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -73285,7 +73285,7 @@
     {
       "id": 145,
       "name": "CreativeContentPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -73759,7 +73759,7 @@
     {
       "id": 146,
       "name": "PlayerEnchantOptionsPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -74319,7 +74319,7 @@
     {
       "id": 147,
       "name": "ItemStackRequestPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -84945,7 +84945,7 @@
     {
       "id": 148,
       "name": "ItemStackResponsePacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -86333,7 +86333,7 @@
     {
       "id": 149,
       "name": "PlayerArmorDamagePacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -86454,7 +86454,7 @@
     {
       "id": 150,
       "name": "CodeBuilderPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -86510,7 +86510,7 @@
     {
       "id": 151,
       "name": "UpdatePlayerGameTypePacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -86667,7 +86667,7 @@
     {
       "id": 152,
       "name": "EmoteListPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -86750,7 +86750,7 @@
     {
       "id": 153,
       "name": "PositionTrackingDBServerBroadcastPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -86866,7 +86866,7 @@
     {
       "id": 154,
       "name": "PositionTrackingDBClientRequestPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -86947,7 +86947,7 @@
     {
       "id": 155,
       "name": "DebugInfoPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -87022,7 +87022,7 @@
     {
       "id": 156,
       "name": "PacketViolationWarningPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -87172,7 +87172,7 @@
     {
       "id": 157,
       "name": "MotionPredictionHintsPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -87325,7 +87325,7 @@
     {
       "id": 158,
       "name": "AnimateEntityPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -87537,7 +87537,7 @@
     {
       "id": 159,
       "name": "CameraShakePacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -87668,7 +87668,7 @@
     {
       "id": 160,
       "name": "PlayerFogPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -87715,7 +87715,7 @@
     {
       "id": 161,
       "name": "CorrectPlayerMovePredictionPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -88078,7 +88078,7 @@
     {
       "id": 162,
       "name": "ItemRegistryPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -88258,7 +88258,7 @@
     {
       "id": 164,
       "name": "ClientboundDebugRendererPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -88481,7 +88481,7 @@
     {
       "id": 165,
       "name": "SyncActorPropertyPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -88509,7 +88509,7 @@
     {
       "id": 166,
       "name": "AddVolumeEntityPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -88866,7 +88866,7 @@
     {
       "id": 167,
       "name": "RemoveVolumeEntityPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -88955,7 +88955,7 @@
     {
       "id": 168,
       "name": "SimulationTypePacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -89016,7 +89016,7 @@
     {
       "id": 169,
       "name": "NpcDialoguePacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -89193,7 +89193,7 @@
     {
       "id": 170,
       "name": "EduUriResourcePacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -89272,7 +89272,7 @@
     {
       "id": 171,
       "name": "CreatePhotoPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -89355,7 +89355,7 @@
     {
       "id": 172,
       "name": "UpdateSubChunkBlocksPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -89857,7 +89857,7 @@
     {
       "id": 174,
       "name": "SubChunkPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -90444,7 +90444,7 @@
     {
       "id": 175,
       "name": "SubChunkRequestPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -90670,7 +90670,7 @@
     {
       "id": 176,
       "name": "PlayerStartItemCooldownPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -90726,7 +90726,7 @@
     {
       "id": 177,
       "name": "ScriptMessagePacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -90787,7 +90787,7 @@
     {
       "id": 178,
       "name": "CodeBuilderSourcePacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -90963,7 +90963,7 @@
     {
       "id": 179,
       "name": "TickingAreasLoadStatusPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -90992,7 +90992,7 @@
     {
       "id": 180,
       "name": "DimensionDataPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -91231,7 +91231,7 @@
     {
       "id": 181,
       "name": "AgentActionEventPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -91447,7 +91447,7 @@
     {
       "id": 182,
       "name": "ChangeMobPropertyPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -91615,7 +91615,7 @@
     {
       "id": 183,
       "name": "LessonProgressPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -91693,7 +91693,7 @@
     {
       "id": 184,
       "name": "RequestAbilityPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -91813,7 +91813,7 @@
     {
       "id": 185,
       "name": "RequestPermissionsPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -91886,7 +91886,7 @@
     {
       "id": 186,
       "name": "ToastRequestPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -91947,7 +91947,7 @@
     {
       "id": 187,
       "name": "UpdateAbilitiesPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -92274,7 +92274,7 @@
     {
       "id": 188,
       "name": "UpdateAdventureSettingsPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -92406,7 +92406,7 @@
     {
       "id": 189,
       "name": "DeathInfoPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -92480,7 +92480,7 @@
     {
       "id": 190,
       "name": "EditorNetworkPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -92531,7 +92531,7 @@
     {
       "id": 191,
       "name": "FeatureRegistryPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -92622,7 +92622,7 @@
     {
       "id": 192,
       "name": "ServerStatsPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -92673,7 +92673,7 @@
     {
       "id": 193,
       "name": "RequestNetworkSettingsPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -92702,7 +92702,7 @@
     {
       "id": 194,
       "name": "GameTestRequestPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -92961,7 +92961,7 @@
     {
       "id": 195,
       "name": "GameTestResultsPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -93044,7 +93044,7 @@
     {
       "id": 196,
       "name": "UpdateClientInputLocksPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -93073,7 +93073,7 @@
     {
       "id": 198,
       "name": "CameraPresetsPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -94058,7 +94058,7 @@
     {
       "id": 199,
       "name": "UnlockedRecipesPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -94166,7 +94166,7 @@
     {
       "id": 300,
       "name": "CameraInstructionPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -95764,7 +95764,7 @@
     {
       "id": 302,
       "name": "TrimDataPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -95965,7 +95965,7 @@
     {
       "id": 303,
       "name": "OpenSignPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -96077,7 +96077,7 @@
     {
       "id": 304,
       "name": "AgentAnimationPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -96165,13 +96165,13 @@
     {
       "id": 305,
       "name": "RefreshEntitlementsPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": null
     },
     {
       "id": 306,
       "name": "PlayerToggleCrafterSlotRequestPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -96288,7 +96288,7 @@
     {
       "id": 307,
       "name": "SetPlayerInventoryOptionsPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -96570,7 +96570,7 @@
     {
       "id": 308,
       "name": "SetHudPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -96747,7 +96747,7 @@
     {
       "id": 309,
       "name": "AwardAchievementPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -96776,13 +96776,13 @@
     {
       "id": 310,
       "name": "ClientboundCloseFormPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": null
     },
     {
       "id": 312,
       "name": "ServerboundLoadingScreenPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -96854,7 +96854,7 @@
     {
       "id": 313,
       "name": "JigsawStructureDataPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -96882,7 +96882,7 @@
     {
       "id": 314,
       "name": "CurrentStructureFeaturePacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -96916,7 +96916,7 @@
     {
       "id": 315,
       "name": "ServerboundDiagnosticsPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -98450,7 +98450,7 @@
     {
       "id": 316,
       "name": "CameraAimAssistPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -98670,7 +98670,7 @@
     {
       "id": 317,
       "name": "ContainerRegistryCleanupPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -99228,7 +99228,7 @@
     {
       "id": 318,
       "name": "MovementEffectPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -99386,7 +99386,7 @@
     {
       "id": 320,
       "name": "CameraAimAssistPresetsPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -100141,7 +100141,7 @@
     {
       "id": 321,
       "name": "ClientCameraAimAssistPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -100237,7 +100237,7 @@
     {
       "id": 322,
       "name": "ClientMovementPredictionSyncPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -100423,7 +100423,7 @@
     {
       "id": 323,
       "name": "UpdateClientOptionsPacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -100513,7 +100513,7 @@
     {
       "id": 324,
       "name": "PlayerVideoCapturePacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -100613,7 +100613,7 @@
     {
       "id": 325,
       "name": "PlayerUpdateEntityOverridesPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -100899,7 +100899,7 @@
     {
       "id": 326,
       "name": "PlayerLocationPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -101140,7 +101140,7 @@
     {
       "id": 327,
       "name": "ClientboundControlSchemeSetPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -101208,7 +101208,7 @@
     {
       "id": 328,
       "name": "PrimitiveShapesPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -102793,7 +102793,7 @@
     {
       "id": 329,
       "name": "ServerboundPackSettingChangePacket",
-      "direction": "unknown",
+      "direction": "bidirectional",
       "fields": [
         {
           "ordinal": 0,
@@ -102926,7 +102926,7 @@
     {
       "id": 330,
       "name": "ClientboundDataStorePacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -103454,7 +103454,7 @@
     {
       "id": 331,
       "name": "GraphicsOverrideParameterPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -104147,7 +104147,7 @@
     {
       "id": 332,
       "name": "ServerboundDataStorePacket",
-      "direction": "unknown",
+      "direction": "serverbound",
       "fields": [
         {
           "ordinal": 0,
@@ -104367,7 +104367,7 @@
     {
       "id": 333,
       "name": "ClientboundDataDrivenUIShowScreenPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -104448,7 +104448,7 @@
     {
       "id": 334,
       "name": "ClientboundDataDrivenUICloseScreenPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -104480,13 +104480,13 @@
     {
       "id": 335,
       "name": "ClientboundDataDrivenUIReloadPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": null
     },
     {
       "id": 336,
       "name": "ClientboundTextureShiftPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -104741,7 +104741,7 @@
     {
       "id": 337,
       "name": "VoxelShapesPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -105088,7 +105088,7 @@
     {
       "id": 338,
       "name": "CameraSplinePacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -105587,7 +105587,7 @@
     {
       "id": 339,
       "name": "CameraAimAssistActorPriorityPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -105710,13 +105710,13 @@
     {
       "id": 340,
       "name": "ResourcePacksReadyForValidationPacket",
-      "direction": "unknown",
+      "direction": "serverbound",
       "fields": null
     },
     {
       "id": 341,
       "name": "LocatorBarPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -106258,7 +106258,7 @@
     {
       "id": 342,
       "name": "PartyChangedPacket",
-      "direction": "unknown",
+      "direction": "serverbound",
       "fields": [
         {
           "ordinal": 0,
@@ -106335,7 +106335,7 @@
     {
       "id": 343,
       "name": "ServerboundDataDrivenScreenClosedPacket",
-      "direction": "unknown",
+      "direction": "serverbound",
       "fields": [
         {
           "ordinal": 0,
@@ -106391,7 +106391,7 @@
     {
       "id": 344,
       "name": "SyncWorldClocksPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -107004,7 +107004,7 @@
     {
       "id": 345,
       "name": "ClientboundAttributeLayerSyncPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -109502,7 +109502,7 @@
     {
       "id": 346,
       "name": "ServerStoreInfoPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -109584,7 +109584,7 @@
     {
       "id": 347,
       "name": "ServerPresenceInfoPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -109643,7 +109643,7 @@
     {
       "id": 348,
       "name": "ClientboundUpdateSoundDataPacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -111133,7 +111133,7 @@
     {
       "id": 349,
       "name": "SendPartyDestinationCookiePacket",
-      "direction": "unknown",
+      "direction": "clientbound",
       "fields": [
         {
           "ordinal": 0,
@@ -111221,7 +111221,7 @@
     {
       "id": 350,
       "name": "PartyDestinationCookieResponsePacket",
-      "direction": "unknown",
+      "direction": "serverbound",
       "fields": [
         {
           "ordinal": 0,

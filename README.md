@@ -45,6 +45,7 @@ go run ./cmd/protocolgen reconcile \
   -lock testdata/source-lock.json \
   -mojang testdata/sources/mojang-v2168 \
   -endstone testdata/sources/endstone-v2168 \
+  -directions /path/to/reviewed-directions.json \
   -out /tmp/protocol-2168.json
 
 go run ./cmd/protocolgen validate \
@@ -138,6 +139,7 @@ go run ./cmd/protocolgen reconcile \
   -endstone /path/to/endstone-protocol-docs \
   -endstone-corrections generated/1.26.40/corrections/endstone \
   -adjudications generated/1.26.40/adjudications.json \
+  -directions generated/1.26.40/directions.json \
   -out generated/1.26.40/manifest.json
 
 go run ./cmd/protocolgen emit-go \
