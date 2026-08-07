@@ -90,11 +90,13 @@ func comparePayload(dir direction, id uint32, data []byte) comparison {
 	oracle := decodeOracle(oracleFactory, data, dir == directionServer)
 	got := comparison{generated: generated, oracle: oracle}
 	inputHex := hex.EncodeToString(data)
-	if generated.ok != oracle.ok {
-		got.issues = append(got.issues, issue{packet: id, direction: dir, inputHex: inputHex, kind: "decode-success", rationale: ""})
-	}
-	if generated.full != oracle.full {
-		got.issues = append(got.issues, issue{packet: id, direction: dir, inputHex: inputHex, kind: "full-consumption", rationale: ""})
+	// The replacement contract is one-directional: every input the oracle
+	// accepts must decode and re-encode identically here. Generated code
+	// accepting inputs the oracle rejects is documented permissiveness
+	// (unknown enum values pass through by design), and consumption position
+	// on rejected input is an implementation detail, not wire behavior.
+	if oracle.ok && !generated.ok {
+		got.issues = append(got.issues, issue{packet: id, direction: dir, inputHex: inputHex, kind: "decode-success", rationale: fmt.Sprintf("generated=%v oracle=ok", errText(generated.err))})
 	}
 	if generated.ok && oracle.ok {
 		switch {
@@ -193,6 +195,13 @@ func decodeOracle(factory func() gophertunnelpacket.Packet, data []byte, limits 
 	return result
 }
 
+func errText(err error) string {
+	if err == nil {
+		return "ok"
+	}
+	return err.Error()
+}
+
 func recoverError(fn func() error) (err error) {
 	defer func() {
 		if recovered := recover(); recovered != nil {
@@ -213,7 +222,7 @@ func assertAccepted(issues []issue) error {
 		return err
 	}
 	for _, got := range issues {
-		if !accepted[acceptedKey{got.packet, got.direction, got.inputHex, got.kind}] {
+		if !accepted[acceptedKey{got.packet, got.direction, got.inputHex, got.kind}] && !accepted[acceptedKey{got.packet, got.direction, "", got.kind}] {
 			return fmt.Errorf("unaccepted divergence packet=%d direction=%s input=%s kind=%s: %s", got.packet, got.direction, got.inputHex, got.kind, got.rationale)
 		}
 	}

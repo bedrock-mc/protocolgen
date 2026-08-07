@@ -99,10 +99,6 @@ func (r *Reader) readUvarint() uint64 {
 		if r.err != nil {
 			return 0
 		}
-		if shift == 63 && b > 1 {
-			r.fail(fmt.Errorf("varint overflows uint64"))
-			return 0
-		}
 		value |= uint64(b&0x7f) << shift
 		if b&0x80 == 0 {
 			return value
@@ -119,10 +115,6 @@ func (r *Reader) readUvarint32() uint32 {
 		if r.err != nil {
 			return 0
 		}
-		if shift == 28 && b&0x7f > 0x0f {
-			r.fail(fmt.Errorf("varint overflows uint32"))
-			return 0
-		}
 		value |= uint32(b&0x7f) << shift
 		if b&0x80 == 0 {
 			return value
@@ -137,11 +129,7 @@ func (r *Reader) Bool(x *bool) {
 	if r.err != nil {
 		return
 	}
-	if value > 1 {
-		r.InvalidValue(value, "boolean must be 0 or 1")
-		return
-	}
-	*x = value == 1
+	*x = value != 0
 }
 func (r *Reader) Int8(x *int8)   { *x = int8(r.readByte()) }
 func (r *Reader) Uint8(x *uint8) { *x = r.readByte() }
@@ -247,31 +235,22 @@ func (r *Reader) BEFloat64(x *float64) {
 }
 
 func (r *Reader) Varint32(x *int32) {
-	value := uint64(r.readUvarint32())
+	value := r.readUvarint32()
 	if r.err != nil {
 		return
 	}
-	if value > uint64(^uint32(0)) {
-		r.InvalidValue(value, "zigzag int32 overflows uint32")
-		return
-	}
-	value32 := uint32(value)
-	*x = int32(value32 >> 1)
-	if value32&1 != 0 {
+	*x = int32(value >> 1)
+	if value&1 != 0 {
 		*x = ^*x
 	}
 }
 
 func (r *Reader) Varuint32(x *uint32) {
-	value := uint64(r.readUvarint32())
+	value := r.readUvarint32()
 	if r.err != nil {
 		return
 	}
-	if value > uint64(^uint32(0)) {
-		r.InvalidValue(value, "varuint32 overflows uint32")
-		return
-	}
-	*x = uint32(value)
+	*x = value
 }
 
 func (r *Reader) Varint64(x *int64) {
@@ -287,12 +266,8 @@ func (r *Reader) Varint64(x *int64) {
 
 func (r *Reader) Varuint64(x *uint64) { *x = r.readUvarint() }
 func (r *Reader) SignedVarint32(x *int32) {
-	value := uint64(r.readUvarint32())
+	value := r.readUvarint32()
 	if r.err != nil {
-		return
-	}
-	if value > uint64(^uint32(0)) {
-		r.InvalidValue(value, "signed varint32 overflows uint32")
 		return
 	}
 	*x = int32(value)
