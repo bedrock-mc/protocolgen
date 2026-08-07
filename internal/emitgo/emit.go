@@ -624,7 +624,7 @@ func emitDefinition(g *generator, definition typeDefinition) (string, error) {
 		fmt.Fprintf(&b, "func (x *%s) Marshal(io IO) {\n", definition.Name)
 		emitter := marshalEmitter{g: g}
 		for _, field := range definition.Fields {
-			if err := emitter.node(&b, field.Node, "x."+field.Name, definition.Name+field.Name, "\t"); err != nil {
+			if err := emitter.node(&b, field.Node, "x."+field.Name, definition.Name+field.Name, "\t", addressStrategy{}); err != nil {
 				return "", fmt.Errorf("type %s field %s marshal: %w", definition.Name, field.Name, err)
 			}
 		}
@@ -689,10 +689,7 @@ func (g *generator) emitPacket(packet manifest.Packet, packetName string) (strin
 			baseName = "IDValue"
 		}
 		name := uniqueFieldName(baseName, used)
-		typ, err := g.goType(field.Encode, packetName+name)
-		if err != nil {
-			return "", err
-		}
+		typ := mustGoType(g, field.Encode, packetName+name)
 		fields = append(fields, packetField{name: name, typ: qualifyGoType(typ, g.definitions), node: field.Encode})
 	}
 	imports := append([]string{g.protocolImportPath}, goImportsForFields(fields)...)
@@ -706,7 +703,7 @@ func (g *generator) emitPacket(packet manifest.Packet, packetName string) (strin
 	fmt.Fprintf(&b, "func (x *%s) Marshal(io protocol.IO) {\n", packetName)
 	emitter := marshalEmitter{g: g, qualifier: "protocol."}
 	for _, field := range fields {
-		if err := emitter.node(&b, field.node, "x."+field.name, packetName+field.name, "\t"); err != nil {
+		if err := emitter.node(&b, field.node, "x."+field.name, packetName+field.name, "\t", addressStrategy{}); err != nil {
 			return "", fmt.Errorf("packet %s field %s marshal: %w", packet.Name, field.name, err)
 		}
 	}
@@ -823,7 +820,7 @@ type marshalEmitter struct {
 	counter   int
 }
 
-func (e *marshalEmitter) goType(node manifest.Node, hint string) string {
+func (e *marshalEmitter) mustGoType(node manifest.Node, hint string) string {
 	typ := mustGoType(e.g, node, hint)
 	if e.qualifier == "" {
 		return typ
@@ -844,27 +841,48 @@ func (e *marshalEmitter) temporary(prefix string) string {
 	return fmt.Sprintf("%s%d", prefix, e.counter)
 }
 
-func (e *marshalEmitter) node(b *strings.Builder, node manifest.Node, expression, hint, indent string) error {
+type addressStrategy struct {
+	pointer bool
+}
+
+func (a addressStrategy) address(expression string) string {
+	if a.pointer {
+		return expression
+	}
+	return "&" + expression
+}
+
+func (a addressStrategy) container(expression string) string {
+	if a.pointer {
+		return "*" + expression
+	}
+	return expression
+}
+
+func (a addressStrategy) element(expression, index string) string {
+	if a.pointer {
+		return "&(*" + expression + ")[" + index + "]"
+	}
+	return expression + "[" + index + "]"
+}
+
+func (a addressStrategy) bits(expression string) string {
+	if a.pointer {
+		return "(*" + expression + ")[:]"
+	}
+	return expression + "[:]"
+}
+
+func (e *marshalEmitter) node(b *strings.Builder, node manifest.Node, expression, hint, indent string, address addressStrategy) error {
 	if method, ok := e.semanticIOCall(node); ok {
-		fmt.Fprintf(b, "%sio.%s(&%s)\n", indent, method, expression)
+		fmt.Fprintf(b, "%sio.%s(%s)\n", indent, method, address.address(expression))
 		return nil
 	}
 	if native, matched, err := e.g.nativeGoType(node); matched || err != nil {
 		if err != nil {
 			return err
 		}
-		switch native {
-		case "uuid.UUID":
-			fmt.Fprintf(b, "%sio.UUID(&%s)\n", indent, expression)
-		case "mgl32.Vec2":
-			fmt.Fprintf(b, "%sio.Vec2(&%s)\n", indent, expression)
-		case "mgl32.Vec3":
-			fmt.Fprintf(b, "%sio.Vec3(&%s)\n", indent, expression)
-		case "color.RGBA":
-			fmt.Fprintf(b, "%sio.RGBA(&%s)\n", indent, expression)
-		default:
-			return fmt.Errorf("native type %s has no codec operation", native)
-		}
+		fmt.Fprintf(b, "%sio.%s(%s)\n", indent, nativeMethod(native), address.address(expression))
 		return nil
 	}
 	switch node.Kind {
@@ -875,42 +893,42 @@ func (e *marshalEmitter) node(b *strings.Builder, node manifest.Node, expression
 			return fmt.Errorf("primitive has no shape")
 		}
 		if node.Primitive.Code == "uuid" {
-			fmt.Fprintf(b, "%sio.UUIDBytes(&%s)\n", indent, expression)
+			fmt.Fprintf(b, "%sio.UUIDBytes(%s)\n", indent, address.address(expression))
 			return nil
 		}
 		if node.Primitive.Code == "nbt_le" {
-			fmt.Fprintf(b, "%sio.NBT(&%s)\n", indent, expression)
+			fmt.Fprintf(b, "%sio.NBT(%s)\n", indent, address.address(expression))
 			return nil
 		}
 		method, err := primitiveIOMethod(node.Primitive.Code)
 		if err != nil {
 			return err
 		}
-		fmt.Fprintf(b, "%sio.%s(&%s)\n", indent, method, expression)
+		fmt.Fprintf(b, "%sio.%s(%s)\n", indent, method, address.address(expression))
 		return nil
 	case manifest.KindString:
 		if !varuint32Prefix(node) {
 			return fmt.Errorf("string has unsupported length prefix")
 		}
-		fmt.Fprintf(b, "%sio.String(&%s)\n", indent, expression)
+		fmt.Fprintf(b, "%sio.String(%s)\n", indent, address.address(expression))
 		return nil
 	case manifest.KindBytes:
 		if !varuint32Prefix(node) {
 			return fmt.Errorf("bytes have unsupported length prefix")
 		}
-		fmt.Fprintf(b, "%sio.Bytes(&%s)\n", indent, expression)
+		fmt.Fprintf(b, "%sio.Bytes(%s)\n", indent, address.address(expression))
 		return nil
 	case manifest.KindBitset:
-		fmt.Fprintf(b, "%sio.Bitset(%s[:], %d)\n", indent, expression, node.Length)
+		fmt.Fprintf(b, "%sio.Bitset(%s, %d)\n", indent, address.bits(expression), node.Length)
 		return nil
 	case manifest.KindStruct:
 		fmt.Fprintf(b, "%s%s.Marshal(io)\n", indent, expression)
 		return nil
 	case manifest.KindRecursive:
-		fmt.Fprintf(b, "%s%s(io, &%s)\n", indent, e.runtime("Marshal"+e.g.identity[node.Target]), expression)
+		fmt.Fprintf(b, "%s%s(io, %s)\n", indent, e.runtime("Marshal"+e.g.identity[node.Target]), address.address(expression))
 		return nil
 	case manifest.KindEnum:
-		return e.enum(b, node, expression, hint, indent)
+		return e.enum(b, node, expression, hint, indent, address)
 	case manifest.KindOptional:
 		if node.Value == nil {
 			return fmt.Errorf("optional has no value")
@@ -920,21 +938,21 @@ func (e *marshalEmitter) node(b *strings.Builder, node manifest.Node, expression
 			if value.Value == nil {
 				return fmt.Errorf("nested optional has no value")
 			}
-			return e.optionalCall(b, "DoubleOptionalFunc", *value.Value, expression, hint+"Value", indent)
+			return e.optionalCall(b, "DoubleOptionalFunc", *value.Value, expression, hint+"Value", indent, address)
 		}
-		return e.optionalCall(b, "OptionalFunc", value, expression, hint+"Value", indent)
+		return e.optionalCall(b, "OptionalFunc", value, expression, hint+"Value", indent, address)
 	case manifest.KindArray:
 		if node.Element == nil || node.Prefix == nil {
 			return fmt.Errorf("array has no element or prefix")
 		}
-		return e.collection(b, *node.Prefix, *node.Element, expression, hint+"Item", indent)
+		return e.collection(b, *node.Prefix, *node.Element, expression, hint+"Item", indent, address)
 	case manifest.KindFixedArray:
 		if node.Element == nil {
 			return fmt.Errorf("fixed array has no element")
 		}
 		index := e.temporary("index")
-		fmt.Fprintf(b, "%sfor %s := range %s {\n", indent, index, expression)
-		if err := e.node(b, *node.Element, expression+"["+index+"]", hint+"Item", indent+"\t"); err != nil {
+		fmt.Fprintf(b, "%sfor %s := range %s {\n", indent, index, address.container(expression))
+		if err := e.node(b, *node.Element, address.element(expression, index), hint+"Item", indent+"\t", address); err != nil {
 			return err
 		}
 		fmt.Fprintf(b, "%s}\n", indent)
@@ -943,13 +961,10 @@ func (e *marshalEmitter) node(b *strings.Builder, node manifest.Node, expression
 		if node.Key == nil || node.Value == nil || node.Prefix == nil {
 			return fmt.Errorf("map has no key, value, or prefix")
 		}
-		return e.mapEntries(b, node, expression, hint, indent)
+		return e.mapEntries(b, node, expression, hint, indent, address)
 	case manifest.KindUnion:
-		name, err := e.g.goType(node, hint)
-		if err != nil {
-			return err
-		}
-		fmt.Fprintf(b, "%s%s(io, &%s)\n", indent, e.runtime("Marshal"+name), expression)
+		name := e.mustGoType(node, hint)
+		fmt.Fprintf(b, "%s%s(io, %s)\n", indent, e.runtime("Marshal"+name), address.address(expression))
 		return nil
 	case manifest.KindReserved, manifest.KindIgnored:
 		return fmt.Errorf("%s nodes require explicit write/discard codec semantics", node.Kind)
@@ -962,188 +977,37 @@ func (e *marshalEmitter) node(b *strings.Builder, node manifest.Node, expression
 	}
 }
 
-// nodePointer emits the codec for a value supplied as a pointer by one of the
-// runtime collection/optional callbacks. Keeping the pointer intact is both
-// simpler and consistent with the hand-written gophertunnel codecs: callback
-// bodies should marshal value directly instead of copying it to a temporary.
-func (e *marshalEmitter) nodePointer(b *strings.Builder, node manifest.Node, expression, hint, indent string) error {
-	if method, ok := e.semanticIOCall(node); ok {
-		fmt.Fprintf(b, "%sio.%s(%s)\n", indent, method, expression)
-		return nil
-	}
-	if native, matched, err := e.g.nativeGoType(node); matched || err != nil {
-		if err != nil {
-			return err
-		}
-		switch native {
-		case "uuid.UUID":
-			fmt.Fprintf(b, "%sio.UUID(%s)\n", indent, expression)
-		case "mgl32.Vec2":
-			fmt.Fprintf(b, "%sio.Vec2(%s)\n", indent, expression)
-		case "mgl32.Vec3":
-			fmt.Fprintf(b, "%sio.Vec3(%s)\n", indent, expression)
-		case "color.RGBA":
-			fmt.Fprintf(b, "%sio.RGBA(%s)\n", indent, expression)
-		default:
-			return fmt.Errorf("native type %s has no codec operation", native)
-		}
-		return nil
-	}
-	switch node.Kind {
-	case manifest.KindVoid:
-		return nil
-	case manifest.KindPrimitive:
-		if node.Primitive == nil {
-			return fmt.Errorf("primitive has no shape")
-		}
-		if node.Primitive.Code == "uuid" {
-			fmt.Fprintf(b, "%sio.UUIDBytes(%s)\n", indent, expression)
-			return nil
-		}
-		if node.Primitive.Code == "nbt_le" {
-			fmt.Fprintf(b, "%sio.NBT(%s)\n", indent, expression)
-			return nil
-		}
-		method, err := primitiveIOMethod(node.Primitive.Code)
-		if err != nil {
-			return err
-		}
-		fmt.Fprintf(b, "%sio.%s(%s)\n", indent, method, expression)
-		return nil
-	case manifest.KindString:
-		if !varuint32Prefix(node) {
-			return fmt.Errorf("string has unsupported length prefix")
-		}
-		fmt.Fprintf(b, "%sio.String(%s)\n", indent, expression)
-		return nil
-	case manifest.KindBytes:
-		if !varuint32Prefix(node) {
-			return fmt.Errorf("bytes have unsupported length prefix")
-		}
-		fmt.Fprintf(b, "%sio.Bytes(%s)\n", indent, expression)
-		return nil
-	case manifest.KindBitset:
-		fmt.Fprintf(b, "%sio.Bitset((*%s)[:], %d)\n", indent, expression, node.Length)
-		return nil
-	case manifest.KindStruct:
-		fmt.Fprintf(b, "%s%s.Marshal(io)\n", indent, pointerMethodReceiver(expression))
-		return nil
-	case manifest.KindRecursive:
-		fmt.Fprintf(b, "%s%s(io, %s)\n", indent, e.runtime("Marshal"+e.g.identity[node.Target]), expression)
-		return nil
-	case manifest.KindEnum:
-		if node.Primitive == nil {
-			return fmt.Errorf("enum has no primitive")
-		}
-		if len(node.Variants) == 0 {
-			return fmt.Errorf("enum has no variants")
-		}
-		if _, err := primitiveGoType(node.Primitive.Code); err != nil {
-			return err
-		}
-		method, err := primitiveIOMethod(node.Primitive.Code)
-		if err != nil {
-			return err
-		}
-		fmt.Fprintf(b, "%s%s(%s, io.%s)\n", indent, e.runtime("IntegerFunc"), expression, method)
-		return nil
-	case manifest.KindOptional:
-		if node.Value == nil {
-			return fmt.Errorf("optional has no value")
-		}
-		value := *node.Value
-		if value.Kind == manifest.KindOptional {
-			if value.Value == nil {
-				return fmt.Errorf("nested optional has no value")
-			}
-			return e.optionalCallPointer(b, "DoubleOptionalFunc", *value.Value, expression, hint+"Value", indent)
-		}
-		return e.optionalCallPointer(b, "OptionalFunc", value, expression, hint+"Value", indent)
-	case manifest.KindArray:
-		if node.Element == nil || node.Prefix == nil {
-			return fmt.Errorf("array has no element or prefix")
-		}
-		return e.collectionPointer(b, *node.Prefix, *node.Element, expression, hint+"Item", indent)
-	case manifest.KindFixedArray:
-		if node.Element == nil {
-			return fmt.Errorf("fixed array has no element")
-		}
-		index := e.temporary("index")
-		element := e.temporary("item")
-		fmt.Fprintf(b, "%sfor %s := range *%s {\n", indent, index, expression)
-		fmt.Fprintf(b, "%s\t%s := &(*%s)[%s]\n", indent, element, expression, index)
-		if err := e.nodePointer(b, *node.Element, element, hint+"Item", indent+"\t"); err != nil {
-			return err
-		}
-		fmt.Fprintf(b, "%s}\n", indent)
-		return nil
-	case manifest.KindMap:
-		if node.Key == nil || node.Value == nil || node.Prefix == nil {
-			return fmt.Errorf("map has no key, value, or prefix")
-		}
-		return e.mapEntriesPointer(b, node, expression, hint, indent)
-	case manifest.KindUnion:
-		name, err := e.g.goType(node, hint)
-		if err != nil {
-			return err
-		}
-		fmt.Fprintf(b, "%s%s(io, %s)\n", indent, e.runtime("Marshal"+name), expression)
-		return nil
-	case manifest.KindReserved, manifest.KindIgnored:
-		return fmt.Errorf("%s nodes require explicit write/discard codec semantics", node.Kind)
-	case manifest.KindSequence, manifest.KindConditional:
-		return fmt.Errorf("%s nodes do not yet have a generated codec", node.Kind)
-	case manifest.KindOpaque, manifest.KindUnresolved:
-		return fmt.Errorf("%s node blocks codec generation: %s", node.Kind, node.Reason)
+func nativeMethod(native string) string {
+	switch native {
+	case "uuid.UUID":
+		return "UUID"
+	case "mgl32.Vec2":
+		return "Vec2"
+	case "mgl32.Vec3":
+		return "Vec3"
+	case "color.RGBA":
+		return "RGBA"
 	default:
-		return fmt.Errorf("unsupported node kind %q", node.Kind)
+		panic("native type " + native + " has no codec operation")
 	}
 }
 
-func pointerMethodReceiver(expression string) string {
-	if expression == "" {
-		return expression
-	}
-	for index, r := range expression {
-		if (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || r == '_' || (index > 0 && r >= '0' && r <= '9') {
-			continue
-		}
-		return "(" + expression + ")"
-	}
-	return expression
-}
-
-func (e *marshalEmitter) optionalCall(b *strings.Builder, helper string, value manifest.Node, expression, hint, indent string) error {
-	fmt.Fprintf(b, "%s%s(io, &%s, ", indent, e.runtime(helper), expression)
+func (e *marshalEmitter) optionalCall(b *strings.Builder, helper string, value manifest.Node, expression, hint, indent string, address addressStrategy) error {
+	fmt.Fprintf(b, "%s%s(io, %s, ", indent, e.runtime(helper), address.address(expression))
 	if method, ok := e.directIOCall(value); ok {
 		fmt.Fprintf(b, "io.%s)\n", method)
 		return nil
 	}
-	typ := e.goType(value, hint)
+	typ := e.mustGoType(value, hint)
 	fmt.Fprintf(b, "func(value *%s) {\n", typ)
-	if err := e.nodePointer(b, value, "value", hint, indent+"\t"); err != nil {
+	if err := e.node(b, value, "value", hint, indent+"\t", addressStrategy{pointer: true}); err != nil {
 		return err
 	}
 	fmt.Fprintf(b, "%s})\n", indent)
 	return nil
 }
 
-func (e *marshalEmitter) optionalCallPointer(b *strings.Builder, helper string, value manifest.Node, expression, hint, indent string) error {
-	fmt.Fprintf(b, "%s%s(io, %s, ", indent, e.runtime(helper), expression)
-	if method, ok := e.directIOCall(value); ok {
-		fmt.Fprintf(b, "io.%s)\n", method)
-		return nil
-	}
-	typ := e.goType(value, hint)
-	fmt.Fprintf(b, "func(value *%s) {\n", typ)
-	if err := e.nodePointer(b, value, "value", hint, indent+"\t"); err != nil {
-		return err
-	}
-	fmt.Fprintf(b, "%s})\n", indent)
-	return nil
-}
-
-func (e *marshalEmitter) collection(b *strings.Builder, prefix, element manifest.Node, expression, hint, indent string) error {
+func (e *marshalEmitter) collection(b *strings.Builder, prefix, element manifest.Node, expression, hint, indent string, address addressStrategy) error {
 	if prefix.Kind != manifest.KindPrimitive || prefix.Primitive == nil {
 		return fmt.Errorf("collection prefix must be a primitive")
 	}
@@ -1151,43 +1015,21 @@ func (e *marshalEmitter) collection(b *strings.Builder, prefix, element manifest
 	if err != nil {
 		return err
 	}
-	fmt.Fprintf(b, "%s%s(io, &%s, io.%s, ", indent, e.runtime("FuncSlice"), expression, countMethod)
+	fmt.Fprintf(b, "%s%s(io, %s, io.%s, ", indent, e.runtime("FuncSlice"), address.address(expression), countMethod)
 	if method, ok := e.directIOCall(element); ok {
 		fmt.Fprintf(b, "io.%s)\n", method)
 		return nil
 	}
-	typ := e.goType(element, hint)
+	typ := e.mustGoType(element, hint)
 	fmt.Fprintf(b, "func(value *%s) {\n", typ)
-	if err := e.nodePointer(b, element, "value", hint, indent+"\t"); err != nil {
+	if err := e.node(b, element, "value", hint, indent+"\t", addressStrategy{pointer: true}); err != nil {
 		return err
 	}
 	fmt.Fprintf(b, "%s})\n", indent)
 	return nil
 }
 
-func (e *marshalEmitter) collectionPointer(b *strings.Builder, prefix, element manifest.Node, expression, hint, indent string) error {
-	if prefix.Kind != manifest.KindPrimitive || prefix.Primitive == nil {
-		return fmt.Errorf("collection prefix must be a primitive")
-	}
-	countMethod, err := primitiveIOMethod(prefix.Primitive.Code)
-	if err != nil {
-		return err
-	}
-	fmt.Fprintf(b, "%s%s(io, %s, io.%s, ", indent, e.runtime("FuncSlice"), expression, countMethod)
-	if method, ok := e.directIOCall(element); ok {
-		fmt.Fprintf(b, "io.%s)\n", method)
-		return nil
-	}
-	typ := e.goType(element, hint)
-	fmt.Fprintf(b, "func(value *%s) {\n", typ)
-	if err := e.nodePointer(b, element, "value", hint, indent+"\t"); err != nil {
-		return err
-	}
-	fmt.Fprintf(b, "%s})\n", indent)
-	return nil
-}
-
-func (e *marshalEmitter) mapEntries(b *strings.Builder, node manifest.Node, expression, hint, indent string) error {
+func (e *marshalEmitter) mapEntries(b *strings.Builder, node manifest.Node, expression, hint, indent string, address addressStrategy) error {
 	if node.Prefix.Kind != manifest.KindPrimitive || node.Prefix.Primitive == nil {
 		return fmt.Errorf("map prefix must be a primitive")
 	}
@@ -1195,13 +1037,13 @@ func (e *marshalEmitter) mapEntries(b *strings.Builder, node manifest.Node, expr
 	if err != nil {
 		return err
 	}
-	fmt.Fprintf(b, "%s%s(io, &%s, io.%s, ", indent, e.runtime("OrderedMap"), expression, countMethod)
+	fmt.Fprintf(b, "%s%s(io, %s, io.%s, ", indent, e.runtime("OrderedMap"), address.address(expression), countMethod)
 	if method, ok := e.directIOCall(*node.Key); ok {
 		fmt.Fprintf(b, "io.%s, ", method)
 	} else {
-		typ := e.goType(*node.Key, hint+"Key")
+		typ := e.mustGoType(*node.Key, hint+"Key")
 		fmt.Fprintf(b, "func(value *%s) {\n", typ)
-		if err := e.nodePointer(b, *node.Key, "value", hint+"Key", indent+"\t"); err != nil {
+		if err := e.node(b, *node.Key, "value", hint+"Key", indent+"\t", addressStrategy{pointer: true}); err != nil {
 			return err
 		}
 		fmt.Fprintf(b, "%s}, ", indent)
@@ -1210,48 +1052,16 @@ func (e *marshalEmitter) mapEntries(b *strings.Builder, node manifest.Node, expr
 		fmt.Fprintf(b, "io.%s)\n", method)
 		return nil
 	}
-	typ := e.goType(*node.Value, hint+"Value")
+	typ := e.mustGoType(*node.Value, hint+"Value")
 	fmt.Fprintf(b, "func(value *%s) {\n", typ)
-	if err := e.nodePointer(b, *node.Value, "value", hint+"Value", indent+"\t"); err != nil {
+	if err := e.node(b, *node.Value, "value", hint+"Value", indent+"\t", addressStrategy{pointer: true}); err != nil {
 		return err
 	}
 	fmt.Fprintf(b, "%s})\n", indent)
 	return nil
 }
 
-func (e *marshalEmitter) mapEntriesPointer(b *strings.Builder, node manifest.Node, expression, hint, indent string) error {
-	if node.Prefix.Kind != manifest.KindPrimitive || node.Prefix.Primitive == nil {
-		return fmt.Errorf("map prefix must be a primitive")
-	}
-	countMethod, err := primitiveIOMethod(node.Prefix.Primitive.Code)
-	if err != nil {
-		return err
-	}
-	fmt.Fprintf(b, "%s%s(io, %s, io.%s, ", indent, e.runtime("OrderedMap"), expression, countMethod)
-	if method, ok := e.directIOCall(*node.Key); ok {
-		fmt.Fprintf(b, "io.%s, ", method)
-	} else {
-		typ := e.goType(*node.Key, hint+"Key")
-		fmt.Fprintf(b, "func(value *%s) {\n", typ)
-		if err := e.nodePointer(b, *node.Key, "value", hint+"Key", indent+"\t"); err != nil {
-			return err
-		}
-		fmt.Fprintf(b, "%s}, ", indent)
-	}
-	if method, ok := e.directIOCall(*node.Value); ok {
-		fmt.Fprintf(b, "io.%s)\n", method)
-		return nil
-	}
-	typ := e.goType(*node.Value, hint+"Value")
-	fmt.Fprintf(b, "func(value *%s) {\n", typ)
-	if err := e.nodePointer(b, *node.Value, "value", hint+"Value", indent+"\t"); err != nil {
-		return err
-	}
-	fmt.Fprintf(b, "%s})\n", indent)
-	return nil
-}
-
-func (e *marshalEmitter) enum(b *strings.Builder, node manifest.Node, expression, hint, indent string) error {
+func (e *marshalEmitter) enum(b *strings.Builder, node manifest.Node, expression, hint, indent string, address addressStrategy) error {
 	if node.Primitive == nil {
 		return fmt.Errorf("enum has no primitive")
 	}
@@ -1265,7 +1075,7 @@ func (e *marshalEmitter) enum(b *strings.Builder, node manifest.Node, expression
 	if err != nil {
 		return err
 	}
-	fmt.Fprintf(b, "%s%s(&%s, io.%s)\n", indent, e.runtime("IntegerFunc"), expression, method)
+	fmt.Fprintf(b, "%s%s(%s, io.%s)\n", indent, e.runtime("IntegerFunc"), address.address(expression), method)
 	return nil
 }
 
@@ -1399,7 +1209,7 @@ func (e *marshalEmitter) union(b *strings.Builder, definition typeDefinition) er
 	}
 	fmt.Fprintf(b, "\t%s(io,\n\t\tfunc() {\n", e.runtime("UnionFunc"))
 	fmt.Fprintf(b, "\t\tvar tag %s\n", tagType)
-	if err := e.node(b, controlNode, "tag", definition.Name+"Tag", "\t\t"); err != nil {
+	if err := e.node(b, controlNode, "tag", definition.Name+"Tag", "\t\t", addressStrategy{}); err != nil {
 		return err
 	}
 	b.WriteString("\t\tswitch int64(tag) {\n")
@@ -1409,7 +1219,7 @@ func (e *marshalEmitter) union(b *strings.Builder, definition typeDefinition) er
 	b.WriteString("\t\tdefault:\n\t\t\tio.InvalidValue(tag, \"unknown union tag\")\n\t\t}\n\t\t},\n\t\tfunc() {\n\t\tswitch value := (*x).(type) {\n")
 	for _, member := range definition.Union {
 		fmt.Fprintf(b, "\t\tcase %s:\n\t\t\ttag := %s(%d)\n", member.Name, tagType, member.Value)
-		if err := e.node(b, controlNode, "tag", definition.Name+"Tag", "\t\t\t"); err != nil {
+		if err := e.node(b, controlNode, "tag", definition.Name+"Tag", "\t\t\t", addressStrategy{}); err != nil {
 			return err
 		}
 		b.WriteString("\t\t\tvalue.Marshal(io)\n")

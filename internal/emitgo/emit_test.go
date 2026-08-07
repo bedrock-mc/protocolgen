@@ -2,11 +2,28 @@ package emitgo
 
 import (
 	"go/format"
+	"os"
 	"strings"
 	"testing"
 
 	"protocolgen/internal/manifest"
 )
+
+func TestMarshalEmitterUsesOneAddressParameterizedWalk(t *testing.T) {
+	source, err := os.ReadFile("emit.go")
+	if err != nil {
+		t.Fatal(err)
+	}
+	text := string(source)
+	if strings.Count(text, "func (e *marshalEmitter) node(") != 1 {
+		t.Fatalf("marshal emitter has more than one node walk")
+	}
+	for _, duplicate := range []string{"nodePointer", "optionalCallPointer", "collectionPointer", "mapEntriesPointer"} {
+		if strings.Contains(text, duplicate) {
+			t.Fatalf("marshal emitter retains duplicate helper %q", duplicate)
+		}
+	}
+}
 
 func TestGenerateConsumesOnlyCanonicalManifest(t *testing.T) {
 	m := manifest.Manifest{
