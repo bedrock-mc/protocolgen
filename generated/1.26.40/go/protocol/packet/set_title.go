@@ -26,3 +26,6 @@ func (x *SetTitle) Marshal(io protocol.IO) {
 	io.String(&x.PlatformOnlineId)
 	io.String(&x.FilteredTitleMessage)
 }
+
+// ID returns the protocol ID for SetTitle.
+func (*SetTitle) ID() uint32 { return IDSetTitle }

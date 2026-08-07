@@ -14,3 +14,6 @@ func (x *ClientCacheBlobStatus) Marshal(io protocol.IO) {
 	protocol.FuncSlice(io, &x.MissingIds, io.Varuint32, io.Uint64)
 	protocol.FuncSlice(io, &x.FoundIds, io.Varuint32, io.Uint64)
 }
+
+// ID returns the protocol ID for ClientCacheBlobStatus.
+func (*ClientCacheBlobStatus) ID() uint32 { return IDClientCacheBlobStatus }

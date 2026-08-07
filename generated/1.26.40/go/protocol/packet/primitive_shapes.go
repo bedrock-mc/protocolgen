@@ -14,3 +14,6 @@ func (x *PrimitiveShapes) Marshal(io protocol.IO) {
 		value.Marshal(io)
 	})
 }
+
+// ID returns the protocol ID for PrimitiveShapes.
+func (*PrimitiveShapes) ID() uint32 { return IDPrimitiveShapes }

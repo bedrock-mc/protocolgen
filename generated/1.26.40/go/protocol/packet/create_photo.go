@@ -16,3 +16,6 @@ func (x *CreatePhoto) Marshal(io protocol.IO) {
 	io.String(&x.PhotoName)
 	io.String(&x.PhotoItemName)
 }
+
+// ID returns the protocol ID for CreatePhoto.
+func (*CreatePhoto) ID() uint32 { return IDCreatePhoto }

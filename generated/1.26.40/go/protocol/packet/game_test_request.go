@@ -24,3 +24,6 @@ func (x *GameTestRequest) Marshal(io protocol.IO) {
 	io.Varint32(&x.TestsPerRow)
 	io.String(&x.TestName)
 }
+
+// ID returns the protocol ID for GameTestRequest.
+func (*GameTestRequest) ID() uint32 { return IDGameTestRequest }

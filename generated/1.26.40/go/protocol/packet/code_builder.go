@@ -14,3 +14,6 @@ func (x *CodeBuilder) Marshal(io protocol.IO) {
 	io.String(&x.URL)
 	io.Bool(&x.ShouldOpenCodeBuilder)
 }
+
+// ID returns the protocol ID for CodeBuilder.
+func (*CodeBuilder) ID() uint32 { return IDCodeBuilder }

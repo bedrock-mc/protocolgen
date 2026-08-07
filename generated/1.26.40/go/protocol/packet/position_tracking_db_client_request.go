@@ -14,3 +14,6 @@ func (x *PositionTrackingDBClientRequest) Marshal(io protocol.IO) {
 	protocol.IntegerFunc(&x.Action, io.Uint8)
 	x.Id.Marshal(io)
 }
+
+// ID returns the protocol ID for PositionTrackingDBClientRequest.
+func (*PositionTrackingDBClientRequest) ID() uint32 { return IDPositionTrackingDBClientRequest }

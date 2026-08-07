@@ -12,3 +12,6 @@ type SimpleEvent struct {
 func (x *SimpleEvent) Marshal(io protocol.IO) {
 	protocol.IntegerFunc(&x.Type, io.Uint16)
 }
+
+// ID returns the protocol ID for SimpleEvent.
+func (*SimpleEvent) ID() uint32 { return IDSimpleEvent }

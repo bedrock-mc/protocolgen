@@ -18,3 +18,6 @@ func (x *RequestAbility) Marshal(io protocol.IO) {
 	io.Bool(&x.Bool)
 	io.Float32(&x.Float)
 }
+
+// ID returns the protocol ID for RequestAbility.
+func (*RequestAbility) ID() uint32 { return IDRequestAbility }

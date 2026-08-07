@@ -20,3 +20,6 @@ func (x *SetDisplayObjective) Marshal(io protocol.IO) {
 	io.String(&x.CriteriaName)
 	io.Varint32(&x.SortOrder)
 }
+
+// ID returns the protocol ID for SetDisplayObjective.
+func (*SetDisplayObjective) ID() uint32 { return IDSetDisplayObjective }

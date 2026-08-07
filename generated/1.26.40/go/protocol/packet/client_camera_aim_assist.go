@@ -16,3 +16,6 @@ func (x *ClientCameraAimAssist) Marshal(io protocol.IO) {
 	protocol.IntegerFunc(&x.Action, io.Uint8)
 	io.Bool(&x.AllowAimAssist)
 }
+
+// ID returns the protocol ID for ClientCameraAimAssist.
+func (*ClientCameraAimAssist) ID() uint32 { return IDClientCameraAimAssist }

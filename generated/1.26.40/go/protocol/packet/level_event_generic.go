@@ -14,3 +14,6 @@ func (x *LevelEventGeneric) Marshal(io protocol.IO) {
 	io.Varint32(&x.EventId)
 	io.NBT(&x.CTD)
 }
+
+// ID returns the protocol ID for LevelEventGeneric.
+func (*LevelEventGeneric) ID() uint32 { return IDLevelEventGeneric }

@@ -14,3 +14,6 @@ func (x *BlockActorData) Marshal(io protocol.IO) {
 	x.BlockPosition.Marshal(io)
 	io.NBT(&x.ActorDataTags)
 }
+
+// ID returns the protocol ID for BlockActorData.
+func (*BlockActorData) ID() uint32 { return IDBlockActorData }

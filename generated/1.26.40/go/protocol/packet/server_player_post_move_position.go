@@ -16,3 +16,6 @@ type ServerPlayerPostMovePosition struct {
 func (x *ServerPlayerPostMovePosition) Marshal(io protocol.IO) {
 	io.Vec3(&x.Pos)
 }
+
+// ID returns the protocol ID for ServerPlayerPostMovePosition.
+func (*ServerPlayerPostMovePosition) ID() uint32 { return IDServerPlayerPostMovePosition }

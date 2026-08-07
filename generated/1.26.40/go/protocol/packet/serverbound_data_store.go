@@ -12,3 +12,6 @@ type ServerboundDataStore struct {
 func (x *ServerboundDataStore) Marshal(io protocol.IO) {
 	x.Update.Marshal(io)
 }
+
+// ID returns the protocol ID for ServerboundDataStore.
+func (*ServerboundDataStore) ID() uint32 { return IDServerboundDataStore }

@@ -20,3 +20,6 @@ func (x *Interact) Marshal(io protocol.IO) {
 	io.ActorRuntimeID(&x.TargetRuntimeID)
 	protocol.OptionalFunc(io, &x.Position, io.Vec3)
 }
+
+// ID returns the protocol ID for Interact.
+func (*Interact) ID() uint32 { return IDInteract }

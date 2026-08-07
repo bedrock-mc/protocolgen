@@ -34,3 +34,6 @@ func (x *MovePlayer) Marshal(io protocol.IO) {
 	})
 	io.PlayerInputTick(&x.Tick)
 }
+
+// ID returns the protocol ID for MovePlayer.
+func (*MovePlayer) ID() uint32 { return IDMovePlayer }

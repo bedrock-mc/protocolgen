@@ -12,3 +12,6 @@ type AutomationClientConnect struct {
 func (x *AutomationClientConnect) Marshal(io protocol.IO) {
 	x.WebSocketData.Marshal(io)
 }
+
+// ID returns the protocol ID for AutomationClientConnect.
+func (*AutomationClientConnect) ID() uint32 { return IDAutomationClientConnect }

@@ -12,3 +12,6 @@ type ServerToClientHandshake struct {
 func (x *ServerToClientHandshake) Marshal(io protocol.IO) {
 	io.String(&x.HandshakeWebToken)
 }
+
+// ID returns the protocol ID for ServerToClientHandshake.
+func (*ServerToClientHandshake) ID() uint32 { return IDServerToClientHandshake }

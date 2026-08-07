@@ -14,3 +14,6 @@ func (x *DebugInfo) Marshal(io protocol.IO) {
 	io.ActorUniqueID(&x.ActorId)
 	io.String(&x.Data)
 }
+
+// ID returns the protocol ID for DebugInfo.
+func (*DebugInfo) ID() uint32 { return IDDebugInfo }

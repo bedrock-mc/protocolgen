@@ -14,3 +14,6 @@ func (x *UpdateSubChunkBlocks) Marshal(io protocol.IO) {
 	x.SubChunkBlockPosition.Marshal(io)
 	x.BlocksChanged.Marshal(io)
 }
+
+// ID returns the protocol ID for UpdateSubChunkBlocks.
+func (*UpdateSubChunkBlocks) ID() uint32 { return IDUpdateSubChunkBlocks }

@@ -14,3 +14,6 @@ func (x *UnlockedRecipes) Marshal(io protocol.IO) {
 	protocol.IntegerFunc(&x.PacketType, io.Uint32)
 	protocol.FuncSlice(io, &x.UnlockedRecipesList, io.Varuint32, io.String)
 }
+
+// ID returns the protocol ID for UnlockedRecipes.
+func (*UnlockedRecipes) ID() uint32 { return IDUnlockedRecipes }

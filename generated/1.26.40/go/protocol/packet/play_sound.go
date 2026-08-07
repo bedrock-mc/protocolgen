@@ -24,3 +24,6 @@ func (x *PlaySound) Marshal(io protocol.IO) {
 		value.Marshal(io)
 	})
 }
+
+// ID returns the protocol ID for PlaySound.
+func (*PlaySound) ID() uint32 { return IDPlaySound }

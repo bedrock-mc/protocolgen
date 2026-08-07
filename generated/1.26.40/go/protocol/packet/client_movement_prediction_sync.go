@@ -22,3 +22,6 @@ func (x *ClientMovementPredictionSync) Marshal(io protocol.IO) {
 	io.ActorUniqueID(&x.ActorUniqueID)
 	io.Bool(&x.ActorFlyingState)
 }
+
+// ID returns the protocol ID for ClientMovementPredictionSync.
+func (*ClientMovementPredictionSync) ID() uint32 { return IDClientMovementPredictionSync }

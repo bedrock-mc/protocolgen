@@ -12,3 +12,6 @@ type MoveActorDelta struct {
 func (x *MoveActorDelta) Marshal(io protocol.IO) {
 	x.MoveData.Marshal(io)
 }
+
+// ID returns the protocol ID for MoveActorDelta.
+func (*MoveActorDelta) ID() uint32 { return IDMoveActorDelta }

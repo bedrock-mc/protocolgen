@@ -16,3 +16,6 @@ func (x *ActorPickRequest) Marshal(io protocol.IO) {
 	io.Uint8(&x.MaxSlots)
 	io.Bool(&x.WithData)
 }
+
+// ID returns the protocol ID for ActorPickRequest.
+func (*ActorPickRequest) ID() uint32 { return IDActorPickRequest }

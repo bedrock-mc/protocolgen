@@ -16,3 +16,6 @@ func (x *GuiDataPickItem) Marshal(io protocol.IO) {
 	io.String(&x.ItemEffectName)
 	io.Int32(&x.Slot)
 }
+
+// ID returns the protocol ID for GuiDataPickItem.
+func (*GuiDataPickItem) ID() uint32 { return IDGuiDataPickItem }

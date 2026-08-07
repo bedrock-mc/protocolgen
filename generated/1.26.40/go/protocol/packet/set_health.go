@@ -12,3 +12,6 @@ type SetHealth struct {
 func (x *SetHealth) Marshal(io protocol.IO) {
 	io.Varint32(&x.Health)
 }
+
+// ID returns the protocol ID for SetHealth.
+func (*SetHealth) ID() uint32 { return IDSetHealth }

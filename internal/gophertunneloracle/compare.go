@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 
 	"protocolgen/internal/manifest"
@@ -97,9 +98,11 @@ func Compare(canonical manifest.Manifest, source extraction, lock Lock, accepted
 			report.Packets = append(report.Packets, result)
 			continue
 		}
-		if atomsEqual(want, got) {
+		wantWire := normalizeFixedArrayGrouping(want)
+		gotWire := normalizeFixedArrayGrouping(got)
+		if atomsEqual(wantWire, gotWire) {
 			result.Classification = "AGREEMENT"
-			result.OperationCount = len(want)
+			result.OperationCount = len(wantWire)
 			report.Counts.Agreement++
 			report.Packets = append(report.Packets, result)
 			continue
@@ -137,6 +140,7 @@ func Compare(canonical manifest.Manifest, source extraction, lock Lock, accepted
 func defaultNormalization() Normalization {
 	return Normalization{
 		FixedWidth:    "Signed and unsigned fixed-width integers with identical width and endianness are equivalent.",
+		FixedGrouping: "Fixed-array wrapper grouping is normalized by expanding scalar wire values; the repeated scalar count remains significant.",
 		Strings:       "A length-prefixed UTF-8 string and a length-prefixed byte slice with the same prefix are wire-equivalent.",
 		ByteArrays:    "A prefixed array of single u8 elements is equivalent to a byte slice with the same prefix.",
 		UUID:          "UUID is compared as 16 bytes at its wire position; gophertunnel's internal UUID byte ordering is intentionally not validated.",
@@ -149,7 +153,7 @@ func defaultNormalization() Normalization {
 			"float versus integer",
 			"option presence",
 			"array prefix type",
-			"fixed-array length",
+			"fixed-array scalar count",
 			"union control and variant discriminants",
 		},
 	}
@@ -472,6 +476,57 @@ func atomsEqual(left, right []atom) bool {
 		}
 	}
 	return true
+}
+
+// normalizeFixedArrayGrouping removes only fixed-array wrapper tokens while
+// retaining every scalar occurrence. This makes [16][16]byte and [256]byte,
+// or a fixed vector and its individually named scalar fields, compare by the
+// bytes they put on the wire. It does not make different lengths equivalent:
+// a different number of scalar atoms still differs.
+func normalizeFixedArrayGrouping(atoms []atom) []atom {
+	result := make([]atom, 0, len(atoms))
+	for index := 0; index < len(atoms); {
+		token := atoms[index].Token
+		if !strings.HasPrefix(token, "FIXED:") {
+			result = append(result, atoms[index])
+			index++
+			continue
+		}
+		count, err := strconv.Atoi(strings.TrimPrefix(token, "FIXED:"))
+		if err != nil || count <= 0 {
+			result = append(result, atoms[index])
+			index++
+			continue
+		}
+		end := fixedArrayEnd(atoms, index)
+		if end < 0 {
+			result = append(result, atoms[index])
+			index++
+			continue
+		}
+		body := normalizeFixedArrayGrouping(atoms[index+1 : end])
+		for repeat := 0; repeat < count; repeat++ {
+			result = append(result, body...)
+		}
+		index = end + 1
+	}
+	return result
+}
+
+func fixedArrayEnd(atoms []atom, start int) int {
+	depth := 0
+	for index := start; index < len(atoms); index++ {
+		switch {
+		case strings.HasPrefix(atoms[index].Token, "FIXED:"):
+			depth++
+		case atoms[index].Token == "/FIXED":
+			depth--
+			if depth == 0 {
+				return index
+			}
+		}
+	}
+	return -1
 }
 
 func atomDisplays(atoms []atom) []string {

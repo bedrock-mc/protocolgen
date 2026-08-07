@@ -48,3 +48,6 @@ func (x *ClientboundMapItemData) Marshal(io protocol.IO) {
 		protocol.FuncSlice(io, value, io.Varuint32, io.Uint32)
 	})
 }
+
+// ID returns the protocol ID for ClientboundMapItemData.
+func (*ClientboundMapItemData) ID() uint32 { return IDClientboundMapItemData }

@@ -16,3 +16,6 @@ func (x *StopSound) Marshal(io protocol.IO) {
 	io.Bool(&x.StopAllSounds)
 	io.Bool(&x.StopMusicLegacy)
 }
+
+// ID returns the protocol ID for StopSound.
+func (*StopSound) ID() uint32 { return IDStopSound }

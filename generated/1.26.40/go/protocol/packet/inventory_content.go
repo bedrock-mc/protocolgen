@@ -20,3 +20,6 @@ func (x *InventoryContent) Marshal(io protocol.IO) {
 	x.FullContainerName.Marshal(io)
 	x.StorageItem.Marshal(io)
 }
+
+// ID returns the protocol ID for InventoryContent.
+func (*InventoryContent) ID() uint32 { return IDInventoryContent }

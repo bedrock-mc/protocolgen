@@ -20,3 +20,6 @@ func (x *Transfer) Marshal(io protocol.IO) {
 		value.Marshal(io)
 	})
 }
+
+// ID returns the protocol ID for Transfer.
+func (*Transfer) ID() uint32 { return IDTransfer }

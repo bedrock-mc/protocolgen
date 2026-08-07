@@ -12,3 +12,6 @@ type PlayStatus struct {
 func (x *PlayStatus) Marshal(io protocol.IO) {
 	protocol.IntegerFunc(&x.Status, io.BEInt32)
 }
+
+// ID returns the protocol ID for PlayStatus.
+func (*PlayStatus) ID() uint32 { return IDPlayStatus }

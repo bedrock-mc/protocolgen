@@ -12,3 +12,6 @@ type CameraInstruction struct {
 func (x *CameraInstruction) Marshal(io protocol.IO) {
 	x.CameraInstruction.Marshal(io)
 }
+
+// ID returns the protocol ID for CameraInstruction.
+func (*CameraInstruction) ID() uint32 { return IDCameraInstruction }

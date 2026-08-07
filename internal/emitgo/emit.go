@@ -1,5 +1,6 @@
-// Package emitgo emits a small standalone Go view from the canonical v2
-// manifest. It receives no source documents and has no profile mapping table.
+// Package emitgo emits a standalone Go view from the canonical v2 manifest.
+// It receives no source documents; target-specific conveniences are selected
+// explicitly through Options.
 package emitgo
 
 import (
@@ -43,23 +44,53 @@ type generator struct {
 	identity           map[string]string
 	usedNames          map[string]bool
 	protocolImportPath string
+	nativeTypes        bool
+	emitPacketRuntime  bool
+	emitPacketPools    bool
+}
+
+// Options controls the target-specific conveniences emitted alongside the
+// canonical wire representation. NativeTypes enables established Go types
+// such as uuid.UUID and mgl32 vectors; disabling it keeps every named shape in
+// generated protocol structs. Packet runtime and pool emission are enabled by
+// Generate and can be disabled by callers that only need definitions.
+type Options struct {
+	ProtocolImportPath string
+	NativeTypes        bool
+	EmitPacketRuntime  bool
+	EmitPacketPools    bool
 }
 
 // Generate emits a protocol package and its packet subpackage. The protocol
 // import path is embedded in packet files so the generated tree can be used as
 // an ordinary Go package from any parent module.
 func Generate(m manifest.Manifest, protocolImportPath string) (map[string]string, error) {
+	return GenerateWithOptions(m, Options{
+		ProtocolImportPath: protocolImportPath,
+		NativeTypes:        true,
+		EmitPacketRuntime:  true,
+		EmitPacketPools:    true,
+	})
+}
+
+// GenerateWithOptions emits a protocol package using explicit target options.
+// The canonical manifest remains the source of truth; options only affect the
+// generated API surface and Go type mappings.
+func GenerateWithOptions(m manifest.Manifest, options Options) (map[string]string, error) {
 	if err := manifest.Validate(m); err != nil {
 		return nil, err
 	}
-	if protocolImportPath == "" || strings.ContainsAny(protocolImportPath, " \t\r\n") {
-		return nil, fmt.Errorf("invalid protocol import path %q", protocolImportPath)
+	if options.ProtocolImportPath == "" || strings.ContainsAny(options.ProtocolImportPath, " \t\r\n") {
+		return nil, fmt.Errorf("invalid protocol import path %q", options.ProtocolImportPath)
 	}
 	g := &generator{
 		definitions:        map[string]typeDefinition{},
 		identity:           map[string]string{},
 		usedNames:          map[string]bool{},
-		protocolImportPath: protocolImportPath,
+		protocolImportPath: options.ProtocolImportPath,
+		nativeTypes:        options.NativeTypes,
+		emitPacketRuntime:  options.EmitPacketRuntime,
+		emitPacketPools:    options.EmitPacketPools,
 	}
 	packets := append([]manifest.Packet(nil), m.Packets...)
 	sort.Slice(packets, func(i, j int) bool { return packets[i].ID < packets[j].ID })
@@ -130,13 +161,16 @@ func ensureNodeCodecSymmetric(node manifest.Node) error {
 }
 
 func (g *generator) goType(node manifest.Node, hint string) (string, error) {
-	if typ, matched, err := nativeGoType(node); matched || err != nil {
+	if typ, matched, err := g.nativeGoType(node); matched || err != nil {
 		return typ, err
 	}
 	switch node.Kind {
 	case manifest.KindPrimitive:
 		if node.Primitive == nil {
 			return "", fmt.Errorf("primitive has no shape")
+		}
+		if node.Primitive.Code == "uuid" {
+			return "[16]byte", nil
 		}
 		return primitiveGoType(node.Primitive.Code)
 	case manifest.KindString:
@@ -267,6 +301,17 @@ func (g *generator) goType(node manifest.Node, hint string) (string, error) {
 
 // nativeGoType maps canonical wire semantics to established Go ecosystem types.
 func nativeGoType(node manifest.Node) (string, bool, error) {
+	return nativeGoTypeWithOptions(node, true)
+}
+
+func (g *generator) nativeGoType(node manifest.Node) (string, bool, error) {
+	return nativeGoTypeWithOptions(node, g.nativeTypes)
+}
+
+func nativeGoTypeWithOptions(node manifest.Node, enabled bool) (string, bool, error) {
+	if !enabled {
+		return "", false, nil
+	}
 	if node.Kind == manifest.KindPrimitive && node.Primitive != nil {
 		switch node.Primitive.Code {
 		case "uuid":
@@ -517,7 +562,19 @@ func (g *generator) emitFiles(packets []manifest.Packet, packetNames map[uint32]
 	}
 	packetFiles := map[string]string{}
 	packetUsed := map[string]bool{"ids.go": true}
+	if g.emitPacketRuntime {
+		packetUsed["packet.go"] = true
+	}
+	if g.emitPacketPools {
+		packetUsed["pool.go"] = true
+	}
 	packetFiles["ids.go"] = emitPacketIDs(packets, packetNames)
+	if g.emitPacketRuntime {
+		packetFiles["packet.go"] = emitPacketRuntime(g.protocolImportPath)
+	}
+	if g.emitPacketPools {
+		packetFiles["pool.go"] = emitPacketPools(packets, packetNames)
+	}
 	for _, packet := range packets {
 		packetName := packetNames[packet.ID]
 		base := snakeName(packetName) + ".go"
@@ -582,6 +639,20 @@ func emitDefinition(g *generator, definition typeDefinition) (string, error) {
 	case manifest.KindBitset:
 		fmt.Fprintf(&b, "// %s stores the %d-bit value used by the wire bitset encoding.\n", definition.Name, definition.BitLength)
 		fmt.Fprintf(&b, "type %s [%d]uint64\n", definition.Name, (definition.BitLength+63)/64)
+		fmt.Fprintf(&b, "\nconst %sLength = %d\n\n", definition.Name, definition.BitLength)
+		fmt.Fprintf(&b, "// Set marks bit index i. It panics when i is outside [0, %d).\n", definition.BitLength)
+		fmt.Fprintf(&b, "func (b *%s) Set(i int) {\n", definition.Name)
+		fmt.Fprintf(&b, "\tif i < 0 || i >= %sLength {\n\t\tpanic(\"index out of bounds\")\n\t}\n", definition.Name)
+		fmt.Fprintf(&b, "\tb[i/64] |= uint64(1) << uint(i%%64)\n}\n\n")
+		fmt.Fprintf(&b, "// Unset clears bit index i. It panics when i is outside [0, %d).\n", definition.BitLength)
+		fmt.Fprintf(&b, "func (b *%s) Unset(i int) {\n", definition.Name)
+		fmt.Fprintf(&b, "\tif i < 0 || i >= %sLength {\n\t\tpanic(\"index out of bounds\")\n\t}\n", definition.Name)
+		fmt.Fprintf(&b, "\tb[i/64] &^= uint64(1) << uint(i%%64)\n}\n\n")
+		fmt.Fprintf(&b, "// Load reports whether bit index i is set. It panics when i is outside [0, %d).\n", definition.BitLength)
+		fmt.Fprintf(&b, "func (b %s) Load(i int) bool {\n", definition.Name)
+		fmt.Fprintf(&b, "\tif i < 0 || i >= %sLength {\n\t\tpanic(\"index out of bounds\")\n\t}\n", definition.Name)
+		fmt.Fprintf(&b, "\treturn b[i/64]&(uint64(1)<<uint(i%%64)) != 0\n}\n\n")
+		fmt.Fprintf(&b, "// Len returns the number of bits in the bitset.\nfunc (b %s) Len() int { return %sLength }\n", definition.Name, definition.Name)
 	default:
 		return "", fmt.Errorf("unsupported definition kind %q", definition.Kind)
 	}
@@ -614,7 +685,13 @@ func (g *generator) emitPacket(packet manifest.Packet, packetName string) (strin
 	used := map[string]bool{}
 	fields := make([]packetField, 0, len(packet.Fields))
 	for _, field := range packet.Fields {
-		name := uniqueFieldName(exportName(field.Name), used)
+		baseName := exportName(field.Name)
+		if g.emitPacketRuntime && baseName == "ID" {
+			// ID is reserved by the generated packet runtime method. Keep the
+			// wire field explicit without making the struct fail to compile.
+			baseName = "IDValue"
+		}
+		name := uniqueFieldName(baseName, used)
 		typ, err := g.goType(field.Encode, packetName+name)
 		if err != nil {
 			return "", err
@@ -637,6 +714,9 @@ func (g *generator) emitPacket(packet manifest.Packet, packetName string) (strin
 		}
 	}
 	b.WriteString("}\n")
+	if g.emitPacketRuntime {
+		fmt.Fprintf(&b, "\n// ID returns the protocol ID for %s.\nfunc (*%s) ID() uint32 { return ID%s }\n", packetName, packetName, packetName)
+	}
 	return formatGoSource(b.String())
 }
 
@@ -648,6 +728,88 @@ func emitPacketIDs(packets []manifest.Packet, packetNames map[uint32]string) str
 	}
 	b.WriteString(")\n")
 	return b.String()
+}
+
+func emitPacketRuntime(protocolImportPath string) string {
+	return mustFormatGoSource(fmt.Sprintf(`// Code generated from canonical protocol manifest v2. DO NOT EDIT.
+
+package packet
+
+import %q
+
+// Packet is the common runtime contract for every generated Bedrock packet.
+// Marshal reads from or writes to the supplied protocol IO implementation.
+type Packet interface {
+	ID() uint32
+	Marshal(protocol.IO)
+}
+`, protocolImportPath))
+}
+
+func emitPacketPools(packets []manifest.Packet, packetNames map[uint32]string) string {
+	var b strings.Builder
+	b.WriteString(`// Code generated from canonical protocol manifest v2. DO NOT EDIT.
+
+package packet
+
+// Factory constructs a fresh packet value for decoding.
+type Factory func() Packet
+
+// Pool maps protocol IDs to packet constructors.
+type Pool map[uint32]Factory
+
+`)
+	emit := func(name string, include func(manifest.Direction) bool) {
+		fmt.Fprintf(&b, "var %s = Pool{\n", name)
+		for _, packet := range packets {
+			if !include(packet.Direction) {
+				continue
+			}
+			packetName := packetNames[packet.ID]
+			fmt.Fprintf(&b, "\tID%s: func() Packet { return &%s{} },\n", packetName, packetName)
+		}
+		b.WriteString("}\n\n")
+	}
+	emit("allPacketFactories", func(manifest.Direction) bool { return true })
+	emit("clientPacketFactories", func(direction manifest.Direction) bool {
+		return direction == manifest.DirectionServerbound || direction == manifest.DirectionBidirectional
+	})
+	emit("serverPacketFactories", func(direction manifest.Direction) bool {
+		return direction == manifest.DirectionClientbound || direction == manifest.DirectionBidirectional
+	})
+	b.WriteString(`// NewPool returns a copy of the complete packet factory table.
+func NewPool() Pool { return clonePool(allPacketFactories) }
+
+// NewClientPool returns factories for packets sent by a client, including
+// packets explicitly marked bidirectional in the manifest.
+func NewClientPool() Pool { return clonePool(clientPacketFactories) }
+
+// NewServerPool returns factories for packets sent by a server, including
+// packets explicitly marked bidirectional in the manifest.
+func NewServerPool() Pool { return clonePool(serverPacketFactories) }
+
+// NewPacket constructs the packet with id, if it is known.
+func NewPacket(id uint32) (Packet, bool) { return newFromPool(allPacketFactories, id) }
+
+// NewClientPacket constructs a known packet sent by a client.
+func NewClientPacket(id uint32) (Packet, bool) { return newFromPool(clientPacketFactories, id) }
+
+// NewServerPacket constructs a known packet sent by a server.
+func NewServerPacket(id uint32) (Packet, bool) { return newFromPool(serverPacketFactories, id) }
+
+func clonePool(source Pool) Pool {
+	copy := make(Pool, len(source))
+	for id, factory := range source { copy[id] = factory }
+	return copy
+}
+
+func newFromPool(pool Pool, id uint32) (Packet, bool) {
+	factory, ok := pool[id]
+	if !ok { return nil, false }
+	return factory(), true
+}
+`)
+	return mustFormatGoSource(b.String())
 }
 
 func emitCodecRuntime() string {
@@ -712,6 +874,7 @@ type IO interface {
 	Bytes(*[]byte)
 	NBT(*[]byte)
 	UUID(*uuid.UUID)
+	UUIDBytes(*[16]byte)
 	Vec2(*mgl32.Vec2)
 	Vec3(*mgl32.Vec3)
 	RGBA(*color.RGBA)
@@ -1057,6 +1220,12 @@ func (r *Reader) UUID(x *uuid.UUID) {
 	copy((*x)[8:], data[8:])
 	reverseBytes((*x)[:8])
 	reverseBytes((*x)[8:])
+}
+
+func (r *Reader) UUIDBytes(x *[16]byte) {
+	var value uuid.UUID
+	r.UUID(&value)
+	copy(x[:], value[:])
 }
 
 func (r *Reader) Vec2(x *mgl32.Vec2) {
@@ -1509,6 +1678,12 @@ func (w *Writer) UUID(x *uuid.UUID) {
 	w.write(data)
 }
 
+func (w *Writer) UUIDBytes(x *[16]byte) {
+	var value uuid.UUID
+	copy(value[:], x[:])
+	w.UUID(&value)
+}
+
 func (w *Writer) Vec2(x *mgl32.Vec2) {
 	w.Float32(&(*x)[0])
 	w.Float32(&(*x)[1])
@@ -1837,11 +2012,11 @@ func (e *marshalEmitter) temporary(prefix string) string {
 }
 
 func (e *marshalEmitter) node(b *strings.Builder, node manifest.Node, expression, hint, indent string) error {
-	if method, ok := semanticIOCall(node); ok {
+	if method, ok := e.semanticIOCall(node); ok {
 		fmt.Fprintf(b, "%sio.%s(&%s)\n", indent, method, expression)
 		return nil
 	}
-	if native, matched, err := nativeGoType(node); matched || err != nil {
+	if native, matched, err := e.g.nativeGoType(node); matched || err != nil {
 		if err != nil {
 			return err
 		}
@@ -1865,6 +2040,10 @@ func (e *marshalEmitter) node(b *strings.Builder, node manifest.Node, expression
 	case manifest.KindPrimitive:
 		if node.Primitive == nil {
 			return fmt.Errorf("primitive has no shape")
+		}
+		if node.Primitive.Code == "uuid" {
+			fmt.Fprintf(b, "%sio.UUIDBytes(&%s)\n", indent, expression)
+			return nil
 		}
 		if node.Primitive.Code == "nbt_le" {
 			fmt.Fprintf(b, "%sio.NBT(&%s)\n", indent, expression)
@@ -1955,11 +2134,11 @@ func (e *marshalEmitter) node(b *strings.Builder, node manifest.Node, expression
 // simpler and consistent with the hand-written gophertunnel codecs: callback
 // bodies should marshal value directly instead of copying it to a temporary.
 func (e *marshalEmitter) nodePointer(b *strings.Builder, node manifest.Node, expression, hint, indent string) error {
-	if method, ok := semanticIOCall(node); ok {
+	if method, ok := e.semanticIOCall(node); ok {
 		fmt.Fprintf(b, "%sio.%s(%s)\n", indent, method, expression)
 		return nil
 	}
-	if native, matched, err := nativeGoType(node); matched || err != nil {
+	if native, matched, err := e.g.nativeGoType(node); matched || err != nil {
 		if err != nil {
 			return err
 		}
@@ -1983,6 +2162,10 @@ func (e *marshalEmitter) nodePointer(b *strings.Builder, node manifest.Node, exp
 	case manifest.KindPrimitive:
 		if node.Primitive == nil {
 			return fmt.Errorf("primitive has no shape")
+		}
+		if node.Primitive.Code == "uuid" {
+			fmt.Fprintf(b, "%sio.UUIDBytes(%s)\n", indent, expression)
+			return nil
 		}
 		if node.Primitive.Code == "nbt_le" {
 			fmt.Fprintf(b, "%sio.NBT(%s)\n", indent, expression)
@@ -2099,7 +2282,7 @@ func pointerMethodReceiver(expression string) string {
 
 func (e *marshalEmitter) optionalCall(b *strings.Builder, helper string, value manifest.Node, expression, hint, indent string) error {
 	fmt.Fprintf(b, "%s%s(io, &%s, ", indent, e.runtime(helper), expression)
-	if method, ok := directIOCall(value); ok {
+	if method, ok := e.directIOCall(value); ok {
 		fmt.Fprintf(b, "io.%s)\n", method)
 		return nil
 	}
@@ -2114,7 +2297,7 @@ func (e *marshalEmitter) optionalCall(b *strings.Builder, helper string, value m
 
 func (e *marshalEmitter) optionalCallPointer(b *strings.Builder, helper string, value manifest.Node, expression, hint, indent string) error {
 	fmt.Fprintf(b, "%s%s(io, %s, ", indent, e.runtime(helper), expression)
-	if method, ok := directIOCall(value); ok {
+	if method, ok := e.directIOCall(value); ok {
 		fmt.Fprintf(b, "io.%s)\n", method)
 		return nil
 	}
@@ -2136,7 +2319,7 @@ func (e *marshalEmitter) collection(b *strings.Builder, prefix, element manifest
 		return err
 	}
 	fmt.Fprintf(b, "%s%s(io, &%s, io.%s, ", indent, e.runtime("FuncSlice"), expression, countMethod)
-	if method, ok := directIOCall(element); ok {
+	if method, ok := e.directIOCall(element); ok {
 		fmt.Fprintf(b, "io.%s)\n", method)
 		return nil
 	}
@@ -2158,7 +2341,7 @@ func (e *marshalEmitter) collectionPointer(b *strings.Builder, prefix, element m
 		return err
 	}
 	fmt.Fprintf(b, "%s%s(io, %s, io.%s, ", indent, e.runtime("FuncSlice"), expression, countMethod)
-	if method, ok := directIOCall(element); ok {
+	if method, ok := e.directIOCall(element); ok {
 		fmt.Fprintf(b, "io.%s)\n", method)
 		return nil
 	}
@@ -2180,7 +2363,7 @@ func (e *marshalEmitter) mapEntries(b *strings.Builder, node manifest.Node, expr
 		return err
 	}
 	fmt.Fprintf(b, "%s%s(io, &%s, io.%s, ", indent, e.runtime("OrderedMap"), expression, countMethod)
-	if method, ok := directIOCall(*node.Key); ok {
+	if method, ok := e.directIOCall(*node.Key); ok {
 		fmt.Fprintf(b, "io.%s, ", method)
 	} else {
 		typ := e.goType(*node.Key, hint+"Key")
@@ -2190,7 +2373,7 @@ func (e *marshalEmitter) mapEntries(b *strings.Builder, node manifest.Node, expr
 		}
 		fmt.Fprintf(b, "%s}, ", indent)
 	}
-	if method, ok := directIOCall(*node.Value); ok {
+	if method, ok := e.directIOCall(*node.Value); ok {
 		fmt.Fprintf(b, "io.%s)\n", method)
 		return nil
 	}
@@ -2212,7 +2395,7 @@ func (e *marshalEmitter) mapEntriesPointer(b *strings.Builder, node manifest.Nod
 		return err
 	}
 	fmt.Fprintf(b, "%s%s(io, %s, io.%s, ", indent, e.runtime("OrderedMap"), expression, countMethod)
-	if method, ok := directIOCall(*node.Key); ok {
+	if method, ok := e.directIOCall(*node.Key); ok {
 		fmt.Fprintf(b, "io.%s, ", method)
 	} else {
 		typ := e.goType(*node.Key, hint+"Key")
@@ -2222,7 +2405,7 @@ func (e *marshalEmitter) mapEntriesPointer(b *strings.Builder, node manifest.Nod
 		}
 		fmt.Fprintf(b, "%s}, ", indent)
 	}
-	if method, ok := directIOCall(*node.Value); ok {
+	if method, ok := e.directIOCall(*node.Value); ok {
 		fmt.Fprintf(b, "io.%s)\n", method)
 		return nil
 	}
@@ -2253,11 +2436,11 @@ func (e *marshalEmitter) enum(b *strings.Builder, node manifest.Node, expression
 	return nil
 }
 
-func directIOCall(node manifest.Node) (string, bool) {
-	if method, ok := semanticIOCall(node); ok {
+func (e *marshalEmitter) directIOCall(node manifest.Node) (string, bool) {
+	if method, ok := e.semanticIOCall(node); ok {
 		return method, true
 	}
-	if native, matched, err := nativeGoType(node); matched && err == nil {
+	if native, matched, err := e.g.nativeGoType(node); matched && err == nil {
 		switch native {
 		case "uuid.UUID":
 			return "UUID", true
@@ -2273,6 +2456,9 @@ func directIOCall(node manifest.Node) (string, bool) {
 	case manifest.KindPrimitive:
 		if node.Primitive == nil {
 			return "", false
+		}
+		if node.Primitive.Code == "uuid" {
+			return "UUIDBytes", true
 		}
 		if node.Primitive.Code == "nbt_le" {
 			return "NBT", true
@@ -2291,8 +2477,8 @@ func directIOCall(node manifest.Node) (string, bool) {
 	return "", false
 }
 
-func semanticIOCall(node manifest.Node) (string, bool) {
-	native, matched, err := nativeGoType(node)
+func (e *marshalEmitter) semanticIOCall(node manifest.Node) (string, bool) {
+	native, matched, err := e.g.nativeGoType(node)
 	if err != nil || !matched {
 		return "", false
 	}
@@ -2330,6 +2516,12 @@ func semanticIOCall(node manifest.Node) (string, bool) {
 		return "", false
 	}
 	return "", false
+}
+
+// semanticIOCall retains the package-local helper used by emitter tests and
+// older integrations; generated code uses the option-aware method above.
+func semanticIOCall(node manifest.Node) (string, bool) {
+	return (&marshalEmitter{g: &generator{nativeTypes: true}}).semanticIOCall(node)
 }
 
 func integerTypeMaximum(typ string) string {
@@ -2592,6 +2784,8 @@ func primitiveGoType(code string) (string, error) {
 	switch code {
 	case "bool":
 		return "bool", nil
+	case "uuid":
+		return "[16]byte", nil
 	case "i8":
 		return "int8", nil
 	case "u8":

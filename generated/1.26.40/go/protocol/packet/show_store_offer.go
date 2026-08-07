@@ -18,3 +18,6 @@ func (x *ShowStoreOffer) Marshal(io protocol.IO) {
 	io.UUID(&x.OfferId)
 	protocol.IntegerFunc(&x.RedirectType, io.Uint8)
 }
+
+// ID returns the protocol ID for ShowStoreOffer.
+func (*ShowStoreOffer) ID() uint32 { return IDShowStoreOffer }

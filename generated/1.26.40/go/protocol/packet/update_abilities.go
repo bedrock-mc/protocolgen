@@ -12,3 +12,6 @@ type UpdateAbilities struct {
 func (x *UpdateAbilities) Marshal(io protocol.IO) {
 	x.Data.Marshal(io)
 }
+
+// ID returns the protocol ID for UpdateAbilities.
+func (*UpdateAbilities) ID() uint32 { return IDUpdateAbilities }

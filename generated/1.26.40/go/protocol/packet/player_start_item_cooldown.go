@@ -14,3 +14,6 @@ func (x *PlayerStartItemCooldown) Marshal(io protocol.IO) {
 	io.String(&x.ItemCategory)
 	io.Varint32(&x.DurationTicks)
 }
+
+// ID returns the protocol ID for PlayerStartItemCooldown.
+func (*PlayerStartItemCooldown) ID() uint32 { return IDPlayerStartItemCooldown }

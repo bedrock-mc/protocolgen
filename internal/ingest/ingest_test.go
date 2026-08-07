@@ -424,6 +424,14 @@ func TestCorrectionCanAddMissingObjectMetadataWithoutOverwriting(t *testing.T) {
 	}
 }
 
+func TestMojangExplicitWireKindNBTLowersToNetworkTag(t *testing.T) {
+	lowerer := &mojangLowerer{documents: map[string]any{}, active: map[string]bool{}, source: fixturePin("mojang")}
+	node := lowerer.lowerSchema(map[string]any{"type": "object", "x-wire-kind": "nbt"}, "fixture.json", "Payload")
+	if node.Kind != manifest.KindPrimitive || node.Primitive == nil || node.Primitive.Code != "nbt_le" {
+		t.Fatalf("node = %#v, want nbt_le primitive", node)
+	}
+}
+
 func TestMojangRejectsMixedProtocolDocuments(t *testing.T) {
 	root := t.TempDir()
 	writeJSON(t, filepath.Join(root, "A.json"), map[string]any{

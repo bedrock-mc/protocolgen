@@ -16,3 +16,6 @@ func (x *LabTable) Marshal(io protocol.IO) {
 	x.Position.Marshal(io)
 	protocol.IntegerFunc(&x.Reaction, io.Uint8)
 }
+
+// ID returns the protocol ID for LabTable.
+func (*LabTable) ID() uint32 { return IDLabTable }

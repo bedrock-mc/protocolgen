@@ -12,3 +12,6 @@ type PurchaseReceipt struct {
 func (x *PurchaseReceipt) Marshal(io protocol.IO) {
 	protocol.FuncSlice(io, &x.PurchaseReceipts, io.Varuint32, io.String)
 }
+
+// ID returns the protocol ID for PurchaseReceipt.
+func (*PurchaseReceipt) ID() uint32 { return IDPurchaseReceipt }

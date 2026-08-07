@@ -18,3 +18,6 @@ func (x *LegacyTelemetryEvent) Marshal(io protocol.IO) {
 	io.Bool(&x.UsePlayerID)
 	protocol.MarshalLegacyTelemetryEventEventData(io, &x.EventData)
 }
+
+// ID returns the protocol ID for LegacyTelemetryEvent.
+func (*LegacyTelemetryEvent) ID() uint32 { return IDLegacyTelemetryEvent }

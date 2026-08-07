@@ -22,3 +22,6 @@ func (x *ResourcePackStack) Marshal(io protocol.IO) {
 	x.Experiments.Marshal(io)
 	io.Bool(&x.IncludeEditorPacks)
 }
+
+// ID returns the protocol ID for ResourcePackStack.
+func (*ResourcePackStack) ID() uint32 { return IDResourcePackStack }

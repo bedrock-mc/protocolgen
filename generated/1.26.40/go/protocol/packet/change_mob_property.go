@@ -22,3 +22,6 @@ func (x *ChangeMobProperty) Marshal(io protocol.IO) {
 	io.Varint32(&x.IntComponentValue)
 	io.Float32(&x.FloatComponentValue)
 }
+
+// ID returns the protocol ID for ChangeMobProperty.
+func (*ChangeMobProperty) ID() uint32 { return IDChangeMobProperty }

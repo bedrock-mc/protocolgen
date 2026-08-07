@@ -12,3 +12,6 @@ type SimulationType struct {
 func (x *SimulationType) Marshal(io protocol.IO) {
 	protocol.IntegerFunc(&x.SimType, io.Uint8)
 }
+
+// ID returns the protocol ID for SimulationType.
+func (*SimulationType) ID() uint32 { return IDSimulationType }

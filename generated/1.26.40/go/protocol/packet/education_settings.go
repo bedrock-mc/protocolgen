@@ -12,3 +12,6 @@ type EducationSettings struct {
 func (x *EducationSettings) Marshal(io protocol.IO) {
 	x.EducationLevelSettings.Marshal(io)
 }
+
+// ID returns the protocol ID for EducationSettings.
+func (*EducationSettings) ID() uint32 { return IDEducationSettings }

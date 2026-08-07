@@ -16,3 +16,6 @@ func (x *StructureTemplateDataResponse) Marshal(io protocol.IO) {
 	io.NBT(&x.StructureSNBT)
 	protocol.IntegerFunc(&x.ResponseType, io.Uint8)
 }
+
+// ID returns the protocol ID for StructureTemplateDataResponse.
+func (*StructureTemplateDataResponse) ID() uint32 { return IDStructureTemplateDataResponse }

@@ -14,3 +14,6 @@ func (x *LocatorBar) Marshal(io protocol.IO) {
 		value.Marshal(io)
 	})
 }
+
+// ID returns the protocol ID for LocatorBar.
+func (*LocatorBar) ID() uint32 { return IDLocatorBar }

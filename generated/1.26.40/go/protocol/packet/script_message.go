@@ -14,3 +14,6 @@ func (x *ScriptMessage) Marshal(io protocol.IO) {
 	io.String(&x.MessageId)
 	io.String(&x.MessageValue)
 }
+
+// ID returns the protocol ID for ScriptMessage.
+func (*ScriptMessage) ID() uint32 { return IDScriptMessage }

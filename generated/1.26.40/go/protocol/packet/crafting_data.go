@@ -56,3 +56,6 @@ func (x *CraftingData) Marshal(io protocol.IO) {
 	})
 	io.Bool(&x.ClearRecipes)
 }
+
+// ID returns the protocol ID for CraftingData.
+func (*CraftingData) ID() uint32 { return IDCraftingData }

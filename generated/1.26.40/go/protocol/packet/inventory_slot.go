@@ -24,3 +24,6 @@ func (x *InventorySlot) Marshal(io protocol.IO) {
 	})
 	x.Item.Marshal(io)
 }
+
+// ID returns the protocol ID for InventorySlot.
+func (*InventorySlot) ID() uint32 { return IDInventorySlot }

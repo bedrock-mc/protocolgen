@@ -16,3 +16,6 @@ func (x *GameTestResults) Marshal(io protocol.IO) {
 	io.String(&x.Error)
 	io.String(&x.TestName)
 }
+
+// ID returns the protocol ID for GameTestResults.
+func (*GameTestResults) ID() uint32 { return IDGameTestResults }

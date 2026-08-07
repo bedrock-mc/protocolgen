@@ -18,3 +18,6 @@ func (x *ContainerOpen) Marshal(io protocol.IO) {
 	x.Position.Marshal(io)
 	io.ActorUniqueID(&x.TargetActorID)
 }
+
+// ID returns the protocol ID for ContainerOpen.
+func (*ContainerOpen) ID() uint32 { return IDContainerOpen }

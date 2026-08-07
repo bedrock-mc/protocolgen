@@ -14,3 +14,6 @@ func (x *MapCreateLockedCopy) Marshal(io protocol.IO) {
 	io.ActorUniqueID(&x.OriginalMapId)
 	io.ActorUniqueID(&x.NewMapId)
 }
+
+// ID returns the protocol ID for MapCreateLockedCopy.
+func (*MapCreateLockedCopy) ID() uint32 { return IDMapCreateLockedCopy }

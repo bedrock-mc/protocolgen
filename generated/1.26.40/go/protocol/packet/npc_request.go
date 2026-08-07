@@ -20,3 +20,6 @@ func (x *NpcRequest) Marshal(io protocol.IO) {
 	io.Uint8(&x.ActionIndex)
 	io.String(&x.SceneName)
 }
+
+// ID returns the protocol ID for NpcRequest.
+func (*NpcRequest) ID() uint32 { return IDNpcRequest }

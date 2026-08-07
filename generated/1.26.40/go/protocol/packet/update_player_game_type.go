@@ -16,3 +16,6 @@ func (x *UpdatePlayerGameType) Marshal(io protocol.IO) {
 	io.ActorUniqueID(&x.TargetPlayer)
 	io.PlayerInputTick(&x.Tick)
 }
+
+// ID returns the protocol ID for UpdatePlayerGameType.
+func (*UpdatePlayerGameType) ID() uint32 { return IDUpdatePlayerGameType }

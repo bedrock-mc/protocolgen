@@ -18,3 +18,6 @@ func (x *NetworkChunkPublisherUpdate) Marshal(io protocol.IO) {
 		value.Marshal(io)
 	})
 }
+
+// ID returns the protocol ID for NetworkChunkPublisherUpdate.
+func (*NetworkChunkPublisherUpdate) ID() uint32 { return IDNetworkChunkPublisherUpdate }

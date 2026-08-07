@@ -48,3 +48,6 @@ func (x *ServerboundDiagnostics) Marshal(io protocol.IO) {
 		value.Marshal(io)
 	})
 }
+
+// ID returns the protocol ID for ServerboundDiagnostics.
+func (*ServerboundDiagnostics) ID() uint32 { return IDServerboundDiagnostics }

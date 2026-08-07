@@ -26,3 +26,6 @@ func (x *ClientboundTextureShift) Marshal(io protocol.IO) {
 	io.Varuint64(&x.TotalLengthInTicks)
 	io.Bool(&x.Enabled)
 }
+
+// ID returns the protocol ID for ClientboundTextureShift.
+func (*ClientboundTextureShift) ID() uint32 { return IDClientboundTextureShift }

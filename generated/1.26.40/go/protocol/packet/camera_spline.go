@@ -14,3 +14,6 @@ func (x *CameraSpline) Marshal(io protocol.IO) {
 		value.Marshal(io)
 	})
 }
+
+// ID returns the protocol ID for CameraSpline.
+func (*CameraSpline) ID() uint32 { return IDCameraSpline }

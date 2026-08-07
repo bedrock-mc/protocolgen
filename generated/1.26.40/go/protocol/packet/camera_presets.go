@@ -12,3 +12,6 @@ type CameraPresets struct {
 func (x *CameraPresets) Marshal(io protocol.IO) {
 	x.CameraPresets.Marshal(io)
 }
+
+// ID returns the protocol ID for CameraPresets.
+func (*CameraPresets) ID() uint32 { return IDCameraPresets }

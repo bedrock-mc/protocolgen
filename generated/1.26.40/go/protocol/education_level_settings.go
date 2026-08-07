@@ -9,7 +9,7 @@ type EducationLevelSettings struct {
 	DisableLegacyTitleBar        bool
 	PostProcessFilter            string
 	ScreenshotBorderResourcePath string
-	AgentCapabilities            Optional[AgentCapabilities]
+	AgentCapabilities            Optional[bool]
 	LocalSettings                EducationLocalLevelSettings
 	DeprecatedAlwaysFalse        bool
 	ExternalLinkSettings         Optional[ExternalLinkSettings]
@@ -23,9 +23,7 @@ func (x *EducationLevelSettings) Marshal(io IO) {
 	io.Bool(&x.DisableLegacyTitleBar)
 	io.String(&x.PostProcessFilter)
 	io.String(&x.ScreenshotBorderResourcePath)
-	OptionalFunc(io, &x.AgentCapabilities, func(value *AgentCapabilities) {
-		value.Marshal(io)
-	})
+	OptionalFunc(io, &x.AgentCapabilities, io.Bool)
 	x.LocalSettings.Marshal(io)
 	io.Bool(&x.DeprecatedAlwaysFalse)
 	OptionalFunc(io, &x.ExternalLinkSettings, func(value *ExternalLinkSettings) {

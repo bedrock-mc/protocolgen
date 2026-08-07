@@ -14,3 +14,6 @@ func (x *ServerStoreInfo) Marshal(io protocol.IO) {
 		value.Marshal(io)
 	})
 }
+
+// ID returns the protocol ID for ServerStoreInfo.
+func (*ServerStoreInfo) ID() uint32 { return IDServerStoreInfo }

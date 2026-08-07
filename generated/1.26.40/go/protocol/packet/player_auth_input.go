@@ -64,3 +64,6 @@ func (x *PlayerAuthInput) Marshal(io protocol.IO) {
 	io.Vec3(&x.CameraOrientation)
 	io.Vec2(&x.RawMoveVector)
 }
+
+// ID returns the protocol ID for PlayerAuthInput.
+func (*PlayerAuthInput) ID() uint32 { return IDPlayerAuthInput }

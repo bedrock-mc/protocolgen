@@ -12,3 +12,6 @@ type AnvilDamage struct {
 func (x *AnvilDamage) Marshal(io protocol.IO) {
 	x.BlockPosition.Marshal(io)
 }
+
+// ID returns the protocol ID for AnvilDamage.
+func (*AnvilDamage) ID() uint32 { return IDAnvilDamage }

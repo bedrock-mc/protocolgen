@@ -12,3 +12,6 @@ type ClientboundDataDrivenUICloseScreen struct {
 func (x *ClientboundDataDrivenUICloseScreen) Marshal(io protocol.IO) {
 	protocol.OptionalFunc(io, &x.FormId, io.Uint32)
 }
+
+// ID returns the protocol ID for ClientboundDataDrivenUICloseScreen.
+func (*ClientboundDataDrivenUICloseScreen) ID() uint32 { return IDClientboundDataDrivenUICloseScreen }

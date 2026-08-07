@@ -16,3 +16,6 @@ func (x *SendPartyDestinationCookie) Marshal(io protocol.IO) {
 	io.String(&x.Intent)
 	io.String(&x.DestinationName)
 }
+
+// ID returns the protocol ID for SendPartyDestinationCookie.
+func (*SendPartyDestinationCookie) ID() uint32 { return IDSendPartyDestinationCookie }

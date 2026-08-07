@@ -14,3 +14,6 @@ func (x *DeathInfo) Marshal(io protocol.IO) {
 	io.String(&x.DeathCauseAttackName)
 	protocol.FuncSlice(io, &x.DeathCauseMessageList, io.Varuint32, io.String)
 }
+
+// ID returns the protocol ID for DeathInfo.
+func (*DeathInfo) ID() uint32 { return IDDeathInfo }

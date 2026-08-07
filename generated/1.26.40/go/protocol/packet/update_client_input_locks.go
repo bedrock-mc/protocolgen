@@ -12,3 +12,6 @@ type UpdateClientInputLocks struct {
 func (x *UpdateClientInputLocks) Marshal(io protocol.IO) {
 	io.Varuint32(&x.InputLockComponentData)
 }
+
+// ID returns the protocol ID for UpdateClientInputLocks.
+func (*UpdateClientInputLocks) ID() uint32 { return IDUpdateClientInputLocks }

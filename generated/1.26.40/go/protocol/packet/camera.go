@@ -14,3 +14,6 @@ func (x *Camera) Marshal(io protocol.IO) {
 	io.ActorUniqueID(&x.CameraID)
 	io.ActorUniqueID(&x.TargetPlayerID)
 }
+
+// ID returns the protocol ID for Camera.
+func (*Camera) ID() uint32 { return IDCamera }

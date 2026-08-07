@@ -16,3 +16,6 @@ func (x *PlayerUpdateEntityOverrides) Marshal(io protocol.IO) {
 	io.Varuint32(&x.PropertyIndex)
 	protocol.MarshalPlayerUpdateEntityOverridesUpdate(io, &x.Update)
 }
+
+// ID returns the protocol ID for PlayerUpdateEntityOverrides.
+func (*PlayerUpdateEntityOverrides) ID() uint32 { return IDPlayerUpdateEntityOverrides }

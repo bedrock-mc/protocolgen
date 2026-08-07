@@ -16,3 +16,6 @@ func (x *CodeBuilderSource) Marshal(io protocol.IO) {
 	protocol.IntegerFunc(&x.Category, io.Uint8)
 	protocol.IntegerFunc(&x.CodeStatus, io.Uint8)
 }
+
+// ID returns the protocol ID for CodeBuilderSource.
+func (*CodeBuilderSource) ID() uint32 { return IDCodeBuilderSource }

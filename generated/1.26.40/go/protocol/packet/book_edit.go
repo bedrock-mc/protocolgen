@@ -14,3 +14,6 @@ func (x *BookEdit) Marshal(io protocol.IO) {
 	io.Varint32(&x.BookSlot)
 	protocol.MarshalBookEditAction(io, &x.Operation)
 }
+
+// ID returns the protocol ID for BookEdit.
+func (*BookEdit) ID() uint32 { return IDBookEdit }

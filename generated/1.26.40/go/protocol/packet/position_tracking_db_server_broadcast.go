@@ -16,3 +16,6 @@ func (x *PositionTrackingDBServerBroadcast) Marshal(io protocol.IO) {
 	x.Id.Marshal(io)
 	io.NBT(&x.PositionTrackingData)
 }
+
+// ID returns the protocol ID for PositionTrackingDBServerBroadcast.
+func (*PositionTrackingDBServerBroadcast) ID() uint32 { return IDPositionTrackingDBServerBroadcast }

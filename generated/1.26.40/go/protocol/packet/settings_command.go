@@ -14,3 +14,6 @@ func (x *SettingsCommand) Marshal(io protocol.IO) {
 	io.String(&x.Command)
 	io.Bool(&x.SuppressOutput)
 }
+
+// ID returns the protocol ID for SettingsCommand.
+func (*SettingsCommand) ID() uint32 { return IDSettingsCommand }

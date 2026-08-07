@@ -14,3 +14,6 @@ func (x *AgentAnimation) Marshal(io protocol.IO) {
 	protocol.IntegerFunc(&x.AgentAnimation, io.Uint8)
 	io.ActorRuntimeID(&x.RuntimeId)
 }
+
+// ID returns the protocol ID for AgentAnimation.
+func (*AgentAnimation) ID() uint32 { return IDAgentAnimation }

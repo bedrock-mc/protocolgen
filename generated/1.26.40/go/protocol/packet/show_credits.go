@@ -14,3 +14,6 @@ func (x *ShowCredits) Marshal(io protocol.IO) {
 	io.ActorRuntimeID(&x.PlayerRuntimeID)
 	io.Varint32(&x.CreditsState)
 }
+
+// ID returns the protocol ID for ShowCredits.
+func (*ShowCredits) ID() uint32 { return IDShowCredits }

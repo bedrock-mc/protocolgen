@@ -241,6 +241,9 @@ func (l *mojangLowerer) pin() manifest.SourcePin {
 }
 
 func (l *mojangLowerer) lowerSchema(schema map[string]any, file, hint string) manifest.Node {
+	if strings.EqualFold(asString(schema["x-wire-kind"]), "nbt") {
+		return manifest.Primitive("nbt_le")
+	}
 	if reference := asString(schema["$ref"]); reference != "" {
 		return l.lowerReference(reference, file, hint, schema)
 	}

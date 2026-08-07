@@ -89,7 +89,11 @@ go run ./cmd/protocolgen emit-rust -manifest /tmp/bedrock-2168-v2.json -out /tmp
 
 Go writes shared codecs and definitions under `protocol/`, and packet structs
 under `protocol/packet/`. `-protocol-import` is the import path packet files
-should use for the generated protocol package in the consuming module.
+should use for the generated protocol package in the consuming module. The
+packet package includes a common `Packet` interface, generated ID methods, and
+direction-aware constructor pools; pass `-packet-runtime=false` or
+`-packet-pools=false` to omit those conveniences. `-native-types=false` keeps
+named wire structs instead of mapping UUIDs and vectors to ecosystem types.
 
 The reproducible synthetic vertical slice is:
 
@@ -177,8 +181,9 @@ oracle cannot become a second protocol schema.
 
 Each manifest packet is classified `AGREEMENT`, `DIVERGENCE`, `UNRESOLVED`, or
 `NO_ORACLE_PACKET`. Only the documented byte-equivalences are normalized;
-width, endianness, varint family, option presence, array prefixes,
-fixed-array lengths, and union discriminants stay distinct, and a marshal the
+width, endianness, varint family, option presence, array prefixes, fixed-array
+scalar counts, and union discriminants stay distinct, while fixed-array wrapper
+grouping is compared by its repeated scalar wire values. A marshal the
 extractor cannot statically resolve is `UNRESOLVED` rather than agreement.
 Accepted divergences in `tools/gophertunnel-oracle/accepted-divergences.json`
 require a reason, at least one evidence locator, and a concrete

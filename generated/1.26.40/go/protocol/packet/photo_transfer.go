@@ -24,3 +24,6 @@ func (x *PhotoTransfer) Marshal(io protocol.IO) {
 	io.Int64(&x.OwnerID)
 	io.String(&x.NewPhotoName)
 }
+
+// ID returns the protocol ID for PhotoTransfer.
+func (*PhotoTransfer) ID() uint32 { return IDPhotoTransfer }

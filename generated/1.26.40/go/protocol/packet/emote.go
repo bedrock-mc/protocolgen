@@ -22,3 +22,6 @@ func (x *Emote) Marshal(io protocol.IO) {
 	io.String(&x.PlatformId)
 	io.Uint8(&x.Flags)
 }
+
+// ID returns the protocol ID for Emote.
+func (*Emote) ID() uint32 { return IDEmote }

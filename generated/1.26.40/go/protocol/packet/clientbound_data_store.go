@@ -14,3 +14,6 @@ func (x *ClientboundDataStore) Marshal(io protocol.IO) {
 		protocol.MarshalBedrockDDUI(io, value)
 	})
 }
+
+// ID returns the protocol ID for ClientboundDataStore.
+func (*ClientboundDataStore) ID() uint32 { return IDClientboundDataStore }

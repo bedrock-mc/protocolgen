@@ -20,3 +20,6 @@ func (x *PlayerAction) Marshal(io protocol.IO) {
 	x.ResultPos.Marshal(io)
 	io.Varint32(&x.Face)
 }
+
+// ID returns the protocol ID for PlayerAction.
+func (*PlayerAction) ID() uint32 { return IDPlayerAction }

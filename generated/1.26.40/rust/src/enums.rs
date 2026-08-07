@@ -858,16 +858,16 @@ impl From<CameraAimAssistPresetsPacketOperation> for u8 {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-#[repr(u8)]
+#[repr(i32)]
 pub enum CameraAimAssistTargetMode {
     Angle = 0,
     Distance = 1,
 }
 
-impl TryFrom<u8> for CameraAimAssistTargetMode {
-    type Error = u8;
+impl TryFrom<i32> for CameraAimAssistTargetMode {
+    type Error = i32;
 
-    fn try_from(value: u8) -> Result<Self, u8> {
+    fn try_from(value: i32) -> Result<Self, i32> {
         match value {
             0 => Ok(Self::Angle),
             1 => Ok(Self::Distance),
@@ -876,9 +876,9 @@ impl TryFrom<u8> for CameraAimAssistTargetMode {
     }
 }
 
-impl From<CameraAimAssistTargetMode> for u8 {
+impl From<CameraAimAssistTargetMode> for i32 {
     fn from(value: CameraAimAssistTargetMode) -> Self {
-        value as u8
+        value as i32
     }
 }
 

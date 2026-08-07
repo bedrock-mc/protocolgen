@@ -12,3 +12,6 @@ type ClientboundControlSchemeSet struct {
 func (x *ClientboundControlSchemeSet) Marshal(io protocol.IO) {
 	protocol.IntegerFunc(&x.ControlScheme, io.Uint8)
 }
+
+// ID returns the protocol ID for ClientboundControlSchemeSet.
+func (*ClientboundControlSchemeSet) ID() uint32 { return IDClientboundControlSchemeSet }

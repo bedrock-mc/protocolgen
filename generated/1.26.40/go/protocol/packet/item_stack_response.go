@@ -14,3 +14,6 @@ func (x *ItemStackResponse) Marshal(io protocol.IO) {
 		value.Marshal(io)
 	})
 }
+
+// ID returns the protocol ID for ItemStackResponse.
+func (*ItemStackResponse) ID() uint32 { return IDItemStackResponse }

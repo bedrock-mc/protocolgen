@@ -14,3 +14,6 @@ func (x *DimensionData) Marshal(io protocol.IO) {
 		value.Marshal(io)
 	})
 }
+
+// ID returns the protocol ID for DimensionData.
+func (*DimensionData) ID() uint32 { return IDDimensionData }

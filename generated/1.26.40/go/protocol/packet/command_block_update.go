@@ -26,3 +26,6 @@ func (x *CommandBlockUpdate) Marshal(io protocol.IO) {
 	io.Int32(&x.TickDelay)
 	io.Bool(&x.ExecuteOnFirstTick)
 }
+
+// ID returns the protocol ID for CommandBlockUpdate.
+func (*CommandBlockUpdate) ID() uint32 { return IDCommandBlockUpdate }

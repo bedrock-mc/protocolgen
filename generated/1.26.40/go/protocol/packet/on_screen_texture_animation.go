@@ -12,3 +12,6 @@ type OnScreenTextureAnimation struct {
 func (x *OnScreenTextureAnimation) Marshal(io protocol.IO) {
 	io.Uint32(&x.EffectId)
 }
+
+// ID returns the protocol ID for OnScreenTextureAnimation.
+func (*OnScreenTextureAnimation) ID() uint32 { return IDOnScreenTextureAnimation }

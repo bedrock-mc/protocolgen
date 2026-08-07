@@ -14,3 +14,6 @@ func (x *OpenSign) Marshal(io protocol.IO) {
 	x.Pos.Marshal(io)
 	io.Bool(&x.IsFrontSide)
 }
+
+// ID returns the protocol ID for OpenSign.
+func (*OpenSign) ID() uint32 { return IDOpenSign }

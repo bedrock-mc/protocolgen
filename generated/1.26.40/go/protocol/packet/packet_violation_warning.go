@@ -18,3 +18,6 @@ func (x *PacketViolationWarning) Marshal(io protocol.IO) {
 	io.Varint32(&x.ViolationPacketId)
 	io.String(&x.ViolationContext)
 }
+
+// ID returns the protocol ID for PacketViolationWarning.
+func (*PacketViolationWarning) ID() uint32 { return IDPacketViolationWarning }

@@ -22,3 +22,6 @@ func (x *NpcDialogue) Marshal(io protocol.IO) {
 	io.String(&x.NpcName)
 	io.String(&x.ActionJSON)
 }
+
+// ID returns the protocol ID for NpcDialogue.
+func (*NpcDialogue) ID() uint32 { return IDNpcDialogue }

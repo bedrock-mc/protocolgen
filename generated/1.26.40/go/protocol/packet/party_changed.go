@@ -14,3 +14,6 @@ func (x *PartyChanged) Marshal(io protocol.IO) {
 		value.Marshal(io)
 	})
 }
+
+// ID returns the protocol ID for PartyChanged.
+func (*PartyChanged) ID() uint32 { return IDPartyChanged }

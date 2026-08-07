@@ -16,3 +16,6 @@ func (x *SetScoreboardIdentity) Marshal(io protocol.IO) {
 		value.Marshal(io)
 	})
 }
+
+// ID returns the protocol ID for SetScoreboardIdentity.
+func (*SetScoreboardIdentity) ID() uint32 { return IDSetScoreboardIdentity }

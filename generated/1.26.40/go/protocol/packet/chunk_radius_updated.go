@@ -12,3 +12,6 @@ type ChunkRadiusUpdated struct {
 func (x *ChunkRadiusUpdated) Marshal(io protocol.IO) {
 	io.Varint32(&x.ChunkRadius)
 }
+
+// ID returns the protocol ID for ChunkRadiusUpdated.
+func (*ChunkRadiusUpdated) ID() uint32 { return IDChunkRadiusUpdated }

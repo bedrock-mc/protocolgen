@@ -12,3 +12,6 @@ type AddBehaviorTree struct {
 func (x *AddBehaviorTree) Marshal(io protocol.IO) {
 	io.String(&x.BehaviorTreeStructureJSON)
 }
+
+// ID returns the protocol ID for AddBehaviorTree.
+func (*AddBehaviorTree) ID() uint32 { return IDAddBehaviorTree }

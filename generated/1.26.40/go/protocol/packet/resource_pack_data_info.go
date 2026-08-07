@@ -24,3 +24,6 @@ func (x *ResourcePackDataInfo) Marshal(io protocol.IO) {
 	io.Bool(&x.IsPremiumPack)
 	io.Uint8(&x.PackType)
 }
+
+// ID returns the protocol ID for ResourcePackDataInfo.
+func (*ResourcePackDataInfo) ID() uint32 { return IDResourcePackDataInfo }

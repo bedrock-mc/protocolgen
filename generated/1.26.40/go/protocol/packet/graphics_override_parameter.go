@@ -28,3 +28,6 @@ func (x *GraphicsOverrideParameter) Marshal(io protocol.IO) {
 	protocol.IntegerFunc(&x.IdentifierForParameter, io.Uint8)
 	io.Bool(&x.ResetParameter)
 }
+
+// ID returns the protocol ID for GraphicsOverrideParameter.
+func (*GraphicsOverrideParameter) ID() uint32 { return IDGraphicsOverrideParameter }

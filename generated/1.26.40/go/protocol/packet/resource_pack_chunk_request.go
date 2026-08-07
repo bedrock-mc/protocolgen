@@ -14,3 +14,6 @@ func (x *ResourcePackChunkRequest) Marshal(io protocol.IO) {
 	io.String(&x.ResourceName)
 	io.Int32(&x.Chunk)
 }
+
+// ID returns the protocol ID for ResourcePackChunkRequest.
+func (*ResourcePackChunkRequest) ID() uint32 { return IDResourcePackChunkRequest }

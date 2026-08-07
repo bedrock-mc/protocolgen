@@ -40,3 +40,6 @@ func (x *ClientboundUpdateSoundData) Marshal(io protocol.IO) {
 		protocol.MarshalSoundDataEvent(io, value)
 	})
 }
+
+// ID returns the protocol ID for ClientboundUpdateSoundData.
+func (*ClientboundUpdateSoundData) ID() uint32 { return IDClientboundUpdateSoundData }

@@ -22,3 +22,6 @@ func (x *ActorEvent) Marshal(io protocol.IO) {
 	io.Varint32(&x.Data)
 	protocol.OptionalFunc(io, &x.FireAtPosition, io.Vec3)
 }
+
+// ID returns the protocol ID for ActorEvent.
+func (*ActorEvent) ID() uint32 { return IDActorEvent }

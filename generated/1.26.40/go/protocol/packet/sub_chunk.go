@@ -20,3 +20,6 @@ func (x *SubChunk) Marshal(io protocol.IO) {
 		value.Marshal(io)
 	})
 }
+
+// ID returns the protocol ID for SubChunk.
+func (*SubChunk) ID() uint32 { return IDSubChunk }

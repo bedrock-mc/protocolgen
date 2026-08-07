@@ -69,3 +69,6 @@ func (x *StartGame) Marshal(io protocol.IO) {
 	})
 	x.ServerTelemetryData.Marshal(io)
 }
+
+// ID returns the protocol ID for StartGame.
+func (*StartGame) ID() uint32 { return IDStartGame }

@@ -49,3 +49,6 @@ func (x *AddPlayer) Marshal(io protocol.IO) {
 	io.String(&x.DeviceId)
 	protocol.IntegerFunc(&x.BuildPlatform, io.Int32)
 }
+
+// ID returns the protocol ID for AddPlayer.
+func (*AddPlayer) ID() uint32 { return IDAddPlayer }

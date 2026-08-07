@@ -14,3 +14,6 @@ func (x *CameraAimAssistActorPriority) Marshal(io protocol.IO) {
 		value.Marshal(io)
 	})
 }
+
+// ID returns the protocol ID for CameraAimAssistActorPriority.
+func (*CameraAimAssistActorPriority) ID() uint32 { return IDCameraAimAssistActorPriority }

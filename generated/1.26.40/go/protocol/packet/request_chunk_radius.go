@@ -14,3 +14,6 @@ func (x *RequestChunkRadius) Marshal(io protocol.IO) {
 	io.Varint32(&x.ChunkRadius)
 	io.Uint8(&x.MaxChunkRadius)
 }
+
+// ID returns the protocol ID for RequestChunkRadius.
+func (*RequestChunkRadius) ID() uint32 { return IDRequestChunkRadius }

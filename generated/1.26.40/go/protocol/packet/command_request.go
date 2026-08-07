@@ -18,3 +18,6 @@ func (x *CommandRequest) Marshal(io protocol.IO) {
 	io.Bool(&x.IsInternal)
 	io.String(&x.Version)
 }
+
+// ID returns the protocol ID for CommandRequest.
+func (*CommandRequest) ID() uint32 { return IDCommandRequest }

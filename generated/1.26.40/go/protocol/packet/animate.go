@@ -18,3 +18,6 @@ func (x *Animate) Marshal(io protocol.IO) {
 	io.Float32(&x.Data)
 	protocol.OptionalFunc(io, &x.SwingSource, io.String)
 }
+
+// ID returns the protocol ID for Animate.
+func (*Animate) ID() uint32 { return IDAnimate }

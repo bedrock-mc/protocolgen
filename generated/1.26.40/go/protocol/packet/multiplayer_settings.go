@@ -12,3 +12,6 @@ type MultiplayerSettings struct {
 func (x *MultiplayerSettings) Marshal(io protocol.IO) {
 	protocol.IntegerFunc(&x.PacketType, io.Varint32)
 }
+
+// ID returns the protocol ID for MultiplayerSettings.
+func (*MultiplayerSettings) ID() uint32 { return IDMultiplayerSettings }

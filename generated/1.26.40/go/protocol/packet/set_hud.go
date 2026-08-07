@@ -16,3 +16,6 @@ func (x *SetHud) Marshal(io protocol.IO) {
 	})
 	protocol.IntegerFunc(&x.HudVisible, io.Varint32)
 }
+
+// ID returns the protocol ID for SetHud.
+func (*SetHud) ID() uint32 { return IDSetHud }

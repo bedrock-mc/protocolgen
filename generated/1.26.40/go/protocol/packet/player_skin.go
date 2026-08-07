@@ -22,3 +22,6 @@ func (x *PlayerSkin) Marshal(io protocol.IO) {
 	io.String(&x.LocalizedNewSkinName)
 	io.String(&x.LocalizedOldSkinName)
 }
+
+// ID returns the protocol ID for PlayerSkin.
+func (*PlayerSkin) ID() uint32 { return IDPlayerSkin }

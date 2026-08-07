@@ -20,3 +20,6 @@ func (x *LevelEvent) Marshal(io protocol.IO) {
 	io.Vec3(&x.Position)
 	io.Varint32(&x.Data)
 }
+
+// ID returns the protocol ID for LevelEvent.
+func (*LevelEvent) ID() uint32 { return IDLevelEvent }

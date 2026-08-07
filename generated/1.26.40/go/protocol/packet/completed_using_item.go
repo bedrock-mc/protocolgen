@@ -14,3 +14,6 @@ func (x *CompletedUsingItem) Marshal(io protocol.IO) {
 	io.Int16(&x.ItemId)
 	io.Int32(&x.ItemUseMethod)
 }
+
+// ID returns the protocol ID for CompletedUsingItem.
+func (*CompletedUsingItem) ID() uint32 { return IDCompletedUsingItem }

@@ -12,3 +12,6 @@ type SubClientLogin struct {
 func (x *SubClientLogin) Marshal(io protocol.IO) {
 	io.String(&x.SubClientConnectionRequest)
 }
+
+// ID returns the protocol ID for SubClientLogin.
+func (*SubClientLogin) ID() uint32 { return IDSubClientLogin }

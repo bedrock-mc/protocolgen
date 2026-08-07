@@ -10,3 +10,6 @@ type ServerSettingsRequest struct {
 // Marshal reads or writes ServerSettingsRequest using its canonical wire layout.
 func (x *ServerSettingsRequest) Marshal(io protocol.IO) {
 }
+
+// ID returns the protocol ID for ServerSettingsRequest.
+func (*ServerSettingsRequest) ID() uint32 { return IDServerSettingsRequest }

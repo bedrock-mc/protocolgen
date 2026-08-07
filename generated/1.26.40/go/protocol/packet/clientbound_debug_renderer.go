@@ -16,3 +16,6 @@ func (x *ClientboundDebugRenderer) Marshal(io protocol.IO) {
 		value.Marshal(io)
 	})
 }
+
+// ID returns the protocol ID for ClientboundDebugRenderer.
+func (*ClientboundDebugRenderer) ID() uint32 { return IDClientboundDebugRenderer }

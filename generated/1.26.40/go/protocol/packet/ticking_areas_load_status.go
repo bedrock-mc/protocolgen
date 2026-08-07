@@ -12,3 +12,6 @@ type TickingAreasLoadStatus struct {
 func (x *TickingAreasLoadStatus) Marshal(io protocol.IO) {
 	io.Bool(&x.WaitingForPreload)
 }
+
+// ID returns the protocol ID for TickingAreasLoadStatus.
+func (*TickingAreasLoadStatus) ID() uint32 { return IDTickingAreasLoadStatus }

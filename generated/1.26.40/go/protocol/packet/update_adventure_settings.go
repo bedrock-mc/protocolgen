@@ -12,3 +12,6 @@ type UpdateAdventureSettings struct {
 func (x *UpdateAdventureSettings) Marshal(io protocol.IO) {
 	x.AdventureSettings.Marshal(io)
 }
+
+// ID returns the protocol ID for UpdateAdventureSettings.
+func (*UpdateAdventureSettings) ID() uint32 { return IDUpdateAdventureSettings }

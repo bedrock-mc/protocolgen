@@ -16,3 +16,6 @@ func (x *LecternUpdate) Marshal(io protocol.IO) {
 	io.Uint8(&x.TotalPages)
 	x.PositionOfLecternToUpdate.Marshal(io)
 }
+
+// ID returns the protocol ID for LecternUpdate.
+func (*LecternUpdate) ID() uint32 { return IDLecternUpdate }

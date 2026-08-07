@@ -18,3 +18,6 @@ func (x *UpdateAttributes) Marshal(io protocol.IO) {
 	})
 	io.PlayerInputTick(&x.Tick)
 }
+
+// ID returns the protocol ID for UpdateAttributes.
+func (*UpdateAttributes) ID() uint32 { return IDUpdateAttributes }

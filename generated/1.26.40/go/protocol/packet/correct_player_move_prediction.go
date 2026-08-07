@@ -28,3 +28,6 @@ func (x *CorrectPlayerMovePrediction) Marshal(io protocol.IO) {
 	io.Bool(&x.OnGround)
 	io.PlayerInputTick(&x.Tick)
 }
+
+// ID returns the protocol ID for CorrectPlayerMovePrediction.
+func (*CorrectPlayerMovePrediction) ID() uint32 { return IDCorrectPlayerMovePrediction }

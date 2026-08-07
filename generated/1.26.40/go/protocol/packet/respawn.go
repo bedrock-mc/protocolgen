@@ -20,3 +20,6 @@ func (x *Respawn) Marshal(io protocol.IO) {
 	protocol.IntegerFunc(&x.State, io.Uint8)
 	io.ActorRuntimeID(&x.PlayerRuntimeId)
 }
+
+// ID returns the protocol ID for Respawn.
+func (*Respawn) ID() uint32 { return IDRespawn }

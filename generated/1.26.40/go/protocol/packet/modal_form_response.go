@@ -18,3 +18,6 @@ func (x *ModalFormResponse) Marshal(io protocol.IO) {
 		protocol.IntegerFunc(value, io.Uint8)
 	})
 }
+
+// ID returns the protocol ID for ModalFormResponse.
+func (*ModalFormResponse) ID() uint32 { return IDModalFormResponse }

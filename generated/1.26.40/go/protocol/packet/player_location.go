@@ -14,3 +14,6 @@ func (x *PlayerLocation) Marshal(io protocol.IO) {
 	io.ActorUniqueID(&x.TargetActorID)
 	protocol.MarshalPlayerLocationLocation(io, &x.Location)
 }
+
+// ID returns the protocol ID for PlayerLocation.
+func (*PlayerLocation) ID() uint32 { return IDPlayerLocation }

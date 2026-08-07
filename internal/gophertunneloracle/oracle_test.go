@@ -43,6 +43,18 @@ func TestUUIDNormalizesOnlyItsExactSixteenByteShape(t *testing.T) {
 	}
 }
 
+func TestFixedArrayGroupingNormalizesOnlyWireEquivalentScalarLayout(t *testing.T) {
+	nested, reasons := manifestNodeAtoms("Nested", manifest.FixedArray(16, manifest.FixedArray(16, manifest.Primitive("i8"))))
+	flat, flatReasons := sourceOperationAtoms(sourceOperation{Kind: "fixed_array", Length: 256, Element: []sourceOperation{{Kind: "primitive", Code: "i8"}}})
+	if len(reasons) != 0 || len(flatReasons) != 0 || !atomsEqual(normalizeFixedArrayGrouping(nested), normalizeFixedArrayGrouping(flat)) {
+		t.Fatalf("nested and flat fixed arrays did not normalize: nested=%#v flat=%#v", nested, flat)
+	}
+	short, _ := sourceOperationAtoms(sourceOperation{Kind: "fixed_array", Length: 255, Element: []sourceOperation{{Kind: "primitive", Code: "i8"}}})
+	if atomsEqual(normalizeFixedArrayGrouping(nested), normalizeFixedArrayGrouping(short)) {
+		t.Fatal("different scalar counts were normalized as equivalent")
+	}
+}
+
 func TestNormalizationPreservesWireShapeDistinctions(t *testing.T) {
 	for name, pair := range map[string]struct {
 		want sourceOperation

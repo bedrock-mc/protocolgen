@@ -12,3 +12,6 @@ type PlayerFog struct {
 func (x *PlayerFog) Marshal(io protocol.IO) {
 	protocol.FuncSlice(io, &x.FogStack, io.Varuint32, io.String)
 }
+
+// ID returns the protocol ID for PlayerFog.
+func (*PlayerFog) ID() uint32 { return IDPlayerFog }

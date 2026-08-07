@@ -18,3 +18,6 @@ func (x *UpdateBlock) Marshal(io protocol.IO) {
 	io.Varuint32(&x.Flags)
 	io.Varuint32(&x.Layer)
 }
+
+// ID returns the protocol ID for UpdateBlock.
+func (*UpdateBlock) ID() uint32 { return IDUpdateBlock }

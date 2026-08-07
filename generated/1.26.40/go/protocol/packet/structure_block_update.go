@@ -18,3 +18,6 @@ func (x *StructureBlockUpdate) Marshal(io protocol.IO) {
 	io.Bool(&x.Trigger)
 	io.Bool(&x.IsWaterlogged)
 }
+
+// ID returns the protocol ID for StructureBlockUpdate.
+func (*StructureBlockUpdate) ID() uint32 { return IDStructureBlockUpdate }

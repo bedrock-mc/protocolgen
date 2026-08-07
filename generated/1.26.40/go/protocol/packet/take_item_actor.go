@@ -14,3 +14,6 @@ func (x *TakeItemActor) Marshal(io protocol.IO) {
 	io.ActorRuntimeID(&x.ItemRuntimeID)
 	io.ActorRuntimeID(&x.ActorRuntimeID)
 }
+
+// ID returns the protocol ID for TakeItemActor.
+func (*TakeItemActor) ID() uint32 { return IDTakeItemActor }

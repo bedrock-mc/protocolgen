@@ -18,3 +18,6 @@ func (x *CreativeContent) Marshal(io protocol.IO) {
 		value.Marshal(io)
 	})
 }
+
+// ID returns the protocol ID for CreativeContent.
+func (*CreativeContent) ID() uint32 { return IDCreativeContent }

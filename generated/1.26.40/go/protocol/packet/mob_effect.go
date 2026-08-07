@@ -26,3 +26,6 @@ func (x *MobEffect) Marshal(io protocol.IO) {
 	io.PlayerInputTick(&x.Tick)
 	io.Bool(&x.Ambient)
 }
+
+// ID returns the protocol ID for MobEffect.
+func (*MobEffect) ID() uint32 { return IDMobEffect }

@@ -18,3 +18,6 @@ func (x *SetSpawnPosition) Marshal(io protocol.IO) {
 	x.DimensionType.Marshal(io)
 	x.SpawnBlockPos.Marshal(io)
 }
+
+// ID returns the protocol ID for SetSpawnPosition.
+func (*SetSpawnPosition) ID() uint32 { return IDSetSpawnPosition }

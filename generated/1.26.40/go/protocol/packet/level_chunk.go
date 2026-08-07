@@ -26,3 +26,6 @@ func (x *LevelChunk) Marshal(io protocol.IO) {
 	})
 	io.Bytes(&x.SerializedChunkData)
 }
+
+// ID returns the protocol ID for LevelChunk.
+func (*LevelChunk) ID() uint32 { return IDLevelChunk }

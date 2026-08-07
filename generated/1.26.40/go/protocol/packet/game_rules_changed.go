@@ -12,3 +12,6 @@ type GameRulesChanged struct {
 func (x *GameRulesChanged) Marshal(io protocol.IO) {
 	x.RuleData.Marshal(io)
 }
+
+// ID returns the protocol ID for GameRulesChanged.
+func (*GameRulesChanged) ID() uint32 { return IDGameRulesChanged }

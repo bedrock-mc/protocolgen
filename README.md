@@ -77,7 +77,9 @@ This produces:
   `DoubleOptionalFunc`, `FuncSlice`, and `OrderedMap` helpers plus bounded
   in-memory `Reader` and `Writer` implementations. Readers cap decoded
   collections by default and expose `NewReaderWithLimit` when an application
-  needs a different bound;
+  needs a different bound. The packet package also provides a `Packet`
+  interface, generated ID methods, and direction-aware constructor pools
+  (`NewPacket`, `NewClientPacket`, and `NewServerPacket`);
 - typed Rust packet structures, one packet module per file, with shared types,
   native enums, checked `TryFrom<integer>` decoding, ordered map tuples, and
   payload-bearing enums for Cereal unions; and
@@ -105,6 +107,11 @@ or protocol-specific structures remain generated named types rather than being
 guessed into an unrelated library type. Go likewise leaves undifferentiated
 NBT as `[]byte`, because the manifest's `nbt_le` primitive may be a compound or
 an intentionally opaque/loose tag stream.
+
+Native Go mappings are a target profile, not part of the canonical schema. The
+CLI enables them by default; pass `-native-types=false` when a consumer wants
+only generated named wire structs. Packet runtime helpers and factory pools can
+similarly be omitted with `-packet-runtime=false` and `-packet-pools=false`.
 
 `generated/1.26.40/` contains the checked-in protocol 2168 source lock,
 canonical 229-packet Cereal manifest, and matching Go and Rust outputs generated
@@ -222,9 +229,10 @@ marshal hides bytes behind runtime branches or opaque interface helpers remain
 only the documented byte-equivalences: signed/unsigned fixed-width integers of
 the same width and endianness, strings versus byte slices with the same length
 prefix, prefixed arrays of one-byte elements versus byte slices, UUIDs as 16
-wire-positioned bytes, and the four named pre-encoded NBT byte fields. Width,
-endianness, fixed versus varint, varint versus zigzag, float versus integer,
-option presence, array prefixes, fixed-array lengths, and union discriminants
+wire-positioned bytes, fixed-array wrapper grouping by its repeated scalar wire
+values, and the four named pre-encoded NBT byte fields. Width, endianness,
+fixed versus varint, varint versus zigzag, float versus integer, option
+presence, array prefixes, scalar counts in fixed arrays, and union discriminants
 remain distinct. Reviewed exceptions live in
 `tools/gophertunnel-oracle/accepted-divergences.json`; every entry requires a
 reason, evidence locator, and a concrete `what_would_settle_it` statement. An

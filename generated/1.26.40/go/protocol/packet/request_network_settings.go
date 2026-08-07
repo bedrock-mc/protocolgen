@@ -12,3 +12,6 @@ type RequestNetworkSettings struct {
 func (x *RequestNetworkSettings) Marshal(io protocol.IO) {
 	io.BEInt32(&x.ClientNetworkVersion)
 }
+
+// ID returns the protocol ID for RequestNetworkSettings.
+func (*RequestNetworkSettings) ID() uint32 { return IDRequestNetworkSettings }

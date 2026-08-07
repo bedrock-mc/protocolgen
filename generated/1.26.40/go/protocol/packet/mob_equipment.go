@@ -20,3 +20,6 @@ func (x *MobEquipment) Marshal(io protocol.IO) {
 	io.Uint8(&x.SelectedSlot)
 	io.Uint8(&x.ContainerID)
 }
+
+// ID returns the protocol ID for MobEquipment.
+func (*MobEquipment) ID() uint32 { return IDMobEquipment }

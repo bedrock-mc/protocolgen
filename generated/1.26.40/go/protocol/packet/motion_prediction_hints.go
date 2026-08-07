@@ -20,3 +20,6 @@ func (x *MotionPredictionHints) Marshal(io protocol.IO) {
 	io.Vec3(&x.MMotion)
 	io.Bool(&x.MOnGround)
 }
+
+// ID returns the protocol ID for MotionPredictionHints.
+func (*MotionPredictionHints) ID() uint32 { return IDMotionPredictionHints }

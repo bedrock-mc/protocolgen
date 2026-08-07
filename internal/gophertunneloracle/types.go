@@ -96,6 +96,7 @@ type OracleSource struct {
 
 type Normalization struct {
 	FixedWidth    string   `json:"fixed_width"`
+	FixedGrouping string   `json:"fixed_array_grouping"`
 	Strings       string   `json:"strings_and_bytes"`
 	ByteArrays    string   `json:"byte_arrays"`
 	UUID          string   `json:"uuid"`

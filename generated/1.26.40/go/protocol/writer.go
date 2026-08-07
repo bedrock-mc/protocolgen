@@ -242,6 +242,12 @@ func (w *Writer) UUID(x *uuid.UUID) {
 	w.write(data)
 }
 
+func (w *Writer) UUIDBytes(x *[16]byte) {
+	var value uuid.UUID
+	copy(value[:], x[:])
+	w.UUID(&value)
+}
+
 func (w *Writer) Vec2(x *mgl32.Vec2) {
 	w.Float32(&(*x)[0])
 	w.Float32(&(*x)[1])

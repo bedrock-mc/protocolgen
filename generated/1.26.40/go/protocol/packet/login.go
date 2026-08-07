@@ -14,3 +14,6 @@ func (x *Login) Marshal(io protocol.IO) {
 	io.BEInt32(&x.ClientNetworkVersion)
 	io.String(&x.ConnectionRequest)
 }
+
+// ID returns the protocol ID for Login.
+func (*Login) ID() uint32 { return IDLogin }

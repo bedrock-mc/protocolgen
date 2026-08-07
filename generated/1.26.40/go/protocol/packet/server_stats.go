@@ -14,3 +14,6 @@ func (x *ServerStats) Marshal(io protocol.IO) {
 	io.Float32(&x.ServerTime)
 	io.Float32(&x.NetworkTime)
 }
+
+// ID returns the protocol ID for ServerStats.
+func (*ServerStats) ID() uint32 { return IDServerStats }

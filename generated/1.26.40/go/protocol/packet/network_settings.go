@@ -20,3 +20,6 @@ func (x *NetworkSettings) Marshal(io protocol.IO) {
 	io.Uint8(&x.ClientThrottleThreshold)
 	io.Float32(&x.ClientThrottleScalar)
 }
+
+// ID returns the protocol ID for NetworkSettings.
+func (*NetworkSettings) ID() uint32 { return IDNetworkSettings }

@@ -20,3 +20,6 @@ func (x *ServerboundPackSettingChange) Marshal(io protocol.IO) {
 	io.String(&x.PackSettingName)
 	protocol.MarshalServerboundPackSettingChangePackSettingValue(io, &x.PackSettingValue)
 }
+
+// ID returns the protocol ID for ServerboundPackSettingChange.
+func (*ServerboundPackSettingChange) ID() uint32 { return IDServerboundPackSettingChange }

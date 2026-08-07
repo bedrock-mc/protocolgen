@@ -26,3 +26,6 @@ func (x *AddVolumeEntity) Marshal(io protocol.IO) {
 	x.DimensionType.Marshal(io)
 	io.String(&x.EngineVersion)
 }
+
+// ID returns the protocol ID for AddVolumeEntity.
+func (*AddVolumeEntity) ID() uint32 { return IDAddVolumeEntity }

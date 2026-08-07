@@ -16,3 +16,6 @@ func (x *BlockEvent) Marshal(io protocol.IO) {
 	io.Varint32(&x.EventType)
 	io.Varint32(&x.EventValue)
 }
+
+// ID returns the protocol ID for BlockEvent.
+func (*BlockEvent) ID() uint32 { return IDBlockEvent }

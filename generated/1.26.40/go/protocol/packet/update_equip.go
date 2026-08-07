@@ -20,3 +20,6 @@ func (x *UpdateEquip) Marshal(io protocol.IO) {
 	io.ActorUniqueID(&x.EntityUniqueId)
 	io.NBT(&x.Data)
 }
+
+// ID returns the protocol ID for UpdateEquip.
+func (*UpdateEquip) ID() uint32 { return IDUpdateEquip }

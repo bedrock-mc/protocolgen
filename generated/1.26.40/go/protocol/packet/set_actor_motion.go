@@ -20,3 +20,6 @@ func (x *SetActorMotion) Marshal(io protocol.IO) {
 	io.Vec3(&x.Motion)
 	io.PlayerInputTick(&x.Tick)
 }
+
+// ID returns the protocol ID for SetActorMotion.
+func (*SetActorMotion) ID() uint32 { return IDSetActorMotion }

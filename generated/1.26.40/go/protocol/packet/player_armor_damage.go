@@ -14,3 +14,6 @@ func (x *PlayerArmorDamage) Marshal(io protocol.IO) {
 		value.Marshal(io)
 	})
 }
+
+// ID returns the protocol ID for PlayerArmorDamage.
+func (*PlayerArmorDamage) ID() uint32 { return IDPlayerArmorDamage }

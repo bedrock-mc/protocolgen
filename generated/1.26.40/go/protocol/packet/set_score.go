@@ -14,3 +14,6 @@ func (x *SetScore) Marshal(io protocol.IO) {
 		protocol.MarshalSetScoreScoreInfoItem(io, value)
 	})
 }
+
+// ID returns the protocol ID for SetScore.
+func (*SetScore) ID() uint32 { return IDSetScore }

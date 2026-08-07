@@ -14,3 +14,6 @@ func (x *ServerboundDataDrivenScreenClosed) Marshal(io protocol.IO) {
 	io.Uint32(&x.FormId)
 	io.String(&x.CloseReason)
 }
+
+// ID returns the protocol ID for ServerboundDataDrivenScreenClosed.
+func (*ServerboundDataDrivenScreenClosed) ID() uint32 { return IDServerboundDataDrivenScreenClosed }

@@ -424,3 +424,69 @@ func TestGenerateUsesNamedRecursiveTypeAndBoundedBitset(t *testing.T) {
 		}
 	}
 }
+
+func TestGenerateEmitsPacketRuntimePoolsAndOptionalNativeProfile(t *testing.T) {
+	packets := []manifest.Packet{
+		{ID: 1, Name: "ServerEnvelope", Direction: manifest.DirectionClientbound},
+		{ID: 2, Name: "ClientEnvelope", Direction: manifest.DirectionServerbound},
+		{ID: 3, Name: "SharedEnvelope", Direction: manifest.DirectionBidirectional},
+	}
+	m := manifest.Manifest{
+		SchemaVersion: 2,
+		Target:        manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 1},
+		Sources:       []manifest.SourcePin{{ID: "fixture", Kind: "fixture", Revision: "1", Digest: "sha256:fixture", MinecraftVersion: "fixture", ProtocolVersion: 1}},
+		Packets:       packets,
+	}
+	files, err := Generate(m, "fixture")
+	if err != nil {
+		t.Fatal(err)
+	}
+	serverSource := ""
+	for _, source := range files {
+		if strings.Contains(source, "type ServerEnvelope struct") {
+			serverSource = source
+			break
+		}
+	}
+	if !strings.Contains(files["protocol/packet/packet.go"], "type Packet interface") || !strings.Contains(serverSource, "func (*ServerEnvelope) ID() uint32 { return IDServerEnvelope }") {
+		t.Fatalf("packet runtime contract was not emitted:\n%s\n%s", files["protocol/packet/packet.go"], serverSource)
+	}
+	pool := files["protocol/packet/pool.go"]
+	for _, want := range []string{"IDServerEnvelope: func() Packet", "IDClientEnvelope: func() Packet", "IDSharedEnvelope: func() Packet", "func NewClientPacket", "func NewServerPacket"} {
+		if !strings.Contains(pool, want) {
+			t.Fatalf("packet pools omit %q:\n%s", want, pool)
+		}
+	}
+	withoutNative, err := GenerateWithOptions(m, Options{ProtocolImportPath: "fixture", EmitPacketRuntime: true, EmitPacketPools: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(withoutNative["protocol/packet/server_packet.go"], "uuid.UUID") {
+		t.Fatal("native profile unexpectedly leaked into disabled output")
+	}
+}
+
+func TestGenerateWithoutNativeTypesUsesFixedUUIDBytes(t *testing.T) {
+	m := manifest.Manifest{
+		SchemaVersion: 2,
+		Target:        manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 1},
+		Sources:       []manifest.SourcePin{{ID: "fixture", Kind: "fixture", Revision: "1", Digest: "sha256:fixture", MinecraftVersion: "fixture", ProtocolVersion: 1}},
+		Packets: []manifest.Packet{{ID: 1, Name: "UUIDPacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{
+			Ordinal: 0, Name: "UUID", Encode: manifest.Primitive("uuid"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}},
+		}}}},
+	}
+	files, err := GenerateWithOptions(m, Options{ProtocolImportPath: "fixture", EmitPacketRuntime: true, EmitPacketPools: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	packet := ""
+	for _, source := range files {
+		if strings.Contains(source, "type UUID struct") {
+			packet = source
+			break
+		}
+	}
+	if !strings.Contains(packet, "UUID [16]byte") || !strings.Contains(packet, "io.UUIDBytes(&x.UUID)") {
+		t.Fatalf("disabled native profile did not emit fixed UUID bytes:\n%s", packet)
+	}
+}

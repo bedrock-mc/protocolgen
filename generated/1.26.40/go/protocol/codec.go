@@ -59,6 +59,7 @@ type IO interface {
 	Bytes(*[]byte)
 	NBT(*[]byte)
 	UUID(*uuid.UUID)
+	UUIDBytes(*[16]byte)
 	Vec2(*mgl32.Vec2)
 	Vec3(*mgl32.Vec3)
 	RGBA(*color.RGBA)

@@ -16,3 +16,6 @@ func (x *AgentActionEvent) Marshal(io protocol.IO) {
 	protocol.IntegerFunc(&x.Action, io.Int32)
 	io.String(&x.Response)
 }
+
+// ID returns the protocol ID for AgentActionEvent.
+func (*AgentActionEvent) ID() uint32 { return IDAgentActionEvent }

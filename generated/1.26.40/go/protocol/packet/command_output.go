@@ -14,3 +14,6 @@ func (x *CommandOutput) Marshal(io protocol.IO) {
 	x.OriginData.Marshal(io)
 	x.Output.Marshal(io)
 }
+
+// ID returns the protocol ID for CommandOutput.
+func (*CommandOutput) ID() uint32 { return IDCommandOutput }

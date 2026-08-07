@@ -12,3 +12,6 @@ type SetLocalPlayerAsInitialized struct {
 func (x *SetLocalPlayerAsInitialized) Marshal(io protocol.IO) {
 	io.ActorRuntimeID(&x.PlayerID)
 }
+
+// ID returns the protocol ID for SetLocalPlayerAsInitialized.
+func (*SetLocalPlayerAsInitialized) ID() uint32 { return IDSetLocalPlayerAsInitialized }

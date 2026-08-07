@@ -14,3 +14,6 @@ func (x *ToastRequest) Marshal(io protocol.IO) {
 	io.String(&x.Title)
 	io.String(&x.Content)
 }
+
+// ID returns the protocol ID for ToastRequest.
+func (*ToastRequest) ID() uint32 { return IDToastRequest }

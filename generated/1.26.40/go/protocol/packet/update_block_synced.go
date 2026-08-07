@@ -22,3 +22,6 @@ func (x *UpdateBlockSynced) Marshal(io protocol.IO) {
 	io.Varuint64(&x.UniqueActorId)
 	io.Varuint64(&x.ActorSyncMessage)
 }
+
+// ID returns the protocol ID for UpdateBlockSynced.
+func (*UpdateBlockSynced) ID() uint32 { return IDUpdateBlockSynced }

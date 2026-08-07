@@ -18,3 +18,6 @@ func (x *StructureTemplateDataRequest) Marshal(io protocol.IO) {
 	x.StructureSettings.Marshal(io)
 	protocol.IntegerFunc(&x.RequestedOperation, io.Uint8)
 }
+
+// ID returns the protocol ID for StructureTemplateDataRequest.
+func (*StructureTemplateDataRequest) ID() uint32 { return IDStructureTemplateDataRequest }

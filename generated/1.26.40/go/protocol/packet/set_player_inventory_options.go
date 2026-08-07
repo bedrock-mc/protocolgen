@@ -12,3 +12,6 @@ type SetPlayerInventoryOptions struct {
 func (x *SetPlayerInventoryOptions) Marshal(io protocol.IO) {
 	x.InventoryOptions.Marshal(io)
 }
+
+// ID returns the protocol ID for SetPlayerInventoryOptions.
+func (*SetPlayerInventoryOptions) ID() uint32 { return IDSetPlayerInventoryOptions }

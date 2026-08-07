@@ -335,6 +335,12 @@ func (r *Reader) UUID(x *uuid.UUID) {
 	reverseBytes((*x)[8:])
 }
 
+func (r *Reader) UUIDBytes(x *[16]byte) {
+	var value uuid.UUID
+	r.UUID(&value)
+	copy(x[:], value[:])
+}
+
 func (r *Reader) Vec2(x *mgl32.Vec2) {
 	r.Float32(&(*x)[0])
 	r.Float32(&(*x)[1])

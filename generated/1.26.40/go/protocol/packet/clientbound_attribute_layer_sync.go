@@ -12,3 +12,6 @@ type ClientboundAttributeLayerSync struct {
 func (x *ClientboundAttributeLayerSync) Marshal(io protocol.IO) {
 	protocol.MarshalAttributeLayerSyncPacketData(io, &x.Data)
 }
+
+// ID returns the protocol ID for ClientboundAttributeLayerSync.
+func (*ClientboundAttributeLayerSync) ID() uint32 { return IDClientboundAttributeLayerSync }

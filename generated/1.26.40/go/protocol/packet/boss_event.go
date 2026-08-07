@@ -26,3 +26,6 @@ func (x *BossEvent) Marshal(io protocol.IO) {
 	protocol.IntegerFunc(&x.Color, io.Uint8)
 	protocol.IntegerFunc(&x.Overlay, io.Uint8)
 }
+
+// ID returns the protocol ID for BossEvent.
+func (*BossEvent) ID() uint32 { return IDBossEvent }

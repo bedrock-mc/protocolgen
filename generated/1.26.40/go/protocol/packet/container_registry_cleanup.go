@@ -14,3 +14,6 @@ func (x *ContainerRegistryCleanup) Marshal(io protocol.IO) {
 		value.Marshal(io)
 	})
 }
+
+// ID returns the protocol ID for ContainerRegistryCleanup.
+func (*ContainerRegistryCleanup) ID() uint32 { return IDContainerRegistryCleanup }

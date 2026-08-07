@@ -16,3 +16,6 @@ func (x *ClientboundDataDrivenUIShowScreen) Marshal(io protocol.IO) {
 	io.Uint32(&x.FormId)
 	protocol.OptionalFunc(io, &x.DataInstanceId, io.Uint32)
 }
+
+// ID returns the protocol ID for ClientboundDataDrivenUIShowScreen.
+func (*ClientboundDataDrivenUIShowScreen) ID() uint32 { return IDClientboundDataDrivenUIShowScreen }

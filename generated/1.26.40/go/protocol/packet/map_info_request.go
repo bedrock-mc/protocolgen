@@ -16,3 +16,6 @@ func (x *MapInfoRequest) Marshal(io protocol.IO) {
 		value.Marshal(io)
 	})
 }
+
+// ID returns the protocol ID for MapInfoRequest.
+func (*MapInfoRequest) ID() uint32 { return IDMapInfoRequest }

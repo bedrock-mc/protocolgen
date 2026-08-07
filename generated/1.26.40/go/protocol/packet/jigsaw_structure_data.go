@@ -12,3 +12,6 @@ type JigsawStructureData struct {
 func (x *JigsawStructureData) Marshal(io protocol.IO) {
 	io.NBT(&x.JigsawStructureDataTag)
 }
+
+// ID returns the protocol ID for JigsawStructureData.
+func (*JigsawStructureData) ID() uint32 { return IDJigsawStructureData }

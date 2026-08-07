@@ -14,3 +14,6 @@ func (x *Disconnect) Marshal(io protocol.IO) {
 	protocol.IntegerFunc(&x.Reason, io.Varint32)
 	protocol.MarshalDisconnectMessages(io, &x.Messages)
 }
+
+// ID returns the protocol ID for Disconnect.
+func (*Disconnect) ID() uint32 { return IDDisconnect }

@@ -30,3 +30,6 @@ func (x *UpdateTrade) Marshal(io protocol.IO) {
 	io.Bool(&x.UsingEconomyTrade)
 	io.NBT(&x.Data)
 }
+
+// ID returns the protocol ID for UpdateTrade.
+func (*UpdateTrade) ID() uint32 { return IDUpdateTrade }

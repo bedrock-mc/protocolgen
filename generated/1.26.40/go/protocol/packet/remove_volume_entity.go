@@ -14,3 +14,6 @@ func (x *RemoveVolumeEntity) Marshal(io protocol.IO) {
 	x.EntityNetworkId.Marshal(io)
 	x.DimensionType.Marshal(io)
 }
+
+// ID returns the protocol ID for RemoveVolumeEntity.
+func (*RemoveVolumeEntity) ID() uint32 { return IDRemoveVolumeEntity }

@@ -12,3 +12,6 @@ type ResourcePackClientResponse struct {
 func (x *ResourcePackClientResponse) Marshal(io protocol.IO) {
 	protocol.MarshalResourcePackClientResponseResponse(io, &x.Response)
 }
+
+// ID returns the protocol ID for ResourcePackClientResponse.
+func (*ResourcePackClientResponse) ID() uint32 { return IDResourcePackClientResponse }

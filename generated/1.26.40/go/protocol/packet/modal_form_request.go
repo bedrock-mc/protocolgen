@@ -14,3 +14,6 @@ func (x *ModalFormRequest) Marshal(io protocol.IO) {
 	io.Varuint32(&x.FormID)
 	io.String(&x.FormUIJSON)
 }
+
+// ID returns the protocol ID for ModalFormRequest.
+func (*ModalFormRequest) ID() uint32 { return IDModalFormRequest }

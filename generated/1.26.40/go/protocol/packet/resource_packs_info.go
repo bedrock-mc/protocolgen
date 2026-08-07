@@ -24,3 +24,6 @@ func (x *ResourcePacksInfo) Marshal(io protocol.IO) {
 		value.Marshal(io)
 	})
 }
+
+// ID returns the protocol ID for ResourcePacksInfo.
+func (*ResourcePacksInfo) ID() uint32 { return IDResourcePacksInfo }

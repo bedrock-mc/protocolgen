@@ -12,3 +12,6 @@ type SetActorLink struct {
 func (x *SetActorLink) Marshal(io protocol.IO) {
 	x.Link.Marshal(io)
 }
+
+// ID returns the protocol ID for SetActorLink.
+func (*SetActorLink) ID() uint32 { return IDSetActorLink }

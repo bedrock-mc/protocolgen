@@ -18,3 +18,6 @@ func (x *CameraShake) Marshal(io protocol.IO) {
 	protocol.IntegerFunc(&x.ShakeType, io.Uint8)
 	protocol.IntegerFunc(&x.ShakeAction, io.Uint8)
 }
+
+// ID returns the protocol ID for CameraShake.
+func (*CameraShake) ID() uint32 { return IDCameraShake }

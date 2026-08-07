@@ -14,3 +14,6 @@ func (x *NetworkStackLatency) Marshal(io protocol.IO) {
 	io.Uint64(&x.CreationTime)
 	io.Bool(&x.IsFromServer)
 }
+
+// ID returns the protocol ID for NetworkStackLatency.
+func (*NetworkStackLatency) ID() uint32 { return IDNetworkStackLatency }

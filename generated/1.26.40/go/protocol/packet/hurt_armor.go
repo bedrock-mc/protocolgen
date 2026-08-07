@@ -16,3 +16,6 @@ func (x *HurtArmor) Marshal(io protocol.IO) {
 	io.Varint32(&x.Damage)
 	io.Varuint64(&x.ArmorSlots)
 }
+
+// ID returns the protocol ID for HurtArmor.
+func (*HurtArmor) ID() uint32 { return IDHurtArmor }

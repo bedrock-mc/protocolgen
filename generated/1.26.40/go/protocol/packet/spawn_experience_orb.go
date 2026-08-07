@@ -18,3 +18,6 @@ func (x *SpawnExperienceOrb) Marshal(io protocol.IO) {
 	io.Vec3(&x.Position)
 	io.Varint32(&x.XPValue)
 }
+
+// ID returns the protocol ID for SpawnExperienceOrb.
+func (*SpawnExperienceOrb) ID() uint32 { return IDSpawnExperienceOrb }

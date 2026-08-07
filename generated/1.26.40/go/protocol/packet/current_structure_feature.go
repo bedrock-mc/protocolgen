@@ -12,3 +12,6 @@ type CurrentStructureFeature struct {
 func (x *CurrentStructureFeature) Marshal(io protocol.IO) {
 	io.String(&x.CurrentStructureFeature)
 }
+
+// ID returns the protocol ID for CurrentStructureFeature.
+func (*CurrentStructureFeature) ID() uint32 { return IDCurrentStructureFeature }

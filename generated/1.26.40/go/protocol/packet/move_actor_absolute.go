@@ -12,3 +12,6 @@ type MoveActorAbsolute struct {
 func (x *MoveActorAbsolute) Marshal(io protocol.IO) {
 	x.MoveData.Marshal(io)
 }
+
+// ID returns the protocol ID for MoveActorAbsolute.
+func (*MoveActorAbsolute) ID() uint32 { return IDMoveActorAbsolute }

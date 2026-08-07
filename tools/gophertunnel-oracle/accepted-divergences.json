@@ -20,54 +20,6 @@
       ]
     },
     {
-      "id": 90,
-      "name": "StructureBlockUpdatePacket",
-      "reason": "The canonical manifest models Structure Name as a required string plus an optional redacted string. The pinned gophertunnel Marshal writes StructureName and FilteredStructureName as two unconditional strings, so the presence Bool and its boundary are absent from the oracle sequence.",
-      "what_would_settle_it": "A protocol 2168 client/server capture, or an exact reference serializer for StructureBlockUpdate, must show whether the redacted name carries a presence byte; then amend the manifest or gophertunnel and remove this entry.",
-      "evidence": [
-        {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/structure_block_update.go",
-          "summary": "Pinned Marshal writes StructureName and FilteredStructureName directly with io.String."
-        },
-        {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/tools/protocoldrift/accepted-drift.json",
-          "summary": "The prior reviewed divergence identifies the same optionality conflict."
-        }
-      ]
-    },
-    {
-      "id": 137,
-      "name": "EducationSettingsPacket",
-      "reason": "Both sides serialize optionals in EducationSettings, but their presence boundaries do not align: the manifest nests Can Modify Blocks inside Agent Capabilities, while the pinned gophertunnel sequence writes CanModifyBlocks as a top-level optional before the later optional fields.",
-      "what_would_settle_it": "A field-level protocol 2168 capture or exact reference serializer must map every presence byte to its enclosing field; then correct the canonical shape or oracle and remove this entry.",
-      "evidence": [
-        {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/education_settings.go",
-          "summary": "Pinned Marshal uses OptionalFunc for CanModifyBlocks and OverrideURI and OptionalMarshaler for ExternalLinkSettings."
-        },
-        {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/tools/protocoldrift/accepted-drift.json",
-          "summary": "The prior reviewed divergence records the same optionality and position conflict."
-        }
-      ]
-    },
-    {
-      "id": 174,
-      "name": "SubChunkPacket",
-      "reason": "The manifest retains the documented 16-by-16 nested fixed-array heightmaps, while gophertunnel stores and writes the same 256 int8 values as one flat fixed array. This is a representation-granularity difference in a byte-identical region, not permission to collapse arbitrary fixed-array lengths.",
-      "what_would_settle_it": "A reviewed source annotation or equivalent type-level evidence must establish that gophertunnel's [256]int8 field is intentionally the flattened [16][16]int8 wire matrix; only then could a narrowly scoped structural rule be added without weakening fixed-array-length checks.",
-      "evidence": [
-        {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/sub_chunk.go",
-          "summary": "Pinned SubChunkEntry Marshal writes HeightMapData and RenderHeightMapData as flat fixed arrays."
-        },
-        {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/tools/protocoldrift/accepted-drift.json",
-          "summary": "The prior reviewed divergence explains the 16x16-versus-256 representation mismatch."
-        }
-      ]
-    },
-    {
       "id": 187,
       "name": "UpdateAbilitiesPacket",
       "reason": "The canonical manifest prefixes Layers with unsigned var_u32, while the pinned gophertunnel AbilityData Marshal uses SliceUint8Length and therefore an unsigned fixed u8 count. The array-prefix distinction is intentionally preserved.",
@@ -80,54 +32,6 @@
         {
           "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/tools/protocoldrift/accepted-drift.json",
           "summary": "The prior reviewed divergence records the one-source-versus-one-source prefix conflict."
-        }
-      ]
-    },
-    {
-      "id": 190,
-      "name": "EditorNetworkPacket",
-      "reason": "The canonical manifest models EditorNetwork as a raw variant name followed by raw variant data strings. The pinned gophertunnel Marshal writes one NetworkLittleEndian NBT payload instead, so the sequences describe different wire shapes.",
-      "what_would_settle_it": "A protocol 2168 capture or exact reference serializer must determine whether the payload is an NBT blob or a name/data pair; then update the canonical shape or oracle and remove this entry.",
-      "evidence": [
-        {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/editor_network.go",
-          "summary": "Pinned EditorNetwork.Marshal writes Payload with io.NBT using NetworkLittleEndian encoding."
-        },
-        {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/tools/protocoldrift/accepted-drift.json",
-          "summary": "The prior reviewed divergence records this structural disagreement."
-        }
-      ]
-    },
-    {
-      "id": 198,
-      "name": "CameraPresetsPacket",
-      "reason": "The deeply nested camera preset shape has optional-boundary differences, and this pinned gophertunnel commit also writes CameraPresetAimAssist.TargetMode with fixed i32 while the manifest specifies optional u8. Neither difference is collapsed by normalization.",
-      "what_would_settle_it": "A field-level protocol 2168 capture or exact reference serializer must establish the nested optional presence bytes and TargetMode width; then update the canonical shape or oracle and remove this entry.",
-      "evidence": [
-        {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/camera.go",
-          "summary": "Pinned CameraPreset and CameraPresetAimAssist Marshal methods define the nested optionals and write TargetMode with io.Int32."
-        },
-        {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/tools/protocoldrift/accepted-drift.json",
-          "summary": "The prior reviewed baseline flags this packet's nested optional disagreement; this run records the additional fixed-width observation."
-        }
-      ]
-    },
-    {
-      "id": 322,
-      "name": "ClientMovementPredictionSyncPacket",
-      "reason": "The canonical manifest preserves Actor Bounding Box as fixed length 3 and Movement Attributes as fixed length 9. The pinned gophertunnel packet writes the same scalar sequence as individual float32 fields after its bitset, so the AST oracle cannot prove those fixed-array grouping boundaries from the hand-written field list.",
-      "what_would_settle_it": "A type-level source annotation or an extractor witness tying the three and nine scalar fields to the canonical fixed-array components would settle the grouping; do not resolve this by globally discarding fixed-array lengths.",
-      "evidence": [
-        {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/client_movement_prediction_sync.go",
-          "summary": "Pinned Marshal writes the bitset followed by three bounding-box floats and nine movement-attribute floats as separate io.Float32 calls."
-        },
-        {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go",
-          "summary": "Pinned Writer.Bitset validates the static bitset size, but the packet source exposes no equivalent fixed-array grouping for the following scalar fields."
         }
       ]
     },

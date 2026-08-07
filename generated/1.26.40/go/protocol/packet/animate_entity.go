@@ -24,3 +24,6 @@ func (x *AnimateEntity) Marshal(io protocol.IO) {
 	io.Float32(&x.MBlendOutTime)
 	protocol.FuncSlice(io, &x.MRuntimeIds, io.Varuint32, io.ActorRuntimeID)
 }
+
+// ID returns the protocol ID for AnimateEntity.
+func (*AnimateEntity) ID() uint32 { return IDAnimateEntity }

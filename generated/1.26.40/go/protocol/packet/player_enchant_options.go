@@ -14,3 +14,6 @@ func (x *PlayerEnchantOptions) Marshal(io protocol.IO) {
 		value.Marshal(io)
 	})
 }
+
+// ID returns the protocol ID for PlayerEnchantOptions.
+func (*PlayerEnchantOptions) ID() uint32 { return IDPlayerEnchantOptions }

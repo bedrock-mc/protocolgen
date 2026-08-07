@@ -12,3 +12,6 @@ type SyncActorProperty struct {
 func (x *SyncActorProperty) Marshal(io protocol.IO) {
 	io.NBT(&x.PropertyData)
 }
+
+// ID returns the protocol ID for SyncActorProperty.
+func (*SyncActorProperty) ID() uint32 { return IDSyncActorProperty }

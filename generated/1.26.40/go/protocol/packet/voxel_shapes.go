@@ -20,3 +20,6 @@ func (x *VoxelShapes) Marshal(io protocol.IO) {
 	})
 	io.Uint16(&x.CustomShapeCount)
 }
+
+// ID returns the protocol ID for VoxelShapes.
+func (*VoxelShapes) ID() uint32 { return IDVoxelShapes }

@@ -18,3 +18,6 @@ func (x *TrimData) Marshal(io protocol.IO) {
 		value.Marshal(io)
 	})
 }
+
+// ID returns the protocol ID for TrimData.
+func (*TrimData) ID() uint32 { return IDTrimData }

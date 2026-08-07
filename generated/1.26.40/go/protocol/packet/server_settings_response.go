@@ -14,3 +14,6 @@ func (x *ServerSettingsResponse) Marshal(io protocol.IO) {
 	io.Varuint32(&x.FormID)
 	io.String(&x.FormUIJSON)
 }
+
+// ID returns the protocol ID for ServerSettingsResponse.
+func (*ServerSettingsResponse) ID() uint32 { return IDServerSettingsResponse }

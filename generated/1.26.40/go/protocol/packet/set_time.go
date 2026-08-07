@@ -12,3 +12,6 @@ type SetTime struct {
 func (x *SetTime) Marshal(io protocol.IO) {
 	io.Varint32(&x.Time)
 }
+
+// ID returns the protocol ID for SetTime.
+func (*SetTime) ID() uint32 { return IDSetTime }

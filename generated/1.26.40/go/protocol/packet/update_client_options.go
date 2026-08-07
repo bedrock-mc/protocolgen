@@ -16,3 +16,6 @@ func (x *UpdateClientOptions) Marshal(io protocol.IO) {
 	})
 	protocol.OptionalFunc(io, &x.FilterProfanityChange, io.Bool)
 }
+
+// ID returns the protocol ID for UpdateClientOptions.
+func (*UpdateClientOptions) ID() uint32 { return IDUpdateClientOptions }

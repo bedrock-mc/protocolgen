@@ -18,3 +18,6 @@ func (x *SubChunkRequest) Marshal(io protocol.IO) {
 	})
 	x.CenterPos.Marshal(io)
 }
+
+// ID returns the protocol ID for SubChunkRequest.
+func (*SubChunkRequest) ID() uint32 { return IDSubChunkRequest }

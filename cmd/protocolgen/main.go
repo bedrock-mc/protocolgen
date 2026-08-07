@@ -207,6 +207,9 @@ func runEmitGo(args []string) error {
 	manifestPath := fs.String("manifest", "", "canonical manifest v2 JSON")
 	out := fs.String("out", "", "generated Go source directory")
 	protocolImport := fs.String("protocol-import", "", "import path of the generated protocol package")
+	nativeTypes := fs.Bool("native-types", true, "map canonical semantic shapes to established Go types such as uuid.UUID and mgl32 vectors")
+	packetRuntime := fs.Bool("packet-runtime", true, "emit the packet interface and ID methods")
+	packetPools := fs.Bool("packet-pools", true, "emit packet factory pools")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
@@ -220,7 +223,12 @@ func runEmitGo(args []string) error {
 	if err != nil {
 		return err
 	}
-	files, err := emitgo.Generate(m, *protocolImport)
+	files, err := emitgo.GenerateWithOptions(m, emitgo.Options{
+		ProtocolImportPath: *protocolImport,
+		NativeTypes:        *nativeTypes,
+		EmitPacketRuntime:  *packetRuntime,
+		EmitPacketPools:    *packetPools,
+	})
 	if err != nil {
 		return err
 	}

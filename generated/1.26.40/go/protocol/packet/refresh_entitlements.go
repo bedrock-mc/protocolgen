@@ -10,3 +10,6 @@ type RefreshEntitlements struct {
 // Marshal reads or writes RefreshEntitlements using its canonical wire layout.
 func (x *RefreshEntitlements) Marshal(io protocol.IO) {
 }
+
+// ID returns the protocol ID for RefreshEntitlements.
+func (*RefreshEntitlements) ID() uint32 { return IDRefreshEntitlements }

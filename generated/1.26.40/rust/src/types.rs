@@ -45,11 +45,6 @@ pub struct AdventureSettings {
 }
 
 #[derive(Clone, Debug, PartialEq)]
-pub struct AgentCapabilities {
-    pub can_modify_blocks: Option<bool>,
-}
-
-#[derive(Clone, Debug, PartialEq)]
 pub struct AnimatedImageData {
     pub skin_image: SkinImage,
     pub animated_texture_type: PersonaAnimatedTextureType,
@@ -206,7 +201,7 @@ pub struct BedrockProfileWhiskerDiagnosticsScopeDataSummary {
 #[derive(Clone, Debug, PartialEq)]
 pub struct BedrockSafetyRedactableString {
     pub unredacted: String,
-    pub redacted: Option<String>,
+    pub redacted: String,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -975,7 +970,7 @@ pub struct EducationLevelSettings {
     pub disable_legacy_title_bar: bool,
     pub post_process_filter: String,
     pub screenshot_border_resource_path: String,
-    pub agent_capabilities: Option<AgentCapabilities>,
+    pub agent_capabilities: Option<bool>,
     pub local_settings: EducationLocalLevelSettings,
     pub deprecated_always_false: bool,
     pub external_link_settings: Option<ExternalLinkSettings>,

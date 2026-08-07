@@ -14,3 +14,6 @@ func (x *PartyDestinationCookieResponse) Marshal(io protocol.IO) {
 	io.String(&x.Cookie)
 	io.Bool(&x.Accepted)
 }
+
+// ID returns the protocol ID for PartyDestinationCookieResponse.
+func (*PartyDestinationCookieResponse) ID() uint32 { return IDPartyDestinationCookieResponse }

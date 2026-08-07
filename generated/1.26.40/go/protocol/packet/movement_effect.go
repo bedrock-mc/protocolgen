@@ -18,3 +18,6 @@ func (x *MovementEffect) Marshal(io protocol.IO) {
 	io.Varint32(&x.EffectDuration)
 	io.PlayerInputTick(&x.Tick)
 }
+
+// ID returns the protocol ID for MovementEffect.
+func (*MovementEffect) ID() uint32 { return IDMovementEffect }

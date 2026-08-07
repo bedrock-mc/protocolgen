@@ -20,3 +20,6 @@ func (x *PlayerToggleCrafterSlotRequest) Marshal(io protocol.IO) {
 	io.Uint8(&x.SlotIndex)
 	io.Bool(&x.IsDisabled)
 }
+
+// ID returns the protocol ID for PlayerToggleCrafterSlotRequest.
+func (*PlayerToggleCrafterSlotRequest) ID() uint32 { return IDPlayerToggleCrafterSlotRequest }

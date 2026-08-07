@@ -12,3 +12,6 @@ type SyncWorldClocks struct {
 func (x *SyncWorldClocks) Marshal(io protocol.IO) {
 	protocol.MarshalSyncWorldClocksData(io, &x.Data)
 }
+
+// ID returns the protocol ID for SyncWorldClocks.
+func (*SyncWorldClocks) ID() uint32 { return IDSyncWorldClocks }

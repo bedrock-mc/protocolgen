@@ -42,3 +42,6 @@ func (x *AddActor) Marshal(io protocol.IO) {
 		value.Marshal(io)
 	})
 }
+
+// ID returns the protocol ID for AddActor.
+func (*AddActor) ID() uint32 { return IDAddActor }

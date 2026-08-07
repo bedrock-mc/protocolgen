@@ -12,3 +12,6 @@ type AwardAchievement struct {
 func (x *AwardAchievement) Marshal(io protocol.IO) {
 	io.Int32(&x.AchievementID)
 }
+
+// ID returns the protocol ID for AwardAchievement.
+func (*AwardAchievement) ID() uint32 { return IDAwardAchievement }

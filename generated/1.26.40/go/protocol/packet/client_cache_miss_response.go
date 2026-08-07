@@ -14,3 +14,6 @@ func (x *ClientCacheMissResponse) Marshal(io protocol.IO) {
 		value.Marshal(io)
 	})
 }
+
+// ID returns the protocol ID for ClientCacheMissResponse.
+func (*ClientCacheMissResponse) ID() uint32 { return IDClientCacheMissResponse }

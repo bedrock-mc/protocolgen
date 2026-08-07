@@ -24,3 +24,6 @@ func (x *SpawnParticleEffect) Marshal(io protocol.IO) {
 	io.String(&x.EffectName)
 	protocol.OptionalFunc(io, &x.MolangVariables, io.String)
 }
+
+// ID returns the protocol ID for SpawnParticleEffect.
+func (*SpawnParticleEffect) ID() uint32 { return IDSpawnParticleEffect }

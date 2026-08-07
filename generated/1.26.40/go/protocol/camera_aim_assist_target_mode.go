@@ -2,7 +2,7 @@
 
 package protocol
 
-type CameraAimAssistTargetMode uint8
+type CameraAimAssistTargetMode int32
 
 const (
 	CameraAimAssistTargetModeAngle    CameraAimAssistTargetMode = 0

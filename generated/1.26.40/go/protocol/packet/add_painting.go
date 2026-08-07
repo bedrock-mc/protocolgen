@@ -24,3 +24,6 @@ func (x *AddPainting) Marshal(io protocol.IO) {
 	io.Varint32(&x.Direction)
 	io.String(&x.Motif)
 }
+
+// ID returns the protocol ID for AddPainting.
+func (*AddPainting) ID() uint32 { return IDAddPainting }

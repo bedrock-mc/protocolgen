@@ -30,3 +30,6 @@ func (x *LevelSoundEvent) Marshal(io protocol.IO) {
 	io.Int64(&x.ActorUniqueId)
 	protocol.OptionalFunc(io, &x.FireAtPosition, io.Vec3)
 }
+
+// ID returns the protocol ID for LevelSoundEvent.
+func (*LevelSoundEvent) ID() uint32 { return IDLevelSoundEvent }

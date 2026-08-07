@@ -10,3 +10,6 @@ type ResourcePacksReadyForValidation struct {
 // Marshal reads or writes ResourcePacksReadyForValidation using its canonical wire layout.
 func (x *ResourcePacksReadyForValidation) Marshal(io protocol.IO) {
 }
+
+// ID returns the protocol ID for ResourcePacksReadyForValidation.
+func (*ResourcePacksReadyForValidation) ID() uint32 { return IDResourcePacksReadyForValidation }

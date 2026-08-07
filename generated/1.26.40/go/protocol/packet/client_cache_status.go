@@ -12,3 +12,6 @@ type ClientCacheStatus struct {
 func (x *ClientCacheStatus) Marshal(io protocol.IO) {
 	io.Bool(&x.IsCacheSupported)
 }
+
+// ID returns the protocol ID for ClientCacheStatus.
+func (*ClientCacheStatus) ID() uint32 { return IDClientCacheStatus }

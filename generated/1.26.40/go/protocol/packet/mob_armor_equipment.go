@@ -22,3 +22,6 @@ func (x *MobArmorEquipment) Marshal(io protocol.IO) {
 	x.Feet.Marshal(io)
 	x.Body.Marshal(io)
 }
+
+// ID returns the protocol ID for MobArmorEquipment.
+func (*MobArmorEquipment) ID() uint32 { return IDMobArmorEquipment }

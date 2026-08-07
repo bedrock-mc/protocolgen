@@ -18,3 +18,6 @@ func (x *SetActorData) Marshal(io protocol.IO) {
 	x.SynchedProperties.Marshal(io)
 	io.PlayerInputTick(&x.Tick)
 }
+
+// ID returns the protocol ID for SetActorData.
+func (*SetActorData) ID() uint32 { return IDSetActorData }

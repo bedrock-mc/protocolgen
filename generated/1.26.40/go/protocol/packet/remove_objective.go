@@ -12,3 +12,6 @@ type RemoveObjective struct {
 func (x *RemoveObjective) Marshal(io protocol.IO) {
 	io.String(&x.ObjectiveName)
 }
+
+// ID returns the protocol ID for RemoveObjective.
+func (*RemoveObjective) ID() uint32 { return IDRemoveObjective }

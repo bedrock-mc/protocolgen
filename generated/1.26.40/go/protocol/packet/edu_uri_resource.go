@@ -12,3 +12,6 @@ type EduUriResource struct {
 func (x *EduUriResource) Marshal(io protocol.IO) {
 	x.EduSharedURIResource.Marshal(io)
 }
+
+// ID returns the protocol ID for EduUriResource.
+func (*EduUriResource) ID() uint32 { return IDEduUriResource }

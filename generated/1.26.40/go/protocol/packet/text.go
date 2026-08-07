@@ -20,3 +20,6 @@ func (x *Text) Marshal(io protocol.IO) {
 	io.String(&x.PlatformId)
 	protocol.OptionalFunc(io, &x.FilteredMessage, io.String)
 }
+
+// ID returns the protocol ID for Text.
+func (*Text) ID() uint32 { return IDText }

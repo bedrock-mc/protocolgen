@@ -16,3 +16,6 @@ func (x *PlayerHotbar) Marshal(io protocol.IO) {
 	io.Uint8(&x.ContainerID)
 	io.Bool(&x.ShouldSelectSlot)
 }
+
+// ID returns the protocol ID for PlayerHotbar.
+func (*PlayerHotbar) ID() uint32 { return IDPlayerHotbar }

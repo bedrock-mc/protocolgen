@@ -16,3 +16,6 @@ func (x *LessonProgress) Marshal(io protocol.IO) {
 	io.Varint32(&x.Score)
 	io.String(&x.ActivityId)
 }
+
+// ID returns the protocol ID for LessonProgress.
+func (*LessonProgress) ID() uint32 { return IDLessonProgress }

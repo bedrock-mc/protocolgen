@@ -16,3 +16,6 @@ func (x *UpdateSoftEnum) Marshal(io protocol.IO) {
 	protocol.FuncSlice(io, &x.Values, io.Varuint32, io.String)
 	protocol.IntegerFunc(&x.UpdateType, io.Uint8)
 }
+
+// ID returns the protocol ID for UpdateSoftEnum.
+func (*UpdateSoftEnum) ID() uint32 { return IDUpdateSoftEnum }

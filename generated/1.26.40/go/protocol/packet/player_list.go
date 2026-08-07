@@ -14,3 +14,6 @@ func (x *PlayerList) Marshal(io protocol.IO) {
 		protocol.MarshalPlayerListEntriesItem(io, value)
 	})
 }
+
+// ID returns the protocol ID for PlayerList.
+func (*PlayerList) ID() uint32 { return IDPlayerList }

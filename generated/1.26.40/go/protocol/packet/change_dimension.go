@@ -22,3 +22,6 @@ func (x *ChangeDimension) Marshal(io protocol.IO) {
 	io.Bool(&x.Respawn)
 	protocol.OptionalFunc(io, &x.LoadingScreenId, io.Uint32)
 }
+
+// ID returns the protocol ID for ChangeDimension.
+func (*ChangeDimension) ID() uint32 { return IDChangeDimension }

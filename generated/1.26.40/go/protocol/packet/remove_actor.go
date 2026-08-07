@@ -12,3 +12,6 @@ type RemoveActor struct {
 func (x *RemoveActor) Marshal(io protocol.IO) {
 	io.ActorUniqueID(&x.TargetActorID)
 }
+
+// ID returns the protocol ID for RemoveActor.
+func (*RemoveActor) ID() uint32 { return IDRemoveActor }

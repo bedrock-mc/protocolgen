@@ -36,3 +36,6 @@ func (x *AvailableCommands) Marshal(io protocol.IO) {
 		value.Marshal(io)
 	})
 }
+
+// ID returns the protocol ID for AvailableCommands.
+func (*AvailableCommands) ID() uint32 { return IDAvailableCommands }

@@ -22,3 +22,6 @@ func (x *InventoryTransaction) Marshal(io protocol.IO) {
 		protocol.MarshalInventoryTransactionTransactionValue(io, value)
 	})
 }
+
+// ID returns the protocol ID for InventoryTransaction.
+func (*InventoryTransaction) ID() uint32 { return IDInventoryTransaction }

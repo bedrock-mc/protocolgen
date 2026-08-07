@@ -12,3 +12,6 @@ type SetCommandsEnabled struct {
 func (x *SetCommandsEnabled) Marshal(io protocol.IO) {
 	io.Bool(&x.CommandsEnabled)
 }
+
+// ID returns the protocol ID for SetCommandsEnabled.
+func (*SetCommandsEnabled) ID() uint32 { return IDSetCommandsEnabled }

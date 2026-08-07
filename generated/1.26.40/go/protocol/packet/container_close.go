@@ -16,3 +16,6 @@ func (x *ContainerClose) Marshal(io protocol.IO) {
 	io.Uint8(&x.ContainerType)
 	io.Bool(&x.ServerInitiatedClose)
 }
+
+// ID returns the protocol ID for ContainerClose.
+func (*ContainerClose) ID() uint32 { return IDContainerClose }

@@ -16,3 +16,6 @@ func (x *BiomeDefinitionList) Marshal(io protocol.IO) {
 	})
 	x.StringList.Marshal(io)
 }
+
+// ID returns the protocol ID for BiomeDefinitionList.
+func (*BiomeDefinitionList) ID() uint32 { return IDBiomeDefinitionList }

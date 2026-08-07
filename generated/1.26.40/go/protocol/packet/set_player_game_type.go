@@ -12,3 +12,6 @@ type SetPlayerGameType struct {
 func (x *SetPlayerGameType) Marshal(io protocol.IO) {
 	protocol.IntegerFunc(&x.PlayerGameType, io.Varint32)
 }
+
+// ID returns the protocol ID for SetPlayerGameType.
+func (*SetPlayerGameType) ID() uint32 { return IDSetPlayerGameType }

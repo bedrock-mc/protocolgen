@@ -28,3 +28,6 @@ func (x *AddItemActor) Marshal(io protocol.IO) {
 	x.EntityData.Marshal(io)
 	io.Bool(&x.IsFromFishing)
 }
+
+// ID returns the protocol ID for AddItemActor.
+func (*AddItemActor) ID() uint32 { return IDAddItemActor }

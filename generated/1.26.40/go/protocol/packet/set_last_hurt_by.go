@@ -12,3 +12,6 @@ type SetLastHurtBy struct {
 func (x *SetLastHurtBy) Marshal(io protocol.IO) {
 	protocol.IntegerFunc(&x.LastHurtBy, io.Varint32)
 }
+
+// ID returns the protocol ID for SetLastHurtBy.
+func (*SetLastHurtBy) ID() uint32 { return IDSetLastHurtBy }

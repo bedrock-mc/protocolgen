@@ -12,3 +12,6 @@ type AvailableActorIdentifiers struct {
 func (x *AvailableActorIdentifiers) Marshal(io protocol.IO) {
 	io.NBT(&x.IdentifierList)
 }
+
+// ID returns the protocol ID for AvailableActorIdentifiers.
+func (*AvailableActorIdentifiers) ID() uint32 { return IDAvailableActorIdentifiers }

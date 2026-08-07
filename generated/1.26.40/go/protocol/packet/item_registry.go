@@ -14,3 +14,6 @@ func (x *ItemRegistry) Marshal(io protocol.IO) {
 		value.Marshal(io)
 	})
 }
+
+// ID returns the protocol ID for ItemRegistry.
+func (*ItemRegistry) ID() uint32 { return IDItemRegistry }
