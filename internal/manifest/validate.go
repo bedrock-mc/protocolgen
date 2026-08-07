@@ -132,6 +132,9 @@ func validateNode(node Node, path string, sourceIDs map[string]bool) error {
 		if !ok || !reflect.DeepEqual(canonical, *node.Primitive) {
 			return fmt.Errorf("%s primitive %q has incomplete or invented signedness/width/endianness", path, node.Primitive.Code)
 		}
+		if node.Primitive.Code == "nbt_le" && !ValidNBTEncoding(node.Encoding) {
+			return fmt.Errorf("%s NBT encoding must be %q or %q", path, NBTNetwork, NBTPersistent)
+		}
 	case KindString, KindBytes:
 		if node.Prefix == nil {
 			return fmt.Errorf("%s has no explicit length prefix", path)

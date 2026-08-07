@@ -20,6 +20,7 @@ regen:
 	$(PROTOCOLGEN) reconcile \
 		-lock $(SOURCE_LOCK) \
 		-directions generated/1.26.40/directions.json \
+		-nbt-encodings generated/1.26.40/nbt-encodings.json \
 		-mojang $(MOJANG_DIR) \
 		-mojang-corrections generated/1.26.40/corrections/mojang \
 		-endstone $(ENDSTONE_DIR) \

@@ -19,6 +19,7 @@ import (
 	"protocolgen/internal/gophertunneloracle"
 	"protocolgen/internal/ingest"
 	"protocolgen/internal/manifest"
+	"protocolgen/internal/nbtencoding"
 	"protocolgen/internal/parity"
 	"protocolgen/internal/reconcile"
 	"protocolgen/internal/sourcelock"
@@ -80,18 +81,23 @@ func runReconcile(args []string) error {
 	endstoneCorrections := fs.String("endstone-corrections", "", "fingerprinted correction directory for -endstone")
 	adjudicationsPath := fs.String("adjudications", "", "fingerprinted adjudications JSON")
 	directionsPath := fs.String("directions", "", "reviewed packet-direction JSON")
+	nbtEncodingsPath := fs.String("nbt-encodings", "", "reviewed per-field NBT encoding JSON")
 	outPath := fs.String("out", "", "canonical manifest v2 output")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
-	if *lockPath == "" || *directionsPath == "" || *outPath == "" {
-		return fmt.Errorf("-lock, -directions, and -out are required")
+	if *lockPath == "" || *directionsPath == "" || *nbtEncodingsPath == "" || *outPath == "" {
+		return fmt.Errorf("-lock, -directions, -nbt-encodings, and -out are required")
 	}
 	lock, err := sourcelock.Load(*lockPath)
 	if err != nil {
 		return err
 	}
 	directions, err := direction.Load(*directionsPath)
+	if err != nil {
+		return err
+	}
+	nbtEncodings, err := nbtencoding.Load(*nbtEncodingsPath)
 	if err != nil {
 		return err
 	}
@@ -120,7 +126,7 @@ func runReconcile(args []string) error {
 			return err
 		}
 	}
-	result, err := reconcile.ReconcileWithDirections(lock.Target, results, adjudications, directions)
+	result, err := reconcile.ReconcileWithDirectionsAndNBT(lock.Target, results, adjudications, directions, nbtEncodings)
 	if err != nil {
 		return err
 	}
