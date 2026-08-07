@@ -19,6 +19,7 @@ type Reader struct {
 	pos            int
 	err            error
 	maxSliceLength uint64
+	limitsEnabled  bool
 }
 
 // NewReader creates a Reader over data.
@@ -27,9 +28,15 @@ func NewReader(data []byte) *Reader {
 }
 
 // NewReaderWithLimit creates a Reader with an explicit maximum decoded
-// collection length. A zero limit rejects every non-empty collection.
+// collection length.
 func NewReaderWithLimit(data []byte, max uint64) *Reader {
-	return &Reader{data: data, maxSliceLength: max}
+	return &Reader{data: data, maxSliceLength: max, limitsEnabled: true}
+}
+
+// NewReaderWithoutLimit creates a Reader for trusted payloads without a
+// collection length limit.
+func NewReaderWithoutLimit(data []byte) *Reader {
+	return &Reader{data: data}
 }
 
 // Reading reports that this IO implementation decodes values.
@@ -399,11 +406,8 @@ func (r *Reader) Bitset(words []uint64, bits uint64) {
 	}
 }
 
-func (r *Reader) SliceLength(value uint64, max uint64) bool {
-	if r.maxSliceLength < max {
-		max = r.maxSliceLength
-	}
-	if value > max {
+func (r *Reader) SliceLength(value uint64, _ uint64) bool {
+	if r.limitsEnabled && value > r.maxSliceLength {
 		r.InvalidValue(value, "collection length exceeds decoder limit")
 		return false
 	}

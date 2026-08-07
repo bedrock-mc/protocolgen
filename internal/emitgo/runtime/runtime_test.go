@@ -49,6 +49,26 @@ func TestReaderRejectsSliceOverLimit(t *testing.T) {
 	}
 }
 
+func TestFuncSliceAcceptsRaisedLimit(t *testing.T) {
+	data := append([]byte{0x88, 0x27}, make([]byte, 5000)...)
+	reader := NewReaderWithLimit(data, 1<<20)
+	values := []uint8(nil)
+	FuncSlice(reader, &values, reader.Varuint32, reader.Uint8)
+	if err := reader.Err(); err != nil {
+		t.Fatal(err)
+	}
+	if len(values) != 5000 {
+		t.Fatalf("decoded %d values, want 5000", len(values))
+	}
+}
+
+func TestReaderWithoutLimitAcceptsLargeSlice(t *testing.T) {
+	reader := NewReaderWithoutLimit(nil)
+	if !reader.SliceLength(maxSliceLength+1, maxSliceLength) {
+		t.Fatal("unlimited reader rejected a collection")
+	}
+}
+
 func TestUUIDRoundTrip(t *testing.T) {
 	want := uuid.MustParse("00112233-4455-6677-8899-aabbccddeeff")
 	writer := NewWriter()
