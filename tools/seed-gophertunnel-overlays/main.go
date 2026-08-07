@@ -347,7 +347,7 @@ func portFieldDocs(owner string, fields []manifest.Field, source sourceType, ove
 		}
 		if len(matches) == 1 {
 			field := fields[matches[0]]
-			overlay.Fields[docs.FieldKey(owner, field.Name)] = sourceField.Doc
+			overlay.Fields[docs.FieldKey(owner, field.Name)] = docs.LeadWith(sourceField.Doc, sourceField.Name, naming.GoExportName(field.Name))
 			used[field.Name] = true
 			ported++
 			continue
@@ -369,7 +369,7 @@ func portFieldDocs(owner string, fields []manifest.Field, source sourceType, ove
 		if _, exists := overlay.Fields[key]; exists {
 			continue
 		}
-		overlay.Fields[key] = sourceField.Doc
+		overlay.Fields[key] = docs.LeadWith(sourceField.Doc, sourceField.Name, naming.GoExportName(field.Name))
 		ported++
 	}
 	return ported, 0, 0

@@ -7,7 +7,7 @@ import "protocolgen/generated/1.26.40/go/protocol"
 // PlaySound is sent by the server to play a sound to the client. Some of the sounds may only be
 // started using this packet and must be stopped using the StopSound packet.
 type PlaySound struct {
-	// SoundName is the name of the sound to play.
+	// Name is the name of the sound to play.
 	Name string
 	// Position is the position at which the sound was played. Some sounds do not depend on a position,
 	// which will then ignore it, but most of them will play with the direction based on the position
@@ -21,8 +21,8 @@ type PlaySound struct {
 	Pitch float32
 	// LoopCount is the number of times to loop the sound before stopping. -1 means no looping at all.
 	LoopCount int32
-	// Handle is an optional sound handle ID. It is currently unknown what this is for, and is not
-	// required to be set by servers.
+	// ServerSoundHandle is an optional sound handle ID. It is currently unknown what this is for, and
+	// is not required to be set by servers.
 	ServerSoundHandle protocol.Optional[protocol.ServerSoundHandle]
 }
 

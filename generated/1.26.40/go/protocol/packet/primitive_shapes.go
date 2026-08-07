@@ -8,7 +8,8 @@ import "protocolgen/generated/1.26.40/go/protocol"
 // shapes in the world. Shapes can be added, removed or updated based on the data provided
 // individually.
 type PrimitiveShapes struct {
-	// Shapes is a list of shapes to draw on the client-side.
+	// ArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemoved is a list of shapes to draw on the
+	// client-side.
 	ArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemoved []protocol.PrimitiveShape
 }
 

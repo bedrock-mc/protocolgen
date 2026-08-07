@@ -8,7 +8,7 @@ import "protocolgen/generated/1.26.40/go/protocol"
 // viewers of that player. It is used for a couple of actions, such as arm swimming and critical
 // hits.
 type ClientCameraAimAssist struct {
-	// PresetID is the identifier of the preset to use which was previously defined in the
+	// CameraPresetID is the identifier of the preset to use which was previously defined in the
 	// CameraAimAssistPresets packet.
 	CameraPresetID string
 	// Action is the action to perform with the aim assist. It is one of the constants above.

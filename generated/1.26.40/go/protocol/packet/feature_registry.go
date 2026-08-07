@@ -9,7 +9,7 @@ import "protocolgen/generated/1.26.40/go/protocol"
 // system introduced in v1.19.20, allowing the client to completely generate the chunks of the world
 // without having to rely on the server.
 type FeatureRegistry struct {
-	// Features is a slice of all registered world generation features.
+	// FeaturesDataList is a slice of all registered world generation features.
 	FeaturesDataList []protocol.FeatureRegistryFeatureBinaryJSONFormat
 }
 

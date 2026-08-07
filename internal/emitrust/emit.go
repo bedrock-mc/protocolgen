@@ -113,7 +113,7 @@ func prepareWithOptions(m manifest.Manifest, options Options) (*generator, []pac
 			if err != nil {
 				return nil, nil, fmt.Errorf("packet %s field %s: %w", packet.Name, field.Name, err)
 			}
-			fields = append(fields, rustFieldInfo{name: fieldName, typ: typ, docs: g.fieldDocs(packet.Name, field)})
+			fields = append(fields, rustFieldInfo{name: fieldName, typ: typ, docs: g.fieldDocs(packet.Name, field, fieldName)})
 		}
 		infos = append(infos, packetInfo{packet: packet, name: name, docs: docs.RustComments(g.docs.Type(packet.Name)), fields: fields, size: g.estimatePacketSize(fields)})
 	}
@@ -657,8 +657,9 @@ func packetNeedsBox(info packetInfo) bool {
 	return len(info.fields) >= 8
 }
 
-func (g *generator) fieldDocs(owner string, field manifest.Field) []string {
-	result := docs.RustComments(g.docs.Field(owner, field.Name))
+func (g *generator) fieldDocs(owner string, field manifest.Field, ident string) []string {
+	text := docs.LeadWith(g.docs.Field(owner, field.Name), naming.GoExportName(field.Name), "`"+strings.TrimPrefix(ident, "r#")+"`")
+	result := docs.RustComments(text)
 	if field.Encode.Kind == manifest.KindOptional {
 		result = append(result, "/// Wire presence: optional value is preceded by a presence marker.")
 	}
@@ -919,7 +920,7 @@ func (g *generator) rustFieldsForUnion(node manifest.Node, parentName string, co
 		if err != nil {
 			return nil, err
 		}
-		fields = append(fields, rustField{Name: fieldName, Type: typ, Docs: g.fieldDocs(rustNodeTypeID(node), field)})
+		fields = append(fields, rustField{Name: fieldName, Type: typ, Docs: g.fieldDocs(rustNodeTypeID(node), field, fieldName)})
 	}
 	if control != nil {
 		g.boxLargeUnionFields(fields)

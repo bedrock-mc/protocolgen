@@ -6,7 +6,7 @@ import "protocolgen/generated/1.26.40/go/protocol"
 
 // CameraSpline is sent by the server to define camera spline paths.
 type CameraSpline struct {
-	// Splines is a list of camera spline definitions.
+	// CameraDataSplines is a list of camera spline definitions.
 	CameraDataSplines []protocol.CameraSplineDefinition
 }
 

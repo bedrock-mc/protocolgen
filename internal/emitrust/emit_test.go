@@ -83,7 +83,7 @@ func TestGenerateRustEmitsReviewedDocs(t *testing.T) {
 	if err != nil {
 		t.Fatalf("GenerateFilesWithOptions: %v", err)
 	}
-	if !strings.Contains(files["src/types.rs"], "/// Shared docs.") || !strings.Contains(files["src/types.rs"], "/// Value docs.") {
+	if !strings.Contains(files["src/types.rs"], "/// Shared docs.") || !strings.Contains(files["src/types.rs"], "/// `value` docs.") {
 		t.Fatalf("shared docs were not emitted:\n%s", files["src/types.rs"])
 	}
 	if !strings.Contains(files["src/packets.rs"], "/// Packet docs.") || !strings.Contains(files["src/packets.rs"], "/// Packet value docs.") {

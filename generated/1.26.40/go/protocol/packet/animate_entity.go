@@ -10,22 +10,22 @@ import "protocolgen/generated/1.26.40/go/protocol"
 // packet can be found at
 // https://learn.microsoft.com/en-us/minecraft/creator/reference/content/animationsreference
 type AnimateEntity struct {
-	// Animation is the name of a single animation to start playing.
+	// MAnimation is the name of a single animation to start playing.
 	MAnimation string
-	// NextState is the first state to start with. These states are declared in animation controllers
+	// MNextState is the first state to start with. These states are declared in animation controllers
 	// (which, in themselves, are animations too). These states in turn may have animations and
 	// transitions to move to a next state.
 	MNextState string
-	// StopCondition is a MoLang expression that specifies when the animation should be stopped.
+	// MStopExpression is a MoLang expression that specifies when the animation should be stopped.
 	MStopExpression string
-	// StopConditionVersion is the MoLang stop condition version.
+	// MStopExpressionVersion is the MoLang stop condition version.
 	MStopExpressionVersion int32
-	// Controller is the animation controller that is used to manage animations. These controllers
+	// MController is the animation controller that is used to manage animations. These controllers
 	// decide when to play which animation.
 	MController string
-	// BlendOutTime does not currently seem to be used.
+	// MBlendOutTime does not currently seem to be used.
 	MBlendOutTime float32
-	// EntityRuntimeIDs is list of runtime IDs of entities that the animation should be applied to.
+	// MRuntimeIds is list of runtime IDs of entities that the animation should be applied to.
 	MRuntimeIds []uint64
 }
 

@@ -9,13 +9,13 @@ import "protocolgen/generated/1.26.40/go/protocol"
 // player when it leaves the server, and to change it back to a real player when it joins again. In
 // non-vanilla situations, the packet is quite useless.
 type SetScoreboardIdentity struct {
-	// ActionType is the type of the action to execute. The action is either
+	// ScoreboardIdentityPacketType is the type of the action to execute. The action is either
 	// ScoreboardIdentityActionRegister to associate an identity with the entry, or
 	// ScoreboardIdentityActionClear to remove associations with an entity.
 	ScoreboardIdentityPacketType protocol.ScoreboardIdentityPacketType
-	// Entries is a list of all entries in the packet. Each of these entries points to one of the
-	// entries on a scoreboard. Depending on ActionType, their identity will either be registered or
-	// cleared.
+	// ScoreboardIdentityInfo is a list of all entries in the packet. Each of these entries points to
+	// one of the entries on a scoreboard. Depending on ActionType, their identity will either be
+	// registered or cleared.
 	ScoreboardIdentityInfo []protocol.ScoreboardIdentityPacketInfo
 }
 

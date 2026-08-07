@@ -5,11 +5,11 @@ package protocol
 // CreativeGroup represents a group of items in the creative inventory. Each group has a category,
 // name and an icon that represents the group.
 type CreativeGroupInfo struct {
-	// Category is the category the group falls under. It is one of the constants above.
+	// CreativeCategory is the category the group falls under. It is one of the constants above.
 	CreativeCategory CreativeItemCategory
 	// Name is the locale name of the group, i.e. "itemGroup.name.planks".
 	Name string
-	// Icon is the item that represents the group in the creative inventory.
+	// GroupIconItem is the item that represents the group in the creative inventory.
 	GroupIconItem NetworkItemInstanceDescriptorSerializedData
 }
 

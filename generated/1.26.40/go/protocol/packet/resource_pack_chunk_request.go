@@ -7,9 +7,9 @@ import "protocolgen/generated/1.26.40/go/protocol"
 // ResourcePackChunkRequest is sent by the client to request a chunk of data from a particular
 // resource pack, that it has obtained information about in a ResourcePackDataInfo packet.
 type ResourcePackChunkRequest struct {
-	// UUID is the unique ID of the resource pack that the chunk of data is requested from.
+	// ResourceName is the unique ID of the resource pack that the chunk of data is requested from.
 	ResourceName string
-	// ChunkIndex is the requested chunk index of the chunk. It is a number that starts at 0 and is
+	// Chunk is the requested chunk index of the chunk. It is a number that starts at 0 and is
 	// incremented for each resource pack data chunk requested.
 	Chunk int32
 }

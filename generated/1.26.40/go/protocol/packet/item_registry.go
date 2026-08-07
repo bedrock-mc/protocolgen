@@ -8,7 +8,7 @@ import "protocolgen/generated/1.26.40/go/protocol"
 // client-side components to a custom item. This packet was formerly known as the ItemComponent
 // packet before 1.21.60, which did not include item definitions but only the components.
 type ItemRegistry struct {
-	// Items is a list of all items with their legacy IDs which are available in the game. Failing to
+	// ItemData is a list of all items with their legacy IDs which are available in the game. Failing to
 	// send any of the items that are in the game will crash mobile clients. Any custom components are
 	// also attached to the items in this list.
 	ItemData []protocol.ItemData

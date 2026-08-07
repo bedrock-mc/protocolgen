@@ -8,7 +8,7 @@ import "protocolgen/generated/1.26.40/go/protocol"
 // controlled by resource packs to change how they are rendered, and the ability to create custom
 // fog.
 type PlayerFog struct {
-	// Stack is a list of fog identifiers to be sent to the client. Examples of fog identifiers are
+	// FogStack is a list of fog identifiers to be sent to the client. Examples of fog identifiers are
 	// "minecraft:fog_ocean" and "minecraft:fog_hell".
 	FogStack []string
 }

@@ -19,11 +19,11 @@ type PhotoTransfer struct {
 	// this ID is set to PhotoName, it will display the photo (provided Education Edition is used). The
 	// photo image is downloaded to a sub-folder with this book ID.
 	BookID string
-	// PhotoType is one of the three photo types above.
+	// Type is one of the three photo types above.
 	Type protocol.PhotoType
 	// SourceType is the source photo type. It is one of the three photo types above.
 	SourceType protocol.PhotoType
-	// OwnerEntityUniqueID is the entity unique ID of the photo's owner.
+	// OwnerID is the entity unique ID of the photo's owner.
 	OwnerID int64
 	// NewPhotoName is the new name of the photo.
 	NewPhotoName string

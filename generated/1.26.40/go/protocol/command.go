@@ -9,7 +9,7 @@ import "github.com/google/uuid"
 type ChainedSubcommand struct {
 	// Name is the name of the chained subcommand and shows up in the list as a regular subcommand enum.
 	Name string
-	// Values contains the index and parameter type of the chained subcommand.
+	// SubCommandValues contains the index and parameter type of the chained subcommand.
 	SubCommandValues []ChainedSubcommandValue
 }
 
@@ -21,12 +21,12 @@ func (x *ChainedSubcommand) Marshal(io IO) {
 
 // ChainedSubcommandValue represents the value for a chained subcommand argument.
 type ChainedSubcommandValue struct {
-	// Index is the index of the argument in the ChainedSubcommandValues slice from the
+	// SubCommandFirstValue is the index of the argument in the ChainedSubcommandValues slice from the
 	// AvailableCommands packet. This is then used to set the type specified by the Value field below.
 	SubCommandFirstValue uint32
-	// Value is a combination of the flags above and specified the type of argument. Unlike regular
-	// parameter types, this should NOT contain any of the special flags (valid, enum, suffixed or soft
-	// enum) but only the basic types.
+	// SubCommandSecondValue is a combination of the flags above and specified the type of argument.
+	// Unlike regular parameter types, this should NOT contain any of the special flags (valid, enum,
+	// suffixed or soft enum) but only the basic types.
 	SubCommandSecondValue uint32
 }
 
@@ -115,12 +115,12 @@ func MarshalCommandBlockUpdateData(io IO, x *CommandBlockUpdateData) {
 // options that are valid. A value that is not one of the options results in a failure during
 // execution.
 type CommandEnum struct {
-	// Type is the type of the command enum. The type will show up in the command usage as the type of
+	// Name is the type of the command enum. The type will show up in the command usage as the type of
 	// the argument if it has a certain amount of arguments, or when Options is set to true in the
 	// command holding the enum.
 	Name string
-	// ValueIndices holds a list of indices that point to the EnumValues slice in the
-	// AvailableCommandsPacket. These represent the options of the enum.
+	// Values holds a list of indices that point to the EnumValues slice in the AvailableCommandsPacket.
+	// These represent the options of the enum.
 	Values []uint32
 }
 
@@ -133,13 +133,13 @@ func (x *CommandEnum) Marshal(io IO) {
 // CommandEnumConstraint is sent in the AvailableCommands packet to limit what values of an enum may
 // be used taking in account things such as whether cheats are enabled.
 type CommandEnumConstraint struct {
-	// EnumValueIndex points to an enum value in the AvailableCommands packet that this constraint
+	// EnumValueSymbol points to an enum value in the AvailableCommands packet that this constraint
 	// should apply to.
 	EnumValueSymbol uint32
-	// EnumIndex points to an enum in the AvailableCommands packet to which this constraint should apply
-	// to.
+	// EnumSymbol points to an enum in the AvailableCommands packet to which this constraint should
+	// apply to.
 	EnumSymbol uint32
-	// Constraints holds a slice of constraints as present in the constants above.
+	// ConstraintIndices holds a slice of constraints as present in the constants above.
 	ConstraintIndices []uint8
 }
 
@@ -210,9 +210,9 @@ func (x *CommandOutputMessage) Marshal(io IO) {
 // overloading in languages such as java. It represents a single usage of the command. A command may
 // have multiple different overloads, which are handled differently.
 type CommandOverload struct {
-	// Chaining determines if the parameters use chained subcommands or not.
+	// IsChaining determines if the parameters use chained subcommands or not.
 	IsChaining bool
-	// Parameters is a list of command parameters that are part of the overload. These parameters
+	// ParameterData is a list of command parameters that are part of the overload. These parameters
 	// specify the usage of the command when this overload is applied.
 	ParameterData []CommandParameter
 }
@@ -260,11 +260,11 @@ const (
 // DynamicEnum is an enum variant that can have its options changed during runtime, without sending
 // a new AvailableCommands packet.
 type DynamicEnum struct {
-	// Type is the type of the command enum. The type will show up in the command usage as the type of
-	// the argument if it has a certain amount of arguments, or when Options is set to true in the
+	// EnumName is the type of the command enum. The type will show up in the command usage as the type
+	// of the argument if it has a certain amount of arguments, or when Options is set to true in the
 	// command holding the enum.
 	EnumName string
-	// Values is a slice of possible options for the enum.
+	// EnumOptions is a slice of possible options for the enum.
 	EnumOptions []string
 }
 

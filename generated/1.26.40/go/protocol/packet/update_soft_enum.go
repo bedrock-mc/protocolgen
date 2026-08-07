@@ -10,14 +10,14 @@ import "protocolgen/generated/1.26.40/go/protocol"
 // enums that have been set in the AvailableCommands packet with the 'Dynamic' field of the
 // CommandEnum set to true.
 type UpdateSoftEnum struct {
-	// EnumType is the type of the enum. This type must be identical to the one set in the
+	// EnumName is the type of the enum. This type must be identical to the one set in the
 	// AvailableCommands packet, because the client uses this to recognise which enum to update.
 	EnumName string
-	// Options is a list of options that should be updated. Depending on the ActionType field, either
+	// Values is a list of options that should be updated. Depending on the ActionType field, either
 	// these options will be added to the enum, the enum options will be set to these options or all of
 	// these options will be removed from the enum.
 	Values []string
-	// ActionType is the type of the action to execute on the enum. The Options field has a different
+	// UpdateType is the type of the action to execute on the enum. The Options field has a different
 	// result, depending on what ActionType is used.
 	UpdateType protocol.SoftEnumUpdateType
 }

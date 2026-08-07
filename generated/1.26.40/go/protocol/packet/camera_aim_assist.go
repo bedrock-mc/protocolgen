@@ -10,10 +10,10 @@ import (
 
 // CameraAimAssist is sent by the server to the client to set up aim assist for the client's camera.
 type CameraAimAssist struct {
-	// Preset is the ID of the preset that has previously been defined in the CameraAimAssistPresets
+	// PresetID is the ID of the preset that has previously been defined in the CameraAimAssistPresets
 	// packet.
 	PresetID string
-	// Angle is the maximum angle around the playes's cursor that the aim assist should check for a
+	// ViewAngle is the maximum angle around the playes's cursor that the aim assist should check for a
 	// target, if TargetMode is set to protocol.AimAssistTargetModeAngle.
 	ViewAngle mgl32.Vec2
 	// Distance is the maximum distance from the player's cursor should check for a target, if

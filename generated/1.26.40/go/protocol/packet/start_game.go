@@ -33,7 +33,7 @@ type StartGame struct {
 	// correct results both client- and server-side.
 	EnchantmentSeed int32
 	BlockProperties []protocol.ServerBlockProperty
-	// MultiPlayerCorrelationID is a unique ID specifying the multi-player session of the player. A
+	// MultiplayerCorrelationID is a unique ID specifying the multi-player session of the player. A
 	// random UUID should be filled out for this field.
 	MultiplayerCorrelationID        string
 	EnableItemStackNetManager       bool

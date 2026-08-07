@@ -90,10 +90,10 @@ func (x *ContainerMixDataEntry) Marshal(io IO) {
 // FullContainerName contains information required to identify a container in a
 // StackRequestSlotInfo.
 type FullContainerName struct {
-	// ContainerID is the ID of the container that the slot was in.
+	// ContainerName is the ID of the container that the slot was in.
 	ContainerName ContainerEnumName
-	// DynamicContainerID is the ID of the container if it is dynamic. If the container is not dynamic,
-	// this field should be left empty. A non-optional value of 0 is assumed to be non-empty.
+	// DynamicID is the ID of the container if it is dynamic. If the container is not dynamic, this
+	// field should be left empty. A non-optional value of 0 is assumed to be non-empty.
 	DynamicID Optional[uint32]
 }
 

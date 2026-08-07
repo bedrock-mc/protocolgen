@@ -13,7 +13,7 @@ import (
 type PrimitiveShape struct {
 	// NetworkID is the network ID of the shape.
 	NetworkID uint64
-	// DimensionID is the optional dimension ID where the shape is rendered.
+	// ShapeType is the optional dimension ID where the shape is rendered.
 	ShapeType Optional[ScriptModuleMinecraftScriptPrimitiveShapeType]
 	// Location is the location of the shape.
 	Location Optional[mgl32.Vec3]
@@ -23,9 +23,9 @@ type PrimitiveShape struct {
 	Rotation Optional[mgl32.Vec3]
 	// TotalTimeLeft is the total time left of the shape.
 	TotalTimeLeft Optional[float32]
-	// Rotation is the rotation of the shape.
+	// MaximumRenderDistance is the rotation of the shape.
 	MaximumRenderDistance Optional[float32]
-	// TotalTimeLeft is the total time left of the shape.
+	// Color is the total time left of the shape.
 	Color Optional[color.RGBA]
 	// DimensionID is the optional dimension ID where the shape is rendered.
 	DimensionID Optional[DimensionType]
@@ -64,7 +64,7 @@ type TextShape struct {
 	// UseRotation is if the text should use the provided rotation, meaning it will be static and does
 	// not follow the camera. Use false for default behaviour.
 	UseRotation bool
-	// BackgroundColour is the RGBA colour to use for the text background. This is a translucent black
+	// BackgroundColor is the RGBA colour to use for the text background. This is a translucent black
 	// colour by default.
 	BackgroundColor Optional[color.RGBA]
 	// DepthTest is whether the text should show through walls. Use true for default behaviour.
@@ -73,7 +73,7 @@ type TextShape struct {
 	// visible effect when UseRotation is true since you cannot see the back side of the text otherwise.
 	// Use true for default behaviour.
 	ShowBackface bool
-	// ShowBackfaceText is if the text should render on the back side of the shape. This only has a
+	// ShowTextBackface is if the text should render on the back side of the shape. This only has a
 	// visible effect when UseRotation is true since you cannot see the back side of the text otherwise.
 	// Use true for default behaviour.
 	ShowTextBackface bool

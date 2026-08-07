@@ -11,7 +11,7 @@ type Emote struct {
 	// EmoteID is the ID of the emote to send.
 	EmoteID          string
 	EmoteLengthTicks uint32
-	// XUID is the Xbox User ID of the player that sent the emote. It is only set when the emote is used
+	// Xuid is the Xbox User ID of the player that sent the emote. It is only set when the emote is used
 	// by a player that is authenticated with Xbox Live.
 	Xuid string
 	// PlatformID is an identifier only set for particular platforms when using an emote (presumably

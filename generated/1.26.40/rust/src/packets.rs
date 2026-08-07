@@ -9,8 +9,8 @@ use crate::wire;
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct Login {
     pub client_network_version: wire::I32BE,
-    /// ConnectionRequest is a string containing information about the player and JWTs that may be used
-    /// to verify if the player is connected to XBOX Live. The connection request also contains the
+    /// `connection_request` is a string containing information about the player and JWTs that may be
+    /// used to verify if the player is connected to XBOX Live. The connection request also contains the
     /// necessary client public key to initiate encryption.
     pub connection_request: String,
 }
@@ -22,7 +22,7 @@ impl Login {
 /// statuses due to a mismatched version, but also success statuses.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PlayStatus {
-    /// Status is the status of the packet. It is one of the constants found above.
+    /// `status` is the status of the packet. It is one of the constants found above.
     pub status: PlayStatusType,
 }
 
@@ -54,8 +54,8 @@ impl ClientToServerHandshake {
 /// as the disconnect screen.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct Disconnect {
-    /// Reason is the reason for the disconnection. This affects the error code displayed on the Ore UI
-    /// disconnection screen and is one of the constants above.
+    /// `reason` is the reason for the disconnection. This affects the error code displayed on the Ore
+    /// UI disconnection screen and is one of the constants above.
     pub reason: ConnectionDisconnectFailReason,
     pub messages: DisconnectMessages,
 }
@@ -70,12 +70,12 @@ impl Disconnect {
 pub struct ResourcePacksInfo {
     pub resource_pack_required: bool,
     pub has_addon_packs: bool,
-    /// HasScripts specifies if any of the resource packs contain scripts in them. If set to true, only
-    /// clients that support scripts will be able to download them.
+    /// `has_scripts` specifies if any of the resource packs contain scripts in them. If set to true,
+    /// only clients that support scripts will be able to download them.
     pub has_scripts: bool,
-    /// ForceDisableVibrantVisuals specifies if the vibrant visuals feature should be forcibly disabled
-    /// on the server. If set to true, the server will ensure that vibrant visuals are not enabled,
-    /// regardless of the client's settings.
+    /// `force_disable_vibrant_visuals` specifies if the vibrant visuals feature should be forcibly
+    /// disabled on the server. If set to true, the server will ensure that vibrant visuals are not
+    /// enabled, regardless of the client's settings.
     pub force_disable_vibrant_visuals: bool,
     pub world_template_id_and_version: PackIdVersion,
     pub resource_packs: Vec<PackInfoData>,
@@ -88,18 +88,19 @@ impl ResourcePacksInfo {
 /// packs should be applied (and downloaded) by the client.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ResourcePackStack {
-    /// TexturePackRequired specifies if the client must accept the texture packs the server has in
+    /// `texture_pack_required` specifies if the client must accept the texture packs the server has in
     /// order to join the server. If set to true, the client gets the option to either download the
     /// resource packs and join, or quit entirely. Behaviour packs never have to be downloaded.
     pub texture_pack_required: bool,
     pub texture_pack_list: Vec<PackInstanceId>,
-    /// BaseGameVersion is the vanilla version that the client should set its resource pack stack to.
+    /// `base_game_version` is the vanilla version that the client should set its resource pack stack
+    /// to.
     pub base_game_version: String,
-    /// Experiments holds a list of experiments that are either enabled or disabled in the world that
+    /// `experiments` holds a list of experiments that are either enabled or disabled in the world that
     /// the player spawns in. It is not clear why experiments are sent both here and in the StartGame
     /// packet.
     pub experiments: Experiments,
-    /// IncludeEditorPacks specifies if vanilla editor packs should be included in the resource pack
+    /// `include_editor_packs` specifies if vanilla editor packs should be included in the resource pack
     /// stack when connecting to an editor world.
     pub include_editor_packs: bool,
 }
@@ -112,7 +113,7 @@ impl ResourcePackStack {
 /// all resource packs ready and set.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ResourcePackClientResponse {
-    /// Response is the response type of the response. It is one of the constants found above.
+    /// `response` is the response type of the response. It is one of the constants found above.
     pub response: ResourcePackClientResponseData,
 }
 
@@ -127,9 +128,9 @@ pub struct Text {
     pub body: TextData,
     pub sender_xuid: String,
     pub platform_id: String,
-    /// FilteredMessage is a filtered version of Message with all the profanity removed. The client will
-    /// use this over Message if this field is not empty and they have the "Filter Profanity" setting
-    /// enabled.
+    /// `filtered_message` is a filtered version of Message with all the profanity removed. The client
+    /// will use this over Message if this field is not empty and they have the "Filter Profanity"
+    /// setting enabled.
     /// Wire presence: optional value is preceded by a presence marker.
     pub filtered_message: Option<String>,
 }
@@ -142,7 +143,7 @@ impl Text {
 /// merely a means of synchronising time between server and client.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SetTime {
-    /// Time is the current time. The time is not limited to 24000 (time of day), but continues
+    /// `time` is the current time. The time is not limited to 24000 (time of day), but continues
     /// progressing after that.
     pub time: wire::ZigZag32,
 }
@@ -161,28 +162,28 @@ pub struct StartGame {
     pub position: glam::Vec3,
     pub rotation: glam::Vec2,
     pub settings: LevelSettings,
-    /// LevelID is a base64 encoded world ID that is used to identify the world.
+    /// `level_id` is a base64 encoded world ID that is used to identify the world.
     pub level_id: String,
     pub level_name: String,
-    /// TemplateContentIdentity is a UUID specific to the premium world template that might have been
-    /// used to generate the world. Servers should always fill out an empty string for this.
+    /// `template_content_identity` is a UUID specific to the premium world template that might have
+    /// been used to generate the world. Servers should always fill out an empty string for this.
     pub template_content_identity: String,
     pub is_trial: bool,
     pub movement_settings: SyncedPlayerMovementSettings,
     pub level_current_time: wire::U64LE,
-    /// EnchantmentSeed is the seed used to seed the random used to produce enchantments in the
+    /// `enchantment_seed` is the seed used to seed the random used to produce enchantments in the
     /// enchantment table. Note that the exact correct random implementation must be used to produce the
     /// correct results both client- and server-side.
     pub enchantment_seed: wire::ZigZag32,
     pub block_properties: Vec<ServerBlockProperty>,
-    /// MultiPlayerCorrelationID is a unique ID specifying the multi-player session of the player. A
+    /// `multiplayer_correlation_id` is a unique ID specifying the multi-player session of the player. A
     /// random UUID should be filled out for this field.
     pub multiplayer_correlation_id: String,
     pub enable_item_stack_net_manager: bool,
     pub server_version: String,
     pub player_property_data: wire::NetworkNbt,
     pub server_block_type_registry_checksum: wire::U64LE,
-    /// WorldTemplateID is a UUID that identifies the template that was used to generate the world.
+    /// `world_template_id` is a UUID that identifies the template that was used to generate the world.
     /// Servers that do not use a world based off of a template can set this to an empty UUID.
     pub world_template_id: uuid::Uuid,
     pub server_enabled_client_side_generation: bool,
@@ -200,21 +201,21 @@ impl StartGame {
 /// one of the few entities that cannot be sent using the AddActor packet.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct AddPlayer {
-    /// UUID is the UUID of the player. It is the same UUID that the client sent in the Login packet at
-    /// the start of the session. A player with this UUID must exist in the player list (built up using
-    /// the PlayerList packet), for it to show up in-game.
+    /// `uuid` is the UUID of the player. It is the same UUID that the client sent in the Login packet
+    /// at the start of the session. A player with this UUID must exist in the player list (built up
+    /// using the PlayerList packet), for it to show up in-game.
     pub uuid: uuid::Uuid,
     pub player_name: String,
     pub target_runtime_id: ActorRuntimeID,
-    /// PlatformChatID is an identifier only set for particular platforms when chatting (presumably only
-    /// for Nintendo Switch). It is otherwise an empty string, and is used to decide which players are
-    /// able to chat with each other.
+    /// `platform_chat_id` is an identifier only set for particular platforms when chatting (presumably
+    /// only for Nintendo Switch). It is otherwise an empty string, and is used to decide which players
+    /// are able to chat with each other.
     pub platform_chat_id: String,
-    /// Position is the position to spawn the player on. If the player is on a distance that the viewer
-    /// cannot see it, the player will still show up if the viewer moves closer.
+    /// `position` is the position to spawn the player on. If the player is on a distance that the
+    /// viewer cannot see it, the player will still show up if the viewer moves closer.
     pub position: glam::Vec3,
-    /// Velocity is the initial velocity the player spawns with. This velocity will initiate client side
-    /// movement of the player.
+    /// `velocity` is the initial velocity the player spawns with. This velocity will initiate client
+    /// side movement of the player.
     pub velocity: glam::Vec3,
     pub rotation: glam::Vec2,
     pub y_head_rotation: wire::F32LE,
@@ -224,10 +225,10 @@ pub struct AddPlayer {
     pub synched_properties: PropertySyncData,
     pub abilities_data: SerializedAbilitiesData,
     pub actor_links: Vec<EntityLink>,
-    /// DeviceID is the device ID set in one of the files found in the storage of the device of the
+    /// `device_id` is the device ID set in one of the files found in the storage of the device of the
     /// player. It may be changed freely, so it should not be relied on for anything.
     pub device_id: String,
-    /// BuildPlatform is the build platform/device OS of the player that is about to be added, as it
+    /// `build_platform` is the build platform/device OS of the player that is about to be added, as it
     /// sent in the Login packet when joining.
     pub build_platform: BuildPlatform,
 }
@@ -242,11 +243,11 @@ pub struct AddActor {
     pub target_actor_id: ActorUniqueID,
     pub target_runtime_id: ActorRuntimeID,
     pub actor_type: String,
-    /// Position is the position to spawn the entity on. If the entity is on a distance that the player
-    /// cannot see it, the entity will still show up if the player moves closer.
+    /// `position` is the position to spawn the entity on. If the entity is on a distance that the
+    /// player cannot see it, the entity will still show up if the player moves closer.
     pub position: glam::Vec3,
-    /// Velocity is the initial velocity the entity spawns with. This velocity will initiate client side
-    /// movement of the entity.
+    /// `velocity` is the initial velocity the entity spawns with. This velocity will initiate client
+    /// side movement of the entity.
     pub velocity: glam::Vec3,
     pub rotation: glam::Vec2,
     pub y_head_rotation: wire::F32LE,
@@ -277,14 +278,14 @@ impl RemoveActor {
 pub struct AddItemActor {
     pub target_actor_id: ActorUniqueID,
     pub target_runtime_id: ActorRuntimeID,
-    /// Item is the item that is spawned. It must have a valid ID for it to show up client-side. If it
+    /// `item` is the item that is spawned. It must have a valid ID for it to show up client-side. If it
     /// is not a valid item, the client will crash when coming near.
     pub item: NetworkItemStackDescriptorSerializedData,
-    /// Position is the position to spawn the entity on. If the entity is on a distance that the player
-    /// cannot see it, the entity will still show up if the player moves closer.
+    /// `position` is the position to spawn the entity on. If the entity is on a distance that the
+    /// player cannot see it, the entity will still show up if the player moves closer.
     pub position: glam::Vec3,
-    /// Velocity is the initial velocity the entity spawns with. This velocity will initiate client side
-    /// movement of the entity.
+    /// `velocity` is the initial velocity the entity spawns with. This velocity will initiate client
+    /// side movement of the entity.
     pub velocity: glam::Vec3,
     pub entity_data: SynchedActorDataCopyableDataList,
     pub is_from_fishing: bool,
@@ -293,11 +294,8 @@ pub struct AddItemActor {
 impl AddItemActor {
     pub const ID: u32 = 15;
 }
-/// ServerPlayerPostMovePosition is sent by the server with the player's position after movement
-/// processing.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ServerPlayerPostMovePosition {
-    /// Position is the player's position after the server has processed movement.
     pub pos: glam::Vec3,
 }
 
@@ -331,19 +329,19 @@ impl MoveActorAbsolute {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct MovePlayer {
     pub player_runtime_id: ActorRuntimeID,
-    /// Position is the position to spawn the player on. If the player is on a distance that the viewer
-    /// cannot see it, the player will still show up if the viewer moves closer.
+    /// `position` is the position to spawn the player on. If the player is on a distance that the
+    /// viewer cannot see it, the player will still show up if the viewer moves closer.
     pub position: glam::Vec3,
     pub rotation: glam::Vec2,
     pub y_head_rotation: wire::F32LE,
     pub position_mode: PlayerPositionModeComponentPositionMode,
-    /// OnGround specifies if the player is considered on the ground. Note that proxies or hacked
+    /// `on_ground` specifies if the player is considered on the ground. Note that proxies or hacked
     /// clients could fake this to always be true, so it should not be taken for granted.
     pub on_ground: bool,
     pub riding_runtime_id: ActorRuntimeID,
     /// Wire presence: optional value is preceded by a presence marker.
     pub teleport_data: Option<MovePlayerTeleportData>,
-    /// Tick is the server tick at which the packet was sent. It is used in relation to
+    /// `tick` is the server tick at which the packet was sent. It is used in relation to
     /// CorrectPlayerMovePrediction.
     pub tick: PlayerInputTick,
 }
@@ -356,16 +354,16 @@ impl MovePlayer {
 /// breaking/placing.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct UpdateBlock {
-    /// Position is the block position at which a block is updated.
+    /// `block_position` is the block position at which a block is updated.
     pub block_position: BlockPos,
-    /// NewBlockRuntimeID is the runtime ID of the block that is placed at Position after sending the
+    /// `block_runtime_id` is the runtime ID of the block that is placed at Position after sending the
     /// packet to the client.
     pub block_runtime_id: wire::VarUInt,
-    /// Flags is a combination of flags that specify the way the block is updated client-side. It is a
+    /// `flags` is a combination of flags that specify the way the block is updated client-side. It is a
     /// combination of the flags above, but typically sending only the BlockUpdateNetwork flag is
     /// sufficient.
     pub flags: wire::VarUInt,
-    /// Layer is the world layer on which the block is updated. For most blocks, this is the first
+    /// `layer` is the world layer on which the block is updated. For most blocks, this is the first
     /// layer, as that layer is the default layer to place blocks on, but for blocks inside of each
     /// other, this differs.
     pub layer: wire::VarUInt,
@@ -380,10 +378,10 @@ impl UpdateBlock {
 pub struct AddPainting {
     pub target_actor_id: ActorUniqueID,
     pub target_runtime_id: ActorRuntimeID,
-    /// Position is the position to spawn the entity on. If the entity is on a distance that the player
-    /// cannot see it, the entity will still show up if the player moves closer.
+    /// `position` is the position to spawn the entity on. If the entity is on a distance that the
+    /// player cannot see it, the entity will still show up if the player moves closer.
     pub position: glam::Vec3,
-    /// Direction is the facing direction of the painting.
+    /// `direction` is the facing direction of the painting.
     pub direction: wire::ZigZag32,
     pub motif: String,
 }
@@ -395,14 +393,14 @@ impl AddPainting {
 /// particles, to sounds, and other events such as starting rain and block breaking.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct LevelEvent {
-    /// EventType is the ID of the event that is being 'called'. It is one of the events found in the
+    /// `event_id` is the ID of the event that is being 'called'. It is one of the events found in the
     /// constants above.
     pub event_id: wire::ZigZag32,
-    /// Position is the position of the level event. Practically every event requires this Vec3 set for
-    /// it, as particles, sounds and block editing relies on it.
+    /// `position` is the position of the level event. Practically every event requires this Vec3 set
+    /// for it, as particles, sounds and block editing relies on it.
     pub position: glam::Vec3,
-    /// EventData is an integer holding additional data of the event. The type of data held depends on
-    /// the EventType.
+    /// `data` is an integer holding additional data of the event. The type of data held depends on the
+    /// EventType.
     pub data: wire::ZigZag32,
 }
 
@@ -413,13 +411,13 @@ impl LevelEvent {
 /// blocks in specific, for example opening a chest.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct BlockEvent {
-    /// Position is the position of the block that an event occurred at.
+    /// `block_position` is the position of the block that an event occurred at.
     pub block_position: BlockPos,
-    /// EventType is the type of the block event. The event type decides the way the event data that
+    /// `event_type` is the type of the block event. The event type decides the way the event data that
     /// follows is used. It is one of the constants found above.
     pub event_type: wire::ZigZag32,
-    /// EventData holds event type specific data. For chests for example, opening the chest means the
-    /// data must hold 1, whereas closing it should hold 0.
+    /// `event_value` holds event type specific data. For chests for example, opening the chest means
+    /// the data must hold 1, whereas closing it should hold 0.
     pub event_value: wire::ZigZag32,
 }
 
@@ -434,8 +432,8 @@ pub struct ActorEvent {
     pub target_runtime_id: ActorRuntimeID,
     pub event_id: ActorEventType,
     pub data: wire::ZigZag32,
-    /// FireAtPosition is the position in the same world at which the event should fire. If this is not
-    /// present, the position entity will be used instead.
+    /// `fire_at_position` is the position in the same world at which the event should fire. If this is
+    /// not present, the position entity will be used instead.
     /// Wire presence: optional value is preceded by a presence marker.
     pub fire_at_position: Option<glam::Vec3>,
 }
@@ -453,10 +451,10 @@ pub struct MobEffect {
     pub effect_amplifier: wire::ZigZag32,
     pub show_particles: bool,
     pub effect_duration_ticks: wire::ZigZag32,
-    /// Tick is the server tick at which the packet was sent. It is used in relation to
+    /// `tick` is the server tick at which the packet was sent. It is used in relation to
     /// CorrectPlayerMovePrediction.
     pub tick: PlayerInputTick,
-    /// Ambient specifies if the effect is ambient. If set to false, it will not get treated as an
+    /// `ambient` specifies if the effect is ambient. If set to false, it will not get treated as an
     /// ambient effect.
     pub ambient: bool,
 }
@@ -470,7 +468,7 @@ impl MobEffect {
 pub struct UpdateAttributes {
     pub target_runtime_id: ActorRuntimeID,
     pub attribute_list: Vec<AttributeData>,
-    /// Tick is the server tick at which the packet was sent. It is used in relation to
+    /// `tick` is the server tick at which the packet was sent. It is used in relation to
     /// CorrectPlayerMovePrediction.
     pub tick: PlayerInputTick,
 }
@@ -484,17 +482,17 @@ impl UpdateAttributes {
 /// world, that could potentially result in a change in the inventory.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct InventoryTransaction {
-    /// LegacyRequestID is an ID that is only non-zero at times when sent by the client. The server
+    /// `legacy_request_id` is an ID that is only non-zero at times when sent by the client. The server
     /// should always send 0 for this. When this field is not 0, the LegacySetItemSlots slice below will
     /// have values in it. LegacyRequestID ties in with the ItemStackResponse packet. If this field is
     /// non-0, the server should respond with an ItemStackResponse packet. Some inventory actions such
     /// as dropping an item out of the hotbar are still one using this packet, and the ItemStackResponse
     /// packet needs to tie in with it.
     pub legacy_request_id: ItemStackLegacyRequestID,
-    /// LegacySetItemSlots are only present if the LegacyRequestID is non-zero. These item slots inform
-    /// the server of the slots that were changed during the inventory transaction, and the server
-    /// should send back an ItemStackResponse packet with these slots present in it. (Or false with no
-    /// slots, if rejected.)
+    /// `legacy_set_item_slots` are only present if the LegacyRequestID is non-zero. These item slots
+    /// inform the server of the slots that were changed during the inventory transaction, and the
+    /// server should send back an ItemStackResponse packet with these slots present in it. (Or false
+    /// with no slots, if rejected.)
     /// Wire presence: optional value is preceded by a presence marker.
     pub legacy_set_item_slots: Option<Vec<LegacySetSlot>>,
     /// Wire presence: optional value is preceded by a presence marker.
@@ -538,7 +536,7 @@ impl MobArmorEquipment {
 pub struct Interact {
     pub action: InteractAction,
     pub target_runtime_id: ActorRuntimeID,
-    /// Position associated with the ActionType above. For the InteractActionMouseOverEntity, this is
+    /// `position` associated with the ActionType above. For the InteractActionMouseOverEntity, this is
     /// the position relative to the entity moused over over which the player hovered with its
     /// mouse/touch. For the InteractActionLeaveVehicle, this is the position that the player spawns at
     /// after leaving the vehicle.
@@ -553,7 +551,7 @@ impl Interact {
 /// its item in their inventory.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct BlockPickRequest {
-    /// Position is the position at which the client requested to pick the block. The block at that
+    /// `position` is the position at which the client requested to pick the block. The block at that
     /// position should have its item put in HotBarSlot if it is empty.
     pub position: BlockPos,
     pub with_data: bool,
@@ -569,7 +567,7 @@ impl BlockPickRequest {
 pub struct ActorPickRequest {
     pub actor_id: wire::I64LE,
     pub max_slots: wire::U8,
-    /// WithData is true if the pick request requests the entity metadata.
+    /// `with_data` is true if the pick request requests the entity metadata.
     pub with_data: bool,
 }
 
@@ -582,7 +580,7 @@ impl ActorPickRequest {
 pub struct PlayerAction {
     pub player_runtime_id: ActorRuntimeID,
     pub action: PlayerActionType,
-    /// BlockPosition is the position of the target block, if the action with the ActionType set
+    /// `block_position` is the position of the target block, if the action with the ActionType set
     /// concerned a block. If that is not the case, the block position will be zero.
     pub block_position: BlockPos,
     pub result_pos: BlockPos,
@@ -610,7 +608,7 @@ pub struct SetActorData {
     pub target_runtime_id: ActorRuntimeID,
     pub actor_data: SynchedActorDataCopyableDataList,
     pub synched_properties: PropertySyncData,
-    /// Tick is the server tick at which the packet was sent. It is used in relation to
+    /// `tick` is the server tick at which the packet was sent. It is used in relation to
     /// CorrectPlayerMovePrediction.
     pub tick: PlayerInputTick,
 }
@@ -624,7 +622,7 @@ impl SetActorData {
 pub struct SetActorMotion {
     pub target_runtime_id: ActorRuntimeID,
     pub motion: glam::Vec3,
-    /// Tick is the server tick at which the packet was sent. It is used in relation to
+    /// `tick` is the server tick at which the packet was sent. It is used in relation to
     /// CorrectPlayerMovePrediction.
     pub tick: PlayerInputTick,
 }
@@ -636,7 +634,7 @@ impl SetActorMotion {
 /// will start riding another.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SetActorLink {
-    /// EntityLink is the link to be set client-side. It links two entities together, so that one entity
+    /// `link` is the link to be set client-side. It links two entities together, so that one entity
     /// rides another. Note that players that see those entities later will not see the link, unless it
     /// is also sent in the AddActor and AddPlayer packets.
     pub link: EntityLink,
@@ -650,7 +648,7 @@ impl SetActorLink {
 /// and maximum health may be changed directly.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SetHealth {
-    /// Health is the new health of the player.
+    /// `health` is the new health of the player.
     pub health: wire::ZigZag32,
 }
 
@@ -676,10 +674,10 @@ impl SetSpawnPosition {
 pub struct Animate {
     pub action: AnimateAction,
     pub target_actor_runtime_id: ActorRuntimeID,
-    /// Data ...
+    /// `data` ...
     pub data: wire::F32LE,
-    /// SwingSource is the source for swing actions. It is one of the action type constants that may be
-    /// found above.
+    /// `swing_source` is the source for swing actions. It is one of the action type constants that may
+    /// be found above.
     /// Wire presence: optional value is preceded by a presence marker.
     pub swing_source: Option<String>,
 }
@@ -693,11 +691,11 @@ impl Animate {
 /// the respawn.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct Respawn {
-    /// Position is the position on which the player should be respawned. The position might be in a
+    /// `position` is the position on which the player should be respawned. The position might be in a
     /// different dimension, in which case the client should first be sent a ChangeDimension packet.
     pub position: glam::Vec3,
-    /// State is the 'state' of the respawn. It is one of the constants that may be found above, and the
-    /// value the packet contains depends on whether the server or client sends it.
+    /// `state` is the 'state' of the respawn. It is one of the constants that may be found above, and
+    /// the value the packet contains depends on whether the server or client sends it.
     pub state: PlayerRespawnState,
     pub player_runtime_id: ActorRuntimeID,
 }
@@ -711,8 +709,8 @@ impl Respawn {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ContainerOpen {
     pub container_id: wire::U8,
-    /// ContainerType is the type ID of the container that is being opened when opening the container at
-    /// the position of the packet. It depends on the block/entity, and could, for example, be the
+    /// `container_type` is the type ID of the container that is being opened when opening the container
+    /// at the position of the packet. It depends on the block/entity, and could, for example, be the
     /// window type of a chest or a hopper, but also a horse inventory.
     pub container_type: wire::U8,
     pub position: BlockPos,
@@ -728,7 +726,7 @@ impl ContainerOpen {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ContainerClose {
     pub container_id: wire::U8,
-    /// ContainerType is the type of container that the server is trying to close. This is used to
+    /// `container_type` is the type of container that the server is trying to close. This is used to
     /// validate on the client side whether or not the server's close request is valid.
     pub container_type: wire::U8,
     pub server_initiated_close: bool,
@@ -752,16 +750,16 @@ impl PlayerHotbar {
 /// are currently opened by the player.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct InventoryContent {
-    /// WindowID is the ID that identifies one of the windows that the client currently has opened, or
-    /// one of the consistent windows such as the main inventory.
+    /// `container_id` is the ID that identifies one of the windows that the client currently has
+    /// opened, or one of the consistent windows such as the main inventory.
     pub container_id: wire::VarUInt,
-    /// Content is the new content of the inventory. The length of this slice must be equal to the full
+    /// `slots` is the new content of the inventory. The length of this slice must be equal to the full
     /// size of the inventory window updated.
     pub slots: Vec<NetworkItemStackDescriptorSerializedData>,
-    /// Container is the protocol.FullContainerName that describes the container that the content is
-    /// for.
+    /// `full_container_name` is the protocol.FullContainerName that describes the container that the
+    /// content is for.
     pub full_container_name: FullContainerName,
-    /// StorageItem is the item that is acting as the storage container for the inventory. If the
+    /// `storage_item` is the item that is acting as the storage container for the inventory. If the
     /// inventory is not a dynamic container then this field should be left empty. When set, only the
     /// item type is used by the client and none of the other stack info.
     pub storage_item: NetworkItemStackDescriptorSerializedData,
@@ -775,22 +773,22 @@ impl InventoryContent {
 /// hand or, for example, a chest inventory.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct InventorySlot {
-    /// WindowID is the ID of the window that the packet modifies. It must point to one of the windows
-    /// that the client currently has opened.
+    /// `container_id` is the ID of the window that the packet modifies. It must point to one of the
+    /// windows that the client currently has opened.
     pub container_id: wire::U8,
-    /// Slot is the index of the slot that the packet modifies. The new item will be set to the slot at
-    /// this index.
+    /// `slot` is the index of the slot that the packet modifies. The new item will be set to the slot
+    /// at this index.
     pub slot: wire::VarUInt,
-    /// Container is the protocol.FullContainerName that describes the container that the content is
-    /// for.
+    /// `full_container_name` is the protocol.FullContainerName that describes the container that the
+    /// content is for.
     /// Wire presence: optional value is preceded by a presence marker.
     pub full_container_name: Option<FullContainerName>,
-    /// StorageItem is the item that is acting as the storage container for the inventory. If the
+    /// `storage_item` is the item that is acting as the storage container for the inventory. If the
     /// inventory is not a dynamic container then this field should be left empty. When set, only the
     /// item type is used by the client and none of the other stack info.
     /// Wire presence: optional value is preceded by a presence marker.
     pub storage_item: Option<NetworkItemStackDescriptorSerializedData>,
-    /// NewItem is the item to be put in the slot at Slot. It will overwrite any item that may currently
+    /// `item` is the item to be put in the slot at Slot. It will overwrite any item that may currently
     /// be present in that slot.
     pub item: NetworkItemStackDescriptorSerializedData,
 }
@@ -805,7 +803,7 @@ impl InventorySlot {
 pub struct ContainerSetData {
     pub container_id: wire::U8,
     pub id: wire::ZigZag32,
-    /// Value is the value of the property. Its use differs per property.
+    /// `value` is the value of the property. Its use differs per property.
     pub value: wire::ZigZag32,
 }
 
@@ -817,7 +815,7 @@ impl ContainerSetData {
 /// crafting station's recipes are included in it.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CraftingData {
-    /// ShapedRecipes through SmithingTrimRecipes are the typed recipe vectors used by 1.26.40.
+    /// `shaped_recipes` through SmithingTrimRecipes are the typed recipe vectors used by 1.26.40.
     pub shaped_recipes: Vec<ShapedRecipe>,
     pub shapeless_recipes: Vec<ShapelessRecipe>,
     pub multi_recipes: Vec<MultiRecipe>,
@@ -826,16 +824,15 @@ pub struct CraftingData {
     pub shaped_chemistry_recipes: Vec<ShapedRecipe>,
     pub smithing_transform_recipes: Vec<SmithingTransformRecipe>,
     pub smithing_trim_recipes: Vec<SmithingTrimRecipe>,
-    /// PotionRecipes is a list of all potion mixing recipes which may be used in the brewing stand.
+    /// `potion_mixes` is a list of all potion mixing recipes which may be used in the brewing stand.
     pub potion_mixes: Vec<PotionMixDataEntry>,
-    /// PotionContainerChangeRecipes is a list of all recipes to convert a potion from one type to
-    /// another, such as from a drinkable potion to a splash potion, or from a splash potion to a
-    /// lingering potion.
+    /// `container_mixes` is a list of all recipes to convert a potion from one type to another, such as
+    /// from a drinkable potion to a splash potion, or from a splash potion to a lingering potion.
     pub container_mixes: Vec<ContainerMixDataEntry>,
-    /// MaterialReducers is a list of all material reducers which is used in education edition
+    /// `material_reducers` is a list of all material reducers which is used in education edition
     /// chemistry.
     pub material_reducers: Vec<MaterialReducerDataEntry>,
-    /// ClearRecipes indicates if all recipes currently active on the client should be cleaned. Doing
+    /// `clear_recipes` indicates if all recipes currently active on the client should be cleaned. Doing
     /// this means that the client will have no recipes active by itself: Any CraftingData packets
     /// previously sent will also be discarded, and only the recipes in this CraftingData packet will be
     /// used.
@@ -876,7 +873,7 @@ pub struct LevelChunk {
     pub sub_chunks_count: wire::VarUInt,
     /// Wire presence: optional value is preceded by a presence marker.
     pub client_request_sub_chunk_limit: Option<wire::ZigZag32>,
-    /// CacheEnabled specifies if the client blob cache should be enabled. This system is based on
+    /// `cache_enabled` specifies if the client blob cache should be enabled. This system is based on
     /// hashes of blobs which are consistent and saved by the client in combination with that blob, so
     /// that the server does not have the same chunk multiple times. If the client does not yet have a
     /// blob with the hash sent, it will send a ClientCacheBlobStatus packet containing the hashes is
@@ -893,7 +890,7 @@ impl LevelChunk {
 /// for the client. If disabled, the client itself will stop the execution of commands.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SetCommandsEnabled {
-    /// Enabled defines if the commands should be enabled, or if false, disabled.
+    /// `commands_enabled` defines if the commands should be enabled, or if false, disabled.
     pub commands_enabled: bool,
 }
 
@@ -905,7 +902,7 @@ impl SetCommandsEnabled {
 /// server-side.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SetDifficulty {
-    /// Difficulty is the new difficulty that the world has.
+    /// `difficulty` is the new difficulty that the world has.
     pub difficulty: wire::VarUInt,
 }
 
@@ -918,14 +915,14 @@ impl SetDifficulty {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ChangeDimension {
     pub dimension_id: DimensionType,
-    /// Position is the position in the new dimension that the player is spawned in.
+    /// `position` is the position in the new dimension that the player is spawned in.
     pub position: glam::Vec3,
-    /// Respawn specifies if the dimension change was respawn based, meaning that the player died in one
-    /// dimension and got respawned into another. The client will send a PlayerAction packet with
+    /// `respawn` specifies if the dimension change was respawn based, meaning that the player died in
+    /// one dimension and got respawned into another. The client will send a PlayerAction packet with
     /// PlayerActionDimensionChangeRequest if it dies in another dimension, indicating that it needs a
     /// DimensionChange packet with Respawn set to true.
     pub respawn: bool,
-    /// LoadingScreenID is a unique ID for the loading screen that the player is currently in. The
+    /// `loading_screen_id` is a unique ID for the loading screen that the player is currently in. The
     /// client will update the server on its state through the ServerBoundLoadingScreen packet, and it
     /// can be used to not send specific packets to the client if it is changing dimensions. This field
     /// should be unique for every ChangeDimension packet sent.
@@ -953,8 +950,8 @@ impl SetPlayerGameType {
 /// the player are obtained from the player list, such as the skin.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PlayerList {
-    /// Entries is a list of all player list entries that should be added/removed from the player list,
-    /// depending on the ActionType set.
+    /// `entries` is a list of all player list entries that should be added/removed from the player
+    /// list, depending on the ActionType set.
     pub entries: Vec<PlayerListData>,
 }
 
@@ -988,10 +985,10 @@ impl LegacyTelemetryEvent {
 /// AddActor packet.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SpawnExperienceOrb {
-    /// Position is the position to spawn the experience orb on. If the entity is on a distance that the
-    /// player cannot see it, the entity will still show up if the player moves closer.
+    /// `position` is the position to spawn the experience orb on. If the entity is on a distance that
+    /// the player cannot see it, the entity will still show up if the player moves closer.
     pub position: glam::Vec3,
-    /// ExperienceAmount is the amount of experience in experience points that the orb carries. The
+    /// `xp_value` is the amount of experience in experience points that the orb carries. The
     /// client-side size of the orb depends on the amount of experience in the orb: There are 11
     /// possible sizes for the orb, for 1–2, 3–6, 7–16, 17–36, 37–72, 73–148, 149–306,
     /// 307–616, 617–1236, 1237–2476, and 2477 and up.
@@ -1047,11 +1044,11 @@ impl MapInfoRequest {
 /// with either the chunk radius requested, or a different chunk radius if the server chooses so.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct RequestChunkRadius {
-    /// ChunkRadius is the requested chunk radius. This value is always the value set in the settings of
-    /// the player.
+    /// `chunk_radius` is the requested chunk radius. This value is always the value set in the settings
+    /// of the player.
     pub chunk_radius: wire::ZigZag32,
-    /// MaxChunkRadius is the maximum chunk radius that the player wants to receive. The reason for the
-    /// client sending this is currently unknown.
+    /// `max_chunk_radius` is the maximum chunk radius that the player wants to receive. The reason for
+    /// the client sending this is currently unknown.
     pub max_chunk_radius: wire::U8,
 }
 
@@ -1063,8 +1060,8 @@ impl RequestChunkRadius {
 /// radius requested by the client in the RequestChunkRadius packet.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ChunkRadiusUpdated {
-    /// ChunkRadius is the final chunk radius that the client will adapt when it receives the packet. It
-    /// does not have to be the same as the requested chunk radius.
+    /// `chunk_radius` is the final chunk radius that the client will adapt when it receives the packet.
+    /// It does not have to be the same as the requested chunk radius.
     pub chunk_radius: wire::ZigZag32,
 }
 
@@ -1098,13 +1095,13 @@ impl Camera {
 pub struct BossEvent {
     pub target_actor_id: ActorUniqueID,
     pub player_id: ActorUniqueID,
-    /// EventType is the type of the event. It is one of the BossEvent constants above.
+    /// `event_type` is the type of the event. It is one of the BossEvent constants above.
     pub event_type: BossEventUpdateType,
     pub name: String,
     pub filtered_name: String,
     pub health_percent: wire::F32LE,
     pub color: BossBarColor,
-    /// Overlay is the overlay of the boss bar that is shown on top of the boss bar when a player is
+    /// `overlay` is the overlay of the boss bar that is shown on top of the boss bar when a player is
     /// subscribed. It is one of the BossEventOverlay constants listed above.
     pub overlay: BossBarOverlay,
 }
@@ -1116,8 +1113,8 @@ impl BossEvent {
 /// typically sent when the player beats the ender dragon and leaves the End.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ShowCredits {
-    /// PlayerRuntimeID is the entity runtime ID of the player to show the credits to. It's not clear
-    /// why this field is actually here in the first place.
+    /// `player_runtime_id` is the entity runtime ID of the player to show the credits to. It's not
+    /// clear why this field is actually here in the first place.
     pub player_runtime_id: ActorRuntimeID,
     pub credits_state: wire::ZigZag32,
 }
@@ -1131,31 +1128,31 @@ impl ShowCredits {
 /// can be resent, but the packet is often very big, so doing this very often should be avoided.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct AvailableCommands {
-    /// EnumValues is a slice of all enum values of any enum in the AvailableCommands packet. EnumValues
-    /// generally should contain each possible value only once. Enums are built by pointing to entries
-    /// in this slice.
+    /// `enum_values` is a slice of all enum values of any enum in the AvailableCommands packet.
+    /// EnumValues generally should contain each possible value only once. Enums are built by pointing
+    /// to entries in this slice.
     pub enum_values: Vec<String>,
-    /// ChainedSubcommandValues is a slice of all chained subcommand names. ChainedSubcommandValues
+    /// `chained_subcommand_values` is a slice of all chained subcommand names. ChainedSubcommandValues
     /// generally should contain each possible value only once. ChainedSubcommands are built by pointing
     /// to entries in this slice.
     pub chained_subcommand_values: Vec<String>,
-    /// Suffixes, like EnumValues, is a slice of all suffix values of any command parameter in the
+    /// `post_fixes`, like EnumValues, is a slice of all suffix values of any command parameter in the
     /// AvailableCommands packet.
     pub post_fixes: Vec<String>,
-    /// Enums is a slice of all (fixed) command enums present in any of the commands.
+    /// `enum_data` is a slice of all (fixed) command enums present in any of the commands.
     pub enum_data: Vec<CommandEnum>,
-    /// ChainedSubcommands is a slice of all subcommands that are followed by a chained command. An
-    /// example usage of this is /execute which allows you to run another command as another entity or
-    /// at a different position etc.
+    /// `chained_subcommand_data` is a slice of all subcommands that are followed by a chained command.
+    /// An example usage of this is /execute which allows you to run another command as another entity
+    /// or at a different position etc.
     pub chained_subcommand_data: Vec<ChainedSubcommand>,
-    /// Commands is a list of all commands that the client should show client-side. The
+    /// `commands` is a list of all commands that the client should show client-side. The
     /// AvailableCommands packet replaces any commands sent before. It does not only add the commands
     /// that are sent in it.
     pub commands: Vec<Command>,
-    /// DynamicEnums is a slice of dynamic command enums. These command enums can be changed during
+    /// `soft_enums` is a slice of dynamic command enums. These command enums can be changed during
     /// runtime without having to resend an AvailableCommands packet.
     pub soft_enums: Vec<DynamicEnum>,
-    /// Constraints is a list of constraints that should be applied to certain options of enums in the
+    /// `constraints` is a list of constraints that should be applied to certain options of enums in the
     /// commands above.
     pub constraints: Vec<CommandEnumConstraint>,
 }
@@ -1168,16 +1165,16 @@ impl AvailableCommands {
 /// the correct result.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CommandRequest {
-    /// CommandLine is the raw entered command line. The client does no parsing of the command line by
+    /// `command` is the raw entered command line. The client does no parsing of the command line by
     /// itself (unlike it did in the early stages), but lets the server do that.
     pub command: String,
-    /// CommandOrigin is the data specifying the origin of the command. In other words, the source that
-    /// the command was from, such as the player itself or a websocket server.
+    /// `origin` is the data specifying the origin of the command. In other words, the source that the
+    /// command was from, such as the player itself or a websocket server.
     pub origin: CommandOriginData,
-    /// Internal specifies if the command request internal. Setting it to false seems to work and the
-    /// usage of this field is not known.
+    /// `is_internal` specifies if the command request internal. Setting it to false seems to work and
+    /// the usage of this field is not known.
     pub is_internal: bool,
-    /// Version is the version of the command that is being executed. This field currently has no
+    /// `version` is the version of the command that is being executed. This field currently has no
     /// purpose or functionality.
     pub version: String,
 }
@@ -1190,24 +1187,25 @@ impl CommandRequest {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CommandBlockUpdate {
     pub target: CommandBlockUpdateData,
-    /// Command is the command currently entered in the command block. This is the command that is
+    /// `command` is the command currently entered in the command block. This is the command that is
     /// executed when the command block is activated.
     pub command: String,
-    /// LastOutput is the output of the last command executed by the command block. It may be left empty
-    /// to show simply no output at all, in combination with setting ShouldTrackOutput to false.
+    /// `last_output` is the output of the last command executed by the command block. It may be left
+    /// empty to show simply no output at all, in combination with setting ShouldTrackOutput to false.
     pub last_output: String,
-    /// Name is the name of the command block updated. If not empty, it will show this name hovering
+    /// `name` is the name of the command block updated. If not empty, it will show this name hovering
     /// above the command block when hovering over the block with the cursor.
     pub name: String,
-    /// FilteredName is a filtered version of Name with all the profanity removed. The client will use
-    /// this over Name if this field is not empty and they have the "Filter Profanity" setting enabled.
+    /// `filtered_name` is a filtered version of Name with all the profanity removed. The client will
+    /// use this over Name if this field is not empty and they have the "Filter Profanity" setting
+    /// enabled.
     pub filtered_name: String,
     pub track_output: bool,
-    /// TickDelay is the delay in ticks between executions of a command block, if it is a repeating
+    /// `tick_delay` is the delay in ticks between executions of a command block, if it is a repeating
     /// command block.
     pub tick_delay: wire::I32LE,
-    /// ExecuteOnFirstTick specifies if the command block should execute on the first tick, AKA as soon
-    /// as the command block is enabled.
+    /// `execute_on_first_tick` specifies if the command block should execute on the first tick, AKA as
+    /// soon as the command block is enabled.
     pub execute_on_first_tick: bool,
 }
 
@@ -1235,15 +1233,15 @@ impl CommandOutput {
 pub struct UpdateTrade {
     pub container_id: wire::U8,
     pub type_: wire::U8,
-    /// Size is the amount of trading options that the villager has.
+    /// `size` is the amount of trading options that the villager has.
     pub size: wire::ZigZag32,
     pub trader_tier: wire::ZigZag32,
-    /// EntityUniqueID is the unique ID of the entity (usually a player) for which the trades are
+    /// `entity_unique_id` is the unique ID of the entity (usually a player) for which the trades are
     /// updated. The updated trades may apply only to this entity.
     pub entity_unique_id: ActorUniqueID,
     pub last_trading_player: ActorUniqueID,
-    /// DisplayName is the name displayed at the top of the trading UI. It is usually used to represent
-    /// the profession of the villager in the UI.
+    /// `display_name` is the name displayed at the top of the trading UI. It is usually used to
+    /// represent the profession of the villager in the UI.
     pub display_name: String,
     pub use_new_trade_screen: bool,
     pub using_economy_trade: bool,
@@ -1260,11 +1258,11 @@ impl UpdateTrade {
 pub struct UpdateEquip {
     pub container_id: wire::U8,
     pub type_: wire::U8,
-    /// Size is the size of the horse inventory that should be opened. A bigger size does, in fact,
+    /// `size` is the size of the horse inventory that should be opened. A bigger size does, in fact,
     /// change the amount of slots displayed.
     pub size: wire::ZigZag32,
-    /// EntityUniqueID is the unique ID of the entity whose equipment was 'updated' to the player. It is
-    /// typically the horse entity that had its inventory opened.
+    /// `entity_unique_id` is the unique ID of the entity whose equipment was 'updated' to the player.
+    /// It is typically the horse entity that had its inventory opened.
     pub entity_unique_id: ActorUniqueID,
     pub data: wire::NetworkNbt,
 }
@@ -1282,7 +1280,7 @@ pub struct ResourcePackDataInfo {
     pub file_size: wire::U64LE,
     pub file_hash: String,
     pub is_premium_pack: bool,
-    /// PackType is the type of the resource pack. It is one of the resource pack types that may be
+    /// `pack_type` is the type of the resource pack. It is one of the resource pack types that may be
     /// found in the constants above.
     pub pack_type: wire::U8,
 }
@@ -1295,12 +1293,12 @@ impl ResourcePackDataInfo {
 /// ResourcePackDataInfo packet sent before.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ResourcePackChunkData {
-    /// UUID is the unique ID of the resource pack that the chunk of data is taken out of.
+    /// `resource_name` is the unique ID of the resource pack that the chunk of data is taken out of.
     pub resource_name: String,
-    /// ChunkIndex is the current chunk index of the chunk. It is a number that starts at 0 and is
+    /// `chunk_id` is the current chunk index of the chunk. It is a number that starts at 0 and is
     /// incremented for each resource pack data chunk sent to the client.
     pub chunk_id: wire::U32LE,
-    /// DataOffset is the current progress in bytes or offset in the data that the resource pack data
+    /// `byte_offset` is the current progress in bytes or offset in the data that the resource pack data
     /// chunk is taken from.
     pub byte_offset: wire::U64LE,
     /// RawPayload is a byte slice containing a chunk of data from the resource pack. It must be of the
@@ -1315,9 +1313,9 @@ impl ResourcePackChunkData {
 /// resource pack, that it has obtained information about in a ResourcePackDataInfo packet.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ResourcePackChunkRequest {
-    /// UUID is the unique ID of the resource pack that the chunk of data is requested from.
+    /// `resource_name` is the unique ID of the resource pack that the chunk of data is requested from.
     pub resource_name: String,
-    /// ChunkIndex is the requested chunk index of the chunk. It is a number that starts at 0 and is
+    /// `chunk` is the requested chunk index of the chunk. It is a number that starts at 0 and is
     /// incremented for each resource pack data chunk requested.
     pub chunk: wire::I32LE,
 }
@@ -1330,14 +1328,15 @@ impl ResourcePackChunkRequest {
 /// server.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct Transfer {
-    /// Address is the address of the new server, which might be either a hostname or an actual IP
-    /// address.
+    /// `server_address` is the address of the new server, which might be either a hostname or an actual
+    /// IP address.
     pub server_address: String,
-    /// Port is the UDP port of the new server.
+    /// `server_port` is the UDP port of the new server.
     pub server_port: wire::U16LE,
-    /// ReloadWorld currently has an unknown usage.
+    /// `reload_world` currently has an unknown usage.
     pub reload_world: bool,
-    /// GatheringJoinInfo optionally identifies the gathering being joined on the target server.
+    /// `gatherings_configuration` optionally identifies the gathering being joined on the target
+    /// server.
     /// Wire presence: optional value is preceded by a presence marker.
     pub gatherings_configuration: Option<ServerConfigurationGatheringsConfigurationJoinInfo>,
 }
@@ -1349,22 +1348,23 @@ impl Transfer {
 /// started using this packet and must be stopped using the StopSound packet.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PlaySound {
-    /// SoundName is the name of the sound to play.
+    /// `name` is the name of the sound to play.
     pub name: String,
-    /// Position is the position at which the sound was played. Some sounds do not depend on a position,
-    /// which will then ignore it, but most of them will play with the direction based on the position
-    /// compared to the player's position.
+    /// `position` is the position at which the sound was played. Some sounds do not depend on a
+    /// position, which will then ignore it, but most of them will play with the direction based on the
+    /// position compared to the player's position.
     pub position: BlockPos,
-    /// Volume is the relative volume of the sound to play. It will be less loud for the player if it is
-    /// farther away from the position of the sound.
+    /// `volume` is the relative volume of the sound to play. It will be less loud for the player if it
+    /// is farther away from the position of the sound.
     pub volume: wire::F32LE,
-    /// Pitch is the pitch of the sound to play. Some sounds completely ignore this field, whereas
+    /// `pitch` is the pitch of the sound to play. Some sounds completely ignore this field, whereas
     /// others use it to specify the pitch as the field is intended.
     pub pitch: wire::F32LE,
-    /// LoopCount is the number of times to loop the sound before stopping. -1 means no looping at all.
+    /// `loop_count` is the number of times to loop the sound before stopping. -1 means no looping at
+    /// all.
     pub loop_count: wire::ZigZag32,
-    /// Handle is an optional sound handle ID. It is currently unknown what this is for, and is not
-    /// required to be set by servers.
+    /// `server_sound_handle` is an optional sound handle ID. It is currently unknown what this is for,
+    /// and is not required to be set by servers.
     /// Wire presence: optional value is preceded by a presence marker.
     pub server_sound_handle: Option<ServerSoundHandle>,
 }
@@ -1376,13 +1376,13 @@ impl PlaySound {
 /// disk track or other long-lasting sounds.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct StopSound {
-    /// SoundName is the name of the sound that should be stopped from playing. If no sound with this
+    /// `sound_name` is the name of the sound that should be stopped from playing. If no sound with this
     /// name is currently active, the packet is ignored.
     pub sound_name: String,
-    /// StopAll specifies if all sounds currently playing to the player should be stopped. If set to
-    /// true, the SoundName field may be left empty.
+    /// `stop_all_sounds` specifies if all sounds currently playing to the player should be stopped. If
+    /// set to true, the SoundName field may be left empty.
     pub stop_all_sounds: bool,
-    /// StopMusicLegacy is currently unknown.
+    /// `stop_music_legacy` is currently unknown.
     pub stop_music_legacy: bool,
 }
 
@@ -1398,11 +1398,11 @@ pub struct SetTitle {
     pub fade_in_time: wire::ZigZag32,
     pub stay_time: wire::ZigZag32,
     pub fade_out_time: wire::ZigZag32,
-    /// XUID is the XBOX Live user ID of the player, which will remain consistent as long as the player
-    /// is logged in with the XBOX Live account. It is empty if the user is not logged into its XBL
-    /// account.
+    /// `xuid` is the XBOX Live user ID of the player, which will remain consistent as long as the
+    /// player is logged in with the XBOX Live account. It is empty if the user is not logged into its
+    /// XBL account.
     pub xuid: String,
-    /// PlatformOnlineID is either a uint64 or an empty string.
+    /// `platform_online_id` is either a uint64 or an empty string.
     pub platform_online_id: String,
     pub filtered_title_message: String,
 }
@@ -1441,7 +1441,7 @@ impl StructureBlockUpdate {
 /// of one of the partnered servers.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ShowStoreOffer {
-    /// OfferID is a UUID that identifies the offer for which a window should be opened.
+    /// `offer_id` is a UUID that identifies the offer for which a window should be opened.
     pub offer_id: uuid::Uuid,
     pub redirect_type: ShowStoreOfferRedirectType,
 }
@@ -1454,8 +1454,8 @@ impl ShowStoreOffer {
 /// servers.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PurchaseReceipt {
-    /// Receipts is a list of receipts, or proofs of purchases, for the offers that have been purchased
-    /// by the player.
+    /// `purchase_receipts` is a list of receipts, or proofs of purchases, for the offers that have been
+    /// purchased by the player.
     pub purchase_receipts: Vec<String>,
 }
 
@@ -1468,8 +1468,8 @@ impl PurchaseReceipt {
 /// the time of sending.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PlayerSkin {
-    /// UUID is the UUID of the player as sent in the Login packet when the client joined the server. It
-    /// must match this UUID exactly for the skin to show up on the player.
+    /// `uuid` is the UUID of the player as sent in the Login packet when the client joined the server.
+    /// It must match this UUID exactly for the skin to show up on the player.
     pub uuid: uuid::Uuid,
     pub serialized_skin: SerializedSkinRef,
     pub localized_new_skin_name: String,
@@ -1542,23 +1542,23 @@ impl NpcRequest {
 /// books was disabled and the packet now has little use anymore.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PhotoTransfer {
-    /// PhotoName is the name of the photo to transfer. It is the exact file name that the client will
-    /// download the photo as, including the extension of the file.
+    /// `photo_name` is the name of the photo to transfer. It is the exact file name that the client
+    /// will download the photo as, including the extension of the file.
     pub photo_name: String,
-    /// PhotoData is the raw data of the photo image. The format of this data may vary: Formats such as
-    /// JPEG or PNG work, as long as PhotoName has the correct extension.
+    /// `photo_data` is the raw data of the photo image. The format of this data may vary: Formats such
+    /// as JPEG or PNG work, as long as PhotoName has the correct extension.
     pub photo_data: bytes::Bytes,
-    /// BookID is the ID of the book that the photo is associated with. If the PhotoName in a book with
-    /// this ID is set to PhotoName, it will display the photo (provided Education Edition is used). The
-    /// photo image is downloaded to a sub-folder with this book ID.
+    /// `book_id` is the ID of the book that the photo is associated with. If the PhotoName in a book
+    /// with this ID is set to PhotoName, it will display the photo (provided Education Edition is
+    /// used). The photo image is downloaded to a sub-folder with this book ID.
     pub book_id: String,
-    /// PhotoType is one of the three photo types above.
+    /// `type_` is one of the three photo types above.
     pub type_: PhotoType,
-    /// SourceType is the source photo type. It is one of the three photo types above.
+    /// `source_type` is the source photo type. It is one of the three photo types above.
     pub source_type: PhotoType,
-    /// OwnerEntityUniqueID is the entity unique ID of the photo's owner.
+    /// `owner_id` is the entity unique ID of the photo's owner.
     pub owner_id: wire::I64LE,
-    /// NewPhotoName is the new name of the photo.
+    /// `new_photo_name` is the new name of the photo.
     pub new_photo_name: String,
 }
 
@@ -1570,8 +1570,8 @@ impl PhotoTransfer {
 /// properties.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ModalFormRequest {
-    /// FormID is an ID used to identify the form. The ID is saved by the client and sent back when the
-    /// player submits the form, so that the server can identify which form was submitted.
+    /// `form_id` is an ID used to identify the form. The ID is saved by the client and sent back when
+    /// the player submits the form, so that the server can identify which form was submitted.
     pub form_id: wire::VarUInt,
     pub form_ui_json: String,
 }
@@ -1584,16 +1584,17 @@ impl ModalFormRequest {
 /// encoded 'null' if the form was closed by clicking the X at the top right corner of the form.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ModalFormResponse {
-    /// FormID is the form ID of the form the client has responded to. It is the same as the ID sent in
-    /// the ModalFormRequest, and may be used to identify which form was submitted.
+    /// `form_id` is the form ID of the form the client has responded to. It is the same as the ID sent
+    /// in the ModalFormRequest, and may be used to identify which form was submitted.
     pub form_id: wire::VarUInt,
-    /// ResponseData is a JSON encoded value representing the response of the player. For a modal form,
-    /// the response is either true or false, for a menu form, the response is an integer specifying the
-    /// index of the button clicked, and for a custom form, the response is an array containing a value
-    /// for each element.
+    /// `json_response` is a JSON encoded value representing the response of the player. For a modal
+    /// form, the response is either true or false, for a menu form, the response is an integer
+    /// specifying the index of the button clicked, and for a custom form, the response is an array
+    /// containing a value for each element.
     /// Wire presence: optional value is preceded by a presence marker.
     pub json_response: Option<String>,
-    /// CancelReason represents the reason why the form was cancelled. It is one of the constants above.
+    /// `form_cancel_reason` represents the reason why the form was cancelled. It is one of the
+    /// constants above.
     /// Wire presence: optional value is preceded by a presence marker.
     pub form_cancel_reason: Option<ModalFormCancelReason>,
 }
@@ -1618,8 +1619,8 @@ impl ServerSettingsRequest {
 /// client fills out the settings and closes the settings again.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ServerSettingsResponse {
-    /// FormID is an ID used to identify the form. The ID is saved by the client and sent back when the
-    /// player submits the form, so that the server can identify which form was submitted.
+    /// `form_id` is an ID used to identify the form. The ID is saved by the client and sent back when
+    /// the player submits the form, so that the server can identify which form was submitted.
     pub form_id: wire::VarUInt,
     pub form_ui_json: String,
 }
@@ -1630,8 +1631,8 @@ impl ServerSettingsResponse {
 /// ShowProfile is sent by the server to show the XBOX Live profile of one player to another.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ShowProfile {
-    /// XUID is the XBOX Live User ID of the player whose profile should be shown to the player. If it
-    /// is not a valid XUID, the client ignores the packet.
+    /// `player_xuid` is the XBOX Live User ID of the player whose profile should be shown to the
+    /// player. If it is not a valid XUID, the client ignores the packet.
     pub player_xuid: String,
 }
 
@@ -1653,8 +1654,8 @@ impl SetDefaultGameType {
 /// showing a scoreboard to a player.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct RemoveObjective {
-    /// ObjectiveName is the name of the objective that the scoreboard currently active has. This name
-    /// must be identical to the one sent in the SetDisplayObjective packet.
+    /// `objective_name` is the name of the objective that the scoreboard currently active has. This
+    /// name must be identical to the one sent in the SetDisplayObjective packet.
     pub objective_name: String,
 }
 
@@ -1665,18 +1666,18 @@ impl RemoveObjective {
 /// Once sent, it should be followed up by a SetScore packet to set the lines of the packet.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SetDisplayObjective {
-    /// DisplaySlot is the slot in which the scoreboard should be displayed. Available options can be
-    /// found in the constants above.
+    /// `display_slot_name` is the slot in which the scoreboard should be displayed. Available options
+    /// can be found in the constants above.
     pub display_slot_name: String,
-    /// ObjectiveName is the name of the objective that the scoreboard displays. Filling out a random
+    /// `objective_name` is the name of the objective that the scoreboard displays. Filling out a random
     /// unique value for this field works: It is not displayed in the scoreboard.
     pub objective_name: String,
-    /// DisplayName is the name, or title, that is displayed at the top of the scoreboard.
+    /// `objective_display_name` is the name, or title, that is displayed at the top of the scoreboard.
     pub objective_display_name: String,
-    /// CriteriaName is the name of the criteria that need to be fulfilled in order for the score to be
-    /// increased. This can be any kind of string and does not show up client-side.
+    /// `criteria_name` is the name of the criteria that need to be fulfilled in order for the score to
+    /// be increased. This can be any kind of string and does not show up client-side.
     pub criteria_name: String,
-    /// SortOrder is the order in which entries on the scoreboard should be sorted. It is one of the
+    /// `sort_order` is the order in which entries on the scoreboard should be sorted. It is one of the
     /// constants that may be found above.
     pub sort_order: wire::ZigZag32,
 }
@@ -1688,8 +1689,8 @@ impl SetDisplayObjective {
 /// used to either add, remove or edit entries on the scoreboard.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SetScore {
-    /// Entries is a list of all entries that the client should operate on. Each entry's IdentityType
-    /// specifies whether it is added, modified or removed.
+    /// `score_info` is a list of all entries that the client should operate on. Each entry's
+    /// IdentityType specifies whether it is added, modified or removed.
     pub score_info: Vec<SetScoreInfoItem>,
 }
 
@@ -1701,15 +1702,15 @@ impl SetScore {
 /// only functional if Education features are enabled.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct LabTable {
-    /// ActionType is the type of the action that was executed. It is one of the constants above.
+    /// `type_` is the type of the action that was executed. It is one of the constants above.
     /// Typically, only LabTableActionCombine is sent by the client, whereas LabTableActionReact is sent
     /// by the server.
     pub type_: LabTableType,
-    /// Position is the position at which the lab table used was located.
+    /// `position` is the position at which the lab table used was located.
     pub position: BlockPos,
-    /// ReactionType is the type of the reaction that took place as a result of the items put into the
-    /// lab table. The reaction type can be either that of an item or a particle, depending on whatever
-    /// the result was of the reaction.
+    /// `reaction` is the type of the reaction that took place as a result of the items put into the lab
+    /// table. The reaction type can be either that of an item or a particle, depending on whatever the
+    /// result was of the reaction.
     pub reaction: LabTableReactionType,
 }
 
@@ -1721,24 +1722,24 @@ impl LabTable {
 /// entity from flickering, and is used in places such as the pushing of blocks with pistons.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct UpdateBlockSynced {
-    /// Position is the block position at which a block is updated.
+    /// `block_position` is the block position at which a block is updated.
     pub block_position: BlockPos,
-    /// NewBlockRuntimeID is the runtime ID of the block that is placed at Position after sending the
+    /// `block_runtime_id` is the runtime ID of the block that is placed at Position after sending the
     /// packet to the client.
     pub block_runtime_id: wire::VarUInt,
-    /// Flags is a combination of flags that specify the way the block is updated client-side. It is a
+    /// `flags` is a combination of flags that specify the way the block is updated client-side. It is a
     /// combination of the flags above, but typically sending only the BlockUpdateNetwork flag is
     /// sufficient.
     pub flags: wire::VarUInt,
-    /// Layer is the world layer on which the block is updated. For most blocks, this is the first
+    /// `layer` is the world layer on which the block is updated. For most blocks, this is the first
     /// layer, as that layer is the default layer to place blocks on, but for blocks inside of each
     /// other, this differs.
     pub layer: wire::VarUInt,
-    /// EntityUniqueID is the unique ID of the falling block entity that the block transitions to or
+    /// `unique_actor_id` is the unique ID of the falling block entity that the block transitions to or
     /// that the entity transitions from. Note that for both possible values for TransitionType, the
     /// EntityUniqueID should point to the falling block entity involved.
     pub unique_actor_id: wire::VarULong,
-    /// TransitionType is the type of the transition that happened. It is either
+    /// `actor_sync_message` is the type of the transition that happened. It is either
     /// BlockToEntityTransition, when a block placed becomes a falling entity, or
     /// EntityToBlockTransition, when a falling entity hits the ground and becomes a solid block again.
     pub actor_sync_message: wire::VarULong,
@@ -1764,13 +1765,13 @@ impl MoveActorDelta {
 /// non-vanilla situations, the packet is quite useless.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SetScoreboardIdentity {
-    /// ActionType is the type of the action to execute. The action is either
+    /// `scoreboard_identity_packet_type` is the type of the action to execute. The action is either
     /// ScoreboardIdentityActionRegister to associate an identity with the entry, or
     /// ScoreboardIdentityActionClear to remove associations with an entity.
     pub scoreboard_identity_packet_type: ScoreboardIdentityPacketType,
-    /// Entries is a list of all entries in the packet. Each of these entries points to one of the
-    /// entries on a scoreboard. Depending on ActionType, their identity will either be registered or
-    /// cleared.
+    /// `scoreboard_identity_info` is a list of all entries in the packet. Each of these entries points
+    /// to one of the entries on a scoreboard. Depending on ActionType, their identity will either be
+    /// registered or cleared.
     pub scoreboard_identity_info: Vec<ScoreboardIdentityPacketInfo>,
 }
 
@@ -1792,15 +1793,15 @@ impl SetLocalPlayerAsInitialized {
 /// CommandEnum set to true.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct UpdateSoftEnum {
-    /// EnumType is the type of the enum. This type must be identical to the one set in the
+    /// `enum_name` is the type of the enum. This type must be identical to the one set in the
     /// AvailableCommands packet, because the client uses this to recognise which enum to update.
     pub enum_name: String,
-    /// Options is a list of options that should be updated. Depending on the ActionType field, either
+    /// `values` is a list of options that should be updated. Depending on the ActionType field, either
     /// these options will be added to the enum, the enum options will be set to these options or all of
     /// these options will be removed from the enum.
     pub values: Vec<String>,
-    /// ActionType is the type of the action to execute on the enum. The Options field has a different
-    /// result, depending on what ActionType is used.
+    /// `update_type` is the type of the action to execute on the enum. The Options field has a
+    /// different result, depending on what ActionType is used.
     pub update_type: SoftEnumUpdateType,
 }
 
@@ -1828,12 +1829,12 @@ impl NetworkStackLatency {
 pub struct SpawnParticleEffect {
     pub dimension_id: wire::U8,
     pub actor_id: ActorUniqueID,
-    /// Position is the position that the particle should be spawned at. If the position is too far away
-    /// from the player, it will not show up. If EntityUniqueID is not -1, the position will be relative
-    /// to the position of the entity.
+    /// `position` is the position that the particle should be spawned at. If the position is too far
+    /// away from the player, it will not show up. If EntityUniqueID is not -1, the position will be
+    /// relative to the position of the entity.
     pub position: glam::Vec3,
     pub effect_name: String,
-    /// MoLangVariables is an encoded JSON map of MoLang variables that may be applicable to the
+    /// `molang_variables` is an encoded JSON map of MoLang variables that may be applicable to the
     /// particle spawn. This can just be left empty in most cases.
     /// Wire presence: optional value is preceded by a presence marker.
     pub molang_variables: Option<String>,
@@ -1861,15 +1862,15 @@ impl AvailableActorIdentifiers {
 /// where they are sent.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct NetworkChunkPublisherUpdate {
-    /// Position is the block position around which chunks loaded will remain shown to the client. Most
-    /// servers set this position to the position of the player itself.
+    /// `new_position_for_view` is the block position around which chunks loaded will remain shown to
+    /// the client. Most servers set this position to the position of the player itself.
     pub new_position_for_view: BlockPos,
-    /// Radius is the radius in blocks around Position that chunks sent show up in and will remain
-    /// loaded in. Unlike the RequestChunkRadius and ChunkRadiusUpdated packets, this radius is in
-    /// blocks rather than chunks, so the chunk radius needs to be multiplied by 16. (Or shifted to the
-    /// left by 4.)
+    /// `new_radius_for_view` is the radius in blocks around Position that chunks sent show up in and
+    /// will remain loaded in. Unlike the RequestChunkRadius and ChunkRadiusUpdated packets, this radius
+    /// is in blocks rather than chunks, so the chunk radius needs to be multiplied by 16. (Or shifted
+    /// to the left by 4.)
     pub new_radius_for_view: wire::VarUInt,
-    /// SavedChunks ... TODO: Figure out what this field is used for.
+    /// `server_built_chunks_list` ... TODO: Figure out what this field is used for.
     pub server_built_chunks_list: Vec<ChunkPos>,
 }
 
@@ -1883,9 +1884,9 @@ impl NetworkChunkPublisherUpdate {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct BiomeDefinitionList {
     pub map_of_biome_names_to_data: Vec<(wire::U16LE, BiomeDefinitionData)>,
-    /// StringList is a makeshift dictionary implementation Mojang created to try and reduce the size of
-    /// the overall packet. It is a list of common strings that are used in the biome definitions, such
-    /// as biome names, float values or query expressions.
+    /// `string_list` is a makeshift dictionary implementation Mojang created to try and reduce the size
+    /// of the overall packet. It is a list of common strings that are used in the biome definitions,
+    /// such as biome names, float values or query expressions.
     pub string_list: BiomeStringList,
 }
 
@@ -1899,31 +1900,31 @@ impl BiomeDefinitionList {
 /// on its own accord.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct LevelSoundEvent {
-    /// SoundType is the type of the sound to play. It is one of the constants above. Some of the sound
-    /// types require additional data, which is set in the ExtraData field.
+    /// `sound_event` is the type of the sound to play. It is one of the constants above. Some of the
+    /// sound types require additional data, which is set in the ExtraData field.
     pub sound_event: String,
-    /// Position is the position of the sound event. The player will be able to hear the direction of
+    /// `position` is the position of the sound event. The player will be able to hear the direction of
     /// the sound based on what position is sent here.
     pub position: glam::Vec3,
-    /// ExtraData is a packed integer that some sound types use to provide extra data. An example of
-    /// this is the note sound, which is composed of a pitch and an instrument type.
+    /// `data` is a packed integer that some sound types use to provide extra data. An example of this
+    /// is the note sound, which is composed of a pitch and an instrument type.
     pub data: wire::ZigZag32,
-    /// EntityType is the string entity type of the entity that emitted the sound, for example
+    /// `actor_identifier` is the string entity type of the entity that emitted the sound, for example
     /// 'minecraft:skeleton'. Some sound types use this entity type for additional data.
     pub actor_identifier: String,
-    /// BabyMob specifies if the sound should be that of a baby mob. It is most notably used for parrot
-    /// imitations, which will change based on if this field is set to true or not.
+    /// `is_baby` specifies if the sound should be that of a baby mob. It is most notably used for
+    /// parrot imitations, which will change based on if this field is set to true or not.
     pub is_baby: bool,
-    /// DisableRelativeVolume specifies if the sound should be played relatively or not. If set to true,
-    /// the sound will have full volume, regardless of where the Position is, whereas if set to false,
-    /// the sound's volume will be based on the distance to Position.
+    /// `is_global` specifies if the sound should be played relatively or not. If set to true, the sound
+    /// will have full volume, regardless of where the Position is, whereas if set to false, the sound's
+    /// volume will be based on the distance to Position.
     pub is_global: bool,
-    /// EntityUniqueID is the unique ID of a source entity. The unique ID is a value that remains
+    /// `actor_unique_id` is the unique ID of a source entity. The unique ID is a value that remains
     /// consistent across different sessions of the same world, but most servers simply fill the runtime
     /// ID of the entity out for this field.
     pub actor_unique_id: wire::I64LE,
-    /// FireAtPosition is the position in the same world at which the event should fire. If this is not
-    /// present, the position entity will be used instead.
+    /// `fire_at_position` is the position in the same world at which the event should fire. If this is
+    /// not present, the position entity will be used instead.
     /// Wire presence: optional value is preceded by a presence marker.
     pub fire_at_position: Option<glam::Vec3>,
 }
@@ -1936,7 +1937,7 @@ impl LevelSoundEvent {
 /// additional data.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct LevelEventGeneric {
-    /// EventID is a unique identifier that identifies the event called. The data that follows has
+    /// `event_id` is a unique identifier that identifies the event called. The data that follows has
     /// fields in the NBT depending on what event it is.
     pub event_id: wire::ZigZag32,
     pub ctd: wire::NetworkNbt,
@@ -1962,8 +1963,8 @@ impl LecternUpdate {
 /// do not support the cache, and attempting to use it anyway will fail.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ClientCacheStatus {
-    /// Enabled specifies if the blob cache is enabled. If false, the server should not attempt to use
-    /// the blob cache. If true, it may do so, but it may also choose not to use it.
+    /// `is_cache_supported` specifies if the blob cache is enabled. If false, the server should not
+    /// attempt to use the blob cache. If true, it may do so, but it may also choose not to use it.
     pub is_cache_supported: bool,
 }
 
@@ -1975,7 +1976,7 @@ impl ClientCacheStatus {
 /// defeated.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct OnScreenTextureAnimation {
-    /// AnimationType is the type of the animation to show. The packet provides no further extra data to
+    /// `effect_id` is the type of the animation to show. The packet provides no further extra data to
     /// allow modifying the duration or other properties of the animation.
     pub effect_id: wire::U32LE,
 }
@@ -1988,11 +1989,11 @@ impl OnScreenTextureAnimation {
 /// modified.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct MapCreateLockedCopy {
-    /// OriginalMapID is the ID of the map that is being copied. The locked copy will obtain all content
-    /// that is visible on this map, except the content will not change.
+    /// `original_map_id` is the ID of the map that is being copied. The locked copy will obtain all
+    /// content that is visible on this map, except the content will not change.
     pub original_map_id: ActorUniqueID,
-    /// NewMapID is the ID of the map that holds the locked copy of the map that OriginalMapID points
-    /// to. Its contents will be impossible to change.
+    /// `new_map_id` is the ID of the map that holds the locked copy of the map that OriginalMapID
+    /// points to. Its contents will be impossible to change.
     pub new_map_id: ActorUniqueID,
 }
 
@@ -2002,16 +2003,17 @@ impl MapCreateLockedCopy {
 /// StructureTemplateDataRequest is sent by the client to request data of a structure.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct StructureTemplateDataRequest {
-    /// StructureName is the name of the structure that was set in the structure block's UI. This is the
-    /// name used to export the structure to a file.
+    /// `structure_name` is the name of the structure that was set in the structure block's UI. This is
+    /// the name used to export the structure to a file.
     pub structure_name: String,
-    /// Position is the position of the structure block that has its template data requested.
+    /// `structure_position` is the position of the structure block that has its template data
+    /// requested.
     pub structure_position: BlockPos,
-    /// Settings is a struct of settings that should be used for exporting the structure. These settings
-    /// are identical to the last sent in the StructureBlockUpdate packet by the client.
+    /// `structure_settings` is a struct of settings that should be used for exporting the structure.
+    /// These settings are identical to the last sent in the StructureBlockUpdate packet by the client.
     pub structure_settings: StructureSettings,
-    /// RequestType specifies the type of template data request that the player sent. It is one of the
-    /// constants found above.
+    /// `requested_operation` specifies the type of template data request that the player sent. It is
+    /// one of the constants found above.
     pub requested_operation: StructureTemplateRequestOperation,
 }
 
@@ -2022,11 +2024,11 @@ impl StructureTemplateDataRequest {
 /// response to a StructureTemplateDataRequest packet.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct StructureTemplateDataResponse {
-    /// StructureName is the name of the structure that was requested. This is the name used to export
-    /// the structure to a file.
+    /// `structure_name` is the name of the structure that was requested. This is the name used to
+    /// export the structure to a file.
     pub structure_name: String,
     pub structure_nbt: wire::NetworkNbt,
-    /// ResponseType specifies the response type of the packet. This depends on the RequestType field
+    /// `response_type` specifies the response type of the packet. This depends on the RequestType field
     /// sent in the StructureTemplateDataRequest packet and is one of the constants above.
     pub response_type: StructureTemplateResponseType,
 }
@@ -2038,10 +2040,10 @@ impl StructureTemplateDataResponse {
 /// server know what blobs it needs and which blobs it already has, in an ACK type system.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ClientCacheBlobStatus {
-    /// MissHashes is a list of blob hashes that the client does not have a blob available for. The
+    /// `missing_ids` is a list of blob hashes that the client does not have a blob available for. The
     /// server should send the blobs matching these hashes as soon as possible.
     pub missing_ids: Vec<wire::U64LE>,
-    /// HitHashes is a list of blob hashes that the client has a blob available for. The blobs hashes
+    /// `found_ids` is a list of blob hashes that the client has a blob available for. The blobs hashes
     /// here mean that the client already has them: The server does not need to send the blobs anymore.
     pub found_ids: Vec<wire::U64LE>,
 }
@@ -2054,8 +2056,9 @@ impl ClientCacheBlobStatus {
 /// acknowledged not to have yet.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ClientCacheMissResponse {
-    /// Blobs is a list of all blobs that the client sent misses for in the ClientCacheBlobStatus. These
-    /// blobs hold the data of the blobs with the hashes they are matched with.
+    /// `missing_blobs` is a list of all blobs that the client sent misses for in the
+    /// ClientCacheBlobStatus. These blobs hold the data of the blobs with the hashes they are matched
+    /// with.
     pub missing_blobs: Vec<MissingBlobData>,
 }
 
@@ -2077,17 +2080,17 @@ impl EducationSettings {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct Emote {
     pub actor_runtime_id: ActorRuntimeID,
-    /// EmoteID is the ID of the emote to send.
+    /// `emote_id` is the ID of the emote to send.
     pub emote_id: String,
     pub emote_length_ticks: wire::VarUInt,
-    /// XUID is the Xbox User ID of the player that sent the emote. It is only set when the emote is
+    /// `xuid` is the Xbox User ID of the player that sent the emote. It is only set when the emote is
     /// used by a player that is authenticated with Xbox Live.
     pub xuid: String,
-    /// PlatformID is an identifier only set for particular platforms when using an emote (presumably
+    /// `platform_id` is an identifier only set for particular platforms when using an emote (presumably
     /// only for Nintendo Switch). It is otherwise an empty string, and is used to decide which players
     /// are able to emote with each other.
     pub platform_id: String,
-    /// Flags is a combination of flags that change the way the Emote packet operates. When the server
+    /// `flags` is a combination of flags that change the way the Emote packet operates. When the server
     /// sends this packet to other players, EmoteFlagServerSide must be present.
     pub flags: wire::U8,
 }
@@ -2107,10 +2110,10 @@ impl MultiplayerSettings {
 /// the issuing of a command to the server, such as when Show Coordinates is enabled.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SettingsCommand {
-    /// CommandLine is the full command line that was sent to the server as a result of the setting that
+    /// `command` is the full command line that was sent to the server as a result of the setting that
     /// the client changed.
     pub command: String,
-    /// SuppressOutput specifies if the client requests the suppressing of the output of the command
+    /// `suppress_output` specifies if the client requests the suppressing of the output of the command
     /// that was executed. Generally this is set to true, as the client won't need a message to confirm
     /// the output of the change.
     pub suppress_output: bool,
@@ -2123,7 +2126,7 @@ impl SettingsCommand {
 /// completely pointless and the server should never listen to it.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct AnvilDamage {
-    /// AnvilPosition is the position in the world that the anvil can be found at.
+    /// `block_position` is the position in the world that the anvil can be found at.
     pub block_position: BlockPos,
 }
 
@@ -2134,11 +2137,11 @@ impl AnvilDamage {
 /// item it is currently using.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CompletedUsingItem {
-    /// UsedItemID is the item ID of the item that the client completed using. This should typically be
+    /// `item_id` is the item ID of the item that the client completed using. This should typically be
     /// the ID of the item held in the hand.
     pub item_id: wire::I16LE,
-    /// UseMethod is the method of the using of the item that was completed. It is one of the constants
-    /// that may be found above.
+    /// `item_use_method` is the method of the using of the item that was completed. It is one of the
+    /// constants that may be found above.
     pub item_use_method: wire::I32LE,
 }
 
@@ -2149,18 +2152,18 @@ impl CompletedUsingItem {
 /// modify the way packets are sent over the network stack.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct NetworkSettings {
-    /// CompressionThreshold is the minimum size of a packet that is compressed when sent. If the size
-    /// of a packet is under this value, it is not compressed. When set to 0, all packets will be left
-    /// uncompressed.
+    /// `compression_threshold` is the minimum size of a packet that is compressed when sent. If the
+    /// size of a packet is under this value, it is not compressed. When set to 0, all packets will be
+    /// left uncompressed.
     pub compression_threshold: wire::U16LE,
-    /// CompressionAlgorithm is the algorithm that is used to compress packets.
+    /// `compression_algorithm` is the algorithm that is used to compress packets.
     pub compression_algorithm: PacketCompressionAlgorithm,
     pub client_throttle_enabled: bool,
-    /// ClientThrottleThreshold is the threshold for client throttling. If the number of players exceeds
-    /// this value, the client will throttle players.
+    /// `client_throttle_threshold` is the threshold for client throttling. If the number of players
+    /// exceeds this value, the client will throttle players.
     pub client_throttle_threshold: wire::U8,
-    /// ClientThrottleScalar is the scalar for client throttling. The scalar is the amount of players
-    /// that are ticked when throttling is enabled.
+    /// `client_throttle_scalar` is the scalar for client throttling. The scalar is the amount of
+    /// players that are ticked when throttling is enabled.
     pub client_throttle_scalar: wire::F32LE,
 }
 
@@ -2174,20 +2177,20 @@ impl NetworkSettings {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PlayerAuthInput {
     pub player_rotation: glam::Vec2,
-    /// Position holds the position that the player reports it has.
+    /// `position` holds the position that the player reports it has.
     pub position: glam::Vec3,
-    /// MoveVector is a Vec2 that specifies the direction in which the player moved, as a combination of
-    /// X/Z values which are created using the WASD/controller stick state.
+    /// `move_vector` is a Vec2 that specifies the direction in which the player moved, as a combination
+    /// of X/Z values which are created using the WASD/controller stick state.
     pub move_vector: glam::Vec2,
     pub player_head_rotation: wire::F32LE,
-    /// InputData is the set of input flags that together specify the way the player moved last tick. It
-    /// holds the flags above.
+    /// `input_data` is the set of input flags that together specify the way the player moved last tick.
+    /// It holds the flags above.
     /// Wire presence: optional value is preceded by a presence marker.
     pub input_data: Option<Vec<InputData>>,
-    /// InputMode specifies the way that the client inputs data to the screen. It is one of the
+    /// `input_mode` specifies the way that the client inputs data to the screen. It is one of the
     /// constants that may be found above.
     pub input_mode: InputMode,
-    /// PlayMode specifies the way that the player is playing. The values it holds, which are rather
+    /// `play_mode` specifies the way that the player is playing. The values it holds, which are rather
     /// random, may be found above.
     pub play_mode: ClientPlayMode,
     pub new_interaction_model: NewInteractionModel,
@@ -2196,23 +2199,23 @@ pub struct PlayerAuthInput {
     pub pos_delta: glam::Vec3,
     /// Wire presence: optional value is preceded by a presence marker.
     pub item_use_transaction: Option<PackedItemUseLegacyInventoryTransaction>,
-    /// ItemStackRequest is sent by the client to change an item in their inventory.
+    /// `item_stack_request` is sent by the client to change an item in their inventory.
     /// Wire presence: optional value is preceded by a presence marker.
     pub item_stack_request: Option<ItemStackRequestData>,
     /// Wire presence: optional value is preceded by a presence marker.
     pub player_block_actions: Option<Vec<PlayerBlockActionData>>,
-    /// VehicleRotation is the rotation of the vehicle that the player is in, if any.
+    /// `vehicle_rotation` is the rotation of the vehicle that the player is in, if any.
     /// Wire presence: optional value is preceded by a presence marker.
     pub vehicle_rotation: Option<glam::Vec2>,
-    /// ClientPredictedVehicle is the unique ID of the vehicle that the client predicts the player to be
-    /// in.
+    /// `client_predicted_vehicle` is the unique ID of the vehicle that the client predicts the player
+    /// to be in.
     /// Wire presence: optional value is preceded by a presence marker.
     pub client_predicted_vehicle: Option<ActorUniqueID>,
     pub analog_move_vector: glam::Vec2,
-    /// CameraOrientation is the vector that represents the camera's forward direction which can be used
-    /// to transform movement to be camera relative.
+    /// `camera_orientation` is the vector that represents the camera's forward direction which can be
+    /// used to transform movement to be camera relative.
     pub camera_orientation: glam::Vec3,
-    /// RawMoveVector is the value of MoveVector before it is affected by input permissions,
+    /// `raw_move_vector` is the value of MoveVector before it is affected by input permissions,
     /// sneaking/fly speeds and isn't normalised for analogue inputs.
     pub raw_move_vector: glam::Vec2,
 }
@@ -2243,9 +2246,9 @@ impl PlayerAuthInput {
 /// 2}, // Ungrouped after "planks" } }
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CreativeContent {
-    /// Groups is a list of the groups that should be added to the creative inventory.
+    /// `groups` is a list of the groups that should be added to the creative inventory.
     pub groups: Vec<CreativeGroupInfo>,
-    /// Items is a list of the items that should be added to the creative inventory.
+    /// `entries` is a list of the items that should be added to the creative inventory.
     pub entries: Vec<CreativeItemEntry>,
 }
 
@@ -2261,8 +2264,8 @@ impl CreativeContent {
 /// actual enchantments in it when items are put in that can have enchantments.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PlayerEnchantOptions {
-    /// Options is a list of possible enchantment options for the item that was put into the enchantment
-    /// table.
+    /// `options` is a list of possible enchantment options for the item that was put into the
+    /// enchantment table.
     pub options: Vec<ItemEnchantOption>,
 }
 
@@ -2275,7 +2278,7 @@ impl PlayerEnchantOptions {
 /// actions such as placing blocks and interacting with entities.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ItemStackRequest {
-    /// Requests holds a list of item stack requests. These requests are all separate, but the client
+    /// `requests` holds a list of item stack requests. These requests are all separate, but the client
     /// buffers the requests, so you might find multiple unrelated requests in this packet.
     pub requests: Vec<ItemStackRequestPacketData>,
 }
@@ -2289,7 +2292,7 @@ impl ItemStackRequest {
 /// undo the actions so that the inventory should be in sync with the server again.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ItemStackResponse {
-    /// Responses is a list of responses to ItemStackRequests sent by the client before. Responses
+    /// `responses` is a list of responses to ItemStackRequests sent by the client before. Responses
     /// either approve or reject a request from the client. Vanilla limits the size of this slice to
     /// 4096.
     pub responses: Vec<ItemStackResponseInfo>,
@@ -2310,11 +2313,11 @@ impl PlayerArmorDamage {
 /// Code Builder (websocket) server.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CodeBuilder {
-    /// URL is the url to the Code Builder (websocket) server.
+    /// `url` is the url to the Code Builder (websocket) server.
     pub url: String,
-    /// ShouldOpenCodeBuilder specifies if the client should automatically open the Code Builder app. If
-    /// set to true, the client will attempt to use the Code Builder app to connect to and interface
-    /// with the server running at the URL above.
+    /// `should_open_code_builder` specifies if the client should automatically open the Code Builder
+    /// app. If set to true, the client will attempt to use the Code Builder app to connect to and
+    /// interface with the server running at the URL above.
     pub should_open_code_builder: bool,
 }
 
@@ -2327,7 +2330,7 @@ impl CodeBuilder {
 pub struct UpdatePlayerGameType {
     pub player_game_type: GameType,
     pub target_player: ActorUniqueID,
-    /// Tick is the server tick at which the packet was sent. It is used in relation to
+    /// `tick` is the server tick at which the packet was sent. It is used in relation to
     /// CorrectPlayerMovePrediction.
     pub tick: PlayerInputTick,
 }
@@ -2386,7 +2389,7 @@ impl PositionTrackingDBClientRequest {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct DebugInfo {
     pub actor_id: ActorUniqueID,
-    /// Data is the debug data.
+    /// `data` is the debug data.
     pub data: String,
 }
 
@@ -2400,7 +2403,7 @@ pub struct PacketViolationWarning {
     pub violation_type: PacketViolationType,
     pub violation_severity: PacketViolationSeverity,
     pub violation_packet_id: wire::ZigZag32,
-    /// ViolationContext holds a description on the violation of the packet.
+    /// `violation_context` holds a description on the violation of the packet.
     pub violation_context: String,
 }
 
@@ -2428,22 +2431,22 @@ impl MotionPredictionHints {
 /// https://learn.microsoft.com/en-us/minecraft/creator/reference/content/animationsreference
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct AnimateEntity {
-    /// Animation is the name of a single animation to start playing.
+    /// `m_animation` is the name of a single animation to start playing.
     pub m_animation: String,
-    /// NextState is the first state to start with. These states are declared in animation controllers
-    /// (which, in themselves, are animations too). These states in turn may have animations and
-    /// transitions to move to a next state.
+    /// `m_next_state` is the first state to start with. These states are declared in animation
+    /// controllers (which, in themselves, are animations too). These states in turn may have animations
+    /// and transitions to move to a next state.
     pub m_next_state: String,
-    /// StopCondition is a MoLang expression that specifies when the animation should be stopped.
+    /// `m_stop_expression` is a MoLang expression that specifies when the animation should be stopped.
     pub m_stop_expression: String,
-    /// StopConditionVersion is the MoLang stop condition version.
+    /// `m_stop_expression_version` is the MoLang stop condition version.
     pub m_stop_expression_version: wire::I32LE,
-    /// Controller is the animation controller that is used to manage animations. These controllers
+    /// `m_controller` is the animation controller that is used to manage animations. These controllers
     /// decide when to play which animation.
     pub m_controller: String,
-    /// BlendOutTime does not currently seem to be used.
+    /// `m_blend_out_time` does not currently seem to be used.
     pub m_blend_out_time: wire::F32LE,
-    /// EntityRuntimeIDs is list of runtime IDs of entities that the animation should be applied to.
+    /// `m_runtime_ids` is list of runtime IDs of entities that the animation should be applied to.
     pub m_runtime_ids: Vec<ActorRuntimeID>,
 }
 
@@ -2454,8 +2457,8 @@ impl AnimateEntity {
 /// for map- making partners.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CameraShake {
-    /// Intensity is the intensity of the shaking. The client limits this value to 4, so anything higher
-    /// may not work.
+    /// `intensity` is the intensity of the shaking. The client limits this value to 4, so anything
+    /// higher may not work.
     pub intensity: wire::F32LE,
     pub seconds: wire::F32LE,
     pub shake_type: CameraShakeType,
@@ -2470,8 +2473,8 @@ impl CameraShake {
 /// fog.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PlayerFog {
-    /// Stack is a list of fog identifiers to be sent to the client. Examples of fog identifiers are
-    /// "minecraft:fog_ocean" and "minecraft:fog_hell".
+    /// `fog_stack` is a list of fog identifiers to be sent to the client. Examples of fog identifiers
+    /// are "minecraft:fog_ocean" and "minecraft:fog_hell".
     pub fog_stack: Vec<String>,
 }
 
@@ -2483,18 +2486,19 @@ impl PlayerFog {
 /// The packet is used to correct movement at a specific point in time.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CorrectPlayerMovePrediction {
-    /// PredictionType is the type of prediction that was corrected. It is one of the constants above.
+    /// `prediction_type` is the type of prediction that was corrected. It is one of the constants
+    /// above.
     pub prediction_type: RewindType,
     pub pos: glam::Vec3,
     pub pos_delta: glam::Vec3,
-    /// Rotation is the rotation of the player at the tick written in the field below.
+    /// `rotation` is the rotation of the player at the tick written in the field below.
     pub rotation: glam::Vec2,
-    /// VehicleAngularVelocity is the angular velocity of the vehicle that the rider is riding.
+    /// `vehicle_angular_velocity` is the angular velocity of the vehicle that the rider is riding.
     /// Wire presence: optional value is preceded by a presence marker.
     pub vehicle_angular_velocity: Option<wire::F32LE>,
-    /// OnGround specifies if the player was on the ground at the time of the tick below.
+    /// `on_ground` specifies if the player was on the ground at the time of the tick below.
     pub on_ground: bool,
-    /// Tick is the tick of the movement which was corrected by this packet.
+    /// `tick` is the tick of the movement which was corrected by this packet.
     pub tick: PlayerInputTick,
 }
 
@@ -2506,9 +2510,9 @@ impl CorrectPlayerMovePrediction {
 /// packet before 1.21.60, which did not include item definitions but only the components.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ItemRegistry {
-    /// Items is a list of all items with their legacy IDs which are available in the game. Failing to
-    /// send any of the items that are in the game will crash mobile clients. Any custom components are
-    /// also attached to the items in this list.
+    /// `item_data` is a list of all items with their legacy IDs which are available in the game.
+    /// Failing to send any of the items that are in the game will crash mobile clients. Any custom
+    /// components are also attached to the items in this list.
     pub item_data: Vec<ItemData>,
 }
 
@@ -2528,7 +2532,7 @@ impl ClientboundDebugRenderer {
 /// SyncActorProperty is an alternative to synced actor data.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SyncActorProperty {
-    /// PropertyData ...
+    /// `property_data` ...
     pub property_data: wire::NetworkNbt,
 }
 
@@ -2545,7 +2549,7 @@ pub struct AddVolumeEntity {
     pub min_bounds: BlockPos,
     pub max_bounds: BlockPos,
     pub dimension_type: DimensionType,
-    /// EngineVersion is the engine version the entity is using, for example, '1.17.0'.
+    /// `engine_version` is the engine version the entity is using, for example, '1.17.0'.
     pub engine_version: String,
 }
 
@@ -2565,7 +2569,7 @@ impl RemoveVolumeEntity {
 /// SimulationType is an in-progress packet. We currently do not know the use case.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SimulationType {
-    /// SimulationType is the simulation type selected.
+    /// `sim_type` is the simulation type selected.
     pub sim_type: SimulationTypeEnum,
 }
 
@@ -2598,7 +2602,7 @@ impl EduUriResource {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CreatePhoto {
     pub raw_id: wire::U64LE,
-    /// PhotoName is the name of the photo.
+    /// `photo_name` is the name of the photo.
     pub photo_name: String,
     pub photo_item_name: String,
 }
@@ -2620,7 +2624,7 @@ impl UpdateSubChunkBlocks {
 /// SubChunk sends data about multiple sub-chunks around a center point.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SubChunk {
-    /// CacheEnabled is whether the sub-chunk caching is enabled or not.
+    /// `cache_enabled` is whether the sub-chunk caching is enabled or not.
     pub cache_enabled: bool,
     pub dimension_type: DimensionType,
     pub center_pos: SubChunkPos,
@@ -2666,13 +2670,13 @@ impl ScriptMessage {
 /// operation with a code builder.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CodeBuilderSource {
-    /// Operation is used to distinguish the operation performed. It is always one of the constants
+    /// `operation` is used to distinguish the operation performed. It is always one of the constants
     /// listed above.
     pub operation: CodeBuilderStorageQueryOptionsOperation,
-    /// Category is used to distinguish the category of the operation performed. It is always one of the
-    /// constants listed above.
+    /// `category` is used to distinguish the category of the operation performed. It is always one of
+    /// the constants listed above.
     pub category: CodeBuilderStorageQueryOptionsCategory,
-    /// CodeStatus is the status of the code builder. It is always one of the constants listed above.
+    /// `code_status` is the status of the code builder. It is always one of the constants listed above.
     pub code_status: CodeBuilderExecutionStateCodeStatus,
 }
 
@@ -2683,7 +2687,7 @@ impl CodeBuilderSource {
 /// area's loading status.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct TickingAreasLoadStatus {
-    /// Preload is true if the server is waiting for the area's preload.
+    /// `waiting_for_preload` is true if the server is waiting for the area's preload.
     pub waiting_for_preload: bool,
 }
 
@@ -2695,7 +2699,7 @@ impl TickingAreasLoadStatus {
 /// by default, rather only being sent when any data-driven dimensions are registered.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct DimensionData {
-    /// Definitions contain a list of data-driven dimension definitions registered on the server.
+    /// `definitions` contain a list of data-driven dimension definitions registered on the server.
     pub definitions: Vec<(String, DimensionDefinition)>,
 }
 
@@ -2733,7 +2737,7 @@ impl ChangeMobProperty {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct LessonProgress {
     pub lesson_action: wire::ZigZag32,
-    /// Score is the score the client should use when displaying the progress.
+    /// `score` is the score the client should use when displaying the progress.
     pub score: wire::ZigZag32,
     pub activity_id: String,
 }
@@ -2745,7 +2749,7 @@ impl LessonProgress {
 /// ability from the server. These abilities are defined above.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct RequestAbility {
-    /// Ability is the ability that the client is requesting. This is one of the constants defined in
+    /// `ability` is the ability that the client is requesting. This is one of the constants defined in
     /// the protocol/ability.go file.
     pub ability: wire::ZigZag32,
     pub value_type: RequestAbilityType,
@@ -2761,13 +2765,14 @@ impl RequestAbility {
 /// Minecraft.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct RequestPermissions {
-    /// EntityUniqueID is the unique ID of the player. The unique ID is unique for the entire world and
-    /// is often used in packets. Most servers send an EntityUniqueID equal to the EntityRuntimeID.
+    /// `target_player_id_raw_id` is the unique ID of the player. The unique ID is unique for the entire
+    /// world and is often used in packets. Most servers send an EntityUniqueID equal to the
+    /// EntityRuntimeID.
     pub target_player_id_raw_id: wire::I64LE,
-    /// PermissionLevel is the current permission level of the player. This is one of the constants that
-    /// may be found in the AdventureSettings packet.
+    /// `player_permission_level` is the current permission level of the player. This is one of the
+    /// constants that may be found in the AdventureSettings packet.
     pub player_permission_level: wire::ZigZag32,
-    /// RequestedPermissions contains the requested permission flags.
+    /// `custom_permission_flags` contains the requested permission flags.
     pub custom_permission_flags: wire::U16LE,
 }
 
@@ -2779,9 +2784,9 @@ impl RequestPermissions {
 /// pack or obtaining an achievement.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ToastRequest {
-    /// Title is the title of the toast.
+    /// `title` is the title of the toast.
     pub title: String,
-    /// Message is the message that the toast may contain alongside the title.
+    /// `content` is the message that the toast may contain alongside the title.
     pub content: String,
 }
 
@@ -2793,7 +2798,7 @@ impl ToastRequest {
 /// AdventureSettings packet since v1.19.10.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct UpdateAbilities {
-    /// AbilityData represents various data about the abilities of a player, such as ability layers or
+    /// `data` represents various data about the abilities of a player, such as ability layers or
     /// permissions.
     pub data: SerializedAbilitiesData,
 }
@@ -2817,9 +2822,10 @@ impl UpdateAdventureSettings {
 /// v1.19.10.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct DeathInfo {
-    /// Cause is the cause of the player's death, such as "suffocation" or "suicide".
+    /// `death_cause_attack_name` is the cause of the player's death, such as "suffocation" or
+    /// "suicide".
     pub death_cause_attack_name: String,
-    /// Messages is a list of death messages to be shown on the death screen.
+    /// `death_cause_message_list` is a list of death messages to be shown on the death screen.
     pub death_cause_message_list: Vec<String>,
 }
 
@@ -2831,9 +2837,9 @@ impl DeathInfo {
 /// information.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct EditorNetwork {
-    /// RouteToManager ...
+    /// `route_to_manager` ...
     pub route_to_manager: bool,
-    /// Payload is a network little endian compound tag holding data relevant to the editor.
+    /// `payload` is a network little endian compound tag holding data relevant to the editor.
     pub payload: wire::NetworkNbt,
 }
 
@@ -2846,7 +2852,7 @@ impl EditorNetwork {
 /// world without having to rely on the server.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct FeatureRegistry {
-    /// Features is a slice of all registered world generation features.
+    /// `features_data_list` is a slice of all registered world generation features.
     pub features_data_list: Vec<FeatureRegistryFeatureBinaryJsonFormat>,
 }
 
@@ -2857,9 +2863,9 @@ impl FeatureRegistry {
 /// statistics. It is purely used for telemetry.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ServerStats {
-    /// ServerTime ...
+    /// `server_time` ...
     pub server_time: wire::F32LE,
-    /// NetworkTime ...
+    /// `network_time` ...
     pub network_time: wire::F32LE,
 }
 
@@ -2870,8 +2876,8 @@ impl ServerStats {
 /// from the server.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct RequestNetworkSettings {
-    /// ClientProtocol is the protocol version of the player. The player is disconnected if the protocol
-    /// is incompatible with the protocol of the server.
+    /// `client_network_version` is the protocol version of the player. The player is disconnected if
+    /// the protocol is incompatible with the protocol of the server.
     pub client_network_version: wire::I32BE,
 }
 
@@ -2881,14 +2887,14 @@ impl RequestNetworkSettings {
 /// GameTestRequest ...
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct GameTestRequest {
-    /// MaxTestsPerBatch ...
+    /// `max_tests_per_batch` ...
     pub max_tests_per_batch: wire::ZigZag32,
     pub repeat_count: wire::ZigZag32,
-    /// Rotation represents the rotation of the test. It is one of the constants above.
+    /// `rotation` represents the rotation of the test. It is one of the constants above.
     pub rotation: Rotation,
     pub stop_on_failure: bool,
     pub test_pos: BlockPos,
-    /// TestsPerRow ...
+    /// `tests_per_row` ...
     pub tests_per_row: wire::ZigZag32,
     pub test_name: String,
 }
@@ -2900,9 +2906,9 @@ impl GameTestRequest {
 /// indicating whether the test was successful or not, and an error string if the test failed.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct GameTestResults {
-    /// Succeeded indicates whether the test succeeded or not.
+    /// `succeeded` indicates whether the test succeeded or not.
     pub succeeded: bool,
-    /// Error is the error that occurred. If Succeeded is true, this field is empty.
+    /// `error` is the error that occurred. If Succeeded is true, this field is empty.
     pub error: String,
     pub test_name: String,
 }
@@ -2914,9 +2920,9 @@ impl GameTestResults {
 /// as camera rotation, movement, jumping, sneaking, mounting or individual directional movement.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct UpdateClientInputLocks {
-    /// Locks is a set of flags that specify which client inputs are disabled, such as whether the
-    /// player can move, rotate the camera, jump, sneak or mount/dismount entities. It is a combination
-    /// of the ClientInputLock constants above.
+    /// `input_lock_component_data` is a set of flags that specify which client inputs are disabled,
+    /// such as whether the player can move, rotate the camera, jump, sneak or mount/dismount entities.
+    /// It is a combination of the ClientInputLock constants above.
     pub input_lock_component_data: wire::VarUInt,
 }
 
@@ -2956,11 +2962,11 @@ impl CameraInstruction {
 /// of all the patterns and materials that can be applied via armour trims.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct TrimData {
-    /// Patterns is a list of patterns that can be applied to armour. Each pattern has its own style and
-    /// texture that is defined through resource packs.
+    /// `trim_pattern_list` is a list of patterns that can be applied to armour. Each pattern has its
+    /// own style and texture that is defined through resource packs.
     pub trim_pattern_list: Vec<TrimPattern>,
-    /// Materials is a list of materials that can be applied to armour. These are mostly different ores
-    /// that have different colours for more customization.
+    /// `trim_material_list` is a list of materials that can be applied to armour. These are mostly
+    /// different ores that have different colours for more customization.
     pub trim_material_list: Vec<TrimMaterial>,
 }
 
@@ -2971,11 +2977,11 @@ impl TrimData {
 /// interact with a sign to edit the text on both sides instead of just the front.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct OpenSign {
-    /// Position is the position of the sign to edit. The client uses this position to get the data of
-    /// the sign, including the existing text and formatting etc.
+    /// `pos` is the position of the sign to edit. The client uses this position to get the data of the
+    /// sign, including the existing text and formatting etc.
     pub pos: BlockPos,
-    /// FrontSide dictates whether the front side of the sign should be opened for editing. If false,
-    /// the back side is assumed to be edited.
+    /// `is_front_side` dictates whether the front side of the sign should be opened for editing. If
+    /// false, the back side is assumed to be edited.
     pub is_front_side: bool,
 }
 
@@ -3006,11 +3012,11 @@ impl RefreshEntitlements {
 /// within a Crafter.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PlayerToggleCrafterSlotRequest {
-    /// PosX is the X position of the Crafter that is being modified.
+    /// `pos_x` is the X position of the Crafter that is being modified.
     pub pos_x: wire::I32LE,
-    /// PosY is the Y position of the Crafter that is being modified.
+    /// `pos_y` is the Y position of the Crafter that is being modified.
     pub pos_y: wire::I32LE,
-    /// PosZ is the Z position of the Crafter that is being modified.
+    /// `pos_z` is the Z position of the Crafter that is being modified.
     pub pos_z: wire::I32LE,
     pub slot_index: wire::U8,
     pub is_disabled: bool,
@@ -3042,8 +3048,8 @@ impl SetHud {
 /// AwardAchievement is sent by the server to award an achievement to a player.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct AwardAchievement {
-    /// AchievementID is the ID of the achievement that should be awarded to the player. The values for
-    /// these IDs are currently unknown.
+    /// `achievement_id` is the ID of the achievement that should be awarded to the player. The values
+    /// for these IDs are currently unknown.
     pub achievement_id: wire::I32LE,
 }
 
@@ -3081,8 +3087,8 @@ impl JigsawStructureData {
 /// feature that the player is currently occupying.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CurrentStructureFeature {
-    /// CurrentFeature is the identifier of the structure feature that the player is currently
-    /// occupying. If the player is not occupying any structure feature, this field is empty.
+    /// `current_structure_feature` is the identifier of the structure feature that the player is
+    /// currently occupying. If the player is not occupying any structure feature, this field is empty.
     pub current_structure_feature: String,
 }
 
@@ -3114,22 +3120,22 @@ impl ServerboundDiagnostics {
 /// camera.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CameraAimAssist {
-    /// Preset is the ID of the preset that has previously been defined in the CameraAimAssistPresets
-    /// packet.
+    /// `preset_id` is the ID of the preset that has previously been defined in the
+    /// CameraAimAssistPresets packet.
     pub preset_id: String,
-    /// Angle is the maximum angle around the playes's cursor that the aim assist should check for a
-    /// target, if TargetMode is set to protocol.AimAssistTargetModeAngle.
+    /// `view_angle` is the maximum angle around the playes's cursor that the aim assist should check
+    /// for a target, if TargetMode is set to protocol.AimAssistTargetModeAngle.
     pub view_angle: glam::Vec2,
-    /// Distance is the maximum distance from the player's cursor should check for a target, if
+    /// `distance` is the maximum distance from the player's cursor should check for a target, if
     /// TargetMode is set to protocol.AimAssistTargetModeDistance.
     pub distance: wire::F32LE,
-    /// TargetMode is the mode that the camera should use for detecting targets. This is currently one
-    /// of protocol.AimAssistTargetModeAngle or protocol.AimAssistTargetModeDistance.
+    /// `target_mode` is the mode that the camera should use for detecting targets. This is currently
+    /// one of protocol.AimAssistTargetModeAngle or protocol.AimAssistTargetModeDistance.
     pub target_mode: TargetMode,
-    /// Action is the action that should be performed with the aim assist. This is one of the constants
-    /// above.
+    /// `action` is the action that should be performed with the aim assist. This is one of the
+    /// constants above.
     pub action: CameraAimAssistAction,
-    /// ShowDebugRender specifies if debug render should be shown.
+    /// `show_debug_render` specifies if debug render should be shown.
     pub show_debug_render: bool,
 }
 
@@ -3140,7 +3146,7 @@ impl CameraAimAssist {
 /// container registry.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ContainerRegistryCleanup {
-    /// RemovedContainers is a list of protocol.FullContainerName's that should be removed from the
+    /// `removed_containers` is a list of protocol.FullContainerName's that should be removed from the
     /// client-side container registry.
     pub removed_containers: Vec<FullContainerName>,
 }
@@ -3156,7 +3162,7 @@ pub struct MovementEffect {
     pub target_runtime_id: ActorRuntimeID,
     pub effect_id: MovementEffectType,
     pub effect_duration: wire::ZigZag32,
-    /// Tick is the server tick at which the packet was sent. It is used in relation to
+    /// `tick` is the server tick at which the packet was sent. It is used in relation to
     /// CorrectPlayerMovePrediction.
     pub tick: PlayerInputTick,
 }
@@ -3169,11 +3175,13 @@ impl MovementEffect {
 /// aim assist.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CameraAimAssistPresets {
-    /// Categories is a list of categories which can be referenced by one of the Presets.
+    /// `camera_aim_assist_presets` is a list of categories which can be referenced by one of the
+    /// Presets.
     pub camera_aim_assist_presets: Vec<CameraAimAssistCategoryDefinition>,
-    /// Presets is a list of presets which define a base for how aim assist should behave
+    /// `camera_aim_assist_categories` is a list of presets which define a base for how aim assist
+    /// should behave
     pub camera_aim_assist_categories: Vec<CameraAimAssistPresetDefinition>,
-    /// Operation is the operation to perform with the presets. It is one of the constants above.
+    /// `operation` is the operation to perform with the presets. It is one of the constants above.
     pub operation: CameraAimAssistPresetOperation,
 }
 
@@ -3185,12 +3193,12 @@ impl CameraAimAssistPresets {
 /// hits.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ClientCameraAimAssist {
-    /// PresetID is the identifier of the preset to use which was previously defined in the
+    /// `camera_preset_id` is the identifier of the preset to use which was previously defined in the
     /// CameraAimAssistPresets packet.
     pub camera_preset_id: String,
-    /// Action is the action to perform with the aim assist. It is one of the constants above.
+    /// `action` is the action to perform with the aim assist. It is one of the constants above.
     pub action: ClientCameraAimAssistAction,
-    /// AllowAimAssist specifies the client can use aim assist or not.
+    /// `allow_aim_assist` specifies the client can use aim assist or not.
     pub allow_aim_assist: bool,
 }
 
@@ -3216,10 +3224,11 @@ impl ClientMovementPredictionSync {
 /// the graphics mode.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct UpdateClientOptions {
-    /// GraphicsMode is the graphics mode that the client is using. It is one of the constants above.
+    /// `graphics_mode_change` is the graphics mode that the client is using. It is one of the constants
+    /// above.
     /// Wire presence: optional value is preceded by a presence marker.
     pub graphics_mode_change: Option<GraphicsMode>,
-    /// FilterProfanity is if the client only uses filtered messages or not.
+    /// `filter_profanity_change` is if the client only uses filtered messages or not.
     /// Wire presence: optional value is preceded by a presence marker.
     pub filter_profanity_change: Option<bool>,
 }
@@ -3233,7 +3242,7 @@ impl UpdateClientOptions {
 /// below.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PlayerVideoCapture {
-    /// Action is the action to perform with the video capture. It is one of the constants above.
+    /// `action` is the action to perform with the video capture. It is one of the constants above.
     pub action: PlayerVideoCaptureData,
 }
 
@@ -3244,8 +3253,8 @@ impl PlayerVideoCapture {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PlayerUpdateEntityOverrides {
     pub target_id: ActorUniqueID,
-    /// PropertyIndex is the index of the property to modify. The index is unique for each property of
-    /// an entity.
+    /// `property_index` is the index of the property to modify. The index is unique for each property
+    /// of an entity.
     pub property_index: wire::VarUInt,
     pub update: PlayerUpdateEntityOverridesData,
 }
@@ -3278,7 +3287,8 @@ impl ClientboundControlSchemeSet {
 /// individually.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PrimitiveShapes {
-    /// Shapes is a list of shapes to draw on the client-side.
+    /// `array_of_primitive_shapes_can_be_a_mix_of_new_updated_or_removed` is a list of shapes to draw
+    /// on the client-side.
     pub array_of_primitive_shapes_can_be_a_mix_of_new_updated_or_removed: Vec<PrimitiveShape>,
 }
 
@@ -3307,15 +3317,15 @@ impl ClientboundDataStore {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct GraphicsOverrideParameter {
     pub parameter_keyframe_values: Vec<(wire::F32LE, glam::Vec3)>,
-    /// FloatValue is an optional single float graphics parameter to be overridden.
+    /// `float_value` is an optional single float graphics parameter to be overridden.
     /// Wire presence: optional value is preceded by a presence marker.
     pub float_value: Option<wire::F32LE>,
-    /// Vec3Value is an optional single Vec3 graphics parameter to be overridden.
+    /// `vec3_value` is an optional single Vec3 graphics parameter to be overridden.
     /// Wire presence: optional value is preceded by a presence marker.
     pub vec3_value: Option<glam::Vec3>,
-    /// BiomeIdentifier is the identifier of the biome for which the parameters apply.
+    /// `biome_identifier` is the identifier of the biome for which the parameters apply.
     pub biome_identifier: String,
-    /// PlayerIdentifier is the optional identifier of the player for which the override parameter
+    /// `player_identifier` is the optional identifier of the player for which the override parameter
     /// applies.
     /// Wire presence: optional value is preceded by a presence marker.
     pub player_identifier: Option<String>,
@@ -3379,11 +3389,11 @@ impl ClientboundTextureShift {
 /// VoxelShapes is sent by the server to send voxel shape data to the client.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct VoxelShapes {
-    /// Shapes is a list of voxel shapes.
+    /// `shapes` is a list of voxel shapes.
     pub shapes: Vec<VoxelShapesSerializableVoxelShape>,
-    /// NameMap is a map of shape names to IDs.
+    /// `name_map` is a map of shape names to IDs.
     pub name_map: Vec<(String, VoxelShapesRegistryHandle)>,
-    /// CustomShapeCount is the number of custom shapes.
+    /// `custom_shape_count` is the number of custom shapes.
     pub custom_shape_count: wire::U16LE,
 }
 
@@ -3393,7 +3403,7 @@ impl VoxelShapes {
 /// CameraSpline is sent by the server to define camera spline paths.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CameraSpline {
-    /// Splines is a list of camera spline definitions.
+    /// `camera_data_splines` is a list of camera spline definitions.
     pub camera_data_splines: Vec<CameraSplineDefinition>,
 }
 
@@ -3404,7 +3414,7 @@ impl CameraSpline {
 /// priorities.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CameraAimAssistActorPriority {
-    /// PriorityData is a list of aim assist actor priority entries.
+    /// `camera_aim_assist_actor_priority_list` is a list of aim assist actor priority entries.
     pub camera_aim_assist_actor_priority_list: Vec<CameraAimAssistActorPriorityData>,
 }
 
@@ -3423,7 +3433,7 @@ impl ResourcePacksReadyForValidation {
 /// LocatorBar is sent by the server to add, remove or update waypoints on the client's locator bar.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct LocatorBar {
-    /// Waypoints is a slice of waypoints to add, remove or update.
+    /// `waypoints` is a slice of waypoints to add, remove or update.
     pub waypoints: Vec<LocatorBarWaypoint>,
 }
 
@@ -3472,7 +3482,8 @@ impl ClientboundAttributeLayerSync {
 /// ShowStoreOffer packet, this only has an effect on partnered servers.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ServerStoreInfo {
-    /// StoreInfo is the store info to set, or nothing to fall back to the default.
+    /// `client_store_entry_point_configuration` is the store info to set, or nothing to fall back to
+    /// the default.
     /// Wire presence: optional value is preceded by a presence marker.
     pub client_store_entry_point_configuration: Option<ServerConfigurationClientStoreEntryPointConfiguration>,
 }
@@ -3483,7 +3494,7 @@ impl ServerStoreInfo {
 /// ServerPresenceInfo is sent by the server to provide the client with presence info.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ServerPresenceInfo {
-    /// PresenceInfo is the presence info to set, or nothing to fall back to the default.
+    /// `presence_configuration` is the presence info to set, or nothing to fall back to the default.
     /// Wire presence: optional value is preceded by a presence marker.
     pub presence_configuration: Option<ServerConfigurationPresenceConfiguration>,
 }
@@ -3497,7 +3508,7 @@ impl ServerPresenceInfo {
 /// not constrain the variant on the wire.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ClientboundUpdateSoundData {
-    /// ServerSoundHandle is the server-side handle of the sound to update.
+    /// `server_sound_handle` is the server-side handle of the sound to update.
     pub server_sound_handle: ServerSoundHandle,
     /// Wire presence: optional value is preceded by a presence marker.
     pub stop: Option<SoundDataEvent>,
@@ -3521,11 +3532,11 @@ impl ClientboundUpdateSoundData {
 /// SendPartyDestinationCookie is sent by the server to a client with a party destination cookie.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SendPartyDestinationCookie {
-    /// Cookie is the opaque party destination cookie.
+    /// `cookie` is the opaque party destination cookie.
     pub cookie: String,
-    /// Intent is the intent of the cookie. It is one of the PartyDestinationCookieIntent constants.
+    /// `intent` is the intent of the cookie. It is one of the PartyDestinationCookieIntent constants.
     pub intent: String,
-    /// DestinationName is the name of the destination the cookie refers to.
+    /// `destination_name` is the name of the destination the cookie refers to.
     pub destination_name: String,
 }
 
@@ -3536,10 +3547,10 @@ impl SendPartyDestinationCookie {
 /// SendPartyDestinationCookie packet.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PartyDestinationCookieResponse {
-    /// Cookie is the opaque party destination cookie echoed back from the SendPartyDestinationCookie
+    /// `cookie` is the opaque party destination cookie echoed back from the SendPartyDestinationCookie
     /// packet.
     pub cookie: String,
-    /// Accepted is true if the client accepted the party destination.
+    /// `accepted` is true if the client accepted the party destination.
     pub accepted: bool,
 }
 

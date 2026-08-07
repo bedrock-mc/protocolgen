@@ -129,6 +129,21 @@ func RustComments(text string) []string {
 	return comments(text, "/// ")
 }
 
+// LeadWith replaces a leading token exactly equal to from with to, so docs
+// ported from a source with different member names lead with the local one.
+// Exact matching keeps ordinary English openers untouched.
+func LeadWith(text, from, to string) string {
+	text = strings.TrimSpace(text)
+	if text == "" || from == "" || from == to {
+		return text
+	}
+	rest, ok := strings.CutPrefix(text, from)
+	if !ok || (rest != "" && rest[0] != ' ' && rest[0] != ',' && rest[0] != '.' && rest[0] != '\'') {
+		return text
+	}
+	return to + rest
+}
+
 func comments(text, prefix string) []string {
 	const width = 100
 	text = strings.ReplaceAll(text, "\r\n", "\n")

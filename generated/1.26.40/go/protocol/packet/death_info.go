@@ -8,9 +8,9 @@ import "protocolgen/generated/1.26.40/go/protocol"
 // It contains messages related to the player's death, which are shown on the death screen as of
 // v1.19.10.
 type DeathInfo struct {
-	// Cause is the cause of the player's death, such as "suffocation" or "suicide".
+	// DeathCauseAttackName is the cause of the player's death, such as "suffocation" or "suicide".
 	DeathCauseAttackName string
-	// Messages is a list of death messages to be shown on the death screen.
+	// DeathCauseMessageList is a list of death messages to be shown on the death screen.
 	DeathCauseMessageList []string
 }
 

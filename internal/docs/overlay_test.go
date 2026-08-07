@@ -43,3 +43,19 @@ func TestCoverageCountsSharedAndPacketDocs(t *testing.T) {
 		t.Fatalf("CoverageOf = %+v, want 2/2 types and fields", coverage)
 	}
 }
+
+func TestLeadWithRewritesForeignIdentifier(t *testing.T) {
+	cases := []struct{ text, from, to, want string }{
+		{"Values contains the index.", "Values", "SubCommandValues", "SubCommandValues contains the index."},
+		{"Index is the index.", "Index", "`sub_command_first_value`", "`sub_command_first_value` is the index."},
+		{"IndexValue is the index.", "Index", "Other", "IndexValue is the index."},
+		{"The command shown to players.", "Name", "Command", "The command shown to players."},
+		{"Name's owner.", "Name", "Target", "Target's owner."},
+		{"", "Name", "X", ""},
+	}
+	for _, c := range cases {
+		if got := LeadWith(c.text, c.from, c.to); got != c.want {
+			t.Fatalf("LeadWith(%q, %q, %q) = %q, want %q", c.text, c.from, c.to, got, c.want)
+		}
+	}
+}

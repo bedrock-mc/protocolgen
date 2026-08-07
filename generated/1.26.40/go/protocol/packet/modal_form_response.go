@@ -11,12 +11,13 @@ type ModalFormResponse struct {
 	// FormID is the form ID of the form the client has responded to. It is the same as the ID sent in
 	// the ModalFormRequest, and may be used to identify which form was submitted.
 	FormID uint32
-	// ResponseData is a JSON encoded value representing the response of the player. For a modal form,
+	// JSONResponse is a JSON encoded value representing the response of the player. For a modal form,
 	// the response is either true or false, for a menu form, the response is an integer specifying the
 	// index of the button clicked, and for a custom form, the response is an array containing a value
 	// for each element.
 	JSONResponse protocol.Optional[string]
-	// CancelReason represents the reason why the form was cancelled. It is one of the constants above.
+	// FormCancelReason represents the reason why the form was cancelled. It is one of the constants
+	// above.
 	FormCancelReason protocol.Optional[protocol.ModalFormCancelReason]
 }
 

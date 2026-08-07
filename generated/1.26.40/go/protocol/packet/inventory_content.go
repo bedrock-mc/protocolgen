@@ -8,13 +8,14 @@ import "protocolgen/generated/1.26.40/go/protocol"
 // is usually sent for the main inventory of the player, but also works for other inventories that
 // are currently opened by the player.
 type InventoryContent struct {
-	// WindowID is the ID that identifies one of the windows that the client currently has opened, or
+	// ContainerID is the ID that identifies one of the windows that the client currently has opened, or
 	// one of the consistent windows such as the main inventory.
 	ContainerID uint32
-	// Content is the new content of the inventory. The length of this slice must be equal to the full
+	// Slots is the new content of the inventory. The length of this slice must be equal to the full
 	// size of the inventory window updated.
 	Slots []protocol.NetworkItemStackDescriptorSerializedData
-	// Container is the protocol.FullContainerName that describes the container that the content is for.
+	// FullContainerName is the protocol.FullContainerName that describes the container that the content
+	// is for.
 	FullContainerName protocol.FullContainerName
 	// StorageItem is the item that is acting as the storage container for the inventory. If the
 	// inventory is not a dynamic container then this field should be left empty. When set, only the

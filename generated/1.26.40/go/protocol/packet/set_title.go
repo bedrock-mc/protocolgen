@@ -12,7 +12,7 @@ type SetTitle struct {
 	FadeInTime  int32
 	StayTime    int32
 	FadeOutTime int32
-	// XUID is the XBOX Live user ID of the player, which will remain consistent as long as the player
+	// Xuid is the XBOX Live user ID of the player, which will remain consistent as long as the player
 	// is logged in with the XBOX Live account. It is empty if the user is not logged into its XBL
 	// account.
 	Xuid string

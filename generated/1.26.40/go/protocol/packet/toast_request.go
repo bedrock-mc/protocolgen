@@ -10,7 +10,7 @@ import "protocolgen/generated/1.26.40/go/protocol"
 type ToastRequest struct {
 	// Title is the title of the toast.
 	Title string
-	// Message is the message that the toast may contain alongside the title.
+	// Content is the message that the toast may contain alongside the title.
 	Content string
 }
 

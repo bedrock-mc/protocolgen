@@ -17,11 +17,10 @@ type CraftingData struct {
 	ShapedChemistryRecipes    []protocol.ShapedRecipe
 	SmithingTransformRecipes  []protocol.SmithingTransformRecipe
 	SmithingTrimRecipes       []protocol.SmithingTrimRecipe
-	// PotionRecipes is a list of all potion mixing recipes which may be used in the brewing stand.
+	// PotionMixes is a list of all potion mixing recipes which may be used in the brewing stand.
 	PotionMixes []protocol.PotionMixDataEntry
-	// PotionContainerChangeRecipes is a list of all recipes to convert a potion from one type to
-	// another, such as from a drinkable potion to a splash potion, or from a splash potion to a
-	// lingering potion.
+	// ContainerMixes is a list of all recipes to convert a potion from one type to another, such as
+	// from a drinkable potion to a splash potion, or from a splash potion to a lingering potion.
 	ContainerMixes []protocol.ContainerMixDataEntry
 	// MaterialReducers is a list of all material reducers which is used in education edition chemistry.
 	MaterialReducers []protocol.MaterialReducerDataEntry

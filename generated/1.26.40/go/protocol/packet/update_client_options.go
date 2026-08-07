@@ -7,9 +7,10 @@ import "protocolgen/generated/1.26.40/go/protocol"
 // UpdateClientOptions is sent by the client when some of the client's options are updated, such as
 // the graphics mode.
 type UpdateClientOptions struct {
-	// GraphicsMode is the graphics mode that the client is using. It is one of the constants above.
+	// GraphicsModeChange is the graphics mode that the client is using. It is one of the constants
+	// above.
 	GraphicsModeChange protocol.Optional[protocol.GraphicsMode]
-	// FilterProfanity is if the client only uses filtered messages or not.
+	// FilterProfanityChange is if the client only uses filtered messages or not.
 	FilterProfanityChange protocol.Optional[bool]
 }
 

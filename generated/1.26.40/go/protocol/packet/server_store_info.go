@@ -7,7 +7,8 @@ import "protocolgen/generated/1.26.40/go/protocol"
 // ServerStoreInfo is sent by the server to provide the client with a store entry point. Like the
 // ShowStoreOffer packet, this only has an effect on partnered servers.
 type ServerStoreInfo struct {
-	// StoreInfo is the store info to set, or nothing to fall back to the default.
+	// ClientStoreEntryPointConfiguration is the store info to set, or nothing to fall back to the
+	// default.
 	ClientStoreEntryPointConfiguration protocol.Optional[protocol.ServerConfigurationClientStoreEntryPointConfiguration]
 }
 

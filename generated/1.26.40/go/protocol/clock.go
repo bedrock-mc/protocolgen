@@ -8,7 +8,7 @@ type SyncWorldClockStateData struct {
 	ClockID uint64
 	// Time is the current time of the clock.
 	Time int32
-	// Paused indicates if the clock is paused.
+	// IsPaused indicates if the clock is paused.
 	IsPaused bool
 }
 
@@ -47,7 +47,7 @@ type WorldClockData struct {
 	Name string
 	// Time is the current time of the clock.
 	Time int32
-	// Paused indicates if the clock is paused.
+	// IsPaused indicates if the clock is paused.
 	IsPaused bool
 	// TimeMarkers is a list of time markers for this clock.
 	TimeMarkers []TimeMarkerData

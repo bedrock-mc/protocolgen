@@ -10,8 +10,8 @@ type StopSound struct {
 	// SoundName is the name of the sound that should be stopped from playing. If no sound with this
 	// name is currently active, the packet is ignored.
 	SoundName string
-	// StopAll specifies if all sounds currently playing to the player should be stopped. If set to
-	// true, the SoundName field may be left empty.
+	// StopAllSounds specifies if all sounds currently playing to the player should be stopped. If set
+	// to true, the SoundName field may be left empty.
 	StopAllSounds bool
 	// StopMusicLegacy is currently unknown.
 	StopMusicLegacy bool

@@ -143,37 +143,37 @@
     {
       "type_id": "AnimateEntityPacket",
       "field": "mAnimation",
-      "doc": "Animation is the name of a single animation to start playing."
+      "doc": "MAnimation is the name of a single animation to start playing."
     },
     {
       "type_id": "AnimateEntityPacket",
       "field": "mBlendOutTime",
-      "doc": "BlendOutTime does not currently seem to be used."
+      "doc": "MBlendOutTime does not currently seem to be used."
     },
     {
       "type_id": "AnimateEntityPacket",
       "field": "mController",
-      "doc": "Controller is the animation controller that is used to manage animations. These controllers decide when\nto play which animation."
+      "doc": "MController is the animation controller that is used to manage animations. These controllers decide when\nto play which animation."
     },
     {
       "type_id": "AnimateEntityPacket",
       "field": "mNextState",
-      "doc": "NextState is the first state to start with. These states are declared in animation controllers (which,\nin themselves, are animations too). These states in turn may have animations and transitions to move to\na next state."
+      "doc": "MNextState is the first state to start with. These states are declared in animation controllers (which,\nin themselves, are animations too). These states in turn may have animations and transitions to move to\na next state."
     },
     {
       "type_id": "AnimateEntityPacket",
       "field": "mRuntimeIds",
-      "doc": "EntityRuntimeIDs is list of runtime IDs of entities that the animation should be applied to."
+      "doc": "MRuntimeIds is list of runtime IDs of entities that the animation should be applied to."
     },
     {
       "type_id": "AnimateEntityPacket",
       "field": "mStopExpression",
-      "doc": "StopCondition is a MoLang expression that specifies when the animation should be stopped."
+      "doc": "MStopExpression is a MoLang expression that specifies when the animation should be stopped."
     },
     {
       "type_id": "AnimateEntityPacket",
       "field": "mStopExpressionVersion",
-      "doc": "StopConditionVersion is the MoLang stop condition version."
+      "doc": "MStopExpressionVersion is the MoLang stop condition version."
     },
     {
       "type_id": "AnimatePacket",
@@ -196,7 +196,7 @@
     {
       "type_id": "AnvilDamagePacket",
       "field": "Block Position",
-      "doc": "AnvilPosition is the position in the world that the anvil can be found at."
+      "doc": "BlockPosition is the position in the world that the anvil can be found at."
     },
     {
       "type_id": "AttributeData",
@@ -231,7 +231,7 @@
     {
       "type_id": "AttributeModifier",
       "field": "Is Serializable?",
-      "doc": "Serializable ...\nTODO: Figure out what this field is used for."
+      "doc": "IsSerializable ...\nTODO: Figure out what this field is used for."
     },
     {
       "type_id": "AttributeModifier",
@@ -263,7 +263,7 @@
     {
       "type_id": "AvailableCommandsPacket",
       "field": "Chained Subcommand Data",
-      "doc": "ChainedSubcommands is a slice of all subcommands that are followed by a chained command. An example usage of this\nis /execute which allows you to run another command as another entity or at a different position etc."
+      "doc": "ChainedSubcommandData is a slice of all subcommands that are followed by a chained command. An example usage of this\nis /execute which allows you to run another command as another entity or at a different position etc."
     },
     {
       "type_id": "AvailableCommandsPacket",
@@ -283,7 +283,7 @@
     {
       "type_id": "AvailableCommandsPacket",
       "field": "Enum Data",
-      "doc": "Enums is a slice of all (fixed) command enums present in any of the\ncommands."
+      "doc": "EnumData is a slice of all (fixed) command enums present in any of the\ncommands."
     },
     {
       "type_id": "AvailableCommandsPacket",
@@ -293,12 +293,12 @@
     {
       "type_id": "AvailableCommandsPacket",
       "field": "Post Fixes",
-      "doc": "Suffixes, like EnumValues, is a slice of all suffix values of any command\nparameter in the AvailableCommands packet."
+      "doc": "PostFixes, like EnumValues, is a slice of all suffix values of any command\nparameter in the AvailableCommands packet."
     },
     {
       "type_id": "AvailableCommandsPacket",
       "field": "Soft Enums",
-      "doc": "DynamicEnums is a slice of dynamic command enums. These command enums can\nbe changed during runtime without having to resend an AvailableCommands\npacket."
+      "doc": "SoftEnums is a slice of dynamic command enums. These command enums can\nbe changed during runtime without having to resend an AvailableCommands\npacket."
     },
     {
       "type_id": "AvailableCommandsPacketCommandData.json#",
@@ -341,7 +341,7 @@
     {
       "type_id": "AvailableCommandsPacketPayload::ChainedSubcommandData",
       "field": "SubCommand values",
-      "doc": "Values contains the index and parameter type of the chained subcommand."
+      "doc": "SubCommandValues contains the index and parameter type of the chained subcommand."
     },
     {
       "type_id": "AvailableCommandsPacketPayload::ChainedSubcommandRelationship",
@@ -350,12 +350,12 @@
     {
       "type_id": "AvailableCommandsPacketPayload::ChainedSubcommandRelationship",
       "field": "SubCommand First Value",
-      "doc": "Index is the index of the argument in the ChainedSubcommandValues slice from the AvailableCommands packet. This is\nthen used to set the type specified by the Value field below."
+      "doc": "SubCommandFirstValue is the index of the argument in the ChainedSubcommandValues slice from the AvailableCommands packet. This is\nthen used to set the type specified by the Value field below."
     },
     {
       "type_id": "AvailableCommandsPacketPayload::ChainedSubcommandRelationship",
       "field": "SubCommand Second Value",
-      "doc": "Value is a combination of the flags above and specified the type of argument. Unlike regular parameter types,\nthis should NOT contain any of the special flags (valid, enum, suffixed or soft enum) but only the basic types."
+      "doc": "SubCommandSecondValue is a combination of the flags above and specified the type of argument. Unlike regular parameter types,\nthis should NOT contain any of the special flags (valid, enum, suffixed or soft enum) but only the basic types."
     },
     {
       "type_id": "AvailableCommandsPacketPayload::ConstrainedValueData",
@@ -364,17 +364,17 @@
     {
       "type_id": "AvailableCommandsPacketPayload::ConstrainedValueData",
       "field": "Constraint Indices",
-      "doc": "Constraints holds a slice of constraints as present in the constants above."
+      "doc": "ConstraintIndices holds a slice of constraints as present in the constants above."
     },
     {
       "type_id": "AvailableCommandsPacketPayload::ConstrainedValueData",
       "field": "Enum Symbol",
-      "doc": "EnumIndex points to an enum in the AvailableCommands packet to which this\nconstraint should apply to."
+      "doc": "EnumSymbol points to an enum in the AvailableCommands packet to which this\nconstraint should apply to."
     },
     {
       "type_id": "AvailableCommandsPacketPayload::ConstrainedValueData",
       "field": "Enum Value Symbol",
-      "doc": "EnumValueIndex points to an enum value in the AvailableCommands packet that this\nconstraint should apply to."
+      "doc": "EnumValueSymbol points to an enum value in the AvailableCommands packet that this\nconstraint should apply to."
     },
     {
       "type_id": "AvailableCommandsPacketPayload::EnumData",
@@ -383,12 +383,12 @@
     {
       "type_id": "AvailableCommandsPacketPayload::EnumData",
       "field": "Name",
-      "doc": "Type is the type of the command enum. The type will show up in the command usage as the type of the\nargument if it has a certain amount of arguments, or when Options is set to true in the\ncommand holding the enum."
+      "doc": "Name is the type of the command enum. The type will show up in the command usage as the type of the\nargument if it has a certain amount of arguments, or when Options is set to true in the\ncommand holding the enum."
     },
     {
       "type_id": "AvailableCommandsPacketPayload::EnumData",
       "field": "Values",
-      "doc": "ValueIndices holds a list of indices that point to the EnumValues slice in the\nAvailableCommandsPacket. These represent the options of the enum."
+      "doc": "Values holds a list of indices that point to the EnumValues slice in the\nAvailableCommandsPacket. These represent the options of the enum."
     },
     {
       "type_id": "AvailableCommandsPacketPayload::OverloadData",
@@ -397,12 +397,12 @@
     {
       "type_id": "AvailableCommandsPacketPayload::OverloadData",
       "field": "Parameter Data",
-      "doc": "Parameters is a list of command parameters that are part of the overload. These parameters specify the\nusage of the command when this overload is applied."
+      "doc": "ParameterData is a list of command parameters that are part of the overload. These parameters specify the\nusage of the command when this overload is applied."
     },
     {
       "type_id": "AvailableCommandsPacketPayload::OverloadData",
       "field": "isChaining",
-      "doc": "Chaining determines if the parameters use chained subcommands or not."
+      "doc": "IsChaining determines if the parameters use chained subcommands or not."
     },
     {
       "type_id": "AvailableCommandsPacketPayload::ParamData",
@@ -425,12 +425,12 @@
     {
       "type_id": "AvailableCommandsPacketPayload::SoftEnumData",
       "field": "Enum Name",
-      "doc": "Type is the type of the command enum. The type will show up in the command usage as the type of the\nargument if it has a certain amount of arguments, or when Options is set to true in the\ncommand holding the enum."
+      "doc": "EnumName is the type of the command enum. The type will show up in the command usage as the type of the\nargument if it has a certain amount of arguments, or when Options is set to true in the\ncommand holding the enum."
     },
     {
       "type_id": "AvailableCommandsPacketPayload::SoftEnumData",
       "field": "Enum Options",
-      "doc": "Values is a slice of possible options for the enum."
+      "doc": "EnumOptions is a slice of possible options for the enum."
     },
     {
       "type_id": "AwardAchievementPacket",
@@ -752,7 +752,7 @@
     {
       "type_id": "BiomeSurfaceBuilderData",
       "field": "has the end surface",
-      "doc": "HasEndSurface is true if the biome has an end surface."
+      "doc": "HasTheEndSurface is true if the biome has an end surface."
     },
     {
       "type_id": "BiomeSurfaceBuilderData",
@@ -814,7 +814,7 @@
     {
       "type_id": "BlockEventPacket",
       "field": "Block Position",
-      "doc": "Position is the position of the block that an event occurred at."
+      "doc": "BlockPosition is the position of the block that an event occurred at."
     },
     {
       "type_id": "BlockEventPacket",
@@ -824,7 +824,7 @@
     {
       "type_id": "BlockEventPacket",
       "field": "Event Value",
-      "doc": "EventData holds event type specific data. For chests for example, opening the chest means the data must\nhold 1, whereas closing it should hold 0."
+      "doc": "EventValue holds event type specific data. For chests for example, opening the chest means the data must\nhold 1, whereas closing it should hold 0."
     },
     {
       "type_id": "BlockPickRequestPacket",
@@ -883,7 +883,7 @@
     {
       "type_id": "CameraAimAssistActorPriority::PriorityData",
       "field": "Priority Value",
-      "doc": "Priority is the priority value for this actor."
+      "doc": "PriorityValue is the priority value for this actor."
     },
     {
       "type_id": "CameraAimAssistActorPriorityPacket",
@@ -892,7 +892,7 @@
     {
       "type_id": "CameraAimAssistActorPriorityPacket",
       "field": "Camera Aim-Assist Actor Priority List",
-      "doc": "PriorityData is a list of aim assist actor priority entries."
+      "doc": "CameraAimAssistActorPriorityList is a list of aim assist actor priority entries."
     },
     {
       "type_id": "CameraAimAssistPacket",
@@ -911,7 +911,7 @@
     {
       "type_id": "CameraAimAssistPacket",
       "field": "Preset Id",
-      "doc": "Preset is the ID of the preset that has previously been defined in the CameraAimAssistPresets packet."
+      "doc": "PresetID is the ID of the preset that has previously been defined in the CameraAimAssistPresets packet."
     },
     {
       "type_id": "CameraAimAssistPacket",
@@ -926,7 +926,7 @@
     {
       "type_id": "CameraAimAssistPacket",
       "field": "View Angle",
-      "doc": "Angle is the maximum angle around the playes's cursor that the aim assist should check for a target,\nif TargetMode is set to protocol.AimAssistTargetModeAngle."
+      "doc": "ViewAngle is the maximum angle around the playes's cursor that the aim assist should check for a target,\nif TargetMode is set to protocol.AimAssistTargetModeAngle."
     },
     {
       "type_id": "CameraAimAssistPresetsPacket",
@@ -935,12 +935,12 @@
     {
       "type_id": "CameraAimAssistPresetsPacket",
       "field": "Camera Aim-Assist Categories",
-      "doc": "Presets is a list of presets which define a base for how aim assist should behave"
+      "doc": "CameraAimAssistCategories is a list of presets which define a base for how aim assist should behave"
     },
     {
       "type_id": "CameraAimAssistPresetsPacket",
       "field": "Camera Aim-Assist Presets",
-      "doc": "Categories is a list of categories which can be referenced by one of the Presets."
+      "doc": "CameraAimAssistPresets is a list of categories which can be referenced by one of the Presets."
     },
     {
       "type_id": "CameraAimAssistPresetsPacket",
@@ -958,12 +958,12 @@
     {
       "type_id": "CameraInstructionOptions::FadeInstruction",
       "field": "Color",
-      "doc": "Colour is the colour of the screen to fade to. This only uses the red, green and blue components."
+      "doc": "Color is the colour of the screen to fade to. This only uses the red, green and blue components."
     },
     {
       "type_id": "CameraInstructionOptions::FadeInstruction",
       "field": "Time",
-      "doc": "TimeData is the time data for the fade, which includes the fade in duration, wait duration and fade out\nduration."
+      "doc": "Time is the time data for the fade, which includes the fade in duration, wait duration and fade out\nduration."
     },
     {
       "type_id": "CameraInstructionOptions::FadeInstruction::TimeOption",
@@ -972,17 +972,17 @@
     {
       "type_id": "CameraInstructionOptions::FadeInstruction::TimeOption",
       "field": "Fade In Time",
-      "doc": "FadeInDuration is the time in seconds for the screen to fully fade in."
+      "doc": "FadeInTime is the time in seconds for the screen to fully fade in."
     },
     {
       "type_id": "CameraInstructionOptions::FadeInstruction::TimeOption",
       "field": "Fade Out Time",
-      "doc": "FadeOutDuration is the time in seconds for the screen to fully fade out."
+      "doc": "FadeOutTime is the time in seconds for the screen to fully fade out."
     },
     {
       "type_id": "CameraInstructionOptions::FadeInstruction::TimeOption",
       "field": "Hold Time",
-      "doc": "WaitDuration is time in seconds to wait before fading out."
+      "doc": "HoldTime is time in seconds to wait before fading out."
     },
     {
       "type_id": "CameraInstructionOptions::FovInstruction",
@@ -1020,7 +1020,7 @@
     {
       "type_id": "CameraInstructionOptions::SetInstruction",
       "field": "pos",
-      "doc": "Position represents the position of the camera."
+      "doc": "Pos represents the position of the camera."
     },
     {
       "type_id": "CameraInstructionOptions::SetInstruction",
@@ -1030,12 +1030,12 @@
     {
       "type_id": "CameraInstructionOptions::SetInstruction",
       "field": "removeIgnoreStartingValuesComponent",
-      "doc": "IgnoreStartingValuesComponent behavior is currently unknown."
+      "doc": "RemoveIgnoreStartingValuesComponent behavior is currently unknown."
     },
     {
       "type_id": "CameraInstructionOptions::SetInstruction",
       "field": "rot",
-      "doc": "Rotation represents the rotation of the camera."
+      "doc": "Rot represents the rotation of the camera."
     },
     {
       "type_id": "CameraInstructionOptions::SetInstruction",
@@ -1049,7 +1049,7 @@
     {
       "type_id": "CameraInstructionOptions::SetInstruction::EaseOption",
       "field": "time",
-      "doc": "Duration is the time in seconds that the easing function should take."
+      "doc": "Time is the time in seconds that the easing function should take."
     },
     {
       "type_id": "CameraInstructionOptions::SetInstruction::EaseOption",
@@ -1068,7 +1068,7 @@
     {
       "type_id": "CameraInstructionOptions::SplineInstruction",
       "field": "loadFromJson",
-      "doc": "LoadFromJson optionally determines whether the spline should be loaded from a JSON definition."
+      "doc": "LoadFromJSON optionally determines whether the spline should be loaded from a JSON definition."
     },
     {
       "type_id": "CameraInstructionOptions::SplineInstruction",
@@ -1100,12 +1100,12 @@
     {
       "type_id": "CameraInstructionOptions::TargetInstruction",
       "field": "Target Actor ID",
-      "doc": "EntityUniqueID is the unique ID of the entity that the camera should target."
+      "doc": "TargetActorID is the unique ID of the entity that the camera should target."
     },
     {
       "type_id": "CameraInstructionOptions::TargetInstruction",
       "field": "Target Center Offset",
-      "doc": "CenterOffset is the offset from the center of the entity that the camera should target."
+      "doc": "TargetCenterOffset is the offset from the center of the entity that the camera should target."
     },
     {
       "type_id": "CameraInstructionPacket",
@@ -1135,7 +1135,7 @@
     {
       "type_id": "CameraSplinePacket",
       "field": "Camera Data Splines",
-      "doc": "Splines is a list of camera spline definitions."
+      "doc": "CameraDataSplines is a list of camera spline definitions."
     },
     {
       "type_id": "ChangeDimensionPacket",
@@ -1180,12 +1180,12 @@
     {
       "type_id": "ClientCacheBlobStatusPacket",
       "field": "Found Ids",
-      "doc": "HitHashes is a list of blob hashes that the client has a blob available for. The blobs hashes here mean\nthat the client already has them: The server does not need to send the blobs anymore."
+      "doc": "FoundIds is a list of blob hashes that the client has a blob available for. The blobs hashes here mean\nthat the client already has them: The server does not need to send the blobs anymore."
     },
     {
       "type_id": "ClientCacheBlobStatusPacket",
       "field": "Missing Ids",
-      "doc": "MissHashes is a list of blob hashes that the client does not have a blob available for. The server\nshould send the blobs matching these hashes as soon as possible."
+      "doc": "MissingIds is a list of blob hashes that the client does not have a blob available for. The server\nshould send the blobs matching these hashes as soon as possible."
     },
     {
       "type_id": "ClientCacheMissResponsePacket",
@@ -1194,7 +1194,7 @@
     {
       "type_id": "ClientCacheMissResponsePacket",
       "field": "Missing Blobs",
-      "doc": "Blobs is a list of all blobs that the client sent misses for in the ClientCacheBlobStatus. These blobs\nhold the data of the blobs with the hashes they are matched with."
+      "doc": "MissingBlobs is a list of all blobs that the client sent misses for in the ClientCacheBlobStatus. These blobs\nhold the data of the blobs with the hashes they are matched with."
     },
     {
       "type_id": "ClientCacheStatusPacket",
@@ -1203,7 +1203,7 @@
     {
       "type_id": "ClientCacheStatusPacket",
       "field": "Is cache supported?",
-      "doc": "Enabled specifies if the blob cache is enabled. If false, the server should not attempt to use the\nblob cache. If true, it may do so, but it may also choose not to use it."
+      "doc": "IsCacheSupported specifies if the blob cache is enabled. If false, the server should not attempt to use the\nblob cache. If true, it may do so, but it may also choose not to use it."
     },
     {
       "type_id": "ClientCameraAimAssistPacket",
@@ -1222,7 +1222,7 @@
     {
       "type_id": "ClientCameraAimAssistPacket",
       "field": "Camera Preset Id",
-      "doc": "PresetID is the identifier of the preset to use which was previously defined in the CameraAimAssistPresets\npacket."
+      "doc": "CameraPresetID is the identifier of the preset to use which was previously defined in the CameraAimAssistPresets\npacket."
     },
     {
       "type_id": "ClientMovementPredictionSyncPacket",
@@ -1342,17 +1342,17 @@
     {
       "type_id": "CommandRequestPacket",
       "field": "Command",
-      "doc": "CommandLine is the raw entered command line. The client does no parsing of the command line by itself\n(unlike it did in the early stages), but lets the server do that."
+      "doc": "Command is the raw entered command line. The client does no parsing of the command line by itself\n(unlike it did in the early stages), but lets the server do that."
     },
     {
       "type_id": "CommandRequestPacket",
       "field": "IsInternal",
-      "doc": "Internal specifies if the command request internal. Setting it to false seems to work and the usage of\nthis field is not known."
+      "doc": "IsInternal specifies if the command request internal. Setting it to false seems to work and the usage of\nthis field is not known."
     },
     {
       "type_id": "CommandRequestPacket",
       "field": "Origin",
-      "doc": "CommandOrigin is the data specifying the origin of the command. In other words, the source that the\ncommand was from, such as the player itself or a websocket server."
+      "doc": "Origin is the data specifying the origin of the command. In other words, the source that the\ncommand was from, such as the player itself or a websocket server."
     },
     {
       "type_id": "CommandRequestPacket",
@@ -1366,12 +1366,12 @@
     {
       "type_id": "CompletedUsingItemPacket",
       "field": "Item Id",
-      "doc": "UsedItemID is the item ID of the item that the client completed using. This should typically be the\nID of the item held in the hand."
+      "doc": "ItemID is the item ID of the item that the client completed using. This should typically be the\nID of the item held in the hand."
     },
     {
       "type_id": "CompletedUsingItemPacket",
       "field": "Item Use Method",
-      "doc": "UseMethod is the method of the using of the item that was completed. It is one of the constants that\nmay be found above."
+      "doc": "ItemUseMethod is the method of the using of the item that was completed. It is one of the constants that\nmay be found above."
     },
     {
       "type_id": "ContainerClosePacket",
@@ -1450,7 +1450,7 @@
     {
       "type_id": "CraftingDataPacket",
       "field": "Container Mixes",
-      "doc": "PotionContainerChangeRecipes is a list of all recipes to convert a potion from one type to another,\nsuch as from a drinkable potion to a splash potion, or from a splash potion to a lingering potion."
+      "doc": "ContainerMixes is a list of all recipes to convert a potion from one type to another,\nsuch as from a drinkable potion to a splash potion, or from a splash potion to a lingering potion."
     },
     {
       "type_id": "CraftingDataPacket",
@@ -1460,7 +1460,7 @@
     {
       "type_id": "CraftingDataPacket",
       "field": "Potion Mixes",
-      "doc": "PotionRecipes is a list of all potion mixing recipes which may be used in the brewing stand."
+      "doc": "PotionMixes is a list of all potion mixing recipes which may be used in the brewing stand."
     },
     {
       "type_id": "CraftingDataPacket",
@@ -1483,7 +1483,7 @@
     {
       "type_id": "CreativeContentPacket",
       "field": "Entries",
-      "doc": "Items is a list of the items that should be added to the creative inventory."
+      "doc": "Entries is a list of the items that should be added to the creative inventory."
     },
     {
       "type_id": "CreativeContentPacket",
@@ -1497,12 +1497,12 @@
     {
       "type_id": "CreativeGroupInfoPayload",
       "field": "Creative Category",
-      "doc": "Category is the category the group falls under. It is one of the constants above."
+      "doc": "CreativeCategory is the category the group falls under. It is one of the constants above."
     },
     {
       "type_id": "CreativeGroupInfoPayload",
       "field": "Group Icon Item",
-      "doc": "Icon is the item that represents the group in the creative inventory."
+      "doc": "GroupIconItem is the item that represents the group in the creative inventory."
     },
     {
       "type_id": "CreativeGroupInfoPayload",
@@ -1516,7 +1516,7 @@
     {
       "type_id": "CurrentStructureFeaturePacket",
       "field": "Current Structure Feature",
-      "doc": "CurrentFeature is the identifier of the structure feature that the player is currently occupying.\nIf the player is not occupying any structure feature, this field is empty."
+      "doc": "CurrentStructureFeature is the identifier of the structure feature that the player is currently occupying.\nIf the player is not occupying any structure feature, this field is empty."
     },
     {
       "type_id": "DeathInfoPacket",
@@ -1525,12 +1525,12 @@
     {
       "type_id": "DeathInfoPacket",
       "field": "Death Cause Attack Name",
-      "doc": "Cause is the cause of the player's death, such as \"suffocation\" or \"suicide\"."
+      "doc": "DeathCauseAttackName is the cause of the player's death, such as \"suffocation\" or \"suicide\"."
     },
     {
       "type_id": "DeathInfoPacket",
       "field": "Death Cause Message List",
-      "doc": "Messages is a list of death messages to be shown on the death screen."
+      "doc": "DeathCauseMessageList is a list of death messages to be shown on the death screen."
     },
     {
       "type_id": "DebugInfoPacket",
@@ -1617,7 +1617,7 @@
     {
       "type_id": "EmotePacket",
       "field": "Xuid",
-      "doc": "XUID is the Xbox User ID of the player that sent the emote. It is only set when the emote is used by a player that\nis authenticated with Xbox Live."
+      "doc": "Xuid is the Xbox User ID of the player that sent the emote. It is only set when the emote is used by a player that\nis authenticated with Xbox Live."
     },
     {
       "type_id": "EnchantmentInstance",
@@ -1630,7 +1630,7 @@
     {
       "type_id": "FeatureRegistryPacket",
       "field": "FeaturesDataList",
-      "doc": "Features is a slice of all registered world generation features."
+      "doc": "FeaturesDataList is a slice of all registered world generation features."
     },
     {
       "type_id": "FullContainerName",
@@ -1639,12 +1639,12 @@
     {
       "type_id": "FullContainerName",
       "field": "Container Name",
-      "doc": "ContainerID is the ID of the container that the slot was in."
+      "doc": "ContainerName is the ID of the container that the slot was in."
     },
     {
       "type_id": "FullContainerName",
       "field": "Dynamic ID",
-      "doc": "DynamicContainerID is the ID of the container if it is dynamic. If the container is not dynamic, this\nfield should be left empty. A non-optional value of 0 is assumed to be non-empty."
+      "doc": "DynamicID is the ID of the container if it is dynamic. If the container is not dynamic, this\nfield should be left empty. A non-optional value of 0 is assumed to be non-empty."
     },
     {
       "type_id": "GameRule",
@@ -1653,17 +1653,17 @@
     {
       "type_id": "GameRule",
       "field": "Rule Can Be Modified",
-      "doc": "CanBeModifiedByPlayer specifies if the game rule can be modified by the player through the in-game UI."
+      "doc": "RuleCanBeModified specifies if the game rule can be modified by the player through the in-game UI."
     },
     {
       "type_id": "GameRule",
       "field": "Rule Name",
-      "doc": "Name is the name of the game rule."
+      "doc": "RuleName is the name of the game rule."
     },
     {
       "type_id": "GameRule",
       "field": "Rule Value",
-      "doc": "Value is the new value of the game rule. This is either a bool, uint32 or float32, or nil for the null\nvariant, which carries no value at all."
+      "doc": "RuleValue is the new value of the game rule. This is either a bool, uint32 or float32, or nil for the null\nvariant, which carries no value at all."
     },
     {
       "type_id": "GameRulesChangedPacket",
@@ -1750,17 +1750,17 @@
     {
       "type_id": "InventoryContentPacket",
       "field": "Container Id",
-      "doc": "WindowID is the ID that identifies one of the windows that the client currently has opened, or one of\nthe consistent windows such as the main inventory."
+      "doc": "ContainerID is the ID that identifies one of the windows that the client currently has opened, or one of\nthe consistent windows such as the main inventory."
     },
     {
       "type_id": "InventoryContentPacket",
       "field": "Full Container Name",
-      "doc": "Container is the protocol.FullContainerName that describes the container that the content is for."
+      "doc": "FullContainerName is the protocol.FullContainerName that describes the container that the content is for."
     },
     {
       "type_id": "InventoryContentPacket",
       "field": "Slots",
-      "doc": "Content is the new content of the inventory. The length of this slice must be equal to the full size of\nthe inventory window updated."
+      "doc": "Slots is the new content of the inventory. The length of this slice must be equal to the full size of\nthe inventory window updated."
     },
     {
       "type_id": "InventoryContentPacket",
@@ -1774,17 +1774,17 @@
     {
       "type_id": "InventorySlotPacket",
       "field": "Container Id",
-      "doc": "WindowID is the ID of the window that the packet modifies. It must point to one of the windows that the\nclient currently has opened."
+      "doc": "ContainerID is the ID of the window that the packet modifies. It must point to one of the windows that the\nclient currently has opened."
     },
     {
       "type_id": "InventorySlotPacket",
       "field": "Full Container Name",
-      "doc": "Container is the protocol.FullContainerName that describes the container that the content is for."
+      "doc": "FullContainerName is the protocol.FullContainerName that describes the container that the content is for."
     },
     {
       "type_id": "InventorySlotPacket",
       "field": "Item",
-      "doc": "NewItem is the item to be put in the slot at Slot. It will overwrite any item that may currently\nbe present in that slot."
+      "doc": "Item is the item to be put in the slot at Slot. It will overwrite any item that may currently\nbe present in that slot."
     },
     {
       "type_id": "InventorySlotPacket",
@@ -1821,7 +1821,7 @@
     {
       "type_id": "ItemRegistryPacket",
       "field": "Item Data",
-      "doc": "Items is a list of all items with their legacy IDs which are available in the game. Failing to send any\nof the items that are in the game will crash mobile clients. Any custom components are also attached to\nthe items in this list."
+      "doc": "ItemData is a list of all items with their legacy IDs which are available in the game. Failing to send any\nof the items that are in the game will crash mobile clients. Any custom components are also attached to\nthe items in this list."
     },
     {
       "type_id": "ItemStackRequestCereal",
@@ -2002,12 +2002,12 @@
     {
       "type_id": "LabTablePacket",
       "field": "Reaction",
-      "doc": "ReactionType is the type of the reaction that took place as a result of the items put into the lab\ntable. The reaction type can be either that of an item or a particle, depending on whatever the result\nwas of the reaction."
+      "doc": "Reaction is the type of the reaction that took place as a result of the items put into the lab\ntable. The reaction type can be either that of an item or a particle, depending on whatever the result\nwas of the reaction."
     },
     {
       "type_id": "LabTablePacket",
       "field": "Type",
-      "doc": "ActionType is the type of the action that was executed. It is one of the constants above. Typically,\nonly LabTableActionCombine is sent by the client, whereas LabTableActionReact is sent by the server."
+      "doc": "Type is the type of the action that was executed. It is one of the constants above. Typically,\nonly LabTableActionCombine is sent by the client, whereas LabTableActionReact is sent by the server."
     },
     {
       "type_id": "LecternUpdatePacket",
@@ -2051,12 +2051,12 @@
     {
       "type_id": "LevelEventPacket",
       "field": "Data",
-      "doc": "EventData is an integer holding additional data of the event. The type of data held depends on the\nEventType."
+      "doc": "Data is an integer holding additional data of the event. The type of data held depends on the\nEventType."
     },
     {
       "type_id": "LevelEventPacket",
       "field": "Event Id",
-      "doc": "EventType is the ID of the event that is being 'called'. It is one of the events found in the constants\nabove."
+      "doc": "EventID is the ID of the event that is being 'called'. It is one of the events found in the constants\nabove."
     },
     {
       "type_id": "LevelEventPacket",
@@ -2070,17 +2070,17 @@
     {
       "type_id": "LevelSoundEventPacket",
       "field": "Actor Identifier",
-      "doc": "EntityType is the string entity type of the entity that emitted the sound, for example\n'minecraft:skeleton'. Some sound types use this entity type for additional data."
+      "doc": "ActorIdentifier is the string entity type of the entity that emitted the sound, for example\n'minecraft:skeleton'. Some sound types use this entity type for additional data."
     },
     {
       "type_id": "LevelSoundEventPacket",
       "field": "Actor Unique Id",
-      "doc": "EntityUniqueID is the unique ID of a source entity. The unique ID is a value that remains consistent across\ndifferent sessions of the same world, but most servers simply fill the runtime ID of the entity out for\nthis field."
+      "doc": "ActorUniqueID is the unique ID of a source entity. The unique ID is a value that remains consistent across\ndifferent sessions of the same world, but most servers simply fill the runtime ID of the entity out for\nthis field."
     },
     {
       "type_id": "LevelSoundEventPacket",
       "field": "Data",
-      "doc": "ExtraData is a packed integer that some sound types use to provide extra data. An example of this is\nthe note sound, which is composed of a pitch and an instrument type."
+      "doc": "Data is a packed integer that some sound types use to provide extra data. An example of this is\nthe note sound, which is composed of a pitch and an instrument type."
     },
     {
       "type_id": "LevelSoundEventPacket",
@@ -2090,12 +2090,12 @@
     {
       "type_id": "LevelSoundEventPacket",
       "field": "Is Baby",
-      "doc": "BabyMob specifies if the sound should be that of a baby mob. It is most notably used for parrot\nimitations, which will change based on if this field is set to true or not."
+      "doc": "IsBaby specifies if the sound should be that of a baby mob. It is most notably used for parrot\nimitations, which will change based on if this field is set to true or not."
     },
     {
       "type_id": "LevelSoundEventPacket",
       "field": "Is Global",
-      "doc": "DisableRelativeVolume specifies if the sound should be played relatively or not. If set to true, the\nsound will have full volume, regardless of where the Position is, whereas if set to false, the sound's\nvolume will be based on the distance to Position."
+      "doc": "IsGlobal specifies if the sound should be played relatively or not. If set to true, the\nsound will have full volume, regardless of where the Position is, whereas if set to false, the sound's\nvolume will be based on the distance to Position."
     },
     {
       "type_id": "LevelSoundEventPacket",
@@ -2105,7 +2105,7 @@
     {
       "type_id": "LevelSoundEventPacket",
       "field": "Sound Event",
-      "doc": "SoundType is the type of the sound to play. It is one of the constants above. Some of the sound types\nrequire additional data, which is set in the ExtraData field."
+      "doc": "SoundEvent is the type of the sound to play. It is one of the constants above. Some of the sound types\nrequire additional data, which is set in the ExtraData field."
     },
     {
       "type_id": "LocatorBarPacket",
@@ -2223,7 +2223,7 @@
     {
       "type_id": "ModalFormResponsePacket",
       "field": "Form Cancel Reason",
-      "doc": "CancelReason represents the reason why the form was cancelled. It is one of the constants above."
+      "doc": "FormCancelReason represents the reason why the form was cancelled. It is one of the constants above."
     },
     {
       "type_id": "ModalFormResponsePacket",
@@ -2233,7 +2233,7 @@
     {
       "type_id": "ModalFormResponsePacket",
       "field": "JSON Response",
-      "doc": "ResponseData is a JSON encoded value representing the response of the player. For a modal form, the response is\neither true or false, for a menu form, the response is an integer specifying the index of the button clicked, and\nfor a custom form, the response is an array containing a value for each element."
+      "doc": "JSONResponse is a JSON encoded value representing the response of the player. For a modal form, the response is\neither true or false, for a menu form, the response is an integer specifying the index of the button clicked, and\nfor a custom form, the response is an array containing a value for each element."
     },
     {
       "type_id": "MotionPredictionHintsPacket",
@@ -2286,17 +2286,17 @@
     {
       "type_id": "NetworkChunkPublisherUpdatePacket",
       "field": "New position for view",
-      "doc": "Position is the block position around which chunks loaded will remain shown to the client. Most servers\nset this position to the position of the player itself."
+      "doc": "NewPositionForView is the block position around which chunks loaded will remain shown to the client. Most servers\nset this position to the position of the player itself."
     },
     {
       "type_id": "NetworkChunkPublisherUpdatePacket",
       "field": "New radius for view",
-      "doc": "Radius is the radius in blocks around Position that chunks sent show up in and will remain loaded in.\nUnlike the RequestChunkRadius and ChunkRadiusUpdated packets, this radius is in blocks rather than\nchunks, so the chunk radius needs to be multiplied by 16. (Or shifted to the left by 4.)"
+      "doc": "NewRadiusForView is the radius in blocks around Position that chunks sent show up in and will remain loaded in.\nUnlike the RequestChunkRadius and ChunkRadiusUpdated packets, this radius is in blocks rather than\nchunks, so the chunk radius needs to be multiplied by 16. (Or shifted to the left by 4.)"
     },
     {
       "type_id": "NetworkChunkPublisherUpdatePacket",
       "field": "Server Built Chunks List",
-      "doc": "SavedChunks ...\nTODO: Figure out what this field is used for."
+      "doc": "ServerBuiltChunksList ...\nTODO: Figure out what this field is used for."
     },
     {
       "type_id": "NetworkSettingsPacket",
@@ -2337,7 +2337,7 @@
     {
       "type_id": "OnScreenTextureAnimationPacket",
       "field": "Effect Id",
-      "doc": "AnimationType is the type of the animation to show. The packet provides no further extra data to allow\nmodifying the duration or other properties of the animation."
+      "doc": "EffectID is the type of the animation to show. The packet provides no further extra data to allow\nmodifying the duration or other properties of the animation."
     },
     {
       "type_id": "OpenSignPacket",
@@ -2346,12 +2346,12 @@
     {
       "type_id": "OpenSignPacket",
       "field": "Is Front Side",
-      "doc": "FrontSide dictates whether the front side of the sign should be opened for editing. If false, the back side is\nassumed to be edited."
+      "doc": "IsFrontSide dictates whether the front side of the sign should be opened for editing. If false, the back side is\nassumed to be edited."
     },
     {
       "type_id": "OpenSignPacket",
       "field": "Pos",
-      "doc": "Position is the position of the sign to edit. The client uses this position to get the data of the sign, including\nthe existing text and formatting etc."
+      "doc": "Pos is the position of the sign to edit. The client uses this position to get the data of the sign, including\nthe existing text and formatting etc."
     },
     {
       "type_id": "PacketViolationWarningPacket",
@@ -2397,7 +2397,7 @@
     {
       "type_id": "PhotoTransferPacket",
       "field": "Owner ID",
-      "doc": "OwnerEntityUniqueID is the entity unique ID of the photo's owner."
+      "doc": "OwnerID is the entity unique ID of the photo's owner."
     },
     {
       "type_id": "PhotoTransferPacket",
@@ -2417,7 +2417,7 @@
     {
       "type_id": "PhotoTransferPacket",
       "field": "Type",
-      "doc": "PhotoType is one of the three photo types above."
+      "doc": "Type is one of the three photo types above."
     },
     {
       "type_id": "PlaySoundPacket",
@@ -2431,7 +2431,7 @@
     {
       "type_id": "PlaySoundPacket",
       "field": "Name",
-      "doc": "SoundName is the name of the sound to play."
+      "doc": "Name is the name of the sound to play."
     },
     {
       "type_id": "PlaySoundPacket",
@@ -2446,7 +2446,7 @@
     {
       "type_id": "PlaySoundPacket",
       "field": "Server Sound Handle",
-      "doc": "Handle is an optional sound handle ID. It is currently unknown what this is for, and is not required\nto be set by servers."
+      "doc": "ServerSoundHandle is an optional sound handle ID. It is currently unknown what this is for, and is not required\nto be set by servers."
     },
     {
       "type_id": "PlaySoundPacket",
@@ -2545,7 +2545,7 @@
     {
       "type_id": "PlayerFogPacket",
       "field": "Fog Stack",
-      "doc": "Stack is a list of fog identifiers to be sent to the client. Examples of fog identifiers are\n\"minecraft:fog_ocean\" and \"minecraft:fog_hell\"."
+      "doc": "FogStack is a list of fog identifiers to be sent to the client. Examples of fog identifiers are\n\"minecraft:fog_ocean\" and \"minecraft:fog_hell\"."
     },
     {
       "type_id": "PlayerListPacket",
@@ -2626,7 +2626,7 @@
     {
       "type_id": "PrimitiveShapeDataPayload",
       "field": "Color",
-      "doc": "TotalTimeLeft is the total time left of the shape."
+      "doc": "Color is the total time left of the shape."
     },
     {
       "type_id": "PrimitiveShapeDataPayload",
@@ -2646,7 +2646,7 @@
     {
       "type_id": "PrimitiveShapeDataPayload",
       "field": "Maximum Render Distance",
-      "doc": "Rotation is the rotation of the shape."
+      "doc": "MaximumRenderDistance is the rotation of the shape."
     },
     {
       "type_id": "PrimitiveShapeDataPayload",
@@ -2666,7 +2666,7 @@
     {
       "type_id": "PrimitiveShapeDataPayload",
       "field": "Shape Type",
-      "doc": "DimensionID is the optional dimension ID where the shape is rendered."
+      "doc": "ShapeType is the optional dimension ID where the shape is rendered."
     },
     {
       "type_id": "PrimitiveShapeDataPayload",
@@ -2680,7 +2680,7 @@
     {
       "type_id": "PrimitiveShapesPacket",
       "field": "Array of primitive shapes (can be a mix of new, updated or removed)",
-      "doc": "Shapes is a list of shapes to draw on the client-side."
+      "doc": "ArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemoved is a list of shapes to draw on the client-side."
     },
     {
       "type_id": "PurchaseReceiptPacket",
@@ -2689,7 +2689,7 @@
     {
       "type_id": "PurchaseReceiptPacket",
       "field": "PurchaseReceipts",
-      "doc": "Receipts is a list of receipts, or proofs of purchases, for the offers that have been purchased by the\nplayer."
+      "doc": "PurchaseReceipts is a list of receipts, or proofs of purchases, for the offers that have been purchased by the\nplayer."
     },
     {
       "type_id": "RefreshEntitlementsPacket",
@@ -2742,7 +2742,7 @@
     {
       "type_id": "RequestNetworkSettingsPacket",
       "field": "ClientNetworkVersion",
-      "doc": "ClientProtocol is the protocol version of the player. The player is disconnected if the protocol is\nincompatible with the protocol of the server."
+      "doc": "ClientNetworkVersion is the protocol version of the player. The player is disconnected if the protocol is\nincompatible with the protocol of the server."
     },
     {
       "type_id": "RequestPermissionsPacket",
@@ -2751,17 +2751,17 @@
     {
       "type_id": "RequestPermissionsPacket",
       "field": "Custom Permission Flags",
-      "doc": "RequestedPermissions contains the requested permission flags."
+      "doc": "CustomPermissionFlags contains the requested permission flags."
     },
     {
       "type_id": "RequestPermissionsPacket",
       "field": "Player Permission Level",
-      "doc": "PermissionLevel is the current permission level of the player. This is one of the constants that may be found\nin the AdventureSettings packet."
+      "doc": "PlayerPermissionLevel is the current permission level of the player. This is one of the constants that may be found\nin the AdventureSettings packet."
     },
     {
       "type_id": "RequestPermissionsPacket",
       "field": "Target Player Id's Raw ID",
-      "doc": "EntityUniqueID is the unique ID of the player. The unique ID is unique for the entire world and is\noften used in packets. Most servers send an EntityUniqueID equal to the EntityRuntimeID."
+      "doc": "TargetPlayerIDSRawID is the unique ID of the player. The unique ID is unique for the entire world and is\noften used in packets. Most servers send an EntityUniqueID equal to the EntityRuntimeID."
     },
     {
       "type_id": "ResourcePackChunkDataPacket",
@@ -2770,7 +2770,7 @@
     {
       "type_id": "ResourcePackChunkDataPacket",
       "field": "Byte Offset",
-      "doc": "DataOffset is the current progress in bytes or offset in the data that the resource pack data chunk is\ntaken from."
+      "doc": "ByteOffset is the current progress in bytes or offset in the data that the resource pack data chunk is\ntaken from."
     },
     {
       "type_id": "ResourcePackChunkDataPacket",
@@ -2780,12 +2780,12 @@
     {
       "type_id": "ResourcePackChunkDataPacket",
       "field": "Chunk ID",
-      "doc": "ChunkIndex is the current chunk index of the chunk. It is a number that starts at 0 and is incremented\nfor each resource pack data chunk sent to the client."
+      "doc": "ChunkID is the current chunk index of the chunk. It is a number that starts at 0 and is incremented\nfor each resource pack data chunk sent to the client."
     },
     {
       "type_id": "ResourcePackChunkDataPacket",
       "field": "Resource Name",
-      "doc": "UUID is the unique ID of the resource pack that the chunk of data is taken out of."
+      "doc": "ResourceName is the unique ID of the resource pack that the chunk of data is taken out of."
     },
     {
       "type_id": "ResourcePackChunkRequestPacket",
@@ -2794,12 +2794,12 @@
     {
       "type_id": "ResourcePackChunkRequestPacket",
       "field": "Chunk",
-      "doc": "ChunkIndex is the requested chunk index of the chunk. It is a number that starts at 0 and is\nincremented for each resource pack data chunk requested."
+      "doc": "Chunk is the requested chunk index of the chunk. It is a number that starts at 0 and is\nincremented for each resource pack data chunk requested."
     },
     {
       "type_id": "ResourcePackChunkRequestPacket",
       "field": "Resource Name",
-      "doc": "UUID is the unique ID of the resource pack that the chunk of data is requested from."
+      "doc": "ResourceName is the unique ID of the resource pack that the chunk of data is requested from."
     },
     {
       "type_id": "ResourcePackClientResponsePacket",
@@ -2899,22 +2899,13 @@
       "doc": "Intent is the intent of the cookie. It is one of the PartyDestinationCookieIntent constants."
     },
     {
-      "type_id": "ServerPlayerPostMovePositionPacket",
-      "doc": "ServerPlayerPostMovePosition is sent by the server with the player's position after movement processing."
-    },
-    {
-      "type_id": "ServerPlayerPostMovePositionPacket",
-      "field": "Pos",
-      "doc": "Position is the player's position after the server has processed movement."
-    },
-    {
       "type_id": "ServerPresenceInfoPacket",
       "doc": "ServerPresenceInfo is sent by the server to provide the client with presence info."
     },
     {
       "type_id": "ServerPresenceInfoPacket",
       "field": "presence_configuration",
-      "doc": "PresenceInfo is the presence info to set, or nothing to fall back to the default."
+      "doc": "PresenceConfiguration is the presence info to set, or nothing to fall back to the default."
     },
     {
       "type_id": "ServerSettingsRequestPacket",
@@ -2950,7 +2941,7 @@
     {
       "type_id": "ServerStoreInfoPacket",
       "field": "client_store_entry_point_configuration",
-      "doc": "StoreInfo is the store info to set, or nothing to fall back to the default."
+      "doc": "ClientStoreEntryPointConfiguration is the store info to set, or nothing to fall back to the default."
     },
     {
       "type_id": "ServerToClientHandshakePacket",
@@ -2972,7 +2963,7 @@
     {
       "type_id": "SetActorLinkPacket",
       "field": "Link",
-      "doc": "EntityLink is the link to be set client-side. It links two entities together, so that one entity rides\nanother. Note that players that see those entities later will not see the link, unless it is also sent\nin the AddActor and AddPlayer packets."
+      "doc": "Link is the link to be set client-side. It links two entities together, so that one entity rides\nanother. Note that players that see those entities later will not see the link, unless it is also sent\nin the AddActor and AddPlayer packets."
     },
     {
       "type_id": "SetActorMotionPacket",
@@ -2990,7 +2981,7 @@
     {
       "type_id": "SetCommandsEnabledPacket",
       "field": "Commands Enabled",
-      "doc": "Enabled defines if the commands should be enabled, or if false, disabled."
+      "doc": "CommandsEnabled defines if the commands should be enabled, or if false, disabled."
     },
     {
       "type_id": "SetDefaultGameTypePacket",
@@ -3017,12 +3008,12 @@
     {
       "type_id": "SetDisplayObjectivePacket",
       "field": "DisplaySlotName",
-      "doc": "DisplaySlot is the slot in which the scoreboard should be displayed. Available options can be found in\nthe constants above."
+      "doc": "DisplaySlotName is the slot in which the scoreboard should be displayed. Available options can be found in\nthe constants above."
     },
     {
       "type_id": "SetDisplayObjectivePacket",
       "field": "ObjectiveDisplayName",
-      "doc": "DisplayName is the name, or title, that is displayed at the top of the scoreboard."
+      "doc": "ObjectiveDisplayName is the name, or title, that is displayed at the top of the scoreboard."
     },
     {
       "type_id": "SetDisplayObjectivePacket",
@@ -3066,7 +3057,7 @@
     {
       "type_id": "SetScorePacket",
       "field": "Score Info",
-      "doc": "Entries is a list of all entries that the client should operate on. Each entry's IdentityType specifies\nwhether it is added, modified or removed."
+      "doc": "ScoreInfo is a list of all entries that the client should operate on. Each entry's IdentityType specifies\nwhether it is added, modified or removed."
     },
     {
       "type_id": "SetScoreboardIdentityPacket",
@@ -3075,12 +3066,12 @@
     {
       "type_id": "SetScoreboardIdentityPacket",
       "field": "Scoreboard Identity Info",
-      "doc": "Entries is a list of all entries in the packet. Each of these entries points to one of the entries on\na scoreboard. Depending on ActionType, their identity will either be registered or cleared."
+      "doc": "ScoreboardIdentityInfo is a list of all entries in the packet. Each of these entries points to one of the entries on\na scoreboard. Depending on ActionType, their identity will either be registered or cleared."
     },
     {
       "type_id": "SetScoreboardIdentityPacket",
       "field": "Scoreboard Identity Packet Type",
-      "doc": "ActionType is the type of the action to execute. The action is either ScoreboardIdentityActionRegister\nto associate an identity with the entry, or ScoreboardIdentityActionClear to remove associations with\nan entity."
+      "doc": "ScoreboardIdentityPacketType is the type of the action to execute. The action is either ScoreboardIdentityActionRegister\nto associate an identity with the entry, or ScoreboardIdentityActionClear to remove associations with\nan entity."
     },
     {
       "type_id": "SetSpawnPositionPacket",
@@ -3107,7 +3098,7 @@
     {
       "type_id": "SetTitlePacket",
       "field": "Xuid",
-      "doc": "XUID is the XBOX Live user ID of the player, which will remain consistent as long as the player is\nlogged in with the XBOX Live account. It is empty if the user is not logged into its XBL account."
+      "doc": "Xuid is the XBOX Live user ID of the player, which will remain consistent as long as the player is\nlogged in with the XBOX Live account. It is empty if the user is not logged into its XBL account."
     },
     {
       "type_id": "SettingsCommandPacket",
@@ -3116,7 +3107,7 @@
     {
       "type_id": "SettingsCommandPacket",
       "field": "Command",
-      "doc": "CommandLine is the full command line that was sent to the server as a result of the setting that the\nclient changed."
+      "doc": "Command is the full command line that was sent to the server as a result of the setting that the\nclient changed."
     },
     {
       "type_id": "SettingsCommandPacket",
@@ -3202,7 +3193,7 @@
     {
       "type_id": "SharedTypes::v1_21_90::CameraPreset",
       "field": "Block Listening Radius",
-      "doc": "TrackingRadius is the radius around the camera that the aim assist should track targets."
+      "doc": "BlockListeningRadius is the radius around the camera that the aim assist should track targets."
     },
     {
       "type_id": "SharedTypes::v1_21_90::CameraPreset",
@@ -3227,12 +3218,12 @@
     {
       "type_id": "SharedTypes::v1_21_90::CameraPreset",
       "field": "Inherit From",
-      "doc": "Parent is the name of the preset that this preset extends upon. This can be left empty."
+      "doc": "InheritFrom is the name of the preset that this preset extends upon. This can be left empty."
     },
     {
       "type_id": "SharedTypes::v1_21_90::CameraPreset",
       "field": "Listener",
-      "doc": "AudioListener defines where the audio should be played from when using this preset. This is one of the\nconstants above."
+      "doc": "Listener defines where the audio should be played from when using this preset. This is one of the\nconstants above."
     },
     {
       "type_id": "SharedTypes::v1_21_90::CameraPreset",
@@ -3297,12 +3288,12 @@
     {
       "type_id": "SharedTypes::v1_21_90::CameraPreset",
       "field": "Yaw Limit Max",
-      "doc": "MaxYawLimit is the maximum yaw limit of the camera."
+      "doc": "YawLimitMax is the maximum yaw limit of the camera."
     },
     {
       "type_id": "SharedTypes::v1_21_90::CameraPreset",
       "field": "Yaw Limit Min",
-      "doc": "MinYawLimit is the minimum yaw limit of the camera."
+      "doc": "YawLimitMin is the minimum yaw limit of the camera."
     },
     {
       "type_id": "SharedTypes::v1_26_0::CameraSplineDefinition",
@@ -3373,7 +3364,7 @@
     {
       "type_id": "ShowProfilePacket",
       "field": "Player XUID",
-      "doc": "XUID is the XBOX Live User ID of the player whose profile should be shown to the player. If it is not\na valid XUID, the client ignores the packet."
+      "doc": "PlayerXUID is the XBOX Live User ID of the player whose profile should be shown to the player. If it is not\na valid XUID, the client ignores the packet."
     },
     {
       "type_id": "ShowStoreOfferPacket",
@@ -3395,7 +3386,7 @@
     {
       "type_id": "SimulationTypePacket",
       "field": "Sim Type",
-      "doc": "SimulationType is the simulation type selected."
+      "doc": "SimType is the simulation type selected."
     },
     {
       "type_id": "SmithingTransformRecipePayload",
@@ -3432,7 +3423,7 @@
     {
       "type_id": "SpawnExperienceOrbPacket",
       "field": "XP Value",
-      "doc": "ExperienceAmount is the amount of experience in experience points that the orb carries. The client-side\nsize of the orb depends on the amount of experience in the orb: There are 11 possible sizes for the\norb, for 1–2, 3–6, 7–16, 17–36, 37–72, 73–148, 149–306, 307–616, 617–1236, 1237–2476, and 2477 and up."
+      "doc": "XPValue is the amount of experience in experience points that the orb carries. The client-side\nsize of the orb depends on the amount of experience in the orb: There are 11 possible sizes for the\norb, for 1–2, 3–6, 7–16, 17–36, 37–72, 73–148, 149–306, 307–616, 617–1236, 1237–2476, and 2477 and up."
     },
     {
       "type_id": "SpawnParticleEffectPacket",
@@ -3465,7 +3456,7 @@
     {
       "type_id": "StartGamePacket",
       "field": "Multiplayer Correlation Id",
-      "doc": "MultiPlayerCorrelationID is a unique ID specifying the multi-player session of the player. A random\nUUID should be filled out for this field."
+      "doc": "MultiplayerCorrelationID is a unique ID specifying the multi-player session of the player. A random\nUUID should be filled out for this field."
     },
     {
       "type_id": "StartGamePacket",
@@ -3489,7 +3480,7 @@
     {
       "type_id": "StopSoundPacket",
       "field": "Stop All Sounds?",
-      "doc": "StopAll specifies if all sounds currently playing to the player should be stopped. If set to true, the\nSoundName field may be left empty."
+      "doc": "StopAllSounds specifies if all sounds currently playing to the player should be stopped. If set to true, the\nSoundName field may be left empty."
     },
     {
       "type_id": "StopSoundPacket",
@@ -3526,7 +3517,7 @@
     {
       "type_id": "StructureTemplateDataRequestPacket",
       "field": "Requested Operation",
-      "doc": "RequestType specifies the type of template data request that the player sent. It is one of the\nconstants found above."
+      "doc": "RequestedOperation specifies the type of template data request that the player sent. It is one of the\nconstants found above."
     },
     {
       "type_id": "StructureTemplateDataRequestPacket",
@@ -3536,12 +3527,12 @@
     {
       "type_id": "StructureTemplateDataRequestPacket",
       "field": "Structure Position",
-      "doc": "Position is the position of the structure block that has its template data requested."
+      "doc": "StructurePosition is the position of the structure block that has its template data requested."
     },
     {
       "type_id": "StructureTemplateDataRequestPacket",
       "field": "Structure Settings",
-      "doc": "Settings is a struct of settings that should be used for exporting the structure. These settings are\nidentical to the last sent in the StructureBlockUpdate packet by the client."
+      "doc": "StructureSettings is a struct of settings that should be used for exporting the structure. These settings are\nidentical to the last sent in the StructureBlockUpdate packet by the client."
     },
     {
       "type_id": "StructureTemplateDataResponsePacket",
@@ -3599,7 +3590,7 @@
     {
       "type_id": "SyncWorldClockStateData",
       "field": "IsPaused",
-      "doc": "Paused indicates if the clock is paused."
+      "doc": "IsPaused indicates if the clock is paused."
     },
     {
       "type_id": "SyncWorldClockStateData",
@@ -3621,7 +3612,7 @@
     {
       "type_id": "TextDataPayload",
       "field": "BackgroundColor",
-      "doc": "BackgroundColour is the RGBA colour to use for the text background. This is a translucent black colour by default."
+      "doc": "BackgroundColor is the RGBA colour to use for the text background. This is a translucent black colour by default."
     },
     {
       "type_id": "TextDataPayload",
@@ -3636,7 +3627,7 @@
     {
       "type_id": "TextDataPayload",
       "field": "ShowTextBackface",
-      "doc": "ShowBackfaceText is if the text should render on the back side of the shape. This only has a visible effect when\nUseRotation is true since you cannot see the back side of the text otherwise. Use true for default behaviour."
+      "doc": "ShowTextBackface is if the text should render on the back side of the shape. This only has a visible effect when\nUseRotation is true since you cannot see the back side of the text otherwise. Use true for default behaviour."
     },
     {
       "type_id": "TextDataPayload",
@@ -3664,7 +3655,7 @@
     {
       "type_id": "TickingAreasLoadStatusPacket",
       "field": "Waiting For Preload",
-      "doc": "Preload is true if the server is waiting for the area's preload."
+      "doc": "WaitingForPreload is true if the server is waiting for the area's preload."
     },
     {
       "type_id": "TimeMarkerData",
@@ -3697,7 +3688,7 @@
     {
       "type_id": "ToastRequestPacket",
       "field": "Content",
-      "doc": "Message is the message that the toast may contain alongside the title."
+      "doc": "Content is the message that the toast may contain alongside the title."
     },
     {
       "type_id": "ToastRequestPacket",
@@ -3711,7 +3702,7 @@
     {
       "type_id": "TransferPacket",
       "field": "Gatherings Configuration",
-      "doc": "GatheringJoinInfo optionally identifies the gathering being joined on the target server."
+      "doc": "GatheringsConfiguration optionally identifies the gathering being joined on the target server."
     },
     {
       "type_id": "TransferPacket",
@@ -3721,12 +3712,12 @@
     {
       "type_id": "TransferPacket",
       "field": "Server Address",
-      "doc": "Address is the address of the new server, which might be either a hostname or an actual IP address."
+      "doc": "ServerAddress is the address of the new server, which might be either a hostname or an actual IP address."
     },
     {
       "type_id": "TransferPacket",
       "field": "Server Port",
-      "doc": "Port is the UDP port of the new server."
+      "doc": "ServerPort is the UDP port of the new server."
     },
     {
       "type_id": "TrimDataPacket",
@@ -3735,12 +3726,12 @@
     {
       "type_id": "TrimDataPacket",
       "field": "TrimMaterial List",
-      "doc": "Materials is a list of materials that can be applied to armour. These are mostly different ores that have different\ncolours for more customization."
+      "doc": "TrimMaterialList is a list of materials that can be applied to armour. These are mostly different ores that have different\ncolours for more customization."
     },
     {
       "type_id": "TrimDataPacket",
       "field": "TrimPattern List",
-      "doc": "Patterns is a list of patterns that can be applied to armour. Each pattern has its own style and texture that is\ndefined through resource packs."
+      "doc": "TrimPatternList is a list of patterns that can be applied to armour. Each pattern has its own style and texture that is\ndefined through resource packs."
     },
     {
       "type_id": "TrimMaterial",
@@ -3749,7 +3740,7 @@
     {
       "type_id": "TrimMaterial",
       "field": "Color",
-      "doc": "Colour is the colour code used for text formatting, for example '§j'."
+      "doc": "Color is the colour code used for text formatting, for example '§j'."
     },
     {
       "type_id": "TrimMaterial",
@@ -3786,7 +3777,7 @@
     {
       "type_id": "UpdateAbilitiesPacket",
       "field": "Data",
-      "doc": "AbilityData represents various data about the abilities of a player, such as ability layers or permissions."
+      "doc": "Data represents various data about the abilities of a player, such as ability layers or permissions."
     },
     {
       "type_id": "UpdateAdventureSettingsPacket",
@@ -3808,12 +3799,12 @@
     {
       "type_id": "UpdateBlockPacket",
       "field": "Block Position",
-      "doc": "Position is the block position at which a block is updated."
+      "doc": "BlockPosition is the block position at which a block is updated."
     },
     {
       "type_id": "UpdateBlockPacket",
       "field": "Block Runtime ID",
-      "doc": "NewBlockRuntimeID is the runtime ID of the block that is placed at Position after sending the packet\nto the client."
+      "doc": "BlockRuntimeID is the runtime ID of the block that is placed at Position after sending the packet\nto the client."
     },
     {
       "type_id": "UpdateBlockPacket",
@@ -3832,17 +3823,17 @@
     {
       "type_id": "UpdateBlockSyncedPacket",
       "field": "Actor Sync Message",
-      "doc": "TransitionType is the type of the transition that happened. It is either BlockToEntityTransition, when\na block placed becomes a falling entity, or EntityToBlockTransition, when a falling entity hits the\nground and becomes a solid block again."
+      "doc": "ActorSyncMessage is the type of the transition that happened. It is either BlockToEntityTransition, when\na block placed becomes a falling entity, or EntityToBlockTransition, when a falling entity hits the\nground and becomes a solid block again."
     },
     {
       "type_id": "UpdateBlockSyncedPacket",
       "field": "Block Position",
-      "doc": "Position is the block position at which a block is updated."
+      "doc": "BlockPosition is the block position at which a block is updated."
     },
     {
       "type_id": "UpdateBlockSyncedPacket",
       "field": "Block Runtime ID",
-      "doc": "NewBlockRuntimeID is the runtime ID of the block that is placed at Position after sending the packet\nto the client."
+      "doc": "BlockRuntimeID is the runtime ID of the block that is placed at Position after sending the packet\nto the client."
     },
     {
       "type_id": "UpdateBlockSyncedPacket",
@@ -3857,7 +3848,7 @@
     {
       "type_id": "UpdateBlockSyncedPacket",
       "field": "Unique Actor Id",
-      "doc": "EntityUniqueID is the unique ID of the falling block entity that the block transitions to or that the\nentity transitions from.\nNote that for both possible values for TransitionType, the EntityUniqueID should point to the falling\nblock entity involved."
+      "doc": "UniqueActorID is the unique ID of the falling block entity that the block transitions to or that the\nentity transitions from.\nNote that for both possible values for TransitionType, the EntityUniqueID should point to the falling\nblock entity involved."
     },
     {
       "type_id": "UpdateClientInputLocksPacket",
@@ -3866,7 +3857,7 @@
     {
       "type_id": "UpdateClientInputLocksPacket",
       "field": "Input Lock ComponentData",
-      "doc": "Locks is a set of flags that specify which client inputs are disabled, such as whether the player can\nmove, rotate the camera, jump, sneak or mount/dismount entities. It is a combination of the\nClientInputLock constants above."
+      "doc": "InputLockComponentData is a set of flags that specify which client inputs are disabled, such as whether the player can\nmove, rotate the camera, jump, sneak or mount/dismount entities. It is a combination of the\nClientInputLock constants above."
     },
     {
       "type_id": "UpdateClientOptionsPacket",
@@ -3875,12 +3866,12 @@
     {
       "type_id": "UpdateClientOptionsPacket",
       "field": "Filter Profanity Change",
-      "doc": "FilterProfanity is if the client only uses filtered messages or not."
+      "doc": "FilterProfanityChange is if the client only uses filtered messages or not."
     },
     {
       "type_id": "UpdateClientOptionsPacket",
       "field": "Graphics Mode Change",
-      "doc": "GraphicsMode is the graphics mode that the client is using. It is one of the constants above."
+      "doc": "GraphicsModeChange is the graphics mode that the client is using. It is one of the constants above."
     },
     {
       "type_id": "UpdateEquipPacket",
@@ -3912,17 +3903,17 @@
     {
       "type_id": "UpdateSoftEnumPacket",
       "field": "Enum Name",
-      "doc": "EnumType is the type of the enum. This type must be identical to the one set in the AvailableCommands\npacket, because the client uses this to recognise which enum to update."
+      "doc": "EnumName is the type of the enum. This type must be identical to the one set in the AvailableCommands\npacket, because the client uses this to recognise which enum to update."
     },
     {
       "type_id": "UpdateSoftEnumPacket",
       "field": "Update Type",
-      "doc": "ActionType is the type of the action to execute on the enum. The Options field has a different result,\ndepending on what ActionType is used."
+      "doc": "UpdateType is the type of the action to execute on the enum. The Options field has a different result,\ndepending on what ActionType is used."
     },
     {
       "type_id": "UpdateSoftEnumPacket",
       "field": "Values",
-      "doc": "Options is a list of options that should be updated. Depending on the ActionType field, either these\noptions will be added to the enum, the enum options will be set to these options or all of these\noptions will be removed from the enum."
+      "doc": "Values is a list of options that should be updated. Depending on the ActionType field, either these\noptions will be added to the enum, the enum options will be set to these options or all of these\noptions will be removed from the enum."
     },
     {
       "type_id": "UpdateSubChunkBlocksPacket",
@@ -3978,7 +3969,7 @@
     {
       "type_id": "WorldClockData",
       "field": "IsPaused",
-      "doc": "Paused indicates if the clock is paused."
+      "doc": "IsPaused indicates if the clock is paused."
     },
     {
       "type_id": "WorldClockData",

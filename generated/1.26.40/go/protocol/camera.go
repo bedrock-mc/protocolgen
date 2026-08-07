@@ -19,7 +19,7 @@ type CameraAimAssistActorPriorityData struct {
 	CategoryIndex int32
 	// ActorIndex is the index of the actor.
 	ActorIndex int32
-	// Priority is the priority value for this actor.
+	// PriorityValue is the priority value for this actor.
 	PriorityValue int32
 }
 
@@ -130,7 +130,7 @@ const (
 type CameraEase struct {
 	// Type is the type of easing function used. This is one of the constants above.
 	Type uint8
-	// Duration is the time in seconds that the easing function should take.
+	// Time is the time in seconds that the easing function should take.
 	Time float32
 }
 
@@ -177,11 +177,11 @@ func (x *CameraFadeColor) Marshal(io IO) {
 
 // CameraFadeTimeData represents the time data for a CameraInstructionFade.
 type CameraFadeTimeData struct {
-	// FadeInDuration is the time in seconds for the screen to fully fade in.
+	// FadeInTime is the time in seconds for the screen to fully fade in.
 	FadeInTime float32
-	// WaitDuration is time in seconds to wait before fading out.
+	// HoldTime is time in seconds to wait before fading out.
 	HoldTime float32
-	// FadeOutDuration is the time in seconds for the screen to fully fade out.
+	// FadeOutTime is the time in seconds for the screen to fully fade out.
 	FadeOutTime float32
 }
 
@@ -232,10 +232,10 @@ func (x *CameraInstructionData) Marshal(io IO) {
 // CameraInstructionFade represents a camera instruction that fades the screen to a specified
 // colour.
 type CameraInstructionFade struct {
-	// TimeData is the time data for the fade, which includes the fade in duration, wait duration and
-	// fade out duration.
+	// Time is the time data for the fade, which includes the fade in duration, wait duration and fade
+	// out duration.
 	Time Optional[CameraFadeTimeData]
-	// Colour is the colour of the screen to fade to. This only uses the red, green and blue components.
+	// Color is the colour of the screen to fade to. This only uses the red, green and blue components.
 	Color Optional[CameraFadeColor]
 }
 
@@ -273,9 +273,9 @@ type CameraInstructionSet struct {
 	Preset uint32
 	// Ease represents the easing function that is used by the instruction.
 	Ease Optional[CameraEase]
-	// Position represents the position of the camera.
+	// Pos represents the position of the camera.
 	Pos Optional[CameraPosition]
-	// Rotation represents the rotation of the camera.
+	// Rot represents the rotation of the camera.
 	Rot Optional[CameraRotation]
 	// Facing is a vector that the camera will always face towards during the duration of the
 	// instruction.
@@ -287,7 +287,7 @@ type CameraInstructionSet struct {
 	EntityOffset Optional[CameraEntityOffset]
 	// Default determines whether the camera is a default camera or not.
 	Default Optional[bool]
-	// IgnoreStartingValuesComponent behavior is currently unknown.
+	// RemoveIgnoreStartingValuesComponent behavior is currently unknown.
 	RemoveIgnoreStartingValuesComponent bool
 }
 
@@ -328,9 +328,9 @@ func (x *CameraInstructionTarget) Marshal(io IO) {
 
 // CameraInstructionTarget represents a camera instruction that targets a specific entity.
 type CameraInstructionTargetData struct {
-	// CenterOffset is the offset from the center of the entity that the camera should target.
+	// TargetCenterOffset is the offset from the center of the entity that the camera should target.
 	TargetCenterOffset Optional[mgl32.Vec3]
-	// EntityUniqueID is the unique ID of the entity that the camera should target.
+	// TargetActorID is the unique ID of the entity that the camera should target.
 	TargetActorID int64
 }
 
@@ -353,7 +353,7 @@ func (x *CameraPosition) Marshal(io IO) {
 type CameraPreset struct {
 	// Name is the name of the preset. Each preset must have their own unique name.
 	Name string
-	// Parent is the name of the preset that this preset extends upon. This can be left empty.
+	// InheritFrom is the name of the preset that this preset extends upon. This can be left empty.
 	InheritFrom string
 	// PosX is the default X position of the camera.
 	PosX Optional[float32]
@@ -375,7 +375,7 @@ type CameraPreset struct {
 	VerticalRotationLimit Optional[mgl32.Vec2]
 	// ContinueTargeting determines whether the camera should continue targeting when using aim assist.
 	ContinueTargeting Optional[bool]
-	// TrackingRadius is the radius around the camera that the aim assist should track targets.
+	// BlockListeningRadius is the radius around the camera that the aim assist should track targets.
 	BlockListeningRadius Optional[float32]
 	// ViewOffset is only used in a follow_orbit camera and controls an offset based on a pivot point to
 	// the player, causing it to be shifted in a certain direction.
@@ -385,12 +385,12 @@ type CameraPreset struct {
 	// Radius is only used in a follow_orbit camera and controls how far away from the player the camera
 	// should be rendered.
 	Radius Optional[float32]
-	// MinYawLimit is the minimum yaw limit of the camera.
+	// YawLimitMin is the minimum yaw limit of the camera.
 	YawLimitMin Optional[float32]
-	// MaxYawLimit is the maximum yaw limit of the camera.
+	// YawLimitMax is the maximum yaw limit of the camera.
 	YawLimitMax Optional[float32]
-	// AudioListener defines where the audio should be played from when using this preset. This is one
-	// of the constants above.
+	// Listener defines where the audio should be played from when using this preset. This is one of the
+	// constants above.
 	Listener Optional[CameraPresetAudioListener]
 	// PlayerEffects is currently unknown.
 	PlayerEffects Optional[bool]
@@ -557,7 +557,7 @@ type CameraSplineInstruction struct {
 	RotationOption    []CameraRotationOption
 	// SplineIdentifier is an optional identifier for referencing the spline by name.
 	SplineIdentifier string
-	// LoadFromJson optionally determines whether the spline should be loaded from a JSON definition.
+	// LoadFromJSON optionally determines whether the spline should be loaded from a JSON definition.
 	LoadFromJSON bool
 }
 

@@ -8,8 +8,8 @@ import "protocolgen/generated/1.26.40/go/protocol"
 // to a ClientCacheBlobStatus packet and contains the blob data of all blobs that the client
 // acknowledged not to have yet.
 type ClientCacheMissResponse struct {
-	// Blobs is a list of all blobs that the client sent misses for in the ClientCacheBlobStatus. These
-	// blobs hold the data of the blobs with the hashes they are matched with.
+	// MissingBlobs is a list of all blobs that the client sent misses for in the ClientCacheBlobStatus.
+	// These blobs hold the data of the blobs with the hashes they are matched with.
 	MissingBlobs []protocol.MissingBlobData
 }
 

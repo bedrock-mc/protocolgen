@@ -14,26 +14,26 @@ import (
 // possible, the packets from the client should be ignored however, and the server should play them
 // on its own accord.
 type LevelSoundEvent struct {
-	// SoundType is the type of the sound to play. It is one of the constants above. Some of the sound
+	// SoundEvent is the type of the sound to play. It is one of the constants above. Some of the sound
 	// types require additional data, which is set in the ExtraData field.
 	SoundEvent string
 	// Position is the position of the sound event. The player will be able to hear the direction of the
 	// sound based on what position is sent here.
 	Position mgl32.Vec3
-	// ExtraData is a packed integer that some sound types use to provide extra data. An example of this
-	// is the note sound, which is composed of a pitch and an instrument type.
+	// Data is a packed integer that some sound types use to provide extra data. An example of this is
+	// the note sound, which is composed of a pitch and an instrument type.
 	Data int32
-	// EntityType is the string entity type of the entity that emitted the sound, for example
+	// ActorIdentifier is the string entity type of the entity that emitted the sound, for example
 	// 'minecraft:skeleton'. Some sound types use this entity type for additional data.
 	ActorIdentifier string
-	// BabyMob specifies if the sound should be that of a baby mob. It is most notably used for parrot
+	// IsBaby specifies if the sound should be that of a baby mob. It is most notably used for parrot
 	// imitations, which will change based on if this field is set to true or not.
 	IsBaby bool
-	// DisableRelativeVolume specifies if the sound should be played relatively or not. If set to true,
-	// the sound will have full volume, regardless of where the Position is, whereas if set to false,
-	// the sound's volume will be based on the distance to Position.
+	// IsGlobal specifies if the sound should be played relatively or not. If set to true, the sound
+	// will have full volume, regardless of where the Position is, whereas if set to false, the sound's
+	// volume will be based on the distance to Position.
 	IsGlobal bool
-	// EntityUniqueID is the unique ID of a source entity. The unique ID is a value that remains
+	// ActorUniqueID is the unique ID of a source entity. The unique ID is a value that remains
 	// consistent across different sessions of the same world, but most servers simply fill the runtime
 	// ID of the entity out for this field.
 	ActorUniqueID int64

@@ -7,7 +7,7 @@ import "protocolgen/generated/1.26.40/go/protocol"
 // SetScore is sent by the server to send the contents of a scoreboard to the player. It may be used
 // to either add, remove or edit entries on the scoreboard.
 type SetScore struct {
-	// Entries is a list of all entries that the client should operate on. Each entry's IdentityType
+	// ScoreInfo is a list of all entries that the client should operate on. Each entry's IdentityType
 	// specifies whether it is added, modified or removed.
 	ScoreInfo []protocol.SetScoreInfoItem
 }

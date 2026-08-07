@@ -8,10 +8,10 @@ import "protocolgen/generated/1.26.40/go/protocol"
 // chunk that the block is located in. It is particularly useful for small modifications like block
 // breaking/placing.
 type UpdateBlock struct {
-	// Position is the block position at which a block is updated.
+	// BlockPosition is the block position at which a block is updated.
 	BlockPosition protocol.BlockPos
-	// NewBlockRuntimeID is the runtime ID of the block that is placed at Position after sending the
-	// packet to the client.
+	// BlockRuntimeID is the runtime ID of the block that is placed at Position after sending the packet
+	// to the client.
 	BlockRuntimeID uint32
 	// Flags is a combination of flags that specify the way the block is updated client-side. It is a
 	// combination of the flags above, but typically sending only the BlockUpdateNetwork flag is

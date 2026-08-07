@@ -431,7 +431,7 @@ type BiomeSurfaceBuilderData struct {
 	HasSwampSurface bool
 	// HasFrozenOceanSurface is true if the biome has a frozen ocean surface.
 	HasFrozenOceanSurface bool
-	// HasEndSurface is true if the biome has an end surface.
+	// HasTheEndSurface is true if the biome has an end surface.
 	HasTheEndSurface bool
 	// MesaSurface is optional information to specify the biome's mesa surface.
 	MesaSurface Optional[BiomeMesaSurfaceData]

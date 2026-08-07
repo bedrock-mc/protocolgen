@@ -8,8 +8,8 @@ import "protocolgen/generated/1.26.40/go/protocol"
 // player. The packet is used, as an example, for when a raid is triggered and when a raid is
 // defeated.
 type OnScreenTextureAnimation struct {
-	// AnimationType is the type of the animation to show. The packet provides no further extra data to
-	// allow modifying the duration or other properties of the animation.
+	// EffectID is the type of the animation to show. The packet provides no further extra data to allow
+	// modifying the duration or other properties of the animation.
 	EffectID uint32
 }
 

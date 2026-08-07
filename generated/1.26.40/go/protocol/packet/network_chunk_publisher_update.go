@@ -12,14 +12,15 @@ import "protocolgen/generated/1.26.40/go/protocol"
 // If the packet is not sent at all, no chunks will be shown to the player, regardless of where they
 // are sent.
 type NetworkChunkPublisherUpdate struct {
-	// Position is the block position around which chunks loaded will remain shown to the client. Most
-	// servers set this position to the position of the player itself.
+	// NewPositionForView is the block position around which chunks loaded will remain shown to the
+	// client. Most servers set this position to the position of the player itself.
 	NewPositionForView protocol.BlockPos
-	// Radius is the radius in blocks around Position that chunks sent show up in and will remain loaded
-	// in. Unlike the RequestChunkRadius and ChunkRadiusUpdated packets, this radius is in blocks rather
-	// than chunks, so the chunk radius needs to be multiplied by 16. (Or shifted to the left by 4.)
+	// NewRadiusForView is the radius in blocks around Position that chunks sent show up in and will
+	// remain loaded in. Unlike the RequestChunkRadius and ChunkRadiusUpdated packets, this radius is in
+	// blocks rather than chunks, so the chunk radius needs to be multiplied by 16. (Or shifted to the
+	// left by 4.)
 	NewRadiusForView uint32
-	// SavedChunks ... TODO: Figure out what this field is used for.
+	// ServerBuiltChunksList ... TODO: Figure out what this field is used for.
 	ServerBuiltChunksList []protocol.ChunkPos
 }
 
