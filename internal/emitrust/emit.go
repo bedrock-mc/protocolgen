@@ -692,21 +692,35 @@ func primitiveRustType(code string) (string, error) {
 }
 
 func emitRustEnum(b *strings.Builder, item definition) {
-	fmt.Fprintf(b, "#[derive(Clone, Copy, Debug, PartialEq, Eq)]\n#[repr(%s)]\npub enum %s {\n", item.Underlying, item.Name)
+	fmt.Fprintf(b, "#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]\npub enum %s {\n", item.Name)
 	used := map[string]bool{}
 	variantNames := make([]string, 0, len(item.Variants))
 	for _, variant := range item.Variants {
 		name := uniqueTypeVariant(enumVariantName(item.Name, variant.Name), used)
 		variantNames = append(variantNames, name)
-		fmt.Fprintf(b, "    %s = %d,\n", name, variant.Value)
+		fmt.Fprintf(b, "    %s,\n", name)
 	}
+	unknownName := uniqueTypeVariant("Unknown", used)
+	fmt.Fprintf(b, "    %s(%s),\n", unknownName, item.Underlying)
 	b.WriteString("}\n\n")
-	fmt.Fprintf(b, "impl TryFrom<%s> for %s {\n    type Error = %s;\n\n    fn try_from(value: %s) -> Result<Self, %s> {\n        match value {\n", item.Underlying, item.Name, item.Underlying, item.Underlying, item.Underlying)
+	fmt.Fprintf(b, "impl From<%s> for %s {\n    fn from(value: %s) -> Self {\n        match value {\n", item.Underlying, item.Name, item.Underlying)
 	for index, variant := range item.Variants {
-		fmt.Fprintf(b, "            %d => Ok(Self::%s),\n", variant.Value, variantNames[index])
+		fmt.Fprintf(b, "            %d => Self::%s,\n", variant.Value, variantNames[index])
 	}
-	b.WriteString("            value => Err(value),\n        }\n    }\n}\n\n")
-	fmt.Fprintf(b, "impl From<%s> for %s {\n    fn from(value: %s) -> Self {\n        value as %s\n    }\n}\n\n", item.Name, item.Underlying, item.Name, item.Underlying)
+	fmt.Fprintf(b, "            value => Self::%s(value),\n        }\n    }\n}\n\n", unknownName)
+	fmt.Fprintf(b, "impl %s {\n    pub fn to_raw(self) -> %s {\n        match self {\n", item.Name, item.Underlying)
+	for index, variant := range item.Variants {
+		fmt.Fprintf(b, "            Self::%s => %d,\n", variantNames[index], variant.Value)
+	}
+	fmt.Fprintf(b, "            Self::%s(value) => value,\n        }\n    }\n}\n\n", unknownName)
+	fmt.Fprintf(b, "impl From<%s> for %s {\n    fn from(value: %s) -> Self {\n        value.to_raw()\n    }\n}\n\n", item.Name, item.Underlying, item.Name)
+	fmt.Fprintf(b, "impl Default for %s {\n    fn default() -> Self {\n", item.Name)
+	if len(variantNames) > 0 {
+		fmt.Fprintf(b, "        Self::%s\n", variantNames[0])
+	} else {
+		fmt.Fprintf(b, "        Self::%s(0)\n", unknownName)
+	}
+	b.WriteString("    }\n}\n\n")
 }
 
 func enumVariantName(enumName, value string) string {

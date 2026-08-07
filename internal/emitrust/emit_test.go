@@ -55,10 +55,13 @@ func TestGenerateRustFilesUseNativeEnumsAndPacketModules(t *testing.T) {
 		t.Fatal(err)
 	}
 	enums := files["src/enums.rs"]
-	for _, text := range []string{"pub enum MultiplayerSettingsPacketType", "Enable = 0", "Disable = 1", "RefreshJoinCode = 2", "impl TryFrom<i32> for MultiplayerSettingsPacketType", "impl From<MultiplayerSettingsPacketType> for i32"} {
+	for _, text := range []string{"pub enum MultiplayerSettingsPacketType", "Enable,", "Disable,", "RefreshJoinCode,", "Unknown(i32)", "impl From<i32> for MultiplayerSettingsPacketType", "fn to_raw(self) -> i32"} {
 		if !strings.Contains(enums, text) {
 			t.Fatalf("native enum output omits %q:\n%s", text, enums)
 		}
+	}
+	if strings.Contains(enums, "TryFrom<i32>") || strings.Contains(enums, "type Error = i32") {
+		t.Fatalf("open enum retained closed decoding:\n%s", enums)
 	}
 	if strings.Contains(enums, "ENUMS") || strings.Contains(enums, "repr(transparent)") {
 		t.Fatalf("enum output retained wrapper constants:\n%s", enums)
