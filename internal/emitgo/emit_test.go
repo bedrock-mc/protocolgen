@@ -129,9 +129,11 @@ func TestGenerateIncludesConcreteCodecRuntime(t *testing.T) {
 		t.Fatal(err)
 	}
 	for name, wants := range map[string][]string{
-		"protocol/codec.go":  {"type IO interface", "func IntegerFunc", "func OptionalFunc", "func UnionFunc", "func FuncSlice"},
-		"protocol/reader.go": {"type Reader struct", "func NewReader", "func (r *Reader) NBT", "func (r *Reader) SliceLength"},
-		"protocol/writer.go": {"type Writer struct", "func NewWriter", "func (w *Writer) NBT", "func (w *Writer) Data"},
+		"protocol/codec.go":   {"type IO interface"},
+		"protocol/helpers.go": {"func IntegerFunc", "func OptionalFunc", "func UnionFunc", "func FuncSlice"},
+		"protocol/reader.go":  {"type Reader struct", "func NewReader", "func (r *Reader) NBT", "func (r *Reader) SliceLength"},
+		"protocol/writer.go":  {"type Writer struct", "func NewWriter", "func (w *Writer) NBT", "func (w *Writer) Data"},
+		"protocol/types.go":   {"type Optional", "type OrderedEntry"},
 	} {
 		source, ok := files[name]
 		if !ok {
