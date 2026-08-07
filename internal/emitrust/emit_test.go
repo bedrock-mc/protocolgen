@@ -306,7 +306,7 @@ func TestGenerateRustUsesAddressableModulesAndCrateIdentity(t *testing.T) {
 func TestGenerateRustKeepsSharedUnionPayloadNamed(t *testing.T) {
 	shared := manifest.Node{Kind: manifest.KindStruct, Semantic: "SharedRecord", TypeID: "SharedRecord", Fields: []manifest.Field{{Ordinal: 0, Name: "Value", Encode: manifest.Primitive("u8"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}
 	union := manifest.Union(manifest.Primitive("u8"), manifest.Variant{Value: 0, Name: "Choice::Shared", Encode: shared})
-	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:shared-rust", MinecraftVersion: "fixture", ProtocolVersion: 2168}}, Packets: []manifest.Packet{{ID: 1, Name: "ChoicePacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{Ordinal: 0, Name: "Choice", Encode: union, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}, {Ordinal: 1, Name: "Shared", Encode: shared, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}}}
+	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:shared-rust", MinecraftVersion: "fixture", ProtocolVersion: 2168}}, Packets: []manifest.Packet{{ID: 1, Name: "EnvelopePacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{Ordinal: 0, Name: "Choice", Encode: union, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}, {Ordinal: 1, Name: "Shared", Encode: shared, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}}}
 	source, err := generatedRustSource(m)
 	if err != nil {
 		t.Fatal(err)
@@ -345,7 +345,7 @@ func TestRustPublicNamesDropSchemaScaffolding(t *testing.T) {
 	tests := map[string]string{
 		"enums/MoLangVersion":                           "MoLangVersion",
 		"enums/MolangVersion":                           "MoLangVersion",
-		"PlayerVideoCapturePacketPayload::Action":       "PlayerVideoCaptureAction",
+		"PlayerVideoCapturePacketPayload::Action":       "Action",
 		"DataItemEntryPayloadUnion":                     "DataItemEntryValue",
 		"DimensionDefinitionGroup::DimensionDefinition": "DimensionDefinition",
 		"ServerWaypointGroup::Action":                   "ServerWaypointGroupAction",

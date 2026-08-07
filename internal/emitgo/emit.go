@@ -5,7 +5,6 @@ package emitgo
 
 import (
 	"embed"
-	"encoding/json"
 	"fmt"
 	"go/format"
 	"sort"
@@ -13,6 +12,7 @@ import (
 	"unicode"
 
 	"protocolgen/internal/manifest"
+	"protocolgen/internal/naming"
 )
 
 type typeDefinition struct {
@@ -44,6 +44,7 @@ type generator struct {
 	definitions        map[string]typeDefinition
 	identity           map[string]string
 	usedNames          map[string]bool
+	resolver           *naming.Resolver
 	protocolImportPath string
 	nativeTypes        bool
 	emitPacketRuntime  bool
@@ -72,6 +73,7 @@ func emitRuntimeFiles() (map[string]string, error) {
 // Generate and can be disabled by callers that only need definitions.
 type Options struct {
 	ProtocolImportPath string
+	Naming             naming.Overlay
 	NativeTypes        bool
 	EmitPacketRuntime  bool
 	EmitPacketPools    bool
@@ -103,6 +105,7 @@ func GenerateWithOptions(m manifest.Manifest, options Options) (map[string]strin
 		definitions:        map[string]typeDefinition{},
 		identity:           map[string]string{},
 		usedNames:          map[string]bool{},
+		resolver:           naming.NewResolver(options.Naming),
 		protocolImportPath: options.ProtocolImportPath,
 		nativeTypes:        options.NativeTypes,
 		emitPacketRuntime:  options.EmitPacketRuntime,
@@ -112,7 +115,11 @@ func GenerateWithOptions(m manifest.Manifest, options Options) (map[string]strin
 	sort.Slice(packets, func(i, j int) bool { return packets[i].ID < packets[j].ID })
 	packetNames := map[uint32]string{}
 	for _, packet := range packets {
-		name := g.unique(packetTypeName(packet.Name))
+		name := packetTypeName(packet.Name)
+		if err := g.resolver.Reserve(packet.Name, naming.PacketTypeName(packet.Name), exportName); err != nil {
+			return nil, fmt.Errorf("packet %s: %w", packet.Name, err)
+		}
+		g.usedNames[name] = true
 		packetNames[packet.ID] = name
 		for _, field := range packet.Fields {
 			if err := ensureCodecSymmetric(field); err != nil {
@@ -254,7 +261,10 @@ func (g *generator) goType(node manifest.Node, hint string) (string, error) {
 		}
 		return "[]OrderedEntry[" + key + ", " + value + "]", nil
 	case manifest.KindUnion:
-		name := g.registerIdentity(node, hint+"Union")
+		name, err := g.registerIdentity(node, hint+"Union")
+		if err != nil {
+			return "", err
+		}
 		if _, exists := g.definitions[name]; !exists {
 			if node.Control == nil || node.Control.Primitive == nil {
 				return "", fmt.Errorf("union has no primitive discriminator")
@@ -293,7 +303,10 @@ func (g *generator) goType(node manifest.Node, hint string) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		name := g.registerIdentity(node, hint+"Enum")
+		name, err := g.registerIdentity(node, hint+"Enum")
+		if err != nil {
+			return "", err
+		}
 		if _, exists := g.definitions[name]; !exists {
 			g.definitions[name] = typeDefinition{Name: name, Kind: manifest.KindEnum, Underlying: underlying, Variants: append([]manifest.Variant(nil), node.Variants...)}
 		}
@@ -447,7 +460,10 @@ func containsString(values []string, target string) bool {
 }
 
 func (g *generator) registerStruct(node manifest.Node, hint string) (string, error) {
-	name := g.registerIdentity(node, hint+"Struct")
+	name, err := g.registerIdentity(node, hint+"Struct")
+	if err != nil {
+		return "", err
+	}
 	if _, exists := g.definitions[name]; exists {
 		return name, nil
 	}
@@ -468,68 +484,15 @@ func (g *generator) registerStruct(node manifest.Node, hint string) (string, err
 	return name, nil
 }
 
-func (g *generator) registerIdentity(node manifest.Node, hint string) string {
-	key := node.TypeID
-	inferred := inferredTypeName(node)
-	if key == "" {
-		identityHint := inferred
-		if identityHint == "" {
-			identityHint = hint
-		} else {
-			identityHint += "/" + unionIdentity(node)
-		}
-		key = fmt.Sprintf("%q/%q/%q", node.Kind, node.Semantic, identityHint)
+func (g *generator) registerIdentity(node manifest.Node, hint string) (string, error) {
+	name, err := g.resolver.Resolve(node, hint, exportName)
+	if err != nil {
+		return "", err
 	}
-	if name, ok := g.identity[key]; ok {
-		return name
-	}
-	base := hint
-	if node.TypeID != "" {
-		base = node.TypeID
-	} else if node.Semantic != "" {
-		base = node.Semantic
-	} else if inferred != "" {
-		base = inferred
-	}
-	candidate := publicTypeName(base)
-	if g.usedNames[candidate] {
-		switch node.Kind {
-		case manifest.KindEnum:
-			candidate += "Type"
-		case manifest.KindUnion:
-			hinted := strings.TrimSuffix(publicTypeName(hint), "Union")
-			if hinted != "" && !g.usedNames[hinted] {
-				candidate = hinted
-			} else {
-				candidate += "Data"
-			}
-		default:
-			candidate += "Data"
-		}
-	}
-	name := g.unique(candidate)
+	key := naming.IdentityKeyFor(node, hint)
 	g.identity[key] = name
-	return name
-}
-
-func unionIdentity(node manifest.Node) string {
-	type variantIdentity struct {
-		Value  int64  `json:"value"`
-		Name   string `json:"name"`
-		TypeID string `json:"type_id,omitempty"`
-	}
-	identity := struct {
-		Control  string            `json:"control"`
-		Variants []variantIdentity `json:"variants"`
-	}{}
-	if node.Control != nil && node.Control.Primitive != nil {
-		identity.Control = node.Control.Primitive.Code
-	}
-	for _, variant := range node.Variants {
-		identity.Variants = append(identity.Variants, variantIdentity{Value: variant.Value, Name: variant.Name, TypeID: variant.Encode.TypeID})
-	}
-	encoded, _ := json.Marshal(identity)
-	return string(encoded)
+	g.usedNames[name] = true
+	return name, nil
 }
 
 func (g *generator) unique(base string) string {
@@ -1438,30 +1401,6 @@ func formatGoSource(source string) (string, error) {
 	return string(formatted), nil
 }
 
-func inferredTypeName(node manifest.Node) string {
-	if node.Kind != manifest.KindUnion || len(node.Variants) == 0 {
-		return ""
-	}
-	prefix := ""
-	for _, variant := range node.Variants {
-		qualified := variant.Name
-		if !strings.Contains(qualified, "::") && variant.Encode.TypeID != "" {
-			qualified = variant.Encode.TypeID
-		}
-		position := strings.LastIndex(qualified, "::")
-		if position < 0 {
-			return ""
-		}
-		candidate := qualified[:position]
-		if prefix == "" {
-			prefix = candidate
-		} else if prefix != candidate {
-			return ""
-		}
-	}
-	return prefix
-}
-
 func shortTypeName(name string) string {
 	if position := strings.LastIndex(name, "::"); position >= 0 {
 		return name[position+2:]
@@ -1582,49 +1521,11 @@ var enumInitialisms = map[string]string{
 }
 
 func packetTypeName(value string) string {
-	name := exportName(value)
-	name = strings.TrimSuffix(name, "Packet")
-	if name == "" {
-		return "Packet"
-	}
-	return name
+	return exportName(naming.PacketTypeName(value))
 }
 
 func publicTypeName(value string) string {
-	value = strings.TrimSuffix(value, ".json#")
-	value = strings.TrimSuffix(value, ".json")
-	value = strings.TrimPrefix(value, "enums/")
-	value = stripSharedTypeVersion(value)
-	value = strings.ReplaceAll(value, "Packet::", "::")
-	value = strings.ReplaceAll(value, "PacketPayload::", "::")
-	value = strings.ReplaceAll(value, "PacketPayload", "")
-	value = collapseRedundantGroup(value)
-	if strings.HasSuffix(value, "PayloadUnion") {
-		value = strings.TrimSuffix(value, "PayloadUnion") + "Value"
-	}
-	value = strings.TrimSuffix(value, "Union")
-	value = strings.TrimSuffix(value, "Payload")
-	return strings.ReplaceAll(exportName(value), "Molang", "MoLang")
-}
-
-func collapseRedundantGroup(value string) string {
-	parts := strings.Split(value, "::")
-	if len(parts) == 2 && parts[0] == parts[1]+"Group" {
-		return parts[1]
-	}
-	return value
-}
-
-func stripSharedTypeVersion(value string) string {
-	const prefix = "SharedTypes::"
-	if !strings.HasPrefix(value, prefix) {
-		return value
-	}
-	rest := strings.TrimPrefix(value, prefix)
-	if separator := strings.Index(rest, "::"); separator >= 0 && strings.HasPrefix(rest[:separator], "v") {
-		return rest[separator+2:]
-	}
-	return rest
+	return strings.ReplaceAll(exportName(naming.PublicTypeName(value)), "Molang", "MoLang")
 }
 
 func snakeName(value string) string {
