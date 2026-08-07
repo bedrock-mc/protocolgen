@@ -641,12 +641,21 @@ func publicTypeName(value string) string {
 	value = strings.ReplaceAll(value, "Packet::", "::")
 	value = strings.ReplaceAll(value, "PacketPayload::", "::")
 	value = strings.ReplaceAll(value, "PacketPayload", "")
+	value = collapseRedundantGroup(value)
 	if strings.HasSuffix(value, "PayloadUnion") {
 		value = strings.TrimSuffix(value, "PayloadUnion") + "Value"
 	}
 	value = strings.TrimSuffix(value, "Union")
 	value = strings.TrimSuffix(value, "Payload")
 	return strings.ReplaceAll(typeName(value), "Molang", "MoLang")
+}
+
+func collapseRedundantGroup(value string) string {
+	parts := strings.Split(value, "::")
+	if len(parts) == 2 && parts[0] == parts[1]+"Group" {
+		return parts[1]
+	}
+	return value
 }
 
 func stripSharedTypeVersion(value string) string {

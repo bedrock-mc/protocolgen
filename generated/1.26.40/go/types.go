@@ -961,7 +961,7 @@ type DataItemVec3 struct {
 
 func (DataItemVec3) isDataItemEntryValue() {}
 
-type DimensionDefinitionGroupDimensionDefinition struct {
+type DimensionDefinition struct {
 	HeightMaximum int32
 	HeightMinimum int32
 	GeneratorType GeneratorType

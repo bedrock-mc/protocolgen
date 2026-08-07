@@ -5,7 +5,7 @@ use crate::*;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct DimensionData {
-    pub definitions: Vec<(String, DimensionDefinitionGroupDimensionDefinition)>,
+    pub definitions: Vec<(String, DimensionDefinition)>,
 }
 
 impl DimensionData {

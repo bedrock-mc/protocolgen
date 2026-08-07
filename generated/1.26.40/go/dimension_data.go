@@ -3,5 +3,5 @@
 package protocol2168
 
 type DimensionData struct {
-	Definitions []OrderedEntry[string, DimensionDefinitionGroupDimensionDefinition]
+	Definitions []OrderedEntry[string, DimensionDefinition]
 }

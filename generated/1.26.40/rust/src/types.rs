@@ -986,7 +986,7 @@ pub struct DataItemVec3 {
 }
 
 #[derive(Clone, Debug, PartialEq)]
-pub struct DimensionDefinitionGroupDimensionDefinition {
+pub struct DimensionDefinition {
     pub height_maximum: i32,
     pub height_minimum: i32,
     pub generator_type: GeneratorType,

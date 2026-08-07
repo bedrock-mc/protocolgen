@@ -171,11 +171,13 @@ func TestGenerateRustKeepsUnrelatedAnonymousUnionsDistinct(t *testing.T) {
 
 func TestRustPublicNamesDropSchemaScaffolding(t *testing.T) {
 	tests := map[string]string{
-		"enums/MoLangVersion":                          "MoLangVersion",
-		"enums/MolangVersion":                          "MoLangVersion",
-		"PlayerVideoCapturePacketPayload::Action":      "PlayerVideoCaptureAction",
-		"DataItemEntryPayloadUnion":                    "DataItemEntryValue",
-		"SharedTypes::v1_26_0::CameraSplineDefinition": "CameraSplineDefinition",
+		"enums/MoLangVersion":                           "MoLangVersion",
+		"enums/MolangVersion":                           "MoLangVersion",
+		"PlayerVideoCapturePacketPayload::Action":       "PlayerVideoCaptureAction",
+		"DataItemEntryPayloadUnion":                     "DataItemEntryValue",
+		"DimensionDefinitionGroup::DimensionDefinition": "DimensionDefinition",
+		"ServerWaypointGroup::Action":                   "ServerWaypointGroupAction",
+		"SharedTypes::v1_26_0::CameraSplineDefinition":  "CameraSplineDefinition",
 	}
 	for input, want := range tests {
 		if got := publicTypeName(input); got != want {
