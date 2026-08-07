@@ -395,8 +395,17 @@ func mergeNode(left, right manifest.Node) (manifest.Node, bool) {
 			}
 		}
 	case manifest.KindString, manifest.KindBytes:
-		if left.Encoding != right.Encoding || left.Representation != right.Representation {
+		if left.Encoding != "" && right.Encoding != "" && left.Encoding != right.Encoding {
 			return manifest.Node{}, false
+		}
+		if result.Encoding == "" {
+			result.Encoding = right.Encoding
+		}
+		if left.Representation != "" && right.Representation != "" && left.Representation != right.Representation {
+			return manifest.Node{}, false
+		}
+		if result.Representation == "" {
+			result.Representation = right.Representation
 		}
 		result.Prefix, ok = mergeNodePointer(left.Prefix, right.Prefix)
 		if !ok {

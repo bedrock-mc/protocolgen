@@ -454,6 +454,26 @@ func TestMojangMissingOrdinalDiagnosticIsDeterministic(t *testing.T) {
 	}
 }
 
+func TestMojangMapEntrySchemasLowerKeyAndValue(t *testing.T) {
+	lowerer := &mojangLowerer{documents: map[string]any{}, active: map[string]bool{}}
+	node := lowerer.lowerSchema(map[string]any{
+		"type": "object",
+		"additionalProperties": map[string]any{
+			"type": "object",
+			"properties": map[string]any{
+				"key":   map[string]any{"type": "integer", "x-underlying-type": "uint16"},
+				"value": map[string]any{"type": "number", "x-underlying-type": "float"},
+			},
+		},
+	}, "Map.json", "Fixture")
+	if node.Kind != manifest.KindMap || node.Key == nil || node.Value == nil {
+		t.Fatalf("node = %#v, want map with key and value", node)
+	}
+	if node.Key.Primitive == nil || node.Key.Primitive.Code != "u16le" || node.Value.Primitive == nil || node.Value.Primitive.Code != "f32le" {
+		t.Fatalf("map key/value = %#v/%#v, want u16le/f32le", node.Key, node.Value)
+	}
+}
+
 func TestEndstoneSpecialUnknownsStayReachableUnresolved(t *testing.T) {
 	lowerer := &endstoneLowerer{types: map[string]any{}, enums: map[string]any{}, active: map[string]bool{}}
 	for _, name := range []string{"cereal::UnknownBuiltin"} {
@@ -498,6 +518,28 @@ func TestEndstoneFixedWidthBitsetRetainsItsCerealBitCount(t *testing.T) {
 	node := endstoneScalar("brstd::bitset<131>")
 	if node.Kind != manifest.NodeKind("bitset") || node.Length != 131 {
 		t.Fatalf("bitset = %#v, want 131-bit wire shape", node)
+	}
+}
+
+func TestEndstoneAlwaysPresentMarkersFoldIntoOptionals(t *testing.T) {
+	fields, err := canonicalEndstoneFields([]any{
+		map[string]any{"type": "bool", "value": true},
+		map[string]any{"name": "Value", "type": "uint32", "optional": true},
+	}, "Fixture")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(fields) != 1 || !fields[0].outerOptional || fields[0].sourceIndex != 1 {
+		t.Fatalf("canonical fields = %#v, want one outer optional sourced from field 1", fields)
+	}
+	lowerer := &endstoneLowerer{}
+	node := lowerer.lowerTypeValue(fields[0].object["type"], "Value", "Fixture.Value")
+	node = lowerer.applyFieldWrappers(node, fields[0].object, "Fixture.Value")
+	if fields[0].outerOptional {
+		node = manifest.Optional(node)
+	}
+	if node.Kind != manifest.KindOptional || node.Value == nil || node.Value.Kind != manifest.KindOptional {
+		t.Fatalf("node = %#v, want double optional", node)
 	}
 }
 

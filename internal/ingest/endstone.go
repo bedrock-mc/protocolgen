@@ -19,6 +19,12 @@ type endstoneLowerer struct {
 	source manifest.SourcePin
 }
 
+type endstoneField struct {
+	object        map[string]any
+	sourceIndex   int
+	outerOptional bool
+}
+
 func ParseEndstone(root string, pin manifest.SourcePin, corrections string) (claims.Result, error) {
 	packetDocs, err := loadJSONFiles(filepath.Join(root, "packets"))
 	if err != nil {
@@ -107,27 +113,28 @@ func ParseEndstone(root string, pin manifest.SourcePin, corrections string) (cla
 		if !ok {
 			return claims.Result{}, fmt.Errorf("Endstone packet %s document disappeared", packet.name)
 		}
-		fields, ok := asArray(object["fields"])
+		rawFields, ok := asArray(object["fields"])
 		if !ok {
 			return claims.Result{}, fmt.Errorf("Endstone packet %s has no fields array", packet.name)
 		}
+		fields, err := canonicalEndstoneFields(rawFields, packet.name)
+		if err != nil {
+			return claims.Result{}, err
+		}
 		direction := parseDirection(object)
 		result.Packets = append(result.Packets, claims.PacketClaim{SourceID: pin.ID, Locator: "packets/" + packet.name + ".json", ID: packet.id, Name: packet.name, Direction: direction})
-		for index, rawField := range fields {
-			field, ok := asMap(rawField)
-			if !ok {
-				return claims.Result{}, fmt.Errorf("Endstone packet %s field %d is not an object", packet.name, index)
-			}
+		for index, canonicalField := range fields {
+			field := canonicalField.object
 			name := asString(field["name"])
-			if name == "" {
-				name = fmt.Sprintf("constant_%d", index)
-			}
 			typeValue, ok := field["type"]
 			if !ok {
 				return claims.Result{}, fmt.Errorf("Endstone packet %s field %s has no type", packet.name, name)
 			}
 			node := lowerer.lowerTypeValue(typeValue, packet.name+safeIdentifierName(name), packet.name+"."+name)
 			node = lowerer.applyFieldWrappers(node, field, packet.name+"."+name)
+			if canonicalField.outerOptional {
+				node = manifest.Optional(node)
+			}
 			reserved, ignored, compatibility := fieldCompatibility(field)
 			if reserved {
 				node = manifest.Reserved(node)
@@ -135,7 +142,7 @@ func ParseEndstone(root string, pin manifest.SourcePin, corrections string) (cla
 			if ignored {
 				node = manifest.Ignored(node)
 			}
-			claim := makeClaim(pin, packet.id, packet.name, direction, index, name, field, node, "packets/"+packet.name+".json#/fields/"+fmt.Sprint(index))
+			claim := makeClaim(pin, packet.id, packet.name, direction, index, name, field, node, "packets/"+packet.name+".json#/fields/"+fmt.Sprint(canonicalField.sourceIndex))
 			claim.Reserved, claim.Ignored, claim.Compatibility = reserved, ignored, compatibility
 			result.Claims = append(result.Claims, claim)
 		}
@@ -214,26 +221,56 @@ func cerealDynamicValue() manifest.Node {
 }
 
 func (l *endstoneLowerer) lowerContainer(object map[string]any, name, context string) manifest.Node {
-	values, ok := asArray(object["fields"])
+	rawValues, ok := asArray(object["fields"])
 	if !ok {
 		return manifest.Unresolved("Endstone type "+name+" has no fields", true)
 	}
+	values, err := canonicalEndstoneFields(rawValues, name)
+	if err != nil {
+		return manifest.Unresolved(err.Error(), true)
+	}
 	fields := make([]manifest.Field, 0, len(values))
-	for index, rawField := range values {
-		field, ok := asMap(rawField)
-		if !ok {
-			return manifest.Unresolved(fmt.Sprintf("Endstone type %s field %d is not an object", name, index), true)
-		}
+	for index, canonicalField := range values {
+		field := canonicalField.object
 		fieldName := asString(field["name"])
-		if fieldName == "" {
-			fieldName = fmt.Sprintf("constant_%d", index)
-		}
 		typeValue := field["type"]
 		node := l.lowerTypeValue(typeValue, name+safeIdentifierName(fieldName), context+"."+fieldName)
 		node = l.applyFieldWrappers(node, field, context+"."+fieldName)
+		if canonicalField.outerOptional {
+			node = manifest.Optional(node)
+		}
 		fields = append(fields, manifest.Field{Ordinal: index, Name: fieldName, Semantic: fieldName, Encode: node, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{l.source.ID}}})
 	}
 	return manifest.Node{Kind: manifest.KindStruct, Semantic: name, TypeID: name, Fields: fields}
+}
+
+func canonicalEndstoneFields(values []any, context string) ([]endstoneField, error) {
+	result := make([]endstoneField, 0, len(values))
+	for index := 0; index < len(values); index++ {
+		field, ok := asMap(values[index])
+		if !ok {
+			return nil, fmt.Errorf("Endstone %s field %d is not an object", context, index)
+		}
+		if asString(field["name"]) != "" {
+			result = append(result, endstoneField{object: field, sourceIndex: index})
+			continue
+		}
+		if !isAlwaysPresentOptionalMarker(field) || index+1 >= len(values) {
+			return nil, fmt.Errorf("Endstone %s has unsupported anonymous field %d", context, index)
+		}
+		next, ok := asMap(values[index+1])
+		if !ok || asString(next["name"]) == "" {
+			return nil, fmt.Errorf("Endstone %s optional marker %d does not precede a named field", context, index)
+		}
+		result = append(result, endstoneField{object: next, sourceIndex: index + 1, outerOptional: true})
+		index++
+	}
+	return result, nil
+}
+
+func isAlwaysPresentOptionalMarker(field map[string]any) bool {
+	value, ok := field["value"].(bool)
+	return ok && value && strings.EqualFold(asString(field["type"]), "bool")
 }
 
 func (l *endstoneLowerer) applyFieldWrappers(node manifest.Node, field map[string]any, context string) manifest.Node {

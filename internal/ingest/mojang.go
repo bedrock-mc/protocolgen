@@ -267,6 +267,17 @@ func (l *mojangLowerer) lowerSchema(schema map[string]any, file, hint string) ma
 		}
 		if additional, ok := schema["additionalProperties"]; ok {
 			if valueSchema, ok := asMap(additional); ok {
+				if entryProperties, ok := asMap(valueSchema["properties"]); ok {
+					keySchema, keyOK := asMap(entryProperties["key"])
+					entryValueSchema, valueOK := asMap(entryProperties["value"])
+					if keyOK && valueOK {
+						return manifest.Map(
+							manifest.Primitive("var_u32"),
+							l.lowerSchema(keySchema, file, hint+"Key"),
+							l.lowerSchema(entryValueSchema, file, hint+"Value"),
+						)
+					}
+				}
 				return manifest.Map(manifest.Primitive("var_u32"), manifest.String(manifest.Primitive("var_u32")), l.lowerSchema(valueSchema, file, hint+"Value"))
 			}
 		}

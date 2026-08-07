@@ -72,11 +72,14 @@ This produces:
 
 `generated/1.26.40/` contains the checked-in protocol 2168 source lock,
 canonical 229-packet Cereal manifest, and matching Go and Rust outputs generated
-from the pinned Endstone dump. Its `corrections/` directory contains
+by reconciling the pinned raw Mojang and Endstone dumps. Its `corrections/`
+directory contains
 fingerprinted, evidence-backed fixes for source defects; each correction stops
 applying if the pinned source changes. The Mojang pin points at the raw official
 JSON. protocolgen applies its own corrections while ingesting that source; it
-does not require a preprocessed checkout or bpd-fixer.
+does not require a preprocessed checkout or bpd-fixer. The checked-in
+`adjudications.json` records the small set of disagreements that require exact
+serializer evidence instead of pretending one documentation source always wins.
 
 For real generation, replace the fixture paths with immutable local Mojang and
 Endstone checkouts and record their revisions and directory hashes in the
@@ -87,8 +90,11 @@ The checked 1.26.40 snapshot is regenerated with:
 ```sh
 go run ./cmd/protocolgen reconcile \
   -lock generated/1.26.40/source-lock.json \
+  -mojang /path/to/bedrock-protocol-docs/json \
+  -mojang-corrections generated/1.26.40/corrections/mojang \
   -endstone /path/to/endstone-protocol-docs \
   -endstone-corrections generated/1.26.40/corrections/endstone \
+  -adjudications generated/1.26.40/adjudications.json \
   -out generated/1.26.40/manifest.json
 
 go run ./cmd/protocolgen emit-go \

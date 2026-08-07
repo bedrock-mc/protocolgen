@@ -72,6 +72,17 @@ func TestReconcileUsesConcreteClaimWhenAnotherSourceIsUnresolved(t *testing.T) {
 	}
 }
 
+func TestMergeNodeFillsMissingTextSemantics(t *testing.T) {
+	partial := manifest.String(manifest.Primitive("var_u32"))
+	partial.Encoding = ""
+	partial.Representation = ""
+	concrete := manifest.String(manifest.Primitive("var_u32"))
+	merged, ok := mergeNode(partial, concrete)
+	if !ok || merged.Encoding != "utf8" || merged.Representation != "text" {
+		t.Fatalf("mergeNode = %#v, %v; want concrete text semantics", merged, ok)
+	}
+}
+
 func TestReconcileUsesCompleteClaimWhenAnotherSourceHasNestedUnresolvedShape(t *testing.T) {
 	target := manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}
 	incomplete := manifest.Node{Kind: manifest.KindStruct, Fields: []manifest.Field{{Ordinal: 0, Name: "Mode", Encode: manifest.Unresolved("missing enum values", true), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"mojang"}}}}}

@@ -1,0 +1,362 @@
+[
+  {
+    "id": "protocol-2168-packet-122-field-0",
+    "target": "BiomeDefinitionListPacket.Map of Biome names to data",
+    "pre_patch_context_sha256": "sha256:77b238f6b81bca9563f93c0805e4fb9a3bbd73c724e53df81f8f1d17431e903f",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:1cc28a9582e750992d46da28ff9e229012d08f6a6677c98e4897b5eb643b2e91"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:3c6bc91bface8f8910b8ef8c60addb32747d5c3e24d46e93b8feed83d08d0d96"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/CloudburstMC/Protocol/blob/fbbeee7d63f1ea3c586a6d5907bd69196679aee6/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v975/serializer/BiomeDefinitionListSerializer_v975.java",
+        "summary": "The inherited codec writes presence flags for biome tags and chunk-generation data."
+      }
+    ],
+    "reason": "The exact Cloudburst 1.26.40 serializer agrees with the Endstone claim."
+  },
+  {
+    "id": "protocol-2168-packet-300-field-0",
+    "target": "CameraInstructionPacket.Camera Instruction",
+    "pre_patch_context_sha256": "sha256:0b8c7b4ebbe3576c6055c723c09dcf2b273a1aec3c4275924dacce247932f245",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:19d9e6f664e8ae1e342b0b9d7d5dcc6d6e8fd9148e637f5f198de8c8061479c9"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:885387c9c0f00b627456bb2a5e85dc0abe5556b25c7abc0eb9e794c4b396f9ad"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/CloudburstMC/Protocol/blob/fbbeee7d63f1ea3c586a6d5907bd69196679aee6/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v924/serializer/CameraInstructionSerializer_v924.java",
+        "summary": "The inherited codec writes each camera instruction slot as optional."
+      }
+    ],
+    "reason": "The exact Cloudburst 1.26.40 serializer agrees with the Endstone claim."
+  },
+  {
+    "id": "protocol-2168-packet-198-field-0",
+    "target": "CameraPresetsPacket.Camera Presets",
+    "pre_patch_context_sha256": "sha256:bd24511953c4c54b847ab1390c69bb6df9e7e6bd37ab31062dbb9a59392a356a",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:c204eb3422c1013ec6f5d39ab25ac4b29079fdc63bb0459c6df5a56964876a30"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:d16e6de0e3625d434268d830797f9b1fd362b32a2a45107bf5959c14aa762d0d"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/CloudburstMC/Protocol/blob/fbbeee7d63f1ea3c586a6d5907bd69196679aee6/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v818/serializer/CameraPresetsSerializer_v818.java",
+        "summary": "The inherited codec writes an array of camera presets whose name and parent are required and remaining fields are optional."
+      }
+    ],
+    "reason": "The exact Cloudburst 1.26.40 serializer agrees with the Endstone claim."
+  },
+  {
+    "id": "protocol-2168-packet-322-field-0",
+    "target": "ClientMovementPredictionSyncPacket.Actor Data Flag",
+    "pre_patch_context_sha256": "sha256:04856f59cc4d368f34b49749d49d7b92d5fe5d8c1b4f71504e61f903fb0a1745",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:28c62b5dbaacdc0f7a8024dd4984278cf99d6a3a7d335d241b3027cebd2a68c8"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:b8eaf718ff0d63a888e16fd9e6a0fc630abbbb6f94276349e98f39194467a507"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/CloudburstMC/Protocol/blob/fbbeee7d63f1ea3c586a6d5907bd69196679aee6/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v975/serializer/MovementPredictionSyncSerializer_v975.java",
+        "summary": "The inherited codec serializes entity flags with the large-varint bitset representation."
+      }
+    ],
+    "reason": "The exact Cloudburst 1.26.40 serializer agrees with the Endstone claim."
+  },
+  {
+    "id": "protocol-2168-packet-79-field-1",
+    "target": "CommandOutputPacket.Output",
+    "pre_patch_context_sha256": "sha256:ca451089ce6d1e73e3fd6f881ffd243f75cdc03b082ba2ac8c23bcc0b43cdb82",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:b6d9eb880dba9ac0ecb8d54a28a82ff4adfb9c754e001a965c41bd8fd0e3b3b2"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:f61f3de62b33439e54837365e11a724e84f39de7e3a21b5b849f4b5b66b37435"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/CloudburstMC/Protocol/blob/fbbeee7d63f1ea3c586a6d5907bd69196679aee6/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v898/serializer/CommandOutputSerializer_v898.java",
+        "summary": "The inherited codec writes the output type as a string followed by the output payload."
+      }
+    ],
+    "reason": "The exact Cloudburst 1.26.40 serializer agrees with the Endstone claim."
+  },
+  {
+    "id": "protocol-2168-packet-52-field-5",
+    "target": "CraftingDataPacket.Shaped Chemistry Recipes",
+    "pre_patch_context_sha256": "sha256:a22794047c1e11614e2ec3847785007617beb75a46046d939f0dfe7d68642b8d",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:2a7ee8ddbd229ae536bf3a46d89c620f01575725638dd7359fe8eadd2789f58c"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:0dfef79d36ccae9eb754f63c811f6c8692bf75db1c17895c7c884b4a20393f7e"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/CloudburstMC/Protocol/blob/fbbeee7d63f1ea3c586a6d5907bd69196679aee6/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v2168/serializer/CraftingDataSerializer_v2168.java",
+        "summary": "The exact v2168 codec writes the recipe unlocking context, presence flag, and optional ingredient array."
+      }
+    ],
+    "reason": "The exact Cloudburst 1.26.40 serializer agrees with the Endstone claim."
+  },
+  {
+    "id": "protocol-2168-packet-52-field-0",
+    "target": "CraftingDataPacket.Shaped Recipes",
+    "pre_patch_context_sha256": "sha256:3e2e5abec01b6961b935e0cbdee1e50c6d4ac613659624ae1a5e15ce48d39cc5",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:9d56ae1b0d806312b4c3dabb11d629c1a2ec02d0bfbc9e9fb8f48f927f0e3a72"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:6179a49dfae25b6a9583f41d2ae379be814a87b9661bb8bb4ada0094a29ab514"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/CloudburstMC/Protocol/blob/fbbeee7d63f1ea3c586a6d5907bd69196679aee6/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v2168/serializer/CraftingDataSerializer_v2168.java",
+        "summary": "The exact v2168 codec writes the recipe unlocking context, presence flag, and optional ingredient array."
+      }
+    ],
+    "reason": "The exact Cloudburst 1.26.40 serializer agrees with the Endstone claim."
+  },
+  {
+    "id": "protocol-2168-packet-52-field-4",
+    "target": "CraftingDataPacket.Shapeless Chemistry Recipes",
+    "pre_patch_context_sha256": "sha256:d24ae6565f891372eb5a7c218111293a530ba1299a567006c3ee9e553b8ec496",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:77a0e4624b1e323555a9c24fcf1a59cf2dbfde552cd086dea626781f1ce6c86a"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:e6551d1be227331415a21277d7b92c5739055b8f542b47bc6bc6bc741a1e8f0e"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/CloudburstMC/Protocol/blob/fbbeee7d63f1ea3c586a6d5907bd69196679aee6/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v2168/serializer/CraftingDataSerializer_v2168.java",
+        "summary": "The exact v2168 codec writes the recipe unlocking context, presence flag, and optional ingredient array."
+      }
+    ],
+    "reason": "The exact Cloudburst 1.26.40 serializer agrees with the Endstone claim."
+  },
+  {
+    "id": "protocol-2168-packet-52-field-1",
+    "target": "CraftingDataPacket.Shapeless Recipes",
+    "pre_patch_context_sha256": "sha256:111e8429267e46915f40307ced57d0ad3ed7b79def9182e808ac2f2facf90cda",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:6d0dc2b633f9232c8a90c371aa616f0836d557c43782d7eb848b52955eed42ea"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:51d7dcd21850f9cef4bfc083973e58ea1446c53764abb9d60a8533b28df3bb03"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/CloudburstMC/Protocol/blob/fbbeee7d63f1ea3c586a6d5907bd69196679aee6/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v2168/serializer/CraftingDataSerializer_v2168.java",
+        "summary": "The exact v2168 codec writes the recipe unlocking context, presence flag, and optional ingredient array."
+      }
+    ],
+    "reason": "The exact Cloudburst 1.26.40 serializer agrees with the Endstone claim."
+  },
+  {
+    "id": "protocol-2168-packet-52-field-6",
+    "target": "CraftingDataPacket.Smithing Transform Recipes",
+    "pre_patch_context_sha256": "sha256:af605f7b2e42ab215d18503d79bdb1c6fd5aa33cfd8254c980d1b6efe99894db",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:2063e9101c03afcb53157e1a3402def351a9d3da7e314bc5ea0d8f9f5123f4f0"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:28f21f0c705cdb31d39c1f1ddb8a89737c0fc12180d2e062c4698ee84c1505b9"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/CloudburstMC/Protocol/blob/fbbeee7d63f1ea3c586a6d5907bd69196679aee6/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v2168/serializer/CraftingDataSerializer_v2168.java",
+        "summary": "The exact v2168 codec writes the recipe unlocking context, presence flag, and optional ingredient array."
+      }
+    ],
+    "reason": "The exact Cloudburst 1.26.40 serializer agrees with the Endstone claim."
+  },
+  {
+    "id": "protocol-2168-packet-52-field-7",
+    "target": "CraftingDataPacket.Smithing Trim Recipes",
+    "pre_patch_context_sha256": "sha256:6452d73798ac0e39e1a75317a132d09e60dc58f9921ced0a683a4513bfd0c10a",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:a0bb5ef32ce4810bbe7fe6ba8975104722152ddd8e3ce8b07272396408f0593f"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:5b0bf2654ac408405fba96bce77d0808c565722d2d448e37fcba3b34d6b422d8"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/CloudburstMC/Protocol/blob/fbbeee7d63f1ea3c586a6d5907bd69196679aee6/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v2168/serializer/CraftingDataSerializer_v2168.java",
+        "summary": "The exact v2168 codec writes the recipe unlocking context, presence flag, and optional ingredient array."
+      }
+    ],
+    "reason": "The exact Cloudburst 1.26.40 serializer agrees with the Endstone claim."
+  },
+  {
+    "id": "protocol-2168-packet-52-field-3",
+    "target": "CraftingDataPacket.User Data Shapeless Recipes",
+    "pre_patch_context_sha256": "sha256:bb33bb347c6fce949e7b7ede8d22388206012027055b98a169754e7a68fb76b4",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:8df2a290b6138b46afe4a9a4496f92ed080490f53bc6d8084af484c14138d575"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:6b53de93b1a7b5975da7c86e18839ea5cb5c25613ed7cbf4623060d4eac26f49"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/CloudburstMC/Protocol/blob/fbbeee7d63f1ea3c586a6d5907bd69196679aee6/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v2168/serializer/CraftingDataSerializer_v2168.java",
+        "summary": "The exact v2168 codec writes the recipe unlocking context, presence flag, and optional ingredient array."
+      }
+    ],
+    "reason": "The exact Cloudburst 1.26.40 serializer agrees with the Endstone claim."
+  },
+  {
+    "id": "protocol-2168-packet-137-field-0",
+    "target": "EducationSettingsPacket.Education Level Settings",
+    "pre_patch_context_sha256": "sha256:352e8de90f4638951ca3b375a211bfefd6892b1a769b0eef892d2ba1c9399f0b",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:3633d384ebb2b353c466c59cc94545ebef2994d211c38783542d28d672522a6a"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:9caba53a928fb67111100927e20a50e371973a4439cd2483bb883b4205ef56c5"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/CloudburstMC/Protocol/blob/fbbeee7d63f1ea3c586a6d5907bd69196679aee6/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v465/serializer/EducationSettingsSerializer_v465.java",
+        "summary": "The inherited codec writes Agent Capabilities and External Link Settings with presence flags."
+      }
+    ],
+    "reason": "The exact Cloudburst 1.26.40 serializer agrees with the Endstone claim."
+  },
+  {
+    "id": "protocol-2168-packet-144-field-11",
+    "target": "PlayerAuthInputPacket.Item Use Transaction",
+    "pre_patch_context_sha256": "sha256:8cee175f663e9ee2bd6fe61dfa193bcc4cd90f234f6cd276e7f001bc7290da94",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:833c0a3ce8c6680fde1dd1031fe90760f97afb62e4cd6cbdd726055f0d2cd3bb"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:a112d47f77ccaa817eb0a188835565f46020f8204f30f491196fbddbb8138ded"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/CloudburstMC/Protocol/blob/fbbeee7d63f1ea3c586a6d5907bd69196679aee6/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v2168/serializer/PlayerAuthInputSerializer_v2168.java",
+        "summary": "The exact v2168 codec writes two presence booleans before Item Use Transaction."
+      }
+    ],
+    "reason": "The exact Cloudburst 1.26.40 serializer agrees with the Endstone claim."
+  },
+  {
+    "id": "protocol-2168-packet-328-field-0",
+    "target": "PrimitiveShapesPacket.Array of primitive shapes (can be a mix of new, updated or removed)",
+    "pre_patch_context_sha256": "sha256:b1ccd4e77a4b76249c667409949ca9a793e803f4dc4de1b40f1097dd20ac9000",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:a21c350907d78f092893a800c2fe876d4134d5c7ab744d9d7b4d14f8986a7d11"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:af54cabfdf2ae683b67ed221dae46abace9fe2b49b691211d6c5377f43df5cca"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/Sandertv/gophertunnel/blob/1653b5407e9b4ce9e8fa272f7713688d42973e3f/minecraft/protocol/shape.go",
+        "summary": "The tested 1.26.40 implementation writes the primitive-shape optional fields and discriminated extra payload in this order."
+      }
+    ],
+    "reason": "The tested gophertunnel 1.26.40 implementation agrees with the Endstone claim."
+  }
+]
