@@ -215,6 +215,15 @@ func LooksLikeArtifact(value string) bool {
 	return false
 }
 
+// PublicVariantName removes numeric placeholders after they have been
+// explicitly reviewed through their owning TypeID.
+func PublicVariantName(value string) string {
+	if strings.HasPrefix(value, "Empty") && allDigits(value[len("Empty"):]) {
+		return "Empty"
+	}
+	return value
+}
+
 func stripPacketPrefix(value string, filenameTypeID bool) string {
 	if parts := strings.Split(value, "::"); len(parts) > 1 {
 		prefix := parts[0]

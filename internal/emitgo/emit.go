@@ -98,6 +98,9 @@ func GenerateWithOptions(m manifest.Manifest, options Options) (map[string]strin
 	if err := manifest.Validate(m); err != nil {
 		return nil, err
 	}
+	if err := naming.ValidateRequiredEntries(m, options.Naming); err != nil {
+		return nil, err
+	}
 	if options.ProtocolImportPath == "" || strings.ContainsAny(options.ProtocolImportPath, " \t\r\n") {
 		return nil, fmt.Errorf("invalid protocol import path %q", options.ProtocolImportPath)
 	}
@@ -278,7 +281,7 @@ func (g *generator) goType(node manifest.Node, hint string) (string, error) {
 					return "", err
 				}
 				if usedMembers[member] {
-					wrapper := g.unique(name + exportName(shortTypeName(variant.Name)))
+					wrapper := g.unique(name + exportName(naming.PublicVariantName(shortTypeName(variant.Name))))
 					g.definitions[wrapper] = typeDefinition{
 						Name:       wrapper,
 						Kind:       manifest.KindStruct,
@@ -429,17 +432,17 @@ func primitiveStructCode(node manifest.Node) (string, bool) {
 }
 
 func (g *generator) registerUnionMember(union string, variant manifest.Variant) (string, error) {
-	member, err := g.goType(variant.Encode, union+exportName(shortTypeName(variant.Name)))
+	member, err := g.goType(variant.Encode, union+exportName(naming.PublicVariantName(shortTypeName(variant.Name))))
 	if err != nil {
 		return "", err
 	}
 	if variant.Encode.Kind == manifest.KindVoid {
-		member = g.unique(union + exportName(shortTypeName(variant.Name)))
+		member = g.unique(union + exportName(naming.PublicVariantName(shortTypeName(variant.Name))))
 		g.definitions[member] = typeDefinition{Name: member, Kind: manifest.KindStruct}
 	}
 	definition, ok := g.definitions[member]
 	if !ok || definition.Kind != manifest.KindStruct {
-		wrapper := g.unique(union + exportName(shortTypeName(variant.Name)))
+		wrapper := g.unique(union + exportName(naming.PublicVariantName(shortTypeName(variant.Name))))
 		g.definitions[wrapper] = typeDefinition{Name: wrapper, Kind: manifest.KindStruct, Fields: []typedField{{Name: "Value", Type: member, Node: variant.Encode}}, Implements: []string{union}}
 		return wrapper, nil
 	}
@@ -1460,9 +1463,55 @@ func exportName(value string) string {
 		return "Generated"
 	}
 	if unicode.IsDigit([]rune(result)[0]) {
-		return "Generated" + result
+		return "Generated" + normalizeGoInitialisms(result)
 	}
-	return result
+	return normalizeGoInitialisms(result)
+}
+
+var goInitialisms = map[string]string{
+	"acl": "ACL", "api": "API", "argb": "ARGB", "ascii": "ASCII", "cpu": "CPU", "css": "CSS",
+	"dns": "DNS", "eof": "EOF", "guid": "GUID", "gpu": "GPU", "html": "HTML", "http": "HTTP",
+	"https": "HTTPS", "id": "ID", "ip": "IP", "json": "JSON", "nbt": "NBT", "osx": "OSX",
+	"qps": "QPS", "ram": "RAM", "rgba": "RGBA", "rgb": "RGB", "rpc": "RPC", "sql": "SQL",
+	"ssh": "SSH", "tcp": "TCP", "tls": "TLS", "tnt": "TNT", "ttl": "TTL", "udp": "UDP",
+	"ui": "UI", "uid": "UID", "uint": "UINT", "uri": "URI", "url": "URL", "uuid": "UUID",
+	"utf8": "UTF8", "uwp": "UWP", "vm": "VM", "xml": "XML", "xz": "XZ", "yaml": "YAML", "zip": "ZIP",
+	"molang": "MoLang",
+}
+
+func normalizeGoInitialisms(value string) string {
+	words := goCamelWords(value)
+	if len(words) == 0 {
+		return value
+	}
+	var b strings.Builder
+	for _, word := range words {
+		if replacement, ok := goInitialisms[strings.ToLower(word)]; ok {
+			b.WriteString(replacement)
+		} else {
+			b.WriteString(word)
+		}
+	}
+	return b.String()
+}
+
+func goCamelWords(value string) []string {
+	runes := []rune(value)
+	if len(runes) == 0 {
+		return nil
+	}
+	start := 0
+	words := make([]string, 0, 4)
+	for index := 1; index < len(runes); index++ {
+		previous, current := runes[index-1], runes[index]
+		nextLower := index+1 < len(runes) && unicode.IsLower(runes[index+1])
+		boundary := unicode.IsUpper(current) && (unicode.IsLower(previous) || unicode.IsDigit(previous) || unicode.IsUpper(previous) && nextLower)
+		if boundary {
+			words = append(words, string(runes[start:index]))
+			start = index
+		}
+	}
+	return append(words, string(runes[start:]))
 }
 
 func enumVariantName(value string) string {
@@ -1494,7 +1543,7 @@ func enumVariantName(value string) string {
 	if b.Len() == 0 {
 		return "Unknown"
 	}
-	return b.String()
+	return normalizeGoInitialisms(b.String())
 }
 
 func normalizeEnumInitialisms(value string) string {

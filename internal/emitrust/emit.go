@@ -66,6 +66,9 @@ func prepareWithOverlay(m manifest.Manifest, overlay naming.Overlay) (*generator
 	if err := manifest.Validate(m); err != nil {
 		return nil, nil, err
 	}
+	if err := naming.ValidateRequiredEntries(m, overlay); err != nil {
+		return nil, nil, err
+	}
 	g := &generator{definitions: map[string]definition{}, identities: map[string]string{}, used: map[string]bool{}, standalone: standaloneRustStructs(m), resolver: naming.NewResolver(overlay)}
 	packets := append([]manifest.Packet(nil), m.Packets...)
 	sort.Slice(packets, func(i, j int) bool { return packets[i].ID < packets[j].ID })
@@ -669,7 +672,7 @@ func (g *generator) rustType(node manifest.Node, hint string) (string, error) {
 			variants := make([]rustVariant, 0, len(node.Variants))
 			used := map[string]bool{}
 			for _, variant := range node.Variants {
-				variantName := strings.TrimSuffix(rustPascalName(shortTypeName(variant.Name)), "Payload")
+				variantName := strings.TrimSuffix(rustPascalName(naming.PublicVariantName(shortTypeName(variant.Name))), "Payload")
 				variantName = uniqueTypeVariant(variantName, used)
 				payload := ""
 				var fields []rustField

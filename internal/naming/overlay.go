@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"sort"
+	"strings"
 
 	"protocolgen/internal/manifest"
 )
@@ -60,6 +62,58 @@ func ValidateOverlay(m manifest.Manifest, document Document) error {
 		usedNames[entry.Name] = entry.TypeID
 	}
 	return nil
+}
+
+// ValidateRequiredEntries reports all artifact TypeIDs that lack review.
+func ValidateRequiredEntries(m manifest.Manifest, overlay Overlay) error {
+	var offenders []string
+	seen := map[string]bool{}
+	for typeID := range TypeIDs(m) {
+		if LooksLikeArtifact(typeID) && overlay.Names[typeID] == "" {
+			seen[typeID] = true
+		}
+	}
+	for _, packet := range m.Packets {
+		for _, field := range packet.Fields {
+			collectVariantArtifacts(field.Encode, "", overlay, seen)
+		}
+	}
+	for typeID := range seen {
+		offenders = append(offenders, typeID)
+	}
+	if len(offenders) == 0 {
+		return nil
+	}
+	sort.Strings(offenders)
+	return fmt.Errorf("naming overlay required for artifact TypeIDs: %s", strings.Join(offenders, ", "))
+}
+
+func collectVariantArtifacts(node manifest.Node, owner string, overlay Overlay, offenders map[string]bool) {
+	if node.TypeID != "" {
+		owner = node.TypeID
+	}
+	for _, variant := range node.Variants {
+		if LooksLikeArtifact(variant.Name) && owner != "" && overlay.Names[owner] == "" {
+			offenders[owner+" (variant "+variant.Name+")"] = true
+		}
+		collectVariantArtifacts(variant.Encode, owner, overlay, offenders)
+	}
+	for _, field := range node.Fields {
+		collectVariantArtifacts(field.Encode, owner, overlay, offenders)
+	}
+	for _, child := range []*manifest.Node{node.Prefix, node.Element, node.Value, node.Key, node.Control, node.Default} {
+		if child != nil {
+			collectVariantArtifacts(*child, owner, overlay, offenders)
+		}
+	}
+	for _, child := range node.Elements {
+		collectVariantArtifacts(child, owner, overlay, offenders)
+	}
+	for _, oneCase := range node.Cases {
+		for _, child := range oneCase.Encode {
+			collectVariantArtifacts(child, owner, overlay, offenders)
+		}
+	}
 }
 
 // TypeIDs returns every TypeID occurring anywhere in a manifest node tree.

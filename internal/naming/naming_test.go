@@ -1,6 +1,7 @@
 package naming
 
 import (
+	"strings"
 	"testing"
 
 	"protocolgen/internal/manifest"
@@ -15,6 +16,25 @@ func TestPublicTypeNameNormalizesQualifiedAndFilenamePacketNames(t *testing.T) {
 		if got := PublicTypeName(input); got != want {
 			t.Errorf("PublicTypeName(%q) = %q, want %q", input, got, want)
 		}
+	}
+}
+
+func TestPublicTypeNameCollapsesImmediateDuplicateTokens(t *testing.T) {
+	if got := PublicTypeName("MemoryMemoryCategory"); got != "MemoryCategory" {
+		t.Fatalf("PublicTypeName duplicate token = %q, want MemoryCategory", got)
+	}
+}
+
+func TestValidateRequiredEntriesListsArtifactTypeIDs(t *testing.T) {
+	m := manifest.Manifest{
+		Packets: []manifest.Packet{{Fields: []manifest.Field{
+			{Encode: manifest.Node{Kind: manifest.KindStruct, TypeID: "GameRuleRuleValueEmpty0"}},
+			{Encode: manifest.Node{Kind: manifest.KindStruct, TypeID: "TypedClientNetId<struct ItemStackRequestIdTag, int32_t, 0>"}},
+		}}},
+	}
+	err := ValidateRequiredEntries(m, Overlay{})
+	if err == nil || !strings.Contains(err.Error(), "GameRuleRuleValueEmpty0") || !strings.Contains(err.Error(), "TypedClientNetId") {
+		t.Fatalf("ValidateRequiredEntries error = %v, want all artifact TypeIDs", err)
 	}
 }
 

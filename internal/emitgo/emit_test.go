@@ -331,6 +331,21 @@ func TestPublicNamesDropSchemaScaffolding(t *testing.T) {
 	}
 }
 
+func TestGoNamesUseCommonInitialisms(t *testing.T) {
+	for input, want := range map[string]string{
+		"Container Id":   "ContainerID",
+		"Json Uri Xz Ui": "JSONURIXZUI",
+		"Identifier":     "Identifier",
+	} {
+		if got := exportName(input); got != want {
+			t.Errorf("exportName(%q) = %q, want %q", input, got, want)
+		}
+	}
+	if got := enumVariantName("VALUE_ID"); got != "ValueID" {
+		t.Fatalf("enumVariantName initialism = %q, want ValueID", got)
+	}
+}
+
 func TestEnumVariantNamesAreIdiomaticGo(t *testing.T) {
 	for input, want := range map[string]string{
 		"NONE":                    "None",
