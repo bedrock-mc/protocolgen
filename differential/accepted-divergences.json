@@ -116,6 +116,20 @@
       "rationale": "Oracle re-encodes empty item user-data NBT as an explicit empty compound; generated preserves wire bytes."
     },
     {
+      "packet": 52,
+      "direction": "client",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle packs MaterialReducer as a single varint mix of (InputItem.NetworkID << 16) | MetadataValue and re-derives it on encode (writer.go MaterialReducer), a length-changing round trip; generated preserves the wire fields. Combined with bool canonicalization the encodings differ in length."
+    },
+    {
+      "packet": 52,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle packs MaterialReducer as a single varint mix of (InputItem.NetworkID << 16) | MetadataValue and re-derives it on encode (writer.go MaterialReducer), a length-changing round trip; generated preserves the wire fields. Combined with bool canonicalization the encodings differ in length."
+    },
+    {
       "packet": 56,
       "direction": "client",
       "input_hex": "",
@@ -128,6 +142,20 @@
       "input_hex": "",
       "kind": "re-encoded-bytes",
       "rationale": "Oracle decodes BlockActorData NBT to a map and re-encodes an explicit empty compound 0a0000 for empty input; generated preserves wire bytes (block_actor_data.go:27)."
+    },
+    {
+      "packet": 65,
+      "direction": "client",
+      "input_hex": "",
+      "kind": "decode-success",
+      "rationale": "LegacyTelemetryEvent carries the event twice on the wire: a zigzag type and a varuint ordinal. The oracle selects the body by type and re-derives the ordinal on encode (writer.go EventOrdinal); the generated union selects by the ordinal tag. Well-formed traffic always agrees on both \u2014 the oracle itself derives one from the other \u2014 so a different body is only selectable with fuzzed input whose type and ordinal disagree."
+    },
+    {
+      "packet": 65,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "decode-success",
+      "rationale": "LegacyTelemetryEvent carries the event twice on the wire: a zigzag type and a varuint ordinal. The oracle selects the body by type and re-derives the ordinal on encode (writer.go EventOrdinal); the generated union selects by the ordinal tag. Well-formed traffic always agrees on both \u2014 the oracle itself derives one from the other \u2014 so a different body is only selectable with fuzzed input whose type and ordinal disagree."
     },
     {
       "packet": 65,
