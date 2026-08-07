@@ -30,8 +30,8 @@ func TestGenerateConsumesOnlyCanonicalManifest(t *testing.T) {
 			t.Errorf("%s contains source/profile lookup text", name)
 		}
 	}
-	if !strings.Contains(files["packets.go"], "type VocabularyPacket struct") || !strings.Contains(files["packets.go"], "Kind: \"optional\"") {
-		t.Fatalf("generated packet source did not contain manifest shape:\n%s", files["packets.go"])
+	if !strings.Contains(files["vocabulary.go"], "type Vocabulary struct") || !strings.Contains(files["vocabulary.go"], "Kind: \"optional\"") {
+		t.Fatalf("generated packet source did not contain manifest shape:\n%s", files["vocabulary.go"])
 	}
 }
 
@@ -56,7 +56,7 @@ func TestGenerateUsesCanonicalNamedTypesAndOrderedMapEntries(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Generate: %v", err)
 	}
-	source := files["packets.go"]
+	source := files["types.go"] + files["biome_definition_list.go"]
 	if !strings.Contains(source, "type BiomeDefinitionData struct") || !strings.Contains(source, "[]OrderedEntry[uint16, BiomeDefinitionData]") {
 		t.Fatalf("generated Go did not use canonical ordered map definitions:\n%s", source)
 	}
@@ -72,8 +72,39 @@ func TestGenerateUsesTypedUnionInterface(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Generate: %v", err)
 	}
-	source := files["packets.go"]
+	source := files["types.go"] + files["sound.go"]
 	if !strings.Contains(source, "type SoundDataEvent interface") || !strings.Contains(source, "func (SoundDataEventSetVolume) isSoundDataEvent()") || strings.Contains(source, "Tag int64") {
 		t.Fatalf("generated Go did not emit a typed union interface:\n%s", source)
+	}
+}
+
+func TestGenerateSplitsPacketsAndSharedDefinitions(t *testing.T) {
+	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:go", MinecraftVersion: "fixture", ProtocolVersion: 2168}}, Packets: []manifest.Packet{{ID: 1, Name: "LoginPacket", Direction: manifest.DirectionServerbound}}}
+	files, err := Generate(m, "wiregen")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, name := range []string{"wire.go", "types.go", "enums.go", "login.go"} {
+		if _, ok := files[name]; !ok {
+			t.Fatalf("generated files omit %s: %v", name, files)
+		}
+	}
+	if strings.Contains(files["login.go"], "LoginPacket") || !strings.Contains(files["login.go"], "type Login struct") {
+		t.Fatalf("packet name was not cleaned:\n%s", files["login.go"])
+	}
+}
+
+func TestPublicNamesDropSchemaScaffolding(t *testing.T) {
+	tests := map[string]string{
+		"enums/MoLangVersion":                          "MoLangVersion",
+		"enums/MolangVersion":                          "MoLangVersion",
+		"PlayerVideoCapturePacketPayload::Action":      "PlayerVideoCaptureAction",
+		"DataItemEntryPayloadUnion":                    "DataItemEntryValue",
+		"SharedTypes::v1_26_0::CameraSplineDefinition": "CameraSplineDefinition",
+	}
+	for input, want := range tests {
+		if got := publicTypeName(input); got != want {
+			t.Fatalf("publicTypeName(%q) = %q, want %q", input, got, want)
+		}
 	}
 }

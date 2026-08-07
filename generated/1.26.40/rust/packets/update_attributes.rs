@@ -1,0 +1,28 @@
+// Code generated from canonical protocol manifest v2. DO NOT EDIT.
+
+#[allow(unused_imports)]
+use crate::*;
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct UpdateAttributes {
+    pub target_runtime_id: ActorRuntimeID,
+    pub attribute_list: Vec<AttributeData>,
+    pub tick: PlayerInputTick,
+}
+
+pub const UPDATEATTRIBUTES_TARGET_RUNTIME_ID_SHAPE: &str = r#"{"kind":"struct","semantic":"ActorRuntimeID","type_id":"ActorRuntimeID","fields":[{"ordinal":0,"name":"Actor Runtime ID","semantic":"Actor Runtime ID","encode":{"kind":"primitive","primitive":{"code":"var_u64","width":64,"signed":false,"zigzag":false,"endianness":"none"}},"symmetry":"symmetric","provenance":{"pins":["endstone"]}}]}"#;
+pub const UPDATEATTRIBUTES_ATTRIBUTE_LIST_SHAPE: &str = r#"{"kind":"array","prefix":{"kind":"primitive","primitive":{"code":"var_u32","width":32,"signed":false,"zigzag":false,"endianness":"none"}},"element":{"kind":"struct","semantic":"AttributeData","type_id":"AttributeData","fields":[{"ordinal":0,"name":"Min Value","semantic":"Min Value","encode":{"kind":"primitive","primitive":{"code":"f32le","width":32,"signed":false,"zigzag":false,"endianness":"little"}},"symmetry":"symmetric","provenance":{"pins":["endstone"]}},{"ordinal":1,"name":"Max Value","semantic":"Max Value","encode":{"kind":"primitive","primitive":{"code":"f32le","width":32,"signed":false,"zigzag":false,"endianness":"little"}},"symmetry":"symmetric","provenance":{"pins":["endstone"]}},{"ordinal":2,"name":"Current Value","semantic":"Current Value","encode":{"kind":"primitive","primitive":{"code":"f32le","width":32,"signed":false,"zigzag":false,"endianness":"little"}},"symmetry":"symmetric","provenance":{"pins":["endstone"]}},{"ordinal":3,"name":"Default Min Value","semantic":"Default Min Value","encode":{"kind":"primitive","primitive":{"code":"f32le","width":32,"signed":false,"zigzag":false,"endianness":"little"}},"symmetry":"symmetric","provenance":{"pins":["endstone"]}},{"ordinal":4,"name":"Default Max Value","semantic":"Default Max Value","encode":{"kind":"primitive","primitive":{"code":"f32le","width":32,"signed":false,"zigzag":false,"endianness":"little"}},"symmetry":"symmetric","provenance":{"pins":["endstone"]}},{"ordinal":5,"name":"Default Value","semantic":"Default Value","encode":{"kind":"primitive","primitive":{"code":"f32le","width":32,"signed":false,"zigzag":false,"endianness":"little"}},"symmetry":"symmetric","provenance":{"pins":["endstone"]}},{"ordinal":6,"name":"Name","semantic":"Name","encode":{"kind":"string","prefix":{"kind":"primitive","primitive":{"code":"var_u32","width":32,"signed":false,"zigzag":false,"endianness":"none"}},"encoding":"utf8","representation":"text"},"symmetry":"symmetric","provenance":{"pins":["endstone"]}},{"ordinal":7,"name":"Modifiers","semantic":"Modifiers","encode":{"kind":"array","prefix":{"kind":"primitive","primitive":{"code":"var_u32","width":32,"signed":false,"zigzag":false,"endianness":"none"}},"element":{"kind":"struct","semantic":"AttributeModifier","type_id":"AttributeModifier","fields":[{"ordinal":0,"name":"Id","semantic":"Id","encode":{"kind":"string","prefix":{"kind":"primitive","primitive":{"code":"var_u32","width":32,"signed":false,"zigzag":false,"endianness":"none"}},"encoding":"utf8","representation":"text"},"symmetry":"symmetric","provenance":{"pins":["endstone"]}},{"ordinal":1,"name":"Name","semantic":"Name","encode":{"kind":"string","prefix":{"kind":"primitive","primitive":{"code":"var_u32","width":32,"signed":false,"zigzag":false,"endianness":"none"}},"encoding":"utf8","representation":"text"},"symmetry":"symmetric","provenance":{"pins":["endstone"]}},{"ordinal":2,"name":"Amount","semantic":"Amount","encode":{"kind":"primitive","primitive":{"code":"f32le","width":32,"signed":false,"zigzag":false,"endianness":"little"}},"symmetry":"symmetric","provenance":{"pins":["endstone"]}},{"ordinal":3,"name":"Operation","semantic":"Operation","encode":{"kind":"primitive","primitive":{"code":"i32le","width":32,"signed":true,"zigzag":false,"endianness":"little"}},"symmetry":"symmetric","provenance":{"pins":["endstone"]}},{"ordinal":4,"name":"Operand","semantic":"Operand","encode":{"kind":"primitive","primitive":{"code":"i32le","width":32,"signed":true,"zigzag":false,"endianness":"little"}},"symmetry":"symmetric","provenance":{"pins":["endstone"]}},{"ordinal":5,"name":"Is Serializable?","semantic":"Is Serializable?","encode":{"kind":"primitive","primitive":{"code":"bool","width":1,"signed":false,"zigzag":false,"endianness":"none"}},"symmetry":"symmetric","provenance":{"pins":["endstone"]}}]}},"symmetry":"symmetric","provenance":{"pins":["endstone"]}}]}}"#;
+pub const UPDATEATTRIBUTES_TICK_SHAPE: &str = r#"{"kind":"struct","semantic":"PlayerInputTick","type_id":"PlayerInputTick","fields":[{"ordinal":0,"name":"Input tick","semantic":"Input tick","encode":{"kind":"primitive","primitive":{"code":"var_u64","width":64,"signed":false,"zigzag":false,"endianness":"none"}},"symmetry":"symmetric","provenance":{"pins":["endstone"]}}]}"#;
+
+impl UpdateAttributes {
+    pub fn encode<E: WireEncoder>(&self, encoder: &mut E) {
+        encoder.field("UpdateAttributesPacket.Target Runtime ID", UPDATEATTRIBUTES_TARGET_RUNTIME_ID_SHAPE);
+        encoder.field("UpdateAttributesPacket.Attribute List", UPDATEATTRIBUTES_ATTRIBUTE_LIST_SHAPE);
+        encoder.field("UpdateAttributesPacket.Tick", UPDATEATTRIBUTES_TICK_SHAPE);
+    }
+    pub fn decode<D: WireDecoder>(decoder: &mut D) {
+        decoder.field("UpdateAttributesPacket.Target Runtime ID", UPDATEATTRIBUTES_TARGET_RUNTIME_ID_SHAPE);
+        decoder.field("UpdateAttributesPacket.Attribute List", UPDATEATTRIBUTES_ATTRIBUTE_LIST_SHAPE);
+        decoder.field("UpdateAttributesPacket.Tick", UPDATEATTRIBUTES_TICK_SHAPE);
+    }
+}

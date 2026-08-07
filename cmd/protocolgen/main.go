@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 
 	"protocolgen/internal/claims"
 	"protocolgen/internal/emitgo"
@@ -237,14 +238,14 @@ func runEmitRust(args []string) error {
 	if err != nil {
 		return err
 	}
-	source, err := emitrust.Generate(m)
+	files, err := emitrust.GenerateFiles(m)
 	if err != nil {
 		return err
 	}
-	if err := writeFiles(*out, map[string]string{"lib.rs": source}); err != nil {
+	if err := writeFiles(*out, files); err != nil {
 		return err
 	}
-	fmt.Printf("Rust emitter: lib.rs -> %s\n", *out)
+	fmt.Printf("Rust emitter: %d files -> %s\n", len(files), *out)
 	return nil
 }
 
@@ -290,18 +291,52 @@ func writeFiles(directory string, files map[string]string) error {
 	if err := os.MkdirAll(directory, 0o755); err != nil {
 		return err
 	}
+	desired := make(map[string]bool, len(files))
 	names := make([]string, 0, len(files))
 	for name := range files {
+		clean := filepath.Clean(name)
+		if clean == "." || filepath.IsAbs(clean) || clean == ".." || strings.HasPrefix(clean, ".."+string(filepath.Separator)) {
+			return fmt.Errorf("emitter returned unsafe filename %q", name)
+		}
+		desired[clean] = true
 		names = append(names, name)
+	}
+	if err := removeStaleGeneratedFiles(directory, desired); err != nil {
+		return err
 	}
 	sort.Strings(names)
 	for _, name := range names {
-		if filepath.Base(name) != name {
-			return fmt.Errorf("emitter returned unsafe filename %q", name)
+		path := filepath.Join(directory, filepath.Clean(name))
+		if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+			return err
 		}
-		if err := os.WriteFile(filepath.Join(directory, name), []byte(files[name]), 0o644); err != nil {
+		if err := os.WriteFile(path, []byte(files[name]), 0o644); err != nil {
 			return err
 		}
 	}
 	return nil
+}
+
+func removeStaleGeneratedFiles(directory string, desired map[string]bool) error {
+	const generatedHeader = "// Code generated from canonical protocol manifest v2. DO NOT EDIT."
+	return filepath.WalkDir(directory, func(path string, entry os.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if entry.IsDir() {
+			return nil
+		}
+		relative, err := filepath.Rel(directory, path)
+		if err != nil || desired[relative] {
+			return err
+		}
+		data, err := os.ReadFile(path)
+		if err != nil {
+			return err
+		}
+		if strings.HasPrefix(string(data), generatedHeader) {
+			return os.Remove(path)
+		}
+		return nil
+	})
 }

@@ -18,11 +18,38 @@ func TestGenerateRustConsumesCanonicalManifest(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Generate: %v", err)
 	}
-	if !strings.Contains(source, "pub struct FixturePacket") || !strings.Contains(source, "pub const FIXTUREPACKET_VALUE_SHAPE") {
+	if !strings.Contains(source, "pub struct Fixture") || !strings.Contains(source, "pub const FIXTURE_VALUE_SHAPE") {
 		t.Fatalf("generated Rust omitted packet/shape:\n%s", source)
 	}
 	if strings.Contains(source, "gophertunnel") || strings.Contains(source, "bedrock-protocol-docs") {
 		t.Fatalf("generated Rust contains source/profile lookup text")
+	}
+}
+
+func TestGenerateRustFilesUseNativeEnumsAndPacketModules(t *testing.T) {
+	packetType := manifest.Enum("zigzag_i32",
+		manifest.EnumValue{Name: "EnableMultiplayer", Value: 0},
+		manifest.EnumValue{Name: "DisableMultiplayer", Value: 1},
+		manifest.EnumValue{Name: "RefreshJoincode", Value: 2},
+	)
+	packetType.Semantic = "MultiplayerSettingsPacketType"
+	packetType.TypeID = "enums/MultiplayerSettingsPacketType"
+	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:rust", MinecraftVersion: "fixture", ProtocolVersion: 2168}}, Packets: []manifest.Packet{{ID: 139, Name: "MultiplayerSettingsPacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{Ordinal: 0, Name: "Packet Type", Encode: packetType, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}}}
+	files, err := GenerateFiles(m)
+	if err != nil {
+		t.Fatal(err)
+	}
+	enums := files["enums.rs"]
+	for _, text := range []string{"pub enum MultiplayerSettingsPacketType", "Enable = 0", "Disable = 1", "RefreshJoinCode = 2", "impl TryFrom<i32> for MultiplayerSettingsPacketType", "impl From<MultiplayerSettingsPacketType> for i32"} {
+		if !strings.Contains(enums, text) {
+			t.Fatalf("native enum output omits %q:\n%s", text, enums)
+		}
+	}
+	if strings.Contains(enums, "ENUMS") || strings.Contains(enums, "repr(transparent)") {
+		t.Fatalf("enum output retained wrapper constants:\n%s", enums)
+	}
+	if _, ok := files["packets/multiplayer_settings.rs"]; !ok {
+		t.Fatalf("packet was not emitted separately: %v", files)
 	}
 }
 
@@ -122,7 +149,35 @@ func TestGenerateRustKeepsUnrelatedAnonymousUnionsDistinct(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Generate: %v", err)
 	}
-	if !strings.Contains(source, "pub alpha: PacketAlphaUnion") || !strings.Contains(source, "pub beta: PacketBetaUnion") {
+	if !strings.Contains(source, "pub alpha: PacketAlpha") || !strings.Contains(source, "pub beta: PacketBeta") {
 		t.Fatalf("anonymous unions were incorrectly deduplicated:\n%s", source)
+	}
+}
+
+func TestRustPublicNamesDropSchemaScaffolding(t *testing.T) {
+	tests := map[string]string{
+		"enums/MoLangVersion":                          "MoLangVersion",
+		"enums/MolangVersion":                          "MoLangVersion",
+		"PlayerVideoCapturePacketPayload::Action":      "PlayerVideoCaptureAction",
+		"DataItemEntryPayloadUnion":                    "DataItemEntryValue",
+		"SharedTypes::v1_26_0::CameraSplineDefinition": "CameraSplineDefinition",
+	}
+	for input, want := range tests {
+		if got := publicTypeName(input); got != want {
+			t.Fatalf("publicTypeName(%q) = %q, want %q", input, got, want)
+		}
+	}
+}
+
+func TestRustEnumVariantsUseIdiomaticCase(t *testing.T) {
+	tests := map[string]string{
+		"START_ATTACKING":   "StartAttacking",
+		"RefreshJoincode":   "RefreshJoinCode",
+		"EnableMultiplayer": "Enable",
+	}
+	for input, want := range tests {
+		if got := enumVariantName("MultiplayerSettingsPacketType", input); got != want {
+			t.Fatalf("enumVariantName(%q) = %q, want %q", input, got, want)
+		}
 	}
 }

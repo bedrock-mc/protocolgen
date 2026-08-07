@@ -49,7 +49,7 @@ func Generate(m manifest.Manifest, packageName string) (map[string]string, error
 	sort.Slice(packets, func(i, j int) bool { return packets[i].ID < packets[j].ID })
 	packetNames := map[uint32]string{}
 	for _, packet := range packets {
-		name := g.unique(exportName(packet.Name))
+		name := g.unique(packetTypeName(packet.Name))
 		packetNames[packet.ID] = name
 		for _, field := range packet.Fields {
 			if _, err := g.goType(field.Encode, name+exportName(field.Name)); err != nil {
@@ -57,12 +57,12 @@ func Generate(m manifest.Manifest, packageName string) (map[string]string, error
 			}
 		}
 	}
-	packetsSource, err := g.emitPackets(packageName, packets, packetNames)
+	files, err := g.emitFiles(packageName, packets, packetNames)
 	if err != nil {
 		return nil, err
 	}
-	wireSource := emitWire(packageName)
-	return map[string]string{"wire.go": wireSource, "packets.go": packetsSource}, nil
+	files["wire.go"] = emitWire(packageName)
+	return files, nil
 }
 
 func (g *generator) goType(node manifest.Node, hint string) (string, error) {
@@ -252,7 +252,23 @@ func (g *generator) registerIdentity(node manifest.Node, hint string) string {
 	} else if inferred != "" {
 		base = inferred
 	}
-	name := g.unique(exportName(base))
+	candidate := publicTypeName(base)
+	if g.usedNames[candidate] {
+		switch node.Kind {
+		case manifest.KindEnum:
+			candidate += "Type"
+		case manifest.KindUnion:
+			hinted := strings.TrimSuffix(publicTypeName(hint), "Union")
+			if hinted != "" && !g.usedNames[hinted] {
+				candidate = hinted
+			} else {
+				candidate += "Data"
+			}
+		default:
+			candidate += "Data"
+		}
+	}
+	name := g.unique(candidate)
 	g.identity[key] = name
 	return name
 }
@@ -294,17 +310,43 @@ func (g *generator) unique(base string) string {
 	}
 }
 
-func (g *generator) emitPackets(packageName string, packets []manifest.Packet, packetNames map[uint32]string) (string, error) {
-	var b strings.Builder
-	fmt.Fprintf(&b, "// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\npackage %s\n\n", packageName)
-	b.WriteString("import \"fmt\"\n\n")
-	b.WriteString("// OrderedEntry preserves the source order and duplicate keys of a wire map.\n")
-	b.WriteString("type OrderedEntry[K, V any] struct {\n\tKey K\n\tValue V\n}\n\n")
+func (g *generator) emitFiles(packageName string, packets []manifest.Packet, packetNames map[uint32]string) (map[string]string, error) {
 	definitions := make([]typeDefinition, 0, len(g.definitions))
 	for _, definition := range g.definitions {
 		definitions = append(definitions, definition)
 	}
 	sort.Slice(definitions, func(i, j int) bool { return definitions[i].Name < definitions[j].Name })
+
+	files := map[string]string{}
+	typesSource, err := emitTypeDefinitions(packageName, definitions)
+	if err != nil {
+		return nil, err
+	}
+	files["types.go"] = typesSource
+	enumsSource, err := emitEnumDefinitions(packageName, definitions)
+	if err != nil {
+		return nil, err
+	}
+	files["enums.go"] = enumsSource
+	usedFiles := map[string]bool{}
+	for _, packet := range packets {
+		packetName := packetNames[packet.ID]
+		base := snakeName(packetName) + ".go"
+		name := uniqueFileName(base, packet.ID, usedFiles)
+		source, err := g.emitPacket(packageName, packet, packetName)
+		if err != nil {
+			return nil, err
+		}
+		files[name] = source
+	}
+	return files, nil
+}
+
+func emitTypeDefinitions(packageName string, definitions []typeDefinition) (string, error) {
+	var b strings.Builder
+	fmt.Fprintf(&b, "// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\npackage %s\n\n", packageName)
+	b.WriteString("// OrderedEntry preserves the source order and duplicate keys of a wire map.\n")
+	b.WriteString("type OrderedEntry[K, V any] struct {\n\tKey K\n\tValue V\n}\n\n")
 	for _, definition := range definitions {
 		switch definition.Kind {
 		case manifest.KindStruct:
@@ -318,62 +360,83 @@ func (g *generator) emitPackets(packageName string, packets []manifest.Packet, p
 			}
 		case manifest.KindUnion:
 			fmt.Fprintf(&b, "type %s interface {\n\tis%s()\n}\n\n", definition.Name, definition.Name)
-		case manifest.KindEnum:
-			fmt.Fprintf(&b, "type %s %s\n\nconst (\n", definition.Name, definition.Underlying)
-			for _, variant := range definition.Variants {
-				fmt.Fprintf(&b, "\t%s%s %s = %d\n", definition.Name, exportName(variant.Name), definition.Name, variant.Value)
-			}
-			b.WriteString(")\n\n")
 		}
 	}
-	for _, packet := range packets {
-		packetName := packetNames[packet.ID]
-		used := map[string]bool{}
-		type packetField struct {
-			field manifest.Field
-			name  string
-			typ   string
+	return formatGoSource(b.String())
+}
+
+func emitEnumDefinitions(packageName string, definitions []typeDefinition) (string, error) {
+	var b strings.Builder
+	fmt.Fprintf(&b, "// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\npackage %s\n\n", packageName)
+	for _, definition := range definitions {
+		if definition.Kind != manifest.KindEnum {
+			continue
 		}
-		fields := make([]packetField, 0, len(packet.Fields))
-		for _, field := range packet.Fields {
-			name := uniqueFieldName(exportName(field.Name), used)
-			typ, err := g.goType(field.Encode, packetName+name)
-			if err != nil {
-				return "", err
-			}
-			fields = append(fields, packetField{field: field, name: name, typ: typ})
+		fmt.Fprintf(&b, "type %s %s\n\nconst (\n", definition.Name, definition.Underlying)
+		for _, variant := range definition.Variants {
+			fmt.Fprintf(&b, "\t%s%s %s = %d\n", definition.Name, exportName(variant.Name), definition.Name, variant.Value)
 		}
-		fmt.Fprintf(&b, "type %s struct {\n", packetName)
-		for _, field := range fields {
-			fmt.Fprintf(&b, "\t%s %s\n", field.name, field.typ)
-		}
-		b.WriteString("}\n\n")
-		fmt.Fprintf(&b, "func (p *%s) Encode(w Encoder) error {\n", packetName)
-		for _, field := range fields {
-			shape, err := shapeExpr(field.field.Encode)
-			if err != nil {
-				return "", err
-			}
-			fmt.Fprintf(&b, "\tif err := w.Write(%s, %s, p.%s); err != nil { return err }\n", strconv.Quote(packet.Name+"."+field.field.Name), shape, field.name)
-		}
-		b.WriteString("\treturn nil\n}\n\n")
-		fmt.Fprintf(&b, "func Decode%s(r Decoder) (%s, error) {\n\tvar p %s\n", packetName, packetName, packetName)
-		for _, field := range fields {
-			decodeNode := field.field.Encode
-			if field.field.Decode != nil {
-				decodeNode = *field.field.Decode
-			}
-			shape, err := shapeExpr(decodeNode)
-			if err != nil {
-				return "", err
-			}
-			fmt.Fprintf(&b, "\t{\n\t\traw, err := r.Read(%s, %s)\n\t\tif err != nil { return p, err }\n\t\tvalue, ok := raw.(%s)\n\t\tif !ok { return p, fmt.Errorf(\"field %s has unexpected decoded type %%T\", raw) }\n\t\tp.%s = value\n\t}\n", strconv.Quote(packet.Name+"."+field.field.Name), shape, field.typ, packet.Name+"."+field.field.Name, field.name)
-		}
-		b.WriteString("\treturn p, nil\n}\n\n")
+		b.WriteString(")\n\n")
 	}
-	formatted, err := format.Source([]byte(b.String()))
+	return formatGoSource(b.String())
+}
+
+type packetField struct {
+	field manifest.Field
+	name  string
+	typ   string
+}
+
+func (g *generator) emitPacket(packageName string, packet manifest.Packet, packetName string) (string, error) {
+	var b strings.Builder
+	fmt.Fprintf(&b, "// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\npackage %s\n\n", packageName)
+	if len(packet.Fields) != 0 {
+		b.WriteString("import \"fmt\"\n\n")
+	}
+	used := map[string]bool{}
+	fields := make([]packetField, 0, len(packet.Fields))
+	for _, field := range packet.Fields {
+		name := uniqueFieldName(exportName(field.Name), used)
+		typ, err := g.goType(field.Encode, packetName+name)
+		if err != nil {
+			return "", err
+		}
+		fields = append(fields, packetField{field: field, name: name, typ: typ})
+	}
+	fmt.Fprintf(&b, "type %s struct {\n", packetName)
+	for _, field := range fields {
+		fmt.Fprintf(&b, "\t%s %s\n", field.name, field.typ)
+	}
+	b.WriteString("}\n\n")
+	fmt.Fprintf(&b, "func (p *%s) Encode(w Encoder) error {\n", packetName)
+	for _, field := range fields {
+		shape, err := shapeExpr(field.field.Encode)
+		if err != nil {
+			return "", err
+		}
+		fmt.Fprintf(&b, "\tif err := w.Write(%s, %s, p.%s); err != nil { return err }\n", strconv.Quote(packet.Name+"."+field.field.Name), shape, field.name)
+	}
+	b.WriteString("\treturn nil\n}\n\n")
+	fmt.Fprintf(&b, "func Decode%s(r Decoder) (%s, error) {\n\tvar p %s\n", packetName, packetName, packetName)
+	for _, field := range fields {
+		decodeNode := field.field.Encode
+		if field.field.Decode != nil {
+			decodeNode = *field.field.Decode
+		}
+		shape, err := shapeExpr(decodeNode)
+		if err != nil {
+			return "", err
+		}
+		fmt.Fprintf(&b, "\t{\n\t\traw, err := r.Read(%s, %s)\n\t\tif err != nil { return p, err }\n\t\tvalue, ok := raw.(%s)\n\t\tif !ok { return p, fmt.Errorf(\"field %s has unexpected decoded type %%T\", raw) }\n\t\tp.%s = value\n\t}\n", strconv.Quote(packet.Name+"."+field.field.Name), shape, field.typ, packet.Name+"."+field.field.Name, field.name)
+	}
+	b.WriteString("\treturn p, nil\n}\n\n")
+	return formatGoSource(b.String())
+}
+
+func formatGoSource(source string) (string, error) {
+	formatted, err := format.Source([]byte(source))
 	if err != nil {
-		return b.String(), fmt.Errorf("format generated Go: %w", err)
+		return source, fmt.Errorf("format generated Go: %w", err)
 	}
 	return string(formatted), nil
 }
@@ -633,6 +696,69 @@ func exportName(value string) string {
 		return "Generated" + result
 	}
 	return result
+}
+
+func packetTypeName(value string) string {
+	name := exportName(value)
+	name = strings.TrimSuffix(name, "Packet")
+	if name == "" {
+		return "Packet"
+	}
+	return name
+}
+
+func publicTypeName(value string) string {
+	value = strings.TrimSuffix(value, ".json#")
+	value = strings.TrimSuffix(value, ".json")
+	value = strings.TrimPrefix(value, "enums/")
+	value = stripSharedTypeVersion(value)
+	value = strings.ReplaceAll(value, "Packet::", "::")
+	value = strings.ReplaceAll(value, "PacketPayload::", "::")
+	value = strings.ReplaceAll(value, "PacketPayload", "")
+	if strings.HasSuffix(value, "PayloadUnion") {
+		value = strings.TrimSuffix(value, "PayloadUnion") + "Value"
+	}
+	value = strings.TrimSuffix(value, "Union")
+	value = strings.TrimSuffix(value, "Payload")
+	return strings.ReplaceAll(exportName(value), "Molang", "MoLang")
+}
+
+func stripSharedTypeVersion(value string) string {
+	const prefix = "SharedTypes::"
+	if !strings.HasPrefix(value, prefix) {
+		return value
+	}
+	rest := strings.TrimPrefix(value, prefix)
+	if separator := strings.Index(rest, "::"); separator >= 0 && strings.HasPrefix(rest[:separator], "v") {
+		return rest[separator+2:]
+	}
+	return rest
+}
+
+func snakeName(value string) string {
+	var b strings.Builder
+	runes := []rune(value)
+	for index, r := range runes {
+		if unicode.IsUpper(r) && index > 0 {
+			previousLower := unicode.IsLower(runes[index-1]) || unicode.IsDigit(runes[index-1])
+			nextLower := index+1 < len(runes) && unicode.IsLower(runes[index+1])
+			if previousLower || nextLower {
+				b.WriteByte('_')
+			}
+		}
+		b.WriteRune(unicode.ToLower(r))
+	}
+	return b.String()
+}
+
+func uniqueFileName(base string, packetID uint32, used map[string]bool) string {
+	if !used[base] {
+		used[base] = true
+		return base
+	}
+	name := strings.TrimSuffix(base, ".go") + fmt.Sprintf("_%d.go", packetID)
+	used[name] = true
+	return name
 }
 
 func uniqueFieldName(base string, used map[string]bool) string {

@@ -63,12 +63,18 @@ go run ./cmd/protocolgen emit-rust \
 This produces:
 
 - a deterministic JSON manifest containing the canonical wire protocol;
-- typed Go packet structures with reusable semantic types, closed union
-  interfaces, and ordered map entries;
-- typed Rust packet structures with reusable semantic types, ordered map
-  tuples, and payload-bearing enums for Cereal unions; and
+- typed Go packet structures, one packet per file, with shared semantic types,
+  enums, closed union interfaces, and ordered map entries;
+- typed Rust packet structures, one packet module per file, with shared types,
+  native enums, checked `TryFrom<integer>` decoding, ordered map tuples, and
+  payload-bearing enums for Cereal unions; and
 - wire-layout descriptors that preserve the exact encoding separately from
   those language-level types.
+
+Packet APIs use concise target-language names: the schema's transport-oriented
+`Packet` and `PacketPayload` suffixes do not leak into public type names. Both
+backends keep common definitions in `types` and `enums`; packet files contain
+only the packet surface and its wire-shape descriptors.
 
 `generated/1.26.40/` contains the checked-in protocol 2168 source lock,
 canonical 229-packet Cereal manifest, and matching Go and Rust outputs generated

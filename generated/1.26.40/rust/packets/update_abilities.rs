@@ -1,0 +1,20 @@
+// Code generated from canonical protocol manifest v2. DO NOT EDIT.
+
+#[allow(unused_imports)]
+use crate::*;
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct UpdateAbilities {
+    pub data: SerializedAbilitiesData,
+}
+
+pub const UPDATEABILITIES_DATA_SHAPE: &str = r#"{"kind":"struct","semantic":"SerializedAbilitiesData","type_id":"SerializedAbilitiesData","fields":[{"ordinal":0,"name":"Target Player Raw Id","semantic":"Target Player Raw Id","encode":{"kind":"primitive","primitive":{"code":"i64le","width":64,"signed":true,"zigzag":false,"endianness":"little"}},"symmetry":"symmetric","provenance":{"pins":["endstone","mojang"]}},{"ordinal":1,"name":"Player Permissions","semantic":"Player Permissions","encode":{"kind":"enum","semantic":"PlayerPermissionLevel","type_id":"enums/PlayerPermissionLevel","primitive":{"code":"i8","width":8,"signed":true,"zigzag":false,"endianness":"none"},"variants":[{"value":0,"name":"Visitor","encode":{"kind":"void"}},{"value":1,"name":"Member","encode":{"kind":"void"}},{"value":2,"name":"Operator","encode":{"kind":"void"}},{"value":3,"name":"Custom","encode":{"kind":"void"}}]},"symmetry":"symmetric","provenance":{"pins":["endstone"]}},{"ordinal":2,"name":"Command Permissions","semantic":"Command Permissions","encode":{"kind":"enum","semantic":"CommandPermissionLevel","type_id":"enums/CommandPermissionLevel","primitive":{"code":"u8","width":8,"signed":false,"zigzag":false,"endianness":"none"},"variants":[{"value":0,"name":"Any","encode":{"kind":"void"}},{"value":1,"name":"GameDirectors","encode":{"kind":"void"}},{"value":2,"name":"Admin","encode":{"kind":"void"}},{"value":3,"name":"Host","encode":{"kind":"void"}},{"value":4,"name":"Owner","encode":{"kind":"void"}},{"value":5,"name":"Internal","encode":{"kind":"void"}}]},"symmetry":"symmetric","provenance":{"pins":["endstone"]}},{"ordinal":3,"name":"Layers","semantic":"Layers","encode":{"kind":"array","prefix":{"kind":"primitive","primitive":{"code":"var_u32","width":32,"signed":false,"zigzag":false,"endianness":"none"}},"element":{"kind":"struct","semantic":"SerializedAbilitiesData::SerializedLayer","type_id":"SerializedAbilitiesData::SerializedLayer","fields":[{"ordinal":0,"name":"SerializedLayer","semantic":"SerializedLayer","encode":{"kind":"primitive","primitive":{"code":"u16le","width":16,"signed":false,"zigzag":false,"endianness":"little"}},"symmetry":"symmetric","provenance":{"pins":["endstone"]}},{"ordinal":1,"name":"AbilitiesSet","semantic":"AbilitiesSet","encode":{"kind":"primitive","primitive":{"code":"u32le","width":32,"signed":false,"zigzag":false,"endianness":"little"}},"symmetry":"symmetric","provenance":{"pins":["endstone"]}},{"ordinal":2,"name":"AbilityValues","semantic":"AbilityValues","encode":{"kind":"primitive","primitive":{"code":"u32le","width":32,"signed":false,"zigzag":false,"endianness":"little"}},"symmetry":"symmetric","provenance":{"pins":["endstone"]}},{"ordinal":3,"name":"FlySpeed","semantic":"FlySpeed","encode":{"kind":"primitive","primitive":{"code":"f32le","width":32,"signed":false,"zigzag":false,"endianness":"little"}},"symmetry":"symmetric","provenance":{"pins":["endstone"]}},{"ordinal":4,"name":"VerticalFlySpeed","semantic":"VerticalFlySpeed","encode":{"kind":"primitive","primitive":{"code":"f32le","width":32,"signed":false,"zigzag":false,"endianness":"little"}},"symmetry":"symmetric","provenance":{"pins":["endstone"]}},{"ordinal":5,"name":"WalkSpeed","semantic":"WalkSpeed","encode":{"kind":"primitive","primitive":{"code":"f32le","width":32,"signed":false,"zigzag":false,"endianness":"little"}},"symmetry":"symmetric","provenance":{"pins":["endstone"]}}]}},"symmetry":"symmetric","provenance":{"pins":["endstone","mojang"]}}]}"#;
+
+impl UpdateAbilities {
+    pub fn encode<E: WireEncoder>(&self, encoder: &mut E) {
+        encoder.field("UpdateAbilitiesPacket.Data", UPDATEABILITIES_DATA_SHAPE);
+    }
+    pub fn decode<D: WireDecoder>(decoder: &mut D) {
+        decoder.field("UpdateAbilitiesPacket.Data", UPDATEABILITIES_DATA_SHAPE);
+    }
+}

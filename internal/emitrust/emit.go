@@ -32,6 +32,12 @@ type rustField struct {
 	Type string
 }
 
+type packetInfo struct {
+	packet manifest.Packet
+	name   string
+	fields []rustFieldInfo
+}
+
 type generator struct {
 	definitions map[string]definition
 	identities  map[string]string
@@ -39,44 +45,50 @@ type generator struct {
 }
 
 func Generate(m manifest.Manifest) (string, error) {
-	if err := manifest.Validate(m); err != nil {
+	g, infos, err := prepare(m)
+	if err != nil {
 		return "", err
+	}
+	return g.emitSingleFile(infos)
+}
+
+func prepare(m manifest.Manifest) (*generator, []packetInfo, error) {
+	if err := manifest.Validate(m); err != nil {
+		return nil, nil, err
 	}
 	g := &generator{definitions: map[string]definition{}, identities: map[string]string{}, used: map[string]bool{}}
 	packets := append([]manifest.Packet(nil), m.Packets...)
 	sort.Slice(packets, func(i, j int) bool { return packets[i].ID < packets[j].ID })
-	type packetInfo struct {
-		packet manifest.Packet
-		name   string
-		fields []rustFieldInfo
-	}
 	infos := make([]packetInfo, 0, len(packets))
 	for _, packet := range packets {
-		name := g.unique(typeName(packet.Name))
+		name := g.unique(packetTypeName(packet.Name))
 		used := map[string]bool{}
 		fields := make([]rustFieldInfo, 0, len(packet.Fields))
 		for _, field := range packet.Fields {
 			fieldName := uniqueField(fieldName(field.Name), used)
 			typ, err := g.rustType(field.Encode, name+typeName(field.Name))
 			if err != nil {
-				return "", fmt.Errorf("packet %s field %s: %w", packet.Name, field.Name, err)
+				return nil, nil, fmt.Errorf("packet %s field %s: %w", packet.Name, field.Name, err)
 			}
 			shape, err := json.Marshal(field.Encode)
 			if err != nil {
-				return "", err
+				return nil, nil, err
 			}
 			decodeShape := shape
 			if field.Decode != nil {
 				decodeShape, err = json.Marshal(*field.Decode)
 				if err != nil {
-					return "", err
+					return nil, nil, err
 				}
 			}
 			fields = append(fields, rustFieldInfo{field: field, name: fieldName, typ: typ, shape: string(shape), decodeShape: string(decodeShape)})
 		}
 		infos = append(infos, packetInfo{packet: packet, name: name, fields: fields})
 	}
+	return g, infos, nil
+}
 
+func (g *generator) emitSingleFile(infos []packetInfo) (string, error) {
 	var b strings.Builder
 	b.WriteString("// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\n")
 	b.WriteString("#![allow(dead_code)]\n\n")
@@ -106,11 +118,7 @@ func Generate(m manifest.Manifest) (string, error) {
 			}
 			b.WriteString("}\n\n")
 		case manifest.KindEnum:
-			fmt.Fprintf(&b, "#[derive(Clone, Copy, Debug, PartialEq, Eq)]\n#[repr(transparent)]\npub struct %s(pub %s);\n", item.Name, item.Underlying)
-			for _, variant := range item.Variants {
-				fmt.Fprintf(&b, "pub const %s_%s: %s = %s(%d);\n", strings.ToUpper(item.Name), strings.ToUpper(typeName(variant.Name)), item.Name, item.Name, variant.Value)
-			}
-			b.WriteString("\n")
+			emitRustEnum(&b, item)
 		}
 	}
 	for _, info := range infos {
@@ -146,6 +154,165 @@ func Generate(m manifest.Manifest) (string, error) {
 		b.WriteString("    }\n}\n\n")
 	}
 	return strings.TrimSpace(b.String()) + "\n", nil
+}
+
+func GenerateFiles(m manifest.Manifest) (map[string]string, error) {
+	g, infos, err := prepare(m)
+	if err != nil {
+		return nil, err
+	}
+	definitions := g.sortedDefinitions()
+	files := map[string]string{
+		"lib.rs":   emitLib(infos),
+		"wire.rs":  emitRustWire(),
+		"enums.rs": emitRustEnums(definitions),
+		"types.rs": emitRustTypes(definitions),
+	}
+	usedFiles := map[string]bool{}
+	var modules strings.Builder
+	modules.WriteString("// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\n")
+	for _, info := range infos {
+		base := moduleFileName(info.name)
+		fileName := base + ".rs"
+		moduleName := rustModuleName(base)
+		if usedFiles[fileName] {
+			base += fmt.Sprintf("_%d", info.packet.ID)
+			fileName = base + ".rs"
+			moduleName = rustModuleName(base)
+		}
+		usedFiles[fileName] = true
+		fmt.Fprintf(&modules, "mod %s;\npub use %s::*;\n", moduleName, moduleName)
+		files["packets/"+fileName] = emitRustPacket(info)
+	}
+	files["packets/mod.rs"] = strings.TrimSpace(modules.String()) + "\n"
+	return files, nil
+}
+
+func (g *generator) sortedDefinitions() []definition {
+	definitions := make([]definition, 0, len(g.definitions))
+	for _, item := range g.definitions {
+		definitions = append(definitions, item)
+	}
+	sort.Slice(definitions, func(i, j int) bool { return definitions[i].Name < definitions[j].Name })
+	return definitions
+}
+
+func emitLib(_ []packetInfo) string {
+	return `// Code generated from canonical protocol manifest v2. DO NOT EDIT.
+
+#![allow(dead_code)]
+
+mod wire;
+pub use wire::*;
+mod enums;
+pub use enums::*;
+mod types;
+pub use types::*;
+mod packets;
+pub use packets::*;
+`
+}
+
+func emitRustWire() string {
+	return `// Code generated from canonical protocol manifest v2. DO NOT EDIT.
+
+pub trait WireEncoder {
+    fn field(&mut self, path: &'static str, shape: &'static str);
+}
+
+pub trait WireDecoder {
+    fn field(&mut self, path: &'static str, shape: &'static str);
+}
+`
+}
+
+func emitRustEnums(definitions []definition) string {
+	var b strings.Builder
+	b.WriteString("// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\n")
+	for _, item := range definitions {
+		if item.Kind == manifest.KindEnum {
+			emitRustEnum(&b, item)
+		}
+	}
+	return strings.TrimSpace(b.String()) + "\n"
+}
+
+func emitRustTypes(definitions []definition) string {
+	var b strings.Builder
+	b.WriteString("// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\n")
+	b.WriteString("use crate::enums::*;\n\n")
+	for _, item := range definitions {
+		switch item.Kind {
+		case manifest.KindStruct:
+			fmt.Fprintf(&b, "#[derive(Clone, Debug, PartialEq)]\npub struct %s {\n", item.Name)
+			for _, field := range item.Fields {
+				fmt.Fprintf(&b, "    pub %s: %s,\n", field.Name, field.Type)
+			}
+			b.WriteString("}\n\n")
+		case manifest.KindUnion:
+			fmt.Fprintf(&b, "#[derive(Clone, Debug, PartialEq)]\npub enum %s {\n", item.Name)
+			for _, variant := range item.Union {
+				if variant.Payload == "" {
+					fmt.Fprintf(&b, "    %s,\n", variant.Name)
+				} else {
+					fmt.Fprintf(&b, "    %s(%s),\n", variant.Name, variant.Payload)
+				}
+			}
+			b.WriteString("}\n\n")
+		}
+	}
+	return strings.TrimSpace(b.String()) + "\n"
+}
+
+func emitRustPacket(info packetInfo) string {
+	var b strings.Builder
+	b.WriteString("// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\n")
+	b.WriteString("#[allow(unused_imports)]\nuse crate::*;\n\n")
+	fmt.Fprintf(&b, "#[derive(Clone, Debug, PartialEq)]\npub struct %s {\n", info.name)
+	for _, field := range info.fields {
+		fmt.Fprintf(&b, "    pub %s: %s,\n", field.name, field.typ)
+	}
+	b.WriteString("}\n\n")
+	for _, field := range info.fields {
+		constName := shapeConst(info.name, field.name)
+		fmt.Fprintf(&b, "pub const %s: &str = %s;\n", constName, rustRawString(field.shape))
+		if field.field.Decode != nil {
+			fmt.Fprintf(&b, "pub const %s_DECODE: &str = %s;\n", constName, rustRawString(field.decodeShape))
+		}
+	}
+	if len(info.fields) != 0 {
+		b.WriteString("\n")
+	}
+	encoderName, decoderName := "encoder", "decoder"
+	if len(info.fields) == 0 {
+		encoderName, decoderName = "_encoder", "_decoder"
+	}
+	fmt.Fprintf(&b, "impl %s {\n    pub fn encode<E: WireEncoder>(&self, %s: &mut E) {\n", info.name, encoderName)
+	for _, field := range info.fields {
+		fmt.Fprintf(&b, "        encoder.field(%s, %s);\n", rustString(info.packet.Name+"."+field.field.Name), shapeConst(info.name, field.name))
+	}
+	fmt.Fprintf(&b, "    }\n    pub fn decode<D: WireDecoder>(%s: &mut D) {\n", decoderName)
+	for _, field := range info.fields {
+		decodeConst := shapeConst(info.name, field.name)
+		if field.field.Decode != nil {
+			decodeConst += "_DECODE"
+		}
+		fmt.Fprintf(&b, "        decoder.field(%s, %s);\n", rustString(info.packet.Name+"."+field.field.Name), decodeConst)
+	}
+	b.WriteString("    }\n}\n")
+	return b.String()
+}
+
+func moduleFileName(value string) string {
+	name := fieldName(value)
+	return strings.TrimPrefix(name, "r#")
+}
+
+func rustModuleName(value string) string {
+	if rustKeywords[value] || rustUnrawableKeywords[value] {
+		return "r#" + value
+	}
+	return value
 }
 
 type rustFieldInfo struct {
@@ -211,7 +378,8 @@ func (g *generator) rustType(node manifest.Node, hint string) (string, error) {
 			variants := make([]rustVariant, 0, len(node.Variants))
 			used := map[string]bool{}
 			for _, variant := range node.Variants {
-				variantName := uniqueTypeVariant(typeName(shortTypeName(variant.Name)), used)
+				variantName := strings.TrimSuffix(rustPascalName(shortTypeName(variant.Name)), "Payload")
+				variantName = uniqueTypeVariant(variantName, used)
 				payload := ""
 				if !emptyPayload(variant.Encode) {
 					var err error
@@ -262,15 +430,16 @@ func (g *generator) registerStruct(node manifest.Node, hint string) (string, err
 		return name, nil
 	}
 	g.definitions[name] = definition{Name: name, Kind: manifest.KindStruct}
+	parentName := name
 	used := map[string]bool{}
 	fields := make([]rustField, 0, len(node.Fields))
 	for _, field := range node.Fields {
-		name := uniqueField(fieldName(field.Name), used)
-		typ, err := g.rustType(field.Encode, name+typeName(field.Name))
+		fieldName := uniqueField(fieldName(field.Name), used)
+		typ, err := g.rustType(field.Encode, parentName+typeName(field.Name))
 		if err != nil {
 			return "", err
 		}
-		fields = append(fields, rustField{Name: name, Type: typ})
+		fields = append(fields, rustField{Name: fieldName, Type: typ})
 	}
 	definition := g.definitions[name]
 	definition.Fields = fields
@@ -301,7 +470,25 @@ func (g *generator) registerIdentity(node manifest.Node, hint string) string {
 	} else if inferred != "" {
 		base = inferred
 	}
-	name := g.unique(typeName(base))
+	candidate := publicTypeName(base)
+	if g.used[candidate] {
+		// Packet names own their unqualified name. Give a nested definition a
+		// semantic role instead of leaking a numeric collision suffix into the API.
+		switch node.Kind {
+		case manifest.KindEnum:
+			candidate += "Type"
+		case manifest.KindUnion:
+			hinted := strings.TrimSuffix(publicTypeName(hint), "Union")
+			if hinted != "" && !g.used[hinted] {
+				candidate = hinted
+			} else {
+				candidate += "Data"
+			}
+		default:
+			candidate += "Data"
+		}
+	}
+	name := g.unique(candidate)
 	g.identities[key] = name
 	return name
 }
@@ -420,6 +607,125 @@ func primitiveRustType(code string) (string, error) {
 	default:
 		return "", fmt.Errorf("unsupported primitive code %q", code)
 	}
+}
+
+func emitRustEnum(b *strings.Builder, item definition) {
+	fmt.Fprintf(b, "#[derive(Clone, Copy, Debug, PartialEq, Eq)]\n#[repr(%s)]\npub enum %s {\n", item.Underlying, item.Name)
+	used := map[string]bool{}
+	variantNames := make([]string, 0, len(item.Variants))
+	for _, variant := range item.Variants {
+		name := uniqueTypeVariant(enumVariantName(item.Name, variant.Name), used)
+		variantNames = append(variantNames, name)
+		fmt.Fprintf(b, "    %s = %d,\n", name, variant.Value)
+	}
+	b.WriteString("}\n\n")
+	fmt.Fprintf(b, "impl TryFrom<%s> for %s {\n    type Error = %s;\n\n    fn try_from(value: %s) -> Result<Self, %s> {\n        match value {\n", item.Underlying, item.Name, item.Underlying, item.Underlying, item.Underlying)
+	for index, variant := range item.Variants {
+		fmt.Fprintf(b, "            %d => Ok(Self::%s),\n", variant.Value, variantNames[index])
+	}
+	b.WriteString("            value => Err(value),\n        }\n    }\n}\n\n")
+	fmt.Fprintf(b, "impl From<%s> for %s {\n    fn from(value: %s) -> Self {\n        value as %s\n    }\n}\n\n", item.Name, item.Underlying, item.Name, item.Underlying)
+}
+
+func enumVariantName(enumName, value string) string {
+	name := rustPascalName(value)
+	base := enumName
+	for _, suffix := range []string{"PacketType", "Settings", "Type", "Mode", "Status", "Action", "Event"} {
+		base = strings.TrimSuffix(base, suffix)
+	}
+	if base != "" && strings.HasSuffix(name, base) && len(name) > len(base) {
+		name = strings.TrimSuffix(name, base)
+	}
+	name = strings.ReplaceAll(name, "Joincode", "JoinCode")
+	name = strings.ReplaceAll(name, "Molang", "MoLang")
+	if name == "" {
+		name = "Value"
+	}
+	if name == "Self" {
+		name = "SelfValue"
+	}
+	return name
+}
+
+func rustPascalName(value string) string {
+	parts := strings.FieldsFunc(value, func(r rune) bool { return !unicode.IsLetter(r) && !unicode.IsDigit(r) })
+	var b strings.Builder
+	for _, part := range parts {
+		for _, word := range camelWords(part) {
+			runes := []rune(strings.ToLower(word))
+			if len(runes) == 0 {
+				continue
+			}
+			runes[0] = unicode.ToUpper(runes[0])
+			b.WriteString(string(runes))
+		}
+	}
+	if b.Len() == 0 {
+		return "Value"
+	}
+	return strings.NewReplacer(
+		"Fishhook", "FishHook",
+		"Fishpos", "FishPos",
+		"Hooktime", "HookTime",
+		"Tntcart", "TntCart",
+		"Joincode", "JoinCode",
+	).Replace(b.String())
+}
+
+func camelWords(value string) []string {
+	runes := []rune(value)
+	if len(runes) == 0 {
+		return nil
+	}
+	start := 0
+	words := make([]string, 0, 4)
+	for index := 1; index < len(runes); index++ {
+		previous, current := runes[index-1], runes[index]
+		nextLower := index+1 < len(runes) && unicode.IsLower(runes[index+1])
+		boundary := unicode.IsUpper(current) && (unicode.IsLower(previous) || unicode.IsDigit(previous) || unicode.IsUpper(previous) && nextLower)
+		if boundary {
+			words = append(words, string(runes[start:index]))
+			start = index
+		}
+	}
+	return append(words, string(runes[start:]))
+}
+
+func packetTypeName(value string) string {
+	name := typeName(value)
+	name = strings.TrimSuffix(name, "Packet")
+	if name == "" {
+		return "Packet"
+	}
+	return name
+}
+
+func publicTypeName(value string) string {
+	value = strings.TrimSuffix(value, ".json#")
+	value = strings.TrimSuffix(value, ".json")
+	value = strings.TrimPrefix(value, "enums/")
+	value = stripSharedTypeVersion(value)
+	value = strings.ReplaceAll(value, "Packet::", "::")
+	value = strings.ReplaceAll(value, "PacketPayload::", "::")
+	value = strings.ReplaceAll(value, "PacketPayload", "")
+	if strings.HasSuffix(value, "PayloadUnion") {
+		value = strings.TrimSuffix(value, "PayloadUnion") + "Value"
+	}
+	value = strings.TrimSuffix(value, "Union")
+	value = strings.TrimSuffix(value, "Payload")
+	return strings.ReplaceAll(typeName(value), "Molang", "MoLang")
+}
+
+func stripSharedTypeVersion(value string) string {
+	const prefix = "SharedTypes::"
+	if !strings.HasPrefix(value, prefix) {
+		return value
+	}
+	rest := strings.TrimPrefix(value, prefix)
+	if separator := strings.Index(rest, "::"); separator >= 0 && strings.HasPrefix(rest[:separator], "v") {
+		return rest[separator+2:]
+	}
+	return rest
 }
 
 func typeName(value string) string {
