@@ -141,6 +141,9 @@ func collectNodeTypeIDs(node manifest.Node, result map[string]bool) {
 	if node.TypeID != "" {
 		result[node.TypeID] = true
 	}
+	if inferred := InferredTypeName(node); inferred != "" {
+		result[inferred] = true
+	}
 	for _, field := range node.Fields {
 		collectFieldTypeIDs(field, result)
 	}

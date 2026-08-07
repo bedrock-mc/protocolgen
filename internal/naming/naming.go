@@ -54,15 +54,22 @@ func (r *Resolver) Resolve(node manifest.Node, hint string, casing func(string) 
 		return name, nil
 	}
 	base := hint
+	inferred := InferredTypeName(node)
 	if node.TypeID != "" {
 		base = node.TypeID
 	} else if node.Semantic != "" {
 		base = node.Semantic
-	} else if inferred := InferredTypeName(node); inferred != "" {
+	} else if inferred != "" {
 		base = inferred
 	}
 
 	neutral := r.overlay.Names[node.TypeID]
+	if neutral == "" && inferred != "" {
+		neutral = r.overlay.Names[inferred]
+	}
+	if neutral == "" {
+		neutral = commonOverlaySuffix(node, r.overlay)
+	}
 	if neutral == "" {
 		if node.TypeID != "" && LooksLikeArtifact(node.TypeID) {
 			return "", fmt.Errorf("type ID %q requires a naming overlay entry", node.TypeID)
@@ -222,6 +229,57 @@ func PublicVariantName(value string) string {
 		return "Empty"
 	}
 	return value
+}
+
+func commonOverlaySuffix(node manifest.Node, overlay Overlay) string {
+	var names []string
+	for _, variant := range node.Variants {
+		if name := overlay.Names[variant.Encode.TypeID]; name != "" {
+			names = append(names, name)
+		}
+	}
+	if len(names) < 2 {
+		return ""
+	}
+	common := camelWords(names[0])
+	for _, name := range names[1:] {
+		common = commonSuffixWords(common, camelWords(name))
+		if len(common) == 0 {
+			return ""
+		}
+	}
+	if len(common) == 0 {
+		return ""
+	}
+	var b strings.Builder
+	for _, word := range common {
+		b.WriteString(word)
+	}
+	return b.String()
+}
+
+func commonSuffixWords(first, second []string) []string {
+	count := len(first)
+	if len(second) < count {
+		count = len(second)
+	}
+	for count > 0 {
+		match := true
+		for index := 0; index < count; index++ {
+			if !strings.EqualFold(first[len(first)-count+index], second[len(second)-count+index]) {
+				match = false
+				break
+			}
+		}
+		if match {
+			break
+		}
+		count--
+	}
+	if count == 0 {
+		return nil
+	}
+	return first[len(first)-count:]
 }
 
 func stripPacketPrefix(value string, filenameTypeID bool) string {

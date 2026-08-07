@@ -19,6 +19,7 @@ import (
 	"protocolgen/internal/gophertunneloracle"
 	"protocolgen/internal/ingest"
 	"protocolgen/internal/manifest"
+	"protocolgen/internal/naming"
 	"protocolgen/internal/parity"
 	"protocolgen/internal/reconcile"
 	"protocolgen/internal/sourcelock"
@@ -212,6 +213,7 @@ func runEmitGo(args []string) error {
 	fs := flag.NewFlagSet("emit-go", flag.ContinueOnError)
 	manifestPath := fs.String("manifest", "", "canonical manifest v2 JSON")
 	out := fs.String("out", "", "generated Go source directory")
+	namingPath := fs.String("naming", "", "reviewed naming overlay JSON; defaults to naming.json beside the manifest")
 	protocolImport := fs.String("protocol-import", "", "import path of the generated protocol package")
 	nativeTypes := fs.Bool("native-types", true, "map canonical semantic shapes to established Go types such as uuid.UUID and mgl32 vectors")
 	packetRuntime := fs.Bool("packet-runtime", true, "emit the packet interface and ID methods")
@@ -229,8 +231,13 @@ func runEmitGo(args []string) error {
 	if err != nil {
 		return err
 	}
+	overlay, err := loadNamingOverlay(*manifestPath, *namingPath, m)
+	if err != nil {
+		return err
+	}
 	files, err := emitgo.GenerateWithOptions(m, emitgo.Options{
 		ProtocolImportPath: *protocolImport,
+		Naming:             overlay,
 		NativeTypes:        *nativeTypes,
 		EmitPacketRuntime:  *packetRuntime,
 		EmitPacketPools:    *packetPools,
@@ -249,6 +256,7 @@ func runEmitRust(args []string) error {
 	fs := flag.NewFlagSet("emit-rust", flag.ContinueOnError)
 	manifestPath := fs.String("manifest", "", "canonical manifest v2 JSON")
 	out := fs.String("out", "", "generated Rust source directory")
+	namingPath := fs.String("naming", "", "reviewed naming overlay JSON; defaults to naming.json beside the manifest")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
@@ -259,7 +267,11 @@ func runEmitRust(args []string) error {
 	if err != nil {
 		return err
 	}
-	files, err := emitrust.GenerateFiles(m)
+	overlay, err := loadNamingOverlay(*manifestPath, *namingPath, m)
+	if err != nil {
+		return err
+	}
+	files, err := emitrust.GenerateFilesWithOverlay(m, overlay)
 	if err != nil {
 		return err
 	}
@@ -268,6 +280,20 @@ func runEmitRust(args []string) error {
 	}
 	fmt.Printf("Rust emitter: %d files -> %s\n", len(files), *out)
 	return nil
+}
+
+func loadNamingOverlay(manifestPath, explicitPath string, m manifest.Manifest) (naming.Overlay, error) {
+	path := explicitPath
+	if path == "" {
+		path = filepath.Join(filepath.Dir(manifestPath), "naming.json")
+	}
+	if _, err := os.Stat(path); err != nil {
+		if os.IsNotExist(err) && explicitPath == "" {
+			return naming.Overlay{}, nil
+		}
+		return naming.Overlay{}, fmt.Errorf("stat naming overlay: %w", err)
+	}
+	return naming.LoadOverlay(path, m)
 }
 
 func runParity(args []string) error {
