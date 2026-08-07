@@ -406,7 +406,7 @@ func (g *generator) rustType(node manifest.Node, hint string) (string, error) {
 				if !emptyPayload(variant.Encode) {
 					var err error
 					if g.inlineRustVariant(variant.Encode) {
-						fields, err = g.rustFields(variant.Encode, name+variantName)
+						fields, err = g.rustFieldsForUnion(variant.Encode, name+variantName, node.Control)
 					} else {
 						payload, err = g.rustType(variant.Encode, name+variantName)
 					}
@@ -513,9 +513,16 @@ func (g *generator) registerStruct(node manifest.Node, hint string) (string, err
 }
 
 func (g *generator) rustFields(node manifest.Node, parentName string) ([]rustField, error) {
+	return g.rustFieldsForUnion(node, parentName, nil)
+}
+
+func (g *generator) rustFieldsForUnion(node manifest.Node, parentName string, control *manifest.Node) ([]rustField, error) {
 	used := map[string]bool{}
 	fields := make([]rustField, 0, len(node.Fields))
 	for _, field := range node.Fields {
+		if control != nil && isUnionDiscriminantField(field, *control) {
+			continue
+		}
 		fieldName := uniqueField(fieldName(field.Name), used)
 		typ, err := g.rustType(field.Encode, parentName+typeName(field.Name))
 		if err != nil {
@@ -524,6 +531,19 @@ func (g *generator) rustFields(node manifest.Node, parentName string) ([]rustFie
 		fields = append(fields, rustField{Name: fieldName, Type: typ})
 	}
 	return fields, nil
+}
+
+func isUnionDiscriminantField(field manifest.Field, control manifest.Node) bool {
+	name := fieldName(field.Name)
+	name = strings.TrimPrefix(name, "r#")
+	name = strings.TrimSuffix(name, "_")
+	if name != "type" || control.Primitive == nil {
+		return false
+	}
+	if field.Encode.Primitive == nil {
+		return false
+	}
+	return field.Encode.Primitive.Code == control.Primitive.Code
 }
 
 func (g *generator) inlineRustVariant(node manifest.Node) bool {

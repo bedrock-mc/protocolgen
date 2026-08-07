@@ -148,6 +148,24 @@ func TestGenerateRustUsesTypedUnionEnum(t *testing.T) {
 	}
 }
 
+func TestGenerateRustDropsUnionDiscriminantPayloadField(t *testing.T) {
+	discriminant := manifest.Enum("u8", manifest.EnumValue{Name: "Byte", Value: 0})
+	discriminant.TypeID = "enums/DataItemType"
+	variant := manifest.Node{Kind: manifest.KindStruct, TypeID: "DataItemByte", Fields: []manifest.Field{
+		{Ordinal: 0, Name: "Type", Encode: discriminant, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		{Ordinal: 1, Name: "Value", Encode: manifest.Primitive("i8"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+	}}
+	union := manifest.Union(manifest.Primitive("u8"), manifest.Variant{Value: 0, Name: "DataItemByte", Encode: variant})
+	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:union-tag", MinecraftVersion: "fixture", ProtocolVersion: 2168}}, Packets: []manifest.Packet{{ID: 1, Name: "DataItemPacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{Ordinal: 0, Name: "Value", Encode: union, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}}}
+	source, err := generatedRustSource(m)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(source, "DataItemByte {\n        value: i8,") || strings.Contains(source, "r#type: DataItemType") {
+		t.Fatalf("union emitted a redundant discriminant payload field:\n%s", source)
+	}
+}
+
 func TestGenerateRustKeepsSharedUnionPayloadNamed(t *testing.T) {
 	shared := manifest.Node{Kind: manifest.KindStruct, Semantic: "SharedRecord", TypeID: "SharedRecord", Fields: []manifest.Field{{Ordinal: 0, Name: "Value", Encode: manifest.Primitive("u8"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}
 	union := manifest.Union(manifest.Primitive("u8"), manifest.Variant{Value: 0, Name: "Choice::Shared", Encode: shared})
