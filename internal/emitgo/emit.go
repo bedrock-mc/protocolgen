@@ -1015,6 +1015,10 @@ func (e *marshalEmitter) collection(b *strings.Builder, prefix, element manifest
 	if err != nil {
 		return err
 	}
+	if prefix.Primitive.Code == "var_u32" && e.marshalableElement(element, hint) {
+		fmt.Fprintf(b, "%s%s(io, %s)\n", indent, e.runtime("Slice"), address.address(expression))
+		return nil
+	}
 	fmt.Fprintf(b, "%s%s(io, %s, io.%s, ", indent, e.runtime("FuncSlice"), address.address(expression), countMethod)
 	if method, ok := e.directIOCall(element); ok {
 		fmt.Fprintf(b, "io.%s)\n", method)
@@ -1027,6 +1031,15 @@ func (e *marshalEmitter) collection(b *strings.Builder, prefix, element manifest
 	}
 	fmt.Fprintf(b, "%s})\n", indent)
 	return nil
+}
+
+func (e *marshalEmitter) marshalableElement(element manifest.Node, hint string) bool {
+	if element.Kind != manifest.KindStruct && element.Kind != manifest.KindRecursive {
+		return false
+	}
+	typ := mustGoType(e.g, element, hint)
+	definition, ok := e.g.definitions[typ]
+	return ok && definition.Kind == manifest.KindStruct
 }
 
 func (e *marshalEmitter) mapEntries(b *strings.Builder, node manifest.Node, expression, hint, indent string, address addressStrategy) error {

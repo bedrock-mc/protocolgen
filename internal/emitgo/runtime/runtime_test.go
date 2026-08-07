@@ -8,6 +8,38 @@ import (
 	"github.com/google/uuid"
 )
 
+type sliceItem struct {
+	value uint8
+}
+
+func (x *sliceItem) Marshal(io IO) {
+	io.Uint8(&x.value)
+}
+
+func TestSliceGenericRoundTrip(t *testing.T) {
+	want := []sliceItem{{value: 1}, {value: 2}, {value: 3}}
+	writer := NewWriter()
+	Slice(writer, &want)
+	if err := writer.Err(); err != nil {
+		t.Fatal(err)
+	}
+
+	reader := NewReader(writer.Data())
+	got := []sliceItem(nil)
+	Slice(reader, &got)
+	if err := reader.Err(); err != nil {
+		t.Fatal(err)
+	}
+	if len(got) != len(want) {
+		t.Fatalf("decoded %d values, want %d", len(got), len(want))
+	}
+	for index := range want {
+		if got[index] != want[index] {
+			t.Fatalf("value %d = %#v, want %#v", index, got[index], want[index])
+		}
+	}
+}
+
 func TestVarintsRoundTrip(t *testing.T) {
 	writer := NewWriter()
 	u32 := uint32(math.MaxUint32)

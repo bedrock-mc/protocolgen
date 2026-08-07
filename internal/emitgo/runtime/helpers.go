@@ -104,6 +104,33 @@ func FuncSlice[T any, C integer](io IO, x *[]T, count func(*C), f func(*T)) {
 	}
 }
 
+// Slice marshals a varuint32-prefixed slice whose element pointer marshals itself.
+func Slice[T any, A PtrMarshaler[T]](io IO, x *[]T) {
+	if io.Reading() {
+		reader, ok := io.(sliceReader)
+		if !ok {
+			io.InvalidValue(io, "reader does not implement SliceLength")
+			return
+		}
+		var n uint32
+		io.Varuint32(&n)
+		length, valid := sliceLength(io, n)
+		if !valid || !reader.SliceLength(uint64(length), maxSliceLength) {
+			return
+		}
+		*x = make([]T, length)
+	} else {
+		n, valid := sliceCount[uint32](io, len(*x))
+		if !valid {
+			return
+		}
+		io.Varuint32(&n)
+	}
+	for i := range *x {
+		A(&(*x)[i]).Marshal(io)
+	}
+}
+
 // OrderedMap marshals an ordered map representation while preserving duplicate
 // keys and source order.
 func OrderedMap[K, V any, C integer](io IO, x *[]OrderedEntry[K, V], count func(*C), key func(*K), value func(*V)) {

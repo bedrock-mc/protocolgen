@@ -91,7 +91,7 @@ func TestGenerateUsesRuntimeHelpersForEnumsAndOptionals(t *testing.T) {
 		"protocol.IntegerFunc(&x.Kind, io.Uint8)",
 		"protocol.OptionalFunc(io, &x.Maybe, io.Int32)",
 		"protocol.IntegerFunc(value, io.Uint8)",
-		"value.Marshal(io)",
+		"protocol.Slice(io, &x.Entries)",
 	} {
 		if !strings.Contains(source, want) {
 			t.Fatalf("generated packet omitted runtime helper %q:\n%s", want, source)
@@ -105,6 +105,9 @@ func TestGenerateUsesRuntimeHelpersForEnumsAndOptionals(t *testing.T) {
 	}
 	if !strings.Contains(source, "FuncSlice(io, value, io.Varuint32") {
 		t.Fatalf("nested collection callback did not retain the supplied slice pointer:\n%s", source)
+	}
+	if strings.Contains(source, "FuncSlice(io, &x.Entries") {
+		t.Fatalf("struct slice still emits an escaping callback:\n%s", source)
 	}
 }
 
