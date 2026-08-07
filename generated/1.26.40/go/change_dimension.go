@@ -2,11 +2,15 @@
 
 package protocol2168
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/go-gl/mathgl/mgl32"
+)
 
 type ChangeDimension struct {
 	DimensionID     DimensionType
-	Position        Vec3
+	Position        mgl32.Vec3
 	Respawn         bool
 	LoadingScreenId *uint32
 }
@@ -45,7 +49,7 @@ func DecodeChangeDimension(r Decoder) (ChangeDimension, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(Vec3)
+		value, ok := raw.(mgl32.Vec3)
 		if !ok {
 			return p, fmt.Errorf("field ChangeDimensionPacket.Position has unexpected decoded type %T", raw)
 		}

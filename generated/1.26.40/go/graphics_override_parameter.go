@@ -2,12 +2,16 @@
 
 package protocol2168
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/go-gl/mathgl/mgl32"
+)
 
 type GraphicsOverrideParameter struct {
-	ParameterKeyframeValues []OrderedEntry[float32, Vec3]
+	ParameterKeyframeValues []OrderedEntry[float32, mgl32.Vec3]
 	FloatValue              *float32
-	Vec3Value               *Vec3
+	Vec3Value               *mgl32.Vec3
 	BiomeIdentifier         string
 	PlayerIdentifier        *string
 	IdentifierForParameter  GraphicsOverrideParameterType
@@ -46,7 +50,7 @@ func DecodeGraphicsOverrideParameter(r Decoder) (GraphicsOverrideParameter, erro
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([]OrderedEntry[float32, Vec3])
+		value, ok := raw.([]OrderedEntry[float32, mgl32.Vec3])
 		if !ok {
 			return p, fmt.Errorf("field GraphicsOverrideParameterPacket.Parameter Keyframe Values has unexpected decoded type %T", raw)
 		}
@@ -68,7 +72,7 @@ func DecodeGraphicsOverrideParameter(r Decoder) (GraphicsOverrideParameter, erro
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(*Vec3)
+		value, ok := raw.(*mgl32.Vec3)
 		if !ok {
 			return p, fmt.Errorf("field GraphicsOverrideParameterPacket.Vec3 Value has unexpected decoded type %T", raw)
 		}

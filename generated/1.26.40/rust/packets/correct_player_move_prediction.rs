@@ -6,9 +6,9 @@ use crate::*;
 #[derive(Clone, Debug, PartialEq)]
 pub struct CorrectPlayerMovePrediction {
     pub prediction_type: RewindType,
-    pub pos: Vec3,
-    pub pos_delta: Vec3,
-    pub rotation: Vec2,
+    pub pos: glam::Vec3,
+    pub pos_delta: glam::Vec3,
+    pub rotation: glam::Vec2,
     pub vehicle_angular_velocity: Option<f32>,
     pub on_ground: bool,
     pub tick: PlayerInputTick,

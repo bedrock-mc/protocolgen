@@ -2,10 +2,14 @@
 
 package protocol2168
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/go-gl/mathgl/mgl32"
+)
 
 type ServerPlayerPostMovePosition struct {
-	Pos Vec3
+	Pos mgl32.Vec3
 }
 
 func (p *ServerPlayerPostMovePosition) Encode(w Encoder) error {
@@ -22,7 +26,7 @@ func DecodeServerPlayerPostMovePosition(r Decoder) (ServerPlayerPostMovePosition
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(Vec3)
+		value, ok := raw.(mgl32.Vec3)
 		if !ok {
 			return p, fmt.Errorf("field ServerPlayerPostMovePositionPacket.Pos has unexpected decoded type %T", raw)
 		}

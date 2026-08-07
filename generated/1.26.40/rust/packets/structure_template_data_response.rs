@@ -6,7 +6,7 @@ use crate::*;
 #[derive(Clone, Debug, PartialEq)]
 pub struct StructureTemplateDataResponse {
     pub structure_name: String,
-    pub structure_s_nbt: Vec<u8>,
+    pub structure_s_nbt: Nbt,
     pub response_type: StructureTemplateResponseType,
 }
 

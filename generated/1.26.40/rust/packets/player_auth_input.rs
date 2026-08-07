@@ -5,25 +5,25 @@ use crate::*;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct PlayerAuthInput {
-    pub player_rotation: Vec2,
-    pub position: Vec3,
-    pub move_vector: Vec2,
+    pub player_rotation: glam::Vec2,
+    pub position: glam::Vec3,
+    pub move_vector: glam::Vec2,
     pub player_head_rotation: f32,
     pub input_data: Option<Vec<PlayerAuthInputInputData>>,
     pub input_mode: InputMode,
     pub play_mode: ClientPlayMode,
     pub new_interaction_model: NewInteractionModel,
-    pub interact_rotation: Vec2,
+    pub interact_rotation: glam::Vec2,
     pub client_tick: PlayerInputTick,
-    pub pos_delta: Vec3,
+    pub pos_delta: glam::Vec3,
     pub item_use_transaction: Option<Option<PackedItemUseLegacyInventoryTransaction>>,
     pub item_stack_request: Option<Option<ItemStackRequestCerealRequestData>>,
     pub player_block_actions: Option<Option<Vec<PlayerBlockActionData>>>,
-    pub vehicle_rotation: Option<Option<Vec2>>,
+    pub vehicle_rotation: Option<Option<glam::Vec2>>,
     pub client_predicted_vehicle: Option<Option<ActorUniqueID>>,
-    pub analog_move_vector: Vec2,
-    pub camera_orientation: Vec3,
-    pub raw_move_vector: Vec2,
+    pub analog_move_vector: glam::Vec2,
+    pub camera_orientation: glam::Vec3,
+    pub raw_move_vector: glam::Vec2,
 }
 
 pub const PLAYERAUTHINPUT_PLAYER_ROTATION_SHAPE: &str = r#"{"kind":"struct","semantic":"Vec2","type_id":"Vec2","fields":[{"ordinal":0,"name":"X","semantic":"X","encode":{"kind":"primitive","primitive":{"code":"f32le","width":32,"signed":false,"zigzag":false,"endianness":"little"}},"symmetry":"symmetric","provenance":{"pins":["endstone"]}},{"ordinal":1,"name":"Y","semantic":"Y","encode":{"kind":"primitive","primitive":{"code":"f32le","width":32,"signed":false,"zigzag":false,"endianness":"little"}},"symmetry":"symmetric","provenance":{"pins":["endstone"]}}]}"#;

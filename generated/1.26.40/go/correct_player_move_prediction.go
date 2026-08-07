@@ -2,13 +2,17 @@
 
 package protocol2168
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/go-gl/mathgl/mgl32"
+)
 
 type CorrectPlayerMovePrediction struct {
 	PredictionType         RewindType
-	Pos                    Vec3
-	PosDelta               Vec3
-	Rotation               Vec2
+	Pos                    mgl32.Vec3
+	PosDelta               mgl32.Vec3
+	Rotation               mgl32.Vec2
 	VehicleAngularVelocity *float32
 	OnGround               bool
 	Tick                   PlayerInputTick
@@ -57,7 +61,7 @@ func DecodeCorrectPlayerMovePrediction(r Decoder) (CorrectPlayerMovePrediction, 
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(Vec3)
+		value, ok := raw.(mgl32.Vec3)
 		if !ok {
 			return p, fmt.Errorf("field CorrectPlayerMovePredictionPacket.Pos has unexpected decoded type %T", raw)
 		}
@@ -68,7 +72,7 @@ func DecodeCorrectPlayerMovePrediction(r Decoder) (CorrectPlayerMovePrediction, 
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(Vec3)
+		value, ok := raw.(mgl32.Vec3)
 		if !ok {
 			return p, fmt.Errorf("field CorrectPlayerMovePredictionPacket.Pos Delta has unexpected decoded type %T", raw)
 		}
@@ -79,7 +83,7 @@ func DecodeCorrectPlayerMovePrediction(r Decoder) (CorrectPlayerMovePrediction, 
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(Vec2)
+		value, ok := raw.(mgl32.Vec2)
 		if !ok {
 			return p, fmt.Errorf("field CorrectPlayerMovePredictionPacket.Rotation has unexpected decoded type %T", raw)
 		}

@@ -2,11 +2,15 @@
 
 package protocol2168
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/google/uuid"
+)
 
 type EmoteList struct {
 	RuntimeId     ActorRuntimeID
-	EmotePieceIds [][16]byte
+	EmotePieceIds []uuid.UUID
 }
 
 func (p *EmoteList) Encode(w Encoder) error {
@@ -37,7 +41,7 @@ func DecodeEmoteList(r Decoder) (EmoteList, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([][16]byte)
+		value, ok := raw.([]uuid.UUID)
 		if !ok {
 			return p, fmt.Errorf("field EmoteListPacket.Emote piece ids has unexpected decoded type %T", raw)
 		}

@@ -7,7 +7,7 @@ use crate::*;
 pub struct PositionTrackingDBServerBroadcast {
     pub action: PositionTrackingDBServerBroadcastAction,
     pub id: PositionTrackingId,
-    pub position_tracking_data: Vec<u8>,
+    pub position_tracking_data: Nbt,
 }
 
 pub const POSITIONTRACKINGDBSERVERBROADCAST_ACTION_SHAPE: &str = r#"{"kind":"enum","semantic":"PositionTrackingDBServerBroadcastPacketPayload::Action","type_id":"enums/PositionTrackingDBServerBroadcastPacketPayload::Action","primitive":{"code":"u8","width":8,"signed":false,"zigzag":false,"endianness":"none"},"variants":[{"value":0,"name":"Update","encode":{"kind":"void"}},{"value":1,"name":"Destroy","encode":{"kind":"void"}},{"value":2,"name":"NotFound","encode":{"kind":"void"}}]}"#;

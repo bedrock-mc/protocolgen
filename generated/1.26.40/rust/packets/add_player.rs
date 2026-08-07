@@ -5,13 +5,13 @@ use crate::*;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct AddPlayer {
-    pub uuid: [u8; 16],
+    pub uuid: uuid::Uuid,
     pub player_name: String,
     pub target_runtime_id: ActorRuntimeID,
     pub platform_chat_id: String,
-    pub position: Vec3,
-    pub velocity: Vec3,
-    pub rotation: Vec2,
+    pub position: glam::Vec3,
+    pub velocity: glam::Vec3,
+    pub rotation: glam::Vec2,
     pub y_head_rotation: f32,
     pub carried_item: CerealizerNetworkItemStackDescriptorSerializedData,
     pub player_game_type: GameType,

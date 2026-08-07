@@ -2,12 +2,16 @@
 
 package protocol2168
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/go-gl/mathgl/mgl32"
+)
 
 type Interact struct {
 	Action          InteractAction
 	TargetRuntimeID ActorRuntimeID
-	Position        *Vec3
+	Position        *mgl32.Vec3
 }
 
 func (p *Interact) Encode(w Encoder) error {
@@ -52,7 +56,7 @@ func DecodeInteract(r Decoder) (Interact, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(*Vec3)
+		value, ok := raw.(*mgl32.Vec3)
 		if !ok {
 			return p, fmt.Errorf("field InteractPacket.Position has unexpected decoded type %T", raw)
 		}

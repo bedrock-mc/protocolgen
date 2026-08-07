@@ -2,10 +2,14 @@
 
 package protocol2168
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/go-gl/mathgl/mgl32"
+)
 
 type Respawn struct {
-	Position        Vec3
+	Position        mgl32.Vec3
 	State           PlayerRespawnState
 	PlayerRuntimeId ActorRuntimeID
 }
@@ -30,7 +34,7 @@ func DecodeRespawn(r Decoder) (Respawn, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(Vec3)
+		value, ok := raw.(mgl32.Vec3)
 		if !ok {
 			return p, fmt.Errorf("field RespawnPacket.Position has unexpected decoded type %T", raw)
 		}

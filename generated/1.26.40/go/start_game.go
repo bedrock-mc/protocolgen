@@ -2,14 +2,19 @@
 
 package protocol2168
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/go-gl/mathgl/mgl32"
+	"github.com/google/uuid"
+)
 
 type StartGame struct {
 	EntityID                          ActorUniqueID
 	RuntimeID                         ActorRuntimeID
 	GameType                          GameType
-	Position                          Vec3
-	Rotation                          Vec2
+	Position                          mgl32.Vec3
+	Rotation                          mgl32.Vec2
 	Settings                          LevelSettings
 	LevelID                           string
 	LevelName                         string
@@ -24,7 +29,7 @@ type StartGame struct {
 	ServerVersion                     string
 	PlayerPropertyData                []byte
 	ServerBlockTypeRegistryChecksum   uint64
-	WorldTemplateID                   [16]byte
+	WorldTemplateID                   uuid.UUID
 	ServerEnabledClientSideGeneration bool
 	BlockNetworkIdsAreHashes          bool
 	NetworkPermissions                NetworkPermissions
@@ -151,7 +156,7 @@ func DecodeStartGame(r Decoder) (StartGame, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(Vec3)
+		value, ok := raw.(mgl32.Vec3)
 		if !ok {
 			return p, fmt.Errorf("field StartGamePacket.Position has unexpected decoded type %T", raw)
 		}
@@ -162,7 +167,7 @@ func DecodeStartGame(r Decoder) (StartGame, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(Vec2)
+		value, ok := raw.(mgl32.Vec2)
 		if !ok {
 			return p, fmt.Errorf("field StartGamePacket.Rotation has unexpected decoded type %T", raw)
 		}
@@ -327,7 +332,7 @@ func DecodeStartGame(r Decoder) (StartGame, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([16]byte)
+		value, ok := raw.(uuid.UUID)
 		if !ok {
 			return p, fmt.Errorf("field StartGamePacket.World Template ID has unexpected decoded type %T", raw)
 		}

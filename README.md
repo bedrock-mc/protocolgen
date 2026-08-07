@@ -76,6 +76,15 @@ Packet APIs use concise target-language names: the schema's transport-oriented
 backends keep common definitions in `types` and `enums`; packet files contain
 only the packet surface and its wire-shape descriptors.
 
+Like sqlc's type overrides, each backend maps well-known wire semantics onto
+types native to its ecosystem without changing the manifest. Go uses
+`uuid.UUID`, `mgl32.Vec2`/`Vec3`, and `color.RGBA`. Rust uses
+`uuid::Uuid`, `glam::Vec2`/`Vec3`, and an explicit `Nbt` byte wrapper. Unknown
+or protocol-specific structures remain generated named types rather than being
+guessed into an unrelated library type. Go likewise leaves undifferentiated
+NBT as `[]byte`, because the manifest's `nbt_le` primitive may be a compound or
+an intentionally opaque/loose tag stream.
+
 `generated/1.26.40/` contains the checked-in protocol 2168 source lock,
 canonical 229-packet Cereal manifest, and matching Go and Rust outputs generated
 by reconciling the pinned raw Mojang and Endstone dumps. Its `corrections/`

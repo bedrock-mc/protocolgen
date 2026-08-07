@@ -2,11 +2,15 @@
 
 package protocol2168
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/go-gl/mathgl/mgl32"
+)
 
 type MotionPredictionHints struct {
 	MRuntimeId ActorRuntimeID
-	MMotion    Vec3
+	MMotion    mgl32.Vec3
 	MOnGround  bool
 }
 
@@ -41,7 +45,7 @@ func DecodeMotionPredictionHints(r Decoder) (MotionPredictionHints, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(Vec3)
+		value, ok := raw.(mgl32.Vec3)
 		if !ok {
 			return p, fmt.Errorf("field MotionPredictionHintsPacket.mMotion has unexpected decoded type %T", raw)
 		}

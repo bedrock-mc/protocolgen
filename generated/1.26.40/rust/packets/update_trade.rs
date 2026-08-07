@@ -14,7 +14,7 @@ pub struct UpdateTrade {
     pub display_name: String,
     pub use_new_trade_screen: bool,
     pub using_economy_trade: bool,
-    pub data: Vec<u8>,
+    pub data: Nbt,
 }
 
 pub const UPDATETRADE_CONTAINER_ID_SHAPE: &str = r#"{"kind":"primitive","primitive":{"code":"u8","width":8,"signed":false,"zigzag":false,"endianness":"none"}}"#;

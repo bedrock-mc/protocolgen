@@ -7,7 +7,7 @@ use crate::*;
 pub struct AddPainting {
     pub target_actor_id: ActorUniqueID,
     pub target_runtime_id: ActorRuntimeID,
-    pub position: Vec3,
+    pub position: glam::Vec3,
     pub direction: i32,
     pub motif: String,
 }

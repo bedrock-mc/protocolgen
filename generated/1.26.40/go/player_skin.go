@@ -2,10 +2,14 @@
 
 package protocol2168
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/google/uuid"
+)
 
 type PlayerSkin struct {
-	UUID                 [16]byte
+	UUID                 uuid.UUID
 	SerializedSkin       SerializedSkinRef
 	LocalizedNewSkinName string
 	LocalizedOldSkinName string
@@ -34,7 +38,7 @@ func DecodePlayerSkin(r Decoder) (PlayerSkin, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([16]byte)
+		value, ok := raw.(uuid.UUID)
 		if !ok {
 			return p, fmt.Errorf("field PlayerSkinPacket.UUID has unexpected decoded type %T", raw)
 		}

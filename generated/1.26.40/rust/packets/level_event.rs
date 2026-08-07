@@ -6,7 +6,7 @@ use crate::*;
 #[derive(Clone, Debug, PartialEq)]
 pub struct LevelEvent {
     pub event_id: i32,
-    pub position: Vec3,
+    pub position: glam::Vec3,
     pub data: i32,
 }
 

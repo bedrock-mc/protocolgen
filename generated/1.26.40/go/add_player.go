@@ -2,16 +2,21 @@
 
 package protocol2168
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/go-gl/mathgl/mgl32"
+	"github.com/google/uuid"
+)
 
 type AddPlayer struct {
-	UUID              [16]byte
+	UUID              uuid.UUID
 	PlayerName        string
 	TargetRuntimeID   ActorRuntimeID
 	PlatformChatId    string
-	Position          Vec3
-	Velocity          Vec3
-	Rotation          Vec2
+	Position          mgl32.Vec3
+	Velocity          mgl32.Vec3
+	Rotation          mgl32.Vec2
 	YHeadRotation     float32
 	CarriedItem       CerealizerNetworkItemStackDescriptorSerializedData
 	PlayerGameType    GameType
@@ -82,7 +87,7 @@ func DecodeAddPlayer(r Decoder) (AddPlayer, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([16]byte)
+		value, ok := raw.(uuid.UUID)
 		if !ok {
 			return p, fmt.Errorf("field AddPlayerPacket.UUID has unexpected decoded type %T", raw)
 		}
@@ -126,7 +131,7 @@ func DecodeAddPlayer(r Decoder) (AddPlayer, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(Vec3)
+		value, ok := raw.(mgl32.Vec3)
 		if !ok {
 			return p, fmt.Errorf("field AddPlayerPacket.Position has unexpected decoded type %T", raw)
 		}
@@ -137,7 +142,7 @@ func DecodeAddPlayer(r Decoder) (AddPlayer, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(Vec3)
+		value, ok := raw.(mgl32.Vec3)
 		if !ok {
 			return p, fmt.Errorf("field AddPlayerPacket.Velocity has unexpected decoded type %T", raw)
 		}
@@ -148,7 +153,7 @@ func DecodeAddPlayer(r Decoder) (AddPlayer, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(Vec2)
+		value, ok := raw.(mgl32.Vec2)
 		if !ok {
 			return p, fmt.Errorf("field AddPlayerPacket.Rotation has unexpected decoded type %T", raw)
 		}

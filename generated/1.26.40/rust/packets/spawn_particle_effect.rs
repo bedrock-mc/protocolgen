@@ -7,7 +7,7 @@ use crate::*;
 pub struct SpawnParticleEffect {
     pub dimension_id: u8,
     pub actor_id: ActorUniqueID,
-    pub position: Vec3,
+    pub position: glam::Vec3,
     pub effect_name: String,
     pub molang_variables: Option<String>,
 }

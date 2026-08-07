@@ -6,8 +6,8 @@ use crate::*;
 #[derive(Clone, Debug, PartialEq)]
 pub struct MovePlayer {
     pub player_runtime_id: ActorRuntimeID,
-    pub position: Vec3,
-    pub rotation: Vec2,
+    pub position: glam::Vec3,
+    pub rotation: glam::Vec2,
     pub y_head_rotation: f32,
     pub position_mode: PlayerPositionModeComponentPositionMode,
     pub on_ground: bool,

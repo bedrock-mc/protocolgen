@@ -2,11 +2,15 @@
 
 package protocol2168
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/go-gl/mathgl/mgl32"
+)
 
 type SetActorMotion struct {
 	TargetRuntimeID ActorRuntimeID
-	Motion          Vec3
+	Motion          mgl32.Vec3
 	Tick            PlayerInputTick
 }
 
@@ -41,7 +45,7 @@ func DecodeSetActorMotion(r Decoder) (SetActorMotion, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(Vec3)
+		value, ok := raw.(mgl32.Vec3)
 		if !ok {
 			return p, fmt.Errorf("field SetActorMotionPacket.Motion has unexpected decoded type %T", raw)
 		}

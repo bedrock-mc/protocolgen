@@ -2,28 +2,32 @@
 
 package protocol2168
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/go-gl/mathgl/mgl32"
+)
 
 type PlayerAuthInput struct {
-	PlayerRotation         Vec2
-	Position               Vec3
-	MoveVector             Vec2
+	PlayerRotation         mgl32.Vec2
+	Position               mgl32.Vec3
+	MoveVector             mgl32.Vec2
 	PlayerHeadRotation     float32
 	InputData              *[]PlayerAuthInputInputData
 	InputMode              InputMode
 	PlayMode               ClientPlayMode
 	NewInteractionModel    NewInteractionModel
-	InteractRotation       Vec2
+	InteractRotation       mgl32.Vec2
 	ClientTick             PlayerInputTick
-	PosDelta               Vec3
+	PosDelta               mgl32.Vec3
 	ItemUseTransaction     **PackedItemUseLegacyInventoryTransaction
 	ItemStackRequest       **ItemStackRequestCerealRequestData
 	PlayerBlockActions     **[]PlayerBlockActionData
-	VehicleRotation        **Vec2
+	VehicleRotation        **mgl32.Vec2
 	ClientPredictedVehicle **ActorUniqueID
-	AnalogMoveVector       Vec2
-	CameraOrientation      Vec3
-	RawMoveVector          Vec2
+	AnalogMoveVector       mgl32.Vec2
+	CameraOrientation      mgl32.Vec3
+	RawMoveVector          mgl32.Vec2
 }
 
 func (p *PlayerAuthInput) Encode(w Encoder) error {
@@ -94,7 +98,7 @@ func DecodePlayerAuthInput(r Decoder) (PlayerAuthInput, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(Vec2)
+		value, ok := raw.(mgl32.Vec2)
 		if !ok {
 			return p, fmt.Errorf("field PlayerAuthInputPacket.Player Rotation has unexpected decoded type %T", raw)
 		}
@@ -105,7 +109,7 @@ func DecodePlayerAuthInput(r Decoder) (PlayerAuthInput, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(Vec3)
+		value, ok := raw.(mgl32.Vec3)
 		if !ok {
 			return p, fmt.Errorf("field PlayerAuthInputPacket.Position has unexpected decoded type %T", raw)
 		}
@@ -116,7 +120,7 @@ func DecodePlayerAuthInput(r Decoder) (PlayerAuthInput, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(Vec2)
+		value, ok := raw.(mgl32.Vec2)
 		if !ok {
 			return p, fmt.Errorf("field PlayerAuthInputPacket.Move Vector has unexpected decoded type %T", raw)
 		}
@@ -182,7 +186,7 @@ func DecodePlayerAuthInput(r Decoder) (PlayerAuthInput, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(Vec2)
+		value, ok := raw.(mgl32.Vec2)
 		if !ok {
 			return p, fmt.Errorf("field PlayerAuthInputPacket.Interact Rotation has unexpected decoded type %T", raw)
 		}
@@ -204,7 +208,7 @@ func DecodePlayerAuthInput(r Decoder) (PlayerAuthInput, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(Vec3)
+		value, ok := raw.(mgl32.Vec3)
 		if !ok {
 			return p, fmt.Errorf("field PlayerAuthInputPacket.Pos Delta has unexpected decoded type %T", raw)
 		}
@@ -248,7 +252,7 @@ func DecodePlayerAuthInput(r Decoder) (PlayerAuthInput, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(**Vec2)
+		value, ok := raw.(**mgl32.Vec2)
 		if !ok {
 			return p, fmt.Errorf("field PlayerAuthInputPacket.Vehicle Rotation has unexpected decoded type %T", raw)
 		}
@@ -270,7 +274,7 @@ func DecodePlayerAuthInput(r Decoder) (PlayerAuthInput, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(Vec2)
+		value, ok := raw.(mgl32.Vec2)
 		if !ok {
 			return p, fmt.Errorf("field PlayerAuthInputPacket.Analog Move Vector has unexpected decoded type %T", raw)
 		}
@@ -281,7 +285,7 @@ func DecodePlayerAuthInput(r Decoder) (PlayerAuthInput, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(Vec3)
+		value, ok := raw.(mgl32.Vec3)
 		if !ok {
 			return p, fmt.Errorf("field PlayerAuthInputPacket.Camera Orientation has unexpected decoded type %T", raw)
 		}
@@ -292,7 +296,7 @@ func DecodePlayerAuthInput(r Decoder) (PlayerAuthInput, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(Vec2)
+		value, ok := raw.(mgl32.Vec2)
 		if !ok {
 			return p, fmt.Errorf("field PlayerAuthInputPacket.Raw Move Vector has unexpected decoded type %T", raw)
 		}

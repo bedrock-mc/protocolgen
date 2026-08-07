@@ -2,10 +2,14 @@
 
 package protocol2168
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/google/uuid"
+)
 
 type ServerboundPackSettingChange struct {
-	PackId           [16]byte
+	PackId           uuid.UUID
 	PackSettingName  string
 	PackSettingValue ServerboundPackSettingChangePackSettingValue
 }
@@ -30,7 +34,7 @@ func DecodeServerboundPackSettingChange(r Decoder) (ServerboundPackSettingChange
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([16]byte)
+		value, ok := raw.(uuid.UUID)
 		if !ok {
 			return p, fmt.Errorf("field ServerboundPackSettingChangePacket.PackId has unexpected decoded type %T", raw)
 		}

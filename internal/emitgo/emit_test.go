@@ -108,3 +108,40 @@ func TestPublicNamesDropSchemaScaffolding(t *testing.T) {
 		}
 	}
 }
+
+func TestGenerateMapsCanonicalSemanticsToNativeGoTypes(t *testing.T) {
+	vec3 := manifest.Node{Kind: manifest.KindStruct, Semantic: "Vec3", TypeID: "Vec3", Fields: []manifest.Field{
+		{Ordinal: 0, Name: "X", Encode: manifest.Primitive("f32le"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		{Ordinal: 1, Name: "Y", Encode: manifest.Primitive("f32le"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		{Ordinal: 2, Name: "Z", Encode: manifest.Primitive("f32le"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+	}}
+	colour := manifest.Node{Kind: manifest.KindStruct, Semantic: "mce::Color", TypeID: "mce::Color", Fields: []manifest.Field{
+		{Ordinal: 0, Name: "Color", Encode: manifest.Primitive("i32le"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+	}}
+	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:native-go", MinecraftVersion: "fixture", ProtocolVersion: 2168}}, Packets: []manifest.Packet{{ID: 1, Name: "NativePacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{
+		{Ordinal: 0, Name: "ID", Encode: manifest.Primitive("uuid"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		{Ordinal: 1, Name: "Position", Encode: vec3, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		{Ordinal: 2, Name: "Colour", Encode: colour, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		{Ordinal: 3, Name: "Data", Encode: manifest.Primitive("nbt_le"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+	}}}}
+	files, err := Generate(m, "wiregen")
+	if err != nil {
+		t.Fatal(err)
+	}
+	source := files["native.go"]
+	for _, want := range []string{"uuid.UUID", "mgl32.Vec3", "color.RGBA", "[]byte", `"github.com/google/uuid"`, `"github.com/go-gl/mathgl/mgl32"`, `"image/color"`} {
+		if !strings.Contains(source, want) {
+			t.Fatalf("native Go output omits %q:\n%s", want, source)
+		}
+	}
+	if strings.Contains(files["types.go"], "type Vec3 struct") || strings.Contains(files["types.go"], "type MceColor struct") {
+		t.Fatalf("native Go types were redundantly regenerated:\n%s", files["types.go"])
+	}
+}
+
+func TestNativeGoTypeRejectsMislabelledVector(t *testing.T) {
+	node := manifest.Node{Kind: manifest.KindStruct, TypeID: "Vec3", Fields: []manifest.Field{{Encode: manifest.Primitive("f64le")}}}
+	if _, matched, err := nativeGoType(node); !matched || err == nil {
+		t.Fatalf("nativeGoType matched=%v error=%v, want a closed failure", matched, err)
+	}
+}

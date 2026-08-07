@@ -5,7 +5,7 @@ use crate::*;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct SyncActorProperty {
-    pub property_data: Vec<u8>,
+    pub property_data: Nbt,
 }
 
 pub const SYNCACTORPROPERTY_PROPERTY_DATA_SHAPE: &str = r#"{"kind":"primitive","primitive":{"code":"nbt_le","width":0,"signed":false,"zigzag":false,"endianness":"little"}}"#;

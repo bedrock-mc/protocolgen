@@ -2,6 +2,9 @@
 
 use crate::enums::*;
 
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub struct Nbt(pub Vec<u8>);
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct ActorDataBoundingBoxComponent {
     pub actor_data_bounding_box: [f32; 3],
@@ -62,7 +65,7 @@ pub struct ArmorSlotAndDamagePair {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct ArrowData {
-    pub arrow_end_location: Option<Vec3>,
+    pub arrow_end_location: Option<glam::Vec3>,
     pub arrow_head_length: Option<f32>,
     pub arrow_head_radius: Option<f32>,
     pub num_segments: Option<u8>,
@@ -498,7 +501,7 @@ pub struct BookEditActionSwapPages {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct BoxData {
-    pub box_bound: Vec3,
+    pub box_bound: glam::Vec3,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -529,7 +532,7 @@ pub struct CameraAimAssistCategoryPriorities {
 pub struct CameraAimAssistCommandPresetDefinition {
     pub preset_id: Option<String>,
     pub target_mode: Option<CameraAimAssistTargetMode>,
-    pub view_angle: Option<Vec2>,
+    pub view_angle: Option<glam::Vec2>,
     pub distance: Option<f32>,
 }
 
@@ -625,12 +628,12 @@ pub struct CameraInstructionOptionsSetInstructionEntityOffsetOption {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct CameraInstructionOptionsSetInstructionFacingOption {
-    pub pos: Vec3,
+    pub pos: glam::Vec3,
 }
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct CameraInstructionOptionsSetInstructionPosOption {
-    pub pos: Vec3,
+    pub pos: glam::Vec3,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -649,7 +652,7 @@ pub struct CameraInstructionOptionsSetInstructionViewOffsetOption {
 pub struct CameraInstructionOptionsSplineInstruction {
     pub total_time: f32,
     pub r#type: u8,
-    pub curve: Vec<Vec3>,
+    pub curve: Vec<glam::Vec3>,
     pub progress_key_frames: Vec<CameraInstructionOptionsSplineInstructionSplineProgressOption>,
     pub rotation_option: Vec<CameraInstructionOptionsSplineInstructionSplineRotationOption>,
     pub spline_identifier: String,
@@ -665,14 +668,14 @@ pub struct CameraInstructionOptionsSplineInstructionSplineProgressOption {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct CameraInstructionOptionsSplineInstructionSplineRotationOption {
-    pub key_frame_value: Vec3,
+    pub key_frame_value: glam::Vec3,
     pub key_frame_time: f32,
     pub key_frame_easing_func: String,
 }
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct CameraInstructionOptionsTargetInstruction {
-    pub target_center_offset: Option<Vec3>,
+    pub target_center_offset: Option<glam::Vec3>,
     pub target_actor_id: i64,
 }
 
@@ -687,12 +690,12 @@ pub struct CameraPreset {
     pub rot_y: Option<f32>,
     pub rotation_speed: Option<f32>,
     pub snap_to_target: Option<bool>,
-    pub horizontal_rotation_limit: Option<Vec2>,
-    pub vertical_rotation_limit: Option<Vec2>,
+    pub horizontal_rotation_limit: Option<glam::Vec2>,
+    pub vertical_rotation_limit: Option<glam::Vec2>,
     pub continue_targeting: Option<bool>,
     pub block_listening_radius: Option<f32>,
-    pub view_offset: Option<Vec2>,
-    pub entity_offset: Option<Vec3>,
+    pub view_offset: Option<glam::Vec2>,
+    pub entity_offset: Option<glam::Vec3>,
     pub radius: Option<f32>,
     pub yaw_limit_min: Option<f32>,
     pub yaw_limit_max: Option<f32>,
@@ -709,7 +712,7 @@ pub struct CameraPresetsData {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct CameraSplineControlPoint {
-    pub position: Vec3,
+    pub position: glam::Vec3,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -731,7 +734,7 @@ pub struct CameraSplineProgressKeyFrame {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct CameraSplineRotationKeyFrame {
-    pub rotation: Vec3,
+    pub rotation: glam::Vec3,
     pub time: f32,
     pub easing: Option<String>,
 }
@@ -821,7 +824,7 @@ pub struct ChunkPos {
 #[derive(Clone, Debug, PartialEq)]
 pub struct ClientboundDebugRendererDebugMarkerData {
     pub text: String,
-    pub position: Vec3,
+    pub position: glam::Vec3,
     pub color: MceColor,
     pub duration: u64,
 }
@@ -848,7 +851,7 @@ pub enum CommandBlockUpdateTarget {
 #[derive(Clone, Debug, PartialEq)]
 pub struct CommandOriginData {
     pub r#type: String,
-    pub uuid: [u8; 16],
+    pub uuid: uuid::Uuid,
     pub request_id: String,
     pub player_id: i64,
 }
@@ -870,7 +873,7 @@ pub struct CommandOutputMessage {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct ConeData {
-    pub radii: Vec2,
+    pub radii: glam::Vec2,
     pub height: f32,
     pub num_segments: u8,
 }
@@ -903,8 +906,8 @@ pub struct CreativeItemEntry {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct CylinderData {
-    pub radius_x: Vec2,
-    pub radius_z: Vec2,
+    pub radius_x: glam::Vec2,
+    pub radius_z: glam::Vec2,
     pub height: f32,
     pub num_segments: u8,
 }
@@ -918,7 +921,7 @@ pub struct DataItemByte {
 #[derive(Clone, Debug, PartialEq)]
 pub struct DataItemCompoundTag {
     pub r#type: DataItemType,
-    pub value: Vec<u8>,
+    pub value: Nbt,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -979,7 +982,7 @@ pub struct DataItemString {
 #[derive(Clone, Debug, PartialEq)]
 pub struct DataItemVec3 {
     pub r#type: DataItemType,
-    pub value: Vec3,
+    pub value: glam::Vec3,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -988,7 +991,7 @@ pub struct DimensionDefinitionGroupDimensionDefinition {
     pub height_minimum: i32,
     pub generator_type: GeneratorType,
     pub dimension_type: DimensionType,
-    pub pack_id: [u8; 16],
+    pub pack_id: uuid::Uuid,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -1114,7 +1117,7 @@ pub struct EducationLocalLevelSettings {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct EllipsoidData {
-    pub radii: Vec3,
+    pub radii: glam::Vec3,
     pub segments_per_axis: u8,
 }
 
@@ -1228,7 +1231,7 @@ pub struct ItemData {
     pub item_id: i16,
     pub is_component_based: bool,
     pub item_version: ItemVersion,
-    pub item_component_data: Vec<u8>,
+    pub item_component_data: Nbt,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -1251,7 +1254,7 @@ pub struct ItemReleaseInventoryTransaction {
     pub action_type: ItemReleaseInventoryTransactionActionType,
     pub slot: i32,
     pub item: CerealizerNetworkItemStackDescriptorSerializedData,
-    pub from_position: Vec3,
+    pub from_position: glam::Vec3,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -1505,8 +1508,8 @@ pub struct ItemUseInventoryTransaction {
     pub face: u8,
     pub slot: i32,
     pub item: CerealizerNetworkItemStackDescriptorSerializedData,
-    pub from_position: Vec3,
-    pub click_position: Vec3,
+    pub from_position: glam::Vec3,
+    pub click_position: glam::Vec3,
     pub target_block_id: u32,
     pub client_interact_prediction: ItemUseInventoryTransactionPredictedResult,
     pub client_cooldown_state: ItemUseInventoryTransactionClientCooldownState,
@@ -1519,8 +1522,8 @@ pub struct ItemUseOnActorInventoryTransaction {
     pub action_type: ItemUseOnActorInventoryTransactionActionType,
     pub slot: i32,
     pub item: CerealizerNetworkItemStackDescriptorSerializedData,
-    pub from_position: Vec3,
-    pub hit_position: Vec3,
+    pub from_position: glam::Vec3,
+    pub hit_position: glam::Vec3,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -1752,7 +1755,7 @@ pub struct LevelSettings {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct LineData {
-    pub line_end_location: Vec3,
+    pub line_end_location: glam::Vec3,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -1818,7 +1821,7 @@ pub struct MissingBlobData {
 pub struct MoveActorAbsoluteData {
     pub actor_runtime_id: ActorRuntimeID,
     pub header: u8,
-    pub position: Vec3,
+    pub position: glam::Vec3,
     pub rotation_x: u8,
     pub rotation_y: u8,
     pub rotation_y_head: u8,
@@ -1847,7 +1850,7 @@ pub struct MovePlayerTeleportData {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct MultiRecipe {
-    pub multi_recipe_uuid: [u8; 16],
+    pub multi_recipe_uuid: uuid::Uuid,
     pub net_id: TypedServerNetIdStructRecipeNetIdTag,
 }
 
@@ -1870,13 +1873,13 @@ pub struct NormalTransactionData {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct PackIdVersion {
-    pub pack_uuid: [u8; 16],
+    pub pack_uuid: uuid::Uuid,
     pub pack_version: SemVersion,
 }
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct PackIdVersionData {
-    pub pack_uuid: [u8; 16],
+    pub pack_uuid: uuid::Uuid,
     pub pack_version: SemVersionData,
 }
 
@@ -1921,7 +1924,7 @@ pub struct PlayerInputTick {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct PlayerListAddEntry {
-    pub uuid: [u8; 16],
+    pub uuid: uuid::Uuid,
     pub actor_unique_id: ActorUniqueID,
     pub player_name: String,
     pub xbl_xuid: String,
@@ -1942,13 +1945,13 @@ pub enum PlayerListEntriesItem {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct PlayerListRemoveEntry {
-    pub uuid: [u8; 16],
+    pub uuid: uuid::Uuid,
 }
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct PlayerLocationCoordinatesLocation {
     pub packet_type: PlayerLocationType,
-    pub position: Vec3,
+    pub position: glam::Vec3,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -2034,9 +2037,9 @@ pub struct PotionMixDataEntry {
 pub struct PrimitiveShapeData {
     pub network_id: u64,
     pub shape_type: Option<ScriptModuleMinecraftScriptPrimitiveShapeType>,
-    pub location: Option<Vec3>,
+    pub location: Option<glam::Vec3>,
     pub scale: Option<f32>,
-    pub rotation: Option<Vec3>,
+    pub rotation: Option<glam::Vec3>,
     pub total_time_left: Option<f32>,
     pub maximum_render_distance: Option<f32>,
     pub color: Option<MceColor>,
@@ -2171,7 +2174,7 @@ pub struct SerializedNoiseBlockSpecifier {
 pub struct SerializedPersonaPieceHandle {
     pub piece_id: String,
     pub piece_type: PersonaPieceType,
-    pub pack_id: [u8; 16],
+    pub pack_id: uuid::Uuid,
     pub is_default_piece: bool,
     pub product_id: String,
 }
@@ -2205,7 +2208,7 @@ pub struct SerializedSkinRef {
 #[derive(Clone, Debug, PartialEq)]
 pub struct ServerBlockProperty {
     pub block_name: String,
-    pub block_definition: Vec<u8>,
+    pub block_definition: Nbt,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -2216,12 +2219,12 @@ pub struct ServerConfigurationClientStoreEntryPointConfiguration {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct ServerConfigurationGatheringsConfigurationJoinInfo {
-    pub experience_id: [u8; 16],
+    pub experience_id: uuid::Uuid,
     pub experience_name: String,
-    pub world_id: Option<[u8; 16]>,
+    pub world_id: Option<uuid::Uuid>,
     pub world_name: Option<String>,
     pub creator_id: String,
-    pub target_id: Option<[u8; 16]>,
+    pub target_id: Option<uuid::Uuid>,
     pub scenario_id: Option<String>,
     pub server_id: Option<String>,
 }
@@ -2249,7 +2252,7 @@ pub struct ServerWaypoint {
     pub is_visible: Option<bool>,
     pub world_position: Option<WorldPosition>,
     pub texture_path: Option<String>,
-    pub icon_size: Option<Vec2>,
+    pub icon_size: Option<glam::Vec2>,
     pub color: Option<MceColor>,
     pub client_position_authority: Option<bool>,
     pub actor_unique_id: Option<ActorUniqueID>,
@@ -2277,7 +2280,7 @@ pub struct ShapedRecipe {
     pub height: i32,
     pub ingredients: Vec<CerealizerRecipeIngredientSerializedData>,
     pub results: Vec<CerealizerNetworkItemInstanceDescriptorSerializedData>,
-    pub uuid: [u8; 16],
+    pub uuid: uuid::Uuid,
     pub tag: String,
     pub priority: i32,
     pub assume_symmetry: bool,
@@ -2290,7 +2293,7 @@ pub struct ShapelessRecipe {
     pub recipe_id: String,
     pub ingredients: Vec<CerealizerRecipeIngredientSerializedData>,
     pub results: Vec<CerealizerNetworkItemInstanceDescriptorSerializedData>,
-    pub uuid: [u8; 16],
+    pub uuid: uuid::Uuid,
     pub tag: String,
     pub priority: i32,
     pub unlocking_requirement: Option<CerealizerRecipeUnlockingRequirementSerializedData>,
@@ -2403,7 +2406,7 @@ pub struct StructureSettings {
     pub animation_seconds: f32,
     pub integrity_value: f32,
     pub integrity_seed: u32,
-    pub rotation_pivot: Vec3,
+    pub rotation_pivot: glam::Vec3,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -2603,19 +2606,6 @@ pub struct UpdateSubChunkNetworkBlockInfo {
 }
 
 #[derive(Clone, Debug, PartialEq)]
-pub struct Vec2 {
-    pub x: f32,
-    pub y: f32,
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct Vec3 {
-    pub x: f32,
-    pub y: f32,
-    pub z: f32,
-}
-
-#[derive(Clone, Debug, PartialEq)]
 pub struct VoxelShapesRegistryHandle {
     pub value: u16,
 }
@@ -2638,7 +2628,7 @@ pub struct VoxelShapesSerializableVoxelShape {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct WaypointGroupWaypointHandle {
-    pub uuid: [u8; 16],
+    pub uuid: uuid::Uuid,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -2657,6 +2647,6 @@ pub struct WorldClockData {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct WorldPosition {
-    pub position: Vec3,
+    pub position: glam::Vec3,
     pub dimension_type: DimensionType,
 }

@@ -181,3 +181,42 @@ func TestRustEnumVariantsUseIdiomaticCase(t *testing.T) {
 		}
 	}
 }
+
+func TestGenerateRustMapsCanonicalSemanticsToNativeTypes(t *testing.T) {
+	vec3 := manifest.Node{Kind: manifest.KindStruct, Semantic: "Vec3", TypeID: "Vec3", Fields: []manifest.Field{
+		{Ordinal: 0, Name: "X", Encode: manifest.Primitive("f32le"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		{Ordinal: 1, Name: "Y", Encode: manifest.Primitive("f32le"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		{Ordinal: 2, Name: "Z", Encode: manifest.Primitive("f32le"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+	}}
+	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:native-rust", MinecraftVersion: "fixture", ProtocolVersion: 2168}}, Packets: []manifest.Packet{{ID: 1, Name: "NativePacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{
+		{Ordinal: 0, Name: "ID", Encode: manifest.Primitive("uuid"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		{Ordinal: 1, Name: "Position", Encode: vec3, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		{Ordinal: 2, Name: "Data", Encode: manifest.Primitive("nbt_le"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+	}}}}
+	files, err := GenerateFiles(m)
+	if err != nil {
+		t.Fatal(err)
+	}
+	packet := files["packets/native.rs"]
+	for _, want := range []string{"uuid::Uuid", "glam::Vec3", "Nbt"} {
+		if !strings.Contains(packet, want) {
+			t.Fatalf("native Rust output omits %q:\n%s", want, packet)
+		}
+	}
+	if !strings.Contains(files["types.rs"], "pub struct Nbt(pub Vec<u8>);") || strings.Contains(files["types.rs"], "pub struct Vec3") {
+		t.Fatalf("Rust shared types do not reflect native mapping:\n%s", files["types.rs"])
+	}
+	for _, dependency := range []string{`glam = "0.30"`, `uuid = "1"`} {
+		if !strings.Contains(files["Cargo.toml"], dependency) {
+			t.Fatalf("generated Cargo.toml omits %q:\n%s", dependency, files["Cargo.toml"])
+		}
+	}
+}
+
+func TestNativeRustTypeRejectsMislabelledVector(t *testing.T) {
+	g := &generator{}
+	node := manifest.Node{Kind: manifest.KindStruct, TypeID: "Vec2", Fields: []manifest.Field{{Encode: manifest.Primitive("f64le")}}}
+	if _, matched, err := g.nativeRustType(node); !matched || err == nil {
+		t.Fatalf("nativeRustType matched=%v error=%v, want a closed failure", matched, err)
+	}
+}

@@ -6,7 +6,7 @@ use crate::*;
 #[derive(Clone, Debug, PartialEq)]
 pub struct AddVolumeEntity {
     pub entity_network_id: EntityNetId,
-    pub components: Vec<u8>,
+    pub components: Nbt,
     pub json_identifier: String,
     pub instance_name: String,
     pub min_bounds: BlockPos,

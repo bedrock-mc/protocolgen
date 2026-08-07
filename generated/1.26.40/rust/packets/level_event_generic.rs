@@ -6,7 +6,7 @@ use crate::*;
 #[derive(Clone, Debug, PartialEq)]
 pub struct LevelEventGeneric {
     pub event_id: i32,
-    pub ctd: Vec<u8>,
+    pub ctd: Nbt,
 }
 
 pub const LEVELEVENTGENERIC_EVENT_ID_SHAPE: &str = r#"{"kind":"primitive","primitive":{"code":"zigzag_i32","width":32,"signed":true,"zigzag":true,"endianness":"none"}}"#;

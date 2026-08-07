@@ -5,7 +5,7 @@ use crate::*;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Respawn {
-    pub position: Vec3,
+    pub position: glam::Vec3,
     pub state: PlayerRespawnState,
     pub player_runtime_id: ActorRuntimeID,
 }

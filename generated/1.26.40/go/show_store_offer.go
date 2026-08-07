@@ -2,10 +2,14 @@
 
 package protocol2168
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/google/uuid"
+)
 
 type ShowStoreOffer struct {
-	OfferId      [16]byte
+	OfferId      uuid.UUID
 	RedirectType ShowStoreOfferRedirectType
 }
 
@@ -26,7 +30,7 @@ func DecodeShowStoreOffer(r Decoder) (ShowStoreOffer, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.([16]byte)
+		value, ok := raw.(uuid.UUID)
 		if !ok {
 			return p, fmt.Errorf("field ShowStoreOfferPacket.Offer Id has unexpected decoded type %T", raw)
 		}

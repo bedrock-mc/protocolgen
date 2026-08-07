@@ -6,7 +6,7 @@ use crate::*;
 #[derive(Clone, Debug, PartialEq)]
 pub struct SetActorMotion {
     pub target_runtime_id: ActorRuntimeID,
-    pub motion: Vec3,
+    pub motion: glam::Vec3,
     pub tick: PlayerInputTick,
 }
 

@@ -1,0 +1,14 @@
+# Code generated from canonical protocol manifest v2. DO NOT EDIT.
+
+[package]
+name = "bedrock-protocol-2168"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[lib]
+path = "lib.rs"
+
+[dependencies]
+glam = "0.30"
+uuid = "1"

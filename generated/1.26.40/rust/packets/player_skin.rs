@@ -5,7 +5,7 @@ use crate::*;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct PlayerSkin {
-    pub uuid: [u8; 16],
+    pub uuid: uuid::Uuid,
     pub serialized_skin: SerializedSkinRef,
     pub localized_new_skin_name: String,
     pub localized_old_skin_name: String,

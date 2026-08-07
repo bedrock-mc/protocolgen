@@ -2,11 +2,15 @@
 
 package protocol2168
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/go-gl/mathgl/mgl32"
+)
 
 type LevelEvent struct {
 	EventId  int32
-	Position Vec3
+	Position mgl32.Vec3
 	Data     int32
 }
 
@@ -41,7 +45,7 @@ func DecodeLevelEvent(r Decoder) (LevelEvent, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(Vec3)
+		value, ok := raw.(mgl32.Vec3)
 		if !ok {
 			return p, fmt.Errorf("field LevelEventPacket.Position has unexpected decoded type %T", raw)
 		}

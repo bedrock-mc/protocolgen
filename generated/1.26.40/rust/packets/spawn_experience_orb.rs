@@ -5,7 +5,7 @@ use crate::*;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct SpawnExperienceOrb {
-    pub position: Vec3,
+    pub position: glam::Vec3,
     pub xp_value: i32,
 }
 

@@ -2,17 +2,21 @@
 
 package protocol2168
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/go-gl/mathgl/mgl32"
+)
 
 type LevelSoundEvent struct {
 	SoundEvent      string
-	Position        Vec3
+	Position        mgl32.Vec3
 	Data            int32
 	ActorIdentifier string
 	IsBaby          bool
 	IsGlobal        bool
 	ActorUniqueId   int64
-	FireAtPosition  *Vec3
+	FireAtPosition  *mgl32.Vec3
 }
 
 func (p *LevelSoundEvent) Encode(w Encoder) error {
@@ -61,7 +65,7 @@ func DecodeLevelSoundEvent(r Decoder) (LevelSoundEvent, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(Vec3)
+		value, ok := raw.(mgl32.Vec3)
 		if !ok {
 			return p, fmt.Errorf("field LevelSoundEventPacket.Position has unexpected decoded type %T", raw)
 		}
@@ -127,7 +131,7 @@ func DecodeLevelSoundEvent(r Decoder) (LevelSoundEvent, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(*Vec3)
+		value, ok := raw.(*mgl32.Vec3)
 		if !ok {
 			return p, fmt.Errorf("field LevelSoundEventPacket.Fire At Position has unexpected decoded type %T", raw)
 		}

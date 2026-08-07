@@ -6,7 +6,7 @@ use crate::*;
 #[derive(Clone, Debug, PartialEq)]
 pub struct MotionPredictionHints {
     pub m_runtime_id: ActorRuntimeID,
-    pub m_motion: Vec3,
+    pub m_motion: glam::Vec3,
     pub m_on_ground: bool,
 }
 

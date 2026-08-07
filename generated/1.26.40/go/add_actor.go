@@ -2,15 +2,19 @@
 
 package protocol2168
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/go-gl/mathgl/mgl32"
+)
 
 type AddActor struct {
 	TargetActorID     ActorUniqueID
 	TargetRuntimeID   ActorRuntimeID
 	ActorType         string
-	Position          Vec3
-	Velocity          Vec3
-	Rotation          Vec2
+	Position          mgl32.Vec3
+	Velocity          mgl32.Vec3
+	Rotation          mgl32.Vec2
 	YHeadRotation     float32
 	YBodyRotation     float32
 	AttributesList    []SyncedAttribute
@@ -99,7 +103,7 @@ func DecodeAddActor(r Decoder) (AddActor, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(Vec3)
+		value, ok := raw.(mgl32.Vec3)
 		if !ok {
 			return p, fmt.Errorf("field AddActorPacket.Position has unexpected decoded type %T", raw)
 		}
@@ -110,7 +114,7 @@ func DecodeAddActor(r Decoder) (AddActor, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(Vec3)
+		value, ok := raw.(mgl32.Vec3)
 		if !ok {
 			return p, fmt.Errorf("field AddActorPacket.Velocity has unexpected decoded type %T", raw)
 		}
@@ -121,7 +125,7 @@ func DecodeAddActor(r Decoder) (AddActor, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(Vec2)
+		value, ok := raw.(mgl32.Vec2)
 		if !ok {
 			return p, fmt.Errorf("field AddActorPacket.Rotation has unexpected decoded type %T", raw)
 		}

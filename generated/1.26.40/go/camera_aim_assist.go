@@ -2,11 +2,15 @@
 
 package protocol2168
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/go-gl/mathgl/mgl32"
+)
 
 type CameraAimAssist struct {
 	PresetId        string
-	ViewAngle       Vec2
+	ViewAngle       mgl32.Vec2
 	Distance        float32
 	TargetMode      CameraAimAssistTargetModeType
 	Action          CameraAimAssistAction
@@ -53,7 +57,7 @@ func DecodeCameraAimAssist(r Decoder) (CameraAimAssist, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(Vec2)
+		value, ok := raw.(mgl32.Vec2)
 		if !ok {
 			return p, fmt.Errorf("field CameraAimAssistPacket.View Angle has unexpected decoded type %T", raw)
 		}

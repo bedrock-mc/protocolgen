@@ -9,7 +9,7 @@ pub struct UpdateEquip {
     pub r#type: u8,
     pub size: i32,
     pub entity_unique_id: ActorUniqueID,
-    pub data: Vec<u8>,
+    pub data: Nbt,
 }
 
 pub const UPDATEEQUIP_CONTAINER_ID_SHAPE: &str = r#"{"kind":"primitive","primitive":{"code":"u8","width":8,"signed":false,"zigzag":false,"endianness":"none"}}"#;

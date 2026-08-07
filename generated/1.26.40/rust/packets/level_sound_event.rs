@@ -6,13 +6,13 @@ use crate::*;
 #[derive(Clone, Debug, PartialEq)]
 pub struct LevelSoundEvent {
     pub sound_event: String,
-    pub position: Vec3,
+    pub position: glam::Vec3,
     pub data: i32,
     pub actor_identifier: String,
     pub is_baby: bool,
     pub is_global: bool,
     pub actor_unique_id: i64,
-    pub fire_at_position: Option<Vec3>,
+    pub fire_at_position: Option<glam::Vec3>,
 }
 
 pub const LEVELSOUNDEVENT_SOUND_EVENT_SHAPE: &str = r##"{"kind":"string","semantic":"SoundEventIdentifier","type_id":"SoundEventIdentifier.json#","prefix":{"kind":"primitive","primitive":{"code":"var_u32","width":32,"signed":false,"zigzag":false,"endianness":"none"}},"encoding":"utf8","representation":"text"}"##;

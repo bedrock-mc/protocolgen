@@ -5,7 +5,7 @@ use crate::*;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct JigsawStructureData {
-    pub jigsaw_structure_data_tag: Vec<u8>,
+    pub jigsaw_structure_data_tag: Nbt,
 }
 
 pub const JIGSAWSTRUCTUREDATA_JIGSAW_STRUCTURE_DATA_TAG_SHAPE: &str = r#"{"kind":"primitive","primitive":{"code":"nbt_le","width":0,"signed":false,"zigzag":false,"endianness":"little"}}"#;

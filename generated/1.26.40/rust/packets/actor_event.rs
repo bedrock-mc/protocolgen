@@ -8,7 +8,7 @@ pub struct ActorEvent {
     pub target_runtime_id: ActorRuntimeID,
     pub event_id: ActorEventType,
     pub data: i32,
-    pub fire_at_position: Option<Vec3>,
+    pub fire_at_position: Option<glam::Vec3>,
 }
 
 pub const ACTOREVENT_TARGET_RUNTIME_ID_SHAPE: &str = r#"{"kind":"struct","semantic":"ActorRuntimeID","type_id":"ActorRuntimeID","fields":[{"ordinal":0,"name":"Actor Runtime ID","semantic":"Actor Runtime ID","encode":{"kind":"primitive","primitive":{"code":"var_u64","width":64,"signed":false,"zigzag":false,"endianness":"none"}},"symmetry":"symmetric","provenance":{"pins":["endstone"]}}]}"#;

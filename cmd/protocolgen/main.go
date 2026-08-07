@@ -318,7 +318,7 @@ func writeFiles(directory string, files map[string]string) error {
 }
 
 func removeStaleGeneratedFiles(directory string, desired map[string]bool) error {
-	const generatedHeader = "// Code generated from canonical protocol manifest v2. DO NOT EDIT."
+	const generatedHeader = "Code generated from canonical protocol manifest v2. DO NOT EDIT."
 	return filepath.WalkDir(directory, func(path string, entry os.DirEntry, err error) error {
 		if err != nil {
 			return err
@@ -334,7 +334,8 @@ func removeStaleGeneratedFiles(directory string, desired map[string]bool) error 
 		if err != nil {
 			return err
 		}
-		if strings.HasPrefix(string(data), generatedHeader) {
+		contents := strings.TrimLeft(string(data), "/# ")
+		if strings.HasPrefix(contents, generatedHeader) {
 			return os.Remove(path)
 		}
 		return nil

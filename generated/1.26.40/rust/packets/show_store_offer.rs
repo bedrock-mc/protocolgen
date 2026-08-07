@@ -5,7 +5,7 @@ use crate::*;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct ShowStoreOffer {
-    pub offer_id: [u8; 16],
+    pub offer_id: uuid::Uuid,
     pub redirect_type: ShowStoreOfferRedirectType,
 }
 

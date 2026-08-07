@@ -66,6 +66,9 @@ func Generate(m manifest.Manifest, packageName string) (map[string]string, error
 }
 
 func (g *generator) goType(node manifest.Node, hint string) (string, error) {
+	if typ, matched, err := nativeGoType(node); matched || err != nil {
+		return typ, err
+	}
 	switch node.Kind {
 	case manifest.KindPrimitive:
 		if node.Primitive == nil {
@@ -174,6 +177,51 @@ func (g *generator) goType(node manifest.Node, hint string) (string, error) {
 	default:
 		return "", fmt.Errorf("unsupported node kind %q", node.Kind)
 	}
+}
+
+// nativeGoType maps canonical wire semantics to established Go ecosystem types.
+func nativeGoType(node manifest.Node) (string, bool, error) {
+	if node.Kind == manifest.KindPrimitive && node.Primitive != nil {
+		switch node.Primitive.Code {
+		case "uuid":
+			return "uuid.UUID", true, nil
+		}
+	}
+	if node.Kind != manifest.KindStruct {
+		return "", false, nil
+	}
+	switch node.TypeID {
+	case "Vec2":
+		if !isPrimitiveStruct(node, "f32le", "f32le") {
+			return "", true, fmt.Errorf("native Vec2 mapping requires exactly two f32le fields")
+		}
+		return "mgl32.Vec2", true, nil
+	case "Vec3":
+		if !isPrimitiveStruct(node, "f32le", "f32le", "f32le") {
+			return "", true, fmt.Errorf("native Vec3 mapping requires exactly three f32le fields")
+		}
+		return "mgl32.Vec3", true, nil
+	case "mce::Color":
+		if !isPrimitiveStruct(node, "i32le") {
+			return "", true, fmt.Errorf("native colour mapping requires exactly one i32le field")
+		}
+		return "color.RGBA", true, nil
+	default:
+		return "", false, nil
+	}
+}
+
+func isPrimitiveStruct(node manifest.Node, codes ...string) bool {
+	if len(node.Fields) != len(codes) {
+		return false
+	}
+	for index, code := range codes {
+		field := node.Fields[index].Encode
+		if field.Kind != manifest.KindPrimitive || field.Primitive == nil || field.Primitive.Code != code {
+			return false
+		}
+	}
+	return true
 }
 
 func (g *generator) registerUnionMember(union string, variant manifest.Variant) (string, error) {
@@ -345,6 +393,7 @@ func (g *generator) emitFiles(packageName string, packets []manifest.Packet, pac
 func emitTypeDefinitions(packageName string, definitions []typeDefinition) (string, error) {
 	var b strings.Builder
 	fmt.Fprintf(&b, "// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\npackage %s\n\n", packageName)
+	writeGoImports(&b, goImportsForDefinitions(definitions))
 	b.WriteString("// OrderedEntry preserves the source order and duplicate keys of a wire map.\n")
 	b.WriteString("type OrderedEntry[K, V any] struct {\n\tKey K\n\tValue V\n}\n\n")
 	for _, definition := range definitions {
@@ -390,9 +439,6 @@ type packetField struct {
 func (g *generator) emitPacket(packageName string, packet manifest.Packet, packetName string) (string, error) {
 	var b strings.Builder
 	fmt.Fprintf(&b, "// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\npackage %s\n\n", packageName)
-	if len(packet.Fields) != 0 {
-		b.WriteString("import \"fmt\"\n\n")
-	}
 	used := map[string]bool{}
 	fields := make([]packetField, 0, len(packet.Fields))
 	for _, field := range packet.Fields {
@@ -403,6 +449,11 @@ func (g *generator) emitPacket(packageName string, packet manifest.Packet, packe
 		}
 		fields = append(fields, packetField{field: field, name: name, typ: typ})
 	}
+	imports := goImportsForFields(fields)
+	if len(packet.Fields) != 0 {
+		imports = append(imports, "fmt")
+	}
+	writeGoImports(&b, imports)
 	fmt.Fprintf(&b, "type %s struct {\n", packetName)
 	for _, field := range fields {
 		fmt.Fprintf(&b, "\t%s %s\n", field.name, field.typ)
@@ -431,6 +482,76 @@ func (g *generator) emitPacket(packageName string, packet manifest.Packet, packe
 	}
 	b.WriteString("\treturn p, nil\n}\n\n")
 	return formatGoSource(b.String())
+}
+
+func goImportsForDefinitions(definitions []typeDefinition) []string {
+	var types []string
+	for _, definition := range definitions {
+		for _, field := range definition.Fields {
+			types = append(types, field.Type)
+		}
+	}
+	return goImportsForTypes(types)
+}
+
+func goImportsForFields(fields []packetField) []string {
+	types := make([]string, 0, len(fields))
+	for _, field := range fields {
+		types = append(types, field.typ)
+	}
+	return goImportsForTypes(types)
+}
+
+func goImportsForTypes(types []string) []string {
+	used := map[string]bool{}
+	for _, typ := range types {
+		if strings.Contains(typ, "color.") {
+			used["image/color"] = true
+		}
+		if strings.Contains(typ, "mgl32.") {
+			used["github.com/go-gl/mathgl/mgl32"] = true
+		}
+		if strings.Contains(typ, "uuid.") {
+			used["github.com/google/uuid"] = true
+		}
+	}
+	imports := make([]string, 0, len(used))
+	for path := range used {
+		imports = append(imports, path)
+	}
+	sort.Strings(imports)
+	return imports
+}
+
+func writeGoImports(b *strings.Builder, imports []string) {
+	if len(imports) == 0 {
+		return
+	}
+	sort.Strings(imports)
+	if len(imports) == 1 {
+		fmt.Fprintf(b, "import %q\n\n", imports[0])
+		return
+	}
+	var standard, external []string
+	for _, path := range imports {
+		first := strings.SplitN(path, "/", 2)[0]
+		if strings.Contains(first, ".") {
+			external = append(external, path)
+		} else {
+			standard = append(standard, path)
+		}
+	}
+	b.WriteString("import (\n")
+	for _, path := range standard {
+		fmt.Fprintf(b, "\t%q\n", path)
+	}
+	if len(standard) != 0 && len(external) != 0 {
+		b.WriteByte('\n')
+	}
+	for _, path := range external {
+		fmt.Fprintf(b, "\t%q\n", path)
+	}
+	b.WriteString(")\n\n")
 }
 
 func formatGoSource(source string) (string, error) {
@@ -653,8 +774,6 @@ func primitiveGoType(code string) (string, error) {
 		return "float32", nil
 	case "f64le", "f64be":
 		return "float64", nil
-	case "uuid":
-		return "[16]byte", nil
 	case "nbt_le":
 		return "[]byte", nil
 	default:

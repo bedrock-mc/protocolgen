@@ -2,12 +2,16 @@
 
 package protocol2168
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/go-gl/mathgl/mgl32"
+)
 
 type MovePlayer struct {
 	PlayerRuntimeID ActorRuntimeID
-	Position        Vec3
-	Rotation        Vec2
+	Position        mgl32.Vec3
+	Rotation        mgl32.Vec2
 	YHeadRotation   float32
 	PositionMode    PlayerPositionModeComponentPositionMode
 	OnGround        bool
@@ -65,7 +69,7 @@ func DecodeMovePlayer(r Decoder) (MovePlayer, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(Vec3)
+		value, ok := raw.(mgl32.Vec3)
 		if !ok {
 			return p, fmt.Errorf("field MovePlayerPacket.Position has unexpected decoded type %T", raw)
 		}
@@ -76,7 +80,7 @@ func DecodeMovePlayer(r Decoder) (MovePlayer, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(Vec2)
+		value, ok := raw.(mgl32.Vec2)
 		if !ok {
 			return p, fmt.Errorf("field MovePlayerPacket.Rotation has unexpected decoded type %T", raw)
 		}

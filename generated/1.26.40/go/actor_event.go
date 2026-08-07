@@ -2,13 +2,17 @@
 
 package protocol2168
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/go-gl/mathgl/mgl32"
+)
 
 type ActorEvent struct {
 	TargetRuntimeID ActorRuntimeID
 	EventID         ActorEventType
 	Data            int32
-	FireAtPosition  *Vec3
+	FireAtPosition  *mgl32.Vec3
 }
 
 func (p *ActorEvent) Encode(w Encoder) error {
@@ -67,7 +71,7 @@ func DecodeActorEvent(r Decoder) (ActorEvent, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(*Vec3)
+		value, ok := raw.(*mgl32.Vec3)
 		if !ok {
 			return p, fmt.Errorf("field ActorEventPacket.Fire At Position has unexpected decoded type %T", raw)
 		}

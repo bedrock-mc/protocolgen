@@ -8,8 +8,8 @@ pub struct AddItemActor {
     pub target_actor_id: ActorUniqueID,
     pub target_runtime_id: ActorRuntimeID,
     pub item: CerealizerNetworkItemStackDescriptorSerializedData,
-    pub position: Vec3,
-    pub velocity: Vec3,
+    pub position: glam::Vec3,
+    pub velocity: glam::Vec3,
     pub entity_data: SynchedActorDataCopyableDataList,
     pub is_from_fishing: bool,
 }

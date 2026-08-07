@@ -9,11 +9,15 @@ import (
 func TestWriteFilesSupportsModulesAndRemovesOnlyStaleGeneratedFiles(t *testing.T) {
 	directory := t.TempDir()
 	stale := filepath.Join(directory, "stale.rs")
+	staleCargo := filepath.Join(directory, "stale.toml")
 	keep := filepath.Join(directory, "notes.txt")
 	if err := os.WriteFile(stale, []byte("// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n"), 0o644); err != nil {
 		t.Fatal(err)
 	}
 	if err := os.WriteFile(keep, []byte("keep me\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(staleCargo, []byte("# Code generated from canonical protocol manifest v2. DO NOT EDIT.\n"), 0o644); err != nil {
 		t.Fatal(err)
 	}
 	if err := writeFiles(directory, map[string]string{"packets/login.rs": "generated\n"}); err != nil {
@@ -24,6 +28,9 @@ func TestWriteFilesSupportsModulesAndRemovesOnlyStaleGeneratedFiles(t *testing.T
 	}
 	if _, err := os.Stat(stale); !os.IsNotExist(err) {
 		t.Fatalf("stale generated file was not removed: %v", err)
+	}
+	if _, err := os.Stat(staleCargo); !os.IsNotExist(err) {
+		t.Fatalf("stale generated Cargo file was not removed: %v", err)
 	}
 	if _, err := os.Stat(keep); err != nil {
 		t.Fatalf("non-generated file was removed: %v", err)

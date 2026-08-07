@@ -2,6 +2,13 @@
 
 package protocol2168
 
+import (
+	"image/color"
+
+	"github.com/go-gl/mathgl/mgl32"
+	"github.com/google/uuid"
+)
+
 // OrderedEntry preserves the source order and duplicate keys of a wire map.
 type OrderedEntry[K, V any] struct {
 	Key   K
@@ -58,7 +65,7 @@ type ArmorSlotAndDamagePair struct {
 }
 
 type ArrowData struct {
-	ArrowEndLocation *Vec3
+	ArrowEndLocation *mgl32.Vec3
 	ArrowHeadLength  *float32
 	ArrowHeadRadius  *float32
 	NumSegments      *uint8
@@ -473,7 +480,7 @@ type BookEditActionSwapPages struct {
 func (BookEditActionSwapPages) isBookEditAction() {}
 
 type BoxData struct {
-	BoxBound Vec3
+	BoxBound mgl32.Vec3
 }
 
 func (BoxData) isPrimitiveShapeDataExtraShapeData() {}
@@ -502,7 +509,7 @@ type CameraAimAssistCategoryPriorities struct {
 type CameraAimAssistCommandPresetDefinition struct {
 	PresetId   *string
 	TargetMode *CameraAimAssistTargetMode
-	ViewAngle  *Vec2
+	ViewAngle  *mgl32.Vec2
 	Distance   *float32
 }
 
@@ -586,11 +593,11 @@ type CameraInstructionOptionsSetInstructionEntityOffsetOption struct {
 }
 
 type CameraInstructionOptionsSetInstructionFacingOption struct {
-	Pos Vec3
+	Pos mgl32.Vec3
 }
 
 type CameraInstructionOptionsSetInstructionPosOption struct {
-	Pos Vec3
+	Pos mgl32.Vec3
 }
 
 type CameraInstructionOptionsSetInstructionRotOption struct {
@@ -606,7 +613,7 @@ type CameraInstructionOptionsSetInstructionViewOffsetOption struct {
 type CameraInstructionOptionsSplineInstruction struct {
 	TotalTime         float32
 	Type              uint8
-	Curve             []Vec3
+	Curve             []mgl32.Vec3
 	ProgressKeyFrames []CameraInstructionOptionsSplineInstructionSplineProgressOption
 	RotationOption    []CameraInstructionOptionsSplineInstructionSplineRotationOption
 	SplineIdentifier  string
@@ -620,13 +627,13 @@ type CameraInstructionOptionsSplineInstructionSplineProgressOption struct {
 }
 
 type CameraInstructionOptionsSplineInstructionSplineRotationOption struct {
-	KeyFrameValue      Vec3
+	KeyFrameValue      mgl32.Vec3
 	KeyFrameTime       float32
 	KeyFrameEasingFunc string
 }
 
 type CameraInstructionOptionsTargetInstruction struct {
-	TargetCenterOffset *Vec3
+	TargetCenterOffset *mgl32.Vec3
 	TargetActorID      int64
 }
 
@@ -640,12 +647,12 @@ type CameraPreset struct {
 	RotY                    *float32
 	RotationSpeed           *float32
 	SnapToTarget            *bool
-	HorizontalRotationLimit *Vec2
-	VerticalRotationLimit   *Vec2
+	HorizontalRotationLimit *mgl32.Vec2
+	VerticalRotationLimit   *mgl32.Vec2
 	ContinueTargeting       *bool
 	BlockListeningRadius    *float32
-	ViewOffset              *Vec2
-	EntityOffset            *Vec3
+	ViewOffset              *mgl32.Vec2
+	EntityOffset            *mgl32.Vec3
 	Radius                  *float32
 	YawLimitMin             *float32
 	YawLimitMax             *float32
@@ -660,7 +667,7 @@ type CameraPresetsData struct {
 }
 
 type CameraSplineControlPoint struct {
-	Position Vec3
+	Position mgl32.Vec3
 }
 
 type CameraSplineDefinition struct {
@@ -679,7 +686,7 @@ type CameraSplineProgressKeyFrame struct {
 }
 
 type CameraSplineRotationKeyFrame struct {
-	Rotation Vec3
+	Rotation mgl32.Vec3
 	Time     float32
 	Easing   *string
 }
@@ -799,8 +806,8 @@ type ChunkPos struct {
 
 type ClientboundDebugRendererDebugMarkerData struct {
 	Text     string
-	Position Vec3
-	Color    MceColor
+	Position mgl32.Vec3
+	Color    color.RGBA
 	Duration uint64
 }
 
@@ -825,7 +832,7 @@ type CommandBlockUpdateTarget interface {
 
 type CommandOriginData struct {
 	Type      string
-	UUID      [16]byte
+	UUID      uuid.UUID
 	RequestId string
 	PlayerId  int64
 }
@@ -844,7 +851,7 @@ type CommandOutputMessage struct {
 }
 
 type ConeData struct {
-	Radii       Vec2
+	Radii       mgl32.Vec2
 	Height      float32
 	NumSegments uint8
 }
@@ -874,8 +881,8 @@ type CreativeItemEntry struct {
 }
 
 type CylinderData struct {
-	RadiusX     Vec2
-	RadiusZ     Vec2
+	RadiusX     mgl32.Vec2
+	RadiusZ     mgl32.Vec2
 	Height      float32
 	NumSegments uint8
 }
@@ -949,7 +956,7 @@ func (DataItemString) isDataItemEntryValue() {}
 
 type DataItemVec3 struct {
 	Type  DataItemType
-	Value Vec3
+	Value mgl32.Vec3
 }
 
 func (DataItemVec3) isDataItemEntryValue() {}
@@ -959,7 +966,7 @@ type DimensionDefinitionGroupDimensionDefinition struct {
 	HeightMinimum int32
 	GeneratorType GeneratorType
 	DimensionType DimensionType
-	PackId        [16]byte
+	PackId        uuid.UUID
 }
 
 type DimensionType struct {
@@ -1078,7 +1085,7 @@ type EducationLocalLevelSettings struct {
 }
 
 type EllipsoidData struct {
-	Radii           Vec3
+	Radii           mgl32.Vec3
 	SegmentsPerAxis uint8
 }
 
@@ -1215,7 +1222,7 @@ type ItemReleaseInventoryTransaction struct {
 	ActionType   ItemReleaseInventoryTransactionActionType
 	Slot         int32
 	Item         CerealizerNetworkItemStackDescriptorSerializedData
-	FromPosition Vec3
+	FromPosition mgl32.Vec3
 }
 
 func (ItemReleaseInventoryTransaction) isInventoryTransactionTransactionValue() {}
@@ -1466,8 +1473,8 @@ type ItemUseInventoryTransaction struct {
 	Face                     uint8
 	Slot                     int32
 	Item                     CerealizerNetworkItemStackDescriptorSerializedData
-	FromPosition             Vec3
-	ClickPosition            Vec3
+	FromPosition             mgl32.Vec3
+	ClickPosition            mgl32.Vec3
 	TargetBlockId            uint32
 	ClientInteractPrediction ItemUseInventoryTransactionPredictedResult
 	ClientCooldownState      ItemUseInventoryTransactionClientCooldownState
@@ -1481,8 +1488,8 @@ type ItemUseOnActorInventoryTransaction struct {
 	ActionType   ItemUseOnActorInventoryTransactionActionType
 	Slot         int32
 	Item         CerealizerNetworkItemStackDescriptorSerializedData
-	FromPosition Vec3
-	HitPosition  Vec3
+	FromPosition mgl32.Vec3
+	HitPosition  mgl32.Vec3
 }
 
 func (ItemUseOnActorInventoryTransaction) isInventoryTransactionTransactionValue() {}
@@ -1716,7 +1723,7 @@ type LevelSettings struct {
 }
 
 type LineData struct {
-	LineEndLocation Vec3
+	LineEndLocation mgl32.Vec3
 }
 
 func (LineData) isPrimitiveShapeDataExtraShapeData() {}
@@ -1733,7 +1740,7 @@ type MapDecoration struct {
 	X         uint8
 	Y         uint8
 	Label     string
-	Color     MceColor
+	Color     color.RGBA
 }
 
 type MapInfoRequestPacketAnonClientPixelsProxy struct {
@@ -1757,10 +1764,6 @@ type MaterialReducerEntryOutput struct {
 	ItemCount int32
 }
 
-type MceColor struct {
-	Color int32
-}
-
 type MemoryMemoryCategoryCounter struct {
 	Category     MemoryMemoryCategory
 	CurrentBytes uint64
@@ -1774,7 +1777,7 @@ type MissingBlobData struct {
 type MoveActorAbsoluteData struct {
 	ActorRuntimeID ActorRuntimeID
 	Header         uint8
-	Position       Vec3
+	Position       mgl32.Vec3
 	RotationX      uint8
 	RotationY      uint8
 	RotationYHead  uint8
@@ -1800,7 +1803,7 @@ type MovePlayerTeleportData struct {
 }
 
 type MultiRecipe struct {
-	MultiRecipeUUID [16]byte
+	MultiRecipeUUID uuid.UUID
 	NetId           TypedServerNetIdStructRecipeNetIdTag
 }
 
@@ -1821,12 +1824,12 @@ type NormalTransactionData struct {
 func (NormalTransactionData) isInventoryTransactionTransactionValue() {}
 
 type PackIdVersion struct {
-	PackUUID    [16]byte
+	PackUUID    uuid.UUID
 	PackVersion SemVersion
 }
 
 type PackIdVersionData struct {
-	PackUUID    [16]byte
+	PackUUID    uuid.UUID
 	PackVersion SemVersionData
 }
 
@@ -1865,7 +1868,7 @@ type PlayerInputTick struct {
 }
 
 type PlayerListAddEntry struct {
-	UUID             [16]byte
+	UUID             uuid.UUID
 	ActorUniqueID    ActorUniqueID
 	PlayerName       string
 	XBLXUID          string
@@ -1875,7 +1878,7 @@ type PlayerListAddEntry struct {
 	IsTeacher        bool
 	IsHost           bool
 	IsSubClient      bool
-	PlayerColor      MceColor
+	PlayerColor      color.RGBA
 }
 
 func (PlayerListAddEntry) isPlayerListEntriesItem() {}
@@ -1885,14 +1888,14 @@ type PlayerListEntriesItem interface {
 }
 
 type PlayerListRemoveEntry struct {
-	UUID [16]byte
+	UUID uuid.UUID
 }
 
 func (PlayerListRemoveEntry) isPlayerListEntriesItem() {}
 
 type PlayerLocationCoordinatesLocation struct {
 	PacketType PlayerLocationType
-	Position   Vec3
+	Position   mgl32.Vec3
 }
 
 func (PlayerLocationCoordinatesLocation) isPlayerLocationLocation() {}
@@ -1978,12 +1981,12 @@ type PotionMixDataEntry struct {
 type PrimitiveShapeData struct {
 	NetworkId             uint64
 	ShapeType             *ScriptModuleMinecraftScriptPrimitiveShapeType
-	Location              *Vec3
+	Location              *mgl32.Vec3
 	Scale                 *float32
-	Rotation              *Vec3
+	Rotation              *mgl32.Vec3
 	TotalTimeLeft         *float32
 	MaximumRenderDistance *float32
-	Color                 *MceColor
+	Color                 *color.RGBA
 	DimensionID           *DimensionType
 	AttachedToEntityID    *ActorUniqueID
 	ExtraShapeData        PrimitiveShapeDataExtraShapeData
@@ -2101,7 +2104,7 @@ type SerializedNoiseBlockSpecifier struct {
 type SerializedPersonaPieceHandle struct {
 	PieceId        string
 	PieceType      PersonaPieceType
-	PackId         [16]byte
+	PackId         uuid.UUID
 	IsDefaultPiece bool
 	ProductId      string
 }
@@ -2119,7 +2122,7 @@ type SerializedSkinRef struct {
 	CapeID                       string
 	FullID                       string
 	ArmSize                      PersonaArmSizeType
-	SkinColor                    MceColor
+	SkinColor                    color.RGBA
 	PersonaPieces                []SerializedPersonaPieceHandle
 	PieceTintColors              []OrderedEntry[string, TintMapColor]
 	IsPremium                    bool
@@ -2142,12 +2145,12 @@ type ServerConfigurationClientStoreEntryPointConfiguration struct {
 }
 
 type ServerConfigurationGatheringsConfigurationJoinInfo struct {
-	ExperienceId   [16]byte
+	ExperienceId   uuid.UUID
 	ExperienceName string
-	WorldId        *[16]byte
+	WorldId        *uuid.UUID
 	WorldName      *string
 	CreatorId      string
-	TargetId       *[16]byte
+	TargetId       *uuid.UUID
 	ScenarioId     *string
 	ServerId       *string
 }
@@ -2171,8 +2174,8 @@ type ServerWaypoint struct {
 	IsVisible               *bool
 	WorldPosition           *WorldPosition
 	TexturePath             *string
-	IconSize                *Vec2
-	Color                   *MceColor
+	IconSize                *mgl32.Vec2
+	Color                   *color.RGBA
 	ClientPositionAuthority *bool
 	ActorUniqueID           *ActorUniqueID
 }
@@ -2212,7 +2215,7 @@ type ShapedRecipe struct {
 	Height               int32
 	Ingredients          []CerealizerRecipeIngredientSerializedData
 	Results              []CerealizerNetworkItemInstanceDescriptorSerializedData
-	UUID                 [16]byte
+	UUID                 uuid.UUID
 	Tag                  string
 	Priority             int32
 	AssumeSymmetry       bool
@@ -2224,7 +2227,7 @@ type ShapelessRecipe struct {
 	RecipeId             string
 	Ingredients          []CerealizerRecipeIngredientSerializedData
 	Results              []CerealizerNetworkItemInstanceDescriptorSerializedData
-	UUID                 [16]byte
+	UUID                 uuid.UUID
 	Tag                  string
 	Priority             int32
 	UnlockingRequirement *CerealizerRecipeUnlockingRequirementSerializedData
@@ -2343,7 +2346,7 @@ type StructureSettings struct {
 	AnimationSeconds                                float32
 	IntegrityValue                                  float32
 	IntegritySeed                                   uint32
-	RotationPivot                                   Vec3
+	RotationPivot                                   mgl32.Vec3
 }
 
 type SubChunkHeightmapData struct {
@@ -2439,7 +2442,7 @@ type TextBody interface {
 type TextData struct {
 	Text             string
 	UseRotation      bool
-	BackgroundColor  *MceColor
+	BackgroundColor  *color.RGBA
 	DepthTest        bool
 	ShowBackface     bool
 	ShowTextBackface bool
@@ -2468,7 +2471,7 @@ type TimeMarkerData struct {
 }
 
 type TintMapColor struct {
-	Colors [4]MceColor
+	Colors [4]color.RGBA
 }
 
 type TrimMaterial struct {
@@ -2515,17 +2518,6 @@ type UpdateSubChunkNetworkBlockInfo struct {
 	SyncMessageMessage        uint32
 }
 
-type Vec2 struct {
-	X float32
-	Y float32
-}
-
-type Vec3 struct {
-	X float32
-	Y float32
-	Z float32
-}
-
 type VoxelShapesRegistryHandle struct {
 	Value uint16
 }
@@ -2545,7 +2537,7 @@ type VoxelShapesSerializableVoxelShape struct {
 }
 
 type WaypointGroupWaypointHandle struct {
-	UUID [16]byte
+	UUID uuid.UUID
 }
 
 type WebSocketPacketData struct {
@@ -2561,6 +2553,6 @@ type WorldClockData struct {
 }
 
 type WorldPosition struct {
-	Position      Vec3
+	Position      mgl32.Vec3
 	DimensionType DimensionType
 }

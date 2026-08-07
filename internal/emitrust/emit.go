@@ -42,6 +42,9 @@ type generator struct {
 	definitions map[string]definition
 	identities  map[string]string
 	used        map[string]bool
+	usesNbt     bool
+	usesUUID    bool
+	usesGlam    bool
 }
 
 func Generate(m manifest.Manifest) (string, error) {
@@ -94,6 +97,9 @@ func (g *generator) emitSingleFile(infos []packetInfo) (string, error) {
 	b.WriteString("#![allow(dead_code)]\n\n")
 	b.WriteString("pub trait WireEncoder {\n    fn field(&mut self, path: &'static str, shape: &'static str);\n}\n")
 	b.WriteString("pub trait WireDecoder {\n    fn field(&mut self, path: &'static str, shape: &'static str);\n}\n\n")
+	if g.usesNbt {
+		b.WriteString("#[derive(Clone, Debug, Default, PartialEq, Eq)]\npub struct Nbt(pub Vec<u8>);\n\n")
+	}
 	definitions := make([]definition, 0, len(g.definitions))
 	for _, item := range g.definitions {
 		definitions = append(definitions, item)
@@ -163,10 +169,11 @@ func GenerateFiles(m manifest.Manifest) (map[string]string, error) {
 	}
 	definitions := g.sortedDefinitions()
 	files := map[string]string{
-		"lib.rs":   emitLib(infos),
-		"wire.rs":  emitRustWire(),
-		"enums.rs": emitRustEnums(definitions),
-		"types.rs": emitRustTypes(definitions),
+		"Cargo.toml": emitCargo(m, g),
+		"lib.rs":     emitLib(infos),
+		"wire.rs":    emitRustWire(),
+		"enums.rs":   emitRustEnums(definitions),
+		"types.rs":   emitRustTypes(definitions, g.usesNbt),
 	}
 	usedFiles := map[string]bool{}
 	var modules strings.Builder
@@ -237,10 +244,13 @@ func emitRustEnums(definitions []definition) string {
 	return strings.TrimSpace(b.String()) + "\n"
 }
 
-func emitRustTypes(definitions []definition) string {
+func emitRustTypes(definitions []definition, usesNbt bool) string {
 	var b strings.Builder
 	b.WriteString("// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\n")
 	b.WriteString("use crate::enums::*;\n\n")
+	if usesNbt {
+		b.WriteString("#[derive(Clone, Debug, Default, PartialEq, Eq)]\npub struct Nbt(pub Vec<u8>);\n\n")
+	}
 	for _, item := range definitions {
 		switch item.Kind {
 		case manifest.KindStruct:
@@ -262,6 +272,22 @@ func emitRustTypes(definitions []definition) string {
 		}
 	}
 	return strings.TrimSpace(b.String()) + "\n"
+}
+
+func emitCargo(m manifest.Manifest, g *generator) string {
+	var b strings.Builder
+	b.WriteString("# Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\n")
+	fmt.Fprintf(&b, "[package]\nname = \"bedrock-protocol-%d\"\nversion = \"0.0.0\"\nedition = \"2021\"\npublish = false\n\n[lib]\npath = \"lib.rs\"\n", m.Target.ProtocolVersion)
+	if g.usesUUID || g.usesGlam {
+		b.WriteString("\n[dependencies]\n")
+		if g.usesGlam {
+			b.WriteString("glam = \"0.30\"\n")
+		}
+		if g.usesUUID {
+			b.WriteString("uuid = \"1\"\n")
+		}
+	}
+	return b.String()
 }
 
 func emitRustPacket(info packetInfo) string {
@@ -324,6 +350,9 @@ type rustFieldInfo struct {
 }
 
 func (g *generator) rustType(node manifest.Node, hint string) (string, error) {
+	if typ, matched, err := g.nativeRustType(node); matched || err != nil {
+		return typ, err
+	}
 	switch node.Kind {
 	case manifest.KindPrimitive:
 		if node.Primitive == nil {
@@ -422,6 +451,51 @@ func (g *generator) rustType(node manifest.Node, hint string) (string, error) {
 	default:
 		return "", fmt.Errorf("unsupported node kind %q", node.Kind)
 	}
+}
+
+func (g *generator) nativeRustType(node manifest.Node) (string, bool, error) {
+	if node.Kind == manifest.KindPrimitive && node.Primitive != nil {
+		switch node.Primitive.Code {
+		case "uuid":
+			g.usesUUID = true
+			return "uuid::Uuid", true, nil
+		case "nbt_le":
+			g.usesNbt = true
+			return "Nbt", true, nil
+		}
+	}
+	if node.Kind != manifest.KindStruct {
+		return "", false, nil
+	}
+	switch node.TypeID {
+	case "Vec2":
+		if !isPrimitiveStruct(node, "f32le", "f32le") {
+			return "", true, fmt.Errorf("native Vec2 mapping requires exactly two f32le fields")
+		}
+		g.usesGlam = true
+		return "glam::Vec2", true, nil
+	case "Vec3":
+		if !isPrimitiveStruct(node, "f32le", "f32le", "f32le") {
+			return "", true, fmt.Errorf("native Vec3 mapping requires exactly three f32le fields")
+		}
+		g.usesGlam = true
+		return "glam::Vec3", true, nil
+	default:
+		return "", false, nil
+	}
+}
+
+func isPrimitiveStruct(node manifest.Node, codes ...string) bool {
+	if len(node.Fields) != len(codes) {
+		return false
+	}
+	for index, code := range codes {
+		field := node.Fields[index].Encode
+		if field.Kind != manifest.KindPrimitive || field.Primitive == nil || field.Primitive.Code != code {
+			return false
+		}
+	}
+	return true
 }
 
 func (g *generator) registerStruct(node manifest.Node, hint string) (string, error) {
@@ -600,10 +674,6 @@ func primitiveRustType(code string) (string, error) {
 		return "f32", nil
 	case "f64le", "f64be":
 		return "f64", nil
-	case "uuid":
-		return "[u8; 16]", nil
-	case "nbt_le":
-		return "Vec<u8>", nil
 	default:
 		return "", fmt.Errorf("unsupported primitive code %q", code)
 	}

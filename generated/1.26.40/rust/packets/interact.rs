@@ -7,7 +7,7 @@ use crate::*;
 pub struct Interact {
     pub action: InteractAction,
     pub target_runtime_id: ActorRuntimeID,
-    pub position: Option<Vec3>,
+    pub position: Option<glam::Vec3>,
 }
 
 pub const INTERACT_ACTION_SHAPE: &str = r#"{"kind":"enum","semantic":"InteractPacketPayload::Action","type_id":"enums/InteractPacketPayload::Action","primitive":{"code":"u8","width":8,"signed":false,"zigzag":false,"endianness":"none"},"variants":[{"value":0,"name":"Invalid","encode":{"kind":"void"}},{"value":3,"name":"StopRiding","encode":{"kind":"void"}},{"value":4,"name":"InteractUpdate","encode":{"kind":"void"}},{"value":5,"name":"NpcOpen","encode":{"kind":"void"}},{"value":6,"name":"OpenInventory","encode":{"kind":"void"}}]}"#;

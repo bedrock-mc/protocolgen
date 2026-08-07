@@ -6,7 +6,7 @@ use crate::*;
 #[derive(Clone, Debug, PartialEq)]
 pub struct ChangeDimension {
     pub dimension_id: DimensionType,
-    pub position: Vec3,
+    pub position: glam::Vec3,
     pub respawn: bool,
     pub loading_screen_id: Option<u32>,
 }

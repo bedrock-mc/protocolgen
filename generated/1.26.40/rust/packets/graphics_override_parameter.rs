@@ -5,9 +5,9 @@ use crate::*;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct GraphicsOverrideParameter {
-    pub parameter_keyframe_values: Vec<(f32, Vec3)>,
+    pub parameter_keyframe_values: Vec<(f32, glam::Vec3)>,
     pub float_value: Option<f32>,
-    pub vec3_value: Option<Vec3>,
+    pub vec3_value: Option<glam::Vec3>,
     pub biome_identifier: String,
     pub player_identifier: Option<String>,
     pub identifier_for_parameter: GraphicsOverrideParameterType,

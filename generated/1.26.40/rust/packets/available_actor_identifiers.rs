@@ -5,7 +5,7 @@ use crate::*;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct AvailableActorIdentifiers {
-    pub identifier_list: Vec<u8>,
+    pub identifier_list: Nbt,
 }
 
 pub const AVAILABLEACTORIDENTIFIERS_IDENTIFIER_LIST_SHAPE: &str = r#"{"kind":"primitive","primitive":{"code":"nbt_le","width":0,"signed":false,"zigzag":false,"endianness":"little"}}"#;

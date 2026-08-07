@@ -2,12 +2,16 @@
 
 package protocol2168
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/go-gl/mathgl/mgl32"
+)
 
 type SpawnParticleEffect struct {
 	DimensionId     uint8
 	ActorId         ActorUniqueID
-	Position        Vec3
+	Position        mgl32.Vec3
 	EffectName      string
 	MolangVariables *string
 }
@@ -60,7 +64,7 @@ func DecodeSpawnParticleEffect(r Decoder) (SpawnParticleEffect, error) {
 		if err != nil {
 			return p, err
 		}
-		value, ok := raw.(Vec3)
+		value, ok := raw.(mgl32.Vec3)
 		if !ok {
 			return p, fmt.Errorf("field SpawnParticleEffectPacket.Position has unexpected decoded type %T", raw)
 		}
