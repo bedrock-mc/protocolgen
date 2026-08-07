@@ -33,7 +33,7 @@ func TestGenerateRustConsumesCanonicalManifest(t *testing.T) {
 	if !strings.Contains(source, "pub struct Fixture") || !strings.Contains(source, "pub const ID: u32 = 1;") {
 		t.Fatalf("generated Rust omitted packet definition or ID:\n%s", source)
 	}
-	if strings.Contains(source, "SHAPE") || strings.Contains(source, "WireEncoder") || strings.Contains(source, "fn encode") {
+	if strings.Contains(source, "SHAPE") || strings.Contains(source, "WireEncoder") {
 		t.Fatalf("generated Rust exposed runtime schema or placeholder codecs:\n%s", source)
 	}
 	if strings.Contains(source, "gophertunnel") || strings.Contains(source, "bedrock-protocol-docs") {
@@ -94,7 +94,7 @@ func TestGenerateRustEscapesKeywordFieldNames(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Generate: %v", err)
 	}
-	if !strings.Contains(source, "pub r#type: u8") {
+	if !strings.Contains(source, "pub r#type: wire::U8") {
 		t.Fatalf("generated Rust did not escape keyword field:\n%s", source)
 	}
 }
@@ -124,7 +124,7 @@ func TestGenerateRustUsesCanonicalNamedTypesAndOrderedMapTuples(t *testing.T) {
 	if !strings.Contains(source, "pub struct BiomeDefinitionData") {
 		t.Fatalf("generated Rust did not use canonical type identity:\n%s", source)
 	}
-	if !strings.Contains(source, "pub map_of_biome_names_to_data: Vec<(u16, BiomeDefinitionData)>") {
+	if !strings.Contains(source, "pub map_of_biome_names_to_data: Vec<(wire::U16LE, BiomeDefinitionData)>") {
 		t.Fatalf("generated Rust did not use ordered map tuples:\n%s", source)
 	}
 	if strings.Contains(source, "BiomeDefinitionListPacketMapOfBiomeNamesToDataValueStruct") {
@@ -143,7 +143,7 @@ func TestGenerateRustUsesTypedUnionEnum(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Generate: %v", err)
 	}
-	if !strings.Contains(source, "pub enum SoundDataEvent") || !strings.Contains(source, "SetVolume {") || !strings.Contains(source, "volume: f32") || strings.Contains(source, "pub struct SoundDataEventSetVolume") || strings.Contains(source, "pub tag: i64") {
+	if !strings.Contains(source, "pub enum SoundDataEvent") || !strings.Contains(source, "SetVolume {") || !strings.Contains(source, "volume: wire::F32LE") || strings.Contains(source, "pub struct SoundDataEventSetVolume") || strings.Contains(source, "pub tag: i64") {
 		t.Fatalf("generated Rust did not emit a typed union enum:\n%s", source)
 	}
 }
@@ -161,8 +161,51 @@ func TestGenerateRustDropsUnionDiscriminantPayloadField(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(source, "DataItemByte {\n        value: i8,") || strings.Contains(source, "r#type: DataItemType") {
+	if !strings.Contains(source, "DataItemByte {\n        value: wire::I8,") || strings.Contains(source, "r#type: DataItemType") {
 		t.Fatalf("union emitted a redundant discriminant payload field:\n%s", source)
+	}
+}
+
+func TestGenerateRustPreservesWirePrimitiveTypesAndOptionalPresence(t *testing.T) {
+	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:wire", MinecraftVersion: "fixture", ProtocolVersion: 2168}}, Packets: []manifest.Packet{{ID: 1, Name: "WirePacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{
+		{Ordinal: 0, Name: "Count", Encode: manifest.Primitive("var_u32"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		{Ordinal: 1, Name: "Delta", Encode: manifest.Primitive("zigzag_i32"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		{Ordinal: 2, Name: "Value", Encode: manifest.Primitive("u32le"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		{Ordinal: 3, Name: "Ratio", Encode: manifest.Primitive("f32le"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		{Ordinal: 4, Name: "Maybe", Encode: manifest.Optional(manifest.Primitive("u8")), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+	}}}}
+	files, err := GenerateFiles(m)
+	if err != nil {
+		t.Fatal(err)
+	}
+	packet := files["src/packets/wire.rs"]
+	for _, want := range []string{"pub count: wire::VarUInt", "pub delta: wire::ZigZag32", "pub value: wire::U32LE", "pub ratio: wire::F32LE", "/// Wire presence: optional value is preceded by a presence marker."} {
+		if !strings.Contains(packet, want) {
+			t.Fatalf("generated packet omitted %q:\n%s", want, packet)
+		}
+	}
+	wire := files["src/wire.rs"]
+	for _, want := range []string{"var_codec!(VarUInt, u32)", "pub struct ZigZag32(pub i32)", "fixed_codec!(U32LE, u32", "fixed_float_codec!(F32LE, f32", "fn encode"} {
+		if !strings.Contains(wire, want) {
+			t.Fatalf("wire module omitted %q:\n%s", want, wire)
+		}
+	}
+}
+
+func TestGenerateRustEmitsUnionDiscriminantMapping(t *testing.T) {
+	union := manifest.Union(manifest.Primitive("u8"),
+		manifest.Variant{Value: 1, Name: "First", Encode: manifest.Void()},
+		manifest.Variant{Value: 7, Name: "Second", Encode: manifest.Void()},
+	)
+	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:union-wire", MinecraftVersion: "fixture", ProtocolVersion: 2168}}, Packets: []manifest.Packet{{ID: 1, Name: "UnionPacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{Ordinal: 0, Name: "Value", Encode: union, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}}}
+	source, err := generatedRustSource(m)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, want := range []string{"pub fn discriminant(&self) -> u8", "Self::First => 1", "Self::Second => 7"} {
+		if !strings.Contains(source, want) {
+			t.Fatalf("union omitted %q:\n%s", want, source)
+		}
 	}
 }
 
@@ -181,12 +224,13 @@ func TestGenerateRustKeepsSharedUnionPayloadNamed(t *testing.T) {
 
 func TestGenerateRustEmptyPacketOnlyEmitsDefinitionAndID(t *testing.T) {
 	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:rust", MinecraftVersion: "fixture", ProtocolVersion: 2168}}, Packets: []manifest.Packet{{ID: 4, Name: "EmptyPacket", Direction: manifest.DirectionServerbound, Fields: []manifest.Field{}}}}
-	source, err := generatedRustSource(m)
+	files, err := GenerateFiles(m)
 	if err != nil {
 		t.Fatalf("Generate: %v", err)
 	}
-	if !strings.Contains(source, "pub struct Empty") || !strings.Contains(source, "pub const ID: u32 = 4;") || strings.Contains(source, "encode") || strings.Contains(source, "decode") {
-		t.Fatalf("empty packet output is not definition-only:\n%s", source)
+	packet := files["src/packets/empty.rs"]
+	if !strings.Contains(packet, "pub struct Empty") || !strings.Contains(packet, "pub const ID: u32 = 4;") || strings.Contains(packet, "encode") || strings.Contains(packet, "decode") {
+		t.Fatalf("empty packet output is not definition-only:\n%s", packet)
 	}
 }
 
@@ -297,7 +341,7 @@ func TestGenerateRustCollapsesDoubleOptionalAndUsesNamedRecursiveType(t *testing
 	for _, source := range files {
 		all.WriteString(source)
 	}
-	for _, want := range []string{"pub maybe: Option<i32>", "Vec<CerealDynamicValue>", "pub struct Bitset131(pub [u64; 3])", "pub flags: Bitset131"} {
+	for _, want := range []string{"pub maybe: Option<wire::I32LE>", "Vec<CerealDynamicValue>", "pub struct Bitset131(pub [u64; 3])", "pub flags: Bitset131"} {
 		if !strings.Contains(all.String(), want) {
 			t.Fatalf("generated output missing %q:\n%s", want, all.String())
 		}
