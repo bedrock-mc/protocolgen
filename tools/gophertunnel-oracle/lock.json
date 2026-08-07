@@ -3,7 +3,7 @@
   "minecraft_version": "1.26.40",
   "protocol_version": 2168,
   "gophertunnel": {
-    "repo": "https://github.com/Sandertv/gophertunnel.git",
+    "repo": "https://github.com/hashimthearab/gophertunnel.git",
     "commit": "be6713da4dc051a4197f897d04835e89e9c54321"
   }
 }
