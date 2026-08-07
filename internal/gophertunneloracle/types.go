@@ -238,6 +238,27 @@ func LoadAccepted(path string) (AcceptedFile, error) {
 	return accepted, nil
 }
 
+// checkAcceptedEvidence keeps the reviewed baseline citing the oracle that was
+// actually run. An entry may cite any independent source, but a locator that
+// names a gophertunnel checkout must be the locked repository at the locked
+// commit; otherwise the "evidence" is a dead or moving link and the entry would
+// silence a divergence nobody can re-read.
+func checkAcceptedEvidence(lock Lock, accepted AcceptedFile) error {
+	base := strings.TrimSuffix(lock.Gophertunnel.Repo, ".git")
+	for _, entry := range accepted.Divergences {
+		for _, evidence := range entry.Evidence {
+			locator := strings.TrimSpace(evidence.Locator)
+			if !strings.HasPrefix(locator, "http") || !strings.Contains(strings.ToLower(locator), "gophertunnel") {
+				continue
+			}
+			if !strings.HasPrefix(locator, base+"/blob/"+lock.Gophertunnel.Commit+"/") && !strings.HasPrefix(locator, base+"/tree/"+lock.Gophertunnel.Commit) {
+				return fmt.Errorf("accepted divergence %d cites gophertunnel evidence %q outside the locked oracle %s@%s", entry.ID, locator, base, lock.Gophertunnel.Commit)
+			}
+		}
+	}
+	return nil
+}
+
 func resolveCheckout(lock Lock, requested, cacheDir string) (string, error) {
 	if requested != "" {
 		path, err := filepath.Abs(requested)

@@ -150,6 +150,37 @@ The preserved conformance machinery remains runnable at
 file is part of the gate: divergence is accepted only when explicitly listed
 with a reason, while unresolved and absent oracle packets remain non-agreement.
 
+## gophertunnel oracle
+
+`verify-gophertunnel` is a second, independent verification axis over the same
+manifest. It reads `tools/gophertunnel-oracle/lock.json`, resolves a checkout
+whose `HEAD` is exactly the locked full SHA, parses the hand-written
+`Marshal(protocol.IO)` methods with `go/ast`, and lowers them into the same
+node vocabulary the manifest uses:
+
+```sh
+go run ./cmd/protocolgen verify-gophertunnel \
+  -manifest generated/1.26.40/manifest.json \
+  -report /tmp/gophertunnel-2168-report.json
+```
+
+The oracle is subject to the same source policy as every other third-party
+view above: it is evidence, never canonical truth. It has no path into
+reconciliation, corrections, adjudications, or emission, and a disagreement is
+resolved by a pinned wire-layout source, not by editing the manifest until it
+matches gophertunnel. The checkout is parsed, never imported or built, so the
+oracle cannot become a second protocol schema.
+
+Each manifest packet is classified `AGREEMENT`, `DIVERGENCE`, `UNRESOLVED`, or
+`NO_ORACLE_PACKET`. Only the documented byte-equivalences are normalized;
+width, endianness, varint family, option presence, array prefixes,
+fixed-array lengths, and union discriminants stay distinct, and a marshal the
+extractor cannot statically resolve is `UNRESOLVED` rather than agreement.
+Accepted divergences in `tools/gophertunnel-oracle/accepted-divergences.json`
+require a reason, at least one evidence locator, and a concrete
+`what_would_settle_it`; they record an open question about one packet and are
+rebuilt from actual run output rather than carried forward.
+
 ## Gaps deliberately left fail-closed
 
 - This is not full 2168 packet coverage and no live/proprietary corpus is

@@ -30,6 +30,9 @@ func CompareFile(options Options) (Report, error) {
 	if accepted.ProtocolVersion != canonical.Target.ProtocolVersion || accepted.MinecraftVersion != canonical.Target.MinecraftVersion {
 		return Report{}, fmt.Errorf("accepted-divergences targets Minecraft %s/protocol %d, manifest targets %s/%d", accepted.MinecraftVersion, accepted.ProtocolVersion, canonical.Target.MinecraftVersion, canonical.Target.ProtocolVersion)
 	}
+	if err := checkAcceptedEvidence(lock, accepted); err != nil {
+		return Report{}, err
+	}
 	checkout, err := resolveCheckout(lock, options.GophertunnelPath, options.CacheDir)
 	if err != nil {
 		return Report{}, err

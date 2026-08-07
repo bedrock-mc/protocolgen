@@ -187,9 +187,19 @@ wire schema.
 `verify-gophertunnel` reads `tools/gophertunnel-oracle/lock.json`, whose oracle
 commit is a full 40-character SHA. Pass `-gophertunnel` for an existing
 checkout at that exact commit, or omit it to clone into the platform user cache
-at runtime. The command parses gophertunnel with `go/ast`; it does not import
-the checkout, download its modules, or compare generated output. The manifest
-is the only protocol shape being verified.
+at runtime. The locked repository may be a fork; only the exact locked SHA is
+trusted, and the checkout is rejected if `HEAD` is anything else. The command
+parses gophertunnel with `go/ast`; it does not import the checkout, download
+its modules, or compare generated output. The manifest is the only protocol
+shape being verified.
+
+The oracle is not canonical. gophertunnel is a hand-written third-party
+implementation used as one independent verification axis, exactly like the
+Axolotl parity gate. It never edits the manifest: `verify-gophertunnel` writes
+only its report, and no correction, adjudication, or source claim is ever
+derived from it automatically. When the oracle and the manifest disagree, the
+resolution is a pinned, reviewable wire-layout source recorded under
+`generated/<version>/corrections/`, not agreement with gophertunnel.
 
 It writes a machine-readable report with one result per manifest packet and
 prints the same run's human summary:
@@ -209,7 +219,11 @@ endianness, fixed versus varint, varint versus zigzag, float versus integer,
 option presence, array prefixes, fixed-array lengths, and union discriminants
 remain distinct. Reviewed exceptions live in
 `tools/gophertunnel-oracle/accepted-divergences.json`; every entry requires a
-reason, evidence locator, and a concrete `what_would_settle_it` statement.
+reason, evidence locator, and a concrete `what_would_settle_it` statement. An
+entry only silences the exit code for one packet; it is a record of an open
+question, not a decision that gophertunnel is right. Entries whose packets no
+longer diverge are reported as `resolved_accepted` so the baseline cannot keep
+accepting differences that no longer exist.
 
 ## Current scope
 

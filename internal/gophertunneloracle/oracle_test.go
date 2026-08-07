@@ -150,6 +150,72 @@ func TestLoadAcceptedRequiresEvidence(t *testing.T) {
 	}
 }
 
+func TestAcceptedEvidenceMustCiteTheLockedOracle(t *testing.T) {
+	lock := fixtureLock()
+	lock.Gophertunnel.Repo = "https://github.com/example/gophertunnel.git"
+	entry := AcceptedDivergence{ID: 1, Name: "P", Reason: "reviewed", WhatWouldSettleIt: "capture"}
+	for _, locator := range []string{
+		"https://github.com/other/gophertunnel/blob/" + lock.Gophertunnel.Commit + "/minecraft/protocol/packet/p.go",
+		"https://github.com/example/gophertunnel/blob/1111111111111111111111111111111111111111/minecraft/protocol/packet/p.go",
+	} {
+		entry.Evidence = []Evidence{{Locator: locator, Summary: "pinned marshal"}}
+		file := AcceptedFile{SchemaVersion: AcceptedSchemaVersion, MinecraftVersion: "1.26.40", ProtocolVersion: 2168, Divergences: []AcceptedDivergence{entry}}
+		if err := checkAcceptedEvidence(lock, file); err == nil {
+			t.Errorf("locator %q outside the locked oracle was accepted", locator)
+		}
+	}
+
+	entry.Evidence = []Evidence{
+		{Locator: "https://github.com/example/gophertunnel/blob/" + lock.Gophertunnel.Commit + "/minecraft/protocol/packet/p.go", Summary: "pinned marshal"},
+		{Locator: "https://github.com/CloudburstMC/Protocol/blob/fbbeee7/Serializer.java", Summary: "independent serializer"},
+	}
+	file := AcceptedFile{SchemaVersion: AcceptedSchemaVersion, MinecraftVersion: "1.26.40", ProtocolVersion: 2168, Divergences: []AcceptedDivergence{entry}}
+	if err := checkAcceptedEvidence(lock, file); err != nil {
+		t.Fatalf("locked-oracle and independent evidence were rejected: %v", err)
+	}
+}
+
+// TestCheckedInOracleBaselineMatchesTheCanonicalManifest keeps the committed
+// lock and reviewed baseline from drifting away from the manifest without a
+// gophertunnel checkout being available.
+func TestCheckedInOracleBaselineMatchesTheCanonicalManifest(t *testing.T) {
+	canonical, err := manifest.Load(filepath.Join("..", "..", "generated", "1.26.40", "manifest.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	lock, err := LoadLock(filepath.Join("..", "..", "tools", "gophertunnel-oracle", "lock.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	accepted, err := LoadAccepted(filepath.Join("..", "..", "tools", "gophertunnel-oracle", "accepted-divergences.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if lock.MinecraftVersion != canonical.Target.MinecraftVersion || lock.ProtocolVersion != canonical.Target.ProtocolVersion {
+		t.Fatalf("lock targets %s/%d, manifest targets %s/%d", lock.MinecraftVersion, lock.ProtocolVersion, canonical.Target.MinecraftVersion, canonical.Target.ProtocolVersion)
+	}
+	if accepted.MinecraftVersion != canonical.Target.MinecraftVersion || accepted.ProtocolVersion != canonical.Target.ProtocolVersion {
+		t.Fatalf("baseline targets %s/%d, manifest targets %s/%d", accepted.MinecraftVersion, accepted.ProtocolVersion, canonical.Target.MinecraftVersion, canonical.Target.ProtocolVersion)
+	}
+	if err := checkAcceptedEvidence(lock, accepted); err != nil {
+		t.Fatal(err)
+	}
+	names := make(map[uint32]string, len(canonical.Packets))
+	for _, packet := range canonical.Packets {
+		names[packet.ID] = packet.Name
+	}
+	for _, entry := range accepted.Divergences {
+		name, ok := names[entry.ID]
+		if !ok {
+			t.Errorf("accepted divergence %d (%s) has no manifest packet", entry.ID, entry.Name)
+			continue
+		}
+		if name != entry.Name {
+			t.Errorf("accepted divergence %d names %q, manifest packet is %q", entry.ID, entry.Name, name)
+		}
+	}
+}
+
 func fixtureManifest(nodes ...manifest.Node) manifest.Manifest {
 	fields := make([]manifest.Field, len(nodes))
 	for index, node := range nodes {
