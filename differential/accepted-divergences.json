@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "minecraft_version": "1.26.40",
+  "protocol_version": 2168,
+  "entries": [
+    {
+      "packet": 93,
+      "direction": "client",
+      "input_hex": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "kind": "re-encoded-bytes",
+      "rationale": "The pinned gophertunnel Skin writer normalizes a false Trusted flag to the string false, while the generated SerializedSkinRef writer preserves the decoded empty string."
+    },
+    {
+      "packet": 93,
+      "direction": "server",
+      "input_hex": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "kind": "re-encoded-bytes",
+      "rationale": "The pinned gophertunnel Skin writer normalizes a false Trusted flag to the string false, while the generated SerializedSkinRef writer preserves the decoded empty string."
+    }
+  ]
+}

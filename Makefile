@@ -15,7 +15,10 @@ GOPHERTUNNEL_DIR ?=
 ORACLE_REPORT ?= /tmp/protocolgen-gophertunnel-report.json
 GOPHER_ARGS = $(if $(GOPHERTUNNEL_DIR),-gophertunnel $(GOPHERTUNNEL_DIR))
 
-.PHONY: regen verify
+.PHONY: regen differential verify
+
+differential:
+	$(GO) -C differential test ./...
 
 regen:
 	@test -n "$(MOJANG_DIR)" || (echo "MOJANG_DIR is required" >&2; exit 2)
@@ -54,5 +57,5 @@ regen:
 	$(GO) test ./...
 	$(GO) vet ./...
 
-verify: regen
+verify: regen differential
 	@test -z "$$(git status --porcelain)" || (echo "regeneration produced drift:" >&2; git status --short >&2; exit 1)
