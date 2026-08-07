@@ -72,6 +72,15 @@ func TestVarintsRoundTrip(t *testing.T) {
 	}
 }
 
+func Test32BitVarintsRejectSixByteEncoding(t *testing.T) {
+	reader := NewReader([]byte{0x80, 0x80, 0x80, 0x80, 0x80, 0x00})
+	var value uint32
+	reader.Varuint32(&value)
+	if reader.Err() == nil {
+		t.Fatal("six-byte uint32 varint was accepted")
+	}
+}
+
 func TestReaderRejectsSliceOverLimit(t *testing.T) {
 	reader := NewReader(nil)
 	if reader.SliceLength(maxSliceLength+1, maxSliceLength) {

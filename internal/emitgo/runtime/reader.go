@@ -110,6 +110,26 @@ func (r *Reader) readUvarint() uint64 {
 	return 0
 }
 
+func (r *Reader) readUvarint32() uint32 {
+	var value uint32
+	for shift := uint(0); shift < 35; shift += 7 {
+		b := r.readByte()
+		if r.err != nil {
+			return 0
+		}
+		if shift == 28 && b&0x7f > 0x0f {
+			r.fail(fmt.Errorf("varint overflows uint32"))
+			return 0
+		}
+		value |= uint32(b&0x7f) << shift
+		if b&0x80 == 0 {
+			return value
+		}
+	}
+	r.fail(fmt.Errorf("varint exceeds five bytes"))
+	return 0
+}
+
 func (r *Reader) Bool(x *bool) {
 	value := r.readByte()
 	if r.err != nil {
@@ -225,7 +245,7 @@ func (r *Reader) BEFloat64(x *float64) {
 }
 
 func (r *Reader) Varint32(x *int32) {
-	value := r.readUvarint()
+	value := uint64(r.readUvarint32())
 	if r.err != nil {
 		return
 	}
@@ -241,7 +261,7 @@ func (r *Reader) Varint32(x *int32) {
 }
 
 func (r *Reader) Varuint32(x *uint32) {
-	value := r.readUvarint()
+	value := uint64(r.readUvarint32())
 	if r.err != nil {
 		return
 	}
@@ -265,7 +285,7 @@ func (r *Reader) Varint64(x *int64) {
 
 func (r *Reader) Varuint64(x *uint64) { *x = r.readUvarint() }
 func (r *Reader) SignedVarint32(x *int32) {
-	value := r.readUvarint()
+	value := uint64(r.readUvarint32())
 	if r.err != nil {
 		return
 	}
