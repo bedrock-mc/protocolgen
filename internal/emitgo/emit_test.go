@@ -6,6 +6,8 @@ import (
 	"strings"
 	"testing"
 
+	"protocolgen/internal/docs"
+	"protocolgen/internal/domains"
 	"protocolgen/internal/manifest"
 )
 
@@ -62,6 +64,66 @@ func TestGenerateConsumesOnlyCanonicalManifest(t *testing.T) {
 	}
 	if strings.Contains(packet, "Shape{") || strings.Contains(packet, "func (p *Vocabulary) Encode") {
 		t.Fatalf("generated packet exposed runtime schema or placeholder codecs:\n%s", packet)
+	}
+}
+
+func TestGenerateGroupsSharedDefinitionsByReviewedDomain(t *testing.T) {
+	alpha := manifest.Node{Kind: manifest.KindStruct, TypeID: "Alpha", Fields: []manifest.Field{{Name: "Value", Encode: manifest.Primitive("u8"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}
+	beta := manifest.Node{Kind: manifest.KindStruct, TypeID: "Beta", Fields: []manifest.Field{{Name: "Value", Encode: manifest.Primitive("u8"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}
+	m := manifest.Manifest{
+		SchemaVersion: 2,
+		Target:        manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 1},
+		Sources:       []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "1", Digest: "fixture", MinecraftVersion: "fixture", ProtocolVersion: 1}},
+		Packets: []manifest.Packet{{ID: 1, Name: "FixturePacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{
+			{Ordinal: 0, Name: "Beta", Encode: beta, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+			{Ordinal: 1, Name: "Alpha", Encode: alpha, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		}}},
+	}
+	files, err := GenerateWithOptions(m, Options{
+		ProtocolImportPath: "fixture",
+		NativeTypes:        false,
+		EmitPacketRuntime:  true,
+		EmitPacketPools:    true,
+		Domains: domains.Overlay{Domains: map[string]string{
+			"Alpha": "shared",
+			"Beta":  "shared",
+		}},
+	})
+	if err != nil {
+		t.Fatalf("GenerateWithOptions: %v", err)
+	}
+	source := files["protocol/shared.go"]
+	if !strings.Contains(source, "type Alpha struct") || !strings.Contains(source, "type Beta struct") {
+		t.Fatalf("shared domain file omitted definitions:\n%s", source)
+	}
+	if strings.Index(source, "type Alpha struct") > strings.Index(source, "type Beta struct") {
+		t.Fatalf("definitions are not sorted by name within domain:\n%s", source)
+	}
+	if _, ok := files["protocol/alpha.go"]; ok {
+		t.Fatalf("domain grouping retained per-type file")
+	}
+}
+
+func TestGenerateEmitsReviewedGoDocs(t *testing.T) {
+	shared := manifest.Node{Kind: manifest.KindStruct, TypeID: "Shared", Fields: []manifest.Field{{Name: "Value", Encode: manifest.Primitive("u8"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}
+	m := manifest.Manifest{
+		SchemaVersion: 2,
+		Target:        manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 1},
+		Sources:       []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "1", Digest: "fixture", MinecraftVersion: "fixture", ProtocolVersion: 1}},
+		Packets:       []manifest.Packet{{ID: 1, Name: "FixturePacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{Name: "Shared Value", Encode: shared, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}},
+	}
+	files, err := GenerateWithOptions(m, Options{ProtocolImportPath: "fixture", NativeTypes: false, Docs: docs.Overlay{
+		Types:  map[string]string{"Shared": "Shared docs.", "FixturePacket": "Packet docs."},
+		Fields: map[string]string{docs.FieldKey("Shared", "Value"): "Value docs.", docs.FieldKey("FixturePacket", "Shared Value"): "Packet value docs."},
+	}})
+	if err != nil {
+		t.Fatalf("GenerateWithOptions: %v", err)
+	}
+	if !strings.Contains(files["protocol/shared.go"], "// Shared docs.") || !strings.Contains(files["protocol/shared.go"], "// Value docs.") {
+		t.Fatalf("shared docs were not emitted:\n%s", files["protocol/shared.go"])
+	}
+	if !strings.Contains(files["protocol/packet/fixture.go"], "// Packet docs.") || !strings.Contains(files["protocol/packet/fixture.go"], "// Packet value docs.") {
+		t.Fatalf("packet docs were not emitted:\n%s", files["protocol/packet/fixture.go"])
 	}
 }
 

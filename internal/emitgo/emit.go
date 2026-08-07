@@ -11,12 +11,15 @@ import (
 	"strings"
 	"unicode"
 
+	"protocolgen/internal/docs"
+	"protocolgen/internal/domains"
 	"protocolgen/internal/manifest"
 	"protocolgen/internal/naming"
 )
 
 type typeDefinition struct {
 	Name       string
+	TypeID     string
 	Kind       manifest.NodeKind
 	Fields     []typedField
 	EntryKey   string
@@ -29,9 +32,10 @@ type typeDefinition struct {
 }
 
 type typedField struct {
-	Name string
-	Type string
-	Node manifest.Node
+	Name     string
+	WireName string
+	Type     string
+	Node     manifest.Node
 }
 
 type goUnionMember struct {
@@ -49,6 +53,8 @@ type generator struct {
 	nativeTypes        bool
 	emitPacketRuntime  bool
 	emitPacketPools    bool
+	domains            domains.Overlay
+	docs               docs.Overlay
 }
 
 //go:embed runtime/codec.go runtime/helpers.go runtime/reader.go runtime/types.go runtime/writer.go
@@ -74,6 +80,8 @@ func emitRuntimeFiles() (map[string]string, error) {
 type Options struct {
 	ProtocolImportPath string
 	Naming             naming.Overlay
+	Domains            domains.Overlay
+	Docs               docs.Overlay
 	NativeTypes        bool
 	EmitPacketRuntime  bool
 	EmitPacketPools    bool
@@ -101,6 +109,11 @@ func GenerateWithOptions(m manifest.Manifest, options Options) (map[string]strin
 	if err := naming.ValidateRequiredEntries(m, options.Naming); err != nil {
 		return nil, err
 	}
+	if options.Domains.Domains != nil {
+		if err := domains.ValidateAssignments(m, options.Domains); err != nil {
+			return nil, err
+		}
+	}
 	if options.ProtocolImportPath == "" || strings.ContainsAny(options.ProtocolImportPath, " \t\r\n") {
 		return nil, fmt.Errorf("invalid protocol import path %q", options.ProtocolImportPath)
 	}
@@ -113,6 +126,8 @@ func GenerateWithOptions(m manifest.Manifest, options Options) (map[string]strin
 		nativeTypes:        options.NativeTypes,
 		emitPacketRuntime:  options.EmitPacketRuntime,
 		emitPacketPools:    options.EmitPacketPools,
+		domains:            options.Domains,
+		docs:               options.Docs,
 	}
 	packets := append([]manifest.Packet(nil), m.Packets...)
 	sort.Slice(packets, func(i, j int) bool { return packets[i].ID < packets[j].ID })
@@ -272,7 +287,7 @@ func (g *generator) goType(node manifest.Node, hint string) (string, error) {
 			if node.Control == nil || node.Control.Primitive == nil {
 				return "", fmt.Errorf("union has no primitive discriminator")
 			}
-			g.definitions[name] = typeDefinition{Name: name, Kind: manifest.KindUnion, Underlying: node.Control.Primitive.Code}
+			g.definitions[name] = typeDefinition{Name: name, TypeID: nodeTypeID(node), Kind: manifest.KindUnion, Underlying: node.Control.Primitive.Code}
 			members := make([]goUnionMember, 0, len(node.Variants))
 			usedMembers := map[string]bool{}
 			for _, variant := range node.Variants {
@@ -284,8 +299,9 @@ func (g *generator) goType(node manifest.Node, hint string) (string, error) {
 					wrapper := g.unique(name + exportName(naming.PublicVariantName(shortTypeName(variant.Name))))
 					g.definitions[wrapper] = typeDefinition{
 						Name:       wrapper,
+						TypeID:     nodeTypeID(variant.Encode),
 						Kind:       manifest.KindStruct,
-						Fields:     []typedField{{Name: "Value", Type: member, Node: variant.Encode}},
+						Fields:     []typedField{{Name: "Value", WireName: "Value", Type: member, Node: variant.Encode}},
 						Implements: []string{name},
 					}
 					member = wrapper
@@ -311,7 +327,7 @@ func (g *generator) goType(node manifest.Node, hint string) (string, error) {
 			return "", err
 		}
 		if _, exists := g.definitions[name]; !exists {
-			g.definitions[name] = typeDefinition{Name: name, Kind: manifest.KindEnum, Underlying: underlying, Variants: append([]manifest.Variant(nil), node.Variants...)}
+			g.definitions[name] = typeDefinition{Name: name, TypeID: nodeTypeID(node), Kind: manifest.KindEnum, Underlying: underlying, Variants: append([]manifest.Variant(nil), node.Variants...)}
 		}
 		return name, nil
 	case manifest.KindReserved, manifest.KindIgnored:
@@ -438,12 +454,12 @@ func (g *generator) registerUnionMember(union string, variant manifest.Variant) 
 	}
 	if variant.Encode.Kind == manifest.KindVoid {
 		member = g.unique(union + exportName(naming.PublicVariantName(shortTypeName(variant.Name))))
-		g.definitions[member] = typeDefinition{Name: member, Kind: manifest.KindStruct}
+		g.definitions[member] = typeDefinition{Name: member, TypeID: nodeTypeID(variant.Encode), Kind: manifest.KindStruct}
 	}
 	definition, ok := g.definitions[member]
 	if !ok || definition.Kind != manifest.KindStruct {
 		wrapper := g.unique(union + exportName(naming.PublicVariantName(shortTypeName(variant.Name))))
-		g.definitions[wrapper] = typeDefinition{Name: wrapper, Kind: manifest.KindStruct, Fields: []typedField{{Name: "Value", Type: member, Node: variant.Encode}}, Implements: []string{union}}
+		g.definitions[wrapper] = typeDefinition{Name: wrapper, TypeID: nodeTypeID(variant.Encode), Kind: manifest.KindStruct, Fields: []typedField{{Name: "Value", WireName: "Value", Type: member, Node: variant.Encode}}, Implements: []string{union}}
 		return wrapper, nil
 	}
 	if !containsString(definition.Implements, union) {
@@ -462,6 +478,13 @@ func containsString(values []string, target string) bool {
 	return false
 }
 
+func nodeTypeID(node manifest.Node) string {
+	if node.TypeID != "" {
+		return node.TypeID
+	}
+	return naming.InferredTypeName(node)
+}
+
 func (g *generator) registerStruct(node manifest.Node, hint string) (string, error) {
 	name, err := g.registerIdentity(node, hint+"Struct")
 	if err != nil {
@@ -470,7 +493,7 @@ func (g *generator) registerStruct(node manifest.Node, hint string) (string, err
 	if _, exists := g.definitions[name]; exists {
 		return name, nil
 	}
-	g.definitions[name] = typeDefinition{Name: name, Kind: manifest.KindStruct}
+	g.definitions[name] = typeDefinition{Name: name, TypeID: nodeTypeID(node), Kind: manifest.KindStruct}
 	used := map[string]bool{}
 	var fields []typedField
 	for _, field := range node.Fields {
@@ -479,7 +502,7 @@ func (g *generator) registerStruct(node manifest.Node, hint string) (string, err
 		if err != nil {
 			return "", err
 		}
-		fields = append(fields, typedField{Name: fieldName, Type: fieldType, Node: field.Encode})
+		fields = append(fields, typedField{Name: fieldName, WireName: field.Name, Type: fieldType, Node: field.Encode})
 	}
 	definition := g.definitions[name]
 	definition.Fields = fields
@@ -542,13 +565,34 @@ func (g *generator) emitFiles(m manifest.Manifest, packets []manifest.Packet, pa
 	usedFiles := map[string]bool{
 		"types.go": true, "codec.go": true, "helpers.go": true, "reader.go": true, "writer.go": true, "version.go": true,
 	}
-	for _, definition := range definitions {
-		source, err := emitDefinition(g, definition)
-		if err != nil {
-			return nil, err
+	if g.domains.Domains == nil {
+		for _, definition := range definitions {
+			source, err := emitDefinitionFile(g, definition)
+			if err != nil {
+				return nil, err
+			}
+			name := uniqueFileName(snakeName(definition.Name)+".go", 0, usedFiles)
+			files["protocol/"+name] = source
 		}
-		name := uniqueFileName(snakeName(definition.Name)+".go", 0, usedFiles)
-		files["protocol/"+name] = source
+	} else {
+		byDomain := map[string][]typeDefinition{}
+		for _, definition := range definitions {
+			domain := g.domainFor(definition)
+			byDomain[domain] = append(byDomain[domain], definition)
+		}
+		domainsByName := make([]string, 0, len(byDomain))
+		for domain := range byDomain {
+			domainsByName = append(domainsByName, domain)
+		}
+		sort.Strings(domainsByName)
+		for _, domain := range domainsByName {
+			source, err := emitDomainFile(g, byDomain[domain])
+			if err != nil {
+				return nil, err
+			}
+			name := uniqueFileName(domain+".go", 0, usedFiles)
+			files["protocol/"+name] = source
+		}
 	}
 	packetFiles := map[string]string{}
 	packetUsed := map[string]bool{"ids.go": true}
@@ -581,18 +625,68 @@ func (g *generator) emitFiles(m manifest.Manifest, packets []manifest.Packet, pa
 	return files, nil
 }
 
-func emitDefinition(g *generator, definition typeDefinition) (string, error) {
+func (g *generator) domainFor(definition typeDefinition) string {
+	if definition.TypeID == "" {
+		return "generated"
+	}
+	return g.domains.Domain(definition.TypeID)
+}
+
+func emitDefinitionFile(g *generator, definition typeDefinition) (string, error) {
+	source, err := emitDefinitionBody(g, definition)
+	if err != nil {
+		return "", err
+	}
 	var b strings.Builder
 	b.WriteString("// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\npackage protocol\n\n")
+	writeGoImports(&b, goImportsForTypes(definitionTypes(definition)))
+	b.WriteString(source)
+	return formatGoSource(b.String())
+}
+
+func emitDomainFile(g *generator, definitions []typeDefinition) (string, error) {
+	sort.Slice(definitions, func(i, j int) bool { return definitions[i].Name < definitions[j].Name })
+	var b strings.Builder
+	b.WriteString("// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\npackage protocol\n\n")
+	var types []string
+	for _, definition := range definitions {
+		types = append(types, definitionTypes(definition)...)
+	}
+	writeGoImports(&b, goImportsForTypes(types))
+	for index, definition := range definitions {
+		if index != 0 {
+			b.WriteString("\n")
+		}
+		source, err := emitDefinitionBody(g, definition)
+		if err != nil {
+			return "", err
+		}
+		b.WriteString(source)
+	}
+	return formatGoSource(b.String())
+}
+
+func definitionTypes(definition typeDefinition) []string {
+	types := make([]string, 0, len(definition.Fields))
+	for _, field := range definition.Fields {
+		types = append(types, field.Type)
+	}
+	return types
+}
+
+func emitDefinitionBody(g *generator, definition typeDefinition) (string, error) {
+	var b strings.Builder
+	for _, line := range docs.GoComments(g.docs.Type(definition.TypeID)) {
+		b.WriteString(line)
+		b.WriteByte('\n')
+	}
 	switch definition.Kind {
 	case manifest.KindStruct:
-		var types []string
-		for _, field := range definition.Fields {
-			types = append(types, field.Type)
-		}
-		writeGoImports(&b, goImportsForTypes(types))
 		fmt.Fprintf(&b, "type %s struct {\n", definition.Name)
 		for _, field := range definition.Fields {
+			for _, line := range docs.GoComments(g.docs.Field(definition.TypeID, field.WireName)) {
+				fmt.Fprintf(&b, "\t%s\n", line)
+			}
 			fmt.Fprintf(&b, "\t%s %s\n", field.Name, field.Type)
 		}
 		b.WriteString("}\n\n")
@@ -646,13 +740,14 @@ func emitDefinition(g *generator, definition typeDefinition) (string, error) {
 	default:
 		return "", fmt.Errorf("unsupported definition kind %q", definition.Kind)
 	}
-	return formatGoSource(b.String())
+	return b.String(), nil
 }
 
 type packetField struct {
-	name string
-	typ  string
-	node manifest.Node
+	name     string
+	wireName string
+	typ      string
+	node     manifest.Node
 }
 
 func (g *generator) emitPacket(packet manifest.Packet, packetName string) (string, error) {
@@ -669,12 +764,19 @@ func (g *generator) emitPacket(packet manifest.Packet, packetName string) (strin
 		}
 		name := uniqueFieldName(baseName, used)
 		typ := mustGoType(g, field.Encode, packetName+name)
-		fields = append(fields, packetField{name: name, typ: qualifyGoType(typ, g.definitions), node: field.Encode})
+		fields = append(fields, packetField{name: name, wireName: field.Name, typ: qualifyGoType(typ, g.definitions), node: field.Encode})
 	}
 	imports := append([]string{g.protocolImportPath}, goImportsForFields(fields)...)
 	writeGoImports(&b, imports)
+	for _, line := range docs.GoComments(g.docs.Type(packet.Name)) {
+		b.WriteString(line)
+		b.WriteByte('\n')
+	}
 	fmt.Fprintf(&b, "type %s struct {\n", packetName)
 	for _, field := range fields {
+		for _, line := range docs.GoComments(g.docs.Field(packet.Name, field.wireName)) {
+			fmt.Fprintf(&b, "\t%s\n", line)
+		}
 		fmt.Fprintf(&b, "\t%s %s\n", field.name, field.typ)
 	}
 	b.WriteString("}\n\n")

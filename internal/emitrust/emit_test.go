@@ -4,6 +4,8 @@ import (
 	"strings"
 	"testing"
 
+	"protocolgen/internal/docs"
+	"protocolgen/internal/domains"
 	"protocolgen/internal/manifest"
 )
 
@@ -38,6 +40,54 @@ func TestGenerateRustConsumesCanonicalManifest(t *testing.T) {
 	}
 	if strings.Contains(source, "gophertunnel") || strings.Contains(source, "bedrock-protocol-docs") {
 		t.Fatalf("generated Rust contains source/profile lookup text")
+	}
+}
+
+func TestGenerateRustOrdersDefinitionsByReviewedDomain(t *testing.T) {
+	alpha := manifest.Node{Kind: manifest.KindStruct, TypeID: "Alpha", Fields: []manifest.Field{{Ordinal: 0, Name: "Value", Encode: manifest.Primitive("u8"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}
+	beta := manifest.Node{Kind: manifest.KindStruct, TypeID: "Beta", Fields: []manifest.Field{{Ordinal: 0, Name: "Value", Encode: manifest.Primitive("u8"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}
+	m := manifest.Manifest{
+		SchemaVersion: 2,
+		Target:        manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 1},
+		Sources:       []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "1", Digest: "fixture", MinecraftVersion: "fixture", ProtocolVersion: 1}},
+		Packets: []manifest.Packet{{ID: 1, Name: "FixturePacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{
+			{Ordinal: 0, Name: "Beta", Encode: beta, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+			{Ordinal: 1, Name: "Alpha", Encode: alpha, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		}}},
+	}
+	files, err := GenerateFilesWithOptions(m, Options{Domains: domains.Overlay{Domains: map[string]string{"Alpha": "shared", "Beta": "shared"}}})
+	if err != nil {
+		t.Fatalf("GenerateFilesWithOptions: %v", err)
+	}
+	types := files["src/types.rs"]
+	if !strings.Contains(types, "// Domain: shared") || strings.Index(types, "pub struct Alpha") > strings.Index(types, "pub struct Beta") {
+		t.Fatalf("Rust definitions were not grouped and sorted:\n%s", types)
+	}
+}
+
+func TestGenerateRustEmitsReviewedDocs(t *testing.T) {
+	shared := manifest.Node{Kind: manifest.KindStruct, TypeID: "Shared", Fields: []manifest.Field{
+		{Ordinal: 0, Name: "Value", Encode: manifest.Primitive("u8"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		{Ordinal: 1, Name: "Other", Encode: manifest.Primitive("u8"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+	}}
+	m := manifest.Manifest{
+		SchemaVersion: 2,
+		Target:        manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 1},
+		Sources:       []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "1", Digest: "fixture", MinecraftVersion: "fixture", ProtocolVersion: 1}},
+		Packets:       []manifest.Packet{{ID: 1, Name: "FixturePacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{Ordinal: 0, Name: "Shared Value", Encode: shared, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}},
+	}
+	files, err := GenerateFilesWithOptions(m, Options{Docs: docs.Overlay{
+		Types:  map[string]string{"Shared": "Shared docs.", "FixturePacket": "Packet docs."},
+		Fields: map[string]string{docs.FieldKey("Shared", "Value"): "Value docs.", docs.FieldKey("FixturePacket", "Shared Value"): "Packet value docs."},
+	}})
+	if err != nil {
+		t.Fatalf("GenerateFilesWithOptions: %v", err)
+	}
+	if !strings.Contains(files["src/types.rs"], "/// Shared docs.") || !strings.Contains(files["src/types.rs"], "/// Value docs.") {
+		t.Fatalf("shared docs were not emitted:\n%s", files["src/types.rs"])
+	}
+	if !strings.Contains(files["src/packets.rs"], "/// Packet docs.") || !strings.Contains(files["src/packets.rs"], "/// Packet value docs.") {
+		t.Fatalf("packet docs were not emitted:\n%s", files["src/packets.rs"])
 	}
 }
 

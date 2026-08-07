@@ -8,12 +8,17 @@ import (
 	"strings"
 	"unicode"
 
+	"protocolgen/internal/docs"
+	"protocolgen/internal/domains"
 	"protocolgen/internal/manifest"
 	"protocolgen/internal/naming"
 )
 
 type definition struct {
 	Name         string
+	TypeID       string
+	Domain       string
+	Docs         []string
 	Kind         manifest.NodeKind
 	Fields       []rustField
 	Underlying   string
@@ -42,6 +47,7 @@ type rustField struct {
 type packetInfo struct {
 	packet manifest.Packet
 	name   string
+	docs   []string
 	fields []rustFieldInfo
 	size   int
 }
@@ -56,20 +62,37 @@ type generator struct {
 	usesBytes   bool
 	standalone  map[string]bool
 	resolver    *naming.Resolver
+	domains     domains.Overlay
+	docs        docs.Overlay
+}
+
+type Options struct {
+	Naming  naming.Overlay
+	Domains domains.Overlay
+	Docs    docs.Overlay
 }
 
 func prepare(m manifest.Manifest) (*generator, []packetInfo, error) {
-	return prepareWithOverlay(m, naming.Overlay{})
+	return prepareWithOptions(m, Options{})
 }
 
 func prepareWithOverlay(m manifest.Manifest, overlay naming.Overlay) (*generator, []packetInfo, error) {
+	return prepareWithOptions(m, Options{Naming: overlay})
+}
+
+func prepareWithOptions(m manifest.Manifest, options Options) (*generator, []packetInfo, error) {
 	if err := manifest.Validate(m); err != nil {
 		return nil, nil, err
 	}
-	if err := naming.ValidateRequiredEntries(m, overlay); err != nil {
+	if err := naming.ValidateRequiredEntries(m, options.Naming); err != nil {
 		return nil, nil, err
 	}
-	g := &generator{definitions: map[string]definition{}, identities: map[string]string{}, used: map[string]bool{}, standalone: standaloneRustStructs(m), resolver: naming.NewResolver(overlay)}
+	if options.Domains.Domains != nil {
+		if err := domains.ValidateAssignments(m, options.Domains); err != nil {
+			return nil, nil, err
+		}
+	}
+	g := &generator{definitions: map[string]definition{}, identities: map[string]string{}, used: map[string]bool{}, standalone: standaloneRustStructs(m), resolver: naming.NewResolver(options.Naming), domains: options.Domains, docs: options.Docs}
 	packets := append([]manifest.Packet(nil), m.Packets...)
 	sort.Slice(packets, func(i, j int) bool { return packets[i].ID < packets[j].ID })
 	infos := make([]packetInfo, 0, len(packets))
@@ -90,9 +113,9 @@ func prepareWithOverlay(m manifest.Manifest, overlay naming.Overlay) (*generator
 			if err != nil {
 				return nil, nil, fmt.Errorf("packet %s field %s: %w", packet.Name, field.Name, err)
 			}
-			fields = append(fields, rustFieldInfo{name: fieldName, typ: typ, docs: fieldDocs(field)})
+			fields = append(fields, rustFieldInfo{name: fieldName, typ: typ, docs: g.fieldDocs(packet.Name, field)})
 		}
-		infos = append(infos, packetInfo{packet: packet, name: name, fields: fields, size: g.estimatePacketSize(fields)})
+		infos = append(infos, packetInfo{packet: packet, name: name, docs: docs.RustComments(g.docs.Type(packet.Name)), fields: fields, size: g.estimatePacketSize(fields)})
 	}
 	return g, infos, nil
 }
@@ -199,7 +222,11 @@ func GenerateFiles(m manifest.Manifest) (map[string]string, error) {
 // GenerateFilesWithOverlay emits Rust definitions using a reviewed naming
 // overlay shared with the Go emitter.
 func GenerateFilesWithOverlay(m manifest.Manifest, overlay naming.Overlay) (map[string]string, error) {
-	g, infos, err := prepareWithOverlay(m, overlay)
+	return GenerateFilesWithOptions(m, Options{Naming: overlay})
+}
+
+func GenerateFilesWithOptions(m manifest.Manifest, options Options) (map[string]string, error) {
+	g, infos, err := prepareWithOptions(m, options)
 	if err != nil {
 		return nil, err
 	}
@@ -220,8 +247,37 @@ func (g *generator) sortedDefinitions() []definition {
 	for _, item := range g.definitions {
 		definitions = append(definitions, item)
 	}
-	sort.Slice(definitions, func(i, j int) bool { return definitions[i].Name < definitions[j].Name })
+	for index := range definitions {
+		if g.domains.Domains != nil {
+			definitions[index].Domain = g.domainFor(definitions[index])
+		}
+		definitions[index].Docs = docs.RustComments(g.docs.Type(definitions[index].TypeID))
+	}
+	if g.domains.Domains == nil {
+		sort.Slice(definitions, func(i, j int) bool { return definitions[i].Name < definitions[j].Name })
+	} else {
+		sort.Slice(definitions, func(i, j int) bool {
+			if definitions[i].Domain != definitions[j].Domain {
+				return definitions[i].Domain < definitions[j].Domain
+			}
+			return definitions[i].Name < definitions[j].Name
+		})
+	}
 	return definitions
+}
+
+func (g *generator) domainFor(item definition) string {
+	if item.TypeID == "" {
+		return "generated"
+	}
+	return g.domains.Domain(item.TypeID)
+}
+
+func rustNodeTypeID(node manifest.Node) string {
+	if node.TypeID != "" {
+		return node.TypeID
+	}
+	return naming.InferredTypeName(node)
 }
 
 func emitLib(m manifest.Manifest) string {
@@ -240,8 +296,10 @@ pub mod wire;
 func emitRustEnums(definitions []definition) string {
 	var b strings.Builder
 	b.WriteString("// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\n")
+	lastDomain := ""
 	for _, item := range definitions {
 		if item.Kind == manifest.KindEnum {
+			writeRustDomainHeader(&b, item, &lastDomain)
 			emitRustEnum(&b, item)
 		}
 	}
@@ -253,9 +311,16 @@ func emitRustTypes(definitions []definition) string {
 	b.WriteString("// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\n")
 	b.WriteString("use crate::enums::*;\n\n")
 	b.WriteString("use crate::wire;\n\n")
+	lastDomain := ""
 	for _, item := range definitions {
+		if item.Kind == manifest.KindStruct || item.Kind == manifest.KindUnion || item.Kind == manifest.KindBitset {
+			writeRustDomainHeader(&b, item, &lastDomain)
+		}
 		switch item.Kind {
 		case manifest.KindStruct:
+			for _, doc := range item.Docs {
+				fmt.Fprintf(&b, "%s\n", doc)
+			}
 			if item.Tuple {
 				derive := "Clone, Copy, Debug, Default, PartialEq"
 				if item.WrapperCodec != "" && item.Fields[0].Type != "f32" && item.Fields[0].Type != "f64" {
@@ -276,6 +341,9 @@ func emitRustTypes(definitions []definition) string {
 			}
 			b.WriteString("}\n\n")
 		case manifest.KindUnion:
+			for _, doc := range item.Docs {
+				fmt.Fprintf(&b, "%s\n", doc)
+			}
 			deriveDefault := unionCanDeriveDefault(item)
 			derive := "Clone, Debug, PartialEq"
 			if deriveDefault {
@@ -333,11 +401,22 @@ func emitRustTypes(definitions []definition) string {
 				b.WriteString("    }\n}\n\n")
 			}
 		case manifest.KindBitset:
+			for _, doc := range item.Docs {
+				fmt.Fprintf(&b, "%s\n", doc)
+			}
 			fmt.Fprintf(&b, "/// Stores the %d-bit value used by the wire bitset encoding.\n", item.BitLength)
 			fmt.Fprintf(&b, "#[derive(Clone, Debug, Default, PartialEq, Eq)]\npub struct %s(pub [u64; %d]);\n\n", item.Name, (item.BitLength+63)/64)
 		}
 	}
 	return strings.TrimSpace(b.String()) + "\n"
+}
+
+func writeRustDomainHeader(b *strings.Builder, item definition, lastDomain *string) {
+	if item.Domain == "" || item.Domain == *lastDomain {
+		return
+	}
+	fmt.Fprintf(b, "// Domain: %s\n\n", item.Domain)
+	*lastDomain = item.Domain
 }
 
 func emitCargo(m manifest.Manifest, g *generator) string {
@@ -531,6 +610,9 @@ func emitRustPacket(info packetInfo) string {
 }
 
 func emitRustPacketDefinition(b *strings.Builder, info packetInfo) {
+	for _, doc := range info.docs {
+		fmt.Fprintf(b, "%s\n", doc)
+	}
 	fmt.Fprintf(b, "#[derive(Clone, Debug, Default, PartialEq)]\npub struct %s {\n", info.name)
 	for _, field := range info.fields {
 		for _, doc := range field.docs {
@@ -575,11 +657,12 @@ func packetNeedsBox(info packetInfo) bool {
 	return len(info.fields) >= 8
 }
 
-func fieldDocs(field manifest.Field) []string {
+func (g *generator) fieldDocs(owner string, field manifest.Field) []string {
+	result := docs.RustComments(g.docs.Field(owner, field.Name))
 	if field.Encode.Kind == manifest.KindOptional {
-		return []string{"/// Wire presence: optional value is preceded by a presence marker."}
+		result = append(result, "/// Wire presence: optional value is preceded by a presence marker.")
 	}
-	return nil
+	return result
 }
 
 func moduleFileName(value string) string {
@@ -676,7 +759,7 @@ func (g *generator) rustType(node manifest.Node, hint string) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			g.definitions[name] = definition{Name: name, Kind: manifest.KindUnion, Control: control}
+			g.definitions[name] = definition{Name: name, TypeID: rustNodeTypeID(node), Kind: manifest.KindUnion, Control: control}
 			variants := make([]rustVariant, 0, len(node.Variants))
 			used := map[string]bool{}
 			for _, variant := range node.Variants {
@@ -718,7 +801,7 @@ func (g *generator) rustType(node manifest.Node, hint string) (string, error) {
 			return "", err
 		}
 		if _, ok := g.definitions[name]; !ok {
-			g.definitions[name] = definition{Name: name, Kind: manifest.KindEnum, Underlying: underlying, Variants: append([]manifest.Variant(nil), node.Variants...)}
+			g.definitions[name] = definition{Name: name, TypeID: rustNodeTypeID(node), Kind: manifest.KindEnum, Underlying: underlying, Variants: append([]manifest.Variant(nil), node.Variants...)}
 		}
 		return name, nil
 	case manifest.KindReserved, manifest.KindIgnored:
@@ -801,6 +884,7 @@ func (g *generator) registerStruct(node manifest.Node, hint string) (string, err
 	if raw, codec, ok := singleFieldWrapper(node); ok {
 		g.definitions[name] = definition{
 			Name:         name,
+			TypeID:       rustNodeTypeID(node),
 			Kind:         manifest.KindStruct,
 			Fields:       []rustField{{Name: "value", Type: raw}},
 			Tuple:        true,
@@ -808,7 +892,7 @@ func (g *generator) registerStruct(node manifest.Node, hint string) (string, err
 		}
 		return name, nil
 	}
-	g.definitions[name] = definition{Name: name, Kind: manifest.KindStruct}
+	g.definitions[name] = definition{Name: name, TypeID: rustNodeTypeID(node), Kind: manifest.KindStruct}
 	fields, err := g.rustFields(node, name)
 	if err != nil {
 		return "", err
@@ -835,7 +919,7 @@ func (g *generator) rustFieldsForUnion(node manifest.Node, parentName string, co
 		if err != nil {
 			return nil, err
 		}
-		fields = append(fields, rustField{Name: fieldName, Type: typ, Docs: fieldDocs(field)})
+		fields = append(fields, rustField{Name: fieldName, Type: typ, Docs: g.fieldDocs(rustNodeTypeID(node), field)})
 	}
 	if control != nil {
 		g.boxLargeUnionFields(fields)
@@ -1111,6 +1195,9 @@ func unionControlType(node manifest.Node) (string, error) {
 }
 
 func emitRustEnum(b *strings.Builder, item definition) {
+	for _, doc := range item.Docs {
+		fmt.Fprintf(b, "%s\n", doc)
+	}
 	derive := "Clone, Copy, Debug, PartialEq, Eq, Hash"
 	if len(item.Variants) > 0 {
 		derive += ", Default"
