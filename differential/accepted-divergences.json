@@ -18,6 +18,20 @@
       "rationale": "Oracle derives the response name string from the response enum on encode (resource_pack_client_response.go Marshal: resourcePackResponseToString), discarding the wire string; generated preserves it."
     },
     {
+      "packet": 9,
+      "direction": "client",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle derives the text category byte from TextType on encode (packet/text.go Marshal), discarding the wire byte; generated preserves it."
+    },
+    {
+      "packet": 9,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle derives the text category byte from TextType on encode (packet/text.go Marshal), discarding the wire byte; generated preserves it."
+    },
+    {
       "packet": 11,
       "direction": "server",
       "input_hex": "",
@@ -37,6 +51,20 @@
       "input_hex": "",
       "kind": "re-encoded-bytes",
       "rationale": "Oracle re-encodes empty item user-data NBT as an explicit empty compound; generated preserves wire bytes."
+    },
+    {
+      "packet": 30,
+      "direction": "client",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle derives the legacy-slots presence bool from LegacyRequestID on encode (packet/inventory_transaction.go Marshal), discarding the wire bool; generated preserves it."
+    },
+    {
+      "packet": 30,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle derives the legacy-slots presence bool from LegacyRequestID on encode (packet/inventory_transaction.go Marshal), discarding the wire bool; generated preserves it."
     },
     {
       "packet": 31,
@@ -123,11 +151,25 @@
       "rationale": "Oracle derives the scoreboard entry type-name string from the variant on encode (scoreboard.go:44 typeNames), discarding the wire string; generated preserves it."
     },
     {
+      "packet": 148,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle derives ContainerInfo presence from slice emptiness on encode (item_stack.go ItemStackResponse Marshal DoubleOptionalFunc); a present-but-empty wire optional re-encodes as absent; generated preserves it."
+    },
+    {
       "packet": 153,
       "direction": "server",
       "input_hex": "",
       "kind": "re-encoded-bytes",
       "rationale": "Oracle re-encodes absent network NBT payload as an explicit empty compound; generated preserves wire bytes."
+    },
+    {
+      "packet": 162,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "re-encoded-bytes",
+      "rationale": "Oracle re-encodes empty per-item network NBT as explicit empty compounds; generated preserves wire bytes."
     },
     {
       "packet": 165,
