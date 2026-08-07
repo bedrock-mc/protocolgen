@@ -92,3 +92,36 @@ func TestValidateRejectsMixedProtocolTargetSources(t *testing.T) {
 		t.Fatalf("Validate error = %v, want mixed-source failure", err)
 	}
 }
+
+func TestValidateRepresentationPatchRequiresExternalEvidenceAndContext(t *testing.T) {
+	base := Manifest{
+		SchemaVersion: 2,
+		Target:        Target{MinecraftVersion: "fixture", ProtocolVersion: 2168},
+		Sources: []SourcePin{
+			{ID: "endstone", Kind: "synthetic", Revision: "fixture", Digest: "fixture:endstone", MinecraftVersion: "fixture", ProtocolVersion: 2168},
+			{ID: "mojang", Kind: "synthetic", Revision: "fixture", Digest: "fixture:mojang", MinecraftVersion: "fixture", ProtocolVersion: 2168},
+		},
+		Packets: []Packet{{ID: 1, Name: "Fixture", Direction: DirectionClientbound, Fields: []Field{{
+			Ordinal: 0, Name: "Payload", Encode: String(Primitive("var_u32")), Symmetry: Symmetric,
+			Provenance: Provenance{Pins: []string{"endstone", "mojang"}},
+		}}}},
+		Adjudications: []Adjudication{{
+			ID: "binary-fixture-payload", Target: "Fixture.Payload", PrePatchContextSHA256: "sha256:context",
+			Claims:   []ClaimFingerprint{{SourceID: "endstone", Digest: "sha256:endstone"}, {SourceID: "mojang", Digest: "sha256:mojang"}},
+			Evidence: []Evidence{{SourceID: "gophertunnel", Locator: "minecraft/protocol/fixture.go:1", External: true}},
+			Reason:   "fixture third-source evidence", Patch: &AdjudicationPatch{Representation: "bytes"},
+		}},
+	}
+	if err := Validate(base); err != nil {
+		t.Fatalf("Validate external representation patch: %v", err)
+	}
+	base.Adjudications[0].SelectedSource = "endstone"
+	if err := Validate(base); err == nil || !strings.Contains(err.Error(), "cannot also select a source") {
+		t.Fatalf("Validate representation patch with selected source = %v, want rejection", err)
+	}
+	base.Adjudications[0].SelectedSource = ""
+	base.Adjudications[0].Evidence[0].External = false
+	if err := Validate(base); err == nil || !strings.Contains(err.Error(), "external evidence marker") {
+		t.Fatalf("Validate unmarked external evidence = %v, want rejection", err)
+	}
+}

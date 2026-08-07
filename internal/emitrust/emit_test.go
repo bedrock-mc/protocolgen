@@ -41,6 +41,25 @@ func TestGenerateRustConsumesCanonicalManifest(t *testing.T) {
 	}
 }
 
+func TestGenerateRustMapsCanonicalBytesToVecU8(t *testing.T) {
+	m := manifest.Manifest{
+		SchemaVersion: 2,
+		Target:        manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168},
+		Sources:       []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:bytes", MinecraftVersion: "fixture", ProtocolVersion: 2168}},
+		Packets: []manifest.Packet{{ID: 1, Name: "BytesPacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{
+			Ordinal: 0, Name: "Payload", Encode: manifest.Bytes(manifest.Primitive("var_u32")), Symmetry: manifest.Symmetric,
+			Provenance: manifest.Provenance{Pins: []string{"fixture"}},
+		}}}},
+	}
+	files, err := GenerateFiles(m)
+	if err != nil {
+		t.Fatalf("Generate: %v", err)
+	}
+	if !strings.Contains(files["src/packets/bytes.rs"], "pub payload: Vec<u8>") {
+		t.Fatalf("generated Rust did not preserve bytes representation:\n%s", files["src/packets/bytes.rs"])
+	}
+}
+
 func TestGenerateRustFilesUseNativeEnumsAndPacketModules(t *testing.T) {
 	packetType := manifest.Enum("zigzag_i32",
 		manifest.EnumValue{Name: "EnableMultiplayer", Value: 0},

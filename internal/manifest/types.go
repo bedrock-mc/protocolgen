@@ -165,6 +165,7 @@ type Evidence struct {
 	Locator          string `json:"locator"`
 	ClaimFingerprint string `json:"claim_fingerprint,omitempty"`
 	Summary          string `json:"summary,omitempty"`
+	External         bool   `json:"external,omitempty"`
 }
 
 type ClaimFingerprint struct {
@@ -177,9 +178,21 @@ type Adjudication struct {
 	Target                string             `json:"target"`
 	PrePatchContextSHA256 string             `json:"pre_patch_context_sha256"`
 	Claims                []ClaimFingerprint `json:"claims"`
-	SelectedSource        string             `json:"selected_source"`
+	SelectedSource        string             `json:"selected_source,omitempty"`
 	Evidence              []Evidence         `json:"evidence"`
 	Reason                string             `json:"reason"`
+	Patch                 *AdjudicationPatch `json:"patch,omitempty"`
+}
+
+// AdjudicationPatch refines the language-level representation of an already
+// reconciled wire claim. It deliberately does not alter framing: a bytes
+// patch changes a length-prefixed UTF-8-shaped node into the equivalent
+// length-prefixed arbitrary-byte node.
+type AdjudicationPatch struct {
+	Representation string `json:"representation"`
+	TypeID         string `json:"type_id,omitempty"`
+	Field          string `json:"field,omitempty"`
+	ContextTarget  string `json:"context_target,omitempty"`
 }
 
 type OverrideProof struct {

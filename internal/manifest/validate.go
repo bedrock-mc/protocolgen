@@ -330,9 +330,19 @@ func validateProvenance(provenance Provenance, sourceIDs map[string]bool, path s
 		previous = pin
 	}
 	for i, evidence := range provenance.Evidence {
-		if evidence.SourceID == "" || evidence.Locator == "" || !sourceIDs[evidence.SourceID] {
-			return fmt.Errorf("%s evidence[%d] has no pinned source locator", path, i)
+		if err := validateEvidence(evidence, sourceIDs, fmt.Sprintf("%s evidence[%d]", path, i)); err != nil {
+			return err
 		}
+	}
+	return nil
+}
+
+func validateEvidence(evidence Evidence, sourceIDs map[string]bool, path string) error {
+	if evidence.SourceID == "" || evidence.Locator == "" {
+		return fmt.Errorf("%s has no evidence source locator", path)
+	}
+	if !sourceIDs[evidence.SourceID] && !evidence.External {
+		return fmt.Errorf("%s cites unpinned source %q without external evidence marker", path, evidence.SourceID)
 	}
 	return nil
 }
@@ -340,26 +350,54 @@ func validateProvenance(provenance Provenance, sourceIDs map[string]bool, path s
 func validateAdjudications(m Manifest, sourceIDs map[string]bool) error {
 	seen := map[string]bool{}
 	for i, adjudication := range m.Adjudications {
-		if adjudication.ID == "" || adjudication.Target == "" || adjudication.PrePatchContextSHA256 == "" || adjudication.SelectedSource == "" || adjudication.Reason == "" {
+		if adjudication.ID == "" || adjudication.Target == "" || adjudication.PrePatchContextSHA256 == "" || adjudication.Reason == "" {
 			return fmt.Errorf("adjudications[%d] is incomplete", i)
 		}
 		if seen[adjudication.ID] {
 			return fmt.Errorf("duplicate adjudication %q", adjudication.ID)
 		}
 		seen[adjudication.ID] = true
-		if !sourceIDs[adjudication.SelectedSource] {
+		if adjudication.Patch == nil && adjudication.SelectedSource == "" {
+			return fmt.Errorf("adjudication %q does not select a source or declare a patch", adjudication.ID)
+		}
+		if adjudication.Patch != nil && adjudication.SelectedSource != "" {
+			return fmt.Errorf("adjudication %q representation patch cannot also select a source", adjudication.ID)
+		}
+		if adjudication.SelectedSource != "" && !sourceIDs[adjudication.SelectedSource] {
 			return fmt.Errorf("adjudication %q selects unknown source %q", adjudication.ID, adjudication.SelectedSource)
+		}
+		if adjudication.Patch != nil {
+			patch := adjudication.Patch
+			if patch.Representation != "bytes" {
+				return fmt.Errorf("adjudication %q has unsupported representation patch %q", adjudication.ID, patch.Representation)
+			}
+			if patch.TypeID == "" && patch.Field != "" || patch.TypeID != "" && patch.Field == "" {
+				return fmt.Errorf("adjudication %q representation patch must provide both type_id and field, or neither", adjudication.ID)
+			}
+			if patch.TypeID == "" && patch.ContextTarget != "" || patch.TypeID != "" && patch.ContextTarget == "" {
+				return fmt.Errorf("adjudication %q representation patch must provide context_target exactly for a typed field patch", adjudication.ID)
+			}
 		}
 		if len(adjudication.Claims) < 2 {
 			return fmt.Errorf("adjudication %q must fingerprint both source claims", adjudication.ID)
 		}
+		claimSources := map[string]bool{}
 		for _, claim := range adjudication.Claims {
 			if claim.Digest == "" || !sourceIDs[claim.SourceID] {
 				return fmt.Errorf("adjudication %q contains an incomplete claim fingerprint", adjudication.ID)
 			}
+			if claimSources[claim.SourceID] {
+				return fmt.Errorf("adjudication %q fingerprints source %q more than once", adjudication.ID, claim.SourceID)
+			}
+			claimSources[claim.SourceID] = true
 		}
 		if len(adjudication.Evidence) == 0 {
 			return fmt.Errorf("adjudication %q has no cited evidence", adjudication.ID)
+		}
+		for evidenceIndex, evidence := range adjudication.Evidence {
+			if err := validateEvidence(evidence, sourceIDs, fmt.Sprintf("adjudication %q evidence[%d]", adjudication.ID, evidenceIndex)); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
@@ -375,9 +413,9 @@ func validateOverrides(m Manifest, sourceIDs map[string]bool) error {
 			return fmt.Errorf("duplicate override proof %q", proof.ID)
 		}
 		seen[proof.ID] = true
-		for _, evidence := range proof.Evidence {
-			if evidence.SourceID == "" || evidence.Locator == "" || !sourceIDs[evidence.SourceID] {
-				return fmt.Errorf("override %q cites an unpinned evidence source", proof.ID)
+		for evidenceIndex, evidence := range proof.Evidence {
+			if err := validateEvidence(evidence, sourceIDs, fmt.Sprintf("override %q evidence[%d]", proof.ID, evidenceIndex)); err != nil {
+				return err
 			}
 		}
 	}

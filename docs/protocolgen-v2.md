@@ -59,7 +59,8 @@ not generation dependencies or hidden precedence rules.
 
 There are no confidence scores, majority votes, or implicit source precedence.
 Missing evidence is not agreement. Equal complete claims inherit only the
-sorted source pins. Different claims fail unless an adjudication contains:
+sorted source pins. Structural disagreements fail unless an adjudication
+contains:
 
 - a context hash over the target and the complete disagreement claim set;
 - a SHA-256 fingerprint for every competing source claim;
@@ -70,6 +71,20 @@ Changing any field name, semantic identity, locator, primitive shape, nested
 node, or source claim makes the fingerprint stale. The same rule applies to
 fingerprinted corrections. This is why source claims include the full node,
 not just a structural summary.
+
+Some disagreements are not source transcription errors. In particular, Mojang
+documentation and an Endstone dump can both faithfully describe a C++
+`std::string` while a third-party wire consumer proves that the field is an
+arbitrary byte buffer. These cases use a representation adjudication rather
+than selecting one source: the adjudication fingerprints the complete equal
+claims and context, cites external evidence, and carries a patch such as
+`{"representation":"bytes"}`. A typed patch also names the semantic type,
+field, and containing context target. The patch changes only the language-level
+representation; the explicit byte prefix and all wire framing remain intact.
+
+External evidence is marked `external: true` and is never treated as a source
+pin or generation input. This keeps the source lock reproducible while making
+the third-source basis for a representation refinement auditable.
 
 ## Commands
 

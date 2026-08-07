@@ -90,11 +90,19 @@ func Reconcile(target manifest.Target, results []claims.Result, adjudications []
 		return keys[i].Ordinal < keys[j].Ordinal
 	})
 
+	representationAdjudications, err := prepareRepresentationAdjudications(target, groups, adjudications)
+	if err != nil {
+		return manifest.Manifest{}, err
+	}
+
 	packets := map[uint32]*manifest.Packet{}
 	for id, metadata := range packetMetadataByID {
 		packets[id] = &manifest.Packet{ID: id, Name: metadata.Name, Direction: metadata.Direction}
 	}
 	usedAdjudications := map[string]bool{}
+	for id := range representationAdjudications {
+		usedAdjudications[id] = true
+	}
 	for _, key := range keys {
 		group := groups[key]
 		sort.SliceStable(group, func(i, j int) bool { return group[i].SourceID < group[j].SourceID })
@@ -131,6 +139,9 @@ func Reconcile(target manifest.Target, results []claims.Result, adjudications []
 	}
 	sort.Slice(packetsOut, func(i, j int) bool { return packetsOut[i].ID < packetsOut[j].ID })
 	sort.Slice(allPins, func(i, j int) bool { return allPins[i].ID < allPins[j].ID })
+	if err := applyRepresentationAdjudications(packetsOut, representationAdjudications); err != nil {
+		return manifest.Manifest{}, err
+	}
 
 	used := make([]manifest.Adjudication, 0, len(usedAdjudications))
 	for _, adjudication := range adjudications {
@@ -173,6 +184,9 @@ func selectClaim(target manifest.Target, group []claims.Claim, adjudications []m
 		return claims.Claim{}, nil, nil, "", err
 	}
 	for _, adjudication := range adjudications {
+		if adjudication.Patch != nil {
+			continue
+		}
 		if adjudication.Target != group[0].FieldPath {
 			continue
 		}
@@ -195,6 +209,262 @@ func selectClaim(target manifest.Target, group []claims.Claim, adjudications []m
 		return *selected, []string{selected.SourceID}, append([]manifest.Evidence(nil), adjudication.Evidence...), adjudication.ID, nil
 	}
 	return claims.Claim{}, nil, nil, "", fmt.Errorf("source claims for %s disagree; an evidenced fingerprinted adjudication is required", group[0].FieldPath)
+}
+
+func prepareRepresentationAdjudications(target manifest.Target, groups map[fieldKey][]claims.Claim, adjudications []manifest.Adjudication) (map[string]manifest.Adjudication, error) {
+	prepared := map[string]manifest.Adjudication{}
+	for _, adjudication := range adjudications {
+		if adjudication.Patch == nil {
+			continue
+		}
+		contextTarget := adjudication.Target
+		if adjudication.Patch.ContextTarget != "" {
+			contextTarget = adjudication.Patch.ContextTarget
+		}
+		group := claimsForFieldPath(groups, contextTarget)
+		if len(group) == 0 {
+			return nil, fmt.Errorf("representation adjudication %q has no source claims for context target %s", adjudication.ID, contextTarget)
+		}
+		sort.SliceStable(group, func(i, j int) bool { return group[i].SourceID < group[j].SourceID })
+		context, err := claims.ContextFingerprint(target, group)
+		if err != nil {
+			return nil, err
+		}
+		if adjudication.PrePatchContextSHA256 != context {
+			return nil, fmt.Errorf("stale representation adjudication %q for %s: pre-patch context fingerprint changed", adjudication.ID, adjudication.Target)
+		}
+		if err := matchClaimFingerprints(adjudication, group); err != nil {
+			return nil, fmt.Errorf("stale representation adjudication %q for %s: %w", adjudication.ID, adjudication.Target, err)
+		}
+		if adjudication.Patch.TypeID != "" {
+			found := false
+			for _, claim := range group {
+				if containsNamedField(claim.Encode, adjudication.Patch.Field) || claim.Decode != nil && containsNamedField(*claim.Decode, adjudication.Patch.Field) {
+					found = true
+					break
+				}
+			}
+			if !found {
+				return nil, fmt.Errorf("representation adjudication %q context has no concrete field %q", adjudication.ID, adjudication.Patch.Field)
+			}
+		}
+		prepared[adjudication.ID] = adjudication
+	}
+	return prepared, nil
+}
+
+func claimsForFieldPath(groups map[fieldKey][]claims.Claim, target string) []claims.Claim {
+	var result []claims.Claim
+	for _, group := range groups {
+		for _, claim := range group {
+			if claim.FieldPath == target {
+				result = append(result, claim)
+			}
+		}
+	}
+	return result
+}
+
+func containsNamedField(node manifest.Node, fieldName string) bool {
+	if node.Kind == manifest.KindStruct {
+		for _, field := range node.Fields {
+			if field.Name == fieldName {
+				return true
+			}
+			if containsNamedField(field.Encode, fieldName) || field.Decode != nil && containsNamedField(*field.Decode, fieldName) {
+				return true
+			}
+		}
+	}
+	for _, child := range node.Elements {
+		if containsNamedField(child, fieldName) {
+			return true
+		}
+	}
+	for _, child := range []*manifest.Node{node.Prefix, node.Element, node.Value, node.Key, node.Control, node.Default} {
+		if child != nil && containsNamedField(*child, fieldName) {
+			return true
+		}
+	}
+	for _, variant := range node.Variants {
+		if containsNamedField(variant.Encode, fieldName) || variant.Decode != nil && containsNamedField(*variant.Decode, fieldName) {
+			return true
+		}
+	}
+	for _, oneCase := range node.Cases {
+		for _, child := range append(append([]manifest.Node(nil), oneCase.Encode...), oneCase.Decode...) {
+			if containsNamedField(child, fieldName) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func applyRepresentationAdjudications(packets []manifest.Packet, adjudications map[string]manifest.Adjudication) error {
+	ordered := make([]manifest.Adjudication, 0, len(adjudications))
+	for _, adjudication := range adjudications {
+		ordered = append(ordered, adjudication)
+	}
+	sort.Slice(ordered, func(i, j int) bool { return ordered[i].ID < ordered[j].ID })
+	for _, adjudication := range ordered {
+		patch := adjudication.Patch
+		changed := 0
+		if patch.TypeID == "" {
+			for packetIndex := range packets {
+				for fieldIndex := range packets[packetIndex].Fields {
+					field := &packets[packetIndex].Fields[fieldIndex]
+					if packets[packetIndex].Name+"."+field.Name != adjudication.Target {
+						continue
+					}
+					if err := replaceWithBytes(&field.Encode); err != nil {
+						return fmt.Errorf("apply representation adjudication %q to %s: %w", adjudication.ID, adjudication.Target, err)
+					}
+					if field.Decode != nil {
+						if err := replaceWithBytes(field.Decode); err != nil {
+							return fmt.Errorf("apply representation adjudication %q to %s decode: %w", adjudication.ID, adjudication.Target, err)
+						}
+					}
+					field.Provenance.Evidence = append(field.Provenance.Evidence, adjudication.Evidence...)
+					changed++
+				}
+			}
+		} else {
+			for packetIndex := range packets {
+				for fieldIndex := range packets[packetIndex].Fields {
+					count, err := patchNamedType(&packets[packetIndex].Fields[fieldIndex].Encode, patch.TypeID, patch.Field, adjudication.Evidence)
+					if err != nil {
+						return fmt.Errorf("apply representation adjudication %q to %s: %w", adjudication.ID, adjudication.Target, err)
+					}
+					changed += count
+					if packets[packetIndex].Fields[fieldIndex].Decode != nil {
+						count, err := patchNamedType(packets[packetIndex].Fields[fieldIndex].Decode, patch.TypeID, patch.Field, adjudication.Evidence)
+						if err != nil {
+							return fmt.Errorf("apply representation adjudication %q to %s decode: %w", adjudication.ID, adjudication.Target, err)
+						}
+						changed += count
+					}
+				}
+			}
+		}
+		if changed == 0 {
+			return fmt.Errorf("representation adjudication %q did not match a generated node", adjudication.ID)
+		}
+	}
+	return nil
+}
+
+func patchNamedType(node *manifest.Node, typeID, fieldName string, evidence []manifest.Evidence) (int, error) {
+	if node == nil {
+		return 0, nil
+	}
+	changed := 0
+	if node.Kind == manifest.KindStruct && node.TypeID == typeID {
+		for fieldIndex := range node.Fields {
+			field := &node.Fields[fieldIndex]
+			if field.Name != fieldName {
+				continue
+			}
+			if err := replaceWithBytes(&field.Encode); err != nil {
+				return 0, err
+			}
+			if field.Decode != nil {
+				if err := replaceWithBytes(field.Decode); err != nil {
+					return 0, err
+				}
+			}
+			field.Provenance.Evidence = append(field.Provenance.Evidence, evidence...)
+			changed++
+		}
+	}
+	for childIndex := range node.Elements {
+		count, err := patchNamedType(&node.Elements[childIndex], typeID, fieldName, evidence)
+		if err != nil {
+			return 0, err
+		}
+		changed += count
+	}
+	for _, child := range []*manifest.Node{node.Prefix, node.Element, node.Value, node.Key, node.Control, node.Default} {
+		if child != nil {
+			count, err := patchNamedType(child, typeID, fieldName, evidence)
+			if err != nil {
+				return 0, err
+			}
+			changed += count
+		}
+	}
+	for variantIndex := range node.Variants {
+		count, err := patchNamedType(&node.Variants[variantIndex].Encode, typeID, fieldName, evidence)
+		if err != nil {
+			return 0, err
+		}
+		changed += count
+		if node.Variants[variantIndex].Decode != nil {
+			count, err := patchNamedType(node.Variants[variantIndex].Decode, typeID, fieldName, evidence)
+			if err != nil {
+				return 0, err
+			}
+			changed += count
+		}
+	}
+	for caseIndex := range node.Cases {
+		for childIndex := range node.Cases[caseIndex].Encode {
+			count, err := patchNamedType(&node.Cases[caseIndex].Encode[childIndex], typeID, fieldName, evidence)
+			if err != nil {
+				return 0, err
+			}
+			changed += count
+		}
+		for childIndex := range node.Cases[caseIndex].Decode {
+			count, err := patchNamedType(&node.Cases[caseIndex].Decode[childIndex], typeID, fieldName, evidence)
+			if err != nil {
+				return 0, err
+			}
+			changed += count
+		}
+	}
+	if node.Kind == manifest.KindStruct {
+		for fieldIndex := range node.Fields {
+			count, err := patchNamedType(&node.Fields[fieldIndex].Encode, typeID, fieldName, evidence)
+			if err != nil {
+				return 0, err
+			}
+			changed += count
+			if node.Fields[fieldIndex].Decode != nil {
+				count, err := patchNamedType(node.Fields[fieldIndex].Decode, typeID, fieldName, evidence)
+				if err != nil {
+					return 0, err
+				}
+				changed += count
+			}
+		}
+	}
+	return changed, nil
+}
+
+func replaceWithBytes(node *manifest.Node) error {
+	if node == nil {
+		return fmt.Errorf("nil representation node")
+	}
+	switch node.Kind {
+	case manifest.KindOptional, manifest.KindReserved, manifest.KindIgnored:
+		if node.Value == nil && node.Element == nil {
+			return fmt.Errorf("%s node has no wrapped value", node.Kind)
+		}
+		if node.Value != nil {
+			return replaceWithBytes(node.Value)
+		}
+		return replaceWithBytes(node.Element)
+	case manifest.KindString:
+		if node.Prefix == nil || node.Encoding != "utf8" || node.Representation != "text" {
+			return fmt.Errorf("string node is not the canonical UTF-8 representation")
+		}
+		prefix := *node.Prefix
+		*node = manifest.Bytes(prefix)
+		return nil
+	default:
+		return fmt.Errorf("expected string or wrapper, got %s", node.Kind)
+	}
 }
 
 func mergeClaimGroup(group []claims.Claim) (claims.Claim, []string, bool) {

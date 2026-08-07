@@ -38,6 +38,25 @@ func TestGenerateConsumesOnlyCanonicalManifest(t *testing.T) {
 	}
 }
 
+func TestGenerateMapsCanonicalBytesToByteSlice(t *testing.T) {
+	m := manifest.Manifest{
+		SchemaVersion: 2,
+		Target:        manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168},
+		Sources:       []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:bytes", MinecraftVersion: "fixture", ProtocolVersion: 2168}},
+		Packets: []manifest.Packet{{ID: 1, Name: "BytesPacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{
+			Ordinal: 0, Name: "Payload", Encode: manifest.Bytes(manifest.Primitive("var_u32")), Symmetry: manifest.Symmetric,
+			Provenance: manifest.Provenance{Pins: []string{"fixture"}},
+		}}}},
+	}
+	files, err := Generate(m, "wiregen")
+	if err != nil {
+		t.Fatalf("Generate: %v", err)
+	}
+	if !strings.Contains(files["bytes.go"], "Payload []byte") {
+		t.Fatalf("generated Go did not preserve bytes representation:\n%s", files["bytes.go"])
+	}
+}
+
 func TestGenerateFailsClosedForReachableUnresolvedNode(t *testing.T) {
 	m := manifest.Manifest{
 		SchemaVersion: 2,

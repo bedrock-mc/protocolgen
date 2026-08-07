@@ -214,3 +214,104 @@ func TestMergeOptionalWrapperAroundComplementaryConcreteShape(t *testing.T) {
 		t.Fatalf("mergeNode = %#v, %v; want optional concrete union", merged, ok)
 	}
 }
+
+func TestReconcileAppliesDirectRepresentationPatchToEqualClaims(t *testing.T) {
+	target := manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}
+	left := testClaim("endstone", manifest.String(manifest.Primitive("var_u32")))
+	right := testClaim("mojang", manifest.String(manifest.Primitive("var_u32")))
+	group := []claims.Claim{left, right}
+	context, err := claims.ContextFingerprint(target, group)
+	if err != nil {
+		t.Fatalf("ContextFingerprint: %v", err)
+	}
+	adj := manifest.Adjudication{
+		ID: "binary-vocabulary-value", Target: left.FieldPath, PrePatchContextSHA256: context,
+		Claims: []manifest.ClaimFingerprint{
+			{SourceID: left.SourceID, Digest: mustFingerprint(t, left)},
+			{SourceID: right.SourceID, Digest: mustFingerprint(t, right)},
+		},
+		Evidence: []manifest.Evidence{{SourceID: "gophertunnel", Locator: "minecraft/protocol/fixture.go:1", External: true}},
+		Reason:   "third-source wire consumer identifies an arbitrary byte buffer",
+		Patch:    &manifest.AdjudicationPatch{Representation: "bytes"},
+	}
+	m, err := Reconcile(target, []claims.Result{
+		{Pin: sourcePin("endstone"), Target: target, Claims: []claims.Claim{left}},
+		{Pin: sourcePin("mojang"), Target: target, Claims: []claims.Claim{right}},
+	}, []manifest.Adjudication{adj})
+	if err != nil {
+		t.Fatalf("Reconcile: %v", err)
+	}
+	field := m.Packets[0].Fields[0]
+	if field.Encode.Kind != manifest.KindBytes || field.Encode.Representation != "bytes" {
+		t.Fatalf("field = %#v, want bytes representation", field.Encode)
+	}
+	if len(field.Provenance.Evidence) != 1 || field.Provenance.Evidence[0].SourceID != "gophertunnel" {
+		t.Fatalf("evidence = %#v, want external third-source evidence", field.Provenance.Evidence)
+	}
+}
+
+func TestReconcileDoesNotUseRepresentationPatchForWireDisagreement(t *testing.T) {
+	target := manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}
+	left := testClaim("endstone", manifest.String(manifest.Primitive("var_u32")))
+	right := testClaim("mojang", manifest.Bytes(manifest.Primitive("var_u32")))
+	group := []claims.Claim{left, right}
+	context, err := claims.ContextFingerprint(target, group)
+	if err != nil {
+		t.Fatalf("ContextFingerprint: %v", err)
+	}
+	adj := manifest.Adjudication{
+		ID: "binary-wire-disagreement", Target: left.FieldPath, PrePatchContextSHA256: context,
+		Claims: []manifest.ClaimFingerprint{
+			{SourceID: left.SourceID, Digest: mustFingerprint(t, left)},
+			{SourceID: right.SourceID, Digest: mustFingerprint(t, right)},
+		},
+		Evidence: []manifest.Evidence{{SourceID: "gophertunnel", Locator: "minecraft/protocol/fixture.go:3", External: true}},
+		Reason:   "representation patches apply only to equal wire claims",
+		Patch:    &manifest.AdjudicationPatch{Representation: "bytes"},
+	}
+	_, err = Reconcile(target, []claims.Result{
+		{Pin: sourcePin("endstone"), Target: target, Claims: []claims.Claim{left}},
+		{Pin: sourcePin("mojang"), Target: target, Claims: []claims.Claim{right}},
+	}, []manifest.Adjudication{adj})
+	if err == nil || !strings.Contains(err.Error(), "adjudication") {
+		t.Fatalf("Reconcile error = %v, want structural disagreement failure", err)
+	}
+}
+
+func TestReconcileAppliesTypedRepresentationPatchInsideNestedOptional(t *testing.T) {
+	target := manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}
+	inner := manifest.Node{Kind: manifest.KindStruct, TypeID: "FixtureInner", Fields: []manifest.Field{{
+		Ordinal: 0, Name: "Payload", Encode: manifest.Optional(manifest.String(manifest.Primitive("var_u32"))),
+		Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"endstone"}},
+	}}}
+	left := testClaim("endstone", inner)
+	right := testClaim("mojang", inner)
+	group := []claims.Claim{left, right}
+	context, err := claims.ContextFingerprint(target, group)
+	if err != nil {
+		t.Fatalf("ContextFingerprint: %v", err)
+	}
+	adj := manifest.Adjudication{
+		ID: "binary-fixture-inner-payload", Target: "Vocabulary.Container.Payload", PrePatchContextSHA256: context,
+		Claims: []manifest.ClaimFingerprint{
+			{SourceID: left.SourceID, Digest: mustFingerprint(t, left)},
+			{SourceID: right.SourceID, Digest: mustFingerprint(t, right)},
+		},
+		Evidence: []manifest.Evidence{{SourceID: "gophertunnel", Locator: "minecraft/protocol/fixture.go:2", External: true}},
+		Reason:   "third-source wire consumer identifies an arbitrary byte buffer",
+		Patch: &manifest.AdjudicationPatch{
+			Representation: "bytes", TypeID: "FixtureInner", Field: "Payload", ContextTarget: left.FieldPath,
+		},
+	}
+	m, err := Reconcile(target, []claims.Result{
+		{Pin: sourcePin("endstone"), Target: target, Claims: []claims.Claim{left}},
+		{Pin: sourcePin("mojang"), Target: target, Claims: []claims.Claim{right}},
+	}, []manifest.Adjudication{adj})
+	if err != nil {
+		t.Fatalf("Reconcile: %v", err)
+	}
+	node := m.Packets[0].Fields[0].Encode
+	if node.Kind != manifest.KindStruct || node.Fields[0].Encode.Kind != manifest.KindOptional || node.Fields[0].Encode.Value == nil || node.Fields[0].Encode.Value.Kind != manifest.KindBytes {
+		t.Fatalf("nested node = %#v, want optional bytes payload", node)
+	}
+}
