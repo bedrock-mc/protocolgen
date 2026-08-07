@@ -1,0 +1,4 @@
+go test fuzz v1
+byte('\x01')
+uint32(347)
+[]byte("1\x000\x010")

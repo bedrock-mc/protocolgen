@@ -261,6 +261,13 @@
       "input_hex": "",
       "kind": "re-encoded-bytes",
       "rationale": "Oracle reads PlayerLocation's reserved varint into a discarded local and always re-encodes zero (player_location.go Marshal); generated preserves the wire value."
+    },
+    {
+      "packet": 347,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "decode-success",
+      "rationale": "Pinned fork carries a stale PresenceInfo shape (ExperienceName, WorldName, RichPresenceID in server_join_information.go:52) while both pinned sources independently describe ServerConfiguration::PresenceConfiguration as a single optional richPresenceId (Mojang presenceConfig.json, Endstone ServerConfiguration__PresenceConfiguration.json). The manifest layout is corroborated; the fork reads extra fields. Fix belongs in the fork."
     }
   ]
 }
