@@ -21,10 +21,6 @@ jobs:
 
   go:
     runs-on: ubuntu-latest
-    env:
-      GO_CACHE: ${{ runner.temp }}/protocolgen-go-cache
-      MOJANG_DIR: ${{ runner.temp }}/protocolgen-mojang/json
-      ENDSTONE_DIR: ${{ runner.temp }}/protocolgen-endstone
     steps:
       - uses: actions/checkout@v4
 
@@ -42,7 +38,11 @@ jobs:
           git -C "$RUNNER_TEMP/protocolgen-endstone" checkout --detach a25dea184832f8b0911d669bad400f43bedde1dd
 
       - name: Regenerate and verify
-        run: make verify
+        run: |
+          make verify \
+            GO_CACHE="$RUNNER_TEMP/protocolgen-go-cache" \
+            MOJANG_DIR="$RUNNER_TEMP/protocolgen-mojang/json" \
+            ENDSTONE_DIR="$RUNNER_TEMP/protocolgen-endstone"
 
       - name: Build
         run: go build ./...
