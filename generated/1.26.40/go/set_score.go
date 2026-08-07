@@ -9,8 +9,6 @@ type SetScore struct {
 // Marshal reads or writes SetScore using its canonical wire layout.
 func (x *SetScore) Marshal(io IO) {
 	FuncSlice(io, &x.ScoreInfo, io.Varuint32, func(value *SetScoreScoreInfoItem) {
-		item := *value
-		marshalSetScoreScoreInfoItem(io, &item)
-		*value = item
+		marshalSetScoreScoreInfoItem(io, value)
 	})
 }

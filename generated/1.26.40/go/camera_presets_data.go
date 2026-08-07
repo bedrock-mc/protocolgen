@@ -9,8 +9,6 @@ type CameraPresetsData struct {
 // Marshal reads or writes CameraPresetsData using its canonical wire layout.
 func (x *CameraPresetsData) Marshal(io IO) {
 	FuncSlice(io, &x.Presets, io.Varuint32, func(value *CameraPreset) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

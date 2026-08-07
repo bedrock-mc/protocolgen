@@ -13,9 +13,7 @@ type InventoryContent struct {
 func (x *InventoryContent) Marshal(io IO) {
 	io.Varuint32(&x.ContainerId)
 	FuncSlice(io, &x.Slots, io.Varuint32, func(value *CerealizerNetworkItemStackDescriptorSerializedData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	x.FullContainerName.Marshal(io)
 	x.StorageItem.Marshal(io)

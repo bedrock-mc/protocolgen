@@ -11,8 +11,6 @@ type MaterialReducerDataEntry struct {
 func (x *MaterialReducerDataEntry) Marshal(io IO) {
 	io.Varint32(&x.FromItemKey)
 	FuncSlice(io, &x.ItemIdsAndCounts, io.Varuint32, func(value *MaterialReducerEntryOutput) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

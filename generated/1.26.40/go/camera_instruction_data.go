@@ -17,36 +17,24 @@ type CameraInstructionData struct {
 // Marshal reads or writes CameraInstructionData using its canonical wire layout.
 func (x *CameraInstructionData) Marshal(io IO) {
 	OptionalFunc(io, &x.Set, func(value *CameraInstructionOptionsSetInstruction) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	OptionalFunc(io, &x.Clear, io.Bool)
 	OptionalFunc(io, &x.Fade, func(value *CameraInstructionOptionsFadeInstruction) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	OptionalFunc(io, &x.Target, func(value *CameraInstructionOptionsTargetInstruction) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	OptionalFunc(io, &x.RemoveTarget, io.Bool)
 	OptionalFunc(io, &x.FieldOfView, func(value *CameraInstructionOptionsFovInstruction) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	OptionalFunc(io, &x.Spline, func(value *CameraInstructionOptionsSplineInstruction) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	OptionalFunc(io, &x.AttachToEntity, func(value *CameraInstructionOptionsAttachToEntityInstruction) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	OptionalFunc(io, &x.DetachFromEntity, io.Bool)
 }

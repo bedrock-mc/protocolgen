@@ -17,8 +17,6 @@ func (x *WorldClockData) Marshal(io IO) {
 	io.Varint32(&x.Time)
 	io.Bool(&x.IsPaused)
 	FuncSlice(io, &x.TimeMarkers, io.Varuint32, func(value *TimeMarkerData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

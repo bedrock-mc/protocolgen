@@ -26,9 +26,7 @@ func (x *MovePlayer) Marshal(io IO) {
 	io.Bool(&x.OnGround)
 	io.ActorRuntimeID(&x.RidingRuntimeID)
 	OptionalFunc(io, &x.TeleportData, func(value *MovePlayerTeleportData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	io.PlayerInputTick(&x.Tick)
 }

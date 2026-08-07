@@ -11,9 +11,7 @@ type BiomeConditionalTransformationData struct {
 // Marshal reads or writes BiomeConditionalTransformationData using its canonical wire layout.
 func (x *BiomeConditionalTransformationData) Marshal(io IO) {
 	FuncSlice(io, &x.TransformsInto, io.Varuint32, func(value *BiomeWeightedData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	io.Uint16(&x.ConditionJson)
 	io.Uint32(&x.MinPassingNeighbors)

@@ -10,13 +10,9 @@ type CameraInstructionOptionsFadeInstruction struct {
 // Marshal reads or writes CameraInstructionOptionsFadeInstruction using its canonical wire layout.
 func (x *CameraInstructionOptionsFadeInstruction) Marshal(io IO) {
 	OptionalFunc(io, &x.Time, func(value *CameraInstructionOptionsFadeInstructionTimeOption) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	OptionalFunc(io, &x.Color, func(value *CameraInstructionOptionsFadeInstructionColorOption) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

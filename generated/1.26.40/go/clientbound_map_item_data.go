@@ -25,36 +25,24 @@ func (x *ClientboundMapItemData) Marshal(io IO) {
 	io.Bool(&x.IsLocked)
 	x.MapOrigin.Marshal(io)
 	OptionalFunc(io, &x.CreationMapIDs, func(value *[]int64) {
-		item := *value
-		FuncSlice(io, &item, io.Varuint32, io.ActorUniqueID)
-		*value = item
+		FuncSlice(io, value, io.Varuint32, io.ActorUniqueID)
 	})
 	OptionalFunc(io, &x.Scale, io.Int8)
 	OptionalFunc(io, &x.TrackedActorIDs, func(value *[]MapItemTrackedActorUniqueId) {
-		item := *value
-		FuncSlice(io, &item, io.Varuint32, func(value *MapItemTrackedActorUniqueId) {
-			item := *value
-			item.Marshal(io)
-			*value = item
+		FuncSlice(io, value, io.Varuint32, func(value *MapItemTrackedActorUniqueId) {
+			value.Marshal(io)
 		})
-		*value = item
 	})
 	OptionalFunc(io, &x.Decorations, func(value *[]MapDecoration) {
-		item := *value
-		FuncSlice(io, &item, io.Varuint32, func(value *MapDecoration) {
-			item := *value
-			item.Marshal(io)
-			*value = item
+		FuncSlice(io, value, io.Varuint32, func(value *MapDecoration) {
+			value.Marshal(io)
 		})
-		*value = item
 	})
 	OptionalFunc(io, &x.Width, io.Varint32)
 	OptionalFunc(io, &x.Height, io.Varint32)
 	OptionalFunc(io, &x.StartX, io.Varint32)
 	OptionalFunc(io, &x.StartY, io.Varint32)
 	OptionalFunc(io, &x.Pixels, func(value *[]uint32) {
-		item := *value
-		FuncSlice(io, &item, io.Varuint32, io.Uint32)
-		*value = item
+		FuncSlice(io, value, io.Varuint32, io.Uint32)
 	})
 }

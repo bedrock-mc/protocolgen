@@ -10,9 +10,7 @@ type SetHud struct {
 // Marshal reads or writes SetHud using its canonical wire layout.
 func (x *SetHud) Marshal(io IO) {
 	FuncSlice(io, &x.HudElement, io.Varuint32, func(value *HudElement) {
-		item := *value
-		IntegerFunc(&item, io.Varint32)
-		*value = item
+		IntegerFunc(value, io.Varint32)
 	})
 	IntegerFunc(&x.HudVisible, io.Varint32)
 }

@@ -17,8 +17,6 @@ func (x *ItemStackRequestCerealCraftRecipeAutoActionData) Marshal(io IO) {
 	x.RecipeNetId.Marshal(io)
 	io.Uint8(&x.NumberOfRequestedCrafts)
 	FuncSlice(io, &x.Ingredients, io.Varuint32, func(value *ItemStackRequestCerealRecipeIngredientData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

@@ -15,8 +15,6 @@ func (x *SubChunk) Marshal(io IO) {
 	x.DimensionType.Marshal(io)
 	x.CenterPos.Marshal(io)
 	FuncSlice(io, &x.SubChunkData, io.Varuint32, func(value *SubChunkSubChunkPacketData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

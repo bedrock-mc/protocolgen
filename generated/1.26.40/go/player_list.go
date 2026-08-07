@@ -9,8 +9,6 @@ type PlayerList struct {
 // Marshal reads or writes PlayerList using its canonical wire layout.
 func (x *PlayerList) Marshal(io IO) {
 	FuncSlice(io, &x.Entries, io.Varuint32, func(value *PlayerListEntriesItem) {
-		item := *value
-		marshalPlayerListEntriesItem(io, &item)
-		*value = item
+		marshalPlayerListEntriesItem(io, value)
 	})
 }

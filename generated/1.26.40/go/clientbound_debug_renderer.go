@@ -11,8 +11,6 @@ type ClientboundDebugRenderer struct {
 func (x *ClientboundDebugRenderer) Marshal(io IO) {
 	io.String(&x.Type)
 	OptionalFunc(io, &x.DebugMarkerData, func(value *ClientboundDebugRendererDebugMarkerData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

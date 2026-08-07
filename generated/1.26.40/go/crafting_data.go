@@ -20,59 +20,37 @@ type CraftingData struct {
 // Marshal reads or writes CraftingData using its canonical wire layout.
 func (x *CraftingData) Marshal(io IO) {
 	FuncSlice(io, &x.ShapedRecipes, io.Varuint32, func(value *ShapedRecipe) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	FuncSlice(io, &x.ShapelessRecipes, io.Varuint32, func(value *ShapelessRecipe) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	FuncSlice(io, &x.MultiRecipes, io.Varuint32, func(value *MultiRecipe) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	FuncSlice(io, &x.UserDataShapelessRecipes, io.Varuint32, func(value *ShapelessRecipe) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	FuncSlice(io, &x.ShapelessChemistryRecipes, io.Varuint32, func(value *ShapelessRecipe) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	FuncSlice(io, &x.ShapedChemistryRecipes, io.Varuint32, func(value *ShapedRecipe) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	FuncSlice(io, &x.SmithingTransformRecipes, io.Varuint32, func(value *SmithingTransformRecipe) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	FuncSlice(io, &x.SmithingTrimRecipes, io.Varuint32, func(value *SmithingTrimRecipe) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	FuncSlice(io, &x.PotionMixes, io.Varuint32, func(value *PotionMixDataEntry) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	FuncSlice(io, &x.ContainerMixes, io.Varuint32, func(value *ContainerMixDataEntry) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	FuncSlice(io, &x.MaterialReducers, io.Varuint32, func(value *MaterialReducerDataEntry) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	io.Bool(&x.ClearRecipes)
 }

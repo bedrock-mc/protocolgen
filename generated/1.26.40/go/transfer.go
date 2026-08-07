@@ -15,8 +15,6 @@ func (x *Transfer) Marshal(io IO) {
 	io.Uint16(&x.ServerPort)
 	io.Bool(&x.ReloadWorld)
 	OptionalFunc(io, &x.GatheringsConfiguration, func(value *ServerConfigurationGatheringsConfigurationJoinInfo) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

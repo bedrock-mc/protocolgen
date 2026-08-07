@@ -14,9 +14,7 @@ func (ItemStackRequestCerealCraftResultsActionData) isItemStackRequestCereal() {
 func (x *ItemStackRequestCerealCraftResultsActionData) Marshal(io IO) {
 	IntegerFunc(&x.ActionType, io.Uint8)
 	FuncSlice(io, &x.CraftResults, io.Varuint32, func(value *ItemStackRequestCerealNetworkItemInstanceDescriptorData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	io.Uint8(&x.NumCrafts)
 }

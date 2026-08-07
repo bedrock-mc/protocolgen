@@ -9,8 +9,6 @@ type SynchedActorDataCopyableDataList struct {
 // Marshal reads or writes SynchedActorDataCopyableDataList using its canonical wire layout.
 func (x *SynchedActorDataCopyableDataList) Marshal(io IO) {
 	FuncSlice(io, &x.Data, io.Varuint32, func(value *DataItemEntry) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

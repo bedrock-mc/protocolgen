@@ -9,8 +9,6 @@ type CameraSpline struct {
 // Marshal reads or writes CameraSpline using its canonical wire layout.
 func (x *CameraSpline) Marshal(io IO) {
 	FuncSlice(io, &x.CameraDataSplines, io.Varuint32, func(value *CameraSplineDefinition) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

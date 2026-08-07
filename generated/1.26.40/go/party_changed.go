@@ -9,8 +9,6 @@ type PartyChanged struct {
 // Marshal reads or writes PartyChanged using its canonical wire layout.
 func (x *PartyChanged) Marshal(io IO) {
 	OptionalFunc(io, &x.PartyInfo, func(value *PlayerPartyInfo) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

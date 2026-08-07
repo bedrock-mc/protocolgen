@@ -9,8 +9,6 @@ type BiomeSurfaceMaterialAdjustmentData struct {
 // Marshal reads or writes BiomeSurfaceMaterialAdjustmentData using its canonical wire layout.
 func (x *BiomeSurfaceMaterialAdjustmentData) Marshal(io IO) {
 	FuncSlice(io, &x.Adjustments, io.Varuint32, func(value *BiomeElementData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

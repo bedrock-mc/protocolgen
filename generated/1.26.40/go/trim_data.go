@@ -10,13 +10,9 @@ type TrimData struct {
 // Marshal reads or writes TrimData using its canonical wire layout.
 func (x *TrimData) Marshal(io IO) {
 	FuncSlice(io, &x.TrimPatternList, io.Varuint32, func(value *TrimPattern) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	FuncSlice(io, &x.TrimMaterialList, io.Varuint32, func(value *TrimMaterial) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

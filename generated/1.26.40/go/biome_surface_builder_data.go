@@ -16,27 +16,19 @@ type BiomeSurfaceBuilderData struct {
 // Marshal reads or writes BiomeSurfaceBuilderData using its canonical wire layout.
 func (x *BiomeSurfaceBuilderData) Marshal(io IO) {
 	OptionalFunc(io, &x.SurfaceMaterials, func(value *BiomeSurfaceMaterialData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	io.Bool(&x.HasDefaultOverworldSurface)
 	io.Bool(&x.HasSwampSurface)
 	io.Bool(&x.HasFrozenOceanSurface)
 	io.Bool(&x.HasTheEndSurface)
 	OptionalFunc(io, &x.MesaSurface, func(value *BiomeMesaSurfaceData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	OptionalFunc(io, &x.CappedSurface, func(value *BiomeCappedSurfaceData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	OptionalFunc(io, &x.NoiseGradientSurface, func(value *BiomeNoiseGradientSurfaceData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

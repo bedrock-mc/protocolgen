@@ -42,9 +42,7 @@ func (x *AddPlayer) Marshal(io IO) {
 	x.SynchedProperties.Marshal(io)
 	x.AbilitiesData.Marshal(io)
 	FuncSlice(io, &x.ActorLinks, io.Varuint32, func(value *ActorLink) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	io.String(&x.DeviceId)
 	IntegerFunc(&x.BuildPlatform, io.Int32)

@@ -19,58 +19,36 @@ type BiomeDefinitionChunkGenData struct {
 // Marshal reads or writes BiomeDefinitionChunkGenData using its canonical wire layout.
 func (x *BiomeDefinitionChunkGenData) Marshal(io IO) {
 	OptionalFunc(io, &x.Climate, func(value *BiomeClimateData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	OptionalFunc(io, &x.ConsolidatedFeatures, func(value *BiomeConsolidatedFeaturesData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	OptionalFunc(io, &x.MountainParams, func(value *BiomeMountainParamsData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	OptionalFunc(io, &x.SurfaceMaterialAdjustments, func(value *BiomeSurfaceMaterialAdjustmentData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	OptionalFunc(io, &x.OverworldGenRules, func(value *BiomeOverworldGenRulesData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	OptionalFunc(io, &x.MultinoiseGenRules, func(value *BiomeMultinoiseGenRulesData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	OptionalFunc(io, &x.LegacyWorldGenRules, func(value *BiomeLegacyWorldGenRulesData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	OptionalFunc(io, &x.ReplacementBiomes, func(value *BiomeReplacementsData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	OptionalFunc(io, &x.VillageType, func(value *VillageType) {
-		item := *value
-		IntegerFunc(&item, io.Uint8)
-		*value = item
+		IntegerFunc(value, io.Uint8)
 	})
 	OptionalFunc(io, &x.SurfaceBuilderData, func(value *BiomeSurfaceBuilderData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	OptionalFunc(io, &x.SubsurfaceBuilderData, func(value *BiomeSurfaceBuilderData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

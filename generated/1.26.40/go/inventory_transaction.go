@@ -12,17 +12,11 @@ type InventoryTransaction struct {
 func (x *InventoryTransaction) Marshal(io IO) {
 	x.LegacyRequestID.Marshal(io)
 	OptionalFunc(io, &x.LegacySetItemSlots, func(value *[]LegacySetSlot) {
-		item := *value
-		FuncSlice(io, &item, io.Varuint32, func(value *LegacySetSlot) {
-			item := *value
-			item.Marshal(io)
-			*value = item
+		FuncSlice(io, value, io.Varuint32, func(value *LegacySetSlot) {
+			value.Marshal(io)
 		})
-		*value = item
 	})
 	OptionalFunc(io, &x.Transaction, func(value *InventoryTransactionTransactionValue) {
-		item := *value
-		marshalInventoryTransactionTransactionValue(io, &item)
-		*value = item
+		marshalInventoryTransactionTransactionValue(io, value)
 	})
 }

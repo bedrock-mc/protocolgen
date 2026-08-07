@@ -18,15 +18,11 @@ type EASEnvironmentAttributeData struct {
 func (x *EASEnvironmentAttributeData) Marshal(io IO) {
 	io.String(&x.AttributeName)
 	OptionalFunc(io, &x.FromAttribute, func(value *EAS) {
-		item := *value
-		marshalEAS(io, &item)
-		*value = item
+		marshalEAS(io, value)
 	})
 	marshalEAS(io, &x.Attribute)
 	OptionalFunc(io, &x.ToAttribute, func(value *EAS) {
-		item := *value
-		marshalEAS(io, &item)
-		*value = item
+		marshalEAS(io, value)
 	})
 	io.Uint32(&x.CurrentTransitionTicks)
 	io.Uint32(&x.TotalTransitionTicks)

@@ -9,8 +9,6 @@ type ServerStoreInfo struct {
 // Marshal reads or writes ServerStoreInfo using its canonical wire layout.
 func (x *ServerStoreInfo) Marshal(io IO) {
 	OptionalFunc(io, &x.ClientStoreEntryPointConfiguration, func(value *ServerConfigurationClientStoreEntryPointConfiguration) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

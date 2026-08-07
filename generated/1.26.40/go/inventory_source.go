@@ -13,8 +13,6 @@ func (x *InventorySource) Marshal(io IO) {
 	IntegerFunc(&x.SourceType, io.Varuint32)
 	DoubleOptionalFunc(io, &x.ContainerID, io.Int8)
 	DoubleOptionalFunc(io, &x.BitFlags, func(value *InventorySourceInventorySourceFlags) {
-		item := *value
-		IntegerFunc(&item, io.Varuint32)
-		*value = item
+		IntegerFunc(value, io.Varuint32)
 	})
 }

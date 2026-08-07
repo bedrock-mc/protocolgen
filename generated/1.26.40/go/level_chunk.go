@@ -20,9 +20,7 @@ func (x *LevelChunk) Marshal(io IO) {
 	OptionalFunc(io, &x.ClientRequestSubChunkLimit, io.Varint32)
 	io.Bool(&x.CacheEnabled)
 	FuncSlice(io, &x.CacheMetadata, io.Varuint32, func(value *LevelChunkSubChunkMetadata) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	io.Bytes(&x.SerializedChunkData)
 }

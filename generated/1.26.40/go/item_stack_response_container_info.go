@@ -11,8 +11,6 @@ type ItemStackResponseContainerInfo struct {
 func (x *ItemStackResponseContainerInfo) Marshal(io IO) {
 	x.FullContainerName.Marshal(io)
 	FuncSlice(io, &x.Slots, io.Varuint32, func(value *ItemStackResponseSlotInfo) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

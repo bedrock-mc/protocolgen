@@ -17,9 +17,7 @@ func (x *ItemStackResponseSlotInfo) Marshal(io IO) {
 	io.Uint8(&x.Slot)
 	io.Uint8(&x.Amount)
 	DoubleOptionalFunc(io, &x.ItemStackNetId, func(value *TypedServerNetIdStructItemStackNetIdTagInt32T0) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	x.CustomName.Marshal(io)
 	io.Varint32(&x.DurabilityCorrection)

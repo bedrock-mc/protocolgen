@@ -11,8 +11,6 @@ type SetScoreboardIdentity struct {
 func (x *SetScoreboardIdentity) Marshal(io IO) {
 	IntegerFunc(&x.ScoreboardIdentityPacketType, io.Uint8)
 	FuncSlice(io, &x.ScoreboardIdentityInfo, io.Varuint32, func(value *ScoreboardIdentityPacketInfo) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

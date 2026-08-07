@@ -24,9 +24,7 @@ func (x *ServerWaypoint) Marshal(io IO) {
 	io.Uint32(&x.UpdateFlag)
 	OptionalFunc(io, &x.IsVisible, io.Bool)
 	OptionalFunc(io, &x.WorldPosition, func(value *WorldPosition) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	OptionalFunc(io, &x.TexturePath, io.String)
 	OptionalFunc(io, &x.IconSize, io.Vec2)

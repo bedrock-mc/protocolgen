@@ -11,8 +11,6 @@ func (SyncWorldClocksSyncStateData) isSyncWorldClocksData() {}
 // Marshal reads or writes SyncWorldClocksSyncStateData using its canonical wire layout.
 func (x *SyncWorldClocksSyncStateData) Marshal(io IO) {
 	FuncSlice(io, &x.ClockData, io.Varuint32, func(value *SyncWorldClockStateData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

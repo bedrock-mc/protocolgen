@@ -11,8 +11,6 @@ func (CerealDynamicValueMap) isCerealDynamicValue() {}
 // Marshal reads or writes CerealDynamicValueMap using its canonical wire layout.
 func (x *CerealDynamicValueMap) Marshal(io IO) {
 	OrderedMap(io, &x.Value, io.Varuint32, io.String, func(value *CerealDynamicValue) {
-		item := *value
-		marshalCerealDynamicValue(io, &item)
-		*value = item
+		marshalCerealDynamicValue(io, value)
 	})
 }

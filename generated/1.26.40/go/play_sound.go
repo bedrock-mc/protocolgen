@@ -19,8 +19,6 @@ func (x *PlaySound) Marshal(io IO) {
 	io.Float32(&x.Pitch)
 	io.Varint32(&x.LoopCount)
 	OptionalFunc(io, &x.ServerSoundHandle, func(value *ServerSoundHandle) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

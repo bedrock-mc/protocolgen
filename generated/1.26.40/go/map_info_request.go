@@ -11,8 +11,6 @@ type MapInfoRequest struct {
 func (x *MapInfoRequest) Marshal(io IO) {
 	io.ActorUniqueID(&x.MapUniqueID)
 	FuncSlice(io, &x.ClientPixelsList, io.Uint32, func(value *MapInfoRequestPacketAnonClientPixelsProxy) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

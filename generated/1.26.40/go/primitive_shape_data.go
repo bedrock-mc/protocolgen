@@ -26,9 +26,7 @@ type PrimitiveShapeData struct {
 func (x *PrimitiveShapeData) Marshal(io IO) {
 	io.Varuint64(&x.NetworkId)
 	OptionalFunc(io, &x.ShapeType, func(value *ScriptModuleMinecraftScriptPrimitiveShapeType) {
-		item := *value
-		IntegerFunc(&item, io.Uint8)
-		*value = item
+		IntegerFunc(value, io.Uint8)
 	})
 	OptionalFunc(io, &x.Location, io.Vec3)
 	OptionalFunc(io, &x.Scale, io.Float32)
@@ -37,9 +35,7 @@ func (x *PrimitiveShapeData) Marshal(io IO) {
 	OptionalFunc(io, &x.MaximumRenderDistance, io.Float32)
 	OptionalFunc(io, &x.Color, io.RGBA)
 	OptionalFunc(io, &x.DimensionID, func(value *DimensionType) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	OptionalFunc(io, &x.AttachedToEntityID, io.ActorUniqueID)
 	marshalPrimitiveShapeDataExtraShapeData(io, &x.ExtraShapeData)

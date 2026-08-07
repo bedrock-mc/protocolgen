@@ -9,8 +9,6 @@ type PlayerEnchantOptions struct {
 // Marshal reads or writes PlayerEnchantOptions using its canonical wire layout.
 func (x *PlayerEnchantOptions) Marshal(io IO) {
 	FuncSlice(io, &x.Options, io.Varuint32, func(value *ItemEnchantOption) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

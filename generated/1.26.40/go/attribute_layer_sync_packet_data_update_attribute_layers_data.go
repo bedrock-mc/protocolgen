@@ -11,8 +11,6 @@ func (AttributeLayerSyncPacketDataUpdateAttributeLayersData) isAttributeLayerSyn
 // Marshal reads or writes AttributeLayerSyncPacketDataUpdateAttributeLayersData using its canonical wire layout.
 func (x *AttributeLayerSyncPacketDataUpdateAttributeLayersData) Marshal(io IO) {
 	FuncSlice(io, &x.AttributeLayers, io.Varuint32, func(value *EASAttributeLayerData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

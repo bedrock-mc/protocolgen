@@ -14,9 +14,7 @@ func (x *CommandOutputData) Marshal(io IO) {
 	io.String(&x.OutputType)
 	io.Uint32(&x.SuccessCount)
 	FuncSlice(io, &x.OutputMessages, io.Varuint32, func(value *CommandOutputMessage) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	OptionalFunc(io, &x.DataSet, io.String)
 }

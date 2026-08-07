@@ -17,8 +17,6 @@ func (x *EASAttributeLayerData) Marshal(io IO) {
 	x.Dimension.Marshal(io)
 	x.Settings.Marshal(io)
 	FuncSlice(io, &x.Attributes, io.Varuint32, func(value *EASEnvironmentAttributeData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

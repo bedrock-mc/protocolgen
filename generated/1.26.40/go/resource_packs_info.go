@@ -19,8 +19,6 @@ func (x *ResourcePacksInfo) Marshal(io IO) {
 	io.Bool(&x.ForceDisableVibrantVisuals)
 	x.WorldTemplateIdAndVersion.Marshal(io)
 	FuncSlice(io, &x.ResourcePacks, io.Varuint32, func(value *PackInfoData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

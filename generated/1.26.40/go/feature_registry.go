@@ -9,8 +9,6 @@ type FeatureRegistry struct {
 // Marshal reads or writes FeatureRegistry using its canonical wire layout.
 func (x *FeatureRegistry) Marshal(io IO) {
 	FuncSlice(io, &x.FeaturesDataList, io.Varuint32, func(value *FeatureRegistryFeatureBinaryJsonFormat) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

@@ -45,6 +45,13 @@ func TestGenerateConsumesOnlyCanonicalManifest(t *testing.T) {
 
 func TestGenerateUsesRuntimeHelpersForEnumsAndOptionals(t *testing.T) {
 	value := manifest.Enum("u8", manifest.EnumValue{Name: "Zero", Value: 0}, manifest.EnumValue{Name: "One", Value: 1})
+	entry := manifest.Struct(manifest.Field{
+		Ordinal:    0,
+		Name:       "Value",
+		Encode:     manifest.Primitive("u8"),
+		Symmetry:   manifest.Symmetric,
+		Provenance: manifest.Provenance{Pins: []string{"fixture"}},
+	})
 	m := manifest.Manifest{
 		SchemaVersion: 2,
 		Target:        manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168},
@@ -52,6 +59,9 @@ func TestGenerateUsesRuntimeHelpersForEnumsAndOptionals(t *testing.T) {
 		Packets: []manifest.Packet{{ID: 1, Name: "HelperPacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{
 			{Ordinal: 0, Name: "Kind", Encode: value, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
 			{Ordinal: 1, Name: "Maybe", Encode: manifest.Optional(manifest.Primitive("i32le")), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+			{Ordinal: 2, Name: "Kinds", Encode: manifest.Array(manifest.Primitive("var_u32"), value), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+			{Ordinal: 3, Name: "Entries", Encode: manifest.Array(manifest.Primitive("var_u32"), entry), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+			{Ordinal: 4, Name: "MaybeKinds", Encode: manifest.Optional(manifest.Array(manifest.Primitive("var_u32"), value)), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
 		}}},
 	}
 	files, err := Generate(m, "wiregen")
@@ -62,6 +72,8 @@ func TestGenerateUsesRuntimeHelpersForEnumsAndOptionals(t *testing.T) {
 	for _, want := range []string{
 		"IntegerFunc(&x.Kind, io.Uint8)",
 		"OptionalFunc(io, &x.Maybe, io.Int32)",
+		"IntegerFunc(value, io.Uint8)",
+		"value.Marshal(io)",
 	} {
 		if !strings.Contains(source, want) {
 			t.Fatalf("generated packet omitted runtime helper %q:\n%s", want, source)
@@ -69,6 +81,12 @@ func TestGenerateUsesRuntimeHelpersForEnumsAndOptionals(t *testing.T) {
 	}
 	if strings.Contains(source, "io.Reading()") || strings.Contains(source, "unknown enum value") {
 		t.Fatalf("ordinary enum/optional mechanics leaked into packet code:\n%s", source)
+	}
+	if strings.Contains(source, "item := *value") || strings.Contains(source, "*value = item") {
+		t.Fatalf("callback codec copied values instead of using the supplied pointer:\n%s", source)
+	}
+	if !strings.Contains(source, "FuncSlice(io, value, io.Varuint32") {
+		t.Fatalf("nested collection callback did not retain the supplied slice pointer:\n%s", source)
 	}
 }
 

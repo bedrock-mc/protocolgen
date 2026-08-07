@@ -30,15 +30,11 @@ func (x *AddActor) Marshal(io IO) {
 	io.Float32(&x.YHeadRotation)
 	io.Float32(&x.YBodyRotation)
 	FuncSlice(io, &x.AttributesList, io.Varuint32, func(value *SyncedAttribute) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	x.ActorData.Marshal(io)
 	x.SynchedProperties.Marshal(io)
 	FuncSlice(io, &x.ActorLinks, io.Varuint32, func(value *ActorLink) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

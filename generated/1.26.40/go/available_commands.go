@@ -19,28 +19,18 @@ func (x *AvailableCommands) Marshal(io IO) {
 	FuncSlice(io, &x.ChainedSubcommandValues, io.Varuint32, io.String)
 	FuncSlice(io, &x.PostFixes, io.Varuint32, io.String)
 	FuncSlice(io, &x.EnumData, io.Varuint32, func(value *AvailableCommandsEnumData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	FuncSlice(io, &x.ChainedSubcommandData, io.Varuint32, func(value *AvailableCommandsChainedSubcommandData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	FuncSlice(io, &x.Commands, io.Varuint32, func(value *AvailableCommandsPacketCommandData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	FuncSlice(io, &x.SoftEnums, io.Varuint32, func(value *AvailableCommandsSoftEnumData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	FuncSlice(io, &x.Constraints, io.Varuint32, func(value *AvailableCommandsConstrainedValueData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

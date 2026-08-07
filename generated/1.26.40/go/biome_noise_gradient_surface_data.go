@@ -12,9 +12,7 @@ type BiomeNoiseGradientSurfaceData struct {
 func (x *BiomeNoiseGradientSurfaceData) Marshal(io IO) {
 	FuncSlice(io, &x.NonReplaceableBlocks, io.Varuint32, io.Uint32)
 	FuncSlice(io, &x.GradientBlocks, io.Varuint32, func(value *SerializedNoiseBlockSpecifier) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	x.Noise.Marshal(io)
 }

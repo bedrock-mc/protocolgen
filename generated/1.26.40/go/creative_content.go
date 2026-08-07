@@ -10,13 +10,9 @@ type CreativeContent struct {
 // Marshal reads or writes CreativeContent using its canonical wire layout.
 func (x *CreativeContent) Marshal(io IO) {
 	FuncSlice(io, &x.Groups, io.Varuint32, func(value *CreativeGroupInfo) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	FuncSlice(io, &x.Entries, io.Varuint32, func(value *CreativeItemEntry) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

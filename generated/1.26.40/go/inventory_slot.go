@@ -15,14 +15,10 @@ func (x *InventorySlot) Marshal(io IO) {
 	io.Uint8(&x.ContainerId)
 	io.Varuint32(&x.Slot)
 	OptionalFunc(io, &x.FullContainerName, func(value *FullContainerName) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	OptionalFunc(io, &x.StorageItem, func(value *CerealizerNetworkItemStackDescriptorSerializedData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	x.Item.Marshal(io)
 }

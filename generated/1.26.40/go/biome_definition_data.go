@@ -26,13 +26,9 @@ func (x *BiomeDefinitionData) Marshal(io IO) {
 	io.Int32(&x.MapWaterColorARGB)
 	io.Bool(&x.Rain)
 	OptionalFunc(io, &x.Tags, func(value *BiomeTagsData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	OptionalFunc(io, &x.ChunkGenData, func(value *BiomeDefinitionChunkGenData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

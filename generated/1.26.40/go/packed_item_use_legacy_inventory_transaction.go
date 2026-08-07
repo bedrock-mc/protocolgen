@@ -12,17 +12,11 @@ type PackedItemUseLegacyInventoryTransaction struct {
 func (x *PackedItemUseLegacyInventoryTransaction) Marshal(io IO) {
 	x.LegacyRequestID.Marshal(io)
 	OptionalFunc(io, &x.LegacySetItemSlots, func(value *[]LegacySetSlot) {
-		item := *value
-		FuncSlice(io, &item, io.Varuint32, func(value *LegacySetSlot) {
-			item := *value
-			item.Marshal(io)
-			*value = item
+		FuncSlice(io, value, io.Varuint32, func(value *LegacySetSlot) {
+			value.Marshal(io)
 		})
-		*value = item
 	})
 	OptionalFunc(io, &x.ItemUseTransaction, func(value *ItemUseInventoryTransaction) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

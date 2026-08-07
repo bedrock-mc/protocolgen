@@ -33,13 +33,9 @@ func (x *PlayerAuthInput) Marshal(io IO) {
 	io.Vec2(&x.MoveVector)
 	io.Float32(&x.PlayerHeadRotation)
 	OptionalFunc(io, &x.InputData, func(value *[]PlayerAuthInputInputData) {
-		item := *value
-		FuncSlice(io, &item, io.Varuint32, func(value *PlayerAuthInputInputData) {
-			item := *value
-			IntegerFunc(&item, io.Varint32)
-			*value = item
+		FuncSlice(io, value, io.Varuint32, func(value *PlayerAuthInputInputData) {
+			IntegerFunc(value, io.Varint32)
 		})
-		*value = item
 	})
 	IntegerFunc(&x.InputMode, io.Varuint32)
 	IntegerFunc(&x.PlayMode, io.Varuint32)
@@ -48,23 +44,15 @@ func (x *PlayerAuthInput) Marshal(io IO) {
 	io.PlayerInputTick(&x.ClientTick)
 	io.Vec3(&x.PosDelta)
 	DoubleOptionalFunc(io, &x.ItemUseTransaction, func(value *PackedItemUseLegacyInventoryTransaction) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	DoubleOptionalFunc(io, &x.ItemStackRequest, func(value *ItemStackRequestCerealRequestData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	DoubleOptionalFunc(io, &x.PlayerBlockActions, func(value *[]PlayerBlockActionData) {
-		item := *value
-		FuncSlice(io, &item, io.Varuint32, func(value *PlayerBlockActionData) {
-			item := *value
-			item.Marshal(io)
-			*value = item
+		FuncSlice(io, value, io.Varuint32, func(value *PlayerBlockActionData) {
+			value.Marshal(io)
 		})
-		*value = item
 	})
 	DoubleOptionalFunc(io, &x.VehicleRotation, io.Vec2)
 	DoubleOptionalFunc(io, &x.ClientPredictedVehicle, io.ActorUniqueID)

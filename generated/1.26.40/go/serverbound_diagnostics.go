@@ -31,28 +31,18 @@ func (x *ServerboundDiagnostics) Marshal(io IO) {
 	io.Float32(&x.AvgRemainderTimePercent)
 	io.Float32(&x.AvgUnaccountedTimePercent)
 	FuncSlice(io, &x.MemoryCategoryValues, io.Varuint32, func(value *MemoryMemoryCategoryCounter) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	FuncSlice(io, &x.EntityDiagnostics, io.Varuint32, func(value *ECSProfilingDiagnosticsEntityDiagnosticTimingInfo) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	FuncSlice(io, &x.SystemDiagnostics, io.Varuint32, func(value *ECSProfilingDiagnosticsSystemDiagnosticTimingInfo) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	FuncSlice(io, &x.SystemCategories, io.Varuint32, func(value *ECSProfilingDiagnosticsSystemCategory) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	FuncSlice(io, &x.WhiskerScopes, io.Varuint32, func(value *BedrockProfileWhiskerDiagnosticsScopeDataSummary) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

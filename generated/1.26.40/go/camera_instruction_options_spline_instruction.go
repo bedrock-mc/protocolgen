@@ -20,14 +20,10 @@ func (x *CameraInstructionOptionsSplineInstruction) Marshal(io IO) {
 	io.Uint8(&x.Type)
 	FuncSlice(io, &x.Curve, io.Varuint32, io.Vec3)
 	FuncSlice(io, &x.ProgressKeyFrames, io.Varuint32, func(value *CameraInstructionOptionsSplineInstructionSplineProgressOption) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	FuncSlice(io, &x.RotationOption, io.Varuint32, func(value *CameraInstructionOptionsSplineInstructionSplineRotationOption) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	io.String(&x.SplineIdentifier)
 	io.Bool(&x.LoadFromJson)

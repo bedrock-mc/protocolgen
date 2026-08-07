@@ -10,9 +10,7 @@ type BiomeDefinitionList struct {
 // Marshal reads or writes BiomeDefinitionList using its canonical wire layout.
 func (x *BiomeDefinitionList) Marshal(io IO) {
 	OrderedMap(io, &x.MapOfBiomeNamesToData, io.Varuint32, io.Uint16, func(value *BiomeDefinitionData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	x.StringList.Marshal(io)
 }

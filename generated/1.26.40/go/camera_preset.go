@@ -50,19 +50,13 @@ func (x *CameraPreset) Marshal(io IO) {
 	OptionalFunc(io, &x.YawLimitMin, io.Float32)
 	OptionalFunc(io, &x.YawLimitMax, io.Float32)
 	OptionalFunc(io, &x.Listener, func(value *CameraPresetAudioListener) {
-		item := *value
-		IntegerFunc(&item, io.Uint8)
-		*value = item
+		IntegerFunc(value, io.Uint8)
 	})
 	OptionalFunc(io, &x.PlayerEffects, io.Bool)
 	OptionalFunc(io, &x.AimAssist, func(value *CameraAimAssistCommandPresetDefinition) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	OptionalFunc(io, &x.ControlScheme, func(value *ControlSchemeScheme) {
-		item := *value
-		IntegerFunc(&item, io.Uint8)
-		*value = item
+		IntegerFunc(value, io.Uint8)
 	})
 }

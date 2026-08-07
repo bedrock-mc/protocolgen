@@ -13,9 +13,7 @@ type ItemStackRequestCerealRequestData struct {
 func (x *ItemStackRequestCerealRequestData) Marshal(io IO) {
 	x.ClientRequestId.Marshal(io)
 	FuncSlice(io, &x.Actions, io.Varuint32, func(value *ItemStackRequestCereal) {
-		item := *value
-		marshalItemStackRequestCereal(io, &item)
-		*value = item
+		marshalItemStackRequestCereal(io, value)
 	})
 	FuncSlice(io, &x.StringsToFilter, io.Varuint32, io.String)
 	IntegerFunc(&x.StringsToFilterOrigin, io.Int32)

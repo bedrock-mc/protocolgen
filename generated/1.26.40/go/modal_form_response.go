@@ -13,8 +13,6 @@ func (x *ModalFormResponse) Marshal(io IO) {
 	io.Varuint32(&x.FormID)
 	OptionalFunc(io, &x.JSONResponse, io.String)
 	OptionalFunc(io, &x.FormCancelReason, func(value *ModalFormCancelReason) {
-		item := *value
-		IntegerFunc(&item, io.Uint8)
-		*value = item
+		IntegerFunc(value, io.Uint8)
 	})
 }

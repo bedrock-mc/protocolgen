@@ -19,22 +19,16 @@ type ShapelessRecipe struct {
 func (x *ShapelessRecipe) Marshal(io IO) {
 	io.String(&x.RecipeId)
 	FuncSlice(io, &x.Ingredients, io.Varuint32, func(value *CerealizerRecipeIngredientSerializedData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	FuncSlice(io, &x.Results, io.Varuint32, func(value *CerealizerNetworkItemInstanceDescriptorSerializedData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	io.UUID(&x.UUID)
 	io.String(&x.Tag)
 	io.Varint32(&x.Priority)
 	OptionalFunc(io, &x.UnlockingRequirement, func(value *CerealizerRecipeUnlockingRequirementSerializedData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	x.NetId.Marshal(io)
 }

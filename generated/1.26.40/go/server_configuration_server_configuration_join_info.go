@@ -11,18 +11,12 @@ type ServerConfigurationServerConfigurationJoinInfo struct {
 // Marshal reads or writes ServerConfigurationServerConfigurationJoinInfo using its canonical wire layout.
 func (x *ServerConfigurationServerConfigurationJoinInfo) Marshal(io IO) {
 	OptionalFunc(io, &x.Gathering, func(value *ServerConfigurationGatheringsConfigurationJoinInfo) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	OptionalFunc(io, &x.ClientStoreEntryPoint, func(value *ServerConfigurationClientStoreEntryPointConfiguration) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	OptionalFunc(io, &x.Presence, func(value *ServerConfigurationPresenceConfiguration) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

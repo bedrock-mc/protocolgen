@@ -9,8 +9,6 @@ type PrimitiveShapes struct {
 // Marshal reads or writes PrimitiveShapes using its canonical wire layout.
 func (x *PrimitiveShapes) Marshal(io IO) {
 	FuncSlice(io, &x.ArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemoved, io.Varuint32, func(value *PrimitiveShapeData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

@@ -12,9 +12,7 @@ type UpdateAttributes struct {
 func (x *UpdateAttributes) Marshal(io IO) {
 	io.ActorRuntimeID(&x.TargetRuntimeID)
 	FuncSlice(io, &x.AttributeList, io.Varuint32, func(value *AttributeData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	io.PlayerInputTick(&x.Tick)
 }

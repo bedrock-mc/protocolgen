@@ -9,8 +9,6 @@ type ItemStackResponse struct {
 // Marshal reads or writes ItemStackResponse using its canonical wire layout.
 func (x *ItemStackResponse) Marshal(io IO) {
 	FuncSlice(io, &x.Responses, io.Varuint32, func(value *ItemStackResponseInfo) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

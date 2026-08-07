@@ -9,8 +9,6 @@ type CameraAimAssistActorPriority struct {
 // Marshal reads or writes CameraAimAssistActorPriority using its canonical wire layout.
 func (x *CameraAimAssistActorPriority) Marshal(io IO) {
 	FuncSlice(io, &x.CameraAimAssistActorPriorityList, io.Varuint32, func(value *CameraAimAssistActorPriorityPriorityData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

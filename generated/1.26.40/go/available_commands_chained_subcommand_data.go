@@ -11,8 +11,6 @@ type AvailableCommandsChainedSubcommandData struct {
 func (x *AvailableCommandsChainedSubcommandData) Marshal(io IO) {
 	io.String(&x.Name)
 	FuncSlice(io, &x.SubCommandValues, io.Varuint32, func(value *AvailableCommandsChainedSubcommandRelationship) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

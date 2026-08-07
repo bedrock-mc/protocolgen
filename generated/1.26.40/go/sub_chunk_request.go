@@ -12,9 +12,7 @@ type SubChunkRequest struct {
 func (x *SubChunkRequest) Marshal(io IO) {
 	x.DimensionType.Marshal(io)
 	FuncSlice(io, &x.SubChunkPositionOffsetList, io.Varuint32, func(value *SubChunkSubChunkPosOffset) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	x.CenterPos.Marshal(io)
 }

@@ -17,18 +17,12 @@ func (x *CameraSplineDefinition) Marshal(io IO) {
 	io.Float32(&x.TotalTime)
 	io.String(&x.SplineType)
 	FuncSlice(io, &x.ControlPoints, io.Varuint32, func(value *CameraSplineControlPoint) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	FuncSlice(io, &x.ProgressKeyFrames, io.Varuint32, func(value *CameraSplineProgressKeyFrame) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	FuncSlice(io, &x.RotationKeyFrames, io.Varuint32, func(value *CameraSplineRotationKeyFrame) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

@@ -24,15 +24,11 @@ func (x *EducationLevelSettings) Marshal(io IO) {
 	io.String(&x.PostProcessFilter)
 	io.String(&x.ScreenshotBorderResourcePath)
 	OptionalFunc(io, &x.AgentCapabilities, func(value *AgentCapabilities) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	x.LocalSettings.Marshal(io)
 	io.Bool(&x.DeprecatedAlwaysFalse)
 	OptionalFunc(io, &x.ExternalLinkSettings, func(value *ExternalLinkSettings) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

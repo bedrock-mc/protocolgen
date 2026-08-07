@@ -13,8 +13,6 @@ func (SyncWorldClocksAddTimeMarkerData) isSyncWorldClocksData() {}
 func (x *SyncWorldClocksAddTimeMarkerData) Marshal(io IO) {
 	io.Varuint64(&x.ClockId)
 	FuncSlice(io, &x.TimeMarkers, io.Varuint32, func(value *TimeMarkerData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

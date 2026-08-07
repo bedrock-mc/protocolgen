@@ -36,9 +36,7 @@ func (x *SerializedSkinRef) Marshal(io IO) {
 	io.String(&x.ResourcePatch)
 	x.ImageData.Marshal(io)
 	FuncSlice(io, &x.AnimatedImageData, io.Varuint32, func(value *AnimatedImageData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	x.CapeImageData.Marshal(io)
 	io.String(&x.GeometryData)
@@ -49,14 +47,10 @@ func (x *SerializedSkinRef) Marshal(io IO) {
 	IntegerFunc(&x.ArmSize, io.Uint8)
 	io.RGBA(&x.SkinColor)
 	FuncSlice(io, &x.PersonaPieces, io.Varuint32, func(value *SerializedPersonaPieceHandle) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	OrderedMap(io, &x.PieceTintColors, io.Varuint32, io.String, func(value *TintMapColor) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	io.Bool(&x.IsPremium)
 	io.Bool(&x.IsPersona)

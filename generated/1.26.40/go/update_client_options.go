@@ -10,9 +10,7 @@ type UpdateClientOptions struct {
 // Marshal reads or writes UpdateClientOptions using its canonical wire layout.
 func (x *UpdateClientOptions) Marshal(io IO) {
 	OptionalFunc(io, &x.GraphicsModeChange, func(value *GraphicsMode) {
-		item := *value
-		IntegerFunc(&item, io.Uint8)
-		*value = item
+		IntegerFunc(value, io.Uint8)
 	})
 	OptionalFunc(io, &x.FilterProfanityChange, io.Bool)
 }

@@ -15,9 +15,7 @@ type CameraAimAssistCommandPresetDefinition struct {
 func (x *CameraAimAssistCommandPresetDefinition) Marshal(io IO) {
 	OptionalFunc(io, &x.PresetId, io.String)
 	OptionalFunc(io, &x.TargetMode, func(value *CameraAimAssistTargetMode) {
-		item := *value
-		IntegerFunc(&item, io.Uint8)
-		*value = item
+		IntegerFunc(value, io.Uint8)
 	})
 	OptionalFunc(io, &x.ViewAngle, io.Vec2)
 	OptionalFunc(io, &x.Distance, io.Float32)

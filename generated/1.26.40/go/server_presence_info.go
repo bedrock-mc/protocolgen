@@ -9,8 +9,6 @@ type ServerPresenceInfo struct {
 // Marshal reads or writes ServerPresenceInfo using its canonical wire layout.
 func (x *ServerPresenceInfo) Marshal(io IO) {
 	OptionalFunc(io, &x.PresenceConfiguration, func(value *ServerConfigurationPresenceConfiguration) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

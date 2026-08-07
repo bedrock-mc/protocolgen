@@ -13,8 +13,6 @@ func (x *MapItemTrackedActorUniqueId) Marshal(io IO) {
 	IntegerFunc(&x.Type, io.Int32)
 	OptionalFunc(io, &x.EntityID, io.ActorUniqueID)
 	OptionalFunc(io, &x.BlockPosition, func(value *BlockPos) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

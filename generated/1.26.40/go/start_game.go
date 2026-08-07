@@ -51,9 +51,7 @@ func (x *StartGame) Marshal(io IO) {
 	io.Uint64(&x.LevelCurrentTime)
 	io.Varint32(&x.EnchantmentSeed)
 	FuncSlice(io, &x.BlockProperties, io.Varuint32, func(value *ServerBlockProperty) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	io.String(&x.MultiplayerCorrelationId)
 	io.Bool(&x.EnableItemStackNetManager)
@@ -65,9 +63,7 @@ func (x *StartGame) Marshal(io IO) {
 	io.Bool(&x.BlockNetworkIdsAreHashes)
 	x.NetworkPermissions.Marshal(io)
 	OptionalFunc(io, &x.ServerConfigurationJoinInfo, func(value *ServerConfigurationServerConfigurationJoinInfo) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	x.ServerTelemetryData.Marshal(io)
 }

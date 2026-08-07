@@ -14,9 +14,7 @@ type ResourcePackStack struct {
 func (x *ResourcePackStack) Marshal(io IO) {
 	io.Bool(&x.TexturePackRequired)
 	FuncSlice(io, &x.TexturePackList, io.Varuint32, func(value *PackInstanceId) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 	io.String(&x.BaseGameVersion)
 	x.Experiments.Marshal(io)

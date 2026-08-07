@@ -11,8 +11,6 @@ type AvailableCommandsOverloadData struct {
 func (x *AvailableCommandsOverloadData) Marshal(io IO) {
 	io.Bool(&x.IsChaining)
 	FuncSlice(io, &x.ParameterData, io.Varuint32, func(value *AvailableCommandsParamData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

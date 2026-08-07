@@ -12,9 +12,7 @@ func (x *ItemEnchants) Marshal(io IO) {
 	io.Int32(&x.Slot)
 	for index1 := range x.ItemEnchants {
 		FuncSlice(io, &x.ItemEnchants[index1], io.Varuint32, func(value *EnchantmentInstance) {
-			item := *value
-			item.Marshal(io)
-			*value = item
+			value.Marshal(io)
 		})
 	}
 }

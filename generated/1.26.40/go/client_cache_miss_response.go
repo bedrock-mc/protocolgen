@@ -9,8 +9,6 @@ type ClientCacheMissResponse struct {
 // Marshal reads or writes ClientCacheMissResponse using its canonical wire layout.
 func (x *ClientCacheMissResponse) Marshal(io IO) {
 	FuncSlice(io, &x.MissingBlobs, io.Varuint32, func(value *MissingBlobData) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

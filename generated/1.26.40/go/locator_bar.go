@@ -9,8 +9,6 @@ type LocatorBar struct {
 // Marshal reads or writes LocatorBar using its canonical wire layout.
 func (x *LocatorBar) Marshal(io IO) {
 	FuncSlice(io, &x.Waypoints, io.Varuint32, func(value *LocatorBarWaypoint) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

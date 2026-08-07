@@ -9,8 +9,6 @@ type PlayerArmorDamage struct {
 // Marshal reads or writes PlayerArmorDamage using its canonical wire layout.
 func (x *PlayerArmorDamage) Marshal(io IO) {
 	FuncSlice(io, &x.ArmorSlotAndDamagePairs, io.Varuint32, func(value *ArmorSlotAndDamagePair) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

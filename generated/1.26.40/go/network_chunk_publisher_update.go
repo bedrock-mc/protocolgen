@@ -13,8 +13,6 @@ func (x *NetworkChunkPublisherUpdate) Marshal(io IO) {
 	x.NewPositionForView.Marshal(io)
 	io.Varuint32(&x.NewRadiusForView)
 	FuncSlice(io, &x.ServerBuiltChunksList, io.Uint32, func(value *ChunkPos) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

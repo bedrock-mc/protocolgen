@@ -9,8 +9,6 @@ type DimensionData struct {
 // Marshal reads or writes DimensionData using its canonical wire layout.
 func (x *DimensionData) Marshal(io IO) {
 	OrderedMap(io, &x.Definitions, io.Varuint32, io.String, func(value *DimensionDefinition) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

@@ -23,8 +23,6 @@ func (x *AttributeData) Marshal(io IO) {
 	io.Float32(&x.DefaultValue)
 	io.String(&x.Name)
 	FuncSlice(io, &x.Modifiers, io.Varuint32, func(value *AttributeModifier) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }

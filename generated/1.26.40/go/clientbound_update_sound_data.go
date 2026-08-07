@@ -17,38 +17,24 @@ type ClientboundUpdateSoundData struct {
 func (x *ClientboundUpdateSoundData) Marshal(io IO) {
 	x.ServerSoundHandle.Marshal(io)
 	OptionalFunc(io, &x.Stop, func(value *SoundDataEvent) {
-		item := *value
-		marshalSoundDataEvent(io, &item)
-		*value = item
+		marshalSoundDataEvent(io, value)
 	})
 	OptionalFunc(io, &x.SetVolume, func(value *SoundDataEvent) {
-		item := *value
-		marshalSoundDataEvent(io, &item)
-		*value = item
+		marshalSoundDataEvent(io, value)
 	})
 	OptionalFunc(io, &x.SetPitch, func(value *SoundDataEvent) {
-		item := *value
-		marshalSoundDataEvent(io, &item)
-		*value = item
+		marshalSoundDataEvent(io, value)
 	})
 	OptionalFunc(io, &x.Fade, func(value *SoundDataEvent) {
-		item := *value
-		marshalSoundDataEvent(io, &item)
-		*value = item
+		marshalSoundDataEvent(io, value)
 	})
 	OptionalFunc(io, &x.SeekTo, func(value *SoundDataEvent) {
-		item := *value
-		marshalSoundDataEvent(io, &item)
-		*value = item
+		marshalSoundDataEvent(io, value)
 	})
 	OptionalFunc(io, &x.Pause, func(value *SoundDataEvent) {
-		item := *value
-		marshalSoundDataEvent(io, &item)
-		*value = item
+		marshalSoundDataEvent(io, value)
 	})
 	OptionalFunc(io, &x.Resume, func(value *SoundDataEvent) {
-		item := *value
-		marshalSoundDataEvent(io, &item)
-		*value = item
+		marshalSoundDataEvent(io, value)
 	})
 }

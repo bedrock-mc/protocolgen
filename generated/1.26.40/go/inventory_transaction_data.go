@@ -9,12 +9,8 @@ type InventoryTransactionData struct {
 // Marshal reads or writes InventoryTransactionData using its canonical wire layout.
 func (x *InventoryTransactionData) Marshal(io IO) {
 	OptionalFunc(io, &x.Actions, func(value *[]InventoryAction) {
-		item := *value
-		FuncSlice(io, &item, io.Varuint32, func(value *InventoryAction) {
-			item := *value
-			item.Marshal(io)
-			*value = item
+		FuncSlice(io, value, io.Varuint32, func(value *InventoryAction) {
+			value.Marshal(io)
 		})
-		*value = item
 	})
 }

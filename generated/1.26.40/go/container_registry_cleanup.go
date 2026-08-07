@@ -9,8 +9,6 @@ type ContainerRegistryCleanup struct {
 // Marshal reads or writes ContainerRegistryCleanup using its canonical wire layout.
 func (x *ContainerRegistryCleanup) Marshal(io IO) {
 	FuncSlice(io, &x.RemovedContainers, io.Varuint32, func(value *FullContainerName) {
-		item := *value
-		item.Marshal(io)
-		*value = item
+		value.Marshal(io)
 	})
 }
