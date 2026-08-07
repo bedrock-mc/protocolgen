@@ -260,10 +260,18 @@ func emitRustTypes(definitions []definition, usesNbt bool) string {
 			}
 			b.WriteString("}\n\n")
 		case manifest.KindUnion:
-			fmt.Fprintf(&b, "#[derive(Clone, Debug, PartialEq)]\npub enum %s {\n", item.Name)
-			for _, variant := range item.Union {
+			deriveDefault := unionCanDeriveDefault(item)
+			derive := "Clone, Debug, PartialEq"
+			if deriveDefault {
+				derive += ", Default"
+			}
+			fmt.Fprintf(&b, "#[derive(%s)]\npub enum %s {\n", derive, item.Name)
+			for index, variant := range item.Union {
 				if isPlaceholderVariantName(variant.SourceName) {
 					fmt.Fprintf(&b, "    /// Naming overlay required: source placeholder `%s`.\n", variant.SourceName)
+				}
+				if deriveDefault && index == 0 {
+					b.WriteString("    #[default]\n")
 				}
 				if len(variant.Fields) != 0 {
 					fmt.Fprintf(&b, "    %s {\n", variant.Name)
@@ -292,7 +300,7 @@ func emitRustTypes(definitions []definition, usesNbt bool) string {
 				}
 			}
 			b.WriteString("        }\n    }\n}\n\n")
-			if len(item.Union) > 0 {
+			if len(item.Union) > 0 && !deriveDefault {
 				first := item.Union[0]
 				fmt.Fprintf(&b, "impl Default for %s {\n    fn default() -> Self {\n", item.Name)
 				if len(first.Fields) != 0 {
@@ -1351,6 +1359,10 @@ func isPlaceholderVariantName(name string) bool {
 		}
 	}
 	return true
+}
+
+func unionCanDeriveDefault(item definition) bool {
+	return len(item.Union) > 0 && len(item.Union[0].Fields) == 0 && item.Union[0].Payload == ""
 }
 
 var rustUnrawableKeywords = map[string]bool{"crate": true, "self": true, "super": true}
