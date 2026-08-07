@@ -165,6 +165,12 @@ func TestGenerateIncludesConcreteCodecRuntime(t *testing.T) {
 			}
 		}
 	}
+	packetRuntime := files["protocol/packet/packet.go"]
+	for _, want := range []string{"func Decode(data []byte, pk Packet) error", "func Encode(pk Packet) ([]byte, error)"} {
+		if !strings.Contains(packetRuntime, want) {
+			t.Fatalf("packet runtime omits %q:\n%s", want, packetRuntime)
+		}
+	}
 }
 
 func TestGenerateWrapsRepeatedUnionPayloadTypes(t *testing.T) {

@@ -55,7 +55,7 @@ func (r *Reader) Remaining() int {
 
 func (r *Reader) fail(err error) {
 	if r.err == nil {
-		r.err = err
+		r.err = fmt.Errorf("byte offset %d: %w", r.pos, err)
 	}
 }
 

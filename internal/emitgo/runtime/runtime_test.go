@@ -3,6 +3,7 @@ package protocol
 import (
 	"bytes"
 	"math"
+	"strings"
 	"testing"
 
 	"github.com/google/uuid"
@@ -129,5 +130,14 @@ func TestReaderRejectsTruncatedString(t *testing.T) {
 	reader.String(&value)
 	if reader.Err() == nil {
 		t.Fatal("truncated string was accepted")
+	}
+}
+
+func TestReaderErrorsIncludeByteOffset(t *testing.T) {
+	reader := NewReader([]byte{2})
+	var value string
+	reader.String(&value)
+	if err := reader.Err(); err == nil || !strings.Contains(err.Error(), "byte offset 1") {
+		t.Fatalf("error = %v, want byte offset 1", reader.Err())
 	}
 }
