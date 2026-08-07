@@ -1,10 +1,8 @@
 // Code generated from canonical protocol manifest v2. DO NOT EDIT.
 
-#![allow(dead_code)]
+pub const PROTOCOL_VERSION: i32 = 2168;
 
-mod enums;
-pub use enums::*;
-mod types;
-pub use types::*;
-mod packets;
-pub use packets::*;
+pub mod enums;
+pub mod packets;
+pub mod types;
+pub mod wire;
