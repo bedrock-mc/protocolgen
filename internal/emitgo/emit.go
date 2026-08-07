@@ -996,7 +996,7 @@ func (e *marshalEmitter) node(b *strings.Builder, node manifest.Node, expression
 		}
 		return e.mapEntries(b, node, expression, hint, indent, address)
 	case manifest.KindUnion:
-		name := e.mustGoType(node, hint)
+		name := mustGoType(e.g, node, hint)
 		fmt.Fprintf(b, "%s%s(io, %s)\n", indent, e.runtime("Marshal"+name), address.address(expression))
 		return nil
 	case manifest.KindReserved, manifest.KindIgnored:
