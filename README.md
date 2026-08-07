@@ -150,6 +150,20 @@ go run ./cmd/protocolgen emit-rust \
   -out generated/1.26.40/rust
 ```
 
+The checked-in snapshot can be regenerated and checked for drift with the
+same commands through the Makefile. Set the local Mojang and Endstone checkout
+paths; the Go commands use `/tmp/go-build-cache` locally.
+
+```sh
+MOJANG_DIR=/path/to/bedrock-protocol-docs/json \
+ENDSTONE_DIR=/path/to/endstone-protocol-docs \
+GOCACHE=/tmp/go-build-cache make regen
+
+MOJANG_DIR=/path/to/bedrock-protocol-docs/json \
+ENDSTONE_DIR=/path/to/endstone-protocol-docs \
+GOCACHE=/tmp/go-build-cache make verify
+```
+
 The raw Mojang side can be inspected independently with:
 
 ```sh
