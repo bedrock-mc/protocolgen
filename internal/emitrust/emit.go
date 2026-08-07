@@ -30,6 +30,7 @@ type rustVariant struct {
 	Payload      string
 	Fields       []rustField
 	Discriminant int64
+	SourceName   string
 }
 
 type rustField struct {
@@ -261,6 +262,9 @@ func emitRustTypes(definitions []definition, usesNbt bool) string {
 		case manifest.KindUnion:
 			fmt.Fprintf(&b, "#[derive(Clone, Debug, PartialEq)]\npub enum %s {\n", item.Name)
 			for _, variant := range item.Union {
+				if isPlaceholderVariantName(variant.SourceName) {
+					fmt.Fprintf(&b, "    /// Naming overlay required: source placeholder `%s`.\n", variant.SourceName)
+				}
 				if len(variant.Fields) != 0 {
 					fmt.Fprintf(&b, "    %s {\n", variant.Name)
 					for _, field := range variant.Fields {
@@ -657,7 +661,7 @@ func (g *generator) rustType(node manifest.Node, hint string) (string, error) {
 						payload = "Box<" + payload + ">"
 					}
 				}
-				variants = append(variants, rustVariant{Name: variantName, Payload: payload, Fields: fields, Discriminant: variant.Value})
+				variants = append(variants, rustVariant{Name: variantName, Payload: payload, Fields: fields, Discriminant: variant.Value, SourceName: variant.Name})
 			}
 			item := g.definitions[name]
 			item.Union = variants
@@ -1149,6 +1153,9 @@ func emitRustEnum(b *strings.Builder, item definition) {
 		if index == 0 {
 			b.WriteString("    #[default]\n")
 		}
+		if isPlaceholderVariantName(variant.Name) {
+			fmt.Fprintf(b, "    /// Naming overlay required: source placeholder `%s`.\n", variant.Name)
+		}
 		fmt.Fprintf(b, "    %s,\n", name)
 	}
 	unknownName := uniqueTypeVariant("Unknown", used)
@@ -1305,6 +1312,7 @@ func typeName(value string) string {
 }
 
 func fieldName(value string) string {
+	value = strings.NewReplacer("'s", "", "'S", "", "’s", "", "’S", "").Replace(value)
 	runes := []rune(value)
 	var b strings.Builder
 	boundary := false
@@ -1326,13 +1334,23 @@ func fieldName(value string) string {
 	if name == "" {
 		return "field"
 	}
-	if rustUnrawableKeywords[name] {
+	name = strings.NewReplacer("no_pv_m", "no_pvm", "no_mv_p", "no_mvp").Replace(name)
+	if rustUnrawableKeywords[name] || rustKeywords[name] {
 		return name + "_"
 	}
-	if rustKeywords[name] {
-		return "r#" + name
-	}
 	return name
+}
+
+func isPlaceholderVariantName(name string) bool {
+	if !strings.HasPrefix(name, "Empty") || len(name) == len("Empty") {
+		return false
+	}
+	for _, r := range name[len("Empty"):] {
+		if r < '0' || r > '9' {
+			return false
+		}
+	}
+	return true
 }
 
 var rustUnrawableKeywords = map[string]bool{"crate": true, "self": true, "super": true}

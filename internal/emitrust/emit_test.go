@@ -94,7 +94,7 @@ func TestGenerateRustEscapesKeywordFieldNames(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Generate: %v", err)
 	}
-	if !strings.Contains(source, "pub r#type: wire::U8") {
+	if !strings.Contains(source, "pub type_: wire::U8") {
 		t.Fatalf("generated Rust did not escape keyword field:\n%s", source)
 	}
 }
@@ -104,6 +104,10 @@ func TestRustFieldNamesUseSnakeCase(t *testing.T) {
 		"Actor Unique ID": "actor_unique_id",
 		"FrameRate":       "frame_rate",
 		"Pack UUID":       "pack_uuid",
+		"Sender's XUID":   "sender_xuid",
+		"No PvM":          "no_pvm",
+		"No MvP":          "no_mvp",
+		"Type":            "type_",
 	}
 	for input, want := range tests {
 		if got := fieldName(input); got != want {
@@ -364,6 +368,18 @@ func TestRustEnumVariantsUseIdiomaticCase(t *testing.T) {
 		if got := enumVariantName("MultiplayerSettingsPacketType", input); got != want {
 			t.Fatalf("enumVariantName(%q) = %q, want %q", input, got, want)
 		}
+	}
+}
+
+func TestGenerateRustMarksPlaceholderUnionVariants(t *testing.T) {
+	union := manifest.Union(manifest.Primitive("u8"), manifest.Variant{Value: 1, Name: "Empty1", Encode: manifest.Void()})
+	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:placeholder", MinecraftVersion: "fixture", ProtocolVersion: 2168}}, Packets: []manifest.Packet{{ID: 1, Name: "PlaceholderPacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{Ordinal: 0, Name: "Value", Encode: union, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}}}
+	source, err := generatedRustSource(m)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(source, "Naming overlay required: source placeholder `Empty1`.") {
+		t.Fatalf("placeholder variant was not marked for naming overlay:\n%s", source)
 	}
 }
 
