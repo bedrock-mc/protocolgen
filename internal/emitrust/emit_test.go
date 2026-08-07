@@ -30,7 +30,7 @@ func TestGenerateRustConsumesCanonicalManifest(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Generate: %v", err)
 	}
-	if !strings.Contains(source, "pub struct Fixture") || !strings.Contains(source, "pub const ID: u32 = 1;") {
+	if !strings.Contains(source, "pub struct Fixture") || !strings.Contains(source, "pub const ID: u32 = 1;") || !strings.Contains(source, `pub const GAME_VERSION: &str = "fixture";`) || !strings.Contains(source, "pub const PROTOCOL_VERSION: i32 = 2168;") {
 		t.Fatalf("generated Rust omitted packet definition or ID:\n%s", source)
 	}
 	if strings.Contains(source, "SHAPE") || strings.Contains(source, "WireEncoder") {
@@ -101,13 +101,14 @@ func TestGenerateRustEscapesKeywordFieldNames(t *testing.T) {
 
 func TestRustFieldNamesUseSnakeCase(t *testing.T) {
 	tests := map[string]string{
-		"Actor Unique ID": "actor_unique_id",
-		"FrameRate":       "frame_rate",
-		"Pack UUID":       "pack_uuid",
-		"Sender's XUID":   "sender_xuid",
-		"No PvM":          "no_pvm",
-		"No MvP":          "no_mvp",
-		"Type":            "type_",
+		"Actor Unique ID":   "actor_unique_id",
+		"FrameRate":         "frame_rate",
+		"Pack UUID":         "pack_uuid",
+		"Sender's XUID":     "sender_xuid",
+		"Tracked Actor IDs": "tracked_actor_ids",
+		"No PvM":            "no_pvm",
+		"No MvP":            "no_mvp",
+		"Type":              "type_",
 	}
 	for input, want := range tests {
 		if got := fieldName(input); got != want {

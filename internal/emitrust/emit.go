@@ -227,13 +227,14 @@ func (g *generator) sortedDefinitions() []definition {
 func emitLib(m manifest.Manifest) string {
 	return fmt.Sprintf(`// Code generated from canonical protocol manifest v2. DO NOT EDIT.
 
+pub const GAME_VERSION: &str = %q;
 pub const PROTOCOL_VERSION: i32 = %d;
 
 pub mod enums;
 pub mod types;
 pub mod packets;
 pub mod wire;
-`, m.Target.ProtocolVersion)
+`, m.Target.MinecraftVersion, m.Target.ProtocolVersion)
 }
 
 func emitRustEnums(definitions []definition) string {
@@ -1236,6 +1237,7 @@ func fieldName(value string) string {
 	if name == "" {
 		return "field"
 	}
+	name = strings.ReplaceAll(name, "i_ds", "ids")
 	name = strings.NewReplacer("no_pv_m", "no_pvm", "no_mv_p", "no_mvp").Replace(name)
 	if rustUnrawableKeywords[name] || rustKeywords[name] {
 		return name + "_"

@@ -48,6 +48,10 @@ func TestGenerateConsumesOnlyCanonicalManifest(t *testing.T) {
 		}
 	}
 	packet := files["protocol/packet/vocabulary.go"]
+	version := files["protocol/version.go"]
+	if !strings.Contains(version, `GAME_VERSION     = "fixture"`) || !strings.Contains(version, "PROTOCOL_VERSION = 2168") {
+		t.Fatalf("generated version constants are incomplete:\n%s", version)
+	}
 	if !strings.Contains(packet, "type Vocabulary struct") || !strings.Contains(packet, "Maybe protocol.Optional[string]") || !strings.Contains(files["protocol/packet/ids.go"], "IDVocabulary uint32 = 1") {
 		t.Fatalf("generated output omitted packet definition or ID:\n%s\n%s", packet, files["protocol/packet/ids.go"])
 	}

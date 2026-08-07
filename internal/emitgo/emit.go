@@ -133,7 +133,7 @@ func GenerateWithOptions(m manifest.Manifest, options Options) (map[string]strin
 			}
 		}
 	}
-	files, err := g.emitFiles(packets, packetNames)
+	files, err := g.emitFiles(m, packets, packetNames)
 	if err != nil {
 		return nil, err
 	}
@@ -515,7 +515,19 @@ func (g *generator) unique(base string) string {
 	}
 }
 
-func (g *generator) emitFiles(packets []manifest.Packet, packetNames map[uint32]string) (map[string]string, error) {
+func emitVersion(m manifest.Manifest) string {
+	return fmt.Sprintf(`// Code generated from canonical protocol manifest v2. DO NOT EDIT.
+
+package protocol
+
+const (
+	GAME_VERSION     = %q
+	PROTOCOL_VERSION = %d
+)
+`, m.Target.MinecraftVersion, m.Target.ProtocolVersion)
+}
+
+func (g *generator) emitFiles(m manifest.Manifest, packets []manifest.Packet, packetNames map[uint32]string) (map[string]string, error) {
 	definitions := make([]typeDefinition, 0, len(g.definitions))
 	for _, definition := range g.definitions {
 		definitions = append(definitions, definition)
@@ -526,8 +538,9 @@ func (g *generator) emitFiles(packets []manifest.Packet, packetNames map[uint32]
 	if err != nil {
 		return nil, err
 	}
+	files["protocol/version.go"] = emitVersion(m)
 	usedFiles := map[string]bool{
-		"types.go": true, "codec.go": true, "helpers.go": true, "reader.go": true, "writer.go": true,
+		"types.go": true, "codec.go": true, "helpers.go": true, "reader.go": true, "writer.go": true, "version.go": true,
 	}
 	for _, definition := range definitions {
 		source, err := emitDefinition(g, definition)
