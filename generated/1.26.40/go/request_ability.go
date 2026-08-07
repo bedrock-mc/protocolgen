@@ -12,14 +12,7 @@ type RequestAbility struct {
 // Marshal reads or writes RequestAbility using its canonical wire layout.
 func (x *RequestAbility) Marshal(io IO) {
 	io.Varint32(&x.Ability)
-	enumValue1 := uint8(x.ValueType)
-	io.Uint8(&enumValue1)
-	x.ValueType = RequestAbilityType(enumValue1)
-	switch int64(enumValue1) {
-	case 0, 1, 2:
-	default:
-		io.InvalidValue(enumValue1, "unknown enum value")
-	}
+	IntegerFunc(&x.ValueType, io.Uint8)
 	io.Bool(&x.Bool)
 	io.Float32(&x.Float)
 }

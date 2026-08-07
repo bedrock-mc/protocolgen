@@ -3,12 +3,12 @@
 package protocol2168
 
 type PlayerLocation struct {
-	TargetActorID ActorUniqueID
+	TargetActorID int64
 	Location      PlayerLocationLocation
 }
 
 // Marshal reads or writes PlayerLocation using its canonical wire layout.
 func (x *PlayerLocation) Marshal(io IO) {
-	x.TargetActorID.Marshal(io)
+	io.ActorUniqueID(&x.TargetActorID)
 	marshalPlayerLocationLocation(io, &x.Location)
 }

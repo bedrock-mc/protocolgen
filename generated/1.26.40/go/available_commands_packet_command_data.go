@@ -1,0 +1,28 @@
+// Code generated from canonical protocol manifest v2. DO NOT EDIT.
+
+package protocol2168
+
+type AvailableCommandsPacketCommandData struct {
+	Name                                string
+	Description                         string
+	Flags                               uint16
+	PermissionLevel                     string
+	AliasEnum                           int32
+	CommandDataChainedSubcommandIndexes []uint32
+	Overloads                           []AvailableCommandsOverloadData
+}
+
+// Marshal reads or writes AvailableCommandsPacketCommandData using its canonical wire layout.
+func (x *AvailableCommandsPacketCommandData) Marshal(io IO) {
+	io.String(&x.Name)
+	io.String(&x.Description)
+	io.Uint16(&x.Flags)
+	io.String(&x.PermissionLevel)
+	io.Int32(&x.AliasEnum)
+	FuncSlice(io, &x.CommandDataChainedSubcommandIndexes, io.Varuint32, io.Uint32)
+	FuncSlice(io, &x.Overloads, io.Varuint32, func(value *AvailableCommandsOverloadData) {
+		item := *value
+		item.Marshal(io)
+		*value = item
+	})
+}

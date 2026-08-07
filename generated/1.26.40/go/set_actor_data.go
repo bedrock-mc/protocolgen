@@ -3,16 +3,16 @@
 package protocol2168
 
 type SetActorData struct {
-	TargetRuntimeID   ActorRuntimeID
+	TargetRuntimeID   uint64
 	ActorData         SynchedActorDataCopyableDataList
 	SynchedProperties PropertySyncData
-	Tick              PlayerInputTick
+	Tick              uint64
 }
 
 // Marshal reads or writes SetActorData using its canonical wire layout.
 func (x *SetActorData) Marshal(io IO) {
-	x.TargetRuntimeID.Marshal(io)
+	io.ActorRuntimeID(&x.TargetRuntimeID)
 	x.ActorData.Marshal(io)
 	x.SynchedProperties.Marshal(io)
-	x.Tick.Marshal(io)
+	io.PlayerInputTick(&x.Tick)
 }

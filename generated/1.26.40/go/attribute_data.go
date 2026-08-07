@@ -1,0 +1,30 @@
+// Code generated from canonical protocol manifest v2. DO NOT EDIT.
+
+package protocol2168
+
+type AttributeData struct {
+	MinValue        float32
+	MaxValue        float32
+	CurrentValue    float32
+	DefaultMinValue float32
+	DefaultMaxValue float32
+	DefaultValue    float32
+	Name            string
+	Modifiers       []AttributeModifier
+}
+
+// Marshal reads or writes AttributeData using its canonical wire layout.
+func (x *AttributeData) Marshal(io IO) {
+	io.Float32(&x.MinValue)
+	io.Float32(&x.MaxValue)
+	io.Float32(&x.CurrentValue)
+	io.Float32(&x.DefaultMinValue)
+	io.Float32(&x.DefaultMaxValue)
+	io.Float32(&x.DefaultValue)
+	io.String(&x.Name)
+	FuncSlice(io, &x.Modifiers, io.Varuint32, func(value *AttributeModifier) {
+		item := *value
+		item.Marshal(io)
+		*value = item
+	})
+}

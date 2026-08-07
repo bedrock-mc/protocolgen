@@ -3,12 +3,12 @@
 package protocol2168
 
 type DebugInfo struct {
-	ActorId ActorUniqueID
+	ActorId int64
 	Data    string
 }
 
 // Marshal reads or writes DebugInfo using its canonical wire layout.
 func (x *DebugInfo) Marshal(io IO) {
-	x.ActorId.Marshal(io)
+	io.ActorUniqueID(&x.ActorId)
 	io.String(&x.Data)
 }

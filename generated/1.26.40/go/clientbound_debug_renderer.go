@@ -10,11 +10,9 @@ type ClientboundDebugRenderer struct {
 // Marshal reads or writes ClientboundDebugRenderer using its canonical wire layout.
 func (x *ClientboundDebugRenderer) Marshal(io IO) {
 	io.String(&x.Type)
-	io.Bool(&x.DebugMarkerData.set)
-	if x.DebugMarkerData.set {
-		x.DebugMarkerData.val.Marshal(io)
-	} else if io.Reading() {
-		var zero ClientboundDebugRendererDebugMarkerData
-		x.DebugMarkerData.val = zero
-	}
+	OptionalFunc(io, &x.DebugMarkerData, func(value *ClientboundDebugRendererDebugMarkerData) {
+		item := *value
+		item.Marshal(io)
+		*value = item
+	})
 }

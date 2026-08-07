@@ -10,28 +10,7 @@ type CodeBuilderSource struct {
 
 // Marshal reads or writes CodeBuilderSource using its canonical wire layout.
 func (x *CodeBuilderSource) Marshal(io IO) {
-	enumValue1 := uint8(x.Operation)
-	io.Uint8(&enumValue1)
-	x.Operation = CodeBuilderStorageQueryOptionsOperation(enumValue1)
-	switch int64(enumValue1) {
-	case 0, 1, 2, 3:
-	default:
-		io.InvalidValue(enumValue1, "unknown enum value")
-	}
-	enumValue2 := uint8(x.Category)
-	io.Uint8(&enumValue2)
-	x.Category = CodeBuilderStorageQueryOptionsCategory(enumValue2)
-	switch int64(enumValue2) {
-	case 0, 1, 2:
-	default:
-		io.InvalidValue(enumValue2, "unknown enum value")
-	}
-	enumValue3 := uint8(x.CodeStatus)
-	io.Uint8(&enumValue3)
-	x.CodeStatus = CodeBuilderExecutionStateCodeStatus(enumValue3)
-	switch int64(enumValue3) {
-	case 0, 1, 2, 3, 4, 5:
-	default:
-		io.InvalidValue(enumValue3, "unknown enum value")
-	}
+	IntegerFunc(&x.Operation, io.Uint8)
+	IntegerFunc(&x.Category, io.Uint8)
+	IntegerFunc(&x.CodeStatus, io.Uint8)
 }

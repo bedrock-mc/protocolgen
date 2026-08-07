@@ -8,12 +8,5 @@ type ClientboundControlSchemeSet struct {
 
 // Marshal reads or writes ClientboundControlSchemeSet using its canonical wire layout.
 func (x *ClientboundControlSchemeSet) Marshal(io IO) {
-	enumValue1 := uint8(x.ControlScheme)
-	io.Uint8(&enumValue1)
-	x.ControlScheme = ControlSchemeScheme(enumValue1)
-	switch int64(enumValue1) {
-	case 0, 1, 2, 3, 4:
-	default:
-		io.InvalidValue(enumValue1, "unknown enum value")
-	}
+	IntegerFunc(&x.ControlScheme, io.Uint8)
 }

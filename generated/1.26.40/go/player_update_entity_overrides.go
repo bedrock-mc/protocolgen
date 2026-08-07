@@ -3,14 +3,14 @@
 package protocol2168
 
 type PlayerUpdateEntityOverrides struct {
-	TargetID      ActorUniqueID
+	TargetID      int64
 	PropertyIndex uint32
 	Update        PlayerUpdateEntityOverridesUpdate
 }
 
 // Marshal reads or writes PlayerUpdateEntityOverrides using its canonical wire layout.
 func (x *PlayerUpdateEntityOverrides) Marshal(io IO) {
-	x.TargetID.Marshal(io)
+	io.ActorUniqueID(&x.TargetID)
 	io.Varuint32(&x.PropertyIndex)
 	marshalPlayerUpdateEntityOverridesUpdate(io, &x.Update)
 }

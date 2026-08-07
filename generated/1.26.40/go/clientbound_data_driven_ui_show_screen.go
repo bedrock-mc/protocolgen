@@ -12,11 +12,5 @@ type ClientboundDataDrivenUIShowScreen struct {
 func (x *ClientboundDataDrivenUIShowScreen) Marshal(io IO) {
 	io.String(&x.ScreenId)
 	io.Uint32(&x.FormId)
-	io.Bool(&x.DataInstanceId.set)
-	if x.DataInstanceId.set {
-		io.Uint32(&x.DataInstanceId.val)
-	} else if io.Reading() {
-		var zero uint32
-		x.DataInstanceId.val = zero
-	}
+	OptionalFunc(io, &x.DataInstanceId, io.Uint32)
 }

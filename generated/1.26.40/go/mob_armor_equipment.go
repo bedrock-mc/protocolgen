@@ -3,7 +3,7 @@
 package protocol2168
 
 type MobArmorEquipment struct {
-	TargetRuntimeID ActorRuntimeID
+	TargetRuntimeID uint64
 	Head            CerealizerNetworkItemStackDescriptorSerializedData
 	Torso           CerealizerNetworkItemStackDescriptorSerializedData
 	Legs            CerealizerNetworkItemStackDescriptorSerializedData
@@ -13,7 +13,7 @@ type MobArmorEquipment struct {
 
 // Marshal reads or writes MobArmorEquipment using its canonical wire layout.
 func (x *MobArmorEquipment) Marshal(io IO) {
-	x.TargetRuntimeID.Marshal(io)
+	io.ActorRuntimeID(&x.TargetRuntimeID)
 	x.Head.Marshal(io)
 	x.Torso.Marshal(io)
 	x.Legs.Marshal(io)

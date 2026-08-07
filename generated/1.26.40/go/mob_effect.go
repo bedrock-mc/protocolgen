@@ -3,31 +3,24 @@
 package protocol2168
 
 type MobEffect struct {
-	TargetRuntimeID     ActorRuntimeID
+	TargetRuntimeID     uint64
 	EventID             MobEffectEvent
 	EffectID            int32
 	EffectAmplifier     int32
 	ShowParticles       bool
 	EffectDurationTicks int32
-	Tick                PlayerInputTick
+	Tick                uint64
 	Ambient             bool
 }
 
 // Marshal reads or writes MobEffect using its canonical wire layout.
 func (x *MobEffect) Marshal(io IO) {
-	x.TargetRuntimeID.Marshal(io)
-	enumValue1 := uint8(x.EventID)
-	io.Uint8(&enumValue1)
-	x.EventID = MobEffectEvent(enumValue1)
-	switch int64(enumValue1) {
-	case 0, 1, 2, 3:
-	default:
-		io.InvalidValue(enumValue1, "unknown enum value")
-	}
+	io.ActorRuntimeID(&x.TargetRuntimeID)
+	IntegerFunc(&x.EventID, io.Uint8)
 	io.Varint32(&x.EffectID)
 	io.Varint32(&x.EffectAmplifier)
 	io.Bool(&x.ShowParticles)
 	io.Varint32(&x.EffectDurationTicks)
-	x.Tick.Marshal(io)
+	io.PlayerInputTick(&x.Tick)
 	io.Bool(&x.Ambient)
 }

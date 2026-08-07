@@ -6,7 +6,7 @@ type ClientMovementPredictionSync struct {
 	ActorDataFlag      ActorDataFlagComponent
 	ActorBoundingBox   ActorDataBoundingBoxComponent
 	MovementAttributes [9]float32
-	ActorUniqueID      ActorUniqueID
+	ActorUniqueID      int64
 	ActorFlyingState   bool
 }
 
@@ -17,6 +17,6 @@ func (x *ClientMovementPredictionSync) Marshal(io IO) {
 	for index1 := range x.MovementAttributes {
 		io.Float32(&x.MovementAttributes[index1])
 	}
-	x.ActorUniqueID.Marshal(io)
+	io.ActorUniqueID(&x.ActorUniqueID)
 	io.Bool(&x.ActorFlyingState)
 }

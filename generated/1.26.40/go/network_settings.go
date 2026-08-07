@@ -13,14 +13,7 @@ type NetworkSettings struct {
 // Marshal reads or writes NetworkSettings using its canonical wire layout.
 func (x *NetworkSettings) Marshal(io IO) {
 	io.Uint16(&x.CompressionThreshold)
-	enumValue1 := uint16(x.CompressionAlgorithm)
-	io.Uint16(&enumValue1)
-	x.CompressionAlgorithm = PacketCompressionAlgorithm(enumValue1)
-	switch int64(enumValue1) {
-	case 0, 1, 65535:
-	default:
-		io.InvalidValue(enumValue1, "unknown enum value")
-	}
+	IntegerFunc(&x.CompressionAlgorithm, io.Uint16)
 	io.Bool(&x.ClientThrottleEnabled)
 	io.Uint8(&x.ClientThrottleThreshold)
 	io.Float32(&x.ClientThrottleScalar)

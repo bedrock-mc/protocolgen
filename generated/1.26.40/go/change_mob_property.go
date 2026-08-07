@@ -3,7 +3,7 @@
 package protocol2168
 
 type ChangeMobProperty struct {
-	ActorId              ActorUniqueID
+	ActorId              int64
 	PropertyName         string
 	BoolComponentValue   bool
 	StringComponentValue string
@@ -13,7 +13,7 @@ type ChangeMobProperty struct {
 
 // Marshal reads or writes ChangeMobProperty using its canonical wire layout.
 func (x *ChangeMobProperty) Marshal(io IO) {
-	x.ActorId.Marshal(io)
+	io.ActorUniqueID(&x.ActorId)
 	io.String(&x.PropertyName)
 	io.Bool(&x.BoolComponentValue)
 	io.String(&x.StringComponentValue)

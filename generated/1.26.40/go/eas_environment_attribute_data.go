@@ -1,0 +1,36 @@
+// Code generated from canonical protocol manifest v2. DO NOT EDIT.
+
+package protocol2168
+
+type EASEnvironmentAttributeData struct {
+	AttributeName          string
+	FromAttribute          Optional[EAS]
+	Attribute              EAS
+	ToAttribute            Optional[EAS]
+	CurrentTransitionTicks uint32
+	TotalTransitionTicks   uint32
+	Easing                 string
+	LocalTransitionTicks   uint32
+	NoiseTransition        bool
+}
+
+// Marshal reads or writes EASEnvironmentAttributeData using its canonical wire layout.
+func (x *EASEnvironmentAttributeData) Marshal(io IO) {
+	io.String(&x.AttributeName)
+	OptionalFunc(io, &x.FromAttribute, func(value *EAS) {
+		item := *value
+		marshalEAS(io, &item)
+		*value = item
+	})
+	marshalEAS(io, &x.Attribute)
+	OptionalFunc(io, &x.ToAttribute, func(value *EAS) {
+		item := *value
+		marshalEAS(io, &item)
+		*value = item
+	})
+	io.Uint32(&x.CurrentTransitionTicks)
+	io.Uint32(&x.TotalTransitionTicks)
+	io.String(&x.Easing)
+	io.Uint32(&x.LocalTransitionTicks)
+	io.Bool(&x.NoiseTransition)
+}

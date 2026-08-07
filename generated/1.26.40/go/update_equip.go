@@ -6,7 +6,7 @@ type UpdateEquip struct {
 	ContainerId    uint8
 	Type           uint8
 	Size           int32
-	EntityUniqueId ActorUniqueID
+	EntityUniqueId int64
 	Data           []byte
 }
 
@@ -15,6 +15,6 @@ func (x *UpdateEquip) Marshal(io IO) {
 	io.Uint8(&x.ContainerId)
 	io.Uint8(&x.Type)
 	io.Varint32(&x.Size)
-	x.EntityUniqueId.Marshal(io)
+	io.ActorUniqueID(&x.EntityUniqueId)
 	io.NBT(&x.Data)
 }

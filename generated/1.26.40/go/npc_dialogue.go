@@ -14,14 +14,7 @@ type NpcDialogue struct {
 // Marshal reads or writes NpcDialogue using its canonical wire layout.
 func (x *NpcDialogue) Marshal(io IO) {
 	io.Uint64(&x.NpcIdRawId)
-	enumValue1 := int32(x.NpcDialogueActionType)
-	io.Varint32(&enumValue1)
-	x.NpcDialogueActionType = NpcDialogueNpcDialogueActionType(enumValue1)
-	switch int64(enumValue1) {
-	case 0, 1:
-	default:
-		io.InvalidValue(enumValue1, "unknown enum value")
-	}
+	IntegerFunc(&x.NpcDialogueActionType, io.Varint32)
 	io.String(&x.Dialogue)
 	io.String(&x.SceneName)
 	io.String(&x.NpcName)

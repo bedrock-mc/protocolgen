@@ -3,12 +3,12 @@
 package protocol2168
 
 type ShowCredits struct {
-	PlayerRuntimeID ActorRuntimeID
+	PlayerRuntimeID uint64
 	CreditsState    int32
 }
 
 // Marshal reads or writes ShowCredits using its canonical wire layout.
 func (x *ShowCredits) Marshal(io IO) {
-	x.PlayerRuntimeID.Marshal(io)
+	io.ActorRuntimeID(&x.PlayerRuntimeID)
 	io.Varint32(&x.CreditsState)
 }

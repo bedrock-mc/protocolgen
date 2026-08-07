@@ -14,11 +14,9 @@ func (x *Transfer) Marshal(io IO) {
 	io.String(&x.ServerAddress)
 	io.Uint16(&x.ServerPort)
 	io.Bool(&x.ReloadWorld)
-	io.Bool(&x.GatheringsConfiguration.set)
-	if x.GatheringsConfiguration.set {
-		x.GatheringsConfiguration.val.Marshal(io)
-	} else if io.Reading() {
-		var zero ServerConfigurationGatheringsConfigurationJoinInfo
-		x.GatheringsConfiguration.val = zero
-	}
+	OptionalFunc(io, &x.GatheringsConfiguration, func(value *ServerConfigurationGatheringsConfigurationJoinInfo) {
+		item := *value
+		item.Marshal(io)
+		*value = item
+	})
 }

@@ -11,13 +11,6 @@ type ClientCameraAimAssist struct {
 // Marshal reads or writes ClientCameraAimAssist using its canonical wire layout.
 func (x *ClientCameraAimAssist) Marshal(io IO) {
 	io.String(&x.CameraPresetId)
-	enumValue1 := uint8(x.Action)
-	io.Uint8(&enumValue1)
-	x.Action = ClientCameraAimAssistPacketAction(enumValue1)
-	switch int64(enumValue1) {
-	case 0, 1:
-	default:
-		io.InvalidValue(enumValue1, "unknown enum value")
-	}
+	IntegerFunc(&x.Action, io.Uint8)
 	io.Bool(&x.AllowAimAssist)
 }

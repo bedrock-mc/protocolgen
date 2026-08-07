@@ -8,8 +8,8 @@ import (
 )
 
 type StartGame struct {
-	EntityID                          ActorUniqueID
-	RuntimeID                         ActorRuntimeID
+	EntityID                          int64
+	RuntimeID                         uint64
 	GameType                          GameType
 	Position                          mgl32.Vec3
 	Rotation                          mgl32.Vec2
@@ -37,16 +37,9 @@ type StartGame struct {
 
 // Marshal reads or writes StartGame using its canonical wire layout.
 func (x *StartGame) Marshal(io IO) {
-	x.EntityID.Marshal(io)
-	x.RuntimeID.Marshal(io)
-	enumValue1 := int32(x.GameType)
-	io.Varint32(&enumValue1)
-	x.GameType = GameType(enumValue1)
-	switch int64(enumValue1) {
-	case -1, 0, 1, 2, 5, 6:
-	default:
-		io.InvalidValue(enumValue1, "unknown enum value")
-	}
+	io.ActorUniqueID(&x.EntityID)
+	io.ActorRuntimeID(&x.RuntimeID)
+	IntegerFunc(&x.GameType, io.Varint32)
 	io.Vec3(&x.Position)
 	io.Vec2(&x.Rotation)
 	x.Settings.Marshal(io)
@@ -57,22 +50,11 @@ func (x *StartGame) Marshal(io IO) {
 	x.MovementSettings.Marshal(io)
 	io.Uint64(&x.LevelCurrentTime)
 	io.Varint32(&x.EnchantmentSeed)
-	if !io.Reading() && uint64(len(x.BlockProperties)) > uint64(^uint32(0)) {
-		io.InvalidValue(len(x.BlockProperties), "collection length overflows uint32")
-		return
-	}
-	count2 := uint32(len(x.BlockProperties))
-	io.Varuint32(&count2)
-	if io.Reading() {
-		if uint64(count2) > uint64(^uint(0)>>1) {
-			io.InvalidValue(count2, "collection length overflows int")
-			return
-		}
-		x.BlockProperties = make([]ServerBlockProperty, int(count2))
-	}
-	for index3 := range x.BlockProperties {
-		x.BlockProperties[index3].Marshal(io)
-	}
+	FuncSlice(io, &x.BlockProperties, io.Varuint32, func(value *ServerBlockProperty) {
+		item := *value
+		item.Marshal(io)
+		*value = item
+	})
 	io.String(&x.MultiplayerCorrelationId)
 	io.Bool(&x.EnableItemStackNetManager)
 	io.String(&x.ServerVersion)
@@ -82,12 +64,10 @@ func (x *StartGame) Marshal(io IO) {
 	io.Bool(&x.ServerEnabledClientSideGeneration)
 	io.Bool(&x.BlockNetworkIdsAreHashes)
 	x.NetworkPermissions.Marshal(io)
-	io.Bool(&x.ServerConfigurationJoinInfo.set)
-	if x.ServerConfigurationJoinInfo.set {
-		x.ServerConfigurationJoinInfo.val.Marshal(io)
-	} else if io.Reading() {
-		var zero ServerConfigurationServerConfigurationJoinInfo
-		x.ServerConfigurationJoinInfo.val = zero
-	}
+	OptionalFunc(io, &x.ServerConfigurationJoinInfo, func(value *ServerConfigurationServerConfigurationJoinInfo) {
+		item := *value
+		item.Marshal(io)
+		*value = item
+	})
 	x.ServerTelemetryData.Marshal(io)
 }

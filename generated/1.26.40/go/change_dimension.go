@@ -16,11 +16,5 @@ func (x *ChangeDimension) Marshal(io IO) {
 	x.DimensionID.Marshal(io)
 	io.Vec3(&x.Position)
 	io.Bool(&x.Respawn)
-	io.Bool(&x.LoadingScreenId.set)
-	if x.LoadingScreenId.set {
-		io.Uint32(&x.LoadingScreenId.val)
-	} else if io.Reading() {
-		var zero uint32
-		x.LoadingScreenId.val = zero
-	}
+	OptionalFunc(io, &x.LoadingScreenId, io.Uint32)
 }
