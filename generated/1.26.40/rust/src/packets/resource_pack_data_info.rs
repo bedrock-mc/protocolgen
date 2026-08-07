@@ -9,7 +9,7 @@ pub struct ResourcePackDataInfo {
     pub chunk_size: u32,
     pub number_of_chunks: u32,
     pub file_size: u64,
-    pub file_hash: String,
+    pub file_hash: Vec<u8>,
     pub is_premium_pack: bool,
     pub pack_type: u8,
 }

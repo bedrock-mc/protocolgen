@@ -4,5 +4,5 @@ package protocol2168
 
 type ScriptMessage struct {
 	MessageId    string
-	MessageValue string
+	MessageValue []byte
 }

@@ -762,7 +762,7 @@ pub struct CerealizerNetworkItemInstanceDescriptorSerializedData {
     pub stack_size: u16,
     pub aux_value: u32,
     pub block_runtime_id: i32,
-    pub user_data_buffer: String,
+    pub user_data_buffer: Vec<u8>,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -772,7 +772,7 @@ pub struct CerealizerNetworkItemStackDescriptorSerializedData {
     pub aux_value: u32,
     pub net_id_variant: Option<i32>,
     pub block_runtime_id: u32,
-    pub user_data_buffer: String,
+    pub user_data_buffer: Vec<u8>,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -1147,7 +1147,7 @@ pub struct ExternalLinkSettings {
 #[derive(Clone, Debug, PartialEq)]
 pub struct FeatureRegistryFeatureBinaryJsonFormat {
     pub feature_name: String,
-    pub binary_json_output: String,
+    pub binary_json_output: Vec<u8>,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -1413,7 +1413,7 @@ pub struct ItemStackRequestCerealNetworkItemInstanceDescriptorData {
     pub item_descriptor: ItemStackRequestCerealRecipeIngredientDataItemDescriptor,
     pub stack_size: u16,
     pub block_runtime_id: u32,
-    pub user_data_buffer: String,
+    pub user_data_buffer: Vec<u8>,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -1814,7 +1814,7 @@ pub struct MemoryMemoryCategoryCounter {
 #[derive(Clone, Debug, PartialEq)]
 pub struct MissingBlobData {
     pub blob_id: u64,
-    pub blob_data: String,
+    pub blob_data: Vec<u8>,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -2428,7 +2428,7 @@ pub struct SubChunkPos {
 pub struct SubChunkSubChunkPacketData {
     pub sub_chunk_pos_offset: SubChunkSubChunkPosOffset,
     pub sub_chunk_request_result: SubChunkSubChunkRequestResult,
-    pub serialized_sub_chunk: Option<String>,
+    pub serialized_sub_chunk: Option<Vec<u8>>,
     pub height_map_data: SubChunkHeightmapData,
     pub blob_id: Option<u64>,
 }

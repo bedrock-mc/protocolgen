@@ -4,7 +4,7 @@ package protocol2168
 
 type PhotoTransfer struct {
 	PhotoName    string
-	PhotoData    string
+	PhotoData    []byte
 	BookID       string
 	Type         PhotoType
 	SourceType   PhotoType

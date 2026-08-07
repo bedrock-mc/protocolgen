@@ -3,5 +3,5 @@
 package protocol2168
 
 type SubClientLogin struct {
-	SubClientConnectionRequest string
+	SubClientConnectionRequest []byte
 }

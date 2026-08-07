@@ -6,7 +6,7 @@ use crate::*;
 #[derive(Clone, Debug, PartialEq)]
 pub struct Login {
     pub client_network_version: i32,
-    pub connection_request: String,
+    pub connection_request: Vec<u8>,
 }
 
 impl Login {

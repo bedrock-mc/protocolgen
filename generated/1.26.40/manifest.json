@@ -57,7 +57,7 @@
           "name": "Connection Request",
           "semantic": "Connection Request",
           "encode": {
-            "kind": "string",
+            "kind": "bytes",
             "prefix": {
               "kind": "primitive",
               "primitive": {
@@ -68,14 +68,27 @@
                 "endianness": "none"
               }
             },
-            "encoding": "utf8",
-            "representation": "text"
+            "representation": "bytes"
           },
           "symmetry": "symmetric",
           "provenance": {
             "pins": [
               "endstone",
               "mojang"
+            ],
+            "evidence": [
+              {
+                "source_id": "gophertunnel",
+                "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/login/request.go#L361-L373",
+                "summary": "encodeRequest places two little-endian int32 lengths and the raw chain/JWT bytes in the connection request.",
+                "external": true
+              },
+              {
+                "source_id": "gophertunnel",
+                "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/login.go#L17-L27",
+                "summary": "Login.ConnectionRequest is []byte and Login.Marshal uses io.ByteSlice.",
+                "external": true
+              }
             ]
           }
         }
@@ -6985,7 +6998,7 @@
                 "name": "User Data Buffer",
                 "semantic": "User Data Buffer",
                 "encode": {
-                  "kind": "string",
+                  "kind": "bytes",
                   "prefix": {
                     "kind": "primitive",
                     "primitive": {
@@ -6996,14 +7009,27 @@
                       "endianness": "none"
                     }
                   },
-                  "encoding": "utf8",
-                  "representation": "text"
+                  "representation": "bytes"
                 },
                 "symmetry": "symmetric",
                 "provenance": {
                   "pins": [
                     "endstone",
                     "mojang"
+                  ],
+                  "evidence": [
+                    {
+                      "source_id": "gophertunnel",
+                      "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+                      "summary": "The corresponding reader obtains the complete serialized buffer through r.ByteSlice.",
+                      "external": true
+                    },
+                    {
+                      "source_id": "gophertunnel",
+                      "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+                      "summary": "The stack descriptor's shared user-data buffer is binary item data written with w.ByteSlice.",
+                      "external": true
+                    }
                   ]
                 }
               }
@@ -11729,7 +11755,7 @@
                 "name": "User Data Buffer",
                 "semantic": "User Data Buffer",
                 "encode": {
-                  "kind": "string",
+                  "kind": "bytes",
                   "prefix": {
                     "kind": "primitive",
                     "primitive": {
@@ -11740,14 +11766,27 @@
                       "endianness": "none"
                     }
                   },
-                  "encoding": "utf8",
-                  "representation": "text"
+                  "representation": "bytes"
                 },
                 "symmetry": "symmetric",
                 "provenance": {
                   "pins": [
                     "endstone",
                     "mojang"
+                  ],
+                  "evidence": [
+                    {
+                      "source_id": "gophertunnel",
+                      "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+                      "summary": "The corresponding reader obtains the complete serialized buffer through r.ByteSlice.",
+                      "external": true
+                    },
+                    {
+                      "source_id": "gophertunnel",
+                      "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+                      "summary": "The stack descriptor's shared user-data buffer is binary item data written with w.ByteSlice.",
+                      "external": true
+                    }
                   ]
                 }
               }
@@ -17002,7 +17041,7 @@
                                               "name": "User Data Buffer",
                                               "semantic": "User Data Buffer",
                                               "encode": {
-                                                "kind": "string",
+                                                "kind": "bytes",
                                                 "prefix": {
                                                   "kind": "primitive",
                                                   "primitive": {
@@ -17013,13 +17052,26 @@
                                                     "endianness": "none"
                                                   }
                                                 },
-                                                "encoding": "utf8",
-                                                "representation": "text"
+                                                "representation": "bytes"
                                               },
                                               "symmetry": "symmetric",
                                               "provenance": {
                                                 "pins": [
                                                   "endstone"
+                                                ],
+                                                "evidence": [
+                                                  {
+                                                    "source_id": "gophertunnel",
+                                                    "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+                                                    "summary": "The corresponding reader obtains the complete serialized buffer through r.ByteSlice.",
+                                                    "external": true
+                                                  },
+                                                  {
+                                                    "source_id": "gophertunnel",
+                                                    "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+                                                    "summary": "The stack descriptor's shared user-data buffer is binary item data written with w.ByteSlice.",
+                                                    "external": true
+                                                  }
                                                 ]
                                               }
                                             }
@@ -17154,7 +17206,7 @@
                                               "name": "User Data Buffer",
                                               "semantic": "User Data Buffer",
                                               "encode": {
-                                                "kind": "string",
+                                                "kind": "bytes",
                                                 "prefix": {
                                                   "kind": "primitive",
                                                   "primitive": {
@@ -17165,13 +17217,26 @@
                                                     "endianness": "none"
                                                   }
                                                 },
-                                                "encoding": "utf8",
-                                                "representation": "text"
+                                                "representation": "bytes"
                                               },
                                               "symmetry": "symmetric",
                                               "provenance": {
                                                 "pins": [
                                                   "endstone"
+                                                ],
+                                                "evidence": [
+                                                  {
+                                                    "source_id": "gophertunnel",
+                                                    "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+                                                    "summary": "The corresponding reader obtains the complete serialized buffer through r.ByteSlice.",
+                                                    "external": true
+                                                  },
+                                                  {
+                                                    "source_id": "gophertunnel",
+                                                    "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+                                                    "summary": "The stack descriptor's shared user-data buffer is binary item data written with w.ByteSlice.",
+                                                    "external": true
+                                                  }
                                                 ]
                                               }
                                             }
@@ -17540,7 +17605,7 @@
                                               "name": "User Data Buffer",
                                               "semantic": "User Data Buffer",
                                               "encode": {
-                                                "kind": "string",
+                                                "kind": "bytes",
                                                 "prefix": {
                                                   "kind": "primitive",
                                                   "primitive": {
@@ -17551,13 +17616,26 @@
                                                     "endianness": "none"
                                                   }
                                                 },
-                                                "encoding": "utf8",
-                                                "representation": "text"
+                                                "representation": "bytes"
                                               },
                                               "symmetry": "symmetric",
                                               "provenance": {
                                                 "pins": [
                                                   "endstone"
+                                                ],
+                                                "evidence": [
+                                                  {
+                                                    "source_id": "gophertunnel",
+                                                    "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+                                                    "summary": "The corresponding reader obtains the complete serialized buffer through r.ByteSlice.",
+                                                    "external": true
+                                                  },
+                                                  {
+                                                    "source_id": "gophertunnel",
+                                                    "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+                                                    "summary": "The stack descriptor's shared user-data buffer is binary item data written with w.ByteSlice.",
+                                                    "external": true
+                                                  }
                                                 ]
                                               }
                                             }
@@ -17692,7 +17770,7 @@
                                               "name": "User Data Buffer",
                                               "semantic": "User Data Buffer",
                                               "encode": {
-                                                "kind": "string",
+                                                "kind": "bytes",
                                                 "prefix": {
                                                   "kind": "primitive",
                                                   "primitive": {
@@ -17703,13 +17781,26 @@
                                                     "endianness": "none"
                                                   }
                                                 },
-                                                "encoding": "utf8",
-                                                "representation": "text"
+                                                "representation": "bytes"
                                               },
                                               "symmetry": "symmetric",
                                               "provenance": {
                                                 "pins": [
                                                   "endstone"
+                                                ],
+                                                "evidence": [
+                                                  {
+                                                    "source_id": "gophertunnel",
+                                                    "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+                                                    "summary": "The corresponding reader obtains the complete serialized buffer through r.ByteSlice.",
+                                                    "external": true
+                                                  },
+                                                  {
+                                                    "source_id": "gophertunnel",
+                                                    "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+                                                    "summary": "The stack descriptor's shared user-data buffer is binary item data written with w.ByteSlice.",
+                                                    "external": true
+                                                  }
                                                 ]
                                               }
                                             }
@@ -18078,7 +18169,7 @@
                                               "name": "User Data Buffer",
                                               "semantic": "User Data Buffer",
                                               "encode": {
-                                                "kind": "string",
+                                                "kind": "bytes",
                                                 "prefix": {
                                                   "kind": "primitive",
                                                   "primitive": {
@@ -18089,13 +18180,26 @@
                                                     "endianness": "none"
                                                   }
                                                 },
-                                                "encoding": "utf8",
-                                                "representation": "text"
+                                                "representation": "bytes"
                                               },
                                               "symmetry": "symmetric",
                                               "provenance": {
                                                 "pins": [
                                                   "endstone"
+                                                ],
+                                                "evidence": [
+                                                  {
+                                                    "source_id": "gophertunnel",
+                                                    "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+                                                    "summary": "The corresponding reader obtains the complete serialized buffer through r.ByteSlice.",
+                                                    "external": true
+                                                  },
+                                                  {
+                                                    "source_id": "gophertunnel",
+                                                    "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+                                                    "summary": "The stack descriptor's shared user-data buffer is binary item data written with w.ByteSlice.",
+                                                    "external": true
+                                                  }
                                                 ]
                                               }
                                             }
@@ -18230,7 +18334,7 @@
                                               "name": "User Data Buffer",
                                               "semantic": "User Data Buffer",
                                               "encode": {
-                                                "kind": "string",
+                                                "kind": "bytes",
                                                 "prefix": {
                                                   "kind": "primitive",
                                                   "primitive": {
@@ -18241,13 +18345,26 @@
                                                     "endianness": "none"
                                                   }
                                                 },
-                                                "encoding": "utf8",
-                                                "representation": "text"
+                                                "representation": "bytes"
                                               },
                                               "symmetry": "symmetric",
                                               "provenance": {
                                                 "pins": [
                                                   "endstone"
+                                                ],
+                                                "evidence": [
+                                                  {
+                                                    "source_id": "gophertunnel",
+                                                    "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+                                                    "summary": "The corresponding reader obtains the complete serialized buffer through r.ByteSlice.",
+                                                    "external": true
+                                                  },
+                                                  {
+                                                    "source_id": "gophertunnel",
+                                                    "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+                                                    "summary": "The stack descriptor's shared user-data buffer is binary item data written with w.ByteSlice.",
+                                                    "external": true
+                                                  }
                                                 ]
                                               }
                                             }
@@ -18624,7 +18741,7 @@
                               "name": "User Data Buffer",
                               "semantic": "User Data Buffer",
                               "encode": {
-                                "kind": "string",
+                                "kind": "bytes",
                                 "prefix": {
                                   "kind": "primitive",
                                   "primitive": {
@@ -18635,13 +18752,26 @@
                                     "endianness": "none"
                                   }
                                 },
-                                "encoding": "utf8",
-                                "representation": "text"
+                                "representation": "bytes"
                               },
                               "symmetry": "symmetric",
                               "provenance": {
                                 "pins": [
                                   "endstone"
+                                ],
+                                "evidence": [
+                                  {
+                                    "source_id": "gophertunnel",
+                                    "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+                                    "summary": "The corresponding reader obtains the complete serialized buffer through r.ByteSlice.",
+                                    "external": true
+                                  },
+                                  {
+                                    "source_id": "gophertunnel",
+                                    "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+                                    "summary": "The stack descriptor's shared user-data buffer is binary item data written with w.ByteSlice.",
+                                    "external": true
+                                  }
                                 ]
                               }
                             }
@@ -19251,7 +19381,7 @@
                                               "name": "User Data Buffer",
                                               "semantic": "User Data Buffer",
                                               "encode": {
-                                                "kind": "string",
+                                                "kind": "bytes",
                                                 "prefix": {
                                                   "kind": "primitive",
                                                   "primitive": {
@@ -19262,13 +19392,26 @@
                                                     "endianness": "none"
                                                   }
                                                 },
-                                                "encoding": "utf8",
-                                                "representation": "text"
+                                                "representation": "bytes"
                                               },
                                               "symmetry": "symmetric",
                                               "provenance": {
                                                 "pins": [
                                                   "endstone"
+                                                ],
+                                                "evidence": [
+                                                  {
+                                                    "source_id": "gophertunnel",
+                                                    "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+                                                    "summary": "The corresponding reader obtains the complete serialized buffer through r.ByteSlice.",
+                                                    "external": true
+                                                  },
+                                                  {
+                                                    "source_id": "gophertunnel",
+                                                    "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+                                                    "summary": "The stack descriptor's shared user-data buffer is binary item data written with w.ByteSlice.",
+                                                    "external": true
+                                                  }
                                                 ]
                                               }
                                             }
@@ -19403,7 +19546,7 @@
                                               "name": "User Data Buffer",
                                               "semantic": "User Data Buffer",
                                               "encode": {
-                                                "kind": "string",
+                                                "kind": "bytes",
                                                 "prefix": {
                                                   "kind": "primitive",
                                                   "primitive": {
@@ -19414,13 +19557,26 @@
                                                     "endianness": "none"
                                                   }
                                                 },
-                                                "encoding": "utf8",
-                                                "representation": "text"
+                                                "representation": "bytes"
                                               },
                                               "symmetry": "symmetric",
                                               "provenance": {
                                                 "pins": [
                                                   "endstone"
+                                                ],
+                                                "evidence": [
+                                                  {
+                                                    "source_id": "gophertunnel",
+                                                    "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+                                                    "summary": "The corresponding reader obtains the complete serialized buffer through r.ByteSlice.",
+                                                    "external": true
+                                                  },
+                                                  {
+                                                    "source_id": "gophertunnel",
+                                                    "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+                                                    "summary": "The stack descriptor's shared user-data buffer is binary item data written with w.ByteSlice.",
+                                                    "external": true
+                                                  }
                                                 ]
                                               }
                                             }
@@ -19681,7 +19837,7 @@
                               "name": "User Data Buffer",
                               "semantic": "User Data Buffer",
                               "encode": {
-                                "kind": "string",
+                                "kind": "bytes",
                                 "prefix": {
                                   "kind": "primitive",
                                   "primitive": {
@@ -19692,13 +19848,26 @@
                                     "endianness": "none"
                                   }
                                 },
-                                "encoding": "utf8",
-                                "representation": "text"
+                                "representation": "bytes"
                               },
                               "symmetry": "symmetric",
                               "provenance": {
                                 "pins": [
                                   "endstone"
+                                ],
+                                "evidence": [
+                                  {
+                                    "source_id": "gophertunnel",
+                                    "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+                                    "summary": "The corresponding reader obtains the complete serialized buffer through r.ByteSlice.",
+                                    "external": true
+                                  },
+                                  {
+                                    "source_id": "gophertunnel",
+                                    "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+                                    "summary": "The stack descriptor's shared user-data buffer is binary item data written with w.ByteSlice.",
+                                    "external": true
+                                  }
                                 ]
                               }
                             }
@@ -20209,7 +20378,7 @@
                                               "name": "User Data Buffer",
                                               "semantic": "User Data Buffer",
                                               "encode": {
-                                                "kind": "string",
+                                                "kind": "bytes",
                                                 "prefix": {
                                                   "kind": "primitive",
                                                   "primitive": {
@@ -20220,13 +20389,26 @@
                                                     "endianness": "none"
                                                   }
                                                 },
-                                                "encoding": "utf8",
-                                                "representation": "text"
+                                                "representation": "bytes"
                                               },
                                               "symmetry": "symmetric",
                                               "provenance": {
                                                 "pins": [
                                                   "endstone"
+                                                ],
+                                                "evidence": [
+                                                  {
+                                                    "source_id": "gophertunnel",
+                                                    "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+                                                    "summary": "The corresponding reader obtains the complete serialized buffer through r.ByteSlice.",
+                                                    "external": true
+                                                  },
+                                                  {
+                                                    "source_id": "gophertunnel",
+                                                    "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+                                                    "summary": "The stack descriptor's shared user-data buffer is binary item data written with w.ByteSlice.",
+                                                    "external": true
+                                                  }
                                                 ]
                                               }
                                             }
@@ -20361,7 +20543,7 @@
                                               "name": "User Data Buffer",
                                               "semantic": "User Data Buffer",
                                               "encode": {
-                                                "kind": "string",
+                                                "kind": "bytes",
                                                 "prefix": {
                                                   "kind": "primitive",
                                                   "primitive": {
@@ -20372,13 +20554,26 @@
                                                     "endianness": "none"
                                                   }
                                                 },
-                                                "encoding": "utf8",
-                                                "representation": "text"
+                                                "representation": "bytes"
                                               },
                                               "symmetry": "symmetric",
                                               "provenance": {
                                                 "pins": [
                                                   "endstone"
+                                                ],
+                                                "evidence": [
+                                                  {
+                                                    "source_id": "gophertunnel",
+                                                    "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+                                                    "summary": "The corresponding reader obtains the complete serialized buffer through r.ByteSlice.",
+                                                    "external": true
+                                                  },
+                                                  {
+                                                    "source_id": "gophertunnel",
+                                                    "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+                                                    "summary": "The stack descriptor's shared user-data buffer is binary item data written with w.ByteSlice.",
+                                                    "external": true
+                                                  }
                                                 ]
                                               }
                                             }
@@ -20593,7 +20788,7 @@
                               "name": "User Data Buffer",
                               "semantic": "User Data Buffer",
                               "encode": {
-                                "kind": "string",
+                                "kind": "bytes",
                                 "prefix": {
                                   "kind": "primitive",
                                   "primitive": {
@@ -20604,13 +20799,26 @@
                                     "endianness": "none"
                                   }
                                 },
-                                "encoding": "utf8",
-                                "representation": "text"
+                                "representation": "bytes"
                               },
                               "symmetry": "symmetric",
                               "provenance": {
                                 "pins": [
                                   "endstone"
+                                ],
+                                "evidence": [
+                                  {
+                                    "source_id": "gophertunnel",
+                                    "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+                                    "summary": "The corresponding reader obtains the complete serialized buffer through r.ByteSlice.",
+                                    "external": true
+                                  },
+                                  {
+                                    "source_id": "gophertunnel",
+                                    "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+                                    "summary": "The stack descriptor's shared user-data buffer is binary item data written with w.ByteSlice.",
+                                    "external": true
+                                  }
                                 ]
                               }
                             }
@@ -20903,7 +21111,7 @@
                 "name": "User Data Buffer",
                 "semantic": "User Data Buffer",
                 "encode": {
-                  "kind": "string",
+                  "kind": "bytes",
                   "prefix": {
                     "kind": "primitive",
                     "primitive": {
@@ -20914,14 +21122,27 @@
                       "endianness": "none"
                     }
                   },
-                  "encoding": "utf8",
-                  "representation": "text"
+                  "representation": "bytes"
                 },
                 "symmetry": "symmetric",
                 "provenance": {
                   "pins": [
                     "endstone",
                     "mojang"
+                  ],
+                  "evidence": [
+                    {
+                      "source_id": "gophertunnel",
+                      "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+                      "summary": "The corresponding reader obtains the complete serialized buffer through r.ByteSlice.",
+                      "external": true
+                    },
+                    {
+                      "source_id": "gophertunnel",
+                      "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+                      "summary": "The stack descriptor's shared user-data buffer is binary item data written with w.ByteSlice.",
+                      "external": true
+                    }
                   ]
                 }
               }
@@ -21177,7 +21398,7 @@
                 "name": "User Data Buffer",
                 "semantic": "User Data Buffer",
                 "encode": {
-                  "kind": "string",
+                  "kind": "bytes",
                   "prefix": {
                     "kind": "primitive",
                     "primitive": {
@@ -21188,14 +21409,27 @@
                       "endianness": "none"
                     }
                   },
-                  "encoding": "utf8",
-                  "representation": "text"
+                  "representation": "bytes"
                 },
                 "symmetry": "symmetric",
                 "provenance": {
                   "pins": [
                     "endstone",
                     "mojang"
+                  ],
+                  "evidence": [
+                    {
+                      "source_id": "gophertunnel",
+                      "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+                      "summary": "The corresponding reader obtains the complete serialized buffer through r.ByteSlice.",
+                      "external": true
+                    },
+                    {
+                      "source_id": "gophertunnel",
+                      "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+                      "summary": "The stack descriptor's shared user-data buffer is binary item data written with w.ByteSlice.",
+                      "external": true
+                    }
                   ]
                 }
               }
@@ -21337,7 +21571,7 @@
                 "name": "User Data Buffer",
                 "semantic": "User Data Buffer",
                 "encode": {
-                  "kind": "string",
+                  "kind": "bytes",
                   "prefix": {
                     "kind": "primitive",
                     "primitive": {
@@ -21348,14 +21582,27 @@
                       "endianness": "none"
                     }
                   },
-                  "encoding": "utf8",
-                  "representation": "text"
+                  "representation": "bytes"
                 },
                 "symmetry": "symmetric",
                 "provenance": {
                   "pins": [
                     "endstone",
                     "mojang"
+                  ],
+                  "evidence": [
+                    {
+                      "source_id": "gophertunnel",
+                      "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+                      "summary": "The corresponding reader obtains the complete serialized buffer through r.ByteSlice.",
+                      "external": true
+                    },
+                    {
+                      "source_id": "gophertunnel",
+                      "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+                      "summary": "The stack descriptor's shared user-data buffer is binary item data written with w.ByteSlice.",
+                      "external": true
+                    }
                   ]
                 }
               }
@@ -21497,7 +21744,7 @@
                 "name": "User Data Buffer",
                 "semantic": "User Data Buffer",
                 "encode": {
-                  "kind": "string",
+                  "kind": "bytes",
                   "prefix": {
                     "kind": "primitive",
                     "primitive": {
@@ -21508,14 +21755,27 @@
                       "endianness": "none"
                     }
                   },
-                  "encoding": "utf8",
-                  "representation": "text"
+                  "representation": "bytes"
                 },
                 "symmetry": "symmetric",
                 "provenance": {
                   "pins": [
                     "endstone",
                     "mojang"
+                  ],
+                  "evidence": [
+                    {
+                      "source_id": "gophertunnel",
+                      "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+                      "summary": "The corresponding reader obtains the complete serialized buffer through r.ByteSlice.",
+                      "external": true
+                    },
+                    {
+                      "source_id": "gophertunnel",
+                      "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+                      "summary": "The stack descriptor's shared user-data buffer is binary item data written with w.ByteSlice.",
+                      "external": true
+                    }
                   ]
                 }
               }
@@ -21657,7 +21917,7 @@
                 "name": "User Data Buffer",
                 "semantic": "User Data Buffer",
                 "encode": {
-                  "kind": "string",
+                  "kind": "bytes",
                   "prefix": {
                     "kind": "primitive",
                     "primitive": {
@@ -21668,14 +21928,27 @@
                       "endianness": "none"
                     }
                   },
-                  "encoding": "utf8",
-                  "representation": "text"
+                  "representation": "bytes"
                 },
                 "symmetry": "symmetric",
                 "provenance": {
                   "pins": [
                     "endstone",
                     "mojang"
+                  ],
+                  "evidence": [
+                    {
+                      "source_id": "gophertunnel",
+                      "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+                      "summary": "The corresponding reader obtains the complete serialized buffer through r.ByteSlice.",
+                      "external": true
+                    },
+                    {
+                      "source_id": "gophertunnel",
+                      "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+                      "summary": "The stack descriptor's shared user-data buffer is binary item data written with w.ByteSlice.",
+                      "external": true
+                    }
                   ]
                 }
               }
@@ -21817,7 +22090,7 @@
                 "name": "User Data Buffer",
                 "semantic": "User Data Buffer",
                 "encode": {
-                  "kind": "string",
+                  "kind": "bytes",
                   "prefix": {
                     "kind": "primitive",
                     "primitive": {
@@ -21828,14 +22101,27 @@
                       "endianness": "none"
                     }
                   },
-                  "encoding": "utf8",
-                  "representation": "text"
+                  "representation": "bytes"
                 },
                 "symmetry": "symmetric",
                 "provenance": {
                   "pins": [
                     "endstone",
                     "mojang"
+                  ],
+                  "evidence": [
+                    {
+                      "source_id": "gophertunnel",
+                      "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+                      "summary": "The corresponding reader obtains the complete serialized buffer through r.ByteSlice.",
+                      "external": true
+                    },
+                    {
+                      "source_id": "gophertunnel",
+                      "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+                      "summary": "The stack descriptor's shared user-data buffer is binary item data written with w.ByteSlice.",
+                      "external": true
+                    }
                   ]
                 }
               }
@@ -25937,7 +26223,7 @@
                   "name": "User Data Buffer",
                   "semantic": "User Data Buffer",
                   "encode": {
-                    "kind": "string",
+                    "kind": "bytes",
                     "prefix": {
                       "kind": "primitive",
                       "primitive": {
@@ -25948,14 +26234,27 @@
                         "endianness": "none"
                       }
                     },
-                    "encoding": "utf8",
-                    "representation": "text"
+                    "representation": "bytes"
                   },
                   "symmetry": "symmetric",
                   "provenance": {
                     "pins": [
                       "endstone",
                       "mojang"
+                    ],
+                    "evidence": [
+                      {
+                        "source_id": "gophertunnel",
+                        "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+                        "summary": "The corresponding reader obtains the complete serialized buffer through r.ByteSlice.",
+                        "external": true
+                      },
+                      {
+                        "source_id": "gophertunnel",
+                        "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+                        "summary": "The stack descriptor's shared user-data buffer is binary item data written with w.ByteSlice.",
+                        "external": true
+                      }
                     ]
                   }
                 }
@@ -26637,7 +26936,7 @@
                 "name": "User Data Buffer",
                 "semantic": "User Data Buffer",
                 "encode": {
-                  "kind": "string",
+                  "kind": "bytes",
                   "prefix": {
                     "kind": "primitive",
                     "primitive": {
@@ -26648,14 +26947,27 @@
                       "endianness": "none"
                     }
                   },
-                  "encoding": "utf8",
-                  "representation": "text"
+                  "representation": "bytes"
                 },
                 "symmetry": "symmetric",
                 "provenance": {
                   "pins": [
                     "endstone",
                     "mojang"
+                  ],
+                  "evidence": [
+                    {
+                      "source_id": "gophertunnel",
+                      "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+                      "summary": "The corresponding reader obtains the complete serialized buffer through r.ByteSlice.",
+                      "external": true
+                    },
+                    {
+                      "source_id": "gophertunnel",
+                      "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+                      "summary": "The stack descriptor's shared user-data buffer is binary item data written with w.ByteSlice.",
+                      "external": true
+                    }
                   ]
                 }
               }
@@ -27392,7 +27704,7 @@
                   "name": "User Data Buffer",
                   "semantic": "User Data Buffer",
                   "encode": {
-                    "kind": "string",
+                    "kind": "bytes",
                     "prefix": {
                       "kind": "primitive",
                       "primitive": {
@@ -27403,14 +27715,27 @@
                         "endianness": "none"
                       }
                     },
-                    "encoding": "utf8",
-                    "representation": "text"
+                    "representation": "bytes"
                   },
                   "symmetry": "symmetric",
                   "provenance": {
                     "pins": [
                       "endstone",
                       "mojang"
+                    ],
+                    "evidence": [
+                      {
+                        "source_id": "gophertunnel",
+                        "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+                        "summary": "The corresponding reader obtains the complete serialized buffer through r.ByteSlice.",
+                        "external": true
+                      },
+                      {
+                        "source_id": "gophertunnel",
+                        "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+                        "summary": "The stack descriptor's shared user-data buffer is binary item data written with w.ByteSlice.",
+                        "external": true
+                      }
                     ]
                   }
                 }
@@ -27553,7 +27878,7 @@
                 "name": "User Data Buffer",
                 "semantic": "User Data Buffer",
                 "encode": {
-                  "kind": "string",
+                  "kind": "bytes",
                   "prefix": {
                     "kind": "primitive",
                     "primitive": {
@@ -27564,14 +27889,27 @@
                       "endianness": "none"
                     }
                   },
-                  "encoding": "utf8",
-                  "representation": "text"
+                  "representation": "bytes"
                 },
                 "symmetry": "symmetric",
                 "provenance": {
                   "pins": [
                     "endstone",
                     "mojang"
+                  ],
+                  "evidence": [
+                    {
+                      "source_id": "gophertunnel",
+                      "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+                      "summary": "The corresponding reader obtains the complete serialized buffer through r.ByteSlice.",
+                      "external": true
+                    },
+                    {
+                      "source_id": "gophertunnel",
+                      "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+                      "summary": "The stack descriptor's shared user-data buffer is binary item data written with w.ByteSlice.",
+                      "external": true
+                    }
                   ]
                 }
               }
@@ -27992,7 +28330,7 @@
                           "name": "User Data Buffer",
                           "semantic": "User Data Buffer",
                           "encode": {
-                            "kind": "string",
+                            "kind": "bytes",
                             "prefix": {
                               "kind": "primitive",
                               "primitive": {
@@ -28003,13 +28341,26 @@
                                 "endianness": "none"
                               }
                             },
-                            "encoding": "utf8",
-                            "representation": "text"
+                            "representation": "bytes"
                           },
                           "symmetry": "symmetric",
                           "provenance": {
                             "pins": [
                               "endstone"
+                            ],
+                            "evidence": [
+                              {
+                                "source_id": "gophertunnel",
+                                "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+                                "summary": "The corresponding reader obtains the complete serialized buffer through r.ByteSlice.",
+                                "external": true
+                              },
+                              {
+                                "source_id": "gophertunnel",
+                                "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+                                "summary": "The shared item descriptor user-data buffer is assembled with binary NBT and written with w.ByteSlice.",
+                                "external": true
+                              }
                             ]
                           }
                         }
@@ -28658,7 +29009,7 @@
                           "name": "User Data Buffer",
                           "semantic": "User Data Buffer",
                           "encode": {
-                            "kind": "string",
+                            "kind": "bytes",
                             "prefix": {
                               "kind": "primitive",
                               "primitive": {
@@ -28669,13 +29020,26 @@
                                 "endianness": "none"
                               }
                             },
-                            "encoding": "utf8",
-                            "representation": "text"
+                            "representation": "bytes"
                           },
                           "symmetry": "symmetric",
                           "provenance": {
                             "pins": [
                               "endstone"
+                            ],
+                            "evidence": [
+                              {
+                                "source_id": "gophertunnel",
+                                "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+                                "summary": "The corresponding reader obtains the complete serialized buffer through r.ByteSlice.",
+                                "external": true
+                              },
+                              {
+                                "source_id": "gophertunnel",
+                                "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+                                "summary": "The shared item descriptor user-data buffer is assembled with binary NBT and written with w.ByteSlice.",
+                                "external": true
+                              }
                             ]
                           }
                         }
@@ -29395,7 +29759,7 @@
                           "name": "User Data Buffer",
                           "semantic": "User Data Buffer",
                           "encode": {
-                            "kind": "string",
+                            "kind": "bytes",
                             "prefix": {
                               "kind": "primitive",
                               "primitive": {
@@ -29406,13 +29770,26 @@
                                 "endianness": "none"
                               }
                             },
-                            "encoding": "utf8",
-                            "representation": "text"
+                            "representation": "bytes"
                           },
                           "symmetry": "symmetric",
                           "provenance": {
                             "pins": [
                               "endstone"
+                            ],
+                            "evidence": [
+                              {
+                                "source_id": "gophertunnel",
+                                "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+                                "summary": "The corresponding reader obtains the complete serialized buffer through r.ByteSlice.",
+                                "external": true
+                              },
+                              {
+                                "source_id": "gophertunnel",
+                                "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+                                "summary": "The shared item descriptor user-data buffer is assembled with binary NBT and written with w.ByteSlice.",
+                                "external": true
+                              }
                             ]
                           }
                         }
@@ -30040,7 +30417,7 @@
                           "name": "User Data Buffer",
                           "semantic": "User Data Buffer",
                           "encode": {
-                            "kind": "string",
+                            "kind": "bytes",
                             "prefix": {
                               "kind": "primitive",
                               "primitive": {
@@ -30051,13 +30428,26 @@
                                 "endianness": "none"
                               }
                             },
-                            "encoding": "utf8",
-                            "representation": "text"
+                            "representation": "bytes"
                           },
                           "symmetry": "symmetric",
                           "provenance": {
                             "pins": [
                               "endstone"
+                            ],
+                            "evidence": [
+                              {
+                                "source_id": "gophertunnel",
+                                "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+                                "summary": "The corresponding reader obtains the complete serialized buffer through r.ByteSlice.",
+                                "external": true
+                              },
+                              {
+                                "source_id": "gophertunnel",
+                                "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+                                "summary": "The shared item descriptor user-data buffer is assembled with binary NBT and written with w.ByteSlice.",
+                                "external": true
+                              }
                             ]
                           }
                         }
@@ -30727,7 +31117,7 @@
                           "name": "User Data Buffer",
                           "semantic": "User Data Buffer",
                           "encode": {
-                            "kind": "string",
+                            "kind": "bytes",
                             "prefix": {
                               "kind": "primitive",
                               "primitive": {
@@ -30738,13 +31128,26 @@
                                 "endianness": "none"
                               }
                             },
-                            "encoding": "utf8",
-                            "representation": "text"
+                            "representation": "bytes"
                           },
                           "symmetry": "symmetric",
                           "provenance": {
                             "pins": [
                               "endstone"
+                            ],
+                            "evidence": [
+                              {
+                                "source_id": "gophertunnel",
+                                "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+                                "summary": "The corresponding reader obtains the complete serialized buffer through r.ByteSlice.",
+                                "external": true
+                              },
+                              {
+                                "source_id": "gophertunnel",
+                                "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+                                "summary": "The shared item descriptor user-data buffer is assembled with binary NBT and written with w.ByteSlice.",
+                                "external": true
+                              }
                             ]
                           }
                         }
@@ -31598,7 +32001,7 @@
                         "name": "User Data Buffer",
                         "semantic": "User Data Buffer",
                         "encode": {
-                          "kind": "string",
+                          "kind": "bytes",
                           "prefix": {
                             "kind": "primitive",
                             "primitive": {
@@ -31609,13 +32012,26 @@
                               "endianness": "none"
                             }
                           },
-                          "encoding": "utf8",
-                          "representation": "text"
+                          "representation": "bytes"
                         },
                         "symmetry": "symmetric",
                         "provenance": {
                           "pins": [
                             "endstone"
+                          ],
+                          "evidence": [
+                            {
+                              "source_id": "gophertunnel",
+                              "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+                              "summary": "The corresponding reader obtains the complete serialized buffer through r.ByteSlice.",
+                              "external": true
+                            },
+                            {
+                              "source_id": "gophertunnel",
+                              "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+                              "summary": "The shared item descriptor user-data buffer is assembled with binary NBT and written with w.ByteSlice.",
+                              "external": true
+                            }
                           ]
                         }
                       }
@@ -33016,7 +33432,7 @@
           "name": "Serialized Chunk Data",
           "semantic": "Serialized Chunk Data",
           "encode": {
-            "kind": "string",
+            "kind": "bytes",
             "prefix": {
               "kind": "primitive",
               "primitive": {
@@ -33027,14 +33443,21 @@
                 "endianness": "none"
               }
             },
-            "encoding": "utf8",
-            "representation": "text"
+            "representation": "bytes"
           },
           "symmetry": "symmetric",
           "provenance": {
             "pins": [
               "endstone",
               "mojang"
+            ],
+            "evidence": [
+              {
+                "source_id": "gophertunnel",
+                "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/level_chunk.go#L31-L53",
+                "summary": "LevelChunk.RawPayload is []byte and is serialized with io.ByteSlice; it contains serialized chunk data.",
+                "external": true
+              }
             ]
           }
         }
@@ -43498,7 +43921,7 @@
           "name": "File Hash",
           "semantic": "File Hash",
           "encode": {
-            "kind": "string",
+            "kind": "bytes",
             "prefix": {
               "kind": "primitive",
               "primitive": {
@@ -43509,14 +43932,21 @@
                 "endianness": "none"
               }
             },
-            "encoding": "utf8",
-            "representation": "text"
+            "representation": "bytes"
           },
           "symmetry": "symmetric",
           "provenance": {
             "pins": [
               "endstone",
               "mojang"
+            ],
+            "evidence": [
+              {
+                "source_id": "gophertunnel",
+                "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/resource_pack_data_info.go#L36-L56",
+                "summary": "ResourcePackDataInfo.Hash is a raw SHA-256 []byte and is serialized with io.ByteSlice.",
+                "external": true
+              }
             ]
           }
         },
@@ -43647,7 +44077,7 @@
           "name": "Chunk Data",
           "semantic": "Chunk Data",
           "encode": {
-            "kind": "string",
+            "kind": "bytes",
             "prefix": {
               "kind": "primitive",
               "primitive": {
@@ -43658,14 +44088,21 @@
                 "endianness": "none"
               }
             },
-            "encoding": "utf8",
-            "representation": "text"
+            "representation": "bytes"
           },
           "symmetry": "symmetric",
           "provenance": {
             "pins": [
               "endstone",
               "mojang"
+            ],
+            "evidence": [
+              {
+                "source_id": "gophertunnel",
+                "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/resource_pack_chunk_data.go#L19-L33",
+                "summary": "ResourcePackChunkData.Data is []byte and is serialized with io.ByteSlice as a compressed-pack chunk.",
+                "external": true
+              }
             ]
           }
         }
@@ -47240,7 +47677,7 @@
           "name": "Sub Client Connection Request",
           "semantic": "Sub Client Connection Request",
           "encode": {
-            "kind": "string",
+            "kind": "bytes",
             "prefix": {
               "kind": "primitive",
               "primitive": {
@@ -47251,14 +47688,21 @@
                 "endianness": "none"
               }
             },
-            "encoding": "utf8",
-            "representation": "text"
+            "representation": "bytes"
           },
           "symmetry": "symmetric",
           "provenance": {
             "pins": [
               "endstone",
               "mojang"
+            ],
+            "evidence": [
+              {
+                "source_id": "gophertunnel",
+                "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/sub_client_login.go#L16-L25",
+                "summary": "SubClientLogin.ConnectionRequest is []byte and is serialized with io.ByteSlice.",
+                "external": true
+              }
             ]
           }
         }
@@ -49096,7 +49540,7 @@
           "name": "Photo Data",
           "semantic": "Photo Data",
           "encode": {
-            "kind": "string",
+            "kind": "bytes",
             "prefix": {
               "kind": "primitive",
               "primitive": {
@@ -49107,14 +49551,21 @@
                 "endianness": "none"
               }
             },
-            "encoding": "utf8",
-            "representation": "text"
+            "representation": "bytes"
           },
           "symmetry": "symmetric",
           "provenance": {
             "pins": [
               "endstone",
               "mojang"
+            ],
+            "evidence": [
+              {
+                "source_id": "gophertunnel",
+                "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/photo_transfer.go#L21-L45",
+                "summary": "PhotoTransfer.PhotoData is raw image []byte and is serialized with io.ByteSlice.",
+                "external": true
+              }
             ]
           }
         },
@@ -58043,7 +58494,7 @@
                   "name": "Blob Data",
                   "semantic": "Blob Data",
                   "encode": {
-                    "kind": "string",
+                    "kind": "bytes",
                     "prefix": {
                       "kind": "primitive",
                       "primitive": {
@@ -58054,13 +58505,20 @@
                         "endianness": "none"
                       }
                     },
-                    "encoding": "utf8",
-                    "representation": "text"
+                    "representation": "bytes"
                   },
                   "symmetry": "symmetric",
                   "provenance": {
                     "pins": [
                       "endstone"
+                    ],
+                    "evidence": [
+                      {
+                        "source_id": "gophertunnel",
+                        "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/blob_cache.go#L6-L17",
+                        "summary": "CacheBlob.Payload is []byte and is serialized with r.ByteSlice as the cached blob payload.",
+                        "external": true
+                      }
                     ]
                   }
                 }
@@ -61101,7 +61559,7 @@
                                                   "name": "User Data Buffer",
                                                   "semantic": "User Data Buffer",
                                                   "encode": {
-                                                    "kind": "string",
+                                                    "kind": "bytes",
                                                     "prefix": {
                                                       "kind": "primitive",
                                                       "primitive": {
@@ -61112,13 +61570,26 @@
                                                         "endianness": "none"
                                                       }
                                                     },
-                                                    "encoding": "utf8",
-                                                    "representation": "text"
+                                                    "representation": "bytes"
                                                   },
                                                   "symmetry": "symmetric",
                                                   "provenance": {
                                                     "pins": [
                                                       "endstone"
+                                                    ],
+                                                    "evidence": [
+                                                      {
+                                                        "source_id": "gophertunnel",
+                                                        "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+                                                        "summary": "The corresponding reader obtains the complete serialized buffer through r.ByteSlice.",
+                                                        "external": true
+                                                      },
+                                                      {
+                                                        "source_id": "gophertunnel",
+                                                        "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+                                                        "summary": "The stack descriptor's shared user-data buffer is binary item data written with w.ByteSlice.",
+                                                        "external": true
+                                                      }
                                                     ]
                                                   }
                                                 }
@@ -61253,7 +61724,7 @@
                                                   "name": "User Data Buffer",
                                                   "semantic": "User Data Buffer",
                                                   "encode": {
-                                                    "kind": "string",
+                                                    "kind": "bytes",
                                                     "prefix": {
                                                       "kind": "primitive",
                                                       "primitive": {
@@ -61264,13 +61735,26 @@
                                                         "endianness": "none"
                                                       }
                                                     },
-                                                    "encoding": "utf8",
-                                                    "representation": "text"
+                                                    "representation": "bytes"
                                                   },
                                                   "symmetry": "symmetric",
                                                   "provenance": {
                                                     "pins": [
                                                       "endstone"
+                                                    ],
+                                                    "evidence": [
+                                                      {
+                                                        "source_id": "gophertunnel",
+                                                        "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+                                                        "summary": "The corresponding reader obtains the complete serialized buffer through r.ByteSlice.",
+                                                        "external": true
+                                                      },
+                                                      {
+                                                        "source_id": "gophertunnel",
+                                                        "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+                                                        "summary": "The stack descriptor's shared user-data buffer is binary item data written with w.ByteSlice.",
+                                                        "external": true
+                                                      }
                                                     ]
                                                   }
                                                 }
@@ -61647,7 +62131,7 @@
                                   "name": "User Data Buffer",
                                   "semantic": "User Data Buffer",
                                   "encode": {
-                                    "kind": "string",
+                                    "kind": "bytes",
                                     "prefix": {
                                       "kind": "primitive",
                                       "primitive": {
@@ -61658,13 +62142,26 @@
                                         "endianness": "none"
                                       }
                                     },
-                                    "encoding": "utf8",
-                                    "representation": "text"
+                                    "representation": "bytes"
                                   },
                                   "symmetry": "symmetric",
                                   "provenance": {
                                     "pins": [
                                       "endstone"
+                                    ],
+                                    "evidence": [
+                                      {
+                                        "source_id": "gophertunnel",
+                                        "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+                                        "summary": "The corresponding reader obtains the complete serialized buffer through r.ByteSlice.",
+                                        "external": true
+                                      },
+                                      {
+                                        "source_id": "gophertunnel",
+                                        "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+                                        "summary": "The stack descriptor's shared user-data buffer is binary item data written with w.ByteSlice.",
+                                        "external": true
+                                      }
                                     ]
                                   }
                                 }
@@ -72309,7 +72806,7 @@
                                           "name": "User Data Buffer",
                                           "semantic": "User Data Buffer",
                                           "encode": {
-                                            "kind": "string",
+                                            "kind": "bytes",
                                             "prefix": {
                                               "kind": "primitive",
                                               "primitive": {
@@ -72320,13 +72817,26 @@
                                                 "endianness": "none"
                                               }
                                             },
-                                            "encoding": "utf8",
-                                            "representation": "text"
+                                            "representation": "bytes"
                                           },
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
                                               "endstone"
+                                            ],
+                                            "evidence": [
+                                              {
+                                                "source_id": "gophertunnel",
+                                                "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+                                                "summary": "The corresponding reader captures the complete user-data buffer through r.ByteSlice.",
+                                                "external": true
+                                              },
+                                              {
+                                                "source_id": "gophertunnel",
+                                                "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+                                                "summary": "The item descriptor user-data buffer contains a sentinel, version, NBT, and string lists, then is written with w.ByteSlice.",
+                                                "external": true
+                                              }
                                             ]
                                           }
                                         }
@@ -73571,7 +74081,7 @@
                         "name": "User Data Buffer",
                         "semantic": "User Data Buffer",
                         "encode": {
-                          "kind": "string",
+                          "kind": "bytes",
                           "prefix": {
                             "kind": "primitive",
                             "primitive": {
@@ -73582,13 +74092,26 @@
                               "endianness": "none"
                             }
                           },
-                          "encoding": "utf8",
-                          "representation": "text"
+                          "representation": "bytes"
                         },
                         "symmetry": "symmetric",
                         "provenance": {
                           "pins": [
                             "endstone"
+                          ],
+                          "evidence": [
+                            {
+                              "source_id": "gophertunnel",
+                              "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+                              "summary": "The corresponding reader obtains the complete serialized buffer through r.ByteSlice.",
+                              "external": true
+                            },
+                            {
+                              "source_id": "gophertunnel",
+                              "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+                              "summary": "The shared item descriptor user-data buffer is assembled with binary NBT and written with w.ByteSlice.",
+                              "external": true
+                            }
                           ]
                         }
                       }
@@ -73771,7 +74294,7 @@
                         "name": "User Data Buffer",
                         "semantic": "User Data Buffer",
                         "encode": {
-                          "kind": "string",
+                          "kind": "bytes",
                           "prefix": {
                             "kind": "primitive",
                             "primitive": {
@@ -73782,13 +74305,26 @@
                               "endianness": "none"
                             }
                           },
-                          "encoding": "utf8",
-                          "representation": "text"
+                          "representation": "bytes"
                         },
                         "symmetry": "symmetric",
                         "provenance": {
                           "pins": [
                             "endstone"
+                          ],
+                          "evidence": [
+                            {
+                              "source_id": "gophertunnel",
+                              "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+                              "summary": "The corresponding reader obtains the complete serialized buffer through r.ByteSlice.",
+                              "external": true
+                            },
+                            {
+                              "source_id": "gophertunnel",
+                              "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+                              "summary": "The shared item descriptor user-data buffer is assembled with binary NBT and written with w.ByteSlice.",
+                              "external": true
+                            }
                           ]
                         }
                       }
@@ -84750,7 +85286,7 @@
                                         "name": "User Data Buffer",
                                         "semantic": "User Data Buffer",
                                         "encode": {
-                                          "kind": "string",
+                                          "kind": "bytes",
                                           "prefix": {
                                             "kind": "primitive",
                                             "primitive": {
@@ -84761,13 +85297,26 @@
                                               "endianness": "none"
                                             }
                                           },
-                                          "encoding": "utf8",
-                                          "representation": "text"
+                                          "representation": "bytes"
                                         },
                                         "symmetry": "symmetric",
                                         "provenance": {
                                           "pins": [
                                             "endstone"
+                                          ],
+                                          "evidence": [
+                                            {
+                                              "source_id": "gophertunnel",
+                                              "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+                                              "summary": "The corresponding reader captures the complete user-data buffer through r.ByteSlice.",
+                                              "external": true
+                                            },
+                                            {
+                                              "source_id": "gophertunnel",
+                                              "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+                                              "summary": "The item descriptor user-data buffer contains a sentinel, version, NBT, and string lists, then is written with w.ByteSlice.",
+                                              "external": true
+                                            }
                                           ]
                                         }
                                       }
@@ -87076,7 +87625,7 @@
           "name": "Data",
           "semantic": "Data",
           "encode": {
-            "kind": "string",
+            "kind": "bytes",
             "prefix": {
               "kind": "primitive",
               "primitive": {
@@ -87087,14 +87636,21 @@
                 "endianness": "none"
               }
             },
-            "encoding": "utf8",
-            "representation": "text"
+            "representation": "bytes"
           },
           "symmetry": "symmetric",
           "provenance": {
             "pins": [
               "endstone",
               "mojang"
+            ],
+            "evidence": [
+              {
+                "source_id": "gophertunnel",
+                "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/debug_info.go#L12-L23",
+                "summary": "DebugInfo.Data is opaque []byte and is serialized with io.ByteSlice.",
+                "external": true
+              }
             ]
           }
         }
@@ -90264,7 +90820,7 @@
                   "encode": {
                     "kind": "optional",
                     "value": {
-                      "kind": "string",
+                      "kind": "bytes",
                       "prefix": {
                         "kind": "primitive",
                         "primitive": {
@@ -90275,8 +90831,7 @@
                           "endianness": "none"
                         }
                       },
-                      "encoding": "utf8",
-                      "representation": "text"
+                      "representation": "bytes"
                     }
                   },
                   "symmetry": "symmetric",
@@ -90284,6 +90839,14 @@
                     "pins": [
                       "endstone",
                       "mojang"
+                    ],
+                    "evidence": [
+                      {
+                        "source_id": "gophertunnel",
+                        "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/sub_chunk.go#L29-L46",
+                        "summary": "SubChunkEntry.RawPayload is Optional[[]byte] and OptionalFunc serializes it with r.ByteSlice.",
+                        "external": true
+                      }
                     ]
                   }
                 },
@@ -90841,7 +91404,7 @@
           "name": "Message Value",
           "semantic": "Message Value",
           "encode": {
-            "kind": "string",
+            "kind": "bytes",
             "prefix": {
               "kind": "primitive",
               "primitive": {
@@ -90852,14 +91415,21 @@
                 "endianness": "none"
               }
             },
-            "encoding": "utf8",
-            "representation": "text"
+            "representation": "bytes"
           },
           "symmetry": "symmetric",
           "provenance": {
             "pins": [
               "endstone",
               "mojang"
+            ],
+            "evidence": [
+              {
+                "source_id": "gophertunnel",
+                "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/script_message.go#L11-L24",
+                "summary": "ScriptMessage.Data is []byte and is serialized with io.ByteSlice, while Identifier is the separate text field.",
+                "external": true
+              }
             ]
           }
         }
@@ -92617,7 +93187,7 @@
           "name": "Raw Variant Data",
           "semantic": "Raw Variant Data",
           "encode": {
-            "kind": "string",
+            "kind": "bytes",
             "prefix": {
               "kind": "primitive",
               "primitive": {
@@ -92628,14 +93198,21 @@
                 "endianness": "none"
               }
             },
-            "encoding": "utf8",
-            "representation": "text"
+            "representation": "bytes"
           },
           "symmetry": "symmetric",
           "provenance": {
             "pins": [
               "endstone",
               "mojang"
+            ],
+            "evidence": [
+              {
+                "source_id": "gophertunnel",
+                "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/editor_network.go#L13-L24",
+                "summary": "The editor payload is network-little-endian NBT, an opaque binary variant payload; Raw Variant Name remains text.",
+                "external": true
+              }
             ]
           }
         }
@@ -92698,7 +93275,7 @@
                   "name": "Binary Json Output",
                   "semantic": "Binary Json Output",
                   "encode": {
-                    "kind": "string",
+                    "kind": "bytes",
                     "prefix": {
                       "kind": "primitive",
                       "primitive": {
@@ -92709,13 +93286,20 @@
                         "endianness": "none"
                       }
                     },
-                    "encoding": "utf8",
-                    "representation": "text"
+                    "representation": "bytes"
                   },
                   "symmetry": "symmetric",
                   "provenance": {
                     "pins": [
                       "endstone"
+                    ],
+                    "evidence": [
+                      {
+                        "source_id": "gophertunnel",
+                        "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/world.go#L45-L52",
+                        "summary": "GenerationFeature.JSON is []byte and is serialized with r.ByteSlice; the sibling Name is text.",
+                        "external": true
+                      }
                     ]
                   }
                 }
@@ -111389,6 +111973,453 @@
     }
   ],
   "adjudications": [
+    {
+      "id": "binary-debug-data",
+      "target": "DebugInfoPacket.Data",
+      "pre_patch_context_sha256": "sha256:80936d3982ce85795e1a8deeb4ca97ff267df103e18608f1bfd4f2a067af39a9",
+      "claims": [
+        {
+          "source_id": "endstone",
+          "digest": "sha256:86785b27af6f9218d956dfdadccc0120ddf32da927c2a0c49857438e920e5b10"
+        },
+        {
+          "source_id": "mojang",
+          "digest": "sha256:787a14ffab7293cdb785085d225cb3db159e604091b4d18a9b280fa31e8a3643"
+        }
+      ],
+      "evidence": [
+        {
+          "source_id": "gophertunnel",
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/debug_info.go#L12-L23",
+          "summary": "DebugInfo.Data is opaque []byte and is serialized with io.ByteSlice.",
+          "external": true
+        }
+      ],
+      "reason": "Both pinned claims faithfully describe the C++ std::string wire node; gophertunnel documents the debug payload as opaque bytes, so it cannot be exposed as UTF-8 text.",
+      "patch": {
+        "representation": "bytes"
+      }
+    },
+    {
+      "id": "binary-editor-raw-variant-data",
+      "target": "EditorNetworkPacket.Raw Variant Data",
+      "pre_patch_context_sha256": "sha256:ded0d90c2116bbf372cb8c55bb8687f707d157f88422ad06e51ae1455c189b02",
+      "claims": [
+        {
+          "source_id": "endstone",
+          "digest": "sha256:019463f9a4909ee7ed48e74d88ac84266addd3193de7594a077545a14d6da6ab"
+        },
+        {
+          "source_id": "mojang",
+          "digest": "sha256:513852570a0f99d7cece6d607221c7da329116931a30798481adda6cffb6be1f"
+        }
+      ],
+      "evidence": [
+        {
+          "source_id": "gophertunnel",
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/editor_network.go#L13-L24",
+          "summary": "The editor payload is network-little-endian NBT, an opaque binary variant payload; Raw Variant Name remains text.",
+          "external": true
+        }
+      ],
+      "reason": "Both pinned claims faithfully describe the C++ std::string wire node; gophertunnel treats the editor variant data as network-little-endian NBT bytes, so only the raw data representation changes.",
+      "patch": {
+        "representation": "bytes"
+      }
+    },
+    {
+      "id": "binary-feature-registry-json",
+      "target": "types/FeatureRegistry::FeatureBinaryJsonFormat.Binary Json Output",
+      "pre_patch_context_sha256": "sha256:d30ecc5bec238f03bd5a97047f6f0a301531beb5b815a1cd7910491a5dd8c78f",
+      "claims": [
+        {
+          "source_id": "endstone",
+          "digest": "sha256:55556aeaca6d7eceeec709af81882121a8ea31799d903c25840b84a0239cae26"
+        },
+        {
+          "source_id": "mojang",
+          "digest": "sha256:75b71cff11dc1449c1652608f3c9a0acdf79516e4813d0ad622cbd72157c8322"
+        }
+      ],
+      "evidence": [
+        {
+          "source_id": "gophertunnel",
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/world.go#L45-L52",
+          "summary": "GenerationFeature.JSON is []byte and is serialized with r.ByteSlice; the sibling Name is text.",
+          "external": true
+        }
+      ],
+      "reason": "Both pinned claims faithfully describe the C++ std::string wire node; Binary Json Output is an encoded binary JSON buffer in gophertunnel, so only the nested language representation changes.",
+      "patch": {
+        "representation": "bytes",
+        "type_id": "FeatureRegistry::FeatureBinaryJsonFormat",
+        "field": "Binary Json Output",
+        "context_target": "FeatureRegistryPacket.FeaturesDataList"
+      }
+    },
+    {
+      "id": "binary-item-instance-descriptor-user-data",
+      "target": "types/cerealizer\u003cNetworkItemInstanceDescriptor\u003e::SerializedData.User Data Buffer",
+      "pre_patch_context_sha256": "sha256:3e2e5abec01b6961b935e0cbdee1e50c6d4ac613659624ae1a5e15ce48d39cc5",
+      "claims": [
+        {
+          "source_id": "endstone",
+          "digest": "sha256:9d56ae1b0d806312b4c3dabb11d629c1a2ec02d0bfbc9e9fb8f48f927f0e3a72"
+        },
+        {
+          "source_id": "mojang",
+          "digest": "sha256:6179a49dfae25b6a9583f41d2ae379be814a87b9661bb8bb4ada0094a29ab514"
+        }
+      ],
+      "evidence": [
+        {
+          "source_id": "gophertunnel",
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+          "summary": "The corresponding reader obtains the complete serialized buffer through r.ByteSlice.",
+          "external": true
+        },
+        {
+          "source_id": "gophertunnel",
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+          "summary": "The shared item descriptor user-data buffer is assembled with binary NBT and written with w.ByteSlice.",
+          "external": true
+        }
+      ],
+      "reason": "Both pinned claims faithfully describe the C++ std::string wire node; the cerealizer NetworkItemInstanceDescriptor buffer is an opaque binary item payload in gophertunnel, so only its language representation changes.",
+      "patch": {
+        "representation": "bytes",
+        "type_id": "cerealizer\u003cNetworkItemInstanceDescriptor\u003e::SerializedData",
+        "field": "User Data Buffer",
+        "context_target": "CraftingDataPacket.Shaped Recipes"
+      }
+    },
+    {
+      "id": "binary-item-stack-descriptor-user-data",
+      "target": "types/cerealizer\u003cNetworkItemStackDescriptor\u003e::SerializedData.User Data Buffer",
+      "pre_patch_context_sha256": "sha256:1d28b1c3ce411bbe906383e480a0781c214358c57ebd642eeeeecd82e62f8b87",
+      "claims": [
+        {
+          "source_id": "endstone",
+          "digest": "sha256:7f88990379ee9c1ac7b1bb3c4510e3c060c0876d3d8a3ab757521c95acc2ca18"
+        },
+        {
+          "source_id": "mojang",
+          "digest": "sha256:56ca5a966c3aeb0c6cbd30e1406c2b0787887668ce413fc29b8bdd8d355508c5"
+        }
+      ],
+      "evidence": [
+        {
+          "source_id": "gophertunnel",
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+          "summary": "The corresponding reader obtains the complete serialized buffer through r.ByteSlice.",
+          "external": true
+        },
+        {
+          "source_id": "gophertunnel",
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+          "summary": "The stack descriptor's shared user-data buffer is binary item data written with w.ByteSlice.",
+          "external": true
+        }
+      ],
+      "reason": "Both pinned claims faithfully describe the C++ std::string wire node; the cerealizer NetworkItemStackDescriptor buffer carries binary item/NBT data in gophertunnel, so only its language representation changes.",
+      "patch": {
+        "representation": "bytes",
+        "type_id": "cerealizer\u003cNetworkItemStackDescriptor\u003e::SerializedData",
+        "field": "User Data Buffer",
+        "context_target": "AddPlayerPacket.Carried Item"
+      }
+    },
+    {
+      "id": "binary-item-stack-request-user-data",
+      "target": "types/ItemStackRequestCereal::NetworkItemInstanceDescriptorData.User Data Buffer",
+      "pre_patch_context_sha256": "sha256:29c3fc45bd0f9f48d16d907edb2a64a35d6db821010e27cf89d969ded7321951",
+      "claims": [
+        {
+          "source_id": "endstone",
+          "digest": "sha256:6ab01bd66d1b987eb0f404b5bb50af627c3bff9a8812398401a5d825e15dc18e"
+        },
+        {
+          "source_id": "mojang",
+          "digest": "sha256:5ef1bd1c8a73f045a32c4be476d550f99077a1c740efcd0d01f29ee92271e12b"
+        }
+      ],
+      "evidence": [
+        {
+          "source_id": "gophertunnel",
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446-L449",
+          "summary": "The corresponding reader captures the complete user-data buffer through r.ByteSlice.",
+          "external": true
+        },
+        {
+          "source_id": "gophertunnel",
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/writer.go#L369-L390",
+          "summary": "The item descriptor user-data buffer contains a sentinel, version, NBT, and string lists, then is written with w.ByteSlice.",
+          "external": true
+        }
+      ],
+      "reason": "Both pinned claims faithfully describe the C++ std::string wire node; gophertunnel's item descriptor buffer contains binary NBT framing and is transported as []byte, so the named field is refined to bytes.",
+      "patch": {
+        "representation": "bytes",
+        "type_id": "ItemStackRequestCereal::NetworkItemInstanceDescriptorData",
+        "field": "User Data Buffer",
+        "context_target": "PlayerAuthInputPacket.Item Stack Request"
+      }
+    },
+    {
+      "id": "binary-level-chunk-serialized-data",
+      "target": "LevelChunkPacket.Serialized Chunk Data",
+      "pre_patch_context_sha256": "sha256:ddec4d21300a1cd0844396a34a9282afdac2c5fe32978bb722447575d87bbf84",
+      "claims": [
+        {
+          "source_id": "endstone",
+          "digest": "sha256:29e138beb2b35fda7983d153f61c26fbe261293ae52abe03ae43bfee56e2afd7"
+        },
+        {
+          "source_id": "mojang",
+          "digest": "sha256:d8f695996116424277b9b21428cdc516b2898239c05db84b60101df2d7b58936"
+        }
+      ],
+      "evidence": [
+        {
+          "source_id": "gophertunnel",
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/level_chunk.go#L31-L53",
+          "summary": "LevelChunk.RawPayload is []byte and is serialized with io.ByteSlice; it contains serialized chunk data.",
+          "external": true
+        }
+      ],
+      "reason": "Both pinned claims faithfully describe the C++ std::string wire node; the palettized chunk payload is arbitrary binary data in gophertunnel, so its canonical representation is bytes without changing framing.",
+      "patch": {
+        "representation": "bytes"
+      }
+    },
+    {
+      "id": "binary-login-connection-request",
+      "target": "LoginPacket.Connection Request",
+      "pre_patch_context_sha256": "sha256:314391309354ea0e57a44484dc08a863aec55f9873ae9376926aef59b1a43c92",
+      "claims": [
+        {
+          "source_id": "endstone",
+          "digest": "sha256:0135639d5b156c8b14ae96b904965e9964b6ccea6e936ec4c359d82469f7e8c7"
+        },
+        {
+          "source_id": "mojang",
+          "digest": "sha256:f2362df862a9bc017d3cb6e01aadcfab199413776bd2bab81aab864f5f849051"
+        }
+      ],
+      "evidence": [
+        {
+          "source_id": "gophertunnel",
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/login/request.go#L361-L373",
+          "summary": "encodeRequest places two little-endian int32 lengths and the raw chain/JWT bytes in the connection request.",
+          "external": true
+        },
+        {
+          "source_id": "gophertunnel",
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/login.go#L17-L27",
+          "summary": "Login.ConnectionRequest is []byte and Login.Marshal uses io.ByteSlice.",
+          "external": true
+        }
+      ],
+      "reason": "Both pinned claims faithfully describe the C++ std::string wire node; gophertunnel exposes this payload as raw bytes, so this adjudication refines only the language-level representation while preserving the varuint32 framing.",
+      "patch": {
+        "representation": "bytes"
+      }
+    },
+    {
+      "id": "binary-missing-blob-data",
+      "target": "types/MissingBlobData.Blob Data",
+      "pre_patch_context_sha256": "sha256:e5b48f4174d9ec5da80ee8a8f0f3f53b5534ec93066f1ced0d7b613f581fa611",
+      "claims": [
+        {
+          "source_id": "endstone",
+          "digest": "sha256:6e270ddbcca932c7b77b8a2ed7a029ce7bd540b87a48ae6a454db83b65fbd738"
+        },
+        {
+          "source_id": "mojang",
+          "digest": "sha256:87eba6ad516bb2607f590b432c225f505801ff30868135078e0733a8b0405aac"
+        }
+      ],
+      "evidence": [
+        {
+          "source_id": "gophertunnel",
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/blob_cache.go#L6-L17",
+          "summary": "CacheBlob.Payload is []byte and is serialized with r.ByteSlice as the cached blob payload.",
+          "external": true
+        }
+      ],
+      "reason": "Both pinned claims faithfully describe the C++ std::string wire node; the client-cache blob is arbitrary chunk or biome data in gophertunnel, so the nested field is refined to bytes only.",
+      "patch": {
+        "representation": "bytes",
+        "type_id": "MissingBlobData",
+        "field": "Blob Data",
+        "context_target": "ClientCacheMissResponsePacket.Missing Blobs"
+      }
+    },
+    {
+      "id": "binary-photo-data",
+      "target": "PhotoTransferPacket.Photo Data",
+      "pre_patch_context_sha256": "sha256:db1787cc2678d054741e03d8ac4ac42d171586cb7b06fe8702a6c872e1be6c5f",
+      "claims": [
+        {
+          "source_id": "endstone",
+          "digest": "sha256:59dee1887474596303d5b307905ccf703f18ddf9798a0cd74de4b798764dfc10"
+        },
+        {
+          "source_id": "mojang",
+          "digest": "sha256:0f6d166bd6b32956f6483d503a9b5e11956baa1b6002c0e8d27662476b63938a"
+        }
+      ],
+      "evidence": [
+        {
+          "source_id": "gophertunnel",
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/photo_transfer.go#L21-L45",
+          "summary": "PhotoTransfer.PhotoData is raw image []byte and is serialized with io.ByteSlice.",
+          "external": true
+        }
+      ],
+      "reason": "Both pinned claims faithfully describe the C++ std::string wire node; JPEG/PNG photo data is arbitrary binary data, so only the language representation changes.",
+      "patch": {
+        "representation": "bytes"
+      }
+    },
+    {
+      "id": "binary-resource-pack-chunk-data",
+      "target": "ResourcePackChunkDataPacket.Chunk Data",
+      "pre_patch_context_sha256": "sha256:093eb1e9b8a20c27f372d70ad14bf7eff841c3433e09c7cfc23d5d4a5a565809",
+      "claims": [
+        {
+          "source_id": "endstone",
+          "digest": "sha256:875d95a1301d15788a682d3ef78847614328b47b069a4dad90a899b96609e9a3"
+        },
+        {
+          "source_id": "mojang",
+          "digest": "sha256:13b1adce8a814702712c4b7af9d808bd07de5862df97c07ff245907ab449d16e"
+        }
+      ],
+      "evidence": [
+        {
+          "source_id": "gophertunnel",
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/resource_pack_chunk_data.go#L19-L33",
+          "summary": "ResourcePackChunkData.Data is []byte and is serialized with io.ByteSlice as a compressed-pack chunk.",
+          "external": true
+        }
+      ],
+      "reason": "Both pinned claims faithfully describe the C++ std::string wire node; a compressed resource-pack slice is arbitrary binary data, so only the language representation changes.",
+      "patch": {
+        "representation": "bytes"
+      }
+    },
+    {
+      "id": "binary-resource-pack-file-hash",
+      "target": "ResourcePackDataInfoPacket.File Hash",
+      "pre_patch_context_sha256": "sha256:84dbc8b4b4165e7fb867ff561cb56c2dc09f01455edc578c1418fdd3e885bf6c",
+      "claims": [
+        {
+          "source_id": "endstone",
+          "digest": "sha256:8dc7a2b09efe82ae4b5e17f23133bed7802a51f742aad518ebc0b8862bc51836"
+        },
+        {
+          "source_id": "mojang",
+          "digest": "sha256:6769f82be39ae961bee0ea237d280a7a8f1fea6d2c0ec417911f61352fcd526c"
+        }
+      ],
+      "evidence": [
+        {
+          "source_id": "gophertunnel",
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/resource_pack_data_info.go#L36-L56",
+          "summary": "ResourcePackDataInfo.Hash is a raw SHA-256 []byte and is serialized with io.ByteSlice.",
+          "external": true
+        }
+      ],
+      "reason": "Both pinned claims faithfully describe the C++ std::string wire node; a raw SHA-256 digest is binary rather than UTF-8 text, so its language representation is refined to bytes.",
+      "patch": {
+        "representation": "bytes"
+      }
+    },
+    {
+      "id": "binary-script-message-value",
+      "target": "ScriptMessagePacket.Message Value",
+      "pre_patch_context_sha256": "sha256:7fb7a3f2b91e7536d7a0498d02bfaf86f920207efc0280ebe45de5481a3e7e7a",
+      "claims": [
+        {
+          "source_id": "endstone",
+          "digest": "sha256:3b740a09abe5a0a7ba511cfd65f8e3381bac878467c6376874214185b5826c6e"
+        },
+        {
+          "source_id": "mojang",
+          "digest": "sha256:3c342226d7e98650141b86617eb5896d92f487e3c33e900db0724e1bbe26183b"
+        }
+      ],
+      "evidence": [
+        {
+          "source_id": "gophertunnel",
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/script_message.go#L11-L24",
+          "summary": "ScriptMessage.Data is []byte and is serialized with io.ByteSlice, while Identifier is the separate text field.",
+          "external": true
+        }
+      ],
+      "reason": "Both pinned claims faithfully describe the C++ std::string wire node; gophertunnel separates the text identifier from the opaque script value, so only Message Value becomes bytes.",
+      "patch": {
+        "representation": "bytes"
+      }
+    },
+    {
+      "id": "binary-sub-chunk-serialized-data",
+      "target": "types/SubChunkPacketPayload::SubChunkPacketData.Serialized Sub Chunk",
+      "pre_patch_context_sha256": "sha256:77b9af06bb34d291f3ca58eb37c13c6ec55c2dc6d9b5463bc622063eda829986",
+      "claims": [
+        {
+          "source_id": "endstone",
+          "digest": "sha256:4b179ae56706633079a83d67de052378a44e3d571b02a1dba0da290b73ac531e"
+        },
+        {
+          "source_id": "mojang",
+          "digest": "sha256:3a01da09a0213fd12e2b3af1bf4de0020d075f9cebfdef0d6d1aecb46a674ec1"
+        }
+      ],
+      "evidence": [
+        {
+          "source_id": "gophertunnel",
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/sub_chunk.go#L29-L46",
+          "summary": "SubChunkEntry.RawPayload is Optional[[]byte] and OptionalFunc serializes it with r.ByteSlice.",
+          "external": true
+        }
+      ],
+      "reason": "Both pinned claims faithfully describe the C++ std::string wire node; gophertunnel identifies the optional serialized sub-chunk as raw bytes, so the presence flag and length prefix remain unchanged.",
+      "patch": {
+        "representation": "bytes",
+        "type_id": "SubChunkPacketPayload::SubChunkPacketData",
+        "field": "Serialized Sub Chunk",
+        "context_target": "SubChunkPacket.SubChunk Data"
+      }
+    },
+    {
+      "id": "binary-sub-client-connection-request",
+      "target": "SubClientLoginPacket.Sub Client Connection Request",
+      "pre_patch_context_sha256": "sha256:16d41454305c4ef2d34e3966f5412c233b3b972b21dc21fece1433cd1b6987e3",
+      "claims": [
+        {
+          "source_id": "endstone",
+          "digest": "sha256:a16d54cb38ffda32032c40cc9ce81cecd75f1453acc1a78714de76a59c3213cc"
+        },
+        {
+          "source_id": "mojang",
+          "digest": "sha256:4997ae43b9dd2a03f79d1cec11c3bbb03fd71dcb87a2184caa68f30e22aa5d44"
+        }
+      ],
+      "evidence": [
+        {
+          "source_id": "gophertunnel",
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/sub_client_login.go#L16-L25",
+          "summary": "SubClientLogin.ConnectionRequest is []byte and is serialized with io.ByteSlice.",
+          "external": true
+        }
+      ],
+      "reason": "Both pinned claims faithfully describe the C++ std::string wire node; gophertunnel models the identical sub-client connection request as raw bytes, so only its language-level representation changes.",
+      "patch": {
+        "representation": "bytes"
+      }
+    },
     {
       "id": "protocol-2168-packet-122-field-0",
       "target": "BiomeDefinitionListPacket.Map of Biome names to data",

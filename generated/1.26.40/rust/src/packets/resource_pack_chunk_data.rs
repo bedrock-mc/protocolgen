@@ -8,7 +8,7 @@ pub struct ResourcePackChunkData {
     pub resource_name: String,
     pub chunk_id: u32,
     pub byte_offset: u64,
-    pub chunk_data: String,
+    pub chunk_data: Vec<u8>,
 }
 
 impl ResourcePackChunkData {

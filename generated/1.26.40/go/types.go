@@ -746,7 +746,7 @@ type CerealizerNetworkItemInstanceDescriptorSerializedData struct {
 	StackSize      uint16
 	AuxValue       uint32
 	BlockRuntimeId int32
-	UserDataBuffer string
+	UserDataBuffer []byte
 }
 
 type CerealizerNetworkItemStackDescriptorSerializedData struct {
@@ -755,7 +755,7 @@ type CerealizerNetworkItemStackDescriptorSerializedData struct {
 	AuxValue       uint32
 	NetIdVariant   *int32
 	BlockRuntimeId uint32
-	UserDataBuffer string
+	UserDataBuffer []byte
 }
 
 type CerealizerRecipeIngredientSerializedData struct {
@@ -1112,7 +1112,7 @@ type ExternalLinkSettings struct {
 
 type FeatureRegistryFeatureBinaryJsonFormat struct {
 	FeatureName      string
-	BinaryJsonOutput string
+	BinaryJsonOutput []byte
 }
 
 type FloatRange struct {
@@ -1387,7 +1387,7 @@ type ItemStackRequestCerealNetworkItemInstanceDescriptorData struct {
 	ItemDescriptor ItemStackRequestCerealRecipeIngredientDataItemDescriptor
 	StackSize      uint16
 	BlockRuntimeId uint32
-	UserDataBuffer string
+	UserDataBuffer []byte
 }
 
 type ItemStackRequestCerealPlaceActionData struct {
@@ -1771,7 +1771,7 @@ type MemoryMemoryCategoryCounter struct {
 
 type MissingBlobData struct {
 	BlobId   uint64
-	BlobData string
+	BlobData []byte
 }
 
 type MoveActorAbsoluteData struct {
@@ -2365,7 +2365,7 @@ type SubChunkPos struct {
 type SubChunkSubChunkPacketData struct {
 	SubChunkPosOffset     SubChunkSubChunkPosOffset
 	SubChunkRequestResult SubChunkSubChunkRequestResult
-	SerializedSubChunk    *string
+	SerializedSubChunk    *[]byte
 	HeightMapData         SubChunkHeightmapData
 	BlobId                *uint64
 }

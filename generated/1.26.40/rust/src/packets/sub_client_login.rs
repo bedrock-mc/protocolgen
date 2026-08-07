@@ -5,7 +5,7 @@ use crate::*;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct SubClientLogin {
-    pub sub_client_connection_request: String,
+    pub sub_client_connection_request: Vec<u8>,
 }
 
 impl SubClientLogin {

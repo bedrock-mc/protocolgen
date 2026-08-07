@@ -7,7 +7,7 @@ use crate::*;
 pub struct EditorNetwork {
     pub route_to_manager: bool,
     pub raw_variant_name: String,
-    pub raw_variant_data: String,
+    pub raw_variant_data: Vec<u8>,
 }
 
 impl EditorNetwork {

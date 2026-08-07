@@ -11,7 +11,7 @@ pub struct LevelChunk {
     pub client_request_sub_chunk_limit: Option<i32>,
     pub cache_enabled: bool,
     pub cache_metadata: Vec<LevelChunkSubChunkMetadata>,
-    pub serialized_chunk_data: String,
+    pub serialized_chunk_data: Vec<u8>,
 }
 
 impl LevelChunk {

@@ -6,7 +6,7 @@ use crate::*;
 #[derive(Clone, Debug, PartialEq)]
 pub struct DebugInfo {
     pub actor_id: ActorUniqueID,
-    pub data: String,
+    pub data: Vec<u8>,
 }
 
 impl DebugInfo {

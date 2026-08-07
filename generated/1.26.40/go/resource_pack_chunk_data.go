@@ -6,5 +6,5 @@ type ResourcePackChunkData struct {
 	ResourceName string
 	ChunkID      uint32
 	ByteOffset   uint64
-	ChunkData    string
+	ChunkData    []byte
 }

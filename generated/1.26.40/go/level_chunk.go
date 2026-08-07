@@ -9,5 +9,5 @@ type LevelChunk struct {
 	ClientRequestSubChunkLimit *int32
 	CacheEnabled               bool
 	CacheMetadata              []LevelChunkSubChunkMetadata
-	SerializedChunkData        string
+	SerializedChunkData        []byte
 }

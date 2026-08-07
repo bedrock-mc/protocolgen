@@ -7,7 +7,7 @@ type ResourcePackDataInfo struct {
 	ChunkSize      uint32
 	NumberOfChunks uint32
 	FileSize       uint64
-	FileHash       string
+	FileHash       []byte
 	IsPremiumPack  bool
 	PackType       uint8
 }

@@ -4,5 +4,5 @@ package protocol2168
 
 type DebugInfo struct {
 	ActorId ActorUniqueID
-	Data    string
+	Data    []byte
 }

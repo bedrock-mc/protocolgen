@@ -5,5 +5,5 @@ package protocol2168
 type EditorNetwork struct {
 	RouteToManager bool
 	RawVariantName string
-	RawVariantData string
+	RawVariantData []byte
 }

@@ -6,7 +6,7 @@ use crate::*;
 #[derive(Clone, Debug, PartialEq)]
 pub struct ScriptMessage {
     pub message_id: String,
-    pub message_value: String,
+    pub message_value: Vec<u8>,
 }
 
 impl ScriptMessage {

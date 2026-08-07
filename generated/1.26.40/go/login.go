@@ -4,5 +4,5 @@ package protocol2168
 
 type Login struct {
 	ClientNetworkVersion int32
-	ConnectionRequest    string
+	ConnectionRequest    []byte
 }
