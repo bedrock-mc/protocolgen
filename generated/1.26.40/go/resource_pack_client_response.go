@@ -5,3 +5,8 @@ package protocol2168
 type ResourcePackClientResponse struct {
 	Response ResourcePackClientResponseResponse
 }
+
+// Marshal reads or writes ResourcePackClientResponse using its canonical wire layout.
+func (x *ResourcePackClientResponse) Marshal(io IO) {
+	marshalResourcePackClientResponseResponse(io, &x.Response)
+}

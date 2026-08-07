@@ -9,3 +9,10 @@ type ServerboundPackSettingChange struct {
 	PackSettingName  string
 	PackSettingValue ServerboundPackSettingChangePackSettingValue
 }
+
+// Marshal reads or writes ServerboundPackSettingChange using its canonical wire layout.
+func (x *ServerboundPackSettingChange) Marshal(io IO) {
+	io.UUID(&x.PackId)
+	io.String(&x.PackSettingName)
+	marshalServerboundPackSettingChangePackSettingValue(io, &x.PackSettingValue)
+}

@@ -8,3 +8,11 @@ type UpdateBlock struct {
 	Flags          uint32
 	Layer          uint32
 }
+
+// Marshal reads or writes UpdateBlock using its canonical wire layout.
+func (x *UpdateBlock) Marshal(io IO) {
+	x.BlockPosition.Marshal(io)
+	io.Varuint32(&x.BlockRuntimeID)
+	io.Varuint32(&x.Flags)
+	io.Varuint32(&x.Layer)
+}

@@ -12,7 +12,7 @@ pub struct ActorDataBoundingBoxComponent {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct ActorDataFlagComponent {
-    pub actor_flag_bitset_data: Vec<u8>,
+    pub actor_flag_bitset_data: Bitset131,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -425,6 +425,10 @@ pub struct BiomeWeightedTemperatureData {
     pub weight: u32,
 }
 
+/// Stores the 131-bit value used by the wire bitset encoding.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct Bitset131(pub [u64; 3]);
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct BlockPos {
     pub x: i32,
@@ -700,8 +704,8 @@ pub enum CerealDynamicValue {
     Int64(i64),
     Double(f64),
     String(String),
-    List(Vec<Vec<u8>>),
-    Map(Vec<(String, Vec<u8>)>),
+    List(Vec<CerealDynamicValue>),
+    Map(Vec<(String, CerealDynamicValue)>),
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -716,7 +720,7 @@ pub struct CerealizerNetworkItemInstanceDescriptorSerializedData {
     pub stack_size: u16,
     pub aux_value: u32,
     pub block_runtime_id: i32,
-    pub user_data_buffer: String,
+    pub user_data_buffer: bytes::Bytes,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -726,7 +730,7 @@ pub struct CerealizerNetworkItemStackDescriptorSerializedData {
     pub aux_value: u32,
     pub net_id_variant: Option<i32>,
     pub block_runtime_id: u32,
-    pub user_data_buffer: String,
+    pub user_data_buffer: bytes::Bytes,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -1063,8 +1067,8 @@ pub struct InventoryOptions {
 #[derive(Clone, Debug, PartialEq)]
 pub struct InventorySource {
     pub source_type: InventorySourceType,
-    pub container_id: Option<Option<i8>>,
-    pub bit_flags: Option<Option<InventorySourceInventorySourceFlags>>,
+    pub container_id: Option<i8>,
+    pub bit_flags: Option<InventorySourceInventorySourceFlags>,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -1222,7 +1226,7 @@ pub struct ItemStackRequestCerealNetworkItemInstanceDescriptorData {
     pub item_descriptor: ItemStackRequestCerealRecipeIngredientDataItemDescriptor,
     pub stack_size: u16,
     pub block_runtime_id: u32,
-    pub user_data_buffer: String,
+    pub user_data_buffer: bytes::Bytes,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -1285,7 +1289,7 @@ pub struct ItemStackResponseContainerInfo {
 pub struct ItemStackResponseInfo {
     pub result: ItemStackNetResult,
     pub client_request_id: TypedClientNetIdStructItemStackRequestIdTagInt32T0,
-    pub containers: Option<Option<Vec<ItemStackResponseContainerInfo>>>,
+    pub containers: Option<Vec<ItemStackResponseContainerInfo>>,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -1293,7 +1297,7 @@ pub struct ItemStackResponseSlotInfo {
     pub requested_slot: u8,
     pub slot: u8,
     pub amount: u8,
-    pub item_stack_net_id: Option<Option<TypedServerNetIdStructItemStackNetIdTagInt32T0>>,
+    pub item_stack_net_id: Option<TypedServerNetIdStructItemStackNetIdTagInt32T0>,
     pub custom_name: BedrockSafetyRedactableString,
     pub durability_correction: i32,
 }
@@ -1534,7 +1538,7 @@ pub struct MemoryMemoryCategoryCounter {
 #[derive(Clone, Debug, PartialEq)]
 pub struct MissingBlobData {
     pub blob_id: u64,
-    pub blob_data: String,
+    pub blob_data: bytes::Bytes,
 }
 
 #[derive(Clone, Debug, PartialEq)]

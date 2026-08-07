@@ -11,3 +11,14 @@ type ResourcePackDataInfo struct {
 	IsPremiumPack  bool
 	PackType       uint8
 }
+
+// Marshal reads or writes ResourcePackDataInfo using its canonical wire layout.
+func (x *ResourcePackDataInfo) Marshal(io IO) {
+	io.String(&x.ResourceName)
+	io.Uint32(&x.ChunkSize)
+	io.Uint32(&x.NumberOfChunks)
+	io.Uint64(&x.FileSize)
+	io.String(&x.FileHash)
+	io.Bool(&x.IsPremiumPack)
+	io.Uint8(&x.PackType)
+}

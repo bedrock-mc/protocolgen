@@ -5,3 +5,8 @@ package protocol2168
 type UpdateAbilities struct {
 	Data SerializedAbilitiesData
 }
+
+// Marshal reads or writes UpdateAbilities using its canonical wire layout.
+func (x *UpdateAbilities) Marshal(io IO) {
+	x.Data.Marshal(io)
+}

@@ -4,3 +4,7 @@ package protocol2168
 
 type ClientboundCloseForm struct {
 }
+
+// Marshal reads or writes ClientboundCloseForm using its canonical wire layout.
+func (x *ClientboundCloseForm) Marshal(io IO) {
+}

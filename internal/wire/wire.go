@@ -8,6 +8,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"math"
+	"math/big"
 	"reflect"
 
 	"protocolgen/internal/manifest"
@@ -83,6 +84,8 @@ func encodeNode(buffer *bytes.Buffer, node manifest.Node, value any) error {
 		}
 		_, _ = buffer.Write(data)
 		return nil
+	case manifest.KindBitset:
+		return encodeBitset(buffer, node.Length, value)
 	case manifest.KindArray, manifest.KindFixedArray:
 		values, err := sliceValue(value)
 		if err != nil {
@@ -217,9 +220,81 @@ func encodeSequence(buffer *bytes.Buffer, nodes []manifest.Node, value any) erro
 	return nil
 }
 
+func encodeBitset(buffer *bytes.Buffer, bits uint64, value any) error {
+	values, err := sliceValue(value)
+	if err != nil {
+		return fmt.Errorf("bitset: %w", err)
+	}
+	wordCount := int((bits + 63) / 64)
+	if len(values) != wordCount {
+		return fmt.Errorf("%d-bit bitset has %d words, want %d", bits, len(values), wordCount)
+	}
+	number := new(big.Int)
+	for wordIndex, raw := range values {
+		word, err := integerValue(raw)
+		if err != nil {
+			return fmt.Errorf("bitset word %d: %w", wordIndex, err)
+		}
+		for bit := 0; bit < 64; bit++ {
+			position := uint64(wordIndex*64 + bit)
+			if position >= bits {
+				if word>>bit != 0 {
+					return fmt.Errorf("%d-bit bitset has set bits outside its bound", bits)
+				}
+				break
+			}
+			if word&(uint64(1)<<bit) != 0 {
+				number.SetBit(number, int(position), 1)
+			}
+		}
+	}
+	if number.Sign() == 0 {
+		return buffer.WriteByte(0)
+	}
+	mask := big.NewInt(0x7f)
+	chunk := new(big.Int)
+	for number.Sign() != 0 {
+		chunk.And(number, mask)
+		byteValue := byte(chunk.Uint64())
+		number.Rsh(number, 7)
+		if number.Sign() != 0 {
+			byteValue |= 0x80
+		}
+		if err := buffer.WriteByte(byteValue); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 type decoder struct {
 	data []byte
 	off  int
+}
+
+func (d *decoder) decodeBitset(bits uint64) ([]uint64, error) {
+	words := make([]uint64, (bits+63)/64)
+	for offset := uint64(0); offset < bits; offset += 7 {
+		data, err := d.take(1)
+		if err != nil {
+			return nil, err
+		}
+		value := data[0] & 0x7f
+		for bit := uint64(0); bit < 7; bit++ {
+			position := offset + bit
+			if value&(1<<bit) == 0 {
+				continue
+			}
+			if position >= bits {
+				return nil, fmt.Errorf("%d-bit bitset overflow", bits)
+			}
+			words[position/64] |= uint64(1) << (position % 64)
+		}
+		if data[0]&0x80 == 0 {
+			return words, nil
+		}
+	}
+	return nil, fmt.Errorf("%d-bit bitset continuation exceeds its bound", bits)
 }
 
 func (d *decoder) decodeNode(node manifest.Node) (any, error) {
@@ -251,6 +326,8 @@ func (d *decoder) decodeNode(node manifest.Node) (any, error) {
 			return nil, err
 		}
 		return append([]byte(nil), data...), nil
+	case manifest.KindBitset:
+		return d.decodeBitset(node.Length)
 	case manifest.KindArray, manifest.KindFixedArray:
 		length := node.Length
 		if node.Kind == manifest.KindArray {
@@ -465,7 +542,10 @@ func (d *decoder) decodePrimitive(code string) (any, error) {
 		if err != nil {
 			return nil, err
 		}
-		return append([]byte(nil), data...), nil
+		value := append([]byte(nil), data...)
+		reverse(value[:8])
+		reverse(value[8:])
+		return value, nil
 	case "nbt_le":
 		return nil, fmt.Errorf("NBT primitive requires a bounded schema codec")
 	default:
@@ -612,12 +692,21 @@ func encodePrimitive(buffer *bytes.Buffer, code string, value any) error {
 			}
 			return fmt.Errorf("uuid has length %d", len(data))
 		}
-		_, _ = buffer.Write(data)
+		wire := append([]byte(nil), data...)
+		reverse(wire[:8])
+		reverse(wire[8:])
+		_, _ = buffer.Write(wire)
 		return nil
 	case "nbt_le":
 		return fmt.Errorf("NBT primitive requires a bounded schema codec")
 	default:
 		return fmt.Errorf("unsupported primitive code %q", code)
+	}
+}
+
+func reverse(data []byte) {
+	for left, right := 0, len(data)-1; left < right; left, right = left+1, right-1 {
+		data[left], data[right] = data[right], data[left]
 	}
 }
 

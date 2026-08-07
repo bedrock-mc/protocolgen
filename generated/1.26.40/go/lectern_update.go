@@ -7,3 +7,10 @@ type LecternUpdate struct {
 	TotalPages                uint8
 	PositionOfLecternToUpdate BlockPos
 }
+
+// Marshal reads or writes LecternUpdate using its canonical wire layout.
+func (x *LecternUpdate) Marshal(io IO) {
+	io.Uint8(&x.NewPageToShow)
+	io.Uint8(&x.TotalPages)
+	x.PositionOfLecternToUpdate.Marshal(io)
+}

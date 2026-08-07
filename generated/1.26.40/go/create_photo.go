@@ -7,3 +7,10 @@ type CreatePhoto struct {
 	PhotoName     string
 	PhotoItemName string
 }
+
+// Marshal reads or writes CreatePhoto using its canonical wire layout.
+func (x *CreatePhoto) Marshal(io IO) {
+	io.Uint64(&x.RawID)
+	io.String(&x.PhotoName)
+	io.String(&x.PhotoItemName)
+}

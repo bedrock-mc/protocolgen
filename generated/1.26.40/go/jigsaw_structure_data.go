@@ -5,3 +5,8 @@ package protocol2168
 type JigsawStructureData struct {
 	JigsawStructureDataTag []byte
 }
+
+// Marshal reads or writes JigsawStructureData using its canonical wire layout.
+func (x *JigsawStructureData) Marshal(io IO) {
+	io.NBT(&x.JigsawStructureDataTag)
+}

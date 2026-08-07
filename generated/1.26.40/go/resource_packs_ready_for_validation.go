@@ -4,3 +4,7 @@ package protocol2168
 
 type ResourcePacksReadyForValidation struct {
 }
+
+// Marshal reads or writes ResourcePacksReadyForValidation using its canonical wire layout.
+func (x *ResourcePacksReadyForValidation) Marshal(io IO) {
+}

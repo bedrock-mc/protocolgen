@@ -7,3 +7,10 @@ type GuiDataPickItem struct {
 	ItemEffectName string
 	Slot           int32
 }
+
+// Marshal reads or writes GuiDataPickItem using its canonical wire layout.
+func (x *GuiDataPickItem) Marshal(io IO) {
+	io.String(&x.ItemName)
+	io.String(&x.ItemEffectName)
+	io.Int32(&x.Slot)
+}

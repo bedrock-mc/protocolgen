@@ -6,3 +6,9 @@ type LevelEventGeneric struct {
 	EventId int32
 	CTD     []byte
 }
+
+// Marshal reads or writes LevelEventGeneric using its canonical wire layout.
+func (x *LevelEventGeneric) Marshal(io IO) {
+	io.Varint32(&x.EventId)
+	io.NBT(&x.CTD)
+}

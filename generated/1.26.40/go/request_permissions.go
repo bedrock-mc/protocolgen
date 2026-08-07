@@ -7,3 +7,10 @@ type RequestPermissions struct {
 	PlayerPermissionLevel int32
 	CustomPermissionFlags uint16
 }
+
+// Marshal reads or writes RequestPermissions using its canonical wire layout.
+func (x *RequestPermissions) Marshal(io IO) {
+	io.Int64(&x.TargetPlayerIdSRawID)
+	io.Varint32(&x.PlayerPermissionLevel)
+	io.Uint16(&x.CustomPermissionFlags)
+}

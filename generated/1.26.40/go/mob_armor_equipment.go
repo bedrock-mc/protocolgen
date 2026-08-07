@@ -10,3 +10,13 @@ type MobArmorEquipment struct {
 	Feet            CerealizerNetworkItemStackDescriptorSerializedData
 	Body            CerealizerNetworkItemStackDescriptorSerializedData
 }
+
+// Marshal reads or writes MobArmorEquipment using its canonical wire layout.
+func (x *MobArmorEquipment) Marshal(io IO) {
+	x.TargetRuntimeID.Marshal(io)
+	x.Head.Marshal(io)
+	x.Torso.Marshal(io)
+	x.Legs.Marshal(io)
+	x.Feet.Marshal(io)
+	x.Body.Marshal(io)
+}

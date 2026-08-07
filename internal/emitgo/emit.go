@@ -21,13 +21,21 @@ type typeDefinition struct {
 	EntryValue string
 	Underlying string
 	Variants   []manifest.Variant
-	Union      []string
+	Union      []goUnionMember
 	Implements []string
+	BitLength  uint64
 }
 
 type typedField struct {
 	Name string
 	Type string
+	Node manifest.Node
+}
+
+type goUnionMember struct {
+	Name  string
+	Value int64
+	Node  manifest.Node
 }
 
 type generator struct {
@@ -51,6 +59,9 @@ func Generate(m manifest.Manifest, packageName string) (map[string]string, error
 		name := g.unique(packetTypeName(packet.Name))
 		packetNames[packet.ID] = name
 		for _, field := range packet.Fields {
+			if err := ensureCodecSymmetric(field); err != nil {
+				return nil, fmt.Errorf("packet %s field %s: %w", packet.Name, field.Name, err)
+			}
 			if _, err := g.goType(field.Encode, name+exportName(field.Name)); err != nil {
 				return nil, fmt.Errorf("packet %s field %s: %w", packet.Name, field.Name, err)
 			}
@@ -61,6 +72,52 @@ func Generate(m manifest.Manifest, packageName string) (map[string]string, error
 		return nil, err
 	}
 	return files, nil
+}
+
+func ensureCodecSymmetric(field manifest.Field) error {
+	if field.Decode != nil || field.Symmetry != manifest.Symmetric {
+		return fmt.Errorf("asymmetric encode/decode layouts require separate codec methods")
+	}
+	return ensureNodeCodecSymmetric(field.Encode)
+}
+
+func ensureNodeCodecSymmetric(node manifest.Node) error {
+	for _, field := range node.Fields {
+		if err := ensureCodecSymmetric(field); err != nil {
+			return fmt.Errorf("nested field %s: %w", field.Name, err)
+		}
+	}
+	for _, variant := range node.Variants {
+		if variant.Decode != nil {
+			return fmt.Errorf("union variant %s has an asymmetric decode layout", variant.Name)
+		}
+		if err := ensureNodeCodecSymmetric(variant.Encode); err != nil {
+			return err
+		}
+	}
+	for _, child := range []*manifest.Node{node.Prefix, node.Element, node.Value, node.Key, node.Control, node.Default} {
+		if child != nil {
+			if err := ensureNodeCodecSymmetric(*child); err != nil {
+				return err
+			}
+		}
+	}
+	for _, child := range node.Elements {
+		if err := ensureNodeCodecSymmetric(child); err != nil {
+			return err
+		}
+	}
+	for _, oneCase := range node.Cases {
+		if len(oneCase.Decode) != 0 {
+			return fmt.Errorf("conditional case %s has an asymmetric decode layout", oneCase.Value)
+		}
+		for _, child := range oneCase.Encode {
+			if err := ensureNodeCodecSymmetric(child); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }
 
 func (g *generator) goType(node manifest.Node, hint string) (string, error) {
@@ -78,7 +135,11 @@ func (g *generator) goType(node manifest.Node, hint string) (string, error) {
 	case manifest.KindBytes:
 		return "[]byte", nil
 	case manifest.KindBitset:
-		return "[]byte", nil
+		name := fmt.Sprintf("Bitset%d", node.Length)
+		if _, exists := g.definitions[name]; !exists {
+			g.definitions[name] = typeDefinition{Name: name, Kind: manifest.KindBitset, BitLength: node.Length}
+		}
+		return name, nil
 	case manifest.KindArray:
 		if node.Element == nil {
 			return "", fmt.Errorf("array has no element")
@@ -98,10 +159,7 @@ func (g *generator) goType(node manifest.Node, hint string) (string, error) {
 		}
 		return fmt.Sprintf("[%d]%s", node.Length, element), nil
 	case manifest.KindSequence:
-		if len(node.Elements) == 0 {
-			return "[]any", nil
-		}
-		return "[]any", nil
+		return "", fmt.Errorf("sequence nodes require a target-specific representation")
 	case manifest.KindOptional:
 		if node.Value == nil {
 			return "", fmt.Errorf("optional has no value")
@@ -139,14 +197,29 @@ func (g *generator) goType(node manifest.Node, hint string) (string, error) {
 	case manifest.KindUnion:
 		name := g.registerIdentity(node, hint+"Union")
 		if _, exists := g.definitions[name]; !exists {
-			g.definitions[name] = typeDefinition{Name: name, Kind: manifest.KindUnion}
-			members := make([]string, 0, len(node.Variants))
+			if node.Control == nil || node.Control.Primitive == nil {
+				return "", fmt.Errorf("union has no primitive discriminator")
+			}
+			g.definitions[name] = typeDefinition{Name: name, Kind: manifest.KindUnion, Underlying: node.Control.Primitive.Code}
+			members := make([]goUnionMember, 0, len(node.Variants))
+			usedMembers := map[string]bool{}
 			for _, variant := range node.Variants {
 				member, err := g.registerUnionMember(name, variant)
 				if err != nil {
 					return "", err
 				}
-				members = append(members, member)
+				if usedMembers[member] {
+					wrapper := g.unique(name + exportName(shortTypeName(variant.Name)))
+					g.definitions[wrapper] = typeDefinition{
+						Name:       wrapper,
+						Kind:       manifest.KindStruct,
+						Fields:     []typedField{{Name: "Value", Type: member, Node: variant.Encode}},
+						Implements: []string{name},
+					}
+					member = wrapper
+				}
+				usedMembers[member] = true
+				members = append(members, goUnionMember{Name: member, Value: variant.Value, Node: variant.Encode})
 			}
 			definition := g.definitions[name]
 			definition.Union = members
@@ -167,14 +240,13 @@ func (g *generator) goType(node manifest.Node, hint string) (string, error) {
 		}
 		return name, nil
 	case manifest.KindReserved, manifest.KindIgnored:
-		if node.Element == nil {
-			return "", fmt.Errorf("compatibility node has no preserved element")
-		}
-		return g.goType(*node.Element, hint)
+		return "", fmt.Errorf("%s nodes require explicit write/discard codec semantics", node.Kind)
 	case manifest.KindRecursive:
-		// Recursive nodes retain their identity in Shape; a generic value keeps the
-		// generated API compilable until a profile chooses a recursive view.
-		return "any", nil
+		name, ok := g.identity[node.Target]
+		if !ok {
+			return "", fmt.Errorf("recursive target %q is not a registered named type", node.Target)
+		}
+		return name, nil
 	case manifest.KindVoid:
 		return "struct{}", nil
 	case manifest.KindOpaque, manifest.KindUnresolved:
@@ -241,7 +313,7 @@ func (g *generator) registerUnionMember(union string, variant manifest.Variant) 
 	definition, ok := g.definitions[member]
 	if !ok || definition.Kind != manifest.KindStruct {
 		wrapper := g.unique(union + exportName(shortTypeName(variant.Name)))
-		g.definitions[wrapper] = typeDefinition{Name: wrapper, Kind: manifest.KindStruct, Fields: []typedField{{Name: "Value", Type: member}}, Implements: []string{union}}
+		g.definitions[wrapper] = typeDefinition{Name: wrapper, Kind: manifest.KindStruct, Fields: []typedField{{Name: "Value", Type: member, Node: variant.Encode}}, Implements: []string{union}}
 		return wrapper, nil
 	}
 	if !containsString(definition.Implements, union) {
@@ -274,7 +346,7 @@ func (g *generator) registerStruct(node manifest.Node, hint string) (string, err
 		if err != nil {
 			return "", err
 		}
-		fields = append(fields, typedField{Name: fieldName, Type: fieldType})
+		fields = append(fields, typedField{Name: fieldName, Type: fieldType, Node: field.Encode})
 	}
 	definition := g.definitions[name]
 	definition.Fields = fields
@@ -376,6 +448,12 @@ func (g *generator) emitFiles(packageName string, packets []manifest.Packet, pac
 		return nil, err
 	}
 	files["types.go"] = typesSource
+	files["codec.go"] = emitCodecRuntime(packageName)
+	marshalSource, err := g.emitSharedMarshalers(packageName, definitions)
+	if err != nil {
+		return nil, err
+	}
+	files["marshal.go"] = marshalSource
 	enumsSource, err := emitEnumDefinitions(packageName, definitions)
 	if err != nil {
 		return nil, err
@@ -421,6 +499,9 @@ func emitTypeDefinitions(packageName string, definitions []typeDefinition) (stri
 			}
 		case manifest.KindUnion:
 			fmt.Fprintf(&b, "type %s interface {\n\tis%s()\n}\n\n", definition.Name, definition.Name)
+		case manifest.KindBitset:
+			fmt.Fprintf(&b, "// %s stores the %d-bit value used by the wire bitset encoding.\n", definition.Name, definition.BitLength)
+			fmt.Fprintf(&b, "type %s [%d]uint64\n\n", definition.Name, (definition.BitLength+63)/64)
 		}
 	}
 	return formatGoSource(b.String())
@@ -445,6 +526,7 @@ func emitEnumDefinitions(packageName string, definitions []typeDefinition) (stri
 type packetField struct {
 	name string
 	typ  string
+	node manifest.Node
 }
 
 func (g *generator) emitPacket(packageName string, packet manifest.Packet, packetName string) (string, error) {
@@ -458,13 +540,22 @@ func (g *generator) emitPacket(packageName string, packet manifest.Packet, packe
 		if err != nil {
 			return "", err
 		}
-		fields = append(fields, packetField{name: name, typ: typ})
+		fields = append(fields, packetField{name: name, typ: typ, node: field.Encode})
 	}
 	imports := goImportsForFields(fields)
 	writeGoImports(&b, imports)
 	fmt.Fprintf(&b, "type %s struct {\n", packetName)
 	for _, field := range fields {
 		fmt.Fprintf(&b, "\t%s %s\n", field.name, field.typ)
+	}
+	b.WriteString("}\n\n")
+	fmt.Fprintf(&b, "// Marshal reads or writes %s using its canonical wire layout.\n", packetName)
+	fmt.Fprintf(&b, "func (x *%s) Marshal(io IO) {\n", packetName)
+	emitter := marshalEmitter{g: g}
+	for _, field := range fields {
+		if err := emitter.node(&b, field.node, "x."+field.name, packetName+field.name, "\t"); err != nil {
+			return "", fmt.Errorf("packet %s field %s marshal: %w", packet.Name, field.name, err)
+		}
 	}
 	b.WriteString("}\n")
 	return formatGoSource(b.String())
@@ -478,6 +569,448 @@ func emitPacketIDs(packageName string, packets []manifest.Packet, packetNames ma
 	}
 	b.WriteString(")\n")
 	return b.String()
+}
+
+func emitCodecRuntime(packageName string) string {
+	return fmt.Sprintf(`// Code generated from canonical protocol manifest v2. DO NOT EDIT.
+
+package %s
+
+import (
+	"image/color"
+
+	"github.com/go-gl/mathgl/mgl32"
+	"github.com/google/uuid"
+)
+
+// IO is the minimal symmetric wire interface used by generated Marshal methods.
+// Reading reports whether calls populate values. InvalidValue must stop the
+// current codec operation, typically by panicking or recording a terminal error.
+// String and Bytes use a varuint32 byte-length prefix. UUID uses Bedrock's
+// little-endian 64-bit halves, NBT consumes exactly one little-endian tag, and
+// Bitset uses seven payload bits per continuation byte.
+type IO interface {
+	Reading() bool
+	InvalidValue(value any, context string)
+
+	Bool(*bool)
+	Int8(*int8)
+	Uint8(*uint8)
+	Int16(*int16)
+	Uint16(*uint16)
+	BEInt16(*int16)
+	BEUint16(*uint16)
+	Int32(*int32)
+	Uint32(*uint32)
+	BEInt32(*int32)
+	BEUint32(*uint32)
+	Int64(*int64)
+	Uint64(*uint64)
+	BEInt64(*int64)
+	BEUint64(*uint64)
+	Float32(*float32)
+	Float64(*float64)
+	BEFloat32(*float32)
+	BEFloat64(*float64)
+	Varint32(*int32)
+	Varuint32(*uint32)
+	Varint64(*int64)
+	Varuint64(*uint64)
+	SignedVarint32(*int32)
+	SignedVarint64(*int64)
+
+	String(*string)
+	Bytes(*[]byte)
+	NBT(*[]byte)
+	UUID(*uuid.UUID)
+	Vec2(*mgl32.Vec2)
+	Vec3(*mgl32.Vec3)
+	RGBA(*color.RGBA)
+	Bitset(words []uint64, bits uint64)
+}
+`, packageName)
+}
+
+func (g *generator) emitSharedMarshalers(packageName string, definitions []typeDefinition) (string, error) {
+	var b strings.Builder
+	fmt.Fprintf(&b, "// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\npackage %s\n\n", packageName)
+	writeGoImports(&b, goImportsForDefinitions(definitions))
+	emitter := marshalEmitter{g: g}
+	for _, definition := range definitions {
+		switch definition.Kind {
+		case manifest.KindStruct:
+			fmt.Fprintf(&b, "// Marshal reads or writes %s using its canonical wire layout.\n", definition.Name)
+			fmt.Fprintf(&b, "func (x *%s) Marshal(io IO) {\n", definition.Name)
+			for _, field := range definition.Fields {
+				if err := emitter.node(&b, field.Node, "x."+field.Name, definition.Name+field.Name, "\t"); err != nil {
+					return "", fmt.Errorf("type %s field %s marshal: %w", definition.Name, field.Name, err)
+				}
+			}
+			b.WriteString("}\n\n")
+		case manifest.KindUnion:
+			if err := emitter.union(&b, definition); err != nil {
+				return "", err
+			}
+		}
+	}
+	return formatGoSource(b.String())
+}
+
+type marshalEmitter struct {
+	g       *generator
+	counter int
+}
+
+func (e *marshalEmitter) temporary(prefix string) string {
+	e.counter++
+	return fmt.Sprintf("%s%d", prefix, e.counter)
+}
+
+func (e *marshalEmitter) node(b *strings.Builder, node manifest.Node, expression, hint, indent string) error {
+	if native, matched, err := nativeGoType(node); matched || err != nil {
+		if err != nil {
+			return err
+		}
+		switch native {
+		case "uuid.UUID":
+			fmt.Fprintf(b, "%sio.UUID(&%s)\n", indent, expression)
+		case "mgl32.Vec2":
+			fmt.Fprintf(b, "%sio.Vec2(&%s)\n", indent, expression)
+		case "mgl32.Vec3":
+			fmt.Fprintf(b, "%sio.Vec3(&%s)\n", indent, expression)
+		case "color.RGBA":
+			fmt.Fprintf(b, "%sio.RGBA(&%s)\n", indent, expression)
+		default:
+			return fmt.Errorf("native type %s has no codec operation", native)
+		}
+		return nil
+	}
+	switch node.Kind {
+	case manifest.KindVoid:
+		return nil
+	case manifest.KindPrimitive:
+		if node.Primitive == nil {
+			return fmt.Errorf("primitive has no shape")
+		}
+		if node.Primitive.Code == "nbt_le" {
+			fmt.Fprintf(b, "%sio.NBT(&%s)\n", indent, expression)
+			return nil
+		}
+		method, err := primitiveIOMethod(node.Primitive.Code)
+		if err != nil {
+			return err
+		}
+		fmt.Fprintf(b, "%sio.%s(&%s)\n", indent, method, expression)
+		return nil
+	case manifest.KindString:
+		if !varuint32Prefix(node) {
+			return fmt.Errorf("string has unsupported length prefix")
+		}
+		fmt.Fprintf(b, "%sio.String(&%s)\n", indent, expression)
+		return nil
+	case manifest.KindBytes:
+		if !varuint32Prefix(node) {
+			return fmt.Errorf("bytes have unsupported length prefix")
+		}
+		fmt.Fprintf(b, "%sio.Bytes(&%s)\n", indent, expression)
+		return nil
+	case manifest.KindBitset:
+		fmt.Fprintf(b, "%sio.Bitset(%s[:], %d)\n", indent, expression, node.Length)
+		return nil
+	case manifest.KindStruct:
+		fmt.Fprintf(b, "%s%s.Marshal(io)\n", indent, expression)
+		return nil
+	case manifest.KindRecursive:
+		fmt.Fprintf(b, "%smarshal%s(io, &%s)\n", indent, e.g.identity[node.Target], expression)
+		return nil
+	case manifest.KindEnum:
+		return e.enum(b, node, expression, hint, indent)
+	case manifest.KindOptional:
+		if node.Value == nil {
+			return fmt.Errorf("optional has no value")
+		}
+		value := *node.Value
+		if value.Kind == manifest.KindOptional {
+			if value.Value == nil {
+				return fmt.Errorf("nested optional has no value")
+			}
+			outer := e.temporary("outer")
+			fmt.Fprintf(b, "%s%s := true\n%sio.Bool(&%s)\n", indent, outer, indent, outer)
+			fmt.Fprintf(b, "%sif %s {\n", indent, outer)
+			if err := e.optional(b, *value.Value, expression, hint+"Value", indent+"\t"); err != nil {
+				return err
+			}
+			fmt.Fprintf(b, "%s} else {\n%s\t%s = Optional[%s]{}\n%s}\n", indent, indent, expression, mustGoType(e.g, *value.Value, hint+"Value"), indent)
+			return nil
+		}
+		return e.optional(b, value, expression, hint+"Value", indent)
+	case manifest.KindArray:
+		if node.Element == nil || node.Prefix == nil {
+			return fmt.Errorf("array has no element or prefix")
+		}
+		return e.collection(b, *node.Prefix, *node.Element, expression, hint+"Item", indent)
+	case manifest.KindFixedArray:
+		if node.Element == nil {
+			return fmt.Errorf("fixed array has no element")
+		}
+		index := e.temporary("index")
+		fmt.Fprintf(b, "%sfor %s := range %s {\n", indent, index, expression)
+		if err := e.node(b, *node.Element, expression+"["+index+"]", hint+"Item", indent+"\t"); err != nil {
+			return err
+		}
+		fmt.Fprintf(b, "%s}\n", indent)
+		return nil
+	case manifest.KindMap:
+		if node.Key == nil || node.Value == nil || node.Prefix == nil {
+			return fmt.Errorf("map has no key, value, or prefix")
+		}
+		return e.mapEntries(b, node, expression, hint, indent)
+	case manifest.KindUnion:
+		name, err := e.g.goType(node, hint)
+		if err != nil {
+			return err
+		}
+		fmt.Fprintf(b, "%smarshal%s(io, &%s)\n", indent, name, expression)
+		return nil
+	case manifest.KindReserved, manifest.KindIgnored:
+		return fmt.Errorf("%s nodes require explicit write/discard codec semantics", node.Kind)
+	case manifest.KindSequence, manifest.KindConditional:
+		return fmt.Errorf("%s nodes do not yet have a generated codec", node.Kind)
+	case manifest.KindOpaque, manifest.KindUnresolved:
+		return fmt.Errorf("%s node blocks codec generation: %s", node.Kind, node.Reason)
+	default:
+		return fmt.Errorf("unsupported node kind %q", node.Kind)
+	}
+}
+
+func (e *marshalEmitter) optional(b *strings.Builder, value manifest.Node, expression, hint, indent string) error {
+	fmt.Fprintf(b, "%sio.Bool(&%s.set)\n%sif %s.set {\n", indent, expression, indent, expression)
+	if err := e.node(b, value, expression+".val", hint, indent+"\t"); err != nil {
+		return err
+	}
+	fmt.Fprintf(b, "%s} else if io.Reading() {\n%s\tvar zero %s\n%s\t%s.val = zero\n%s}\n", indent, indent, mustGoType(e.g, value, hint), indent, expression, indent)
+	return nil
+}
+
+func (e *marshalEmitter) collection(b *strings.Builder, prefix, element manifest.Node, expression, hint, indent string) error {
+	countType, err := e.g.goType(prefix, hint+"Count")
+	if err != nil {
+		return err
+	}
+	count := e.temporary("count")
+	if maximum := integerTypeMaximum(countType); maximum != "" {
+		fmt.Fprintf(b, "%sif !io.Reading() && uint64(len(%s)) > %s { io.InvalidValue(len(%s), \"collection length overflows %s\"); return }\n", indent, expression, maximum, expression, countType)
+	}
+	fmt.Fprintf(b, "%s%s := %s(len(%s))\n", indent, count, countType, expression)
+	if err := e.node(b, prefix, count, hint+"Count", indent); err != nil {
+		return err
+	}
+	fmt.Fprintf(b, "%sif io.Reading() {\n", indent)
+	if strings.HasPrefix(countType, "int") {
+		fmt.Fprintf(b, "%s\tif %s < 0 { io.InvalidValue(%s, \"negative collection length\"); return }\n", indent, count, count)
+	}
+	fmt.Fprintf(b, "%s\tif uint64(%s) > uint64(^uint(0)>>1) { io.InvalidValue(%s, \"collection length overflows int\"); return }\n", indent, count, count)
+	fmt.Fprintf(b, "%s\t%s = make(%s, int(%s))\n%s}\n", indent, expression, mustGoType(e.g, manifest.Array(prefix, element), strings.TrimSuffix(hint, "Item")), count, indent)
+	index := e.temporary("index")
+	fmt.Fprintf(b, "%sfor %s := range %s {\n", indent, index, expression)
+	if err := e.node(b, element, expression+"["+index+"]", hint, indent+"\t"); err != nil {
+		return err
+	}
+	fmt.Fprintf(b, "%s}\n", indent)
+	return nil
+}
+
+func (e *marshalEmitter) mapEntries(b *strings.Builder, node manifest.Node, expression, hint, indent string) error {
+	countType, err := e.g.goType(*node.Prefix, hint+"Count")
+	if err != nil {
+		return err
+	}
+	count := e.temporary("count")
+	if maximum := integerTypeMaximum(countType); maximum != "" {
+		fmt.Fprintf(b, "%sif !io.Reading() && uint64(len(%s)) > %s { io.InvalidValue(len(%s), \"map length overflows %s\"); return }\n", indent, expression, maximum, expression, countType)
+	}
+	fmt.Fprintf(b, "%s%s := %s(len(%s))\n", indent, count, countType, expression)
+	if err := e.node(b, *node.Prefix, count, hint+"Count", indent); err != nil {
+		return err
+	}
+	mapType, err := e.g.goType(node, hint)
+	if err != nil {
+		return err
+	}
+	fmt.Fprintf(b, "%sif io.Reading() {\n", indent)
+	if strings.HasPrefix(countType, "int") {
+		fmt.Fprintf(b, "%s\tif %s < 0 { io.InvalidValue(%s, \"negative map length\"); return }\n", indent, count, count)
+	}
+	fmt.Fprintf(b, "%s\tif uint64(%s) > uint64(^uint(0)>>1) { io.InvalidValue(%s, \"map length overflows int\"); return }\n", indent, count, count)
+	fmt.Fprintf(b, "%s\t%s = make(%s, int(%s))\n%s}\n", indent, expression, mapType, count, indent)
+	index := e.temporary("index")
+	fmt.Fprintf(b, "%sfor %s := range %s {\n", indent, index, expression)
+	if err := e.node(b, *node.Key, expression+"["+index+"].Key", hint+"Key", indent+"\t"); err != nil {
+		return err
+	}
+	if err := e.node(b, *node.Value, expression+"["+index+"].Value", hint+"Value", indent+"\t"); err != nil {
+		return err
+	}
+	fmt.Fprintf(b, "%s}\n", indent)
+	return nil
+}
+
+func (e *marshalEmitter) enum(b *strings.Builder, node manifest.Node, expression, hint, indent string) error {
+	if node.Primitive == nil {
+		return fmt.Errorf("enum has no primitive")
+	}
+	if len(node.Variants) == 0 {
+		return fmt.Errorf("enum has no variants")
+	}
+	underlying, err := primitiveGoType(node.Primitive.Code)
+	if err != nil {
+		return err
+	}
+	wire := e.temporary("enumValue")
+	fmt.Fprintf(b, "%s%s := %s(%s)\n", indent, wire, underlying, expression)
+	method, err := primitiveIOMethod(node.Primitive.Code)
+	if err != nil {
+		return err
+	}
+	fmt.Fprintf(b, "%sio.%s(&%s)\n%s%s = %s(%s)\n", indent, method, wire, indent, expression, mustGoType(e.g, node, hint), wire)
+	fmt.Fprintf(b, "%sswitch int64(%s) {\n%scase ", indent, wire, indent)
+	for index, variant := range node.Variants {
+		if index != 0 {
+			b.WriteString(", ")
+		}
+		fmt.Fprintf(b, "%d", variant.Value)
+	}
+	fmt.Fprintf(b, ":\n%sdefault:\n%s\tio.InvalidValue(%s, \"unknown enum value\")\n%s}\n", indent, indent, wire, indent)
+	return nil
+}
+
+func integerTypeMaximum(typ string) string {
+	switch typ {
+	case "uint8":
+		return "uint64(^uint8(0))"
+	case "uint16":
+		return "uint64(^uint16(0))"
+	case "uint32":
+		return "uint64(^uint32(0))"
+	case "uint64":
+		return "^uint64(0)"
+	case "int8":
+		return "uint64(^uint8(0) >> 1)"
+	case "int16":
+		return "uint64(^uint16(0) >> 1)"
+	case "int32":
+		return "uint64(^uint32(0) >> 1)"
+	case "int64":
+		return "uint64(^uint64(0) >> 1)"
+	default:
+		return ""
+	}
+}
+
+func (e *marshalEmitter) union(b *strings.Builder, definition typeDefinition) error {
+	fmt.Fprintf(b, "func marshal%s(io IO, x *%s) {\n", definition.Name, definition.Name)
+	if len(definition.Union) == 0 {
+		b.WriteString("\tio.InvalidValue(nil, \"union has no variants\")\n}\n\n")
+		return nil
+	}
+	// Every union member is a generated struct (or a wrapper around a scalar),
+	// so payload dispatch can remain fully typed in both directions.
+	b.WriteString("\tif io.Reading() {\n")
+	if definition.Underlying == "" {
+		return fmt.Errorf("union %s has no discriminator primitive", definition.Name)
+	}
+	controlNode := manifest.Primitive(definition.Underlying)
+	tagType, err := primitiveGoType(definition.Underlying)
+	if err != nil {
+		return err
+	}
+	fmt.Fprintf(b, "\t\tvar tag %s\n", tagType)
+	if err := e.node(b, controlNode, "tag", definition.Name+"Tag", "\t\t"); err != nil {
+		return err
+	}
+	b.WriteString("\t\tswitch int64(tag) {\n")
+	for _, member := range definition.Union {
+		fmt.Fprintf(b, "\t\tcase %d:\n\t\t\tvar value %s\n\t\t\tvalue.Marshal(io)\n\t\t\t*x = value\n", member.Value, member.Name)
+	}
+	b.WriteString("\t\tdefault:\n\t\t\tio.InvalidValue(tag, \"unknown union tag\")\n\t\t}\n\t\treturn\n\t}\n\tswitch value := (*x).(type) {\n")
+	for _, member := range definition.Union {
+		fmt.Fprintf(b, "\tcase %s:\n\t\ttag := %s(%d)\n", member.Name, tagType, member.Value)
+		if err := e.node(b, controlNode, "tag", definition.Name+"Tag", "\t\t"); err != nil {
+			return err
+		}
+		b.WriteString("\t\tvalue.Marshal(io)\n")
+	}
+	b.WriteString("\tdefault:\n\t\tio.InvalidValue(*x, \"unknown union value\")\n\t}\n}\n\n")
+	return nil
+}
+
+func mustGoType(g *generator, node manifest.Node, hint string) string {
+	typ, err := g.goType(node, hint)
+	if err != nil {
+		panic(err)
+	}
+	return typ
+}
+
+func varuint32Prefix(node manifest.Node) bool {
+	return node.Prefix != nil && node.Prefix.Kind == manifest.KindPrimitive && node.Prefix.Primitive != nil && node.Prefix.Primitive.Code == "var_u32"
+}
+
+func primitiveIOMethod(code string) (string, error) {
+	switch code {
+	case "bool":
+		return "Bool", nil
+	case "i8":
+		return "Int8", nil
+	case "u8":
+		return "Uint8", nil
+	case "i16le":
+		return "Int16", nil
+	case "u16le":
+		return "Uint16", nil
+	case "i16be":
+		return "BEInt16", nil
+	case "u16be":
+		return "BEUint16", nil
+	case "i32le":
+		return "Int32", nil
+	case "u32le":
+		return "Uint32", nil
+	case "i32be":
+		return "BEInt32", nil
+	case "u32be":
+		return "BEUint32", nil
+	case "i64le":
+		return "Int64", nil
+	case "u64le":
+		return "Uint64", nil
+	case "i64be":
+		return "BEInt64", nil
+	case "u64be":
+		return "BEUint64", nil
+	case "f32le":
+		return "Float32", nil
+	case "f64le":
+		return "Float64", nil
+	case "f32be":
+		return "BEFloat32", nil
+	case "f64be":
+		return "BEFloat64", nil
+	case "zigzag_i32":
+		return "Varint32", nil
+	case "zigzag_i64":
+		return "Varint64", nil
+	case "var_u32":
+		return "Varuint32", nil
+	case "var_u64":
+		return "Varuint64", nil
+	case "var_i32":
+		return "SignedVarint32", nil
+	case "var_i64":
+		return "SignedVarint64", nil
+	default:
+		return "", fmt.Errorf("primitive %q has no IO method", code)
+	}
 }
 
 func goImportsForDefinitions(definitions []typeDefinition) []string {

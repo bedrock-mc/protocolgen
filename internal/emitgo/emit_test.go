@@ -33,8 +33,48 @@ func TestGenerateConsumesOnlyCanonicalManifest(t *testing.T) {
 	if !strings.Contains(files["vocabulary.go"], "type Vocabulary struct") || !strings.Contains(files["vocabulary.go"], "Maybe Optional[string]") || !strings.Contains(files["ids.go"], "IDVocabulary uint32 = 1") {
 		t.Fatalf("generated output omitted packet definition or ID:\n%s\n%s", files["vocabulary.go"], files["ids.go"])
 	}
+	for _, want := range []string{"func (x *Vocabulary) Marshal(io IO)", "io.Uint8(&x.Value)", "io.Bool(&x.Maybe.set)", "io.String(&x.Maybe.val)"} {
+		if !strings.Contains(files["vocabulary.go"], want) {
+			t.Fatalf("generated packet marshal omits %q:\n%s", want, files["vocabulary.go"])
+		}
+	}
 	if strings.Contains(files["vocabulary.go"], "Shape{") || strings.Contains(files["vocabulary.go"], "func (p *Vocabulary) Encode") {
 		t.Fatalf("generated packet exposed runtime schema or placeholder codecs:\n%s", files["vocabulary.go"])
+	}
+}
+
+func TestGenerateWrapsRepeatedUnionPayloadTypes(t *testing.T) {
+	message := manifest.Struct(manifest.Field{Ordinal: 0, Name: "Text", Encode: manifest.String(manifest.Primitive("var_u32")), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}})
+	message.TypeID = "Message"
+	union := manifest.Union(manifest.Primitive("u8"),
+		manifest.Variant{Value: 0, Name: "First", Encode: message},
+		manifest.Variant{Value: 1, Name: "Second", Encode: message},
+	)
+	union.TypeID = "Choice"
+	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 1}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "1", Digest: "fixture", MinecraftVersion: "fixture", ProtocolVersion: 1}}, Packets: []manifest.Packet{{ID: 1, Name: "ChoicePacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{Ordinal: 0, Name: "Choice", Encode: union, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}}}
+	files, err := Generate(m, "fixture")
+	if err != nil {
+		t.Fatal(err)
+	}
+	marshal := files["marshal.go"]
+	if strings.Count(marshal, "case Message:") != 1 || !strings.Contains(marshal, "case ChoiceChoiceSecond:") {
+		t.Fatalf("repeated union payloads were not made tag-distinct:\n%s", marshal)
+	}
+}
+
+func TestGenerateCodecFailsClosedForSequence(t *testing.T) {
+	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 1}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "1", Digest: "fixture", MinecraftVersion: "fixture", ProtocolVersion: 1}}, Packets: []manifest.Packet{{ID: 1, Name: "SequencePacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{Ordinal: 0, Name: "Value", Encode: manifest.Sequence(manifest.Primitive("u8")), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}}}
+	if _, err := Generate(m, "fixture"); err == nil || !strings.Contains(err.Error(), "sequence") {
+		t.Fatalf("Generate error = %v, want sequence failure", err)
+	}
+}
+
+func TestGenerateCodecFailsClosedForAsymmetricField(t *testing.T) {
+	decode := manifest.Primitive("u16le")
+	field := manifest.Field{Ordinal: 0, Name: "Value", Encode: manifest.Primitive("u8"), Decode: &decode, Symmetry: manifest.Asymmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}
+	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 1}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "1", Digest: "fixture", MinecraftVersion: "fixture", ProtocolVersion: 1}}, Packets: []manifest.Packet{{ID: 1, Name: "AsymmetricPacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{field}}}}
+	if _, err := Generate(m, "fixture"); err == nil || !strings.Contains(err.Error(), "asymmetric") {
+		t.Fatalf("Generate error = %v, want asymmetric failure", err)
 	}
 }
 
@@ -175,5 +215,35 @@ func TestNativeGoTypeRejectsMislabelledVector(t *testing.T) {
 	node := manifest.Node{Kind: manifest.KindStruct, TypeID: "Vec3", Fields: []manifest.Field{{Encode: manifest.Primitive("f64le")}}}
 	if _, matched, err := nativeGoType(node); !matched || err == nil {
 		t.Fatalf("nativeGoType matched=%v error=%v, want a closed failure", matched, err)
+	}
+}
+
+func TestGenerateUsesNamedRecursiveTypeAndBoundedBitset(t *testing.T) {
+	dynamic := manifest.Union(manifest.Primitive("u8"),
+		manifest.Variant{Value: 0, Name: "Empty", Encode: manifest.Void()},
+		manifest.Variant{Value: 1, Name: "List", Encode: manifest.Array(manifest.Primitive("var_u32"), manifest.Recursive("cereal::DynamicValue"))},
+	)
+	dynamic.TypeID = "cereal::DynamicValue"
+	m := manifest.Manifest{
+		SchemaVersion: 2,
+		Target:        manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 1},
+		Sources:       []manifest.SourcePin{{ID: "fixture", Kind: "fixture", Revision: "1", Digest: "sha256:fixture", MinecraftVersion: "fixture", ProtocolVersion: 1}},
+		Packets: []manifest.Packet{{ID: 1, Name: "RecursivePacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{
+			{Ordinal: 0, Name: "Value", Encode: dynamic, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+			{Ordinal: 1, Name: "Flags", Encode: manifest.Bitset(131), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		}}},
+	}
+	files, err := Generate(m, "fixture")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var all strings.Builder
+	for _, source := range files {
+		all.WriteString(source)
+	}
+	for _, want := range []string{"[]CerealDynamicValue", "type Bitset131 [3]uint64", "Flags Bitset131"} {
+		if !strings.Contains(all.String(), want) {
+			t.Fatalf("generated output missing %q:\n%s", want, all.String())
+		}
 	}
 }

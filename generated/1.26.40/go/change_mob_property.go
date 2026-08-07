@@ -10,3 +10,13 @@ type ChangeMobProperty struct {
 	IntComponentValue    int32
 	FloatComponentValue  float32
 }
+
+// Marshal reads or writes ChangeMobProperty using its canonical wire layout.
+func (x *ChangeMobProperty) Marshal(io IO) {
+	x.ActorId.Marshal(io)
+	io.String(&x.PropertyName)
+	io.Bool(&x.BoolComponentValue)
+	io.String(&x.StringComponentValue)
+	io.Varint32(&x.IntComponentValue)
+	io.Float32(&x.FloatComponentValue)
+}

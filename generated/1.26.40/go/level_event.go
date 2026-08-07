@@ -9,3 +9,10 @@ type LevelEvent struct {
 	Position mgl32.Vec3
 	Data     int32
 }
+
+// Marshal reads or writes LevelEvent using its canonical wire layout.
+func (x *LevelEvent) Marshal(io IO) {
+	io.Varint32(&x.EventId)
+	io.Vec3(&x.Position)
+	io.Varint32(&x.Data)
+}

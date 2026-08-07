@@ -6,3 +6,9 @@ type Camera struct {
 	CameraID       ActorUniqueID
 	TargetPlayerID ActorUniqueID
 }
+
+// Marshal reads or writes Camera using its canonical wire layout.
+func (x *Camera) Marshal(io IO) {
+	x.CameraID.Marshal(io)
+	x.TargetPlayerID.Marshal(io)
+}

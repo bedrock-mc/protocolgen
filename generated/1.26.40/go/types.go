@@ -36,7 +36,7 @@ type ActorDataBoundingBoxComponent struct {
 }
 
 type ActorDataFlagComponent struct {
-	ActorFlagBitsetData []byte
+	ActorFlagBitsetData Bitset131
 }
 
 type ActorLink struct {
@@ -448,6 +448,9 @@ type BiomeWeightedTemperatureData struct {
 	Weight      uint32
 }
 
+// Bitset131 stores the 131-bit value used by the wire bitset encoding.
+type Bitset131 [3]uint64
+
 type BlockPos struct {
 	X int32
 	Y int32
@@ -730,13 +733,13 @@ type CerealDynamicValueInt64 struct {
 func (CerealDynamicValueInt64) isCerealDynamicValue() {}
 
 type CerealDynamicValueList struct {
-	Value []any
+	Value []CerealDynamicValue
 }
 
 func (CerealDynamicValueList) isCerealDynamicValue() {}
 
 type CerealDynamicValueMap struct {
-	Value []OrderedEntry[string, any]
+	Value []OrderedEntry[string, CerealDynamicValue]
 }
 
 func (CerealDynamicValueMap) isCerealDynamicValue() {}
@@ -762,7 +765,7 @@ type CerealizerNetworkItemInstanceDescriptorSerializedData struct {
 	StackSize      uint16
 	AuxValue       uint32
 	BlockRuntimeId int32
-	UserDataBuffer string
+	UserDataBuffer []byte
 }
 
 type CerealizerNetworkItemStackDescriptorSerializedData struct {
@@ -771,7 +774,7 @@ type CerealizerNetworkItemStackDescriptorSerializedData struct {
 	AuxValue       uint32
 	NetIdVariant   Optional[int32]
 	BlockRuntimeId uint32
-	UserDataBuffer string
+	UserDataBuffer []byte
 }
 
 type CerealizerRecipeIngredientSerializedData struct {
@@ -1403,7 +1406,7 @@ type ItemStackRequestCerealNetworkItemInstanceDescriptorData struct {
 	ItemDescriptor ItemStackRequestCerealRecipeIngredientDataItemDescriptor
 	StackSize      uint16
 	BlockRuntimeId uint32
-	UserDataBuffer string
+	UserDataBuffer []byte
 }
 
 type ItemStackRequestCerealPlaceActionData struct {
@@ -1787,7 +1790,7 @@ type MemoryMemoryCategoryCounter struct {
 
 type MissingBlobData struct {
 	BlobId   uint64
-	BlobData string
+	BlobData []byte
 }
 
 type MoveActorAbsoluteData struct {
@@ -2454,6 +2457,60 @@ func (TextAuthorAndMessage) isTextBody() {}
 type TextBody interface {
 	isTextBody()
 }
+
+type TextBodyAnnouncement struct {
+	Value TextAuthorAndMessage
+}
+
+func (TextBodyAnnouncement) isTextBody() {}
+
+type TextBodyJukeboxPopup struct {
+	Value TextMessageAndParams
+}
+
+func (TextBodyJukeboxPopup) isTextBody() {}
+
+type TextBodyPopup struct {
+	Value TextMessageAndParams
+}
+
+func (TextBodyPopup) isTextBody() {}
+
+type TextBodySystemMessage struct {
+	Value TextMessageOnly
+}
+
+func (TextBodySystemMessage) isTextBody() {}
+
+type TextBodyTextObject struct {
+	Value TextMessageOnly
+}
+
+func (TextBodyTextObject) isTextBody() {}
+
+type TextBodyTextObjectAnnouncement struct {
+	Value TextMessageOnly
+}
+
+func (TextBodyTextObjectAnnouncement) isTextBody() {}
+
+type TextBodyTextObjectWhisper struct {
+	Value TextMessageOnly
+}
+
+func (TextBodyTextObjectWhisper) isTextBody() {}
+
+type TextBodyTip struct {
+	Value TextMessageOnly
+}
+
+func (TextBodyTip) isTextBody() {}
+
+type TextBodyWhisper struct {
+	Value TextAuthorAndMessage
+}
+
+func (TextBodyWhisper) isTextBody() {}
 
 type TextData struct {
 	Text             string

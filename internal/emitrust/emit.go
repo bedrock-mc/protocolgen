@@ -19,6 +19,7 @@ type definition struct {
 	Underlying string
 	Variants   []manifest.Variant
 	Union      []rustVariant
+	BitLength  uint64
 }
 
 type rustVariant struct {
@@ -45,6 +46,7 @@ type generator struct {
 	usesNbt     bool
 	usesUUID    bool
 	usesGlam    bool
+	usesBytes   bool
 	standalone  map[string]bool
 }
 
@@ -61,6 +63,9 @@ func prepare(m manifest.Manifest) (*generator, []packetInfo, error) {
 		used := map[string]bool{}
 		fields := make([]rustFieldInfo, 0, len(packet.Fields))
 		for _, field := range packet.Fields {
+			if err := ensureCodecSymmetric(field); err != nil {
+				return nil, nil, fmt.Errorf("packet %s field %s: %w", packet.Name, field.Name, err)
+			}
 			fieldName := uniqueField(fieldName(field.Name), used)
 			typ, err := g.rustType(field.Encode, name+typeName(field.Name))
 			if err != nil {
@@ -71,6 +76,52 @@ func prepare(m manifest.Manifest) (*generator, []packetInfo, error) {
 		infos = append(infos, packetInfo{packet: packet, name: name, fields: fields})
 	}
 	return g, infos, nil
+}
+
+func ensureCodecSymmetric(field manifest.Field) error {
+	if field.Decode != nil || field.Symmetry != manifest.Symmetric {
+		return fmt.Errorf("asymmetric encode/decode layouts require separate codec methods")
+	}
+	return ensureNodeCodecSymmetric(field.Encode)
+}
+
+func ensureNodeCodecSymmetric(node manifest.Node) error {
+	for _, field := range node.Fields {
+		if err := ensureCodecSymmetric(field); err != nil {
+			return fmt.Errorf("nested field %s: %w", field.Name, err)
+		}
+	}
+	for _, variant := range node.Variants {
+		if variant.Decode != nil {
+			return fmt.Errorf("union variant %s has an asymmetric decode layout", variant.Name)
+		}
+		if err := ensureNodeCodecSymmetric(variant.Encode); err != nil {
+			return err
+		}
+	}
+	for _, child := range []*manifest.Node{node.Prefix, node.Element, node.Value, node.Key, node.Control, node.Default} {
+		if child != nil {
+			if err := ensureNodeCodecSymmetric(*child); err != nil {
+				return err
+			}
+		}
+	}
+	for _, child := range node.Elements {
+		if err := ensureNodeCodecSymmetric(child); err != nil {
+			return err
+		}
+	}
+	for _, oneCase := range node.Cases {
+		if len(oneCase.Decode) != 0 {
+			return fmt.Errorf("conditional case %s has an asymmetric decode layout", oneCase.Value)
+		}
+		for _, child := range oneCase.Encode {
+			if err := ensureNodeCodecSymmetric(child); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }
 
 // standaloneRustStructs returns named structs that are used outside the root
@@ -219,6 +270,9 @@ func emitRustTypes(definitions []definition, usesNbt bool) string {
 				}
 			}
 			b.WriteString("}\n\n")
+		case manifest.KindBitset:
+			fmt.Fprintf(&b, "/// Stores the %d-bit value used by the wire bitset encoding.\n", item.BitLength)
+			fmt.Fprintf(&b, "#[derive(Clone, Debug, PartialEq, Eq)]\npub struct %s(pub [u64; %d]);\n\n", item.Name, (item.BitLength+63)/64)
 		}
 	}
 	return strings.TrimSpace(b.String()) + "\n"
@@ -228,8 +282,11 @@ func emitCargo(m manifest.Manifest, g *generator) string {
 	var b strings.Builder
 	b.WriteString("# Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\n")
 	fmt.Fprintf(&b, "[package]\nname = \"bedrock-protocol-%d\"\nversion = \"0.0.0\"\nedition = \"2021\"\npublish = false\n", m.Target.ProtocolVersion)
-	if g.usesUUID || g.usesGlam {
+	if g.usesUUID || g.usesGlam || g.usesBytes {
 		b.WriteString("\n[dependencies]\n")
+		if g.usesBytes {
+			b.WriteString("bytes = \"1\"\n")
+		}
 		if g.usesGlam {
 			b.WriteString("glam = \"0.30\"\n")
 		}
@@ -282,9 +339,14 @@ func (g *generator) rustType(node manifest.Node, hint string) (string, error) {
 	case manifest.KindString:
 		return "String", nil
 	case manifest.KindBytes:
-		return "Vec<u8>", nil
+		g.usesBytes = true
+		return "bytes::Bytes", nil
 	case manifest.KindBitset:
-		return "Vec<u8>", nil
+		name := fmt.Sprintf("Bitset%d", node.Length)
+		if _, ok := g.definitions[name]; !ok {
+			g.definitions[name] = definition{Name: name, Kind: manifest.KindBitset, BitLength: node.Length}
+		}
+		return name, nil
 	case manifest.KindArray:
 		if node.Element == nil {
 			return "", fmt.Errorf("array has no element")
@@ -298,12 +360,22 @@ func (g *generator) rustType(node manifest.Node, hint string) (string, error) {
 		element, err := g.rustType(*node.Element, hint+"Item")
 		return fmt.Sprintf("[%s; %d]", element, node.Length), err
 	case manifest.KindSequence:
-		return "Vec<Vec<u8>>", nil
+		return "", fmt.Errorf("sequence nodes require a target-specific representation")
 	case manifest.KindOptional:
 		if node.Value == nil {
 			return "", fmt.Errorf("optional has no value")
 		}
-		value, err := g.rustType(*node.Value, hint+"Value")
+		valueNode := *node.Value
+		// Cereal uses an always-present outer optional around some optional
+		// values. Retain both markers in the manifest, but expose only the
+		// meaningful inner state, matching the Go and gophertunnel APIs.
+		if valueNode.Kind == manifest.KindOptional {
+			if valueNode.Value == nil {
+				return "", fmt.Errorf("nested optional has no value")
+			}
+			valueNode = *valueNode.Value
+		}
+		value, err := g.rustType(valueNode, hint+"Value")
 		return "Option<" + value + ">", err
 	case manifest.KindStruct:
 		return g.registerStruct(node, hint)
@@ -363,12 +435,13 @@ func (g *generator) rustType(node manifest.Node, hint string) (string, error) {
 		}
 		return name, nil
 	case manifest.KindReserved, manifest.KindIgnored:
-		if node.Element == nil {
-			return "", fmt.Errorf("compatibility node has no element")
-		}
-		return g.rustType(*node.Element, hint)
+		return "", fmt.Errorf("%s nodes require explicit write/discard codec semantics", node.Kind)
 	case manifest.KindRecursive:
-		return "Vec<u8>", nil
+		name, ok := g.identities[node.Target]
+		if !ok {
+			return "", fmt.Errorf("recursive target %q is not a registered named type", node.Target)
+		}
+		return name, nil
 	case manifest.KindVoid:
 		return "()", nil
 	case manifest.KindOpaque, manifest.KindUnresolved:

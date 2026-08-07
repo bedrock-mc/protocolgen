@@ -7,3 +7,10 @@ type PlayerHotbar struct {
 	ContainerID      uint8
 	ShouldSelectSlot bool
 }
+
+// Marshal reads or writes PlayerHotbar using its canonical wire layout.
+func (x *PlayerHotbar) Marshal(io IO) {
+	io.Varuint32(&x.SelectedSlot)
+	io.Uint8(&x.ContainerID)
+	io.Bool(&x.ShouldSelectSlot)
+}

@@ -7,3 +7,10 @@ type SendPartyDestinationCookie struct {
 	Intent          string
 	DestinationName string
 }
+
+// Marshal reads or writes SendPartyDestinationCookie using its canonical wire layout.
+func (x *SendPartyDestinationCookie) Marshal(io IO) {
+	io.String(&x.Cookie)
+	io.String(&x.Intent)
+	io.String(&x.DestinationName)
+}

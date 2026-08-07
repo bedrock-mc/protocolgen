@@ -7,3 +7,10 @@ type BlockEvent struct {
 	EventType     int32
 	EventValue    int32
 }
+
+// Marshal reads or writes BlockEvent using its canonical wire layout.
+func (x *BlockEvent) Marshal(io IO) {
+	x.BlockPosition.Marshal(io)
+	io.Varint32(&x.EventType)
+	io.Varint32(&x.EventValue)
+}

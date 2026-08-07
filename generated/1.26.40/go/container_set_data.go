@@ -7,3 +7,10 @@ type ContainerSetData struct {
 	ID          int32
 	Value       int32
 }
+
+// Marshal reads or writes ContainerSetData using its canonical wire layout.
+func (x *ContainerSetData) Marshal(io IO) {
+	io.Uint8(&x.ContainerID)
+	io.Varint32(&x.ID)
+	io.Varint32(&x.Value)
+}

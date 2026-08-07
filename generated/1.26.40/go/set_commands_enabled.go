@@ -5,3 +5,8 @@ package protocol2168
 type SetCommandsEnabled struct {
 	CommandsEnabled bool
 }
+
+// Marshal reads or writes SetCommandsEnabled using its canonical wire layout.
+func (x *SetCommandsEnabled) Marshal(io IO) {
+	io.Bool(&x.CommandsEnabled)
+}

@@ -6,7 +6,7 @@ use crate::*;
 #[derive(Clone, Debug, PartialEq)]
 pub struct PhotoTransfer {
     pub photo_name: String,
-    pub photo_data: String,
+    pub photo_data: bytes::Bytes,
     pub book_id: String,
     pub r#type: PhotoType,
     pub source_type: PhotoType,

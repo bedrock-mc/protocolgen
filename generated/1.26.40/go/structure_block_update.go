@@ -8,3 +8,11 @@ type StructureBlockUpdate struct {
 	Trigger       bool
 	IsWaterlogged bool
 }
+
+// Marshal reads or writes StructureBlockUpdate using its canonical wire layout.
+func (x *StructureBlockUpdate) Marshal(io IO) {
+	x.BlockPosition.Marshal(io)
+	x.StructureData.Marshal(io)
+	io.Bool(&x.Trigger)
+	io.Bool(&x.IsWaterlogged)
+}

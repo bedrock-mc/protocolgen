@@ -10,3 +10,13 @@ type UpdateBlockSynced struct {
 	UniqueActorId    uint64
 	ActorSyncMessage uint64
 }
+
+// Marshal reads or writes UpdateBlockSynced using its canonical wire layout.
+func (x *UpdateBlockSynced) Marshal(io IO) {
+	x.BlockPosition.Marshal(io)
+	io.Varuint32(&x.BlockRuntimeID)
+	io.Varuint32(&x.Flags)
+	io.Varuint32(&x.Layer)
+	io.Varuint64(&x.UniqueActorId)
+	io.Varuint64(&x.ActorSyncMessage)
+}
