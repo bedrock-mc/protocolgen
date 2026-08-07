@@ -8,7 +8,7 @@ type SubChunk struct {
 	CacheEnabled  bool
 	DimensionType protocol.DimensionType
 	CenterPos     protocol.SubChunkPos
-	SubChunkData  []protocol.SubChunkSubChunkPacketData
+	SubChunkData  []protocol.SubChunkData
 }
 
 // Marshal reads or writes SubChunk using its canonical wire layout.

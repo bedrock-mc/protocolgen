@@ -5,13 +5,13 @@ package packet
 import "protocolgen/generated/1.26.40/go/protocol"
 
 type PlayerList struct {
-	Entries []protocol.PlayerListEntriesItem
+	Entries []protocol.PlayerListData
 }
 
 // Marshal reads or writes PlayerList using its canonical wire layout.
 func (x *PlayerList) Marshal(io protocol.IO) {
-	protocol.FuncSlice(io, &x.Entries, io.Varuint32, func(value *protocol.PlayerListEntriesItem) {
-		protocol.MarshalPlayerListEntriesItem(io, value)
+	protocol.FuncSlice(io, &x.Entries, io.Varuint32, func(value *protocol.PlayerListData) {
+		protocol.MarshalPlayerListData(io, value)
 	})
 }
 

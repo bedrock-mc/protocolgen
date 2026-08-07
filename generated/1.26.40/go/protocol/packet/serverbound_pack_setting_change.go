@@ -9,14 +9,14 @@ import (
 )
 
 type ServerboundPackSettingChange struct {
-	PackId           uuid.UUID
+	PackID           uuid.UUID
 	PackSettingName  string
 	PackSettingValue protocol.ServerboundPackSettingChangePackSettingValue
 }
 
 // Marshal reads or writes ServerboundPackSettingChange using its canonical wire layout.
 func (x *ServerboundPackSettingChange) Marshal(io protocol.IO) {
-	io.UUID(&x.PackId)
+	io.UUID(&x.PackID)
 	io.String(&x.PackSettingName)
 	protocol.MarshalServerboundPackSettingChangePackSettingValue(io, &x.PackSettingValue)
 }

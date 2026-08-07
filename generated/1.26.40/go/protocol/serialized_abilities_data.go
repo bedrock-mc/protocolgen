@@ -3,7 +3,7 @@
 package protocol
 
 type SerializedAbilitiesData struct {
-	TargetPlayerRawId  int64
+	TargetPlayerRawID  int64
 	PlayerPermissions  PlayerPermissionLevel
 	CommandPermissions CommandPermissionLevel
 	Layers             []SerializedAbilitiesDataSerializedLayer
@@ -11,7 +11,7 @@ type SerializedAbilitiesData struct {
 
 // Marshal reads or writes SerializedAbilitiesData using its canonical wire layout.
 func (x *SerializedAbilitiesData) Marshal(io IO) {
-	io.Int64(&x.TargetPlayerRawId)
+	io.Int64(&x.TargetPlayerRawID)
 	IntegerFunc(&x.PlayerPermissions, io.Int8)
 	IntegerFunc(&x.CommandPermissions, io.Uint8)
 	Slice(io, &x.Layers)

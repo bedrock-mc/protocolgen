@@ -3,14 +3,14 @@
 package protocol
 
 type SyncWorldClockStateData struct {
-	ClockId  uint64
+	ClockID  uint64
 	Time     int32
 	IsPaused bool
 }
 
 // Marshal reads or writes SyncWorldClockStateData using its canonical wire layout.
 func (x *SyncWorldClockStateData) Marshal(io IO) {
-	io.Varuint64(&x.ClockId)
+	io.Varuint64(&x.ClockID)
 	io.Varint32(&x.Time)
 	io.Bool(&x.IsPaused)
 }

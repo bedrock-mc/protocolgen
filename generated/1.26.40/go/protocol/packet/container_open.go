@@ -5,7 +5,7 @@ package packet
 import "protocolgen/generated/1.26.40/go/protocol"
 
 type ContainerOpen struct {
-	ContainerId   uint8
+	ContainerID   uint8
 	ContainerType uint8
 	Position      protocol.BlockPos
 	TargetActorID int64
@@ -13,7 +13,7 @@ type ContainerOpen struct {
 
 // Marshal reads or writes ContainerOpen using its canonical wire layout.
 func (x *ContainerOpen) Marshal(io protocol.IO) {
-	io.Uint8(&x.ContainerId)
+	io.Uint8(&x.ContainerID)
 	io.Uint8(&x.ContainerType)
 	x.Position.Marshal(io)
 	io.ActorUniqueID(&x.TargetActorID)

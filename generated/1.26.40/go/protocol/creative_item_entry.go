@@ -3,14 +3,14 @@
 package protocol
 
 type CreativeItemEntry struct {
-	CreativeNetId TypedServerNetIdStructCreativeItemNetIdTag
-	ItemInstance  CerealizerNetworkItemInstanceDescriptorSerializedData
+	CreativeNetID CreativeItemNetID
+	ItemInstance  NetworkItemInstanceDescriptorSerializedData
 	GroupIndex    uint32
 }
 
 // Marshal reads or writes CreativeItemEntry using its canonical wire layout.
 func (x *CreativeItemEntry) Marshal(io IO) {
-	x.CreativeNetId.Marshal(io)
+	x.CreativeNetID.Marshal(io)
 	x.ItemInstance.Marshal(io)
 	io.Varuint32(&x.GroupIndex)
 }

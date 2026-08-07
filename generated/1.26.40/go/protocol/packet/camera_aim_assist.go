@@ -9,17 +9,17 @@ import (
 )
 
 type CameraAimAssist struct {
-	PresetId        string
+	PresetID        string
 	ViewAngle       mgl32.Vec2
 	Distance        float32
-	TargetMode      protocol.CameraAimAssistTargetModeType
+	TargetMode      protocol.TargetMode
 	Action          protocol.CameraAimAssistAction
 	ShowDebugRender bool
 }
 
 // Marshal reads or writes CameraAimAssist using its canonical wire layout.
 func (x *CameraAimAssist) Marshal(io protocol.IO) {
-	io.String(&x.PresetId)
+	io.String(&x.PresetID)
 	io.Vec2(&x.ViewAngle)
 	io.Float32(&x.Distance)
 	protocol.IntegerFunc(&x.TargetMode, io.Uint8)

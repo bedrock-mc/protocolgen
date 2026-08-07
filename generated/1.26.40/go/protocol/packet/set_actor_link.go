@@ -5,7 +5,7 @@ package packet
 import "protocolgen/generated/1.26.40/go/protocol"
 
 type SetActorLink struct {
-	Link protocol.ActorLink
+	Link protocol.EntityLink
 }
 
 // Marshal reads or writes SetActorLink using its canonical wire layout.

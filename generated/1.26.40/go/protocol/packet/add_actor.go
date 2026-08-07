@@ -20,7 +20,7 @@ type AddActor struct {
 	AttributesList    []protocol.SyncedAttribute
 	ActorData         protocol.SynchedActorDataCopyableDataList
 	SynchedProperties protocol.PropertySyncData
-	ActorLinks        []protocol.ActorLink
+	ActorLinks        []protocol.EntityLink
 }
 
 // Marshal reads or writes AddActor using its canonical wire layout.

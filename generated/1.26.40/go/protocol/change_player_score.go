@@ -4,19 +4,19 @@ package protocol
 
 type ChangePlayerScore struct {
 	Action         string
-	ScoreboardId   ScoreboardId
+	ScoreboardID   ScoreboardID
 	ObjectiveName  string
 	ScoreValue     int32
-	PlayerUniqueId PlayerScoreboardId
+	PlayerUniqueID PlayerScoreboardID
 }
 
-func (*ChangePlayerScore) isSetScoreScoreInfoItem() {}
+func (*ChangePlayerScore) isSetScoreInfoItem() {}
 
 // Marshal reads or writes ChangePlayerScore using its canonical wire layout.
 func (x *ChangePlayerScore) Marshal(io IO) {
 	io.String(&x.Action)
-	x.ScoreboardId.Marshal(io)
+	x.ScoreboardID.Marshal(io)
 	io.String(&x.ObjectiveName)
 	io.Int32(&x.ScoreValue)
-	x.PlayerUniqueId.Marshal(io)
+	x.PlayerUniqueID.Marshal(io)
 }

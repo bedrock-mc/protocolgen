@@ -5,7 +5,7 @@ package packet
 import "protocolgen/generated/1.26.40/go/protocol"
 
 type AutomationClientConnect struct {
-	WebSocketData protocol.WebSocketPacketData
+	WebSocketData protocol.WebSocketData
 }
 
 // Marshal reads or writes AutomationClientConnect using its canonical wire layout.

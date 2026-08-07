@@ -11,7 +11,7 @@ type ArrowData struct {
 	NumSegments      Optional[uint8]
 }
 
-func (*ArrowData) isPrimitiveShapeDataExtraShapeData() {}
+func (*ArrowData) isPrimitiveShapeExtraShapeData() {}
 
 // Marshal reads or writes ArrowData using its canonical wire layout.
 func (x *ArrowData) Marshal(io IO) {

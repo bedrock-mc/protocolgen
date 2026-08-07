@@ -5,13 +5,13 @@ package packet
 import "protocolgen/generated/1.26.40/go/protocol"
 
 type RemoveVolumeEntity struct {
-	EntityNetworkId protocol.EntityNetId
+	EntityNetworkID protocol.EntityNetID
 	DimensionType   protocol.DimensionType
 }
 
 // Marshal reads or writes RemoveVolumeEntity using its canonical wire layout.
 func (x *RemoveVolumeEntity) Marshal(io protocol.IO) {
-	x.EntityNetworkId.Marshal(io)
+	x.EntityNetworkID.Marshal(io)
 	x.DimensionType.Marshal(io)
 }
 

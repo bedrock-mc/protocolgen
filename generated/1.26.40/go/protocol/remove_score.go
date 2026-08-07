@@ -4,15 +4,15 @@ package protocol
 
 type RemoveScore struct {
 	Action        string
-	ScoreboardId  ScoreboardId
+	ScoreboardID  ScoreboardID
 	ObjectiveName Optional[string]
 }
 
-func (*RemoveScore) isSetScoreScoreInfoItem() {}
+func (*RemoveScore) isSetScoreInfoItem() {}
 
 // Marshal reads or writes RemoveScore using its canonical wire layout.
 func (x *RemoveScore) Marshal(io IO) {
 	io.String(&x.Action)
-	x.ScoreboardId.Marshal(io)
+	x.ScoreboardID.Marshal(io)
 	OptionalFunc(io, &x.ObjectiveName, io.String)
 }

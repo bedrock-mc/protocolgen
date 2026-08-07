@@ -4,7 +4,7 @@ package protocol
 
 type ItemData struct {
 	ItemName          string
-	ItemId            int16
+	ItemID            int16
 	IsComponentBased  bool
 	ItemVersion       ItemVersion
 	ItemComponentData []byte
@@ -13,7 +13,7 @@ type ItemData struct {
 // Marshal reads or writes ItemData using its canonical wire layout.
 func (x *ItemData) Marshal(io IO) {
 	io.String(&x.ItemName)
-	io.Int16(&x.ItemId)
+	io.Int16(&x.ItemID)
 	io.Bool(&x.IsComponentBased)
 	IntegerFunc(&x.ItemVersion, io.Varint32)
 	io.NBT(&x.ItemComponentData, NBTNetwork)

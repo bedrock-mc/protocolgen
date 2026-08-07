@@ -5,13 +5,13 @@ package packet
 import "protocolgen/generated/1.26.40/go/protocol"
 
 type SetTitle struct {
-	TitleType            protocol.SetTitleTitleType
+	TitleType            protocol.TitleType
 	TitleText            string
 	FadeInTime           int32
 	StayTime             int32
 	FadeOutTime          int32
 	Xuid                 string
-	PlatformOnlineId     string
+	PlatformOnlineID     string
 	FilteredTitleMessage string
 }
 
@@ -23,7 +23,7 @@ func (x *SetTitle) Marshal(io protocol.IO) {
 	io.Varint32(&x.StayTime)
 	io.Varint32(&x.FadeOutTime)
 	io.String(&x.Xuid)
-	io.String(&x.PlatformOnlineId)
+	io.String(&x.PlatformOnlineID)
 	io.String(&x.FilteredTitleMessage)
 }
 

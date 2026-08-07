@@ -3,10 +3,10 @@
 package protocol
 
 type ServerConfigurationPresenceConfiguration struct {
-	RichPresenceId Optional[string]
+	RichPresenceID Optional[string]
 }
 
 // Marshal reads or writes ServerConfigurationPresenceConfiguration using its canonical wire layout.
 func (x *ServerConfigurationPresenceConfiguration) Marshal(io IO) {
-	OptionalFunc(io, &x.RichPresenceId, io.String)
+	OptionalFunc(io, &x.RichPresenceID, io.String)
 }

@@ -27,7 +27,7 @@ type LevelSettings struct {
 	PlatformBroadcastSetting               SocialGamePublishSetting
 	CommandsEnabled                        bool
 	TexturePacksRequired                   bool
-	RuleData                               GameRulesChangedPacketData
+	RuleData                               GameRulesChangedData
 	Experiments                            Experiments
 	HasBonusChestEnabled                   bool
 	StartWithMapEnabled                    bool
@@ -47,7 +47,7 @@ type LevelSettings struct {
 	LimitedWorldWidth                      int32
 	LimitedWorldDepth                      int32
 	NetherType                             bool
-	EduSharedUriResource                   EduSharedUriResource
+	EduSharedURIResource                   EduSharedURIResource
 	OverrideForceExperimentalGameplay      Optional[bool]
 	ChatRestrictionLevel                   ChatRestrictionLevel
 	DisablePlayerInteractions              bool
@@ -101,7 +101,7 @@ func (x *LevelSettings) Marshal(io IO) {
 	io.Int32(&x.LimitedWorldWidth)
 	io.Int32(&x.LimitedWorldDepth)
 	io.Bool(&x.NetherType)
-	x.EduSharedUriResource.Marshal(io)
+	x.EduSharedURIResource.Marshal(io)
 	OptionalFunc(io, &x.OverrideForceExperimentalGameplay, io.Bool)
 	IntegerFunc(&x.ChatRestrictionLevel, io.Uint8)
 	io.Bool(&x.DisablePlayerInteractions)

@@ -5,7 +5,7 @@ package packet
 import "protocolgen/generated/1.26.40/go/protocol"
 
 type AddVolumeEntity struct {
-	EntityNetworkId protocol.EntityNetId
+	EntityNetworkID protocol.EntityNetID
 	Components      []byte
 	JSONIdentifier  string
 	InstanceName    string
@@ -17,7 +17,7 @@ type AddVolumeEntity struct {
 
 // Marshal reads or writes AddVolumeEntity using its canonical wire layout.
 func (x *AddVolumeEntity) Marshal(io protocol.IO) {
-	x.EntityNetworkId.Marshal(io)
+	x.EntityNetworkID.Marshal(io)
 	io.NBT(&x.Components, protocol.NBTNetwork)
 	io.String(&x.JSONIdentifier)
 	io.String(&x.InstanceName)

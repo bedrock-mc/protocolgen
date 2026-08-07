@@ -5,7 +5,7 @@ package packet
 import "protocolgen/generated/1.26.40/go/protocol"
 
 type ChangeMobProperty struct {
-	ActorId              int64
+	ActorID              int64
 	PropertyName         string
 	BoolComponentValue   bool
 	StringComponentValue string
@@ -15,7 +15,7 @@ type ChangeMobProperty struct {
 
 // Marshal reads or writes ChangeMobProperty using its canonical wire layout.
 func (x *ChangeMobProperty) Marshal(io protocol.IO) {
-	io.ActorUniqueID(&x.ActorId)
+	io.ActorUniqueID(&x.ActorID)
 	io.String(&x.PropertyName)
 	io.Bool(&x.BoolComponentValue)
 	io.String(&x.StringComponentValue)

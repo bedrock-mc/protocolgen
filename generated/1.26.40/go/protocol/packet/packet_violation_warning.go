@@ -7,7 +7,7 @@ import "protocolgen/generated/1.26.40/go/protocol"
 type PacketViolationWarning struct {
 	ViolationType     protocol.PacketViolationType
 	ViolationSeverity protocol.PacketViolationSeverity
-	ViolationPacketId int32
+	ViolationPacketID int32
 	ViolationContext  string
 }
 
@@ -15,7 +15,7 @@ type PacketViolationWarning struct {
 func (x *PacketViolationWarning) Marshal(io protocol.IO) {
 	protocol.IntegerFunc(&x.ViolationType, io.Varint32)
 	protocol.IntegerFunc(&x.ViolationSeverity, io.Varint32)
-	io.Varint32(&x.ViolationPacketId)
+	io.Varint32(&x.ViolationPacketID)
 	io.String(&x.ViolationContext)
 }
 

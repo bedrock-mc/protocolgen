@@ -5,8 +5,8 @@ package protocol
 type InventoryAction struct {
 	Source   InventorySource
 	Slot     uint32
-	FromItem CerealizerNetworkItemStackDescriptorSerializedData
-	ToItem   CerealizerNetworkItemStackDescriptorSerializedData
+	FromItem NetworkItemStackDescriptorSerializedData
+	ToItem   NetworkItemStackDescriptorSerializedData
 }
 
 // Marshal reads or writes InventoryAction using its canonical wire layout.

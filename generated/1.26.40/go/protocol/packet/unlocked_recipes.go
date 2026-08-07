@@ -5,7 +5,7 @@ package packet
 import "protocolgen/generated/1.26.40/go/protocol"
 
 type UnlockedRecipes struct {
-	PacketType          protocol.UnlockedRecipesPacketType
+	PacketType          protocol.PacketType
 	UnlockedRecipesList []string
 }
 

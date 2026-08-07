@@ -5,7 +5,7 @@ package protocol
 type CreativeGroupInfo struct {
 	CreativeCategory CreativeItemCategory
 	Name             string
-	GroupIconItem    CerealizerNetworkItemInstanceDescriptorSerializedData
+	GroupIconItem    NetworkItemInstanceDescriptorSerializedData
 }
 
 // Marshal reads or writes CreativeGroupInfo using its canonical wire layout.

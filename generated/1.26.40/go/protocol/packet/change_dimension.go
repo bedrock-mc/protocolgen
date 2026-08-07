@@ -12,7 +12,7 @@ type ChangeDimension struct {
 	DimensionID     protocol.DimensionType
 	Position        mgl32.Vec3
 	Respawn         bool
-	LoadingScreenId protocol.Optional[uint32]
+	LoadingScreenID protocol.Optional[uint32]
 }
 
 // Marshal reads or writes ChangeDimension using its canonical wire layout.
@@ -20,7 +20,7 @@ func (x *ChangeDimension) Marshal(io protocol.IO) {
 	x.DimensionID.Marshal(io)
 	io.Vec3(&x.Position)
 	io.Bool(&x.Respawn)
-	protocol.OptionalFunc(io, &x.LoadingScreenId, io.Uint32)
+	protocol.OptionalFunc(io, &x.LoadingScreenID, io.Uint32)
 }
 
 // ID returns the protocol ID for ChangeDimension.

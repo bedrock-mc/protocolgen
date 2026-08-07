@@ -5,18 +5,18 @@ package protocol
 import "github.com/google/uuid"
 
 type SerializedPersonaPieceHandle struct {
-	PieceId        string
+	PieceID        string
 	PieceType      PersonaPieceType
-	PackId         uuid.UUID
+	PackID         uuid.UUID
 	IsDefaultPiece bool
-	ProductId      string
+	ProductID      string
 }
 
 // Marshal reads or writes SerializedPersonaPieceHandle using its canonical wire layout.
 func (x *SerializedPersonaPieceHandle) Marshal(io IO) {
-	io.String(&x.PieceId)
+	io.String(&x.PieceID)
 	IntegerFunc(&x.PieceType, io.Uint32)
-	io.UUID(&x.PackId)
+	io.UUID(&x.PackID)
 	io.Bool(&x.IsDefaultPiece)
-	io.String(&x.ProductId)
+	io.String(&x.ProductID)
 }

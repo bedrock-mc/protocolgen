@@ -3,14 +3,14 @@
 package protocol
 
 type ContainerMixDataEntry struct {
-	FromItemId    int32
-	ReagentItemId int32
-	ToItemId      int32
+	FromItemID    int32
+	ReagentItemID int32
+	ToItemID      int32
 }
 
 // Marshal reads or writes ContainerMixDataEntry using its canonical wire layout.
 func (x *ContainerMixDataEntry) Marshal(io IO) {
-	io.Varint32(&x.FromItemId)
-	io.Varint32(&x.ReagentItemId)
-	io.Varint32(&x.ToItemId)
+	io.Varint32(&x.FromItemID)
+	io.Varint32(&x.ReagentItemID)
+	io.Varint32(&x.ToItemID)
 }

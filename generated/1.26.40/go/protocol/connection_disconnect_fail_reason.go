@@ -49,7 +49,7 @@ const (
 	ConnectionDisconnectFailReasonDisconnected                                  ConnectionDisconnectFailReason = 41
 	ConnectionDisconnectFailReasonInvalidPlayer                                 ConnectionDisconnectFailReason = 42
 	ConnectionDisconnectFailReasonLoggedInOtherLocation                         ConnectionDisconnectFailReason = 43
-	ConnectionDisconnectFailReasonServerIdConflict                              ConnectionDisconnectFailReason = 44
+	ConnectionDisconnectFailReasonServerIDConflict                              ConnectionDisconnectFailReason = 44
 	ConnectionDisconnectFailReasonNotAllowed                                    ConnectionDisconnectFailReason = 45
 	ConnectionDisconnectFailReasonNotAuthenticated                              ConnectionDisconnectFailReason = 46
 	ConnectionDisconnectFailReasonInvalidTenant                                 ConnectionDisconnectFailReason = 47
@@ -81,7 +81,7 @@ const (
 	ConnectionDisconnectFailReasonNetherNetProtocolVersion                      ConnectionDisconnectFailReason = 73
 	ConnectionDisconnectFailReasonSubsystemStatusError                          ConnectionDisconnectFailReason = 74
 	ConnectionDisconnectFailReasonEmptyAuthFromDiscovery                        ConnectionDisconnectFailReason = 75
-	ConnectionDisconnectFailReasonEmptyUrlFromDiscovery                         ConnectionDisconnectFailReason = 76
+	ConnectionDisconnectFailReasonEmptyURLFromDiscovery                         ConnectionDisconnectFailReason = 76
 	ConnectionDisconnectFailReasonExpiredAuthFromDiscovery                      ConnectionDisconnectFailReason = 77
 	ConnectionDisconnectFailReasonUnknownSignalServiceSignInFailure             ConnectionDisconnectFailReason = 78
 	ConnectionDisconnectFailReasonXBLJoinLobbyFailure                           ConnectionDisconnectFailReason = 79

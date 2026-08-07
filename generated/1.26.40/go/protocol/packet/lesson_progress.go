@@ -7,14 +7,14 @@ import "protocolgen/generated/1.26.40/go/protocol"
 type LessonProgress struct {
 	LessonAction int32
 	Score        int32
-	ActivityId   string
+	ActivityID   string
 }
 
 // Marshal reads or writes LessonProgress using its canonical wire layout.
 func (x *LessonProgress) Marshal(io protocol.IO) {
 	io.Varint32(&x.LessonAction)
 	io.Varint32(&x.Score)
-	io.String(&x.ActivityId)
+	io.String(&x.ActivityID)
 }
 
 // ID returns the protocol ID for LessonProgress.

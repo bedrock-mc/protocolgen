@@ -24,7 +24,7 @@ type StartGame struct {
 	LevelCurrentTime                  uint64
 	EnchantmentSeed                   int32
 	BlockProperties                   []protocol.ServerBlockProperty
-	MultiplayerCorrelationId          string
+	MultiplayerCorrelationID          string
 	EnableItemStackNetManager         bool
 	ServerVersion                     string
 	PlayerPropertyData                []byte
@@ -53,7 +53,7 @@ func (x *StartGame) Marshal(io protocol.IO) {
 	io.Uint64(&x.LevelCurrentTime)
 	io.Varint32(&x.EnchantmentSeed)
 	protocol.Slice(io, &x.BlockProperties)
-	io.String(&x.MultiplayerCorrelationId)
+	io.String(&x.MultiplayerCorrelationID)
 	io.Bool(&x.EnableItemStackNetManager)
 	io.String(&x.ServerVersion)
 	io.NBT(&x.PlayerPropertyData, protocol.NBTNetwork)

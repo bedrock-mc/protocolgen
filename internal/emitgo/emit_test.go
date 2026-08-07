@@ -48,6 +48,10 @@ func TestGenerateConsumesOnlyCanonicalManifest(t *testing.T) {
 		}
 	}
 	packet := files["protocol/packet/vocabulary.go"]
+	version := files["protocol/version.go"]
+	if !strings.Contains(version, `GAME_VERSION     = "fixture"`) || !strings.Contains(version, "PROTOCOL_VERSION = 2168") {
+		t.Fatalf("generated version constants are incomplete:\n%s", version)
+	}
 	if !strings.Contains(packet, "type Vocabulary struct") || !strings.Contains(packet, "Maybe protocol.Optional[string]") || !strings.Contains(files["protocol/packet/ids.go"], "IDVocabulary uint32 = 1") {
 		t.Fatalf("generated output omitted packet definition or ID:\n%s\n%s", packet, files["protocol/packet/ids.go"])
 	}
@@ -181,13 +185,13 @@ func TestGenerateWrapsRepeatedUnionPayloadTypes(t *testing.T) {
 		manifest.Variant{Value: 1, Name: "Second", Encode: message},
 	)
 	union.TypeID = "Choice"
-	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 1}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "1", Digest: "fixture", MinecraftVersion: "fixture", ProtocolVersion: 1}}, Packets: []manifest.Packet{{ID: 1, Name: "ChoicePacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{Ordinal: 0, Name: "Choice", Encode: union, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}}}
+	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 1}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "1", Digest: "fixture", MinecraftVersion: "fixture", ProtocolVersion: 1}}, Packets: []manifest.Packet{{ID: 1, Name: "EnvelopePacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{Ordinal: 0, Name: "Choice", Encode: union, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}}}
 	files, err := Generate(m, "fixture")
 	if err != nil {
 		t.Fatal(err)
 	}
 	marshal := generatedSource(files)
-	if strings.Count(marshal, "case *Message:") != 1 || !strings.Contains(marshal, "case *ChoiceChoiceSecond:") {
+	if strings.Count(marshal, "case *Message:") != 1 || !strings.Contains(marshal, "case *ChoiceSecond:") {
 		t.Fatalf("repeated union payloads were not made tag-distinct:\n%s", marshal)
 	}
 	if !strings.Contains(marshal, "value := new(Message)") || !strings.Contains(marshal, "*x = value") {
@@ -318,7 +322,7 @@ func TestPublicNamesDropSchemaScaffolding(t *testing.T) {
 	tests := map[string]string{
 		"enums/MoLangVersion":                           "MoLangVersion",
 		"enums/MolangVersion":                           "MoLangVersion",
-		"PlayerVideoCapturePacketPayload::Action":       "PlayerVideoCaptureAction",
+		"PlayerVideoCapturePacketPayload::Action":       "Action",
 		"DataItemEntryPayloadUnion":                     "DataItemEntryValue",
 		"DimensionDefinitionGroup::DimensionDefinition": "DimensionDefinition",
 		"ServerWaypointGroup::Action":                   "ServerWaypointGroupAction",
@@ -328,6 +332,21 @@ func TestPublicNamesDropSchemaScaffolding(t *testing.T) {
 		if got := publicTypeName(input); got != want {
 			t.Fatalf("publicTypeName(%q) = %q, want %q", input, got, want)
 		}
+	}
+}
+
+func TestGoNamesUseCommonInitialisms(t *testing.T) {
+	for input, want := range map[string]string{
+		"Container Id":   "ContainerID",
+		"Json Uri Xz Ui": "JSONURIXZUI",
+		"Identifier":     "Identifier",
+	} {
+		if got := exportName(input); got != want {
+			t.Errorf("exportName(%q) = %q, want %q", input, got, want)
+		}
+	}
+	if got := enumVariantName("VALUE_ID"); got != "ValueID" {
+		t.Fatalf("enumVariantName initialism = %q, want ValueID", got)
 	}
 }
 

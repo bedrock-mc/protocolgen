@@ -6,7 +6,7 @@ import "protocolgen/generated/1.26.40/go/protocol"
 
 type MobEquipment struct {
 	TargetRuntimeID uint64
-	Item            protocol.CerealizerNetworkItemStackDescriptorSerializedData
+	Item            protocol.NetworkItemStackDescriptorSerializedData
 	Slot            uint8
 	SelectedSlot    uint8
 	ContainerID     uint8

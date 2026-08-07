@@ -3,12 +3,12 @@
 package protocol
 
 type ScoreboardIdentityPacketInfo struct {
-	ScoreboardId   ScoreboardId
-	PlayerUniqueId Optional[int64]
+	ScoreboardID   ScoreboardID
+	PlayerUniqueID Optional[int64]
 }
 
 // Marshal reads or writes ScoreboardIdentityPacketInfo using its canonical wire layout.
 func (x *ScoreboardIdentityPacketInfo) Marshal(io IO) {
-	x.ScoreboardId.Marshal(io)
-	OptionalFunc(io, &x.PlayerUniqueId, io.Varint64)
+	x.ScoreboardID.Marshal(io)
+	OptionalFunc(io, &x.PlayerUniqueID, io.Varint64)
 }

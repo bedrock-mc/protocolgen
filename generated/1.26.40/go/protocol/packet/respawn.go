@@ -11,14 +11,14 @@ import (
 type Respawn struct {
 	Position        mgl32.Vec3
 	State           protocol.PlayerRespawnState
-	PlayerRuntimeId uint64
+	PlayerRuntimeID uint64
 }
 
 // Marshal reads or writes Respawn using its canonical wire layout.
 func (x *Respawn) Marshal(io protocol.IO) {
 	io.Vec3(&x.Position)
 	protocol.IntegerFunc(&x.State, io.Uint8)
-	io.ActorRuntimeID(&x.PlayerRuntimeId)
+	io.ActorRuntimeID(&x.PlayerRuntimeID)
 }
 
 // ID returns the protocol ID for Respawn.

@@ -9,13 +9,13 @@ import (
 )
 
 type ShowStoreOffer struct {
-	OfferId      uuid.UUID
+	OfferID      uuid.UUID
 	RedirectType protocol.ShowStoreOfferRedirectType
 }
 
 // Marshal reads or writes ShowStoreOffer using its canonical wire layout.
 func (x *ShowStoreOffer) Marshal(io protocol.IO) {
-	io.UUID(&x.OfferId)
+	io.UUID(&x.OfferID)
 	protocol.IntegerFunc(&x.RedirectType, io.Uint8)
 }
 

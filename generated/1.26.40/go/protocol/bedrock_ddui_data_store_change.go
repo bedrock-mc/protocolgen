@@ -6,7 +6,7 @@ type BedrockDDUIDataStoreChange struct {
 	DataStoreName       string
 	Property            string
 	UpdateCount         uint32
-	TheNewPropertyValue CerealDynamicValue
+	TheNewPropertyValue DynamicValue
 }
 
 func (*BedrockDDUIDataStoreChange) isBedrockDDUI() {}
@@ -16,5 +16,5 @@ func (x *BedrockDDUIDataStoreChange) Marshal(io IO) {
 	io.String(&x.DataStoreName)
 	io.String(&x.Property)
 	io.Uint32(&x.UpdateCount)
-	MarshalCerealDynamicValue(io, &x.TheNewPropertyValue)
+	MarshalDynamicValue(io, &x.TheNewPropertyValue)
 }

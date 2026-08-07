@@ -9,13 +9,13 @@ import (
 )
 
 type EmoteList struct {
-	RuntimeId     uint64
+	RuntimeID     uint64
 	EmotePieceIds []uuid.UUID
 }
 
 // Marshal reads or writes EmoteList using its canonical wire layout.
 func (x *EmoteList) Marshal(io protocol.IO) {
-	io.ActorRuntimeID(&x.RuntimeId)
+	io.ActorRuntimeID(&x.RuntimeID)
 	protocol.FuncSlice(io, &x.EmotePieceIds, io.Varuint32, io.UUID)
 }
 

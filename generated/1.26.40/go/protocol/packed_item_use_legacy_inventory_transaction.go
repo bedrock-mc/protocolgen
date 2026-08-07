@@ -3,7 +3,7 @@
 package protocol
 
 type PackedItemUseLegacyInventoryTransaction struct {
-	LegacyRequestID    TypedClientNetIdStructItemStackLegacyRequestIdTagInt32T0
+	LegacyRequestID    ItemStackLegacyRequestID
 	LegacySetItemSlots Optional[[]LegacySetSlot]
 	ItemUseTransaction Optional[ItemUseInventoryTransaction]
 }

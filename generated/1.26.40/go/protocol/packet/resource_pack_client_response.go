@@ -5,12 +5,12 @@ package packet
 import "protocolgen/generated/1.26.40/go/protocol"
 
 type ResourcePackClientResponse struct {
-	Response protocol.ResourcePackClientResponseResponse
+	Response protocol.ResourcePackClientResponseData
 }
 
 // Marshal reads or writes ResourcePackClientResponse using its canonical wire layout.
 func (x *ResourcePackClientResponse) Marshal(io protocol.IO) {
-	protocol.MarshalResourcePackClientResponseResponse(io, &x.Response)
+	protocol.MarshalResourcePackClientResponseData(io, &x.Response)
 }
 
 // ID returns the protocol ID for ResourcePackClientResponse.

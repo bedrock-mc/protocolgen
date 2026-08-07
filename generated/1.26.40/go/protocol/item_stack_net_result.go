@@ -17,7 +17,7 @@ const (
 	ItemStackNetResultInvalidCraftResult                               ItemStackNetResult = 9
 	ItemStackNetResultInvalidCraftResultIndex                          ItemStackNetResult = 10
 	ItemStackNetResultInvalidCraftResultItem                           ItemStackNetResult = 11
-	ItemStackNetResultInvalidItemNetId                                 ItemStackNetResult = 12
+	ItemStackNetResultInvalidItemNetID                                 ItemStackNetResult = 12
 	ItemStackNetResultMissingCreatedOutputContainer                    ItemStackNetResult = 13
 	ItemStackNetResultFailedToSetCreatedItemOutputSlot                 ItemStackNetResult = 14
 	ItemStackNetResultRequestAlreadyInProgress                         ItemStackNetResult = 15
@@ -28,7 +28,7 @@ const (
 	ItemStackNetResultItemAlreadyConsumedFromSlot                      ItemStackNetResult = 20
 	ItemStackNetResultConsumedTooMuchFromSlot                          ItemStackNetResult = 21
 	ItemStackNetResultMismatchSlotExpectedConsumedItem                 ItemStackNetResult = 22
-	ItemStackNetResultMismatchSlotExpectedConsumedItemNetIdVariant     ItemStackNetResult = 23
+	ItemStackNetResultMismatchSlotExpectedConsumedItemNetIDVariant     ItemStackNetResult = 23
 	ItemStackNetResultFailedToMatchExpectedSlotConsumedItem            ItemStackNetResult = 24
 	ItemStackNetResultFailedToMatchExpectedAllowedAnywhereConsumedItem ItemStackNetResult = 25
 	ItemStackNetResultConsumedItemOutOfAllowedSlotRange                ItemStackNetResult = 26
@@ -37,7 +37,7 @@ const (
 	ItemStackNetResultInvalidExperimentalRecipeRequest                 ItemStackNetResult = 29
 	ItemStackNetResultFailedToCraftCreative                            ItemStackNetResult = 30
 	ItemStackNetResultFailedToGetLevelRecipe                           ItemStackNetResult = 31
-	ItemStackNetResultFailedToFindRecipeByNetId                        ItemStackNetResult = 32
+	ItemStackNetResultFailedToFindRecipeByNetID                        ItemStackNetResult = 32
 	ItemStackNetResultMismatchedCraftingSize                           ItemStackNetResult = 33
 	ItemStackNetResultMissingInputSparseContainer                      ItemStackNetResult = 34
 	ItemStackNetResultMismatchedRecipeForInputGridItems                ItemStackNetResult = 35

@@ -5,14 +5,14 @@ package packet
 import "protocolgen/generated/1.26.40/go/protocol"
 
 type PositionTrackingDBClientRequest struct {
-	Action protocol.PositionTrackingDBClientRequestAction
-	Id     protocol.PositionTrackingId
+	Action  protocol.PositionTrackingDBClientRequestAction
+	IDValue protocol.PositionTrackingID
 }
 
 // Marshal reads or writes PositionTrackingDBClientRequest using its canonical wire layout.
 func (x *PositionTrackingDBClientRequest) Marshal(io protocol.IO) {
 	protocol.IntegerFunc(&x.Action, io.Uint8)
-	x.Id.Marshal(io)
+	x.IDValue.Marshal(io)
 }
 
 // ID returns the protocol ID for PositionTrackingDBClientRequest.

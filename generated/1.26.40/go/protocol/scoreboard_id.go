@@ -2,11 +2,11 @@
 
 package protocol
 
-type ScoreboardId struct {
-	ScoreboardId int64
+type ScoreboardID struct {
+	ScoreboardID int64
 }
 
-// Marshal reads or writes ScoreboardId using its canonical wire layout.
-func (x *ScoreboardId) Marshal(io IO) {
-	io.Varint64(&x.ScoreboardId)
+// Marshal reads or writes ScoreboardID using its canonical wire layout.
+func (x *ScoreboardID) Marshal(io IO) {
+	io.Varint64(&x.ScoreboardID)
 }

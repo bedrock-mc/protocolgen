@@ -9,14 +9,14 @@ import (
 )
 
 type LevelEvent struct {
-	EventId  int32
+	EventID  int32
 	Position mgl32.Vec3
 	Data     int32
 }
 
 // Marshal reads or writes LevelEvent using its canonical wire layout.
 func (x *LevelEvent) Marshal(io protocol.IO) {
-	io.Varint32(&x.EventId)
+	io.Varint32(&x.EventID)
 	io.Vec3(&x.Position)
 	io.Varint32(&x.Data)
 }

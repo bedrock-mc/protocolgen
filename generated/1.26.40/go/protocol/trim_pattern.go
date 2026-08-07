@@ -4,11 +4,11 @@ package protocol
 
 type TrimPattern struct {
 	ItemName  string
-	PatternId string
+	PatternID string
 }
 
 // Marshal reads or writes TrimPattern using its canonical wire layout.
 func (x *TrimPattern) Marshal(io IO) {
 	io.String(&x.ItemName)
-	io.String(&x.PatternId)
+	io.String(&x.PatternID)
 }

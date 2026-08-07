@@ -6,18 +6,18 @@ import "protocolgen/generated/1.26.40/go/protocol"
 
 type Text struct {
 	Localize        bool
-	Body            protocol.TextBody
+	Body            protocol.TextData
 	SenderSXUID     string
-	PlatformId      string
+	PlatformID      string
 	FilteredMessage protocol.Optional[string]
 }
 
 // Marshal reads or writes Text using its canonical wire layout.
 func (x *Text) Marshal(io protocol.IO) {
 	io.Bool(&x.Localize)
-	protocol.MarshalTextBody(io, &x.Body)
+	protocol.MarshalTextData(io, &x.Body)
 	io.String(&x.SenderSXUID)
-	io.String(&x.PlatformId)
+	io.String(&x.PlatformID)
 	protocol.OptionalFunc(io, &x.FilteredMessage, io.String)
 }
 

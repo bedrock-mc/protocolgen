@@ -8,11 +8,11 @@ type ItemReleaseInventoryTransaction struct {
 	Actions      InventoryTransactionData
 	ActionType   ItemReleaseInventoryTransactionActionType
 	Slot         int32
-	Item         CerealizerNetworkItemStackDescriptorSerializedData
+	Item         NetworkItemStackDescriptorSerializedData
 	FromPosition mgl32.Vec3
 }
 
-func (*ItemReleaseInventoryTransaction) isInventoryTransactionTransactionValue() {}
+func (*ItemReleaseInventoryTransaction) isInventoryTransactionValue() {}
 
 // Marshal reads or writes ItemReleaseInventoryTransaction using its canonical wire layout.
 func (x *ItemReleaseInventoryTransaction) Marshal(io IO) {

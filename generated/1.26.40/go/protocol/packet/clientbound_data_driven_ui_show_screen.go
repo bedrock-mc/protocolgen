@@ -5,16 +5,16 @@ package packet
 import "protocolgen/generated/1.26.40/go/protocol"
 
 type ClientboundDataDrivenUIShowScreen struct {
-	ScreenId       string
-	FormId         uint32
-	DataInstanceId protocol.Optional[uint32]
+	ScreenID       string
+	FormID         uint32
+	DataInstanceID protocol.Optional[uint32]
 }
 
 // Marshal reads or writes ClientboundDataDrivenUIShowScreen using its canonical wire layout.
 func (x *ClientboundDataDrivenUIShowScreen) Marshal(io protocol.IO) {
-	io.String(&x.ScreenId)
-	io.Uint32(&x.FormId)
-	protocol.OptionalFunc(io, &x.DataInstanceId, io.Uint32)
+	io.String(&x.ScreenID)
+	io.Uint32(&x.FormID)
+	protocol.OptionalFunc(io, &x.DataInstanceID, io.Uint32)
 }
 
 // ID returns the protocol ID for ClientboundDataDrivenUIShowScreen.

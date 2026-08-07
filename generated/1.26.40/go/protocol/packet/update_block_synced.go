@@ -9,7 +9,7 @@ type UpdateBlockSynced struct {
 	BlockRuntimeID   uint32
 	Flags            uint32
 	Layer            uint32
-	UniqueActorId    uint64
+	UniqueActorID    uint64
 	ActorSyncMessage uint64
 }
 
@@ -19,7 +19,7 @@ func (x *UpdateBlockSynced) Marshal(io protocol.IO) {
 	io.Varuint32(&x.BlockRuntimeID)
 	io.Varuint32(&x.Flags)
 	io.Varuint32(&x.Layer)
-	io.Varuint64(&x.UniqueActorId)
+	io.Varuint64(&x.UniqueActorID)
 	io.Varuint64(&x.ActorSyncMessage)
 }
 

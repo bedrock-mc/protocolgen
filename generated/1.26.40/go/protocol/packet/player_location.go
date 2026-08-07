@@ -6,13 +6,13 @@ import "protocolgen/generated/1.26.40/go/protocol"
 
 type PlayerLocation struct {
 	TargetActorID int64
-	Location      protocol.PlayerLocationLocation
+	Location      protocol.PlayerLocationData
 }
 
 // Marshal reads or writes PlayerLocation using its canonical wire layout.
 func (x *PlayerLocation) Marshal(io protocol.IO) {
 	io.ActorUniqueID(&x.TargetActorID)
-	protocol.MarshalPlayerLocationLocation(io, &x.Location)
+	protocol.MarshalPlayerLocationData(io, &x.Location)
 }
 
 // ID returns the protocol ID for PlayerLocation.

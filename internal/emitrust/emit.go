@@ -3,13 +3,13 @@
 package emitrust
 
 import (
-	"encoding/json"
 	"fmt"
 	"sort"
 	"strings"
 	"unicode"
 
 	"protocolgen/internal/manifest"
+	"protocolgen/internal/naming"
 )
 
 type definition struct {
@@ -55,18 +55,30 @@ type generator struct {
 	usesGlam    bool
 	usesBytes   bool
 	standalone  map[string]bool
+	resolver    *naming.Resolver
 }
 
 func prepare(m manifest.Manifest) (*generator, []packetInfo, error) {
+	return prepareWithOverlay(m, naming.Overlay{})
+}
+
+func prepareWithOverlay(m manifest.Manifest, overlay naming.Overlay) (*generator, []packetInfo, error) {
 	if err := manifest.Validate(m); err != nil {
 		return nil, nil, err
 	}
-	g := &generator{definitions: map[string]definition{}, identities: map[string]string{}, used: map[string]bool{}, standalone: standaloneRustStructs(m)}
+	if err := naming.ValidateRequiredEntries(m, overlay); err != nil {
+		return nil, nil, err
+	}
+	g := &generator{definitions: map[string]definition{}, identities: map[string]string{}, used: map[string]bool{}, standalone: standaloneRustStructs(m), resolver: naming.NewResolver(overlay)}
 	packets := append([]manifest.Packet(nil), m.Packets...)
 	sort.Slice(packets, func(i, j int) bool { return packets[i].ID < packets[j].ID })
 	infos := make([]packetInfo, 0, len(packets))
 	for _, packet := range packets {
-		name := g.unique(packetTypeName(packet.Name))
+		name := packetTypeName(packet.Name)
+		if err := g.resolver.Reserve(packet.Name, naming.PacketTypeName(packet.Name), rustPublicTypeName); err != nil {
+			return nil, nil, fmt.Errorf("packet %s: %w", packet.Name, err)
+		}
+		g.used[name] = true
 		used := map[string]bool{}
 		fields := make([]rustFieldInfo, 0, len(packet.Fields))
 		for _, field := range packet.Fields {
@@ -181,7 +193,13 @@ func standaloneRustStructs(m manifest.Manifest) map[string]bool {
 }
 
 func GenerateFiles(m manifest.Manifest) (map[string]string, error) {
-	g, infos, err := prepare(m)
+	return GenerateFilesWithOverlay(m, naming.Overlay{})
+}
+
+// GenerateFilesWithOverlay emits Rust definitions using a reviewed naming
+// overlay shared with the Go emitter.
+func GenerateFilesWithOverlay(m manifest.Manifest, overlay naming.Overlay) (map[string]string, error) {
+	g, infos, err := prepareWithOverlay(m, overlay)
 	if err != nil {
 		return nil, err
 	}
@@ -209,13 +227,14 @@ func (g *generator) sortedDefinitions() []definition {
 func emitLib(m manifest.Manifest) string {
 	return fmt.Sprintf(`// Code generated from canonical protocol manifest v2. DO NOT EDIT.
 
+pub const GAME_VERSION: &str = %q;
 pub const PROTOCOL_VERSION: i32 = %d;
 
 pub mod enums;
 pub mod types;
 pub mod packets;
 pub mod wire;
-`, m.Target.ProtocolVersion)
+`, m.Target.MinecraftVersion, m.Target.ProtocolVersion)
 }
 
 func emitRustEnums(definitions []definition) string {
@@ -648,7 +667,10 @@ func (g *generator) rustType(node manifest.Node, hint string) (string, error) {
 		}
 		return "Vec<(" + key + ", " + value + ")>", nil
 	case manifest.KindUnion:
-		name := g.registerIdentity(node, hint+"Union")
+		name, err := g.registerIdentity(node, hint+"Union")
+		if err != nil {
+			return "", err
+		}
 		if _, ok := g.definitions[name]; !ok {
 			control, err := unionControlType(node)
 			if err != nil {
@@ -658,7 +680,7 @@ func (g *generator) rustType(node manifest.Node, hint string) (string, error) {
 			variants := make([]rustVariant, 0, len(node.Variants))
 			used := map[string]bool{}
 			for _, variant := range node.Variants {
-				variantName := strings.TrimSuffix(rustPascalName(shortTypeName(variant.Name)), "Payload")
+				variantName := strings.TrimSuffix(rustPascalName(naming.PublicVariantName(shortTypeName(variant.Name))), "Payload")
 				variantName = uniqueTypeVariant(variantName, used)
 				payload := ""
 				var fields []rustField
@@ -691,7 +713,10 @@ func (g *generator) rustType(node manifest.Node, hint string) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		name := g.registerIdentity(node, hint+"Enum")
+		name, err := g.registerIdentity(node, hint+"Enum")
+		if err != nil {
+			return "", err
+		}
 		if _, ok := g.definitions[name]; !ok {
 			g.definitions[name] = definition{Name: name, Kind: manifest.KindEnum, Underlying: underlying, Variants: append([]manifest.Variant(nil), node.Variants...)}
 		}
@@ -766,7 +791,10 @@ func isPrimitiveStruct(node manifest.Node, codes ...string) bool {
 }
 
 func (g *generator) registerStruct(node manifest.Node, hint string) (string, error) {
-	name := g.registerIdentity(node, hint+"Struct")
+	name, err := g.registerIdentity(node, hint+"Struct")
+	if err != nil {
+		return "", err
+	}
 	if _, ok := g.definitions[name]; ok {
 		return name, nil
 	}
@@ -939,94 +967,15 @@ func (g *generator) inlineRustVariant(node manifest.Node) bool {
 	return node.TypeID == "" || !g.standalone[node.TypeID]
 }
 
-func (g *generator) registerIdentity(node manifest.Node, hint string) string {
-	key := node.TypeID
-	inferred := inferredTypeName(node)
-	if key == "" {
-		identityHint := inferred
-		if identityHint == "" {
-			identityHint = hint
-		} else {
-			identityHint += "/" + unionIdentity(node)
-		}
-		key = fmt.Sprintf("%s/%s/%s", node.Kind, node.Semantic, identityHint)
+func (g *generator) registerIdentity(node manifest.Node, hint string) (string, error) {
+	name, err := g.resolver.Resolve(node, hint, rustPublicTypeName)
+	if err != nil {
+		return "", err
 	}
-	if name, ok := g.identities[key]; ok {
-		return name
-	}
-	base := hint
-	if node.TypeID != "" {
-		base = node.TypeID
-	} else if node.Semantic != "" {
-		base = node.Semantic
-	} else if inferred != "" {
-		base = inferred
-	}
-	candidate := publicTypeName(base)
-	if g.used[candidate] {
-		// Packet names own their unqualified name. Give a nested definition a
-		// semantic role instead of leaking a numeric collision suffix into the API.
-		switch node.Kind {
-		case manifest.KindEnum:
-			candidate += "Type"
-		case manifest.KindUnion:
-			hinted := strings.TrimSuffix(publicTypeName(hint), "Union")
-			if hinted != "" && !g.used[hinted] {
-				candidate = hinted
-			} else {
-				candidate += "Data"
-			}
-		default:
-			candidate += "Data"
-		}
-	}
-	name := g.unique(candidate)
+	key := naming.IdentityKeyFor(node, hint)
 	g.identities[key] = name
-	return name
-}
-
-func unionIdentity(node manifest.Node) string {
-	type variantIdentity struct {
-		Value  int64  `json:"value"`
-		Name   string `json:"name"`
-		TypeID string `json:"type_id,omitempty"`
-	}
-	identity := struct {
-		Control  string            `json:"control"`
-		Variants []variantIdentity `json:"variants"`
-	}{}
-	if node.Control != nil && node.Control.Primitive != nil {
-		identity.Control = node.Control.Primitive.Code
-	}
-	for _, variant := range node.Variants {
-		identity.Variants = append(identity.Variants, variantIdentity{Value: variant.Value, Name: variant.Name, TypeID: variant.Encode.TypeID})
-	}
-	encoded, _ := json.Marshal(identity)
-	return string(encoded)
-}
-
-func inferredTypeName(node manifest.Node) string {
-	if node.Kind != manifest.KindUnion || len(node.Variants) == 0 {
-		return ""
-	}
-	prefix := ""
-	for _, variant := range node.Variants {
-		qualified := variant.Name
-		if !strings.Contains(qualified, "::") && variant.Encode.TypeID != "" {
-			qualified = variant.Encode.TypeID
-		}
-		position := strings.LastIndex(qualified, "::")
-		if position < 0 {
-			return ""
-		}
-		candidate := qualified[:position]
-		if prefix == "" {
-			prefix = candidate
-		} else if prefix != candidate {
-			return ""
-		}
-	}
-	return prefix
+	g.used[name] = true
+	return name, nil
 }
 
 func shortTypeName(name string) string {
@@ -1264,73 +1213,19 @@ func camelWords(value string) []string {
 }
 
 func packetTypeName(value string) string {
-	name := typeName(value)
-	name = strings.TrimSuffix(name, "Packet")
-	if name == "" {
-		return "Packet"
-	}
-	return name
+	return rustPublicTypeName(naming.PacketTypeName(value))
 }
 
 func publicTypeName(value string) string {
-	value = strings.TrimSuffix(value, ".json#")
-	value = strings.TrimSuffix(value, ".json")
-	value = strings.TrimPrefix(value, "enums/")
-	value = stripSharedTypeVersion(value)
-	value = strings.ReplaceAll(value, "Packet::", "::")
-	value = strings.ReplaceAll(value, "PacketPayload::", "::")
-	value = strings.ReplaceAll(value, "PacketPayload", "")
-	value = collapseRedundantGroup(value)
-	if strings.HasSuffix(value, "PayloadUnion") {
-		value = strings.TrimSuffix(value, "PayloadUnion") + "Value"
-	}
-	value = strings.TrimSuffix(value, "Union")
-	value = strings.TrimSuffix(value, "Payload")
-	return strings.ReplaceAll(typeName(value), "Molang", "MoLang")
+	return rustPublicTypeName(value)
 }
 
-func collapseRedundantGroup(value string) string {
-	parts := strings.Split(value, "::")
-	if len(parts) == 2 && parts[0] == parts[1]+"Group" {
-		return parts[1]
-	}
-	return value
-}
-
-func stripSharedTypeVersion(value string) string {
-	const prefix = "SharedTypes::"
-	if !strings.HasPrefix(value, prefix) {
-		return value
-	}
-	rest := strings.TrimPrefix(value, prefix)
-	if separator := strings.Index(rest, "::"); separator >= 0 && strings.HasPrefix(rest[:separator], "v") {
-		return rest[separator+2:]
-	}
-	return rest
+func rustPublicTypeName(value string) string {
+	return strings.ReplaceAll(naming.PublicTypeName(value), "Molang", "MoLang")
 }
 
 func typeName(value string) string {
-	var b strings.Builder
-	upper := true
-	for _, r := range value {
-		if unicode.IsLetter(r) || unicode.IsDigit(r) {
-			if upper {
-				r = unicode.ToUpper(r)
-				upper = false
-			}
-			b.WriteRune(r)
-		} else {
-			upper = true
-		}
-	}
-	result := b.String()
-	if result == "" {
-		return "Generated"
-	}
-	if unicode.IsDigit([]rune(result)[0]) {
-		return "Generated" + result
-	}
-	return result
+	return rustPascalName(value)
 }
 
 func fieldName(value string) string {
@@ -1356,6 +1251,7 @@ func fieldName(value string) string {
 	if name == "" {
 		return "field"
 	}
+	name = strings.ReplaceAll(name, "i_ds", "ids")
 	name = strings.NewReplacer("no_pv_m", "no_pvm", "no_mv_p", "no_mvp").Replace(name)
 	if rustUnrawableKeywords[name] || rustKeywords[name] {
 		return name + "_"

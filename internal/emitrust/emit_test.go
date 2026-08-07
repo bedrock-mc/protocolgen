@@ -30,7 +30,7 @@ func TestGenerateRustConsumesCanonicalManifest(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Generate: %v", err)
 	}
-	if !strings.Contains(source, "pub struct Fixture") || !strings.Contains(source, "pub const ID: u32 = 1;") {
+	if !strings.Contains(source, "pub struct Fixture") || !strings.Contains(source, "pub const ID: u32 = 1;") || !strings.Contains(source, `pub const GAME_VERSION: &str = "fixture";`) || !strings.Contains(source, "pub const PROTOCOL_VERSION: i32 = 2168;") {
 		t.Fatalf("generated Rust omitted packet definition or ID:\n%s", source)
 	}
 	if strings.Contains(source, "SHAPE") || strings.Contains(source, "WireEncoder") {
@@ -101,13 +101,14 @@ func TestGenerateRustEscapesKeywordFieldNames(t *testing.T) {
 
 func TestRustFieldNamesUseSnakeCase(t *testing.T) {
 	tests := map[string]string{
-		"Actor Unique ID": "actor_unique_id",
-		"FrameRate":       "frame_rate",
-		"Pack UUID":       "pack_uuid",
-		"Sender's XUID":   "sender_xuid",
-		"No PvM":          "no_pvm",
-		"No MvP":          "no_mvp",
-		"Type":            "type_",
+		"Actor Unique ID":   "actor_unique_id",
+		"FrameRate":         "frame_rate",
+		"Pack UUID":         "pack_uuid",
+		"Sender's XUID":     "sender_xuid",
+		"Tracked Actor IDs": "tracked_actor_ids",
+		"No PvM":            "no_pvm",
+		"No MvP":            "no_mvp",
+		"Type":              "type_",
 	}
 	for input, want := range tests {
 		if got := fieldName(input); got != want {
@@ -306,7 +307,7 @@ func TestGenerateRustUsesAddressableModulesAndCrateIdentity(t *testing.T) {
 func TestGenerateRustKeepsSharedUnionPayloadNamed(t *testing.T) {
 	shared := manifest.Node{Kind: manifest.KindStruct, Semantic: "SharedRecord", TypeID: "SharedRecord", Fields: []manifest.Field{{Ordinal: 0, Name: "Value", Encode: manifest.Primitive("u8"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}
 	union := manifest.Union(manifest.Primitive("u8"), manifest.Variant{Value: 0, Name: "Choice::Shared", Encode: shared})
-	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:shared-rust", MinecraftVersion: "fixture", ProtocolVersion: 2168}}, Packets: []manifest.Packet{{ID: 1, Name: "ChoicePacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{Ordinal: 0, Name: "Choice", Encode: union, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}, {Ordinal: 1, Name: "Shared", Encode: shared, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}}}
+	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:shared-rust", MinecraftVersion: "fixture", ProtocolVersion: 2168}}, Packets: []manifest.Packet{{ID: 1, Name: "EnvelopePacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{Ordinal: 0, Name: "Choice", Encode: union, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}, {Ordinal: 1, Name: "Shared", Encode: shared, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}}}
 	source, err := generatedRustSource(m)
 	if err != nil {
 		t.Fatal(err)
@@ -345,7 +346,7 @@ func TestRustPublicNamesDropSchemaScaffolding(t *testing.T) {
 	tests := map[string]string{
 		"enums/MoLangVersion":                           "MoLangVersion",
 		"enums/MolangVersion":                           "MoLangVersion",
-		"PlayerVideoCapturePacketPayload::Action":       "PlayerVideoCaptureAction",
+		"PlayerVideoCapturePacketPayload::Action":       "Action",
 		"DataItemEntryPayloadUnion":                     "DataItemEntryValue",
 		"DimensionDefinitionGroup::DimensionDefinition": "DimensionDefinition",
 		"ServerWaypointGroup::Action":                   "ServerWaypointGroupAction",

@@ -5,7 +5,7 @@ package packet
 import "protocolgen/generated/1.26.40/go/protocol"
 
 type CameraAimAssistActorPriority struct {
-	CameraAimAssistActorPriorityList []protocol.CameraAimAssistActorPriorityPriorityData
+	CameraAimAssistActorPriorityList []protocol.CameraAimAssistActorPriorityData
 }
 
 // Marshal reads or writes CameraAimAssistActorPriority using its canonical wire layout.

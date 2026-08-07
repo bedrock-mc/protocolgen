@@ -3,20 +3,20 @@
 package protocol
 
 type SmithingTrimRecipe struct {
-	RecipeId           string
-	TemplateIngredient CerealizerRecipeIngredientSerializedData
-	BaseIngredient     CerealizerRecipeIngredientSerializedData
-	AdditionIngredient CerealizerRecipeIngredientSerializedData
+	RecipeID           string
+	TemplateIngredient RecipeIngredientSerializedData
+	BaseIngredient     RecipeIngredientSerializedData
+	AdditionIngredient RecipeIngredientSerializedData
 	Tag                string
-	NetId              TypedServerNetIdStructRecipeNetIdTag
+	NetID              RecipeNetID
 }
 
 // Marshal reads or writes SmithingTrimRecipe using its canonical wire layout.
 func (x *SmithingTrimRecipe) Marshal(io IO) {
-	io.String(&x.RecipeId)
+	io.String(&x.RecipeID)
 	x.TemplateIngredient.Marshal(io)
 	x.BaseIngredient.Marshal(io)
 	x.AdditionIngredient.Marshal(io)
 	io.String(&x.Tag)
-	x.NetId.Marshal(io)
+	x.NetID.Marshal(io)
 }

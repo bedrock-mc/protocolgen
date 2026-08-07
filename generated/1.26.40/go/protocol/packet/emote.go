@@ -5,21 +5,21 @@ package packet
 import "protocolgen/generated/1.26.40/go/protocol"
 
 type Emote struct {
-	ActorRuntimeId   uint64
-	EmoteId          string
+	ActorRuntimeID   uint64
+	EmoteID          string
 	EmoteLengthTicks uint32
 	Xuid             string
-	PlatformId       string
+	PlatformID       string
 	Flags            uint8
 }
 
 // Marshal reads or writes Emote using its canonical wire layout.
 func (x *Emote) Marshal(io protocol.IO) {
-	io.ActorRuntimeID(&x.ActorRuntimeId)
-	io.String(&x.EmoteId)
+	io.ActorRuntimeID(&x.ActorRuntimeID)
+	io.String(&x.EmoteID)
 	io.Varuint32(&x.EmoteLengthTicks)
 	io.String(&x.Xuid)
-	io.String(&x.PlatformId)
+	io.String(&x.PlatformID)
 	io.Uint8(&x.Flags)
 }
 

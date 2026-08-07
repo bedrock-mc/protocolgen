@@ -3,16 +3,16 @@
 package protocol
 
 type SocialEventsServerTelemetryData struct {
-	ServerId   string
-	ScenarioId string
-	WorldId    string
-	OwnerId    string
+	ServerID   string
+	ScenarioID string
+	WorldID    string
+	OwnerID    string
 }
 
 // Marshal reads or writes SocialEventsServerTelemetryData using its canonical wire layout.
 func (x *SocialEventsServerTelemetryData) Marshal(io IO) {
-	io.String(&x.ServerId)
-	io.String(&x.ScenarioId)
-	io.String(&x.WorldId)
-	io.String(&x.OwnerId)
+	io.String(&x.ServerID)
+	io.String(&x.ScenarioID)
+	io.String(&x.WorldID)
+	io.String(&x.OwnerID)
 }

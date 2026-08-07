@@ -2,11 +2,11 @@
 
 package protocol
 
-type PositionTrackingId struct {
+type PositionTrackingID struct {
 	Value int32
 }
 
-// Marshal reads or writes PositionTrackingId using its canonical wire layout.
-func (x *PositionTrackingId) Marshal(io IO) {
+// Marshal reads or writes PositionTrackingID using its canonical wire layout.
+func (x *PositionTrackingID) Marshal(io IO) {
 	io.Varint32(&x.Value)
 }

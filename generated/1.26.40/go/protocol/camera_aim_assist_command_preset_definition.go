@@ -5,7 +5,7 @@ package protocol
 import "github.com/go-gl/mathgl/mgl32"
 
 type CameraAimAssistCommandPresetDefinition struct {
-	PresetId   Optional[string]
+	PresetID   Optional[string]
 	TargetMode Optional[CameraAimAssistTargetMode]
 	ViewAngle  Optional[mgl32.Vec2]
 	Distance   Optional[float32]
@@ -13,7 +13,7 @@ type CameraAimAssistCommandPresetDefinition struct {
 
 // Marshal reads or writes CameraAimAssistCommandPresetDefinition using its canonical wire layout.
 func (x *CameraAimAssistCommandPresetDefinition) Marshal(io IO) {
-	OptionalFunc(io, &x.PresetId, io.String)
+	OptionalFunc(io, &x.PresetID, io.String)
 	OptionalFunc(io, &x.TargetMode, func(value *CameraAimAssistTargetMode) {
 		IntegerFunc(value, io.Int32)
 	})

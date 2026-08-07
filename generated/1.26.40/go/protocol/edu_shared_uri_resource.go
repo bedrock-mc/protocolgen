@@ -2,13 +2,13 @@
 
 package protocol
 
-type EduSharedUriResource struct {
+type EduSharedURIResource struct {
 	ButtonName string
-	LinkUri    string
+	LinkURI    string
 }
 
-// Marshal reads or writes EduSharedUriResource using its canonical wire layout.
-func (x *EduSharedUriResource) Marshal(io IO) {
+// Marshal reads or writes EduSharedURIResource using its canonical wire layout.
+func (x *EduSharedURIResource) Marshal(io IO) {
 	io.String(&x.ButtonName)
-	io.String(&x.LinkUri)
+	io.String(&x.LinkURI)
 }

@@ -4,13 +4,13 @@ package protocol
 
 type BiomeConditionalTransformationData struct {
 	TransformsInto      []BiomeWeightedData
-	ConditionJson       uint16
+	ConditionJSON       uint16
 	MinPassingNeighbors uint32
 }
 
 // Marshal reads or writes BiomeConditionalTransformationData using its canonical wire layout.
 func (x *BiomeConditionalTransformationData) Marshal(io IO) {
 	Slice(io, &x.TransformsInto)
-	io.Uint16(&x.ConditionJson)
+	io.Uint16(&x.ConditionJSON)
 	io.Uint32(&x.MinPassingNeighbors)
 }

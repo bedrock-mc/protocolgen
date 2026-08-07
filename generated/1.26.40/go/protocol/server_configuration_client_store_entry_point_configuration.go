@@ -3,12 +3,12 @@
 package protocol
 
 type ServerConfigurationClientStoreEntryPointConfiguration struct {
-	StoreId   string
+	StoreID   string
 	StoreName string
 }
 
 // Marshal reads or writes ServerConfigurationClientStoreEntryPointConfiguration using its canonical wire layout.
 func (x *ServerConfigurationClientStoreEntryPointConfiguration) Marshal(io IO) {
-	io.String(&x.StoreId)
+	io.String(&x.StoreID)
 	io.String(&x.StoreName)
 }
