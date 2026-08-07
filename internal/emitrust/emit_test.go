@@ -230,6 +230,45 @@ func TestGenerateRustEmitsPacketRegistryAndSum(t *testing.T) {
 	}
 }
 
+func TestGenerateRustUsesDefaultsAndTupleWrappers(t *testing.T) {
+	actor := manifest.Node{Kind: manifest.KindStruct, Semantic: "ActorRuntimeID", TypeID: "ActorRuntimeID", Fields: []manifest.Field{{Ordinal: 0, Name: "Actor Runtime ID", Encode: manifest.Primitive("var_u64"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}
+	packet := manifest.Packet{ID: 1, Name: "DefaultPacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{Ordinal: 0, Name: "Runtime", Encode: actor, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}
+	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:defaults", MinecraftVersion: "fixture", ProtocolVersion: 2168}}, Packets: []manifest.Packet{packet}}
+	files, err := GenerateFiles(m)
+	if err != nil {
+		t.Fatal(err)
+	}
+	types := files["src/types.rs"]
+	packets := files["src/packets/default.rs"]
+	for _, want := range []string{"pub struct ActorRuntimeID(pub u64);", "impl wire::WireCodec for ActorRuntimeID", "Default, PartialEq, Eq, Hash"} {
+		if !strings.Contains(types, want) {
+			t.Fatalf("generated types omitted %q:\n%s", want, types)
+		}
+	}
+	if !strings.Contains(packets, "#[derive(Clone, Debug, Default, PartialEq)]") {
+		t.Fatalf("packet did not derive Default:\n%s", packets)
+	}
+}
+
+func TestGenerateRustBoxesLargeUnionFields(t *testing.T) {
+	large := manifest.Node{Kind: manifest.KindStruct, Semantic: "LargeRecord", TypeID: "LargeRecord"}
+	for index := 0; index < 8; index++ {
+		large.Fields = append(large.Fields, manifest.Field{Ordinal: index, Name: "Text" + string(rune('A'+index)), Encode: manifest.String(manifest.Primitive("var_u32")), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}})
+	}
+	variant := manifest.Node{Kind: manifest.KindStruct, TypeID: "LargeUnionVariant", Fields: []manifest.Field{
+		{Ordinal: 0, Name: "Payload", Encode: large, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+	}}
+	union := manifest.Union(manifest.Primitive("u8"), manifest.Variant{Value: 0, Name: "Add", Encode: variant}, manifest.Variant{Value: 1, Name: "Remove", Encode: manifest.Void()})
+	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:large-union", MinecraftVersion: "fixture", ProtocolVersion: 2168}}, Packets: []manifest.Packet{{ID: 1, Name: "LargeUnionPacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{Ordinal: 0, Name: "Value", Encode: union, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}}}
+	source, err := generatedRustSource(m)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(source, "payload: Box<LargeRecord>") {
+		t.Fatalf("large union field was not boxed:\n%s", source)
+	}
+}
+
 func TestGenerateRustKeepsSharedUnionPayloadNamed(t *testing.T) {
 	shared := manifest.Node{Kind: manifest.KindStruct, Semantic: "SharedRecord", TypeID: "SharedRecord", Fields: []manifest.Field{{Ordinal: 0, Name: "Value", Encode: manifest.Primitive("u8"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}
 	union := manifest.Union(manifest.Primitive("u8"), manifest.Variant{Value: 0, Name: "Choice::Shared", Encode: shared})

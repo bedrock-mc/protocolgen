@@ -13,14 +13,16 @@ import (
 )
 
 type definition struct {
-	Name       string
-	Kind       manifest.NodeKind
-	Fields     []rustField
-	Underlying string
-	Control    string
-	Variants   []manifest.Variant
-	Union      []rustVariant
-	BitLength  uint64
+	Name         string
+	Kind         manifest.NodeKind
+	Fields       []rustField
+	Underlying   string
+	Control      string
+	Variants     []manifest.Variant
+	Union        []rustVariant
+	BitLength    uint64
+	Tuple        bool
+	WrapperCodec string
 }
 
 type rustVariant struct {
@@ -40,6 +42,7 @@ type packetInfo struct {
 	packet manifest.Packet
 	name   string
 	fields []rustFieldInfo
+	size   int
 }
 
 type generator struct {
@@ -76,7 +79,7 @@ func prepare(m manifest.Manifest) (*generator, []packetInfo, error) {
 			}
 			fields = append(fields, rustFieldInfo{name: fieldName, typ: typ, docs: fieldDocs(field)})
 		}
-		infos = append(infos, packetInfo{packet: packet, name: name, fields: fields})
+		infos = append(infos, packetInfo{packet: packet, name: name, fields: fields, size: g.estimatePacketSize(fields)})
 	}
 	return g, infos, nil
 }
@@ -256,7 +259,18 @@ func emitRustTypes(definitions []definition, usesNbt bool) string {
 	for _, item := range definitions {
 		switch item.Kind {
 		case manifest.KindStruct:
-			fmt.Fprintf(&b, "#[derive(Clone, Debug, PartialEq)]\npub struct %s {\n", item.Name)
+			if item.Tuple {
+				derive := "Clone, Copy, Debug, Default, PartialEq"
+				if item.WrapperCodec != "" && item.Fields[0].Type != "f32" && item.Fields[0].Type != "f64" {
+					derive += ", Eq, Hash"
+				}
+				fmt.Fprintf(&b, "#[derive(%s)]\npub struct %s(pub %s);\n\n", derive, item.Name, item.Fields[0].Type)
+				if item.WrapperCodec != "" {
+					fmt.Fprintf(&b, "impl wire::WireCodec for %s {\n    fn encode<W: std::io::Write>(&self, writer: &mut W) -> std::io::Result<()> {\n        <wire::%s as wire::WireCodec>::encode(&wire::%s(self.0), writer)\n    }\n\n    fn decode<R: std::io::Read>(reader: &mut R) -> std::io::Result<Self> {\n        <wire::%s as wire::WireCodec>::decode(reader).map(|value| Self(value.0))\n    }\n}\n\n", item.Name, item.WrapperCodec, item.WrapperCodec, item.WrapperCodec)
+				}
+				continue
+			}
+			fmt.Fprintf(&b, "#[derive(Clone, Debug, Default, PartialEq)]\npub struct %s {\n", item.Name)
 			for _, field := range item.Fields {
 				for _, doc := range field.Docs {
 					fmt.Fprintf(&b, "    %s\n", doc)
@@ -294,9 +308,25 @@ func emitRustTypes(definitions []definition, usesNbt bool) string {
 				}
 			}
 			b.WriteString("        }\n    }\n}\n\n")
+			if len(item.Union) > 0 {
+				first := item.Union[0]
+				fmt.Fprintf(&b, "impl Default for %s {\n    fn default() -> Self {\n", item.Name)
+				if len(first.Fields) != 0 {
+					fmt.Fprintf(&b, "        Self::%s {\n", first.Name)
+					for _, field := range first.Fields {
+						fmt.Fprintf(&b, "            %s: Default::default(),\n", field.Name)
+					}
+					b.WriteString("        }\n")
+				} else if first.Payload != "" {
+					fmt.Fprintf(&b, "        Self::%s(Default::default())\n", first.Name)
+				} else {
+					fmt.Fprintf(&b, "        Self::%s\n", first.Name)
+				}
+				b.WriteString("    }\n}\n\n")
+			}
 		case manifest.KindBitset:
 			fmt.Fprintf(&b, "/// Stores the %d-bit value used by the wire bitset encoding.\n", item.BitLength)
-			fmt.Fprintf(&b, "#[derive(Clone, Debug, PartialEq, Eq)]\npub struct %s(pub [u64; %d]);\n\n", item.Name, (item.BitLength+63)/64)
+			fmt.Fprintf(&b, "#[derive(Clone, Debug, Default, PartialEq, Eq)]\npub struct %s(pub [u64; %d]);\n\n", item.Name, (item.BitLength+63)/64)
 		}
 	}
 	return strings.TrimSpace(b.String()) + "\n"
@@ -466,7 +496,7 @@ func emitRustPacket(info packetInfo) string {
 	b.WriteString("// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\n")
 	b.WriteString("#[allow(unused_imports)]\nuse crate::*;\n\n")
 	b.WriteString("use crate::wire;\n\n")
-	fmt.Fprintf(&b, "#[derive(Clone, Debug, PartialEq)]\npub struct %s {\n", info.name)
+	fmt.Fprintf(&b, "#[derive(Clone, Debug, Default, PartialEq)]\npub struct %s {\n", info.name)
 	for _, field := range info.fields {
 		for _, doc := range field.docs {
 			fmt.Fprintf(&b, "%s\n", doc)
@@ -627,6 +657,9 @@ func (g *generator) rustType(node manifest.Node, hint string) (string, error) {
 					if err != nil {
 						return "", err
 					}
+					if payload != "" && g.largeRustType(payload) {
+						payload = "Box<" + payload + ">"
+					}
 				}
 				variants = append(variants, rustVariant{Name: variantName, Payload: payload, Fields: fields, Discriminant: variant.Value})
 			}
@@ -715,6 +748,16 @@ func (g *generator) registerStruct(node manifest.Node, hint string) (string, err
 	if _, ok := g.definitions[name]; ok {
 		return name, nil
 	}
+	if raw, codec, ok := singleFieldWrapper(node); ok {
+		g.definitions[name] = definition{
+			Name:         name,
+			Kind:         manifest.KindStruct,
+			Fields:       []rustField{{Name: "value", Type: raw}},
+			Tuple:        true,
+			WrapperCodec: codec,
+		}
+		return name, nil
+	}
 	g.definitions[name] = definition{Name: name, Kind: manifest.KindStruct}
 	fields, err := g.rustFields(node, name)
 	if err != nil {
@@ -744,7 +787,114 @@ func (g *generator) rustFieldsForUnion(node manifest.Node, parentName string, co
 		}
 		fields = append(fields, rustField{Name: fieldName, Type: typ, Docs: fieldDocs(field)})
 	}
+	if control != nil {
+		g.boxLargeUnionFields(fields)
+	}
 	return fields, nil
+}
+
+func singleFieldWrapper(node manifest.Node) (string, string, bool) {
+	if len(node.Fields) != 1 {
+		return "", "", false
+	}
+	field := node.Fields[0].Encode
+	if field.Kind != manifest.KindPrimitive || field.Primitive == nil || field.Primitive.Code == "bool" {
+		return "", "", false
+	}
+	raw, err := primitiveRustRawType(field.Primitive.Code)
+	if err != nil {
+		return "", "", false
+	}
+	return raw, wireCodecType(field.Primitive.Code), true
+}
+
+func wireCodecType(code string) string {
+	codeToType := map[string]string{
+		"i8":         "I8",
+		"u8":         "U8",
+		"i16le":      "I16LE",
+		"i16be":      "I16BE",
+		"u16le":      "U16LE",
+		"u16be":      "U16BE",
+		"i32le":      "I32LE",
+		"i32be":      "I32BE",
+		"u32le":      "U32LE",
+		"u32be":      "U32BE",
+		"i64le":      "I64LE",
+		"i64be":      "I64BE",
+		"u64le":      "U64LE",
+		"u64be":      "U64BE",
+		"var_i32":    "VarInt",
+		"var_u32":    "VarUInt",
+		"var_i64":    "VarLong",
+		"var_u64":    "VarULong",
+		"f32le":      "F32LE",
+		"f32be":      "F32BE",
+		"f64le":      "F64LE",
+		"f64be":      "F64BE",
+		"zigzag_i32": "ZigZag32",
+		"zigzag_i64": "ZigZag64",
+	}
+	return codeToType[code]
+}
+
+func (g *generator) boxLargeUnionFields(fields []rustField) {
+	for index := range fields {
+		if g.largeRustType(fields[index].Type) {
+			fields[index].Type = "Box<" + fields[index].Type + ">"
+		}
+	}
+}
+
+func (g *generator) largeRustType(typ string) bool {
+	if strings.HasPrefix(typ, "Box<") {
+		return false
+	}
+	return g.estimateRustType(typ, map[string]bool{}) > 128
+}
+
+func (g *generator) estimatePacketSize(fields []rustFieldInfo) int {
+	size := 0
+	for _, field := range fields {
+		size += g.estimateRustType(field.typ, map[string]bool{})
+	}
+	return size
+}
+
+func (g *generator) estimateRustType(typ string, visiting map[string]bool) int {
+	if strings.HasPrefix(typ, "Box<") || strings.HasPrefix(typ, "Vec<") || strings.HasPrefix(typ, "Option<") || typ == "String" || typ == "bytes::Bytes" {
+		return 24
+	}
+	if strings.HasPrefix(typ, "wire::") {
+		return 8
+	}
+	switch typ {
+	case "bool", "i8", "u8":
+		return 1
+	case "i16", "u16":
+		return 2
+	case "i32", "u32", "f32":
+		return 4
+	case "i64", "u64", "f64":
+		return 8
+	case "uuid::Uuid":
+		return 16
+	case "glam::Vec2":
+		return 8
+	case "glam::Vec3":
+		return 12
+	}
+	item, ok := g.definitions[typ]
+	if !ok || visiting[typ] {
+		return 8
+	}
+	visiting[typ] = true
+	size := 0
+	for _, field := range item.Fields {
+		size += g.estimateRustType(field.Type, visiting)
+	}
+	delete(visiting, typ)
+	return size
 }
 
 func isUnionDiscriminantField(field manifest.Field, control manifest.Node) bool {
@@ -990,12 +1140,19 @@ func unionControlType(node manifest.Node) (string, error) {
 }
 
 func emitRustEnum(b *strings.Builder, item definition) {
-	fmt.Fprintf(b, "#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]\npub enum %s {\n", item.Name)
+	derive := "Clone, Copy, Debug, PartialEq, Eq, Hash"
+	if len(item.Variants) > 0 {
+		derive += ", Default"
+	}
+	fmt.Fprintf(b, "#[derive(%s)]\npub enum %s {\n", derive, item.Name)
 	used := map[string]bool{}
 	variantNames := make([]string, 0, len(item.Variants))
-	for _, variant := range item.Variants {
+	for index, variant := range item.Variants {
 		name := uniqueTypeVariant(enumVariantName(item.Name, variant.Name), used)
 		variantNames = append(variantNames, name)
+		if index == 0 {
+			b.WriteString("    #[default]\n")
+		}
 		fmt.Fprintf(b, "    %s,\n", name)
 	}
 	unknownName := uniqueTypeVariant("Unknown", used)
@@ -1012,13 +1169,9 @@ func emitRustEnum(b *strings.Builder, item definition) {
 	}
 	fmt.Fprintf(b, "            Self::%s(value) => value,\n        }\n    }\n}\n\n", unknownName)
 	fmt.Fprintf(b, "impl From<%s> for %s {\n    fn from(value: %s) -> Self {\n        value.to_raw()\n    }\n}\n\n", item.Name, item.Underlying, item.Name)
-	fmt.Fprintf(b, "impl Default for %s {\n    fn default() -> Self {\n", item.Name)
-	if len(variantNames) > 0 {
-		fmt.Fprintf(b, "        Self::%s\n", variantNames[0])
-	} else {
-		fmt.Fprintf(b, "        Self::%s(0)\n", unknownName)
+	if len(variantNames) == 0 {
+		fmt.Fprintf(b, "impl Default for %s {\n    fn default() -> Self {\n        Self::%s(0)\n    }\n}\n\n", item.Name, unknownName)
 	}
-	b.WriteString("    }\n}\n\n")
 }
 
 func enumVariantName(enumName, value string) string {
