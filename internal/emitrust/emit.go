@@ -24,6 +24,7 @@ type definition struct {
 type rustVariant struct {
 	Name    string
 	Payload string
+	Fields  []rustField
 }
 
 type rustField struct {
@@ -44,13 +45,14 @@ type generator struct {
 	usesNbt     bool
 	usesUUID    bool
 	usesGlam    bool
+	standalone  map[string]bool
 }
 
 func prepare(m manifest.Manifest) (*generator, []packetInfo, error) {
 	if err := manifest.Validate(m); err != nil {
 		return nil, nil, err
 	}
-	g := &generator{definitions: map[string]definition{}, identities: map[string]string{}, used: map[string]bool{}}
+	g := &generator{definitions: map[string]definition{}, identities: map[string]string{}, used: map[string]bool{}, standalone: standaloneRustStructs(m)}
 	packets := append([]manifest.Packet(nil), m.Packets...)
 	sort.Slice(packets, func(i, j int) bool { return packets[i].ID < packets[j].ID })
 	infos := make([]packetInfo, 0, len(packets))
@@ -69,6 +71,55 @@ func prepare(m manifest.Manifest) (*generator, []packetInfo, error) {
 		infos = append(infos, packetInfo{packet: packet, name: name, fields: fields})
 	}
 	return g, infos, nil
+}
+
+// standaloneRustStructs returns named structs that are used outside the root
+// payload of a union variant and therefore retain their own public type.
+func standaloneRustStructs(m manifest.Manifest) map[string]bool {
+	standalone := map[string]bool{}
+	var walk func(manifest.Node, bool)
+	walk = func(node manifest.Node, directVariant bool) {
+		if node.Kind == manifest.KindStruct && node.TypeID != "" && !directVariant {
+			standalone[node.TypeID] = true
+		}
+		for _, child := range []*manifest.Node{node.Prefix, node.Element, node.Value, node.Key, node.Control, node.Default} {
+			if child != nil {
+				walk(*child, false)
+			}
+		}
+		for _, child := range node.Elements {
+			walk(child, false)
+		}
+		for _, field := range node.Fields {
+			walk(field.Encode, false)
+			if field.Decode != nil {
+				walk(*field.Decode, false)
+			}
+		}
+		for _, variant := range node.Variants {
+			walk(variant.Encode, true)
+			if variant.Decode != nil {
+				walk(*variant.Decode, true)
+			}
+		}
+		for _, oneCase := range node.Cases {
+			for _, child := range oneCase.Encode {
+				walk(child, false)
+			}
+			for _, child := range oneCase.Decode {
+				walk(child, false)
+			}
+		}
+	}
+	for _, packet := range m.Packets {
+		for _, field := range packet.Fields {
+			walk(field.Encode, false)
+			if field.Decode != nil {
+				walk(*field.Decode, false)
+			}
+		}
+	}
+	return standalone
 }
 
 func GenerateFiles(m manifest.Manifest) (map[string]string, error) {
@@ -155,7 +206,13 @@ func emitRustTypes(definitions []definition, usesNbt bool) string {
 		case manifest.KindUnion:
 			fmt.Fprintf(&b, "#[derive(Clone, Debug, PartialEq)]\npub enum %s {\n", item.Name)
 			for _, variant := range item.Union {
-				if variant.Payload == "" {
+				if len(variant.Fields) != 0 {
+					fmt.Fprintf(&b, "    %s {\n", variant.Name)
+					for _, field := range variant.Fields {
+						fmt.Fprintf(&b, "        %s: %s,\n", field.Name, field.Type)
+					}
+					b.WriteString("    },\n")
+				} else if variant.Payload == "" {
 					fmt.Fprintf(&b, "    %s,\n", variant.Name)
 				} else {
 					fmt.Fprintf(&b, "    %s(%s),\n", variant.Name, variant.Payload)
@@ -273,14 +330,19 @@ func (g *generator) rustType(node manifest.Node, hint string) (string, error) {
 				variantName := strings.TrimSuffix(rustPascalName(shortTypeName(variant.Name)), "Payload")
 				variantName = uniqueTypeVariant(variantName, used)
 				payload := ""
+				var fields []rustField
 				if !emptyPayload(variant.Encode) {
 					var err error
-					payload, err = g.rustType(variant.Encode, name+variantName)
+					if g.inlineRustVariant(variant.Encode) {
+						fields, err = g.rustFields(variant.Encode, name+variantName)
+					} else {
+						payload, err = g.rustType(variant.Encode, name+variantName)
+					}
 					if err != nil {
 						return "", err
 					}
 				}
-				variants = append(variants, rustVariant{Name: variantName, Payload: payload})
+				variants = append(variants, rustVariant{Name: variantName, Payload: payload, Fields: fields})
 			}
 			item := g.definitions[name]
 			item.Union = variants
@@ -367,21 +429,35 @@ func (g *generator) registerStruct(node manifest.Node, hint string) (string, err
 		return name, nil
 	}
 	g.definitions[name] = definition{Name: name, Kind: manifest.KindStruct}
-	parentName := name
+	fields, err := g.rustFields(node, name)
+	if err != nil {
+		return "", err
+	}
+	definition := g.definitions[name]
+	definition.Fields = fields
+	g.definitions[name] = definition
+	return name, nil
+}
+
+func (g *generator) rustFields(node manifest.Node, parentName string) ([]rustField, error) {
 	used := map[string]bool{}
 	fields := make([]rustField, 0, len(node.Fields))
 	for _, field := range node.Fields {
 		fieldName := uniqueField(fieldName(field.Name), used)
 		typ, err := g.rustType(field.Encode, parentName+typeName(field.Name))
 		if err != nil {
-			return "", err
+			return nil, err
 		}
 		fields = append(fields, rustField{Name: fieldName, Type: typ})
 	}
-	definition := g.definitions[name]
-	definition.Fields = fields
-	g.definitions[name] = definition
-	return name, nil
+	return fields, nil
+}
+
+func (g *generator) inlineRustVariant(node manifest.Node) bool {
+	if node.Kind != manifest.KindStruct || len(node.Fields) == 0 || node.TypeID == "Vec2" || node.TypeID == "Vec3" {
+		return false
+	}
+	return node.TypeID == "" || !g.standalone[node.TypeID]
 }
 
 func (g *generator) registerIdentity(node manifest.Node, hint string) string {

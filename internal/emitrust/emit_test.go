@@ -140,8 +140,21 @@ func TestGenerateRustUsesTypedUnionEnum(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Generate: %v", err)
 	}
-	if !strings.Contains(source, "pub enum SoundDataEvent") || !strings.Contains(source, "SetVolume(SoundDataEventSetVolume)") || strings.Contains(source, "pub tag: i64") {
+	if !strings.Contains(source, "pub enum SoundDataEvent") || !strings.Contains(source, "SetVolume {") || !strings.Contains(source, "volume: f32") || strings.Contains(source, "pub struct SoundDataEventSetVolume") || strings.Contains(source, "pub tag: i64") {
 		t.Fatalf("generated Rust did not emit a typed union enum:\n%s", source)
+	}
+}
+
+func TestGenerateRustKeepsSharedUnionPayloadNamed(t *testing.T) {
+	shared := manifest.Node{Kind: manifest.KindStruct, Semantic: "SharedRecord", TypeID: "SharedRecord", Fields: []manifest.Field{{Ordinal: 0, Name: "Value", Encode: manifest.Primitive("u8"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}
+	union := manifest.Union(manifest.Primitive("u8"), manifest.Variant{Value: 0, Name: "Choice::Shared", Encode: shared})
+	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:shared-rust", MinecraftVersion: "fixture", ProtocolVersion: 2168}}, Packets: []manifest.Packet{{ID: 1, Name: "ChoicePacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{Ordinal: 0, Name: "Choice", Encode: union, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}, {Ordinal: 1, Name: "Shared", Encode: shared, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}}}
+	source, err := generatedRustSource(m)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(source, "Shared(SharedRecord)") || !strings.Contains(source, "pub struct SharedRecord") {
+		t.Fatalf("shared union payload was incorrectly inlined:\n%s", source)
 	}
 }
 
