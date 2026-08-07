@@ -19,6 +19,7 @@ regen:
 	@test -n "$(ENDSTONE_DIR)" || (echo "ENDSTONE_DIR is required" >&2; exit 2)
 	$(PROTOCOLGEN) reconcile \
 		-lock $(SOURCE_LOCK) \
+		-directions generated/1.26.40/directions.json \
 		-mojang $(MOJANG_DIR) \
 		-mojang-corrections generated/1.26.40/corrections/mojang \
 		-endstone $(ENDSTONE_DIR) \

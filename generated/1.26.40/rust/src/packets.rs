@@ -30,7 +30,8 @@ impl ServerToClientHandshake {
     pub const ID: u32 = 3;
 }
 #[derive(Clone, Debug, Default, PartialEq)]
-pub struct ClientToServerHandshake {}
+pub struct ClientToServerHandshake {
+}
 
 impl ClientToServerHandshake {
     pub const ID: u32 = 4;
@@ -1056,7 +1057,8 @@ impl ModalFormResponse {
     pub const ID: u32 = 101;
 }
 #[derive(Clone, Debug, Default, PartialEq)]
-pub struct ServerSettingsRequest {}
+pub struct ServerSettingsRequest {
+}
 
 impl ServerSettingsRequest {
     pub const ID: u32 = 102;
@@ -1954,7 +1956,8 @@ impl AgentAnimation {
     pub const ID: u32 = 304;
 }
 #[derive(Clone, Debug, Default, PartialEq)]
-pub struct RefreshEntitlements {}
+pub struct RefreshEntitlements {
+}
 
 impl RefreshEntitlements {
     pub const ID: u32 = 305;
@@ -1997,7 +2000,8 @@ impl AwardAchievement {
     pub const ID: u32 = 309;
 }
 #[derive(Clone, Debug, Default, PartialEq)]
-pub struct ClientboundCloseForm {}
+pub struct ClientboundCloseForm {
+}
 
 impl ClientboundCloseForm {
     pub const ID: u32 = 310;
@@ -2231,7 +2235,8 @@ impl ClientboundDataDrivenUICloseScreen {
     pub const ID: u32 = 334;
 }
 #[derive(Clone, Debug, Default, PartialEq)]
-pub struct ClientboundDataDrivenUIReload {}
+pub struct ClientboundDataDrivenUIReload {
+}
 
 impl ClientboundDataDrivenUIReload {
     pub const ID: u32 = 335;
@@ -2278,7 +2283,8 @@ impl CameraAimAssistActorPriority {
     pub const ID: u32 = 339;
 }
 #[derive(Clone, Debug, Default, PartialEq)]
-pub struct ResourcePacksReadyForValidation {}
+pub struct ResourcePacksReadyForValidation {
+}
 
 impl ResourcePacksReadyForValidation {
     pub const ID: u32 = 340;
@@ -2328,8 +2334,7 @@ impl ClientboundAttributeLayerSync {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ServerStoreInfo {
     /// Wire presence: optional value is preceded by a presence marker.
-    pub client_store_entry_point_configuration:
-        Option<ServerConfigurationClientStoreEntryPointConfiguration>,
+    pub client_store_entry_point_configuration: Option<ServerConfigurationClientStoreEntryPointConfiguration>,
 }
 
 impl ServerStoreInfo {

@@ -158,8 +158,27 @@ func checkPackets(t *testing.T, data []byte) {
 		if err := writer.Err(); err != nil {
 			t.Fatalf("packet %d encode failed after decoding %x: %v", id, data, err)
 		}
-		if !bytes.Equal(writer.Data(), data) {
-			t.Fatalf("packet %d changed bytes: input=%x output=%x", id, data, writer.Data())
+		// The decoder deliberately accepts non-canonical varints (wire compat
+		// with gophertunnel/BDS), so arbitrary input need not survive
+		// byte-identically. The canonical re-encoding must be a fixed point.
+		canonical := append([]byte(nil), writer.Data()...)
+		second := factory()
+		reader = protocol.NewReader(canonical)
+		if panicValue := callMarshal(second, reader); panicValue != nil {
+			t.Fatalf("packet %d re-decode panicked for %x: %v", id, canonical, panicValue)
+		}
+		if err := reader.Err(); err != nil || reader.Remaining() != 0 {
+			t.Fatalf("packet %d re-decode of own encoding %x failed: err=%v remaining=%d", id, canonical, reader.Err(), reader.Remaining())
+		}
+		writer = protocol.NewWriter()
+		if panicValue := callMarshal(second, writer); panicValue != nil {
+			t.Fatalf("packet %d re-encode panicked for %x: %v", id, canonical, panicValue)
+		}
+		if err := writer.Err(); err != nil {
+			t.Fatalf("packet %d re-encode failed for %x: %v", id, canonical, err)
+		}
+		if !bytes.Equal(writer.Data(), canonical) {
+			t.Fatalf("packet %d canonical encoding is not a fixed point: first=%x second=%x", id, canonical, writer.Data())
 		}
 	}
 }

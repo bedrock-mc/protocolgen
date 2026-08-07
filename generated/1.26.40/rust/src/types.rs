@@ -1028,15 +1028,33 @@ pub struct DataItemEntry {
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum DataItemEntryValue {
-    DataItemByte { value: wire::I8 },
-    DataItemShort { value: wire::I16LE },
-    DataItemInt { value: wire::ZigZag32 },
-    DataItemFloat { value: wire::F32LE },
-    DataItemString { value: String },
-    DataItemCompoundTag { value: Nbt },
-    DataItemPos { value: BlockPos },
-    DataItemInt64 { value: wire::ZigZag64 },
-    DataItemVec3 { value: glam::Vec3 },
+    DataItemByte {
+        value: wire::I8,
+    },
+    DataItemShort {
+        value: wire::I16LE,
+    },
+    DataItemInt {
+        value: wire::ZigZag32,
+    },
+    DataItemFloat {
+        value: wire::F32LE,
+    },
+    DataItemString {
+        value: String,
+    },
+    DataItemCompoundTag {
+        value: Nbt,
+    },
+    DataItemPos {
+        value: BlockPos,
+    },
+    DataItemInt64 {
+        value: wire::ZigZag64,
+    },
+    DataItemVec3 {
+        value: glam::Vec3,
+    },
 }
 
 impl DataItemEntryValue {
@@ -2161,10 +2179,20 @@ impl wire::WireCodec for PlayerScoreboardId {
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum PlayerUpdateEntityOverridesUpdate {
-    ClearOverride { type_: String },
-    RemoveOverride { type_: String },
-    IntOverride { type_: String, value: wire::I32LE },
-    FloatOverride { type_: String, value: wire::F32LE },
+    ClearOverride {
+        type_: String,
+    },
+    RemoveOverride {
+        type_: String,
+    },
+    IntOverride {
+        type_: String,
+        value: wire::I32LE,
+    },
+    FloatOverride {
+        type_: String,
+        value: wire::F32LE,
+    },
 }
 
 impl PlayerUpdateEntityOverridesUpdate {

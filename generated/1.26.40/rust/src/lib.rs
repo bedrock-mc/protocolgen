@@ -3,6 +3,6 @@
 pub const PROTOCOL_VERSION: i32 = 2168;
 
 pub mod enums;
-pub mod packets;
 pub mod types;
+pub mod packets;
 pub mod wire;

@@ -82,10 +82,7 @@ fn read_var_u64<R: Read>(reader: &mut R) -> io::Result<u64> {
             return Ok(value);
         }
     }
-    Err(io::Error::new(
-        io::ErrorKind::InvalidData,
-        "varint too large",
-    ))
+    Err(io::Error::new(io::ErrorKind::InvalidData, "varint too large"))
 }
 
 macro_rules! var_codec {
