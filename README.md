@@ -276,8 +276,8 @@ scanner, direction-aware packet registration, and codebase-specific merge rules
 remain future backend work. The generator fails instead of emitting generic
 fallback types for unsupported sequence or unresolved nodes.
 
-The older `cmd/gophertunnel` and `cmd/raw` experiments remain available, but
-they are not inputs to the canonical pipeline and cannot weaken its validation.
+The superseded v1 experiments are not inputs to the canonical pipeline; the
+historical Axolotl protocol work remains under `migration/`.
 
 See [docs/protocolgen-v2.md](docs/protocolgen-v2.md) for the manifest model,
 source policy, adjudication format, Axolotl migration gate, and known gaps.

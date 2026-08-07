@@ -201,5 +201,6 @@ rebuilt from actual run output rather than carried forward.
   runtime. Go emits canonical Marshal logic, but a concrete standalone byte
   reader/writer or gophertunnel adapter remains downstream work. The older
   gophertunnel generator remains a narrow `go/ast` assistive adapter.
-- Existing `cmd/raw` and `cmd/gophertunnel` are preserved standalone WIP tools.
+- Superseded v1 generators are retired; migration history remains under
+  `migration/axolotl-protocol/`.
   They are not v2 inputs or emitters and do not weaken v2 validation.
