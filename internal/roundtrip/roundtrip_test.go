@@ -110,6 +110,36 @@ func TestRuntimeStringBounds(t *testing.T) {
 	}
 }
 
+func TestNBTCorpusFormats(t *testing.T) {
+	cases := []struct {
+		name     string
+		encoding protocol.NBTEncoding
+	}{
+		{name: "network", encoding: protocol.NBTNetwork},
+		{name: "persistent", encoding: protocol.NBTPersistent},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			contents, err := os.ReadFile(filepath.Join("testdata", "corpus", "block-actor-"+tc.name+".hex"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			data, err := hex.DecodeString(strings.TrimSpace(string(contents)))
+			if err != nil {
+				t.Fatal(err)
+			}
+			reader := protocol.NewReader(data)
+			var position protocol.BlockPos
+			position.Marshal(reader)
+			var tags []byte
+			reader.NBT(&tags, tc.encoding)
+			if err := reader.Err(); err != nil || reader.Remaining() != 0 {
+				t.Fatalf("decode err=%v remaining=%d", err, reader.Remaining())
+			}
+		})
+	}
+}
+
 func corpus(t testing.TB) [][]byte {
 	t.Helper()
 	paths, err := filepath.Glob(filepath.Join("testdata", "corpus", "*.hex"))

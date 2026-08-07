@@ -930,7 +930,11 @@ func (e *marshalEmitter) node(b *strings.Builder, node manifest.Node, expression
 			return nil
 		}
 		if node.Primitive.Code == "nbt_le" {
-			fmt.Fprintf(b, "%sio.NBT(%s)\n", indent, address.address(expression))
+			encoding, err := nbtIOConstant(node, e.qualifier)
+			if err != nil {
+				return err
+			}
+			fmt.Fprintf(b, "%sio.NBT(%s, %s)\n", indent, address.address(expression), encoding)
 			return nil
 		}
 		method, err := primitiveIOMethod(node.Primitive.Code)
@@ -1149,9 +1153,6 @@ func (e *marshalEmitter) directIOCall(node manifest.Node) (string, bool) {
 		if node.Primitive.Code == "uuid" {
 			return "UUIDBytes", true
 		}
-		if node.Primitive.Code == "nbt_le" {
-			return "NBT", true
-		}
 		method, err := primitiveIOMethod(node.Primitive.Code)
 		return method, err == nil
 	case manifest.KindString:
@@ -1164,6 +1165,17 @@ func (e *marshalEmitter) directIOCall(node manifest.Node) (string, bool) {
 		}
 	}
 	return "", false
+}
+
+func nbtIOConstant(node manifest.Node, qualifier string) (string, error) {
+	switch manifest.NBTEncoding(node.Encoding) {
+	case manifest.NBTNetwork:
+		return qualifier + "NBTNetwork", nil
+	case manifest.NBTPersistent:
+		return qualifier + "NBTPersistent", nil
+	default:
+		return "", fmt.Errorf("NBT node has invalid encoding %q", node.Encoding)
+	}
 }
 
 func (e *marshalEmitter) semanticIOCall(node manifest.Node) (string, bool) {

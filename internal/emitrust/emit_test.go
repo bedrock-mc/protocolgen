@@ -392,7 +392,7 @@ func TestGenerateRustMapsCanonicalSemanticsToNativeTypes(t *testing.T) {
 	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:native-rust", MinecraftVersion: "fixture", ProtocolVersion: 2168}}, Packets: []manifest.Packet{{ID: 1, Name: "NativePacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{
 		{Ordinal: 0, Name: "ID", Encode: manifest.Primitive("uuid"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
 		{Ordinal: 1, Name: "Position", Encode: vec3, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
-		{Ordinal: 2, Name: "Data", Encode: manifest.Primitive("nbt_le"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		{Ordinal: 2, Name: "Data", Encode: manifest.NBT(manifest.NBTNetwork), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
 		{Ordinal: 3, Name: "Payload", Encode: manifest.Bytes(manifest.Primitive("var_u32")), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
 	}}}}
 	files, err := GenerateFiles(m)
@@ -400,12 +400,12 @@ func TestGenerateRustMapsCanonicalSemanticsToNativeTypes(t *testing.T) {
 		t.Fatal(err)
 	}
 	packet := files["src/packets.rs"]
-	for _, want := range []string{"uuid::Uuid", "glam::Vec3", "Nbt", "bytes::Bytes"} {
+	for _, want := range []string{"uuid::Uuid", "glam::Vec3", "wire::NetworkNbt", "bytes::Bytes"} {
 		if !strings.Contains(packet, want) {
 			t.Fatalf("native Rust output omits %q:\n%s", want, packet)
 		}
 	}
-	if !strings.Contains(files["src/types.rs"], "pub struct Nbt(pub Vec<u8>);") || strings.Contains(files["src/types.rs"], "pub struct Vec3") {
+	if !strings.Contains(files["src/wire.rs"], "pub struct NetworkNbt(pub bytes::Bytes);") || strings.Contains(files["src/types.rs"], "pub struct Vec3") {
 		t.Fatalf("Rust shared types do not reflect native mapping:\n%s", files["src/types.rs"])
 	}
 	for _, dependency := range []string{`bytes = "1"`, `glam = "0.30"`, `uuid = "1"`} {
@@ -463,5 +463,28 @@ func TestGenerateRustFailsClosedForAsymmetricField(t *testing.T) {
 	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 1}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "1", Digest: "fixture", MinecraftVersion: "fixture", ProtocolVersion: 1}}, Packets: []manifest.Packet{{ID: 1, Name: "AsymmetricPacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{field}}}}
 	if _, err := GenerateFiles(m); err == nil || !strings.Contains(err.Error(), "asymmetric") {
 		t.Fatalf("GenerateFiles error = %v, want asymmetric failure", err)
+	}
+}
+
+func TestGenerateRustPreservesNBTEncodingTypes(t *testing.T) {
+	m := manifest.Manifest{SchemaVersion: manifest.SchemaVersion, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:nbt", MinecraftVersion: "fixture", ProtocolVersion: 2168}}, Packets: []manifest.Packet{{ID: 1, Name: "NBTPacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{
+		{Ordinal: 0, Name: "Network", Encode: manifest.NBT(manifest.NBTNetwork), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		{Ordinal: 1, Name: "Persistent", Encode: manifest.NBT(manifest.NBTPersistent), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+	}}}}
+	files, err := GenerateFiles(m)
+	if err != nil {
+		t.Fatal(err)
+	}
+	packet := files["src/packets.rs"]
+	for _, want := range []string{"pub network: wire::NetworkNbt", "pub persistent: wire::PersistentNbt"} {
+		if !strings.Contains(packet, want) {
+			t.Fatalf("packet omitted %q:\n%s", want, packet)
+		}
+	}
+	wire := files["src/wire.rs"]
+	for _, want := range []string{"pub struct NetworkNbt(pub bytes::Bytes);", "pub struct PersistentNbt(pub bytes::Bytes);"} {
+		if !strings.Contains(wire, want) {
+			t.Fatalf("wire module omitted %q:\n%s", want, wire)
+		}
 	}
 }

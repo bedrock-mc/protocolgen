@@ -366,7 +366,7 @@ func TestGenerateMapsCanonicalSemanticsToNativeGoTypes(t *testing.T) {
 		{Ordinal: 0, Name: "ID", Encode: manifest.Primitive("uuid"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
 		{Ordinal: 1, Name: "Position", Encode: vec3, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
 		{Ordinal: 2, Name: "Colour", Encode: colour, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
-		{Ordinal: 3, Name: "Data", Encode: manifest.Primitive("nbt_le"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		{Ordinal: 3, Name: "Data", Encode: manifest.NBT(manifest.NBTNetwork), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
 		{Ordinal: 4, Name: "Runtime", Encode: runtimeID, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
 		{Ordinal: 5, Name: "Unique", Encode: uniqueID, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
 	}}}}
@@ -519,5 +519,30 @@ func TestGenerateWithoutNativeTypesUsesFixedUUIDBytes(t *testing.T) {
 	}
 	if !strings.Contains(packet, "UUID [16]byte") || !strings.Contains(packet, "io.UUIDBytes(&x.UUID)") {
 		t.Fatalf("disabled native profile did not emit fixed UUID bytes:\n%s", packet)
+	}
+}
+
+func TestGenerateGoPreservesNBTEncodingOnIOCalls(t *testing.T) {
+	m := manifest.Manifest{
+		SchemaVersion: manifest.SchemaVersion,
+		Target:        manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168},
+		Sources:       []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "sha256:fixture"}},
+		Packets: []manifest.Packet{{ID: 1, Name: "NBTPacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{
+			{Ordinal: 0, Name: "Network", Encode: manifest.NBT(manifest.NBTNetwork), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+			{Ordinal: 1, Name: "Persistent", Encode: manifest.NBT(manifest.NBTPersistent), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		}}},
+	}
+	files, err := Generate(m, "example.com/protocol")
+	if err != nil {
+		t.Fatal(err)
+	}
+	packet := files["protocol/packet/nbt.go"]
+	for _, want := range []string{"io.NBT(&x.Network, protocol.NBTNetwork)", "io.NBT(&x.Persistent, protocol.NBTPersistent)"} {
+		if !strings.Contains(packet, want) {
+			t.Fatalf("packet omitted %q:\n%s", want, packet)
+		}
+	}
+	if !strings.Contains(files["protocol/codec.go"], "NBT(*[]byte, NBTEncoding)") {
+		t.Fatalf("runtime IO did not expose format-aware NBT:\n%s", files["protocol/codec.go"])
 	}
 }

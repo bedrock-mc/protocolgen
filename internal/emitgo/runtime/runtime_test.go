@@ -180,3 +180,215 @@ func TestWriterUUIDDoesNotAllocate(t *testing.T) {
 		t.Fatalf("UUID allocations = %v, want zero", allocs)
 	}
 }
+
+func TestNBTScannersReadNestedPersistentCompound(t *testing.T) {
+	data := persistentNBTFixture()
+	data = append(data, 0x7f)
+	reader := NewReader(data)
+	var got []byte
+	reader.NBT(&got, NBTPersistent)
+	if err := reader.Err(); err != nil {
+		t.Fatalf("persistent NBT: %v", err)
+	}
+	if !bytes.Equal(got, data[:len(data)-1]) || reader.Remaining() != 1 {
+		t.Fatalf("persistent result=%x remaining=%d", got, reader.Remaining())
+	}
+	var marker byte
+	reader.Uint8(&marker)
+	if marker != 0x7f || reader.Err() != nil {
+		t.Fatalf("marker=%x err=%v", marker, reader.Err())
+	}
+}
+
+func TestNBTScannersReadNestedNetworkCompound(t *testing.T) {
+	data := networkNBTFixture()
+	data = append(data, 0x7f)
+	reader := NewReader(data)
+	var got []byte
+	reader.NBT(&got, NBTNetwork)
+	if err := reader.Err(); err != nil {
+		t.Fatalf("network NBT: %v", err)
+	}
+	if !bytes.Equal(got, data[:len(data)-1]) || reader.Remaining() != 1 {
+		t.Fatalf("network result=%x remaining=%d", got, reader.Remaining())
+	}
+	var marker byte
+	reader.Uint8(&marker)
+	if marker != 0x7f || reader.Err() != nil {
+		t.Fatalf("marker=%x err=%v", marker, reader.Err())
+	}
+}
+
+func TestNBTScannersRejectTruncation(t *testing.T) {
+	for _, test := range []struct {
+		name string
+		data []byte
+		enc  NBTEncoding
+	}{
+		{"persistent", persistentNBTFixture(), NBTPersistent},
+		{"network", networkNBTFixture(), NBTNetwork},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			for length := 0; length < len(test.data); length++ {
+				reader := NewReader(test.data[:length])
+				var value []byte
+				reader.NBT(&value, test.enc)
+				if reader.Err() == nil {
+					t.Fatalf("prefix length %d was accepted", length)
+				}
+			}
+		})
+	}
+}
+
+func TestNetworkNBTRegressionBlockActorDataShape(t *testing.T) {
+	data := networkCompoundStart()
+	data = appendNetworkNamedString(data, "id", "Chest")
+	data = appendNetworkNamedInt32(data, "x", 42)
+	data = appendNetworkNamedCompound(data, "data", func(value []byte) []byte {
+		value = appendNetworkNamedList(value, "Items", 10, [][]byte{
+			networkCompoundPayload(networkNamedInt32(nil, "Slot", 2)),
+		})
+		return value
+	})
+	data = append(data, 0)
+	reader := NewReader(append(data, 0xaa))
+	var value []byte
+	reader.NBT(&value, NBTNetwork)
+	if err := reader.Err(); err != nil || reader.Remaining() != 1 {
+		t.Fatalf("BlockActorData-shaped NBT err=%v remaining=%d", reader.Err(), reader.Remaining())
+	}
+}
+
+func TestNBTWriterEchoesRawBytesWithoutFormatKnowledge(t *testing.T) {
+	data := []byte{0x0a, 0x00, 0x0a, 0x01, 0x78, 0x00}
+	for _, encoding := range []NBTEncoding{NBTNetwork, NBTPersistent} {
+		writer := NewWriter()
+		writer.NBT(&data, encoding)
+		if err := writer.Err(); err != nil || !bytes.Equal(writer.Data(), data) {
+			t.Fatalf("encoding=%v err=%v data=%x", encoding, err, writer.Data())
+		}
+	}
+}
+
+func appendPersistentNamed(data []byte, name string, payload []byte) []byte {
+	data = append(data, payload[0])
+	data = append(data, byte(len(name)), 0)
+	data = append(data, name...)
+	return append(data, payload[1:]...)
+}
+
+func persistentNBTFixture() []byte {
+	data := []byte{10, 0, 0}
+	data = appendPersistentNamed(data, "byte", []byte{1, 0x7f})
+	data = appendPersistentNamed(data, "short", []byte{2, 0x34, 0x12})
+	data = appendPersistentNamed(data, "int", []byte{3, 0x78, 0x56, 0x34, 0x12})
+	data = appendPersistentNamed(data, "long", append([]byte{4}, []byte{0xef, 0xcd, 0xab, 0x89, 0x67, 0x45, 0x23, 0x01}...))
+	data = appendPersistentNamed(data, "float", []byte{5, 0, 0, 0, 0})
+	data = appendPersistentNamed(data, "double", append([]byte{6}, make([]byte, 8)...))
+	data = appendPersistentNamed(data, "bytes", append([]byte{7, 2, 0, 0, 0}, []byte{1, 2}...))
+	data = appendPersistentNamed(data, "string", append([]byte{8, 3, 0}, []byte("abc")...))
+	list := []byte{9, 3, 2, 0, 0, 0, 1, 0, 0, 0, 0xff, 0xff, 0xff, 0xff}
+	data = appendPersistentNamed(data, "list", list)
+	data = appendPersistentNamed(data, "empty", []byte{9, 0, 0, 0, 0, 0})
+	nested := appendPersistentNamed(nil, "value", []byte{3, 7, 0, 0, 0})
+	data = appendPersistentNamed(data, "nested", append(append([]byte{10}, nested...), 0))
+	data = appendPersistentNamed(data, "intarray", append([]byte{11, 2, 0, 0, 0}, []byte{1, 0, 0, 0, 2, 0, 0, 0}...))
+	data = appendPersistentNamed(data, "longarray", append([]byte{12, 2, 0, 0, 0}, make([]byte, 16)...))
+	return append(data, 0)
+}
+
+func networkNBTFixture() []byte {
+	data := networkCompoundStart()
+	data = appendNetworkNamed(data, "byte", 1, []byte{0x7f})
+	data = appendNetworkNamed(data, "short", 2, []byte{0x34, 0x12})
+	data = appendNetworkNamed(data, "int", 3, appendNetworkVarint(nil, 123))
+	data = appendNetworkNamed(data, "long", 4, appendNetworkVarint64(nil, -456))
+	data = appendNetworkNamed(data, "float", 5, []byte{0, 0, 0, 0})
+	data = appendNetworkNamed(data, "double", 6, make([]byte, 8))
+	data = appendNetworkNamed(data, "bytes", 7, append(appendNetworkVarint(nil, 2), []byte{1, 2}...))
+	stringPayload := appendNetworkUvarint(nil, 3)
+	stringPayload = append(stringPayload, "abc"...)
+	data = appendNetworkNamed(data, "string", 8, stringPayload)
+	list := []byte{3}
+	list = appendNetworkVarint(list, 2)
+	list = appendNetworkVarint(list, 1)
+	list = appendNetworkVarint(list, -1)
+	data = appendNetworkNamed(data, "list", 9, list)
+	data = appendNetworkNamed(data, "empty", 9, []byte{0, 0})
+	nested := appendNetworkNamed(nil, "value", 3, appendNetworkVarint(nil, 7))
+	data = appendNetworkNamed(data, "nested", 10, append(nested, 0))
+	intArray := appendNetworkVarint(nil, 2)
+	intArray = appendNetworkVarint(intArray, 1)
+	intArray = appendNetworkVarint(intArray, 2)
+	data = appendNetworkNamed(data, "intarray", 11, intArray)
+	longArray := appendNetworkVarint(nil, 2)
+	longArray = append(longArray, appendNetworkVarint64(nil, 3)...)
+	longArray = append(longArray, appendNetworkVarint64(nil, 4)...)
+	data = appendNetworkNamed(data, "longarray", 12, longArray)
+	return append(data, 0)
+}
+
+func appendNetworkUvarint(data []byte, value uint32) []byte {
+	for value >= 0x80 {
+		data = append(data, byte(value)|0x80)
+		value >>= 7
+	}
+	return append(data, byte(value))
+}
+
+func appendNetworkVarint(data []byte, value int32) []byte {
+	raw := uint32(value) << 1
+	if value < 0 {
+		raw = ^raw
+	}
+	return appendNetworkUvarint(data, raw)
+}
+
+func appendNetworkVarint64(data []byte, value int64) []byte {
+	raw := uint64(value) << 1
+	if value < 0 {
+		raw = ^raw
+	}
+	for raw >= 0x80 {
+		data = append(data, byte(raw)|0x80)
+		raw >>= 7
+	}
+	return append(data, byte(raw))
+}
+
+func appendNetworkNamed(data []byte, name string, tag byte, payload []byte) []byte {
+	data = append(data, tag)
+	data = appendNetworkUvarint(data, uint32(len(name)))
+	data = append(data, name...)
+	return append(data, payload...)
+}
+
+func networkCompoundStart() []byte { return []byte{10, 0} }
+func networkCompoundPayload(payload []byte) []byte {
+	return append(payload, 0)
+}
+func networkNamedInt32(data []byte, name string, value int32) []byte {
+	return appendNetworkNamed(data, name, 3, appendNetworkVarint(nil, value))
+}
+func appendNetworkNamedInt32(data []byte, name string, value int32) []byte {
+	return appendNetworkNamed(data, name, 3, appendNetworkVarint(nil, value))
+}
+func appendNetworkNamedString(data []byte, name, value string) []byte {
+	payload := appendNetworkUvarint(nil, uint32(len(value)))
+	payload = append(payload, value...)
+	return appendNetworkNamed(data, name, 8, payload)
+}
+func appendNetworkNamedCompound(data []byte, name string, fn func([]byte) []byte) []byte {
+	payload := fn(nil)
+	payload = append(payload, 0)
+	return appendNetworkNamed(data, name, 10, payload)
+}
+func appendNetworkNamedList(data []byte, name string, element byte, values [][]byte) []byte {
+	payload := []byte{element}
+	payload = appendNetworkVarint(payload, int32(len(values)))
+	for _, value := range values {
+		payload = append(payload, value...)
+	}
+	return appendNetworkNamed(data, name, 9, payload)
+}

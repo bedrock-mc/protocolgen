@@ -190,8 +190,8 @@ func GenerateFiles(m manifest.Manifest) (map[string]string, error) {
 		"Cargo.toml":     emitCargo(m, g),
 		"src/lib.rs":     emitLib(m),
 		"src/enums.rs":   emitRustEnums(definitions),
-		"src/types.rs":   emitRustTypes(definitions, g.usesNbt),
-		"src/wire.rs":    emitWire(),
+		"src/types.rs":   emitRustTypes(definitions),
+		"src/wire.rs":    emitWire(g.usesNbt),
 		"src/packets.rs": emitRustPackets(infos),
 	}
 	return files, nil
@@ -229,14 +229,11 @@ func emitRustEnums(definitions []definition) string {
 	return strings.TrimSpace(b.String()) + "\n"
 }
 
-func emitRustTypes(definitions []definition, usesNbt bool) string {
+func emitRustTypes(definitions []definition) string {
 	var b strings.Builder
 	b.WriteString("// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\n")
 	b.WriteString("use crate::enums::*;\n\n")
 	b.WriteString("use crate::wire;\n\n")
-	if usesNbt {
-		b.WriteString("#[derive(Clone, Debug, Default, PartialEq, Eq)]\npub struct Nbt(pub Vec<u8>);\n\n")
-	}
 	for _, item := range definitions {
 		switch item.Kind {
 		case manifest.KindStruct:
@@ -344,8 +341,8 @@ func emitCargo(m manifest.Manifest, g *generator) string {
 	return b.String()
 }
 
-func emitWire() string {
-	return `// Code generated from canonical protocol manifest v2. DO NOT EDIT.
+func emitWire(usesNbt bool) string {
+	source := `// Code generated from canonical protocol manifest v2. DO NOT EDIT.
 
 use std::io::{self, Read, Write};
 
@@ -482,6 +479,16 @@ impl WireCodec for ZigZag64 {
     }
 }
 `
+	if usesNbt {
+		source += `
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub struct NetworkNbt(pub bytes::Bytes);
+
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub struct PersistentNbt(pub bytes::Bytes);
+`
+	}
+	return source
 }
 
 func emitRustPackets(infos []packetInfo) string {
@@ -713,8 +720,15 @@ func (g *generator) nativeRustType(node manifest.Node) (string, bool, error) {
 			g.usesUUID = true
 			return "uuid::Uuid", true, nil
 		case "nbt_le":
+			if !manifest.ValidNBTEncoding(node.Encoding) {
+				return "", true, fmt.Errorf("NBT node has invalid encoding %q", node.Encoding)
+			}
 			g.usesNbt = true
-			return "Nbt", true, nil
+			g.usesBytes = true
+			if node.Encoding == string(manifest.NBTNetwork) {
+				return "wire::NetworkNbt", true, nil
+			}
+			return "wire::PersistentNbt", true, nil
 		}
 	}
 	if node.Kind != manifest.KindStruct {
