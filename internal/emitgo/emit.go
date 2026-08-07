@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"go/format"
 	"sort"
-	"strconv"
 	"strings"
 	"unicode"
 
@@ -61,7 +60,6 @@ func Generate(m manifest.Manifest, packageName string) (map[string]string, error
 	if err != nil {
 		return nil, err
 	}
-	files["wire.go"] = emitWire(packageName)
 	return files, nil
 }
 
@@ -376,6 +374,7 @@ func (g *generator) emitFiles(packageName string, packets []manifest.Packet, pac
 		return nil, err
 	}
 	files["enums.go"] = enumsSource
+	files["ids.go"] = emitPacketIDs(packageName, packets, packetNames)
 	usedFiles := map[string]bool{}
 	for _, packet := range packets {
 		packetName := packetNames[packet.ID]
@@ -431,9 +430,8 @@ func emitEnumDefinitions(packageName string, definitions []typeDefinition) (stri
 }
 
 type packetField struct {
-	field manifest.Field
-	name  string
-	typ   string
+	name string
+	typ  string
 }
 
 func (g *generator) emitPacket(packageName string, packet manifest.Packet, packetName string) (string, error) {
@@ -447,41 +445,26 @@ func (g *generator) emitPacket(packageName string, packet manifest.Packet, packe
 		if err != nil {
 			return "", err
 		}
-		fields = append(fields, packetField{field: field, name: name, typ: typ})
+		fields = append(fields, packetField{name: name, typ: typ})
 	}
 	imports := goImportsForFields(fields)
-	if len(packet.Fields) != 0 {
-		imports = append(imports, "fmt")
-	}
 	writeGoImports(&b, imports)
 	fmt.Fprintf(&b, "type %s struct {\n", packetName)
 	for _, field := range fields {
 		fmt.Fprintf(&b, "\t%s %s\n", field.name, field.typ)
 	}
-	b.WriteString("}\n\n")
-	fmt.Fprintf(&b, "func (p *%s) Encode(w Encoder) error {\n", packetName)
-	for _, field := range fields {
-		shape, err := shapeExpr(field.field.Encode)
-		if err != nil {
-			return "", err
-		}
-		fmt.Fprintf(&b, "\tif err := w.Write(%s, %s, p.%s); err != nil { return err }\n", strconv.Quote(packet.Name+"."+field.field.Name), shape, field.name)
-	}
-	b.WriteString("\treturn nil\n}\n\n")
-	fmt.Fprintf(&b, "func Decode%s(r Decoder) (%s, error) {\n\tvar p %s\n", packetName, packetName, packetName)
-	for _, field := range fields {
-		decodeNode := field.field.Encode
-		if field.field.Decode != nil {
-			decodeNode = *field.field.Decode
-		}
-		shape, err := shapeExpr(decodeNode)
-		if err != nil {
-			return "", err
-		}
-		fmt.Fprintf(&b, "\t{\n\t\traw, err := r.Read(%s, %s)\n\t\tif err != nil { return p, err }\n\t\tvalue, ok := raw.(%s)\n\t\tif !ok { return p, fmt.Errorf(\"field %s has unexpected decoded type %%T\", raw) }\n\t\tp.%s = value\n\t}\n", strconv.Quote(packet.Name+"."+field.field.Name), shape, field.typ, packet.Name+"."+field.field.Name, field.name)
-	}
-	b.WriteString("\treturn p, nil\n}\n\n")
+	b.WriteString("}\n")
 	return formatGoSource(b.String())
+}
+
+func emitPacketIDs(packageName string, packets []manifest.Packet, packetNames map[uint32]string) string {
+	var b strings.Builder
+	fmt.Fprintf(&b, "// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\npackage %s\n\nconst (\n", packageName)
+	for _, packet := range packets {
+		fmt.Fprintf(&b, "\tID%s uint32 = %d\n", packetNames[packet.ID], packet.ID)
+	}
+	b.WriteString(")\n")
+	return b.String()
 }
 
 func goImportsForDefinitions(definitions []typeDefinition) []string {
@@ -591,163 +574,6 @@ func shortTypeName(name string) string {
 		return name[position+2:]
 	}
 	return name
-}
-
-func shapeExpr(node manifest.Node) (string, error) {
-	parts := []string{fmt.Sprintf("Kind: %s", strconv.Quote(string(node.Kind)))}
-	if node.Semantic != "" {
-		parts = append(parts, "Semantic: "+strconv.Quote(node.Semantic))
-	}
-	if node.TypeID != "" {
-		parts = append(parts, "TypeID: "+strconv.Quote(node.TypeID))
-	}
-	if node.Primitive != nil {
-		parts = append(parts, "PrimitiveCode: "+strconv.Quote(node.Primitive.Code))
-	}
-	if node.Encoding != "" {
-		parts = append(parts, "Encoding: "+strconv.Quote(node.Encoding))
-	}
-	if node.Representation != "" {
-		parts = append(parts, "Representation: "+strconv.Quote(node.Representation))
-	}
-	if node.Length != 0 {
-		parts = append(parts, fmt.Sprintf("Length: %d", node.Length))
-	}
-	if node.Prefix != nil {
-		prefix, err := shapeExpr(*node.Prefix)
-		if err != nil {
-			return "", err
-		}
-		parts = append(parts, "Prefix: &"+prefix)
-	}
-	if node.Element != nil {
-		element, err := shapeExpr(*node.Element)
-		if err != nil {
-			return "", err
-		}
-		parts = append(parts, "Element: &"+element)
-	}
-	if node.Value != nil {
-		value, err := shapeExpr(*node.Value)
-		if err != nil {
-			return "", err
-		}
-		parts = append(parts, "Value: &"+value)
-	}
-	if len(node.Elements) > 0 {
-		elements := make([]string, 0, len(node.Elements))
-		for _, element := range node.Elements {
-			shape, err := shapeExpr(element)
-			if err != nil {
-				return "", err
-			}
-			elements = append(elements, shape)
-		}
-		parts = append(parts, "Elements: []Shape{"+strings.Join(elements, ", ")+"}")
-	}
-	if node.Key != nil {
-		key, err := shapeExpr(*node.Key)
-		if err != nil {
-			return "", err
-		}
-		parts = append(parts, "Key: &"+key)
-	}
-	if node.Control != nil {
-		control, err := shapeExpr(*node.Control)
-		if err != nil {
-			return "", err
-		}
-		parts = append(parts, "Control: &"+control)
-	}
-	if node.Default != nil {
-		defaultShape, err := shapeExpr(*node.Default)
-		if err != nil {
-			return "", err
-		}
-		parts = append(parts, "Default: &"+defaultShape)
-	}
-	if node.Target != "" {
-		parts = append(parts, "Target: "+strconv.Quote(node.Target))
-	}
-	if node.CompareTo != "" {
-		parts = append(parts, "CompareTo: "+strconv.Quote(node.CompareTo))
-	}
-	if len(node.Fields) > 0 {
-		fields := make([]string, 0, len(node.Fields))
-		for _, field := range node.Fields {
-			fieldShape, err := shapeExpr(field.Encode)
-			if err != nil {
-				return "", err
-			}
-			fields = append(fields, fmt.Sprintf("{Ordinal: %d, Name: %s, Shape: %s}", field.Ordinal, strconv.Quote(field.Name), fieldShape))
-		}
-		parts = append(parts, "Fields: []ShapeField{"+strings.Join(fields, ", ")+"}")
-	}
-	if len(node.Variants) > 0 {
-		variants := make([]string, 0, len(node.Variants))
-		for _, variant := range node.Variants {
-			variantShape, err := shapeExpr(variant.Encode)
-			if err != nil {
-				return "", err
-			}
-			variants = append(variants, fmt.Sprintf("{Value: %d, Name: %s, Shape: %s}", variant.Value, strconv.Quote(variant.Name), variantShape))
-		}
-		parts = append(parts, "Variants: []ShapeVariant{"+strings.Join(variants, ", ")+"}")
-	}
-	if len(node.Cases) > 0 {
-		cases := make([]string, 0, len(node.Cases))
-		for _, oneCase := range node.Cases {
-			shapes := make([]string, 0, len(oneCase.Encode))
-			for _, child := range oneCase.Encode {
-				childShape, err := shapeExpr(child)
-				if err != nil {
-					return "", err
-				}
-				shapes = append(shapes, childShape)
-			}
-			cases = append(cases, fmt.Sprintf("{Value: %s, Shapes: []Shape{%s}}", strconv.Quote(oneCase.Value), strings.Join(shapes, ", ")))
-		}
-		parts = append(parts, "Cases: []ShapeCase{"+strings.Join(cases, ", ")+"}")
-	}
-	return "Shape{" + strings.Join(parts, ", ") + "}", nil
-}
-
-func emitWire(packageName string) string {
-	return fmt.Sprintf(`// Code generated from canonical protocol manifest v2. DO NOT EDIT.
-
-package %s
-
-// Shape is the frozen wire vocabulary rendered from the canonical manifest.
-// A profile may implement Encoder/Decoder, but it cannot alter Shape.
-type Shape struct {
-	Kind string
-	Semantic string
-	TypeID string
-	PrimitiveCode string
-	Encoding string
-	Representation string
-	Prefix *Shape
-	Element *Shape
-	Length uint64
-	Value *Shape
-	Elements []Shape
-	Key *Shape
-	Fields []ShapeField
-	Variants []ShapeVariant
-	Control *Shape
-	CompareTo string
-	Cases []ShapeCase
-	Default *Shape
-	Target string
-}
-
-type ShapeField struct { Ordinal int; Name string; Shape Shape }
-type ShapeVariant struct { Value int64; Name string; Shape Shape }
-type ShapeCase struct { Value string; Shapes []Shape }
-
-type Encoder interface { Write(path string, shape Shape, value any) error }
-type Decoder interface { Read(path string, shape Shape) (any, error) }
-`, packageName)
 }
 
 func primitiveGoType(code string) (string, error) {

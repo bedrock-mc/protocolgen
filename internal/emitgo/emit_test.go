@@ -30,8 +30,11 @@ func TestGenerateConsumesOnlyCanonicalManifest(t *testing.T) {
 			t.Errorf("%s contains source/profile lookup text", name)
 		}
 	}
-	if !strings.Contains(files["vocabulary.go"], "type Vocabulary struct") || !strings.Contains(files["vocabulary.go"], "Kind: \"optional\"") {
-		t.Fatalf("generated packet source did not contain manifest shape:\n%s", files["vocabulary.go"])
+	if !strings.Contains(files["vocabulary.go"], "type Vocabulary struct") || !strings.Contains(files["ids.go"], "IDVocabulary uint32 = 1") {
+		t.Fatalf("generated output omitted packet definition or ID:\n%s\n%s", files["vocabulary.go"], files["ids.go"])
+	}
+	if strings.Contains(files["vocabulary.go"], "Shape{") || strings.Contains(files["vocabulary.go"], "func (p *Vocabulary) Encode") {
+		t.Fatalf("generated packet exposed runtime schema or placeholder codecs:\n%s", files["vocabulary.go"])
 	}
 }
 
@@ -84,13 +87,16 @@ func TestGenerateSplitsPacketsAndSharedDefinitions(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, name := range []string{"wire.go", "types.go", "enums.go", "login.go"} {
+	for _, name := range []string{"ids.go", "types.go", "enums.go", "login.go"} {
 		if _, ok := files[name]; !ok {
 			t.Fatalf("generated files omit %s: %v", name, files)
 		}
 	}
 	if strings.Contains(files["login.go"], "LoginPacket") || !strings.Contains(files["login.go"], "type Login struct") {
 		t.Fatalf("packet name was not cleaned:\n%s", files["login.go"])
+	}
+	if _, ok := files["wire.go"]; ok {
+		t.Fatalf("definition-only output unexpectedly contains wire.go")
 	}
 }
 

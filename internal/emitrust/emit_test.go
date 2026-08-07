@@ -7,6 +7,18 @@ import (
 	"protocolgen/internal/manifest"
 )
 
+func generatedRustSource(m manifest.Manifest) (string, error) {
+	files, err := GenerateFiles(m)
+	if err != nil {
+		return "", err
+	}
+	var source strings.Builder
+	for _, contents := range files {
+		source.WriteString(contents)
+	}
+	return source.String(), nil
+}
+
 func TestGenerateRustConsumesCanonicalManifest(t *testing.T) {
 	m := manifest.Manifest{
 		SchemaVersion: 2,
@@ -14,12 +26,15 @@ func TestGenerateRustConsumesCanonicalManifest(t *testing.T) {
 		Sources:       []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:rust", MinecraftVersion: "fixture", ProtocolVersion: 2168}},
 		Packets:       []manifest.Packet{{ID: 1, Name: "FixturePacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{Ordinal: 0, Name: "Value", Encode: manifest.Optional(manifest.Primitive("u8")), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}},
 	}
-	source, err := Generate(m)
+	source, err := generatedRustSource(m)
 	if err != nil {
 		t.Fatalf("Generate: %v", err)
 	}
-	if !strings.Contains(source, "pub struct Fixture") || !strings.Contains(source, "pub const FIXTURE_VALUE_SHAPE") {
-		t.Fatalf("generated Rust omitted packet/shape:\n%s", source)
+	if !strings.Contains(source, "pub struct Fixture") || !strings.Contains(source, "pub const ID: u32 = 1;") {
+		t.Fatalf("generated Rust omitted packet definition or ID:\n%s", source)
+	}
+	if strings.Contains(source, "SHAPE") || strings.Contains(source, "WireEncoder") || strings.Contains(source, "fn encode") {
+		t.Fatalf("generated Rust exposed runtime schema or placeholder codecs:\n%s", source)
 	}
 	if strings.Contains(source, "gophertunnel") || strings.Contains(source, "bedrock-protocol-docs") {
 		t.Fatalf("generated Rust contains source/profile lookup text")
@@ -39,7 +54,7 @@ func TestGenerateRustFilesUseNativeEnumsAndPacketModules(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	enums := files["enums.rs"]
+	enums := files["src/enums.rs"]
 	for _, text := range []string{"pub enum MultiplayerSettingsPacketType", "Enable = 0", "Disable = 1", "RefreshJoinCode = 2", "impl TryFrom<i32> for MultiplayerSettingsPacketType", "impl From<MultiplayerSettingsPacketType> for i32"} {
 		if !strings.Contains(enums, text) {
 			t.Fatalf("native enum output omits %q:\n%s", text, enums)
@@ -48,7 +63,7 @@ func TestGenerateRustFilesUseNativeEnumsAndPacketModules(t *testing.T) {
 	if strings.Contains(enums, "ENUMS") || strings.Contains(enums, "repr(transparent)") {
 		t.Fatalf("enum output retained wrapper constants:\n%s", enums)
 	}
-	if _, ok := files["packets/multiplayer_settings.rs"]; !ok {
+	if _, ok := files["src/packets/multiplayer_settings.rs"]; !ok {
 		t.Fatalf("packet was not emitted separately: %v", files)
 	}
 }
@@ -60,7 +75,7 @@ func TestGenerateRustFailsClosedForUnresolved(t *testing.T) {
 		Sources:       []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:rust", MinecraftVersion: "fixture", ProtocolVersion: 2168}},
 		Packets:       []manifest.Packet{{ID: 1, Name: "Blocked", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{Ordinal: 0, Name: "Value", Encode: manifest.Unresolved("dynamic", true), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}},
 	}
-	if _, err := Generate(m); err == nil || !strings.Contains(err.Error(), "unresolved") {
+	if _, err := GenerateFiles(m); err == nil || !strings.Contains(err.Error(), "unresolved") {
 		t.Fatalf("Generate error = %v, want unresolved failure", err)
 	}
 }
@@ -72,7 +87,7 @@ func TestGenerateRustEscapesKeywordFieldNames(t *testing.T) {
 		Sources:       []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:rust", MinecraftVersion: "fixture", ProtocolVersion: 2168}},
 		Packets:       []manifest.Packet{{ID: 1, Name: "KeywordPacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{Ordinal: 0, Name: "Type", Encode: manifest.Primitive("u8"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}},
 	}
-	source, err := Generate(m)
+	source, err := generatedRustSource(m)
 	if err != nil {
 		t.Fatalf("Generate: %v", err)
 	}
@@ -99,7 +114,7 @@ func TestGenerateRustUsesCanonicalNamedTypesAndOrderedMapTuples(t *testing.T) {
 	mapping := manifest.Map(manifest.Primitive("var_u32"), manifest.Primitive("u16le"), biome)
 	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:rust", MinecraftVersion: "fixture", ProtocolVersion: 2168}}, Packets: []manifest.Packet{{ID: 122, Name: "BiomeDefinitionListPacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{Ordinal: 0, Name: "Map of Biome names to data", Encode: mapping, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}}}
 
-	source, err := Generate(m)
+	source, err := generatedRustSource(m)
 	if err != nil {
 		t.Fatalf("Generate: %v", err)
 	}
@@ -121,7 +136,7 @@ func TestGenerateRustUsesTypedUnionEnum(t *testing.T) {
 	)
 	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:rust", MinecraftVersion: "fixture", ProtocolVersion: 2168}}, Packets: []manifest.Packet{{ID: 348, Name: "SoundPacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{Ordinal: 0, Name: "Event", Encode: union, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}}}
 
-	source, err := Generate(m)
+	source, err := generatedRustSource(m)
 	if err != nil {
 		t.Fatalf("Generate: %v", err)
 	}
@@ -130,14 +145,14 @@ func TestGenerateRustUsesTypedUnionEnum(t *testing.T) {
 	}
 }
 
-func TestGenerateRustEmptyPacketDoesNotEmitUnusedParameters(t *testing.T) {
+func TestGenerateRustEmptyPacketOnlyEmitsDefinitionAndID(t *testing.T) {
 	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:rust", MinecraftVersion: "fixture", ProtocolVersion: 2168}}, Packets: []manifest.Packet{{ID: 4, Name: "EmptyPacket", Direction: manifest.DirectionServerbound, Fields: []manifest.Field{}}}}
-	source, err := Generate(m)
+	source, err := generatedRustSource(m)
 	if err != nil {
 		t.Fatalf("Generate: %v", err)
 	}
-	if !strings.Contains(source, "_encoder: &mut E") || !strings.Contains(source, "_decoder: &mut D") {
-		t.Fatalf("empty packet parameters are not intentionally unused:\n%s", source)
+	if !strings.Contains(source, "pub struct Empty") || !strings.Contains(source, "pub const ID: u32 = 4;") || strings.Contains(source, "encode") || strings.Contains(source, "decode") {
+		t.Fatalf("empty packet output is not definition-only:\n%s", source)
 	}
 }
 
@@ -145,7 +160,7 @@ func TestGenerateRustKeepsUnrelatedAnonymousUnionsDistinct(t *testing.T) {
 	first := manifest.Union(manifest.Primitive("u8"), manifest.Variant{Value: 0, Name: "First", Encode: manifest.Void()})
 	second := manifest.Union(manifest.Primitive("u8"), manifest.Variant{Value: 0, Name: "Second", Encode: manifest.Void()})
 	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:rust", MinecraftVersion: "fixture", ProtocolVersion: 2168}}, Packets: []manifest.Packet{{ID: 1, Name: "Packet", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{Ordinal: 0, Name: "Alpha", Encode: first, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}, {Ordinal: 1, Name: "Beta", Encode: second, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}}}
-	source, err := Generate(m)
+	source, err := generatedRustSource(m)
 	if err != nil {
 		t.Fatalf("Generate: %v", err)
 	}
@@ -197,14 +212,14 @@ func TestGenerateRustMapsCanonicalSemanticsToNativeTypes(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	packet := files["packets/native.rs"]
+	packet := files["src/packets/native.rs"]
 	for _, want := range []string{"uuid::Uuid", "glam::Vec3", "Nbt"} {
 		if !strings.Contains(packet, want) {
 			t.Fatalf("native Rust output omits %q:\n%s", want, packet)
 		}
 	}
-	if !strings.Contains(files["types.rs"], "pub struct Nbt(pub Vec<u8>);") || strings.Contains(files["types.rs"], "pub struct Vec3") {
-		t.Fatalf("Rust shared types do not reflect native mapping:\n%s", files["types.rs"])
+	if !strings.Contains(files["src/types.rs"], "pub struct Nbt(pub Vec<u8>);") || strings.Contains(files["src/types.rs"], "pub struct Vec3") {
+		t.Fatalf("Rust shared types do not reflect native mapping:\n%s", files["src/types.rs"])
 	}
 	for _, dependency := range []string{`glam = "0.30"`, `uuid = "1"`} {
 		if !strings.Contains(files["Cargo.toml"], dependency) {

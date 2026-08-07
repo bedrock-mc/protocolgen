@@ -68,13 +68,14 @@ This produces:
 - typed Rust packet structures, one packet module per file, with shared types,
   native enums, checked `TryFrom<integer>` decoding, ordered map tuples, and
   payload-bearing enums for Cereal unions; and
-- wire-layout descriptors that preserve the exact encoding separately from
-  those language-level types.
+- packet IDs in both language outputs.
 
 Packet APIs use concise target-language names: the schema's transport-oriented
 `Packet` and `PacketPayload` suffixes do not leak into public type names. Both
 backends keep common definitions in `types` and `enums`; packet files contain
-only the packet surface and its wire-shape descriptors.
+only the packet definition. The canonical manifest is the sole wire-schema
+artifact rather than being duplicated as large runtime descriptors in every
+generated language.
 
 Like sqlc's type overrides, each backend maps well-known wire semantics onto
 types native to its ecosystem without changing the manifest. Go uses
@@ -175,14 +176,15 @@ wire schema.
 The full pipeline—ingestion, reconciliation, validation, and Go/Rust
 emission—is implemented.
 
-The current emitters generate typed packet APIs that delegate wire work to an
-encoder/decoder supplied by the target codebase. They do **not yet** generate
-complete, drop-in [gophertunnel](https://github.com/Sandertv/gophertunnel)
-`Marshal(protocol.IO)` implementations or the full borrowed
-[Axolotl](https://github.com/axolotl-stack/axolotl-stack) codec API. NBT,
+The current emitters generate packet definitions, semantic types, enums,
+unions, and packet IDs. They deliberately do **not** expose placeholder codec
+methods. Complete, drop-in
+[gophertunnel](https://github.com/Sandertv/gophertunnel)
+`Marshal(protocol.IO)` implementations and the full borrowed
+[Axolotl](https://github.com/axolotl-stack/axolotl-stack) codec API remain
+future backend work, along with NBT and
 recursive target-specific codecs, conditional decode context, packet
-registration, and codebase-specific merge rules are the remaining backend
-work.
+registration, and codebase-specific merge rules.
 
 The older `cmd/gophertunnel` and `cmd/raw` experiments remain available, but
 they are not inputs to the canonical pipeline and cannot weaken its validation.

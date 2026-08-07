@@ -1,6 +1,5 @@
-// Package emitrust emits a compact Rust consumer surface from the canonical
-// v2 manifest. The emitted shape snapshots are serialized from manifest nodes;
-// no Rust source is reverse-lowered.
+// Package emitrust emits Rust protocol definitions from the canonical v2
+// manifest. The manifest remains the sole wire-schema artifact.
 package emitrust
 
 import (
@@ -47,14 +46,6 @@ type generator struct {
 	usesGlam    bool
 }
 
-func Generate(m manifest.Manifest) (string, error) {
-	g, infos, err := prepare(m)
-	if err != nil {
-		return "", err
-	}
-	return g.emitSingleFile(infos)
-}
-
 func prepare(m manifest.Manifest) (*generator, []packetInfo, error) {
 	if err := manifest.Validate(m); err != nil {
 		return nil, nil, err
@@ -73,93 +64,11 @@ func prepare(m manifest.Manifest) (*generator, []packetInfo, error) {
 			if err != nil {
 				return nil, nil, fmt.Errorf("packet %s field %s: %w", packet.Name, field.Name, err)
 			}
-			shape, err := json.Marshal(field.Encode)
-			if err != nil {
-				return nil, nil, err
-			}
-			decodeShape := shape
-			if field.Decode != nil {
-				decodeShape, err = json.Marshal(*field.Decode)
-				if err != nil {
-					return nil, nil, err
-				}
-			}
-			fields = append(fields, rustFieldInfo{field: field, name: fieldName, typ: typ, shape: string(shape), decodeShape: string(decodeShape)})
+			fields = append(fields, rustFieldInfo{name: fieldName, typ: typ})
 		}
 		infos = append(infos, packetInfo{packet: packet, name: name, fields: fields})
 	}
 	return g, infos, nil
-}
-
-func (g *generator) emitSingleFile(infos []packetInfo) (string, error) {
-	var b strings.Builder
-	b.WriteString("// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\n")
-	b.WriteString("#![allow(dead_code)]\n\n")
-	b.WriteString("pub trait WireEncoder {\n    fn field(&mut self, path: &'static str, shape: &'static str);\n}\n")
-	b.WriteString("pub trait WireDecoder {\n    fn field(&mut self, path: &'static str, shape: &'static str);\n}\n\n")
-	if g.usesNbt {
-		b.WriteString("#[derive(Clone, Debug, Default, PartialEq, Eq)]\npub struct Nbt(pub Vec<u8>);\n\n")
-	}
-	definitions := make([]definition, 0, len(g.definitions))
-	for _, item := range g.definitions {
-		definitions = append(definitions, item)
-	}
-	sort.Slice(definitions, func(i, j int) bool { return definitions[i].Name < definitions[j].Name })
-	for _, item := range definitions {
-		switch item.Kind {
-		case manifest.KindStruct:
-			fmt.Fprintf(&b, "#[derive(Clone, Debug, PartialEq)]\npub struct %s {\n", item.Name)
-			for _, field := range item.Fields {
-				fmt.Fprintf(&b, "    pub %s: %s,\n", field.Name, field.Type)
-			}
-			b.WriteString("}\n\n")
-		case manifest.KindUnion:
-			fmt.Fprintf(&b, "#[derive(Clone, Debug, PartialEq)]\npub enum %s {\n", item.Name)
-			for _, variant := range item.Union {
-				if variant.Payload == "" {
-					fmt.Fprintf(&b, "    %s,\n", variant.Name)
-				} else {
-					fmt.Fprintf(&b, "    %s(%s),\n", variant.Name, variant.Payload)
-				}
-			}
-			b.WriteString("}\n\n")
-		case manifest.KindEnum:
-			emitRustEnum(&b, item)
-		}
-	}
-	for _, info := range infos {
-		fmt.Fprintf(&b, "#[derive(Clone, Debug, PartialEq)]\npub struct %s {\n", info.name)
-		for _, field := range info.fields {
-			fmt.Fprintf(&b, "    pub %s: %s,\n", field.name, field.typ)
-		}
-		b.WriteString("}\n\n")
-		for _, field := range info.fields {
-			constName := shapeConst(info.name, field.name)
-			fmt.Fprintf(&b, "pub const %s: &str = %s;\n", constName, rustRawString(field.shape))
-			if field.field.Decode != nil {
-				fmt.Fprintf(&b, "pub const %s_DECODE: &str = %s;\n", constName, rustRawString(field.decodeShape))
-			}
-		}
-		b.WriteString("\n")
-		encoderName, decoderName := "encoder", "decoder"
-		if len(info.fields) == 0 {
-			encoderName, decoderName = "_encoder", "_decoder"
-		}
-		fmt.Fprintf(&b, "impl %s {\n    pub fn encode<E: WireEncoder>(&self, %s: &mut E) {\n", info.name, encoderName)
-		for _, field := range info.fields {
-			fmt.Fprintf(&b, "        encoder.field(%s, %s);\n", rustString(info.packet.Name+"."+field.field.Name), shapeConst(info.name, field.name))
-		}
-		fmt.Fprintf(&b, "    }\n    pub fn decode<D: WireDecoder>(%s: &mut D) {\n", decoderName)
-		for _, field := range info.fields {
-			decodeConst := shapeConst(info.name, field.name)
-			if field.field.Decode != nil {
-				decodeConst += "_DECODE"
-			}
-			fmt.Fprintf(&b, "        decoder.field(%s, %s);\n", rustString(info.packet.Name+"."+field.field.Name), decodeConst)
-		}
-		b.WriteString("    }\n}\n\n")
-	}
-	return strings.TrimSpace(b.String()) + "\n", nil
 }
 
 func GenerateFiles(m manifest.Manifest) (map[string]string, error) {
@@ -169,11 +78,10 @@ func GenerateFiles(m manifest.Manifest) (map[string]string, error) {
 	}
 	definitions := g.sortedDefinitions()
 	files := map[string]string{
-		"Cargo.toml": emitCargo(m, g),
-		"lib.rs":     emitLib(infos),
-		"wire.rs":    emitRustWire(),
-		"enums.rs":   emitRustEnums(definitions),
-		"types.rs":   emitRustTypes(definitions, g.usesNbt),
+		"Cargo.toml":   emitCargo(m, g),
+		"src/lib.rs":   emitLib(infos),
+		"src/enums.rs": emitRustEnums(definitions),
+		"src/types.rs": emitRustTypes(definitions, g.usesNbt),
 	}
 	usedFiles := map[string]bool{}
 	var modules strings.Builder
@@ -189,9 +97,9 @@ func GenerateFiles(m manifest.Manifest) (map[string]string, error) {
 		}
 		usedFiles[fileName] = true
 		fmt.Fprintf(&modules, "mod %s;\npub use %s::*;\n", moduleName, moduleName)
-		files["packets/"+fileName] = emitRustPacket(info)
+		files["src/packets/"+fileName] = emitRustPacket(info)
 	}
-	files["packets/mod.rs"] = strings.TrimSpace(modules.String()) + "\n"
+	files["src/packets/mod.rs"] = strings.TrimSpace(modules.String()) + "\n"
 	return files, nil
 }
 
@@ -209,27 +117,12 @@ func emitLib(_ []packetInfo) string {
 
 #![allow(dead_code)]
 
-mod wire;
-pub use wire::*;
 mod enums;
 pub use enums::*;
 mod types;
 pub use types::*;
 mod packets;
 pub use packets::*;
-`
-}
-
-func emitRustWire() string {
-	return `// Code generated from canonical protocol manifest v2. DO NOT EDIT.
-
-pub trait WireEncoder {
-    fn field(&mut self, path: &'static str, shape: &'static str);
-}
-
-pub trait WireDecoder {
-    fn field(&mut self, path: &'static str, shape: &'static str);
-}
 `
 }
 
@@ -277,7 +170,7 @@ func emitRustTypes(definitions []definition, usesNbt bool) string {
 func emitCargo(m manifest.Manifest, g *generator) string {
 	var b strings.Builder
 	b.WriteString("# Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\n")
-	fmt.Fprintf(&b, "[package]\nname = \"bedrock-protocol-%d\"\nversion = \"0.0.0\"\nedition = \"2021\"\npublish = false\n\n[lib]\npath = \"lib.rs\"\n", m.Target.ProtocolVersion)
+	fmt.Fprintf(&b, "[package]\nname = \"bedrock-protocol-%d\"\nversion = \"0.0.0\"\nedition = \"2021\"\npublish = false\n", m.Target.ProtocolVersion)
 	if g.usesUUID || g.usesGlam {
 		b.WriteString("\n[dependencies]\n")
 		if g.usesGlam {
@@ -298,34 +191,7 @@ func emitRustPacket(info packetInfo) string {
 	for _, field := range info.fields {
 		fmt.Fprintf(&b, "    pub %s: %s,\n", field.name, field.typ)
 	}
-	b.WriteString("}\n\n")
-	for _, field := range info.fields {
-		constName := shapeConst(info.name, field.name)
-		fmt.Fprintf(&b, "pub const %s: &str = %s;\n", constName, rustRawString(field.shape))
-		if field.field.Decode != nil {
-			fmt.Fprintf(&b, "pub const %s_DECODE: &str = %s;\n", constName, rustRawString(field.decodeShape))
-		}
-	}
-	if len(info.fields) != 0 {
-		b.WriteString("\n")
-	}
-	encoderName, decoderName := "encoder", "decoder"
-	if len(info.fields) == 0 {
-		encoderName, decoderName = "_encoder", "_decoder"
-	}
-	fmt.Fprintf(&b, "impl %s {\n    pub fn encode<E: WireEncoder>(&self, %s: &mut E) {\n", info.name, encoderName)
-	for _, field := range info.fields {
-		fmt.Fprintf(&b, "        encoder.field(%s, %s);\n", rustString(info.packet.Name+"."+field.field.Name), shapeConst(info.name, field.name))
-	}
-	fmt.Fprintf(&b, "    }\n    pub fn decode<D: WireDecoder>(%s: &mut D) {\n", decoderName)
-	for _, field := range info.fields {
-		decodeConst := shapeConst(info.name, field.name)
-		if field.field.Decode != nil {
-			decodeConst += "_DECODE"
-		}
-		fmt.Fprintf(&b, "        decoder.field(%s, %s);\n", rustString(info.packet.Name+"."+field.field.Name), decodeConst)
-	}
-	b.WriteString("    }\n}\n")
+	fmt.Fprintf(&b, "}\n\nimpl %s {\n    pub const ID: u32 = %d;\n}\n", info.name, info.packet.ID)
 	return b.String()
 }
 
@@ -342,11 +208,8 @@ func rustModuleName(value string) string {
 }
 
 type rustFieldInfo struct {
-	field       manifest.Field
-	name        string
-	typ         string
-	shape       string
-	decodeShape string
+	name string
+	typ  string
 }
 
 func (g *generator) rustType(node manifest.Node, hint string) (string, error) {
@@ -881,20 +744,4 @@ func uniqueField(base string, used map[string]bool) string {
 			return candidate
 		}
 	}
-}
-
-func shapeConst(packet, field string) string {
-	return strings.ToUpper(typeName(packet)) + "_" + strings.ToUpper(fieldName(field)) + "_SHAPE"
-}
-
-func rustString(value string) string {
-	return "\"" + strings.NewReplacer("\\", "\\\\", "\"", "\\\"", "\n", "\\n", "\r", "\\r").Replace(value) + "\""
-}
-
-func rustRawString(value string) string {
-	delimiter := "#"
-	for strings.Contains(value, delimiter+"\"") {
-		delimiter += "#"
-	}
-	return "r" + delimiter + "\"" + value + "\"" + delimiter
 }

@@ -31,8 +31,9 @@ unresolved nodes make validation and generation fail.
 `schema_version: 2` is the wire vocabulary version. It is not a target profile:
 Cargo layout, borrowed views, lossy strings, naming, and cross-version
 deduplication belong in a downstream profile. The generated Rust and Go output
-in this slice are profile-neutral consumer surfaces with shape snapshots; they
-are not a claim of complete packet codec coverage.
+in this slice contains profile-neutral definitions and packet IDs. The
+manifest is the only emitted wire-schema artifact, and the language outputs do
+not claim packet codec coverage until they can emit real value serialization.
 
 ## Sources and version pins
 
