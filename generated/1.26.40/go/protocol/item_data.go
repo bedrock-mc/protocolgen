@@ -16,5 +16,5 @@ func (x *ItemData) Marshal(io IO) {
 	io.Int16(&x.ItemId)
 	io.Bool(&x.IsComponentBased)
 	IntegerFunc(&x.ItemVersion, io.Varint32)
-	io.NBT(&x.ItemComponentData)
+	io.NBT(&x.ItemComponentData, NBTNetwork)
 }

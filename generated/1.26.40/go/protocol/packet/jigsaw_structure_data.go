@@ -10,7 +10,7 @@ type JigsawStructureData struct {
 
 // Marshal reads or writes JigsawStructureData using its canonical wire layout.
 func (x *JigsawStructureData) Marshal(io protocol.IO) {
-	io.NBT(&x.JigsawStructureDataTag)
+	io.NBT(&x.JigsawStructureDataTag, protocol.NBTNetwork)
 }
 
 // ID returns the protocol ID for JigsawStructureData.

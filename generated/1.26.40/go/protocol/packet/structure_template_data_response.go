@@ -13,7 +13,7 @@ type StructureTemplateDataResponse struct {
 // Marshal reads or writes StructureTemplateDataResponse using its canonical wire layout.
 func (x *StructureTemplateDataResponse) Marshal(io protocol.IO) {
 	io.String(&x.StructureName)
-	io.NBT(&x.StructureSNBT)
+	io.NBT(&x.StructureSNBT, protocol.NBTNetwork)
 	protocol.IntegerFunc(&x.ResponseType, io.Uint8)
 }
 

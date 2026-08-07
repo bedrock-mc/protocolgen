@@ -5732,7 +5732,8 @@
                       "signed": false,
                       "zigzag": false,
                       "endianness": "little"
-                    }
+                    },
+                    "encoding": "network"
                   },
                   "symmetry": "symmetric",
                   "provenance": {
@@ -5840,7 +5841,8 @@
               "signed": false,
               "zigzag": false,
               "endianness": "little"
-            }
+            },
+            "encoding": "network"
           },
           "symmetry": "symmetric",
           "provenance": {
@@ -7857,7 +7859,8 @@
                                         "signed": false,
                                         "zigzag": false,
                                         "endianness": "little"
-                                      }
+                                      },
+                                      "encoding": "network"
                                     },
                                     "symmetry": "symmetric",
                                     "provenance": {
@@ -10540,7 +10543,8 @@
                                         "signed": false,
                                         "zigzag": false,
                                         "endianness": "little"
-                                      }
+                                      },
+                                      "encoding": "network"
                                     },
                                     "symmetry": "symmetric",
                                     "provenance": {
@@ -12698,7 +12702,8 @@
                                         "signed": false,
                                         "zigzag": false,
                                         "endianness": "little"
-                                      }
+                                      },
+                                      "encoding": "network"
                                     },
                                     "symmetry": "symmetric",
                                     "provenance": {
@@ -23673,7 +23678,8 @@
                                         "signed": false,
                                         "zigzag": false,
                                         "endianness": "little"
-                                      }
+                                      },
+                                      "encoding": "network"
                                     },
                                     "symmetry": "symmetric",
                                     "provenance": {
@@ -32739,7 +32745,8 @@
               "signed": false,
               "zigzag": false,
               "endianness": "little"
-            }
+            },
+            "encoding": "network"
           },
           "symmetry": "symmetric",
           "provenance": {
@@ -43217,7 +43224,8 @@
               "signed": false,
               "zigzag": false,
               "endianness": "little"
-            }
+            },
+            "encoding": "network"
           },
           "symmetry": "symmetric",
           "provenance": {
@@ -43352,7 +43360,8 @@
               "signed": false,
               "zigzag": false,
               "endianness": "little"
-            }
+            },
+            "encoding": "network"
           },
           "symmetry": "symmetric",
           "provenance": {
@@ -51701,7 +51710,8 @@
               "signed": false,
               "zigzag": false,
               "endianness": "little"
-            }
+            },
+            "encoding": "network"
           },
           "symmetry": "symmetric",
           "provenance": {
@@ -56677,7 +56687,8 @@
               "signed": false,
               "zigzag": false,
               "endianness": "little"
-            }
+            },
+            "encoding": "network"
           },
           "symmetry": "symmetric",
           "provenance": {
@@ -57805,7 +57816,8 @@
               "signed": false,
               "zigzag": false,
               "endianness": "little"
-            }
+            },
+            "encoding": "network"
           },
           "symmetry": "symmetric",
           "provenance": {
@@ -86852,7 +86864,8 @@
               "signed": false,
               "zigzag": false,
               "endianness": "little"
-            }
+            },
+            "encoding": "network"
           },
           "symmetry": "symmetric",
           "provenance": {
@@ -88233,7 +88246,8 @@
                       "signed": false,
                       "zigzag": false,
                       "endianness": "little"
-                    }
+                    },
+                    "encoding": "network"
                   },
                   "symmetry": "symmetric",
                   "provenance": {
@@ -88495,7 +88509,8 @@
               "signed": false,
               "zigzag": false,
               "endianness": "little"
-            }
+            },
+            "encoding": "network"
           },
           "symmetry": "symmetric",
           "provenance": {
@@ -88564,7 +88579,8 @@
               "signed": false,
               "zigzag": false,
               "endianness": "little"
-            }
+            },
+            "encoding": "network"
           },
           "symmetry": "symmetric",
           "provenance": {
@@ -92516,7 +92532,8 @@
               "signed": false,
               "zigzag": false,
               "endianness": "little"
-            }
+            },
+            "encoding": "network"
           },
           "symmetry": "symmetric",
           "provenance": {
@@ -96868,7 +96885,8 @@
               "signed": false,
               "zigzag": false,
               "endianness": "little"
-            }
+            },
+            "encoding": "network"
           },
           "symmetry": "symmetric",
           "provenance": {

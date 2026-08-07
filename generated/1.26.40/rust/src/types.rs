@@ -4,9 +4,6 @@ use crate::enums::*;
 
 use crate::wire;
 
-#[derive(Clone, Debug, Default, PartialEq, Eq)]
-pub struct Nbt(pub Vec<u8>);
-
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ActorDataBoundingBoxComponent {
     pub actor_data_bounding_box: [wire::F32LE; 3],
@@ -1044,7 +1041,7 @@ pub enum DataItemEntryValue {
         value: String,
     },
     DataItemCompoundTag {
-        value: Nbt,
+        value: wire::NetworkNbt,
     },
     DataItemPos {
         value: BlockPos,
@@ -1421,7 +1418,7 @@ pub struct ItemData {
     pub item_id: wire::I16LE,
     pub is_component_based: bool,
     pub item_version: ItemVersion,
-    pub item_component_data: Nbt,
+    pub item_component_data: wire::NetworkNbt,
 }
 
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -2501,7 +2498,7 @@ pub struct SerializedSkinRef {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ServerBlockProperty {
     pub block_name: String,
-    pub block_definition: Nbt,
+    pub block_definition: wire::NetworkNbt,
 }
 
 #[derive(Clone, Debug, Default, PartialEq)]

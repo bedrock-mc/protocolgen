@@ -56,7 +56,7 @@ func (x *StartGame) Marshal(io protocol.IO) {
 	io.String(&x.MultiplayerCorrelationId)
 	io.Bool(&x.EnableItemStackNetManager)
 	io.String(&x.ServerVersion)
-	io.NBT(&x.PlayerPropertyData)
+	io.NBT(&x.PlayerPropertyData, protocol.NBTNetwork)
 	io.Uint64(&x.ServerBlockTypeRegistryChecksum)
 	io.UUID(&x.WorldTemplateID)
 	io.Bool(&x.ServerEnabledClientSideGeneration)

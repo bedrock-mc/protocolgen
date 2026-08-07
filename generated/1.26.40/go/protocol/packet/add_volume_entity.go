@@ -18,7 +18,7 @@ type AddVolumeEntity struct {
 // Marshal reads or writes AddVolumeEntity using its canonical wire layout.
 func (x *AddVolumeEntity) Marshal(io protocol.IO) {
 	x.EntityNetworkId.Marshal(io)
-	io.NBT(&x.Components)
+	io.NBT(&x.Components, protocol.NBTNetwork)
 	io.String(&x.JSONIdentifier)
 	io.String(&x.InstanceName)
 	x.MinBounds.Marshal(io)

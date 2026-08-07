@@ -13,8 +13,9 @@ import (
 // Reading reports whether calls populate values. InvalidValue must stop the
 // current codec operation, typically by panicking or recording a terminal error.
 // String and Bytes use a varuint32 byte-length prefix. UUID uses Bedrock's
-// little-endian 64-bit halves, NBT consumes exactly one little-endian tag, and
-// Bitset uses seven payload bits per continuation byte.
+// little-endian 64-bit halves. NBT readers scan one format-selected tag;
+// writers copy the already encoded bytes. Bitset uses seven payload bits per
+// continuation byte.
 type IO interface {
 	Reading() bool
 	InvalidValue(value any, context string)
@@ -57,7 +58,7 @@ type IO interface {
 
 	String(*string)
 	Bytes(*[]byte)
-	NBT(*[]byte)
+	NBT(*[]byte, NBTEncoding)
 	UUID(*uuid.UUID)
 	UUIDBytes(*[16]byte)
 	Vec2(*mgl32.Vec2)
@@ -65,3 +66,11 @@ type IO interface {
 	RGBA(*color.RGBA)
 	Bitset(words []uint64, bits uint64)
 }
+
+// NBTEncoding selects the wire representation used by an NBT reader.
+type NBTEncoding uint8
+
+const (
+	NBTNetwork NBTEncoding = iota
+	NBTPersistent
+)

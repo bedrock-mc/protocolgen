@@ -118,7 +118,7 @@ pub struct StartGame {
     pub multiplayer_correlation_id: String,
     pub enable_item_stack_net_manager: bool,
     pub server_version: String,
-    pub player_property_data: Nbt,
+    pub player_property_data: wire::NetworkNbt,
     pub server_block_type_registry_checksum: wire::U64LE,
     pub world_template_id: uuid::Uuid,
     pub server_enabled_client_side_generation: bool,
@@ -576,7 +576,7 @@ impl GuiDataPickItem {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct BlockActorData {
     pub block_position: BlockPos,
-    pub actor_data_tags: Nbt,
+    pub actor_data_tags: wire::NetworkNbt,
 }
 
 impl BlockActorData {
@@ -826,7 +826,7 @@ pub struct UpdateTrade {
     pub display_name: String,
     pub use_new_trade_screen: bool,
     pub using_economy_trade: bool,
-    pub data: Nbt,
+    pub data: wire::NetworkNbt,
 }
 
 impl UpdateTrade {
@@ -838,7 +838,7 @@ pub struct UpdateEquip {
     pub type_: wire::U8,
     pub size: wire::ZigZag32,
     pub entity_unique_id: ActorUniqueID,
-    pub data: Nbt,
+    pub data: wire::NetworkNbt,
 }
 
 impl UpdateEquip {
@@ -1198,7 +1198,7 @@ impl SpawnParticleEffect {
 }
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct AvailableActorIdentifiers {
-    pub identifier_list: Nbt,
+    pub identifier_list: wire::NetworkNbt,
 }
 
 impl AvailableActorIdentifiers {
@@ -1242,7 +1242,7 @@ impl LevelSoundEvent {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct LevelEventGeneric {
     pub event_id: wire::ZigZag32,
-    pub ctd: Nbt,
+    pub ctd: wire::NetworkNbt,
 }
 
 impl LevelEventGeneric {
@@ -1297,7 +1297,7 @@ impl StructureTemplateDataRequest {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct StructureTemplateDataResponse {
     pub structure_name: String,
-    pub structure_nbt: Nbt,
+    pub structure_nbt: wire::NetworkNbt,
     pub response_type: StructureTemplateResponseType,
 }
 
@@ -1493,7 +1493,7 @@ impl EmoteList {
 pub struct PositionTrackingDBServerBroadcast {
     pub action: PositionTrackingDBServerBroadcastAction,
     pub id: PositionTrackingId,
-    pub position_tracking_data: Nbt,
+    pub position_tracking_data: wire::NetworkNbt,
 }
 
 impl PositionTrackingDBServerBroadcast {
@@ -1606,7 +1606,7 @@ impl ClientboundDebugRenderer {
 }
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SyncActorProperty {
-    pub property_data: Nbt,
+    pub property_data: wire::NetworkNbt,
 }
 
 impl SyncActorProperty {
@@ -1615,7 +1615,7 @@ impl SyncActorProperty {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct AddVolumeEntity {
     pub entity_network_id: EntityNetId,
-    pub components: Nbt,
+    pub components: wire::NetworkNbt,
     pub json_identifier: String,
     pub instance_name: String,
     pub min_bounds: BlockPos,
@@ -1840,7 +1840,7 @@ impl DeathInfo {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct EditorNetwork {
     pub route_to_manager: bool,
-    pub payload: Nbt,
+    pub payload: wire::NetworkNbt,
 }
 
 impl EditorNetwork {
@@ -2018,7 +2018,7 @@ impl ServerboundLoadingScreen {
 }
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct JigsawStructureData {
-    pub jigsaw_structure_data_tag: Nbt,
+    pub jigsaw_structure_data_tag: wire::NetworkNbt,
 }
 
 impl JigsawStructureData {

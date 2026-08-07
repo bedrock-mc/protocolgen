@@ -12,7 +12,7 @@ type EditorNetwork struct {
 // Marshal reads or writes EditorNetwork using its canonical wire layout.
 func (x *EditorNetwork) Marshal(io protocol.IO) {
 	io.Bool(&x.RouteToManager)
-	io.NBT(&x.Payload)
+	io.NBT(&x.Payload, protocol.NBTNetwork)
 }
 
 // ID returns the protocol ID for EditorNetwork.

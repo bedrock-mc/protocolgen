@@ -226,17 +226,10 @@ func (w *Writer) Bytes(x *[]byte) {
 	w.write(*x)
 }
 
-func (w *Writer) NBT(x *[]byte) {
+// NBT copies already encoded bytes. The encoding is needed by readers only;
+// writers do not reinterpret raw NBT values.
+func (w *Writer) NBT(x *[]byte, _ NBTEncoding) {
 	if w.err != nil {
-		return
-	}
-	position := 0
-	if err := scanNBT(*x, &position, true); err != nil {
-		w.fail(err)
-		return
-	}
-	if position != len(*x) {
-		w.fail(fmt.Errorf("NBT has %d trailing bytes", len(*x)-position))
 		return
 	}
 	w.write(*x)

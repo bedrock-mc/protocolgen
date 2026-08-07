@@ -10,5 +10,5 @@ type ServerBlockProperty struct {
 // Marshal reads or writes ServerBlockProperty using its canonical wire layout.
 func (x *ServerBlockProperty) Marshal(io IO) {
 	io.String(&x.BlockName)
-	io.NBT(&x.BlockDefinition)
+	io.NBT(&x.BlockDefinition, NBTNetwork)
 }

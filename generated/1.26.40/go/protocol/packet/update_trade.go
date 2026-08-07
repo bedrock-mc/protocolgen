@@ -28,7 +28,7 @@ func (x *UpdateTrade) Marshal(io protocol.IO) {
 	io.String(&x.DisplayName)
 	io.Bool(&x.UseNewTradeScreen)
 	io.Bool(&x.UsingEconomyTrade)
-	io.NBT(&x.Data)
+	io.NBT(&x.Data, protocol.NBTNetwork)
 }
 
 // ID returns the protocol ID for UpdateTrade.

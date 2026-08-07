@@ -134,3 +134,9 @@ impl WireCodec for ZigZag64 {
         Ok(Self(((raw >> 1) as i64) ^ -((raw & 1) as i64)))
     }
 }
+
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub struct NetworkNbt(pub bytes::Bytes);
+
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub struct PersistentNbt(pub bytes::Bytes);

@@ -12,5 +12,5 @@ func (*DataItemCompoundTag) isDataItemEntryValue() {}
 // Marshal reads or writes DataItemCompoundTag using its canonical wire layout.
 func (x *DataItemCompoundTag) Marshal(io IO) {
 	IntegerFunc(&x.Type, io.Uint8)
-	io.NBT(&x.Value)
+	io.NBT(&x.Value, NBTNetwork)
 }

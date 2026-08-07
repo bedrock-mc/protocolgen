@@ -12,6 +12,8 @@ import (
 	"github.com/google/uuid"
 )
 
+const maxNBTStringSize = 1<<15 - 1
+
 // Reader decodes one generated protocol value from a byte slice. Decode
 // failures are retained by Err instead of panicking.
 type Reader struct {
@@ -339,12 +341,21 @@ func (r *Reader) readLength(context string) (int, bool) {
 	return int(length), true
 }
 
-func (r *Reader) NBT(x *[]byte) {
+func (r *Reader) NBT(x *[]byte, encoding NBTEncoding) {
 	if r.err != nil {
 		return
 	}
 	start := r.pos
-	if err := scanNBT(r.data, &r.pos, true); err != nil {
+	var err error
+	switch encoding {
+	case NBTNetwork:
+		err = scanNetworkNBT(r.data, &r.pos, true)
+	case NBTPersistent:
+		err = scanNBT(r.data, &r.pos, true)
+	default:
+		err = fmt.Errorf("unknown NBT encoding %d", encoding)
+	}
+	if err != nil {
 		r.fail(err)
 		return
 	}
@@ -526,8 +537,130 @@ func scanNBTPayload(data []byte, pos *int, tag byte) error {
 		if tag == 12 {
 			width = 8
 		}
+		if int64(length) > int64(len(data)-*pos)/int64(width) {
+			return fmt.Errorf("NBT ended unexpectedly")
+		}
 		_, err = nbtReadBytes(data, pos, int(length)*width)
 		return err
+	default:
+		return fmt.Errorf("unknown NBT tag %d", tag)
+	}
+}
+
+func scanNetworkNBT(data []byte, pos *int, named bool) error {
+	tag, err := nbtReadByte(data, pos)
+	if err != nil {
+		return fmt.Errorf("NBT ended before its tag")
+	}
+	if tag == 0 {
+		return nil
+	}
+	if named {
+		length, err := nbtReadNetworkUint32(data, pos)
+		if err != nil {
+			return err
+		}
+		if length > maxNBTStringSize {
+			return fmt.Errorf("NBT string length %d exceeds %d", length, maxNBTStringSize)
+		}
+		if uint64(length) > uint64(len(data)-*pos) {
+			return fmt.Errorf("NBT ended unexpectedly")
+		}
+		*pos += int(length)
+	}
+	return scanNetworkNBTPayload(data, pos, tag)
+}
+
+func scanNetworkNBTPayload(data []byte, pos *int, tag byte) error {
+	switch tag {
+	case 1:
+		_, err := nbtReadByte(data, pos)
+		return err
+	case 2:
+		_, err := nbtReadBytes(data, pos, 2)
+		return err
+	case 3:
+		_, err := nbtReadNetworkInt32(data, pos)
+		return err
+	case 4:
+		_, err := nbtReadNetworkInt64(data, pos)
+		return err
+	case 5:
+		_, err := nbtReadBytes(data, pos, 4)
+		return err
+	case 6:
+		_, err := nbtReadBytes(data, pos, 8)
+		return err
+	case 7:
+		length, err := nbtReadNetworkInt32(data, pos)
+		if err != nil || length < 0 {
+			return fmt.Errorf("invalid NBT byte-array length %d", length)
+		}
+		_, err = nbtReadBytes(data, pos, int(length))
+		return err
+	case 8:
+		length, err := nbtReadNetworkUint32(data, pos)
+		if err != nil {
+			return err
+		}
+		if length > maxNBTStringSize {
+			return fmt.Errorf("NBT string length %d exceeds %d", length, maxNBTStringSize)
+		}
+		if uint64(length) > uint64(len(data)-*pos) {
+			return fmt.Errorf("NBT ended unexpectedly")
+		}
+		*pos += int(length)
+		return nil
+	case 9:
+		element, err := nbtReadByte(data, pos)
+		if err != nil {
+			return err
+		}
+		length, err := nbtReadNetworkInt32(data, pos)
+		if err != nil || length < 0 {
+			return fmt.Errorf("invalid NBT list length %d", length)
+		}
+		if element == 0 && length != 0 {
+			return fmt.Errorf("invalid NBT list element tag 0")
+		}
+		for index := int32(0); index < length; index++ {
+			if err := scanNetworkNBTPayload(data, pos, element); err != nil {
+				return err
+			}
+		}
+		return nil
+	case 10:
+		for {
+			if *pos >= len(data) {
+				return fmt.Errorf("NBT compound has no end tag")
+			}
+			if data[*pos] == 0 {
+				*pos += 1
+				return nil
+			}
+			if err := scanNetworkNBT(data, pos, true); err != nil {
+				return err
+			}
+		}
+	case 11, 12:
+		length, err := nbtReadNetworkInt32(data, pos)
+		if err != nil || length < 0 {
+			return fmt.Errorf("invalid NBT array length %d", length)
+		}
+		if tag == 11 {
+			for index := int32(0); index < length; index++ {
+				if _, err := nbtReadNetworkInt32(data, pos); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+		for index := int32(0); index < length; index++ {
+			if _, err := nbtReadNetworkInt64(data, pos); err != nil {
+				return err
+			}
+		}
+		return nil
 	default:
 		return fmt.Errorf("unknown NBT tag %d", tag)
 	}
@@ -565,4 +698,58 @@ func nbtReadInt32(data []byte, pos *int) (int32, error) {
 		return 0, err
 	}
 	return int32(binary.LittleEndian.Uint32(value)), nil
+}
+
+func nbtReadNetworkUint32(data []byte, pos *int) (uint32, error) {
+	var value uint32
+	for shift := uint(0); shift < 35; shift += 7 {
+		byteValue, err := nbtReadByte(data, pos)
+		if err != nil {
+			return 0, err
+		}
+		value |= uint32(byteValue&0x7f) << shift
+		if byteValue&0x80 == 0 {
+			return value, nil
+		}
+	}
+	return 0, fmt.Errorf("NBT varuint32 exceeds five bytes")
+}
+
+func nbtReadNetworkInt32(data []byte, pos *int) (int32, error) {
+	value, err := nbtReadNetworkUint32(data, pos)
+	if err != nil {
+		return 0, err
+	}
+	result := int32(value >> 1)
+	if value&1 != 0 {
+		result = ^result
+	}
+	return result, nil
+}
+
+func nbtReadNetworkUint64(data []byte, pos *int) (uint64, error) {
+	var value uint64
+	for shift := uint(0); shift < 70; shift += 7 {
+		byteValue, err := nbtReadByte(data, pos)
+		if err != nil {
+			return 0, err
+		}
+		value |= uint64(byteValue&0x7f) << shift
+		if byteValue&0x80 == 0 {
+			return value, nil
+		}
+	}
+	return 0, fmt.Errorf("NBT varuint64 exceeds ten bytes")
+}
+
+func nbtReadNetworkInt64(data []byte, pos *int) (int64, error) {
+	value, err := nbtReadNetworkUint64(data, pos)
+	if err != nil {
+		return 0, err
+	}
+	result := int64(value >> 1)
+	if value&1 != 0 {
+		result = ^result
+	}
+	return result, nil
 }

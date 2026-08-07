@@ -14,7 +14,7 @@ type PositionTrackingDBServerBroadcast struct {
 func (x *PositionTrackingDBServerBroadcast) Marshal(io protocol.IO) {
 	protocol.IntegerFunc(&x.Action, io.Uint8)
 	x.Id.Marshal(io)
-	io.NBT(&x.PositionTrackingData)
+	io.NBT(&x.PositionTrackingData, protocol.NBTNetwork)
 }
 
 // ID returns the protocol ID for PositionTrackingDBServerBroadcast.

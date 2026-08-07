@@ -10,7 +10,7 @@ type AvailableActorIdentifiers struct {
 
 // Marshal reads or writes AvailableActorIdentifiers using its canonical wire layout.
 func (x *AvailableActorIdentifiers) Marshal(io protocol.IO) {
-	io.NBT(&x.IdentifierList)
+	io.NBT(&x.IdentifierList, protocol.NBTNetwork)
 }
 
 // ID returns the protocol ID for AvailableActorIdentifiers.

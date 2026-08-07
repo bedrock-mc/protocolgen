@@ -12,7 +12,7 @@ type LevelEventGeneric struct {
 // Marshal reads or writes LevelEventGeneric using its canonical wire layout.
 func (x *LevelEventGeneric) Marshal(io protocol.IO) {
 	io.Varint32(&x.EventId)
-	io.NBT(&x.CTD)
+	io.NBT(&x.CTD, protocol.NBTNetwork)
 }
 
 // ID returns the protocol ID for LevelEventGeneric.

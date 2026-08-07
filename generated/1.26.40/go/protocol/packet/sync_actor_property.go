@@ -10,7 +10,7 @@ type SyncActorProperty struct {
 
 // Marshal reads or writes SyncActorProperty using its canonical wire layout.
 func (x *SyncActorProperty) Marshal(io protocol.IO) {
-	io.NBT(&x.PropertyData)
+	io.NBT(&x.PropertyData, protocol.NBTNetwork)
 }
 
 // ID returns the protocol ID for SyncActorProperty.
