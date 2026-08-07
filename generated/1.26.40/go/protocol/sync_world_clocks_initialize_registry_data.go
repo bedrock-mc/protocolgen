@@ -6,11 +6,9 @@ type SyncWorldClocksInitializeRegistryData struct {
 	ClockData []WorldClockData
 }
 
-func (SyncWorldClocksInitializeRegistryData) isSyncWorldClocksData() {}
+func (*SyncWorldClocksInitializeRegistryData) isSyncWorldClocksData() {}
 
 // Marshal reads or writes SyncWorldClocksInitializeRegistryData using its canonical wire layout.
 func (x *SyncWorldClocksInitializeRegistryData) Marshal(io IO) {
-	FuncSlice(io, &x.ClockData, io.Varuint32, func(value *WorldClockData) {
-		value.Marshal(io)
-	})
+	Slice(io, &x.ClockData)
 }

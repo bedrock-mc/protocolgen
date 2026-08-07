@@ -8,7 +8,7 @@ type BoxData struct {
 	BoxBound mgl32.Vec3
 }
 
-func (BoxData) isPrimitiveShapeDataExtraShapeData() {}
+func (*BoxData) isPrimitiveShapeDataExtraShapeData() {}
 
 // Marshal reads or writes BoxData using its canonical wire layout.
 func (x *BoxData) Marshal(io IO) {

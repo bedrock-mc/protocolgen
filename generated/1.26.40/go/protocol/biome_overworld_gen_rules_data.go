@@ -14,25 +14,11 @@ type BiomeOverworldGenRulesData struct {
 
 // Marshal reads or writes BiomeOverworldGenRulesData using its canonical wire layout.
 func (x *BiomeOverworldGenRulesData) Marshal(io IO) {
-	FuncSlice(io, &x.HillsTransformations, io.Varuint32, func(value *BiomeWeightedData) {
-		value.Marshal(io)
-	})
-	FuncSlice(io, &x.MutateTransformations, io.Varuint32, func(value *BiomeWeightedData) {
-		value.Marshal(io)
-	})
-	FuncSlice(io, &x.RiverTransformations, io.Varuint32, func(value *BiomeWeightedData) {
-		value.Marshal(io)
-	})
-	FuncSlice(io, &x.ShoreTransformations, io.Varuint32, func(value *BiomeWeightedData) {
-		value.Marshal(io)
-	})
-	FuncSlice(io, &x.PreHillsEdge, io.Varuint32, func(value *BiomeConditionalTransformationData) {
-		value.Marshal(io)
-	})
-	FuncSlice(io, &x.PostShoreEdge, io.Varuint32, func(value *BiomeConditionalTransformationData) {
-		value.Marshal(io)
-	})
-	FuncSlice(io, &x.Climate, io.Varuint32, func(value *BiomeWeightedTemperatureData) {
-		value.Marshal(io)
-	})
+	Slice(io, &x.HillsTransformations)
+	Slice(io, &x.MutateTransformations)
+	Slice(io, &x.RiverTransformations)
+	Slice(io, &x.ShoreTransformations)
+	Slice(io, &x.PreHillsEdge)
+	Slice(io, &x.PostShoreEdge)
+	Slice(io, &x.Climate)
 }

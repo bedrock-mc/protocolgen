@@ -5,7 +5,7 @@ package protocol
 type SoundDataEventStop struct {
 }
 
-func (SoundDataEventStop) isSoundDataEvent() {}
+func (*SoundDataEventStop) isSoundDataEvent() {}
 
 // Marshal reads or writes SoundDataEventStop using its canonical wire layout.
 func (x *SoundDataEventStop) Marshal(io IO) {

@@ -14,19 +14,19 @@ func MarshalSetScoreScoreInfoItem(io IO, x *SetScoreScoreInfoItem) {
 			io.Uint8(&tag)
 			switch int64(tag) {
 			case 0:
-				var value RemoveScore
+				value := new(RemoveScore)
 				value.Marshal(io)
 				*x = value
 			case 1:
-				var value ChangePlayerScore
+				value := new(ChangePlayerScore)
 				value.Marshal(io)
 				*x = value
 			case 2:
-				var value ChangeEntityScore
+				value := new(ChangeEntityScore)
 				value.Marshal(io)
 				*x = value
 			case 3:
-				var value ChangeFakePlayerScore
+				value := new(ChangeFakePlayerScore)
 				value.Marshal(io)
 				*x = value
 			default:
@@ -35,19 +35,19 @@ func MarshalSetScoreScoreInfoItem(io IO, x *SetScoreScoreInfoItem) {
 		},
 		func() {
 			switch value := (*x).(type) {
-			case RemoveScore:
+			case *RemoveScore:
 				tag := uint8(0)
 				io.Uint8(&tag)
 				value.Marshal(io)
-			case ChangePlayerScore:
+			case *ChangePlayerScore:
 				tag := uint8(1)
 				io.Uint8(&tag)
 				value.Marshal(io)
-			case ChangeEntityScore:
+			case *ChangeEntityScore:
 				tag := uint8(2)
 				io.Uint8(&tag)
 				value.Marshal(io)
-			case ChangeFakePlayerScore:
+			case *ChangeFakePlayerScore:
 				tag := uint8(3)
 				io.Uint8(&tag)
 				value.Marshal(io)

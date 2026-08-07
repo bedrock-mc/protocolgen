@@ -14,15 +14,15 @@ func MarshalBedrockDDUI(io IO, x *BedrockDDUI) {
 			io.Varuint32(&tag)
 			switch int64(tag) {
 			case 0:
-				var value BedrockDDUIDataStoreUpdate
+				value := new(BedrockDDUIDataStoreUpdate)
 				value.Marshal(io)
 				*x = value
 			case 1:
-				var value BedrockDDUIDataStoreChange
+				value := new(BedrockDDUIDataStoreChange)
 				value.Marshal(io)
 				*x = value
 			case 2:
-				var value BedrockDDUIDataStoreRemoval
+				value := new(BedrockDDUIDataStoreRemoval)
 				value.Marshal(io)
 				*x = value
 			default:
@@ -31,15 +31,15 @@ func MarshalBedrockDDUI(io IO, x *BedrockDDUI) {
 		},
 		func() {
 			switch value := (*x).(type) {
-			case BedrockDDUIDataStoreUpdate:
+			case *BedrockDDUIDataStoreUpdate:
 				tag := uint32(0)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case BedrockDDUIDataStoreChange:
+			case *BedrockDDUIDataStoreChange:
 				tag := uint32(1)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case BedrockDDUIDataStoreRemoval:
+			case *BedrockDDUIDataStoreRemoval:
 				tag := uint32(2)
 				io.Varuint32(&tag)
 				value.Marshal(io)

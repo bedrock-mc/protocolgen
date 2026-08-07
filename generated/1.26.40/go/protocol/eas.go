@@ -14,15 +14,15 @@ func MarshalEAS(io IO, x *EAS) {
 			io.Varuint32(&tag)
 			switch int64(tag) {
 			case 0:
-				var value EASBoolAttributeData
+				value := new(EASBoolAttributeData)
 				value.Marshal(io)
 				*x = value
 			case 1:
-				var value EASFloatAttributeData
+				value := new(EASFloatAttributeData)
 				value.Marshal(io)
 				*x = value
 			case 2:
-				var value EASColorAttributeData
+				value := new(EASColorAttributeData)
 				value.Marshal(io)
 				*x = value
 			default:
@@ -31,15 +31,15 @@ func MarshalEAS(io IO, x *EAS) {
 		},
 		func() {
 			switch value := (*x).(type) {
-			case EASBoolAttributeData:
+			case *EASBoolAttributeData:
 				tag := uint32(0)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case EASFloatAttributeData:
+			case *EASFloatAttributeData:
 				tag := uint32(1)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case EASColorAttributeData:
+			case *EASColorAttributeData:
 				tag := uint32(2)
 				io.Varuint32(&tag)
 				value.Marshal(io)

@@ -6,7 +6,7 @@ type ResourcePackClientResponseResourcePackStackFinished struct {
 	ResponseType string
 }
 
-func (ResourcePackClientResponseResourcePackStackFinished) isResourcePackClientResponseResponse() {}
+func (*ResourcePackClientResponseResourcePackStackFinished) isResourcePackClientResponseResponse() {}
 
 // Marshal reads or writes ResourcePackClientResponseResourcePackStackFinished using its canonical wire layout.
 func (x *ResourcePackClientResponseResourcePackStackFinished) Marshal(io IO) {

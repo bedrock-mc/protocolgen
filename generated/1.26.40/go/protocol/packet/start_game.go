@@ -52,9 +52,7 @@ func (x *StartGame) Marshal(io protocol.IO) {
 	x.MovementSettings.Marshal(io)
 	io.Uint64(&x.LevelCurrentTime)
 	io.Varint32(&x.EnchantmentSeed)
-	protocol.FuncSlice(io, &x.BlockProperties, io.Varuint32, func(value *protocol.ServerBlockProperty) {
-		value.Marshal(io)
-	})
+	protocol.Slice(io, &x.BlockProperties)
 	io.String(&x.MultiplayerCorrelationId)
 	io.Bool(&x.EnableItemStackNetManager)
 	io.String(&x.ServerVersion)

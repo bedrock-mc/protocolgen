@@ -11,7 +11,7 @@ type LegacyTelemetryEventMobKilled struct {
 	TraderName                string
 }
 
-func (LegacyTelemetryEventMobKilled) isLegacyTelemetryEventEventData() {}
+func (*LegacyTelemetryEventMobKilled) isLegacyTelemetryEventEventData() {}
 
 // Marshal reads or writes LegacyTelemetryEventMobKilled using its canonical wire layout.
 func (x *LegacyTelemetryEventMobKilled) Marshal(io IO) {

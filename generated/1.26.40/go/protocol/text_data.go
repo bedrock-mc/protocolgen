@@ -13,7 +13,7 @@ type TextData struct {
 	ShowTextBackface bool
 }
 
-func (TextData) isPrimitiveShapeDataExtraShapeData() {}
+func (*TextData) isPrimitiveShapeDataExtraShapeData() {}
 
 // Marshal reads or writes TextData using its canonical wire layout.
 func (x *TextData) Marshal(io IO) {

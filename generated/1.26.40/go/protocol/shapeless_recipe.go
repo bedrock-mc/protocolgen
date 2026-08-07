@@ -18,12 +18,8 @@ type ShapelessRecipe struct {
 // Marshal reads or writes ShapelessRecipe using its canonical wire layout.
 func (x *ShapelessRecipe) Marshal(io IO) {
 	io.String(&x.RecipeId)
-	FuncSlice(io, &x.Ingredients, io.Varuint32, func(value *CerealizerRecipeIngredientSerializedData) {
-		value.Marshal(io)
-	})
-	FuncSlice(io, &x.Results, io.Varuint32, func(value *CerealizerNetworkItemInstanceDescriptorSerializedData) {
-		value.Marshal(io)
-	})
+	Slice(io, &x.Ingredients)
+	Slice(io, &x.Results)
 	io.UUID(&x.UUID)
 	io.String(&x.Tag)
 	io.Varint32(&x.Priority)

@@ -6,7 +6,7 @@ type PlayerUpdateEntityOverridesClearOverride struct {
 	Type string
 }
 
-func (PlayerUpdateEntityOverridesClearOverride) isPlayerUpdateEntityOverridesUpdate() {}
+func (*PlayerUpdateEntityOverridesClearOverride) isPlayerUpdateEntityOverridesUpdate() {}
 
 // Marshal reads or writes PlayerUpdateEntityOverridesClearOverride using its canonical wire layout.
 func (x *PlayerUpdateEntityOverridesClearOverride) Marshal(io IO) {

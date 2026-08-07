@@ -6,7 +6,7 @@ type ItemStackRequestCerealLabTableCombineActionData struct {
 	ActionType ItemStackRequestActionType
 }
 
-func (ItemStackRequestCerealLabTableCombineActionData) isItemStackRequestCereal() {}
+func (*ItemStackRequestCerealLabTableCombineActionData) isItemStackRequestCereal() {}
 
 // Marshal reads or writes ItemStackRequestCerealLabTableCombineActionData using its canonical wire layout.
 func (x *ItemStackRequestCerealLabTableCombineActionData) Marshal(io IO) {

@@ -6,7 +6,7 @@ type LegacyTelemetryEventTargetBlockHit struct {
 	RedstoneLevel int32
 }
 
-func (LegacyTelemetryEventTargetBlockHit) isLegacyTelemetryEventEventData() {}
+func (*LegacyTelemetryEventTargetBlockHit) isLegacyTelemetryEventEventData() {}
 
 // Marshal reads or writes LegacyTelemetryEventTargetBlockHit using its canonical wire layout.
 func (x *LegacyTelemetryEventTargetBlockHit) Marshal(io IO) {

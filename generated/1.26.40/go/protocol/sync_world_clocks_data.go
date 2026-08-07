@@ -14,19 +14,19 @@ func MarshalSyncWorldClocksData(io IO, x *SyncWorldClocksData) {
 			io.Varuint32(&tag)
 			switch int64(tag) {
 			case 0:
-				var value SyncWorldClocksSyncStateData
+				value := new(SyncWorldClocksSyncStateData)
 				value.Marshal(io)
 				*x = value
 			case 1:
-				var value SyncWorldClocksInitializeRegistryData
+				value := new(SyncWorldClocksInitializeRegistryData)
 				value.Marshal(io)
 				*x = value
 			case 2:
-				var value SyncWorldClocksAddTimeMarkerData
+				value := new(SyncWorldClocksAddTimeMarkerData)
 				value.Marshal(io)
 				*x = value
 			case 3:
-				var value SyncWorldClocksRemoveTimeMarkerData
+				value := new(SyncWorldClocksRemoveTimeMarkerData)
 				value.Marshal(io)
 				*x = value
 			default:
@@ -35,19 +35,19 @@ func MarshalSyncWorldClocksData(io IO, x *SyncWorldClocksData) {
 		},
 		func() {
 			switch value := (*x).(type) {
-			case SyncWorldClocksSyncStateData:
+			case *SyncWorldClocksSyncStateData:
 				tag := uint32(0)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case SyncWorldClocksInitializeRegistryData:
+			case *SyncWorldClocksInitializeRegistryData:
 				tag := uint32(1)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case SyncWorldClocksAddTimeMarkerData:
+			case *SyncWorldClocksAddTimeMarkerData:
 				tag := uint32(2)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case SyncWorldClocksRemoveTimeMarkerData:
+			case *SyncWorldClocksRemoveTimeMarkerData:
 				tag := uint32(3)
 				io.Varuint32(&tag)
 				value.Marshal(io)

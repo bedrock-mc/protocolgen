@@ -14,75 +14,75 @@ func MarshalItemStackRequestCereal(io IO, x *ItemStackRequestCereal) {
 			io.Varuint32(&tag)
 			switch int64(tag) {
 			case 0:
-				var value ItemStackRequestCerealTakeActionData
+				value := new(ItemStackRequestCerealTakeActionData)
 				value.Marshal(io)
 				*x = value
 			case 1:
-				var value ItemStackRequestCerealPlaceActionData
+				value := new(ItemStackRequestCerealPlaceActionData)
 				value.Marshal(io)
 				*x = value
 			case 2:
-				var value ItemStackRequestCerealSwapActionData
+				value := new(ItemStackRequestCerealSwapActionData)
 				value.Marshal(io)
 				*x = value
 			case 3:
-				var value ItemStackRequestCerealDropActionData
+				value := new(ItemStackRequestCerealDropActionData)
 				value.Marshal(io)
 				*x = value
 			case 4:
-				var value ItemStackRequestCerealDestroyActionData
+				value := new(ItemStackRequestCerealDestroyActionData)
 				value.Marshal(io)
 				*x = value
 			case 5:
-				var value ItemStackRequestCerealConsumeActionData
+				value := new(ItemStackRequestCerealConsumeActionData)
 				value.Marshal(io)
 				*x = value
 			case 6:
-				var value ItemStackRequestCerealCreateActionData
+				value := new(ItemStackRequestCerealCreateActionData)
 				value.Marshal(io)
 				*x = value
 			case 7:
-				var value ItemStackRequestCerealLabTableCombineActionData
+				value := new(ItemStackRequestCerealLabTableCombineActionData)
 				value.Marshal(io)
 				*x = value
 			case 8:
-				var value ItemStackRequestCerealBeaconPaymentActionData
+				value := new(ItemStackRequestCerealBeaconPaymentActionData)
 				value.Marshal(io)
 				*x = value
 			case 9:
-				var value ItemStackRequestCerealMineBlockActionData
+				value := new(ItemStackRequestCerealMineBlockActionData)
 				value.Marshal(io)
 				*x = value
 			case 10:
-				var value ItemStackRequestCerealCraftRecipeActionData
+				value := new(ItemStackRequestCerealCraftRecipeActionData)
 				value.Marshal(io)
 				*x = value
 			case 11:
-				var value ItemStackRequestCerealCraftRecipeAutoActionData
+				value := new(ItemStackRequestCerealCraftRecipeAutoActionData)
 				value.Marshal(io)
 				*x = value
 			case 12:
-				var value ItemStackRequestCerealCraftCreativeActionData
+				value := new(ItemStackRequestCerealCraftCreativeActionData)
 				value.Marshal(io)
 				*x = value
 			case 13:
-				var value ItemStackRequestCerealCraftRecipeOptionalActionData
+				value := new(ItemStackRequestCerealCraftRecipeOptionalActionData)
 				value.Marshal(io)
 				*x = value
 			case 14:
-				var value ItemStackRequestCerealCraftRepairAndDisenchantActionData
+				value := new(ItemStackRequestCerealCraftRepairAndDisenchantActionData)
 				value.Marshal(io)
 				*x = value
 			case 15:
-				var value ItemStackRequestCerealCraftLoomActionData
+				value := new(ItemStackRequestCerealCraftLoomActionData)
 				value.Marshal(io)
 				*x = value
 			case 16:
-				var value ItemStackRequestCerealCraftNonImplementedActionData
+				value := new(ItemStackRequestCerealCraftNonImplementedActionData)
 				value.Marshal(io)
 				*x = value
 			case 17:
-				var value ItemStackRequestCerealCraftResultsActionData
+				value := new(ItemStackRequestCerealCraftResultsActionData)
 				value.Marshal(io)
 				*x = value
 			default:
@@ -91,75 +91,75 @@ func MarshalItemStackRequestCereal(io IO, x *ItemStackRequestCereal) {
 		},
 		func() {
 			switch value := (*x).(type) {
-			case ItemStackRequestCerealTakeActionData:
+			case *ItemStackRequestCerealTakeActionData:
 				tag := uint32(0)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case ItemStackRequestCerealPlaceActionData:
+			case *ItemStackRequestCerealPlaceActionData:
 				tag := uint32(1)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case ItemStackRequestCerealSwapActionData:
+			case *ItemStackRequestCerealSwapActionData:
 				tag := uint32(2)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case ItemStackRequestCerealDropActionData:
+			case *ItemStackRequestCerealDropActionData:
 				tag := uint32(3)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case ItemStackRequestCerealDestroyActionData:
+			case *ItemStackRequestCerealDestroyActionData:
 				tag := uint32(4)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case ItemStackRequestCerealConsumeActionData:
+			case *ItemStackRequestCerealConsumeActionData:
 				tag := uint32(5)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case ItemStackRequestCerealCreateActionData:
+			case *ItemStackRequestCerealCreateActionData:
 				tag := uint32(6)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case ItemStackRequestCerealLabTableCombineActionData:
+			case *ItemStackRequestCerealLabTableCombineActionData:
 				tag := uint32(7)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case ItemStackRequestCerealBeaconPaymentActionData:
+			case *ItemStackRequestCerealBeaconPaymentActionData:
 				tag := uint32(8)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case ItemStackRequestCerealMineBlockActionData:
+			case *ItemStackRequestCerealMineBlockActionData:
 				tag := uint32(9)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case ItemStackRequestCerealCraftRecipeActionData:
+			case *ItemStackRequestCerealCraftRecipeActionData:
 				tag := uint32(10)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case ItemStackRequestCerealCraftRecipeAutoActionData:
+			case *ItemStackRequestCerealCraftRecipeAutoActionData:
 				tag := uint32(11)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case ItemStackRequestCerealCraftCreativeActionData:
+			case *ItemStackRequestCerealCraftCreativeActionData:
 				tag := uint32(12)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case ItemStackRequestCerealCraftRecipeOptionalActionData:
+			case *ItemStackRequestCerealCraftRecipeOptionalActionData:
 				tag := uint32(13)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case ItemStackRequestCerealCraftRepairAndDisenchantActionData:
+			case *ItemStackRequestCerealCraftRepairAndDisenchantActionData:
 				tag := uint32(14)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case ItemStackRequestCerealCraftLoomActionData:
+			case *ItemStackRequestCerealCraftLoomActionData:
 				tag := uint32(15)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case ItemStackRequestCerealCraftNonImplementedActionData:
+			case *ItemStackRequestCerealCraftNonImplementedActionData:
 				tag := uint32(16)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case ItemStackRequestCerealCraftResultsActionData:
+			case *ItemStackRequestCerealCraftResultsActionData:
 				tag := uint32(17)
 				io.Varuint32(&tag)
 				value.Marshal(io)

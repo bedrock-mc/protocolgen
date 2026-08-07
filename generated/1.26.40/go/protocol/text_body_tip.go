@@ -6,7 +6,7 @@ type TextBodyTip struct {
 	Value TextMessageOnly
 }
 
-func (TextBodyTip) isTextBody() {}
+func (*TextBodyTip) isTextBody() {}
 
 // Marshal reads or writes TextBodyTip using its canonical wire layout.
 func (x *TextBodyTip) Marshal(io IO) {

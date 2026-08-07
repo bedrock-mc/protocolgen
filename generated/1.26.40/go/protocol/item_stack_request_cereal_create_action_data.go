@@ -7,7 +7,7 @@ type ItemStackRequestCerealCreateActionData struct {
 	ResultsIndex uint8
 }
 
-func (ItemStackRequestCerealCreateActionData) isItemStackRequestCereal() {}
+func (*ItemStackRequestCerealCreateActionData) isItemStackRequestCereal() {}
 
 // Marshal reads or writes ItemStackRequestCerealCreateActionData using its canonical wire layout.
 func (x *ItemStackRequestCerealCreateActionData) Marshal(io IO) {

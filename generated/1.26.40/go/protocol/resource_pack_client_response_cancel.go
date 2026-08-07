@@ -6,7 +6,7 @@ type ResourcePackClientResponseCancel struct {
 	ResponseType string
 }
 
-func (ResourcePackClientResponseCancel) isResourcePackClientResponseResponse() {}
+func (*ResourcePackClientResponseCancel) isResourcePackClientResponseResponse() {}
 
 // Marshal reads or writes ResourcePackClientResponseCancel using its canonical wire layout.
 func (x *ResourcePackClientResponseCancel) Marshal(io IO) {

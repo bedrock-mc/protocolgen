@@ -31,14 +31,10 @@ func (x *ClientboundMapItemData) Marshal(io protocol.IO) {
 	})
 	protocol.OptionalFunc(io, &x.Scale, io.Int8)
 	protocol.OptionalFunc(io, &x.TrackedActorIDs, func(value *[]protocol.MapItemTrackedActorUniqueId) {
-		protocol.FuncSlice(io, value, io.Varuint32, func(value *protocol.MapItemTrackedActorUniqueId) {
-			value.Marshal(io)
-		})
+		protocol.Slice(io, value)
 	})
 	protocol.OptionalFunc(io, &x.Decorations, func(value *[]protocol.MapDecoration) {
-		protocol.FuncSlice(io, value, io.Varuint32, func(value *protocol.MapDecoration) {
-			value.Marshal(io)
-		})
+		protocol.Slice(io, value)
 	})
 	protocol.OptionalFunc(io, &x.Width, io.Varint32)
 	protocol.OptionalFunc(io, &x.Height, io.Varint32)

@@ -8,7 +8,7 @@ type AttributeLayerSyncPacketDataUpdateAttributeLayerSettingsData struct {
 	AttributesLayerSettings EASAttributeLayerSettings
 }
 
-func (AttributeLayerSyncPacketDataUpdateAttributeLayerSettingsData) isAttributeLayerSyncPacketData() {
+func (*AttributeLayerSyncPacketDataUpdateAttributeLayerSettingsData) isAttributeLayerSyncPacketData() {
 }
 
 // Marshal reads or writes AttributeLayerSyncPacketDataUpdateAttributeLayerSettingsData using its canonical wire layout.

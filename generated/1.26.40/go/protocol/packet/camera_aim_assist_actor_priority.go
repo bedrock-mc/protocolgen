@@ -10,9 +10,7 @@ type CameraAimAssistActorPriority struct {
 
 // Marshal reads or writes CameraAimAssistActorPriority using its canonical wire layout.
 func (x *CameraAimAssistActorPriority) Marshal(io protocol.IO) {
-	protocol.FuncSlice(io, &x.CameraAimAssistActorPriorityList, io.Varuint32, func(value *protocol.CameraAimAssistActorPriorityPriorityData) {
-		value.Marshal(io)
-	})
+	protocol.Slice(io, &x.CameraAimAssistActorPriorityList)
 }
 
 // ID returns the protocol ID for CameraAimAssistActorPriority.

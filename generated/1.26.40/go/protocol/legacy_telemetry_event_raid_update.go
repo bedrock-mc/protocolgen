@@ -8,7 +8,7 @@ type LegacyTelemetryEventRaidUpdate struct {
 	Success     bool
 }
 
-func (LegacyTelemetryEventRaidUpdate) isLegacyTelemetryEventEventData() {}
+func (*LegacyTelemetryEventRaidUpdate) isLegacyTelemetryEventEventData() {}
 
 // Marshal reads or writes LegacyTelemetryEventRaidUpdate using its canonical wire layout.
 func (x *LegacyTelemetryEventRaidUpdate) Marshal(io IO) {

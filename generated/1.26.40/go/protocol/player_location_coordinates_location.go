@@ -9,7 +9,7 @@ type PlayerLocationCoordinatesLocation struct {
 	Position   mgl32.Vec3
 }
 
-func (PlayerLocationCoordinatesLocation) isPlayerLocationLocation() {}
+func (*PlayerLocationCoordinatesLocation) isPlayerLocationLocation() {}
 
 // Marshal reads or writes PlayerLocationCoordinatesLocation using its canonical wire layout.
 func (x *PlayerLocationCoordinatesLocation) Marshal(io IO) {

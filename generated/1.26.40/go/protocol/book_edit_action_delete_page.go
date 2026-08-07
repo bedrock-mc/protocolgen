@@ -6,7 +6,7 @@ type BookEditActionDeletePage struct {
 	PageIndex int32
 }
 
-func (BookEditActionDeletePage) isBookEditAction() {}
+func (*BookEditActionDeletePage) isBookEditAction() {}
 
 // Marshal reads or writes BookEditActionDeletePage using its canonical wire layout.
 func (x *BookEditActionDeletePage) Marshal(io IO) {

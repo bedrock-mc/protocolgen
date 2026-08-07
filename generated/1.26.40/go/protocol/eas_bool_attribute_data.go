@@ -7,7 +7,7 @@ type EASBoolAttributeData struct {
 	Operation string
 }
 
-func (EASBoolAttributeData) isEAS() {}
+func (*EASBoolAttributeData) isEAS() {}
 
 // Marshal reads or writes EASBoolAttributeData using its canonical wire layout.
 func (x *EASBoolAttributeData) Marshal(io IO) {

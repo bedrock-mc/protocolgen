@@ -14,31 +14,31 @@ func MarshalCerealDynamicValue(io IO, x *CerealDynamicValue) {
 			io.Int32(&tag)
 			switch int64(tag) {
 			case 0:
-				var value CerealDynamicValueNone
+				value := new(CerealDynamicValueNone)
 				value.Marshal(io)
 				*x = value
 			case 1:
-				var value CerealDynamicValueBool
+				value := new(CerealDynamicValueBool)
 				value.Marshal(io)
 				*x = value
 			case 2:
-				var value CerealDynamicValueInt64
+				value := new(CerealDynamicValueInt64)
 				value.Marshal(io)
 				*x = value
 			case 3:
-				var value CerealDynamicValueDouble
+				value := new(CerealDynamicValueDouble)
 				value.Marshal(io)
 				*x = value
 			case 4:
-				var value CerealDynamicValueString
+				value := new(CerealDynamicValueString)
 				value.Marshal(io)
 				*x = value
 			case 5:
-				var value CerealDynamicValueList
+				value := new(CerealDynamicValueList)
 				value.Marshal(io)
 				*x = value
 			case 6:
-				var value CerealDynamicValueMap
+				value := new(CerealDynamicValueMap)
 				value.Marshal(io)
 				*x = value
 			default:
@@ -47,31 +47,31 @@ func MarshalCerealDynamicValue(io IO, x *CerealDynamicValue) {
 		},
 		func() {
 			switch value := (*x).(type) {
-			case CerealDynamicValueNone:
+			case *CerealDynamicValueNone:
 				tag := int32(0)
 				io.Int32(&tag)
 				value.Marshal(io)
-			case CerealDynamicValueBool:
+			case *CerealDynamicValueBool:
 				tag := int32(1)
 				io.Int32(&tag)
 				value.Marshal(io)
-			case CerealDynamicValueInt64:
+			case *CerealDynamicValueInt64:
 				tag := int32(2)
 				io.Int32(&tag)
 				value.Marshal(io)
-			case CerealDynamicValueDouble:
+			case *CerealDynamicValueDouble:
 				tag := int32(3)
 				io.Int32(&tag)
 				value.Marshal(io)
-			case CerealDynamicValueString:
+			case *CerealDynamicValueString:
 				tag := int32(4)
 				io.Int32(&tag)
 				value.Marshal(io)
-			case CerealDynamicValueList:
+			case *CerealDynamicValueList:
 				tag := int32(5)
 				io.Int32(&tag)
 				value.Marshal(io)
-			case CerealDynamicValueMap:
+			case *CerealDynamicValueMap:
 				tag := int32(6)
 				io.Int32(&tag)
 				value.Marshal(io)

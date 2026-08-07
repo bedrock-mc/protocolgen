@@ -14,19 +14,19 @@ func MarshalItemStackRequestCerealRecipeIngredientDataItemDescriptor(io IO, x *I
 			io.Varuint32(&tag)
 			switch int64(tag) {
 			case 0:
-				var value ItemStackRequestCerealEmptyItemDescriptorData
+				value := new(ItemStackRequestCerealEmptyItemDescriptorData)
 				value.Marshal(io)
 				*x = value
 			case 1:
-				var value ItemStackRequestCerealItemNameDescriptorData
+				value := new(ItemStackRequestCerealItemNameDescriptorData)
 				value.Marshal(io)
 				*x = value
 			case 2:
-				var value ItemStackRequestCerealMoLangItemDescriptorData
+				value := new(ItemStackRequestCerealMoLangItemDescriptorData)
 				value.Marshal(io)
 				*x = value
 			case 3:
-				var value ItemStackRequestCerealItemTagDescriptorData
+				value := new(ItemStackRequestCerealItemTagDescriptorData)
 				value.Marshal(io)
 				*x = value
 			default:
@@ -35,19 +35,19 @@ func MarshalItemStackRequestCerealRecipeIngredientDataItemDescriptor(io IO, x *I
 		},
 		func() {
 			switch value := (*x).(type) {
-			case ItemStackRequestCerealEmptyItemDescriptorData:
+			case *ItemStackRequestCerealEmptyItemDescriptorData:
 				tag := uint32(0)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case ItemStackRequestCerealItemNameDescriptorData:
+			case *ItemStackRequestCerealItemNameDescriptorData:
 				tag := uint32(1)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case ItemStackRequestCerealMoLangItemDescriptorData:
+			case *ItemStackRequestCerealMoLangItemDescriptorData:
 				tag := uint32(2)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case ItemStackRequestCerealItemTagDescriptorData:
+			case *ItemStackRequestCerealItemTagDescriptorData:
 				tag := uint32(3)
 				io.Varuint32(&tag)
 				value.Marshal(io)

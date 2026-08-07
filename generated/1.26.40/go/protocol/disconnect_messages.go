@@ -14,11 +14,11 @@ func MarshalDisconnectMessages(io IO, x *DisconnectMessages) {
 			io.Varuint32(&tag)
 			switch int64(tag) {
 			case 0:
-				var value DisconnectPacketMessages
+				value := new(DisconnectPacketMessages)
 				value.Marshal(io)
 				*x = value
 			case 1:
-				var value DisconnectMessagesEmpty1
+				value := new(DisconnectMessagesEmpty1)
 				value.Marshal(io)
 				*x = value
 			default:
@@ -27,11 +27,11 @@ func MarshalDisconnectMessages(io IO, x *DisconnectMessages) {
 		},
 		func() {
 			switch value := (*x).(type) {
-			case DisconnectPacketMessages:
+			case *DisconnectPacketMessages:
 				tag := uint32(0)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case DisconnectMessagesEmpty1:
+			case *DisconnectMessagesEmpty1:
 				tag := uint32(1)
 				io.Varuint32(&tag)
 				value.Marshal(io)

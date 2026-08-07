@@ -6,7 +6,7 @@ type SoundDataEventSeekTo struct {
 	Seconds float32
 }
 
-func (SoundDataEventSeekTo) isSoundDataEvent() {}
+func (*SoundDataEventSeekTo) isSoundDataEvent() {}
 
 // Marshal reads or writes SoundDataEventSeekTo using its canonical wire layout.
 func (x *SoundDataEventSeekTo) Marshal(io IO) {

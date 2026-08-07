@@ -9,7 +9,7 @@ type BedrockDDUIDataStoreChange struct {
 	TheNewPropertyValue CerealDynamicValue
 }
 
-func (BedrockDDUIDataStoreChange) isBedrockDDUI() {}
+func (*BedrockDDUIDataStoreChange) isBedrockDDUI() {}
 
 // Marshal reads or writes BedrockDDUIDataStoreChange using its canonical wire layout.
 func (x *BedrockDDUIDataStoreChange) Marshal(io IO) {

@@ -9,14 +9,12 @@ type ItemStackRequestCerealCraftRecipeAutoActionData struct {
 	Ingredients             []ItemStackRequestCerealRecipeIngredientData
 }
 
-func (ItemStackRequestCerealCraftRecipeAutoActionData) isItemStackRequestCereal() {}
+func (*ItemStackRequestCerealCraftRecipeAutoActionData) isItemStackRequestCereal() {}
 
 // Marshal reads or writes ItemStackRequestCerealCraftRecipeAutoActionData using its canonical wire layout.
 func (x *ItemStackRequestCerealCraftRecipeAutoActionData) Marshal(io IO) {
 	IntegerFunc(&x.ActionType, io.Uint8)
 	x.RecipeNetId.Marshal(io)
 	io.Uint8(&x.NumberOfRequestedCrafts)
-	FuncSlice(io, &x.Ingredients, io.Varuint32, func(value *ItemStackRequestCerealRecipeIngredientData) {
-		value.Marshal(io)
-	})
+	Slice(io, &x.Ingredients)
 }

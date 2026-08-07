@@ -12,12 +12,8 @@ type CameraAimAssistPresets struct {
 
 // Marshal reads or writes CameraAimAssistPresets using its canonical wire layout.
 func (x *CameraAimAssistPresets) Marshal(io protocol.IO) {
-	protocol.FuncSlice(io, &x.CameraAimAssistPresets, io.Varuint32, func(value *protocol.CameraAimAssistCategoryDefinition) {
-		value.Marshal(io)
-	})
-	protocol.FuncSlice(io, &x.CameraAimAssistCategories, io.Varuint32, func(value *protocol.CameraAimAssistPresetDefinition) {
-		value.Marshal(io)
-	})
+	protocol.Slice(io, &x.CameraAimAssistPresets)
+	protocol.Slice(io, &x.CameraAimAssistCategories)
 	protocol.IntegerFunc(&x.Operation, io.Uint8)
 }
 

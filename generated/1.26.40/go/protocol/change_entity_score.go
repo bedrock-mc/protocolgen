@@ -10,7 +10,7 @@ type ChangeEntityScore struct {
 	ActorId       int64
 }
 
-func (ChangeEntityScore) isSetScoreScoreInfoItem() {}
+func (*ChangeEntityScore) isSetScoreScoreInfoItem() {}
 
 // Marshal reads or writes ChangeEntityScore using its canonical wire layout.
 func (x *ChangeEntityScore) Marshal(io IO) {

@@ -8,7 +8,7 @@ type BookEditActionFinalize struct {
 	XUID   string
 }
 
-func (BookEditActionFinalize) isBookEditAction() {}
+func (*BookEditActionFinalize) isBookEditAction() {}
 
 // Marshal reads or writes BookEditActionFinalize using its canonical wire layout.
 func (x *BookEditActionFinalize) Marshal(io IO) {

@@ -6,7 +6,7 @@ type SoundDataEventSetVolume struct {
 	Volume float32
 }
 
-func (SoundDataEventSetVolume) isSoundDataEvent() {}
+func (*SoundDataEventSetVolume) isSoundDataEvent() {}
 
 // Marshal reads or writes SoundDataEventSetVolume using its canonical wire layout.
 func (x *SoundDataEventSetVolume) Marshal(io IO) {

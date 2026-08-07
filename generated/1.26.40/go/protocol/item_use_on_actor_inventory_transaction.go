@@ -14,7 +14,7 @@ type ItemUseOnActorInventoryTransaction struct {
 	HitPosition  mgl32.Vec3
 }
 
-func (ItemUseOnActorInventoryTransaction) isInventoryTransactionTransactionValue() {}
+func (*ItemUseOnActorInventoryTransaction) isInventoryTransactionTransactionValue() {}
 
 // Marshal reads or writes ItemUseOnActorInventoryTransaction using its canonical wire layout.
 func (x *ItemUseOnActorInventoryTransaction) Marshal(io IO) {

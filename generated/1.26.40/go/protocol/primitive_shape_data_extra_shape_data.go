@@ -14,43 +14,43 @@ func MarshalPrimitiveShapeDataExtraShapeData(io IO, x *PrimitiveShapeDataExtraSh
 			io.Varuint32(&tag)
 			switch int64(tag) {
 			case 0:
-				var value PrimitiveShapeDataExtraShapeDataEmpty0
+				value := new(PrimitiveShapeDataExtraShapeDataEmpty0)
 				value.Marshal(io)
 				*x = value
 			case 1:
-				var value ArrowData
+				value := new(ArrowData)
 				value.Marshal(io)
 				*x = value
 			case 2:
-				var value TextData
+				value := new(TextData)
 				value.Marshal(io)
 				*x = value
 			case 3:
-				var value BoxData
+				value := new(BoxData)
 				value.Marshal(io)
 				*x = value
 			case 4:
-				var value LineData
+				value := new(LineData)
 				value.Marshal(io)
 				*x = value
 			case 5:
-				var value SphereData
+				value := new(SphereData)
 				value.Marshal(io)
 				*x = value
 			case 6:
-				var value CylinderData
+				value := new(CylinderData)
 				value.Marshal(io)
 				*x = value
 			case 7:
-				var value PyramidData
+				value := new(PyramidData)
 				value.Marshal(io)
 				*x = value
 			case 8:
-				var value EllipsoidData
+				value := new(EllipsoidData)
 				value.Marshal(io)
 				*x = value
 			case 9:
-				var value ConeData
+				value := new(ConeData)
 				value.Marshal(io)
 				*x = value
 			default:
@@ -59,43 +59,43 @@ func MarshalPrimitiveShapeDataExtraShapeData(io IO, x *PrimitiveShapeDataExtraSh
 		},
 		func() {
 			switch value := (*x).(type) {
-			case PrimitiveShapeDataExtraShapeDataEmpty0:
+			case *PrimitiveShapeDataExtraShapeDataEmpty0:
 				tag := uint32(0)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case ArrowData:
+			case *ArrowData:
 				tag := uint32(1)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case TextData:
+			case *TextData:
 				tag := uint32(2)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case BoxData:
+			case *BoxData:
 				tag := uint32(3)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case LineData:
+			case *LineData:
 				tag := uint32(4)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case SphereData:
+			case *SphereData:
 				tag := uint32(5)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case CylinderData:
+			case *CylinderData:
 				tag := uint32(6)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case PyramidData:
+			case *PyramidData:
 				tag := uint32(7)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case EllipsoidData:
+			case *EllipsoidData:
 				tag := uint32(8)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case ConeData:
+			case *ConeData:
 				tag := uint32(9)
 				io.Varuint32(&tag)
 				value.Marshal(io)

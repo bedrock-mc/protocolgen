@@ -21,39 +21,17 @@ type CraftingData struct {
 
 // Marshal reads or writes CraftingData using its canonical wire layout.
 func (x *CraftingData) Marshal(io protocol.IO) {
-	protocol.FuncSlice(io, &x.ShapedRecipes, io.Varuint32, func(value *protocol.ShapedRecipe) {
-		value.Marshal(io)
-	})
-	protocol.FuncSlice(io, &x.ShapelessRecipes, io.Varuint32, func(value *protocol.ShapelessRecipe) {
-		value.Marshal(io)
-	})
-	protocol.FuncSlice(io, &x.MultiRecipes, io.Varuint32, func(value *protocol.MultiRecipe) {
-		value.Marshal(io)
-	})
-	protocol.FuncSlice(io, &x.UserDataShapelessRecipes, io.Varuint32, func(value *protocol.ShapelessRecipe) {
-		value.Marshal(io)
-	})
-	protocol.FuncSlice(io, &x.ShapelessChemistryRecipes, io.Varuint32, func(value *protocol.ShapelessRecipe) {
-		value.Marshal(io)
-	})
-	protocol.FuncSlice(io, &x.ShapedChemistryRecipes, io.Varuint32, func(value *protocol.ShapedRecipe) {
-		value.Marshal(io)
-	})
-	protocol.FuncSlice(io, &x.SmithingTransformRecipes, io.Varuint32, func(value *protocol.SmithingTransformRecipe) {
-		value.Marshal(io)
-	})
-	protocol.FuncSlice(io, &x.SmithingTrimRecipes, io.Varuint32, func(value *protocol.SmithingTrimRecipe) {
-		value.Marshal(io)
-	})
-	protocol.FuncSlice(io, &x.PotionMixes, io.Varuint32, func(value *protocol.PotionMixDataEntry) {
-		value.Marshal(io)
-	})
-	protocol.FuncSlice(io, &x.ContainerMixes, io.Varuint32, func(value *protocol.ContainerMixDataEntry) {
-		value.Marshal(io)
-	})
-	protocol.FuncSlice(io, &x.MaterialReducers, io.Varuint32, func(value *protocol.MaterialReducerDataEntry) {
-		value.Marshal(io)
-	})
+	protocol.Slice(io, &x.ShapedRecipes)
+	protocol.Slice(io, &x.ShapelessRecipes)
+	protocol.Slice(io, &x.MultiRecipes)
+	protocol.Slice(io, &x.UserDataShapelessRecipes)
+	protocol.Slice(io, &x.ShapelessChemistryRecipes)
+	protocol.Slice(io, &x.ShapedChemistryRecipes)
+	protocol.Slice(io, &x.SmithingTransformRecipes)
+	protocol.Slice(io, &x.SmithingTrimRecipes)
+	protocol.Slice(io, &x.PotionMixes)
+	protocol.Slice(io, &x.ContainerMixes)
+	protocol.Slice(io, &x.MaterialReducers)
 	io.Bool(&x.ClearRecipes)
 }
 

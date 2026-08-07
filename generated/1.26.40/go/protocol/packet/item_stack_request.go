@@ -10,9 +10,7 @@ type ItemStackRequest struct {
 
 // Marshal reads or writes ItemStackRequest using its canonical wire layout.
 func (x *ItemStackRequest) Marshal(io protocol.IO) {
-	protocol.FuncSlice(io, &x.Requests, io.Varuint32, func(value *protocol.ItemStackRequestPacketDataRequestData) {
-		value.Marshal(io)
-	})
+	protocol.Slice(io, &x.Requests)
 }
 
 // ID returns the protocol ID for ItemStackRequest.

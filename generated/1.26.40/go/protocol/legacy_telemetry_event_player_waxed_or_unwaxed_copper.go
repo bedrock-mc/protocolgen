@@ -6,7 +6,7 @@ type LegacyTelemetryEventPlayerWaxedOrUnwaxedCopper struct {
 	PlayerWaxedOrUnwaxedCopperBlockID int32
 }
 
-func (LegacyTelemetryEventPlayerWaxedOrUnwaxedCopper) isLegacyTelemetryEventEventData() {}
+func (*LegacyTelemetryEventPlayerWaxedOrUnwaxedCopper) isLegacyTelemetryEventEventData() {}
 
 // Marshal reads or writes LegacyTelemetryEventPlayerWaxedOrUnwaxedCopper using its canonical wire layout.
 func (x *LegacyTelemetryEventPlayerWaxedOrUnwaxedCopper) Marshal(io IO) {

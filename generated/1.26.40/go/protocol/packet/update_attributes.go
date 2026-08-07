@@ -13,9 +13,7 @@ type UpdateAttributes struct {
 // Marshal reads or writes UpdateAttributes using its canonical wire layout.
 func (x *UpdateAttributes) Marshal(io protocol.IO) {
 	io.ActorRuntimeID(&x.TargetRuntimeID)
-	protocol.FuncSlice(io, &x.AttributeList, io.Varuint32, func(value *protocol.AttributeData) {
-		value.Marshal(io)
-	})
+	protocol.Slice(io, &x.AttributeList)
 	io.PlayerInputTick(&x.Tick)
 }
 

@@ -19,7 +19,7 @@ type ItemUseInventoryTransaction struct {
 	ClientCooldownState      ItemUseInventoryTransactionClientCooldownState
 }
 
-func (ItemUseInventoryTransaction) isInventoryTransactionTransactionValue() {}
+func (*ItemUseInventoryTransaction) isInventoryTransactionTransactionValue() {}
 
 // Marshal reads or writes ItemUseInventoryTransaction using its canonical wire layout.
 func (x *ItemUseInventoryTransaction) Marshal(io IO) {

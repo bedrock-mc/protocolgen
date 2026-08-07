@@ -10,7 +10,7 @@ type ChangePlayerScore struct {
 	PlayerUniqueId PlayerScoreboardId
 }
 
-func (ChangePlayerScore) isSetScoreScoreInfoItem() {}
+func (*ChangePlayerScore) isSetScoreScoreInfoItem() {}
 
 // Marshal reads or writes ChangePlayerScore using its canonical wire layout.
 func (x *ChangePlayerScore) Marshal(io IO) {

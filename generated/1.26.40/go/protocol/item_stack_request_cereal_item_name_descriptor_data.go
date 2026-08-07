@@ -8,7 +8,7 @@ type ItemStackRequestCerealItemNameDescriptorData struct {
 	AuxValue       int32
 }
 
-func (ItemStackRequestCerealItemNameDescriptorData) isItemStackRequestCerealRecipeIngredientDataItemDescriptor() {
+func (*ItemStackRequestCerealItemNameDescriptorData) isItemStackRequestCerealRecipeIngredientDataItemDescriptor() {
 }
 
 // Marshal reads or writes ItemStackRequestCerealItemNameDescriptorData using its canonical wire layout.

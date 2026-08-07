@@ -9,7 +9,7 @@ type ItemStackRequestCerealCraftRepairAndDisenchantActionData struct {
 	RepairCost              int32
 }
 
-func (ItemStackRequestCerealCraftRepairAndDisenchantActionData) isItemStackRequestCereal() {}
+func (*ItemStackRequestCerealCraftRepairAndDisenchantActionData) isItemStackRequestCereal() {}
 
 // Marshal reads or writes ItemStackRequestCerealCraftRepairAndDisenchantActionData using its canonical wire layout.
 func (x *ItemStackRequestCerealCraftRepairAndDisenchantActionData) Marshal(io IO) {

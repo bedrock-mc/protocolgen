@@ -9,7 +9,7 @@ type CommandBlockUpdateBlockCommandData struct {
 	IsConditional    bool
 }
 
-func (CommandBlockUpdateBlockCommandData) isCommandBlockUpdateTarget() {}
+func (*CommandBlockUpdateBlockCommandData) isCommandBlockUpdateTarget() {}
 
 // Marshal reads or writes CommandBlockUpdateBlockCommandData using its canonical wire layout.
 func (x *CommandBlockUpdateBlockCommandData) Marshal(io IO) {

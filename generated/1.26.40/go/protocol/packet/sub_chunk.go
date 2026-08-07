@@ -16,9 +16,7 @@ func (x *SubChunk) Marshal(io protocol.IO) {
 	io.Bool(&x.CacheEnabled)
 	x.DimensionType.Marshal(io)
 	x.CenterPos.Marshal(io)
-	protocol.FuncSlice(io, &x.SubChunkData, io.Varuint32, func(value *protocol.SubChunkSubChunkPacketData) {
-		value.Marshal(io)
-	})
+	protocol.Slice(io, &x.SubChunkData)
 }
 
 // ID returns the protocol ID for SubChunk.

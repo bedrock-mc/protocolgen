@@ -14,9 +14,7 @@ type InventoryTransaction struct {
 func (x *InventoryTransaction) Marshal(io protocol.IO) {
 	x.LegacyRequestID.Marshal(io)
 	protocol.OptionalFunc(io, &x.LegacySetItemSlots, func(value *[]protocol.LegacySetSlot) {
-		protocol.FuncSlice(io, value, io.Varuint32, func(value *protocol.LegacySetSlot) {
-			value.Marshal(io)
-		})
+		protocol.Slice(io, value)
 	})
 	protocol.OptionalFunc(io, &x.Transaction, func(value *protocol.InventoryTransactionTransactionValue) {
 		protocol.MarshalInventoryTransactionTransactionValue(io, value)

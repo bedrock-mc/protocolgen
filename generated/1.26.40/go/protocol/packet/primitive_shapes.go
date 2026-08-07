@@ -10,9 +10,7 @@ type PrimitiveShapes struct {
 
 // Marshal reads or writes PrimitiveShapes using its canonical wire layout.
 func (x *PrimitiveShapes) Marshal(io protocol.IO) {
-	protocol.FuncSlice(io, &x.ArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemoved, io.Varuint32, func(value *protocol.PrimitiveShapeData) {
-		value.Marshal(io)
-	})
+	protocol.Slice(io, &x.ArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemoved)
 }
 
 // ID returns the protocol ID for PrimitiveShapes.

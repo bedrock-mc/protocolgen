@@ -8,13 +8,12 @@ type AttributeLayerSyncPacketDataUpdateEnvironmentAttributesData struct {
 	Attributes              []EASEnvironmentAttributeData
 }
 
-func (AttributeLayerSyncPacketDataUpdateEnvironmentAttributesData) isAttributeLayerSyncPacketData() {}
+func (*AttributeLayerSyncPacketDataUpdateEnvironmentAttributesData) isAttributeLayerSyncPacketData() {
+}
 
 // Marshal reads or writes AttributeLayerSyncPacketDataUpdateEnvironmentAttributesData using its canonical wire layout.
 func (x *AttributeLayerSyncPacketDataUpdateEnvironmentAttributesData) Marshal(io IO) {
 	io.String(&x.AttributeLayerName)
 	x.AttributeLayerDimension.Marshal(io)
-	FuncSlice(io, &x.Attributes, io.Varuint32, func(value *EASEnvironmentAttributeData) {
-		value.Marshal(io)
-	})
+	Slice(io, &x.Attributes)
 }

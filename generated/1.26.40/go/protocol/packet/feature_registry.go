@@ -10,9 +10,7 @@ type FeatureRegistry struct {
 
 // Marshal reads or writes FeatureRegistry using its canonical wire layout.
 func (x *FeatureRegistry) Marshal(io protocol.IO) {
-	protocol.FuncSlice(io, &x.FeaturesDataList, io.Varuint32, func(value *protocol.FeatureRegistryFeatureBinaryJsonFormat) {
-		value.Marshal(io)
-	})
+	protocol.Slice(io, &x.FeaturesDataList)
 }
 
 // ID returns the protocol ID for FeatureRegistry.

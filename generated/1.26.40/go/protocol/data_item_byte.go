@@ -7,7 +7,7 @@ type DataItemByte struct {
 	Value int8
 }
 
-func (DataItemByte) isDataItemEntryValue() {}
+func (*DataItemByte) isDataItemEntryValue() {}
 
 // Marshal reads or writes DataItemByte using its canonical wire layout.
 func (x *DataItemByte) Marshal(io IO) {

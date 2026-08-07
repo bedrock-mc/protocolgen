@@ -15,9 +15,7 @@ type BiomeScatterParamData struct {
 
 // Marshal reads or writes BiomeScatterParamData using its canonical wire layout.
 func (x *BiomeScatterParamData) Marshal(io IO) {
-	FuncSlice(io, &x.Coordinates, io.Varuint32, func(value *BiomeCoordinateData) {
-		value.Marshal(io)
-	})
+	Slice(io, &x.Coordinates)
 	IntegerFunc(&x.EvalOrder, io.Varint32)
 	io.Varint32(&x.ChancePercentType)
 	io.Uint16(&x.ChancePercent)

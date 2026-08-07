@@ -33,14 +33,10 @@ func (x *AddActor) Marshal(io protocol.IO) {
 	io.Vec2(&x.Rotation)
 	io.Float32(&x.YHeadRotation)
 	io.Float32(&x.YBodyRotation)
-	protocol.FuncSlice(io, &x.AttributesList, io.Varuint32, func(value *protocol.SyncedAttribute) {
-		value.Marshal(io)
-	})
+	protocol.Slice(io, &x.AttributesList)
 	x.ActorData.Marshal(io)
 	x.SynchedProperties.Marshal(io)
-	protocol.FuncSlice(io, &x.ActorLinks, io.Varuint32, func(value *protocol.ActorLink) {
-		value.Marshal(io)
-	})
+	protocol.Slice(io, &x.ActorLinks)
 }
 
 // ID returns the protocol ID for AddActor.

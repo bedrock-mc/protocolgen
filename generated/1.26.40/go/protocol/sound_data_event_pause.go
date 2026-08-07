@@ -5,7 +5,7 @@ package protocol
 type SoundDataEventPause struct {
 }
 
-func (SoundDataEventPause) isSoundDataEvent() {}
+func (*SoundDataEventPause) isSoundDataEvent() {}
 
 // Marshal reads or writes SoundDataEventPause using its canonical wire layout.
 func (x *SoundDataEventPause) Marshal(io IO) {

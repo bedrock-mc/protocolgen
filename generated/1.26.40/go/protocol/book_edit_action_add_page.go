@@ -8,7 +8,7 @@ type BookEditActionAddPage struct {
 	PhotoName string
 }
 
-func (BookEditActionAddPage) isBookEditAction() {}
+func (*BookEditActionAddPage) isBookEditAction() {}
 
 // Marshal reads or writes BookEditActionAddPage using its canonical wire layout.
 func (x *BookEditActionAddPage) Marshal(io IO) {

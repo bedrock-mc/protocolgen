@@ -7,7 +7,7 @@ type DataItemPos struct {
 	Value BlockPos
 }
 
-func (DataItemPos) isDataItemEntryValue() {}
+func (*DataItemPos) isDataItemEntryValue() {}
 
 // Marshal reads or writes DataItemPos using its canonical wire layout.
 func (x *DataItemPos) Marshal(io IO) {

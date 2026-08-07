@@ -14,11 +14,11 @@ func MarshalPlayerVideoCaptureAction(io IO, x *PlayerVideoCaptureAction) {
 			io.Uint8(&tag)
 			switch int64(tag) {
 			case 0:
-				var value PlayerVideoCaptureStopVideoCapture
+				value := new(PlayerVideoCaptureStopVideoCapture)
 				value.Marshal(io)
 				*x = value
 			case 1:
-				var value PlayerVideoCaptureStartVideoCapture
+				value := new(PlayerVideoCaptureStartVideoCapture)
 				value.Marshal(io)
 				*x = value
 			default:
@@ -27,11 +27,11 @@ func MarshalPlayerVideoCaptureAction(io IO, x *PlayerVideoCaptureAction) {
 		},
 		func() {
 			switch value := (*x).(type) {
-			case PlayerVideoCaptureStopVideoCapture:
+			case *PlayerVideoCaptureStopVideoCapture:
 				tag := uint8(0)
 				io.Uint8(&tag)
 				value.Marshal(io)
-			case PlayerVideoCaptureStartVideoCapture:
+			case *PlayerVideoCaptureStartVideoCapture:
 				tag := uint8(1)
 				io.Uint8(&tag)
 				value.Marshal(io)

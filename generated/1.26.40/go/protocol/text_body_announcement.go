@@ -6,7 +6,7 @@ type TextBodyAnnouncement struct {
 	Value TextAuthorAndMessage
 }
 
-func (TextBodyAnnouncement) isTextBody() {}
+func (*TextBodyAnnouncement) isTextBody() {}
 
 // Marshal reads or writes TextBodyAnnouncement using its canonical wire layout.
 func (x *TextBodyAnnouncement) Marshal(io IO) {

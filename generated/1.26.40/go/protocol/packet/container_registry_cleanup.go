@@ -10,9 +10,7 @@ type ContainerRegistryCleanup struct {
 
 // Marshal reads or writes ContainerRegistryCleanup using its canonical wire layout.
 func (x *ContainerRegistryCleanup) Marshal(io protocol.IO) {
-	protocol.FuncSlice(io, &x.RemovedContainers, io.Varuint32, func(value *protocol.FullContainerName) {
-		value.Marshal(io)
-	})
+	protocol.Slice(io, &x.RemovedContainers)
 }
 
 // ID returns the protocol ID for ContainerRegistryCleanup.

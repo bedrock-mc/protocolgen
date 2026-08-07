@@ -10,7 +10,5 @@ type AvailableCommandsOverloadData struct {
 // Marshal reads or writes AvailableCommandsOverloadData using its canonical wire layout.
 func (x *AvailableCommandsOverloadData) Marshal(io IO) {
 	io.Bool(&x.IsChaining)
-	FuncSlice(io, &x.ParameterData, io.Varuint32, func(value *AvailableCommandsParamData) {
-		value.Marshal(io)
-	})
+	Slice(io, &x.ParameterData)
 }

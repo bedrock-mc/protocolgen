@@ -12,7 +12,7 @@ type ItemReleaseInventoryTransaction struct {
 	FromPosition mgl32.Vec3
 }
 
-func (ItemReleaseInventoryTransaction) isInventoryTransactionTransactionValue() {}
+func (*ItemReleaseInventoryTransaction) isInventoryTransactionTransactionValue() {}
 
 // Marshal reads or writes ItemReleaseInventoryTransaction using its canonical wire layout.
 func (x *ItemReleaseInventoryTransaction) Marshal(io IO) {

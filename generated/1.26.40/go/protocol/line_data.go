@@ -8,7 +8,7 @@ type LineData struct {
 	LineEndLocation mgl32.Vec3
 }
 
-func (LineData) isPrimitiveShapeDataExtraShapeData() {}
+func (*LineData) isPrimitiveShapeDataExtraShapeData() {}
 
 // Marshal reads or writes LineData using its canonical wire layout.
 func (x *LineData) Marshal(io IO) {

@@ -8,7 +8,7 @@ type LegacyTelemetryEventBossKilled struct {
 	BossType    int32
 }
 
-func (LegacyTelemetryEventBossKilled) isLegacyTelemetryEventEventData() {}
+func (*LegacyTelemetryEventBossKilled) isLegacyTelemetryEventEventData() {}
 
 // Marshal reads or writes LegacyTelemetryEventBossKilled using its canonical wire layout.
 func (x *LegacyTelemetryEventBossKilled) Marshal(io IO) {

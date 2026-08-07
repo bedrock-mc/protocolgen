@@ -6,7 +6,7 @@ type ServerboundPackSettingChangePackSettingValueBool struct {
 	Value bool
 }
 
-func (ServerboundPackSettingChangePackSettingValueBool) isServerboundPackSettingChangePackSettingValue() {
+func (*ServerboundPackSettingChangePackSettingValueBool) isServerboundPackSettingChangePackSettingValue() {
 }
 
 // Marshal reads or writes ServerboundPackSettingChangePackSettingValueBool using its canonical wire layout.

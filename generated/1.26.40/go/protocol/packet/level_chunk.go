@@ -21,9 +21,7 @@ func (x *LevelChunk) Marshal(io protocol.IO) {
 	io.Varuint32(&x.SubChunksCount)
 	protocol.OptionalFunc(io, &x.ClientRequestSubChunkLimit, io.Varint32)
 	io.Bool(&x.CacheEnabled)
-	protocol.FuncSlice(io, &x.CacheMetadata, io.Varuint32, func(value *protocol.LevelChunkSubChunkMetadata) {
-		value.Marshal(io)
-	})
+	protocol.Slice(io, &x.CacheMetadata)
 	io.Bytes(&x.SerializedChunkData)
 }
 

@@ -7,7 +7,7 @@ type DisconnectPacketMessages struct {
 	FilteredMessage string
 }
 
-func (DisconnectPacketMessages) isDisconnectMessages() {}
+func (*DisconnectPacketMessages) isDisconnectMessages() {}
 
 // Marshal reads or writes DisconnectPacketMessages using its canonical wire layout.
 func (x *DisconnectPacketMessages) Marshal(io IO) {

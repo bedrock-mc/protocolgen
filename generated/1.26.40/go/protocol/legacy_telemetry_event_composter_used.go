@@ -7,7 +7,7 @@ type LegacyTelemetryEventComposterUsed struct {
 	ItemId               int32
 }
 
-func (LegacyTelemetryEventComposterUsed) isLegacyTelemetryEventEventData() {}
+func (*LegacyTelemetryEventComposterUsed) isLegacyTelemetryEventEventData() {}
 
 // Marshal reads or writes LegacyTelemetryEventComposterUsed using its canonical wire layout.
 func (x *LegacyTelemetryEventComposterUsed) Marshal(io IO) {

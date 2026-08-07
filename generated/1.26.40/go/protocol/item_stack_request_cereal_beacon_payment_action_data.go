@@ -8,7 +8,7 @@ type ItemStackRequestCerealBeaconPaymentActionData struct {
 	SecondaryEffectId int32
 }
 
-func (ItemStackRequestCerealBeaconPaymentActionData) isItemStackRequestCereal() {}
+func (*ItemStackRequestCerealBeaconPaymentActionData) isItemStackRequestCereal() {}
 
 // Marshal reads or writes ItemStackRequestCerealBeaconPaymentActionData using its canonical wire layout.
 func (x *ItemStackRequestCerealBeaconPaymentActionData) Marshal(io IO) {

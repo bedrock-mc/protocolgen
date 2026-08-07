@@ -6,7 +6,7 @@ type CerealDynamicValueString struct {
 	Value string
 }
 
-func (CerealDynamicValueString) isCerealDynamicValue() {}
+func (*CerealDynamicValueString) isCerealDynamicValue() {}
 
 // Marshal reads or writes CerealDynamicValueString using its canonical wire layout.
 func (x *CerealDynamicValueString) Marshal(io IO) {

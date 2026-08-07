@@ -6,7 +6,7 @@ type BedrockDDUIDataStoreRemoval struct {
 	DataStoreName string
 }
 
-func (BedrockDDUIDataStoreRemoval) isBedrockDDUI() {}
+func (*BedrockDDUIDataStoreRemoval) isBedrockDDUI() {}
 
 // Marshal reads or writes BedrockDDUIDataStoreRemoval using its canonical wire layout.
 func (x *BedrockDDUIDataStoreRemoval) Marshal(io IO) {

@@ -7,7 +7,7 @@ type SyncWorldClocksRemoveTimeMarkerData struct {
 	TimeMarkerIds []uint64
 }
 
-func (SyncWorldClocksRemoveTimeMarkerData) isSyncWorldClocksData() {}
+func (*SyncWorldClocksRemoveTimeMarkerData) isSyncWorldClocksData() {}
 
 // Marshal reads or writes SyncWorldClocksRemoveTimeMarkerData using its canonical wire layout.
 func (x *SyncWorldClocksRemoveTimeMarkerData) Marshal(io IO) {

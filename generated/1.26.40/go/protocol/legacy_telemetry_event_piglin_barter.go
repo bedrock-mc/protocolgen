@@ -7,7 +7,7 @@ type LegacyTelemetryEventPiglinBarter struct {
 	WasTargetingBarteringPlayer bool
 }
 
-func (LegacyTelemetryEventPiglinBarter) isLegacyTelemetryEventEventData() {}
+func (*LegacyTelemetryEventPiglinBarter) isLegacyTelemetryEventEventData() {}
 
 // Marshal reads or writes LegacyTelemetryEventPiglinBarter using its canonical wire layout.
 func (x *LegacyTelemetryEventPiglinBarter) Marshal(io IO) {

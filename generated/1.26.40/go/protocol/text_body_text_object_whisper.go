@@ -6,7 +6,7 @@ type TextBodyTextObjectWhisper struct {
 	Value TextMessageOnly
 }
 
-func (TextBodyTextObjectWhisper) isTextBody() {}
+func (*TextBodyTextObjectWhisper) isTextBody() {}
 
 // Marshal reads or writes TextBodyTextObjectWhisper using its canonical wire layout.
 func (x *TextBodyTextObjectWhisper) Marshal(io IO) {

@@ -9,10 +9,6 @@ type PropertySyncData struct {
 
 // Marshal reads or writes PropertySyncData using its canonical wire layout.
 func (x *PropertySyncData) Marshal(io IO) {
-	FuncSlice(io, &x.IntEntriesList, io.Varuint32, func(value *PropertySyncDataPropertySyncIntEntry) {
-		value.Marshal(io)
-	})
-	FuncSlice(io, &x.FloatEntriesList, io.Varuint32, func(value *PropertySyncDataPropertySyncFloatEntry) {
-		value.Marshal(io)
-	})
+	Slice(io, &x.IntEntriesList)
+	Slice(io, &x.FloatEntriesList)
 }

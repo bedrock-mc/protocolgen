@@ -9,7 +9,7 @@ type LegacyTelemetryEventItemUsed struct {
 	Count     int32
 }
 
-func (LegacyTelemetryEventItemUsed) isLegacyTelemetryEventEventData() {}
+func (*LegacyTelemetryEventItemUsed) isLegacyTelemetryEventEventData() {}
 
 // Marshal reads or writes LegacyTelemetryEventItemUsed using its canonical wire layout.
 func (x *LegacyTelemetryEventItemUsed) Marshal(io IO) {

@@ -10,7 +10,7 @@ type LegacyTelemetryEventInteraction struct {
 	InteractionActorColor   uint8
 }
 
-func (LegacyTelemetryEventInteraction) isLegacyTelemetryEventEventData() {}
+func (*LegacyTelemetryEventInteraction) isLegacyTelemetryEventEventData() {}
 
 // Marshal reads or writes LegacyTelemetryEventInteraction using its canonical wire layout.
 func (x *LegacyTelemetryEventInteraction) Marshal(io IO) {

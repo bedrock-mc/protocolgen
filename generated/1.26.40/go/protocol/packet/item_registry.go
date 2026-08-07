@@ -10,9 +10,7 @@ type ItemRegistry struct {
 
 // Marshal reads or writes ItemRegistry using its canonical wire layout.
 func (x *ItemRegistry) Marshal(io protocol.IO) {
-	protocol.FuncSlice(io, &x.ItemData, io.Varuint32, func(value *protocol.ItemData) {
-		value.Marshal(io)
-	})
+	protocol.Slice(io, &x.ItemData)
 }
 
 // ID returns the protocol ID for ItemRegistry.

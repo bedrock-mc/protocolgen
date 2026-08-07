@@ -7,7 +7,7 @@ type ResourcePackClientResponseDownloading struct {
 	DownloadingPacks []string
 }
 
-func (ResourcePackClientResponseDownloading) isResourcePackClientResponseResponse() {}
+func (*ResourcePackClientResponseDownloading) isResourcePackClientResponseResponse() {}
 
 // Marshal reads or writes ResourcePackClientResponseDownloading using its canonical wire layout.
 func (x *ResourcePackClientResponseDownloading) Marshal(io IO) {

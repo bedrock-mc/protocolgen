@@ -14,19 +14,19 @@ func MarshalPlayerUpdateEntityOverridesUpdate(io IO, x *PlayerUpdateEntityOverri
 			io.Uint8(&tag)
 			switch int64(tag) {
 			case 0:
-				var value PlayerUpdateEntityOverridesClearOverride
+				value := new(PlayerUpdateEntityOverridesClearOverride)
 				value.Marshal(io)
 				*x = value
 			case 1:
-				var value PlayerUpdateEntityOverridesRemoveOverride
+				value := new(PlayerUpdateEntityOverridesRemoveOverride)
 				value.Marshal(io)
 				*x = value
 			case 2:
-				var value PlayerUpdateEntityOverridesIntOverride
+				value := new(PlayerUpdateEntityOverridesIntOverride)
 				value.Marshal(io)
 				*x = value
 			case 3:
-				var value PlayerUpdateEntityOverridesFloatOverride
+				value := new(PlayerUpdateEntityOverridesFloatOverride)
 				value.Marshal(io)
 				*x = value
 			default:
@@ -35,19 +35,19 @@ func MarshalPlayerUpdateEntityOverridesUpdate(io IO, x *PlayerUpdateEntityOverri
 		},
 		func() {
 			switch value := (*x).(type) {
-			case PlayerUpdateEntityOverridesClearOverride:
+			case *PlayerUpdateEntityOverridesClearOverride:
 				tag := uint8(0)
 				io.Uint8(&tag)
 				value.Marshal(io)
-			case PlayerUpdateEntityOverridesRemoveOverride:
+			case *PlayerUpdateEntityOverridesRemoveOverride:
 				tag := uint8(1)
 				io.Uint8(&tag)
 				value.Marshal(io)
-			case PlayerUpdateEntityOverridesIntOverride:
+			case *PlayerUpdateEntityOverridesIntOverride:
 				tag := uint8(2)
 				io.Uint8(&tag)
 				value.Marshal(io)
-			case PlayerUpdateEntityOverridesFloatOverride:
+			case *PlayerUpdateEntityOverridesFloatOverride:
 				tag := uint8(3)
 				io.Uint8(&tag)
 				value.Marshal(io)

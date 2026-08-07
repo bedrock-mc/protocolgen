@@ -14,91 +14,91 @@ func MarshalLegacyTelemetryEventEventData(io IO, x *LegacyTelemetryEventEventDat
 			io.Varuint32(&tag)
 			switch int64(tag) {
 			case 0:
-				var value LegacyTelemetryEventAchievement
+				value := new(LegacyTelemetryEventAchievement)
 				value.Marshal(io)
 				*x = value
 			case 1:
-				var value LegacyTelemetryEventInteraction
+				value := new(LegacyTelemetryEventInteraction)
 				value.Marshal(io)
 				*x = value
 			case 2:
-				var value LegacyTelemetryEventPortalCreated
+				value := new(LegacyTelemetryEventPortalCreated)
 				value.Marshal(io)
 				*x = value
 			case 3:
-				var value LegacyTelemetryEventPortalUsed
+				value := new(LegacyTelemetryEventPortalUsed)
 				value.Marshal(io)
 				*x = value
 			case 4:
-				var value LegacyTelemetryEventMobKilled
+				value := new(LegacyTelemetryEventMobKilled)
 				value.Marshal(io)
 				*x = value
 			case 5:
-				var value LegacyTelemetryEventCauldronUsed
+				value := new(LegacyTelemetryEventCauldronUsed)
 				value.Marshal(io)
 				*x = value
 			case 6:
-				var value LegacyTelemetryEventPlayerDied
+				value := new(LegacyTelemetryEventPlayerDied)
 				value.Marshal(io)
 				*x = value
 			case 7:
-				var value LegacyTelemetryEventBossKilled
+				value := new(LegacyTelemetryEventBossKilled)
 				value.Marshal(io)
 				*x = value
 			case 8:
-				var value LegacyTelemetryEventSlashCommand
+				value := new(LegacyTelemetryEventSlashCommand)
 				value.Marshal(io)
 				*x = value
 			case 9:
-				var value LegacyTelemetryEventMobBorn
+				value := new(LegacyTelemetryEventMobBorn)
 				value.Marshal(io)
 				*x = value
 			case 10:
-				var value LegacyTelemetryEventPOICauldronUsed
+				value := new(LegacyTelemetryEventPOICauldronUsed)
 				value.Marshal(io)
 				*x = value
 			case 11:
-				var value LegacyTelemetryEventComposterUsed
+				value := new(LegacyTelemetryEventComposterUsed)
 				value.Marshal(io)
 				*x = value
 			case 12:
-				var value LegacyTelemetryEventBellUsed
+				value := new(LegacyTelemetryEventBellUsed)
 				value.Marshal(io)
 				*x = value
 			case 13:
-				var value LegacyTelemetryEventActorDefinition
+				value := new(LegacyTelemetryEventActorDefinition)
 				value.Marshal(io)
 				*x = value
 			case 14:
-				var value LegacyTelemetryEventRaidUpdate
+				value := new(LegacyTelemetryEventRaidUpdate)
 				value.Marshal(io)
 				*x = value
 			case 15:
-				var value LegacyTelemetryEventTargetBlockHit
+				value := new(LegacyTelemetryEventTargetBlockHit)
 				value.Marshal(io)
 				*x = value
 			case 16:
-				var value LegacyTelemetryEventPiglinBarter
+				value := new(LegacyTelemetryEventPiglinBarter)
 				value.Marshal(io)
 				*x = value
 			case 17:
-				var value LegacyTelemetryEventPlayerWaxedOrUnwaxedCopper
+				value := new(LegacyTelemetryEventPlayerWaxedOrUnwaxedCopper)
 				value.Marshal(io)
 				*x = value
 			case 18:
-				var value LegacyTelemetryEventCodeBuilderRuntimeAction
+				value := new(LegacyTelemetryEventCodeBuilderRuntimeAction)
 				value.Marshal(io)
 				*x = value
 			case 19:
-				var value LegacyTelemetryEventCodeBuilderScoreboard
+				value := new(LegacyTelemetryEventCodeBuilderScoreboard)
 				value.Marshal(io)
 				*x = value
 			case 20:
-				var value LegacyTelemetryEventItemUsed
+				value := new(LegacyTelemetryEventItemUsed)
 				value.Marshal(io)
 				*x = value
 			case 21:
-				var value LegacyTelemetryEventEmpty
+				value := new(LegacyTelemetryEventEmpty)
 				value.Marshal(io)
 				*x = value
 			default:
@@ -107,91 +107,91 @@ func MarshalLegacyTelemetryEventEventData(io IO, x *LegacyTelemetryEventEventDat
 		},
 		func() {
 			switch value := (*x).(type) {
-			case LegacyTelemetryEventAchievement:
+			case *LegacyTelemetryEventAchievement:
 				tag := uint32(0)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case LegacyTelemetryEventInteraction:
+			case *LegacyTelemetryEventInteraction:
 				tag := uint32(1)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case LegacyTelemetryEventPortalCreated:
+			case *LegacyTelemetryEventPortalCreated:
 				tag := uint32(2)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case LegacyTelemetryEventPortalUsed:
+			case *LegacyTelemetryEventPortalUsed:
 				tag := uint32(3)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case LegacyTelemetryEventMobKilled:
+			case *LegacyTelemetryEventMobKilled:
 				tag := uint32(4)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case LegacyTelemetryEventCauldronUsed:
+			case *LegacyTelemetryEventCauldronUsed:
 				tag := uint32(5)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case LegacyTelemetryEventPlayerDied:
+			case *LegacyTelemetryEventPlayerDied:
 				tag := uint32(6)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case LegacyTelemetryEventBossKilled:
+			case *LegacyTelemetryEventBossKilled:
 				tag := uint32(7)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case LegacyTelemetryEventSlashCommand:
+			case *LegacyTelemetryEventSlashCommand:
 				tag := uint32(8)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case LegacyTelemetryEventMobBorn:
+			case *LegacyTelemetryEventMobBorn:
 				tag := uint32(9)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case LegacyTelemetryEventPOICauldronUsed:
+			case *LegacyTelemetryEventPOICauldronUsed:
 				tag := uint32(10)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case LegacyTelemetryEventComposterUsed:
+			case *LegacyTelemetryEventComposterUsed:
 				tag := uint32(11)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case LegacyTelemetryEventBellUsed:
+			case *LegacyTelemetryEventBellUsed:
 				tag := uint32(12)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case LegacyTelemetryEventActorDefinition:
+			case *LegacyTelemetryEventActorDefinition:
 				tag := uint32(13)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case LegacyTelemetryEventRaidUpdate:
+			case *LegacyTelemetryEventRaidUpdate:
 				tag := uint32(14)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case LegacyTelemetryEventTargetBlockHit:
+			case *LegacyTelemetryEventTargetBlockHit:
 				tag := uint32(15)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case LegacyTelemetryEventPiglinBarter:
+			case *LegacyTelemetryEventPiglinBarter:
 				tag := uint32(16)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case LegacyTelemetryEventPlayerWaxedOrUnwaxedCopper:
+			case *LegacyTelemetryEventPlayerWaxedOrUnwaxedCopper:
 				tag := uint32(17)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case LegacyTelemetryEventCodeBuilderRuntimeAction:
+			case *LegacyTelemetryEventCodeBuilderRuntimeAction:
 				tag := uint32(18)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case LegacyTelemetryEventCodeBuilderScoreboard:
+			case *LegacyTelemetryEventCodeBuilderScoreboard:
 				tag := uint32(19)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case LegacyTelemetryEventItemUsed:
+			case *LegacyTelemetryEventItemUsed:
 				tag := uint32(20)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case LegacyTelemetryEventEmpty:
+			case *LegacyTelemetryEventEmpty:
 				tag := uint32(21)
 				io.Varuint32(&tag)
 				value.Marshal(io)

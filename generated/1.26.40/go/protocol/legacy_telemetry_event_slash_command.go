@@ -9,7 +9,7 @@ type LegacyTelemetryEventSlashCommand struct {
 	ErrorList    string
 }
 
-func (LegacyTelemetryEventSlashCommand) isLegacyTelemetryEventEventData() {}
+func (*LegacyTelemetryEventSlashCommand) isLegacyTelemetryEventEventData() {}
 
 // Marshal reads or writes LegacyTelemetryEventSlashCommand using its canonical wire layout.
 func (x *LegacyTelemetryEventSlashCommand) Marshal(io IO) {

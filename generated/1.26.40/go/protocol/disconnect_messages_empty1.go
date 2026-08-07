@@ -5,7 +5,7 @@ package protocol
 type DisconnectMessagesEmpty1 struct {
 }
 
-func (DisconnectMessagesEmpty1) isDisconnectMessages() {}
+func (*DisconnectMessagesEmpty1) isDisconnectMessages() {}
 
 // Marshal reads or writes DisconnectMessagesEmpty1 using its canonical wire layout.
 func (x *DisconnectMessagesEmpty1) Marshal(io IO) {

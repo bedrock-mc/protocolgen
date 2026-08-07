@@ -14,11 +14,11 @@ func MarshalPlayerListEntriesItem(io IO, x *PlayerListEntriesItem) {
 			io.Uint8(&tag)
 			switch int64(tag) {
 			case 0:
-				var value PlayerListAddEntry
+				value := new(PlayerListAddEntry)
 				value.Marshal(io)
 				*x = value
 			case 1:
-				var value PlayerListRemoveEntry
+				value := new(PlayerListRemoveEntry)
 				value.Marshal(io)
 				*x = value
 			default:
@@ -27,11 +27,11 @@ func MarshalPlayerListEntriesItem(io IO, x *PlayerListEntriesItem) {
 		},
 		func() {
 			switch value := (*x).(type) {
-			case PlayerListAddEntry:
+			case *PlayerListAddEntry:
 				tag := uint8(0)
 				io.Uint8(&tag)
 				value.Marshal(io)
-			case PlayerListRemoveEntry:
+			case *PlayerListRemoveEntry:
 				tag := uint8(1)
 				io.Uint8(&tag)
 				value.Marshal(io)

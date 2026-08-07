@@ -8,7 +8,7 @@ type ItemStackRequestCerealMoLangItemDescriptorData struct {
 	MolangVersion  MoLangVersion
 }
 
-func (ItemStackRequestCerealMoLangItemDescriptorData) isItemStackRequestCerealRecipeIngredientDataItemDescriptor() {
+func (*ItemStackRequestCerealMoLangItemDescriptorData) isItemStackRequestCerealRecipeIngredientDataItemDescriptor() {
 }
 
 // Marshal reads or writes ItemStackRequestCerealMoLangItemDescriptorData using its canonical wire layout.

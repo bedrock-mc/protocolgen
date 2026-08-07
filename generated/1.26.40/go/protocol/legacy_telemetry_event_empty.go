@@ -5,7 +5,7 @@ package protocol
 type LegacyTelemetryEventEmpty struct {
 }
 
-func (LegacyTelemetryEventEmpty) isLegacyTelemetryEventEventData() {}
+func (*LegacyTelemetryEventEmpty) isLegacyTelemetryEventEventData() {}
 
 // Marshal reads or writes LegacyTelemetryEventEmpty using its canonical wire layout.
 func (x *LegacyTelemetryEventEmpty) Marshal(io IO) {

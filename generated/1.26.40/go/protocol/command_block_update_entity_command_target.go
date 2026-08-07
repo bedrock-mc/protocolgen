@@ -6,7 +6,7 @@ type CommandBlockUpdateEntityCommandTarget struct {
 	TargetRuntimeID uint64
 }
 
-func (CommandBlockUpdateEntityCommandTarget) isCommandBlockUpdateTarget() {}
+func (*CommandBlockUpdateEntityCommandTarget) isCommandBlockUpdateTarget() {}
 
 // Marshal reads or writes CommandBlockUpdateEntityCommandTarget using its canonical wire layout.
 func (x *CommandBlockUpdateEntityCommandTarget) Marshal(io IO) {

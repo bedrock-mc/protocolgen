@@ -43,9 +43,7 @@ func (x *AddPlayer) Marshal(io protocol.IO) {
 	x.EntityData.Marshal(io)
 	x.SynchedProperties.Marshal(io)
 	x.AbilitiesData.Marshal(io)
-	protocol.FuncSlice(io, &x.ActorLinks, io.Varuint32, func(value *protocol.ActorLink) {
-		value.Marshal(io)
-	})
+	protocol.Slice(io, &x.ActorLinks)
 	io.String(&x.DeviceId)
 	protocol.IntegerFunc(&x.BuildPlatform, io.Int32)
 }

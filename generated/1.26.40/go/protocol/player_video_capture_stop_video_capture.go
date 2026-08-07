@@ -5,7 +5,7 @@ package protocol
 type PlayerVideoCaptureStopVideoCapture struct {
 }
 
-func (PlayerVideoCaptureStopVideoCapture) isPlayerVideoCaptureAction() {}
+func (*PlayerVideoCaptureStopVideoCapture) isPlayerVideoCaptureAction() {}
 
 // Marshal reads or writes PlayerVideoCaptureStopVideoCapture using its canonical wire layout.
 func (x *PlayerVideoCaptureStopVideoCapture) Marshal(io IO) {

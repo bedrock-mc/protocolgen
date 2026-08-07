@@ -14,51 +14,51 @@ func MarshalTextBody(io IO, x *TextBody) {
 			io.Uint8(&tag)
 			switch int64(tag) {
 			case 0:
-				var value TextMessageOnly
+				value := new(TextMessageOnly)
 				value.Marshal(io)
 				*x = value
 			case 1:
-				var value TextAuthorAndMessage
+				value := new(TextAuthorAndMessage)
 				value.Marshal(io)
 				*x = value
 			case 2:
-				var value TextMessageAndParams
+				value := new(TextMessageAndParams)
 				value.Marshal(io)
 				*x = value
 			case 3:
-				var value TextBodyPopup
+				value := new(TextBodyPopup)
 				value.Marshal(io)
 				*x = value
 			case 4:
-				var value TextBodyJukeboxPopup
+				value := new(TextBodyJukeboxPopup)
 				value.Marshal(io)
 				*x = value
 			case 5:
-				var value TextBodyTip
+				value := new(TextBodyTip)
 				value.Marshal(io)
 				*x = value
 			case 6:
-				var value TextBodySystemMessage
+				value := new(TextBodySystemMessage)
 				value.Marshal(io)
 				*x = value
 			case 7:
-				var value TextBodyWhisper
+				value := new(TextBodyWhisper)
 				value.Marshal(io)
 				*x = value
 			case 8:
-				var value TextBodyAnnouncement
+				value := new(TextBodyAnnouncement)
 				value.Marshal(io)
 				*x = value
 			case 9:
-				var value TextBodyTextObjectWhisper
+				value := new(TextBodyTextObjectWhisper)
 				value.Marshal(io)
 				*x = value
 			case 10:
-				var value TextBodyTextObject
+				value := new(TextBodyTextObject)
 				value.Marshal(io)
 				*x = value
 			case 11:
-				var value TextBodyTextObjectAnnouncement
+				value := new(TextBodyTextObjectAnnouncement)
 				value.Marshal(io)
 				*x = value
 			default:
@@ -67,51 +67,51 @@ func MarshalTextBody(io IO, x *TextBody) {
 		},
 		func() {
 			switch value := (*x).(type) {
-			case TextMessageOnly:
+			case *TextMessageOnly:
 				tag := uint8(0)
 				io.Uint8(&tag)
 				value.Marshal(io)
-			case TextAuthorAndMessage:
+			case *TextAuthorAndMessage:
 				tag := uint8(1)
 				io.Uint8(&tag)
 				value.Marshal(io)
-			case TextMessageAndParams:
+			case *TextMessageAndParams:
 				tag := uint8(2)
 				io.Uint8(&tag)
 				value.Marshal(io)
-			case TextBodyPopup:
+			case *TextBodyPopup:
 				tag := uint8(3)
 				io.Uint8(&tag)
 				value.Marshal(io)
-			case TextBodyJukeboxPopup:
+			case *TextBodyJukeboxPopup:
 				tag := uint8(4)
 				io.Uint8(&tag)
 				value.Marshal(io)
-			case TextBodyTip:
+			case *TextBodyTip:
 				tag := uint8(5)
 				io.Uint8(&tag)
 				value.Marshal(io)
-			case TextBodySystemMessage:
+			case *TextBodySystemMessage:
 				tag := uint8(6)
 				io.Uint8(&tag)
 				value.Marshal(io)
-			case TextBodyWhisper:
+			case *TextBodyWhisper:
 				tag := uint8(7)
 				io.Uint8(&tag)
 				value.Marshal(io)
-			case TextBodyAnnouncement:
+			case *TextBodyAnnouncement:
 				tag := uint8(8)
 				io.Uint8(&tag)
 				value.Marshal(io)
-			case TextBodyTextObjectWhisper:
+			case *TextBodyTextObjectWhisper:
 				tag := uint8(9)
 				io.Uint8(&tag)
 				value.Marshal(io)
-			case TextBodyTextObject:
+			case *TextBodyTextObject:
 				tag := uint8(10)
 				io.Uint8(&tag)
 				value.Marshal(io)
-			case TextBodyTextObjectAnnouncement:
+			case *TextBodyTextObjectAnnouncement:
 				tag := uint8(11)
 				io.Uint8(&tag)
 				value.Marshal(io)

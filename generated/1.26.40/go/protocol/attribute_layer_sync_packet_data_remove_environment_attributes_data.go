@@ -8,7 +8,8 @@ type AttributeLayerSyncPacketDataRemoveEnvironmentAttributesData struct {
 	Attributes              []string
 }
 
-func (AttributeLayerSyncPacketDataRemoveEnvironmentAttributesData) isAttributeLayerSyncPacketData() {}
+func (*AttributeLayerSyncPacketDataRemoveEnvironmentAttributesData) isAttributeLayerSyncPacketData() {
+}
 
 // Marshal reads or writes AttributeLayerSyncPacketDataRemoveEnvironmentAttributesData using its canonical wire layout.
 func (x *AttributeLayerSyncPacketDataRemoveEnvironmentAttributesData) Marshal(io IO) {

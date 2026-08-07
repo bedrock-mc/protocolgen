@@ -14,11 +14,11 @@ func MarshalCommandBlockUpdateTarget(io IO, x *CommandBlockUpdateTarget) {
 			io.Varuint32(&tag)
 			switch int64(tag) {
 			case 0:
-				var value CommandBlockUpdateEntityCommandTarget
+				value := new(CommandBlockUpdateEntityCommandTarget)
 				value.Marshal(io)
 				*x = value
 			case 1:
-				var value CommandBlockUpdateBlockCommandData
+				value := new(CommandBlockUpdateBlockCommandData)
 				value.Marshal(io)
 				*x = value
 			default:
@@ -27,11 +27,11 @@ func MarshalCommandBlockUpdateTarget(io IO, x *CommandBlockUpdateTarget) {
 		},
 		func() {
 			switch value := (*x).(type) {
-			case CommandBlockUpdateEntityCommandTarget:
+			case *CommandBlockUpdateEntityCommandTarget:
 				tag := uint32(0)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case CommandBlockUpdateBlockCommandData:
+			case *CommandBlockUpdateBlockCommandData:
 				tag := uint32(1)
 				io.Varuint32(&tag)
 				value.Marshal(io)

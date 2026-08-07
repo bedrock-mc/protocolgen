@@ -7,7 +7,7 @@ type SoundDataEventFade struct {
 	TargetVolume float32
 }
 
-func (SoundDataEventFade) isSoundDataEvent() {}
+func (*SoundDataEventFade) isSoundDataEvent() {}
 
 // Marshal reads or writes SoundDataEventFade using its canonical wire layout.
 func (x *SoundDataEventFade) Marshal(io IO) {

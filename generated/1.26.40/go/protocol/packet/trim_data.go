@@ -11,12 +11,8 @@ type TrimData struct {
 
 // Marshal reads or writes TrimData using its canonical wire layout.
 func (x *TrimData) Marshal(io protocol.IO) {
-	protocol.FuncSlice(io, &x.TrimPatternList, io.Varuint32, func(value *protocol.TrimPattern) {
-		value.Marshal(io)
-	})
-	protocol.FuncSlice(io, &x.TrimMaterialList, io.Varuint32, func(value *protocol.TrimMaterial) {
-		value.Marshal(io)
-	})
+	protocol.Slice(io, &x.TrimPatternList)
+	protocol.Slice(io, &x.TrimMaterialList)
 }
 
 // ID returns the protocol ID for TrimData.

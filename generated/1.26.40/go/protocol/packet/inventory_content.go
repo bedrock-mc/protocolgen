@@ -14,9 +14,7 @@ type InventoryContent struct {
 // Marshal reads or writes InventoryContent using its canonical wire layout.
 func (x *InventoryContent) Marshal(io protocol.IO) {
 	io.Varuint32(&x.ContainerId)
-	protocol.FuncSlice(io, &x.Slots, io.Varuint32, func(value *protocol.CerealizerNetworkItemStackDescriptorSerializedData) {
-		value.Marshal(io)
-	})
+	protocol.Slice(io, &x.Slots)
 	x.FullContainerName.Marshal(io)
 	x.StorageItem.Marshal(io)
 }

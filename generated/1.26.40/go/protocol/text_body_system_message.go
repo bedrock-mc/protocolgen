@@ -6,7 +6,7 @@ type TextBodySystemMessage struct {
 	Value TextMessageOnly
 }
 
-func (TextBodySystemMessage) isTextBody() {}
+func (*TextBodySystemMessage) isTextBody() {}
 
 // Marshal reads or writes TextBodySystemMessage using its canonical wire layout.
 func (x *TextBodySystemMessage) Marshal(io IO) {

@@ -9,7 +9,7 @@ type ItemStackRequestCerealMineBlockActionData struct {
 	NetIdVariant        int32
 }
 
-func (ItemStackRequestCerealMineBlockActionData) isItemStackRequestCereal() {}
+func (*ItemStackRequestCerealMineBlockActionData) isItemStackRequestCereal() {}
 
 // Marshal reads or writes ItemStackRequestCerealMineBlockActionData using its canonical wire layout.
 func (x *ItemStackRequestCerealMineBlockActionData) Marshal(io IO) {

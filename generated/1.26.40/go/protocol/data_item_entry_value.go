@@ -14,39 +14,39 @@ func MarshalDataItemEntryValue(io IO, x *DataItemEntryValue) {
 			io.Uint8(&tag)
 			switch int64(tag) {
 			case 0:
-				var value DataItemByte
+				value := new(DataItemByte)
 				value.Marshal(io)
 				*x = value
 			case 1:
-				var value DataItemShort
+				value := new(DataItemShort)
 				value.Marshal(io)
 				*x = value
 			case 2:
-				var value DataItemInt
+				value := new(DataItemInt)
 				value.Marshal(io)
 				*x = value
 			case 3:
-				var value DataItemFloat
+				value := new(DataItemFloat)
 				value.Marshal(io)
 				*x = value
 			case 4:
-				var value DataItemString
+				value := new(DataItemString)
 				value.Marshal(io)
 				*x = value
 			case 5:
-				var value DataItemCompoundTag
+				value := new(DataItemCompoundTag)
 				value.Marshal(io)
 				*x = value
 			case 6:
-				var value DataItemPos
+				value := new(DataItemPos)
 				value.Marshal(io)
 				*x = value
 			case 7:
-				var value DataItemInt64
+				value := new(DataItemInt64)
 				value.Marshal(io)
 				*x = value
 			case 8:
-				var value DataItemVec3
+				value := new(DataItemVec3)
 				value.Marshal(io)
 				*x = value
 			default:
@@ -55,39 +55,39 @@ func MarshalDataItemEntryValue(io IO, x *DataItemEntryValue) {
 		},
 		func() {
 			switch value := (*x).(type) {
-			case DataItemByte:
+			case *DataItemByte:
 				tag := uint8(0)
 				io.Uint8(&tag)
 				value.Marshal(io)
-			case DataItemShort:
+			case *DataItemShort:
 				tag := uint8(1)
 				io.Uint8(&tag)
 				value.Marshal(io)
-			case DataItemInt:
+			case *DataItemInt:
 				tag := uint8(2)
 				io.Uint8(&tag)
 				value.Marshal(io)
-			case DataItemFloat:
+			case *DataItemFloat:
 				tag := uint8(3)
 				io.Uint8(&tag)
 				value.Marshal(io)
-			case DataItemString:
+			case *DataItemString:
 				tag := uint8(4)
 				io.Uint8(&tag)
 				value.Marshal(io)
-			case DataItemCompoundTag:
+			case *DataItemCompoundTag:
 				tag := uint8(5)
 				io.Uint8(&tag)
 				value.Marshal(io)
-			case DataItemPos:
+			case *DataItemPos:
 				tag := uint8(6)
 				io.Uint8(&tag)
 				value.Marshal(io)
-			case DataItemInt64:
+			case *DataItemInt64:
 				tag := uint8(7)
 				io.Uint8(&tag)
 				value.Marshal(io)
-			case DataItemVec3:
+			case *DataItemVec3:
 				tag := uint8(8)
 				io.Uint8(&tag)
 				value.Marshal(io)

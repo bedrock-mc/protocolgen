@@ -22,7 +22,7 @@ type PlayerListAddEntry struct {
 	PlayerColor      color.RGBA
 }
 
-func (PlayerListAddEntry) isPlayerListEntriesItem() {}
+func (*PlayerListAddEntry) isPlayerListEntriesItem() {}
 
 // Marshal reads or writes PlayerListAddEntry using its canonical wire layout.
 func (x *PlayerListAddEntry) Marshal(io IO) {

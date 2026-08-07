@@ -10,7 +10,5 @@ type MaterialReducerDataEntry struct {
 // Marshal reads or writes MaterialReducerDataEntry using its canonical wire layout.
 func (x *MaterialReducerDataEntry) Marshal(io IO) {
 	io.Varint32(&x.FromItemKey)
-	FuncSlice(io, &x.ItemIdsAndCounts, io.Varuint32, func(value *MaterialReducerEntryOutput) {
-		value.Marshal(io)
-	})
+	Slice(io, &x.ItemIdsAndCounts)
 }

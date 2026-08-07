@@ -14,11 +14,11 @@ func MarshalPlayerLocationLocation(io IO, x *PlayerLocationLocation) {
 			io.Varuint32(&tag)
 			switch int64(tag) {
 			case 0:
-				var value PlayerLocationCoordinatesLocation
+				value := new(PlayerLocationCoordinatesLocation)
 				value.Marshal(io)
 				*x = value
 			case 1:
-				var value PlayerLocationHiddenLocation
+				value := new(PlayerLocationHiddenLocation)
 				value.Marshal(io)
 				*x = value
 			default:
@@ -27,11 +27,11 @@ func MarshalPlayerLocationLocation(io IO, x *PlayerLocationLocation) {
 		},
 		func() {
 			switch value := (*x).(type) {
-			case PlayerLocationCoordinatesLocation:
+			case *PlayerLocationCoordinatesLocation:
 				tag := uint32(0)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case PlayerLocationHiddenLocation:
+			case *PlayerLocationHiddenLocation:
 				tag := uint32(1)
 				io.Varuint32(&tag)
 				value.Marshal(io)

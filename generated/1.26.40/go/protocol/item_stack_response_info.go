@@ -13,8 +13,6 @@ func (x *ItemStackResponseInfo) Marshal(io IO) {
 	IntegerFunc(&x.Result, io.Uint8)
 	x.ClientRequestId.Marshal(io)
 	DoubleOptionalFunc(io, &x.Containers, func(value *[]ItemStackResponseContainerInfo) {
-		FuncSlice(io, value, io.Varuint32, func(value *ItemStackResponseContainerInfo) {
-			value.Marshal(io)
-		})
+		Slice(io, value)
 	})
 }

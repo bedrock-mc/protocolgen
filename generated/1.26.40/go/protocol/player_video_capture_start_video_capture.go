@@ -7,7 +7,7 @@ type PlayerVideoCaptureStartVideoCapture struct {
 	FilePrefix string
 }
 
-func (PlayerVideoCaptureStartVideoCapture) isPlayerVideoCaptureAction() {}
+func (*PlayerVideoCaptureStartVideoCapture) isPlayerVideoCaptureAction() {}
 
 // Marshal reads or writes PlayerVideoCaptureStartVideoCapture using its canonical wire layout.
 func (x *PlayerVideoCaptureStartVideoCapture) Marshal(io IO) {

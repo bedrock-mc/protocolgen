@@ -14,7 +14,5 @@ func (x *SerializedAbilitiesData) Marshal(io IO) {
 	io.Int64(&x.TargetPlayerRawId)
 	IntegerFunc(&x.PlayerPermissions, io.Int8)
 	IntegerFunc(&x.CommandPermissions, io.Uint8)
-	FuncSlice(io, &x.Layers, io.Varuint32, func(value *SerializedAbilitiesDataSerializedLayer) {
-		value.Marshal(io)
-	})
+	Slice(io, &x.Layers)
 }

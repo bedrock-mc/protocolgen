@@ -8,7 +8,7 @@ type LegacyTelemetryEventCauldronUsed struct {
 	FillLevel     int32
 }
 
-func (LegacyTelemetryEventCauldronUsed) isLegacyTelemetryEventEventData() {}
+func (*LegacyTelemetryEventCauldronUsed) isLegacyTelemetryEventEventData() {}
 
 // Marshal reads or writes LegacyTelemetryEventCauldronUsed using its canonical wire layout.
 func (x *LegacyTelemetryEventCauldronUsed) Marshal(io IO) {

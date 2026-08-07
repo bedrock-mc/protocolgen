@@ -23,12 +23,8 @@ func (x *ShapedRecipe) Marshal(io IO) {
 	io.String(&x.RecipeId)
 	io.Varint32(&x.Width)
 	io.Varint32(&x.Height)
-	FuncSlice(io, &x.Ingredients, io.Varuint32, func(value *CerealizerRecipeIngredientSerializedData) {
-		value.Marshal(io)
-	})
-	FuncSlice(io, &x.Results, io.Varuint32, func(value *CerealizerNetworkItemInstanceDescriptorSerializedData) {
-		value.Marshal(io)
-	})
+	Slice(io, &x.Ingredients)
+	Slice(io, &x.Results)
 	io.UUID(&x.UUID)
 	io.String(&x.Tag)
 	io.Varint32(&x.Priority)

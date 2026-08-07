@@ -6,7 +6,7 @@ type TextMessageOnly struct {
 	Message string
 }
 
-func (TextMessageOnly) isTextBody() {}
+func (*TextMessageOnly) isTextBody() {}
 
 // Marshal reads or writes TextMessageOnly using its canonical wire layout.
 func (x *TextMessageOnly) Marshal(io IO) {

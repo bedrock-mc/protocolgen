@@ -8,7 +8,5 @@ type GameRulesChangedPacketData struct {
 
 // Marshal reads or writes GameRulesChangedPacketData using its canonical wire layout.
 func (x *GameRulesChangedPacketData) Marshal(io IO) {
-	FuncSlice(io, &x.RulesList, io.Varuint32, func(value *GameRule) {
-		value.Marshal(io)
-	})
+	Slice(io, &x.RulesList)
 }

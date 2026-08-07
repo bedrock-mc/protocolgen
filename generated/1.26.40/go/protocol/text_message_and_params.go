@@ -7,7 +7,7 @@ type TextMessageAndParams struct {
 	ParameterList []string
 }
 
-func (TextMessageAndParams) isTextBody() {}
+func (*TextMessageAndParams) isTextBody() {}
 
 // Marshal reads or writes TextMessageAndParams using its canonical wire layout.
 func (x *TextMessageAndParams) Marshal(io IO) {

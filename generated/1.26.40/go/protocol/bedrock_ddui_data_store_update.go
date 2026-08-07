@@ -11,7 +11,7 @@ type BedrockDDUIDataStoreUpdate struct {
 	PathUpdateCount     uint32
 }
 
-func (BedrockDDUIDataStoreUpdate) isBedrockDDUI() {}
+func (*BedrockDDUIDataStoreUpdate) isBedrockDDUI() {}
 
 // Marshal reads or writes BedrockDDUIDataStoreUpdate using its canonical wire layout.
 func (x *BedrockDDUIDataStoreUpdate) Marshal(io IO) {

@@ -6,7 +6,7 @@ type BedrockDDUIDataStoreUpdateDataString struct {
 	Value string
 }
 
-func (BedrockDDUIDataStoreUpdateDataString) isBedrockDDUIDataStoreUpdateData() {}
+func (*BedrockDDUIDataStoreUpdateDataString) isBedrockDDUIDataStoreUpdateData() {}
 
 // Marshal reads or writes BedrockDDUIDataStoreUpdateDataString using its canonical wire layout.
 func (x *BedrockDDUIDataStoreUpdateDataString) Marshal(io IO) {

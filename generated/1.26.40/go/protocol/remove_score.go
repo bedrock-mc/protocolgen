@@ -8,7 +8,7 @@ type RemoveScore struct {
 	ObjectiveName Optional[string]
 }
 
-func (RemoveScore) isSetScoreScoreInfoItem() {}
+func (*RemoveScore) isSetScoreScoreInfoItem() {}
 
 // Marshal reads or writes RemoveScore using its canonical wire layout.
 func (x *RemoveScore) Marshal(io IO) {

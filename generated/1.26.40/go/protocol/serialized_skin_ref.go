@@ -35,9 +35,7 @@ func (x *SerializedSkinRef) Marshal(io IO) {
 	io.String(&x.PlayFabID)
 	io.String(&x.ResourcePatch)
 	x.ImageData.Marshal(io)
-	FuncSlice(io, &x.AnimatedImageData, io.Varuint32, func(value *AnimatedImageData) {
-		value.Marshal(io)
-	})
+	Slice(io, &x.AnimatedImageData)
 	x.CapeImageData.Marshal(io)
 	io.String(&x.GeometryData)
 	io.String(&x.GeometryDataMinEngineVersion)
@@ -46,9 +44,7 @@ func (x *SerializedSkinRef) Marshal(io IO) {
 	io.String(&x.FullID)
 	IntegerFunc(&x.ArmSize, io.Uint8)
 	io.RGBA(&x.SkinColor)
-	FuncSlice(io, &x.PersonaPieces, io.Varuint32, func(value *SerializedPersonaPieceHandle) {
-		value.Marshal(io)
-	})
+	Slice(io, &x.PersonaPieces)
 	OrderedMap(io, &x.PieceTintColors, io.Varuint32, io.String, func(value *TintMapColor) {
 		value.Marshal(io)
 	})

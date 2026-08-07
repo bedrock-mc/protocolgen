@@ -20,21 +20,11 @@ func (x *AvailableCommands) Marshal(io protocol.IO) {
 	protocol.FuncSlice(io, &x.EnumValues, io.Varuint32, io.String)
 	protocol.FuncSlice(io, &x.ChainedSubcommandValues, io.Varuint32, io.String)
 	protocol.FuncSlice(io, &x.PostFixes, io.Varuint32, io.String)
-	protocol.FuncSlice(io, &x.EnumData, io.Varuint32, func(value *protocol.AvailableCommandsEnumData) {
-		value.Marshal(io)
-	})
-	protocol.FuncSlice(io, &x.ChainedSubcommandData, io.Varuint32, func(value *protocol.AvailableCommandsChainedSubcommandData) {
-		value.Marshal(io)
-	})
-	protocol.FuncSlice(io, &x.Commands, io.Varuint32, func(value *protocol.AvailableCommandsPacketCommandData) {
-		value.Marshal(io)
-	})
-	protocol.FuncSlice(io, &x.SoftEnums, io.Varuint32, func(value *protocol.AvailableCommandsSoftEnumData) {
-		value.Marshal(io)
-	})
-	protocol.FuncSlice(io, &x.Constraints, io.Varuint32, func(value *protocol.AvailableCommandsConstrainedValueData) {
-		value.Marshal(io)
-	})
+	protocol.Slice(io, &x.EnumData)
+	protocol.Slice(io, &x.ChainedSubcommandData)
+	protocol.Slice(io, &x.Commands)
+	protocol.Slice(io, &x.SoftEnums)
+	protocol.Slice(io, &x.Constraints)
 }
 
 // ID returns the protocol ID for AvailableCommands.

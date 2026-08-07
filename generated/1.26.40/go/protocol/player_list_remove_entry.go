@@ -8,7 +8,7 @@ type PlayerListRemoveEntry struct {
 	UUID uuid.UUID
 }
 
-func (PlayerListRemoveEntry) isPlayerListEntriesItem() {}
+func (*PlayerListRemoveEntry) isPlayerListEntriesItem() {}
 
 // Marshal reads or writes PlayerListRemoveEntry using its canonical wire layout.
 func (x *PlayerListRemoveEntry) Marshal(io IO) {

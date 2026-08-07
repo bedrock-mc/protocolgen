@@ -8,7 +8,7 @@ type ItemStackRequestCerealCraftCreativeActionData struct {
 	NumberOfRequestedCrafts uint8
 }
 
-func (ItemStackRequestCerealCraftCreativeActionData) isItemStackRequestCereal() {}
+func (*ItemStackRequestCerealCraftCreativeActionData) isItemStackRequestCereal() {}
 
 // Marshal reads or writes ItemStackRequestCerealCraftCreativeActionData using its canonical wire layout.
 func (x *ItemStackRequestCerealCraftCreativeActionData) Marshal(io IO) {

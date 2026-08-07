@@ -6,7 +6,7 @@ type CerealDynamicValueMap struct {
 	Value []OrderedEntry[string, CerealDynamicValue]
 }
 
-func (CerealDynamicValueMap) isCerealDynamicValue() {}
+func (*CerealDynamicValueMap) isCerealDynamicValue() {}
 
 // Marshal reads or writes CerealDynamicValueMap using its canonical wire layout.
 func (x *CerealDynamicValueMap) Marshal(io IO) {

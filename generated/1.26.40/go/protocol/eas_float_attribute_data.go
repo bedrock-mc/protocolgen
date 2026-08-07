@@ -9,7 +9,7 @@ type EASFloatAttributeData struct {
 	ConstraintMax Optional[float32]
 }
 
-func (EASFloatAttributeData) isEAS() {}
+func (*EASFloatAttributeData) isEAS() {}
 
 // Marshal reads or writes EASFloatAttributeData using its canonical wire layout.
 func (x *EASFloatAttributeData) Marshal(io IO) {

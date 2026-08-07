@@ -9,7 +9,7 @@ type DataItemVec3 struct {
 	Value mgl32.Vec3
 }
 
-func (DataItemVec3) isDataItemEntryValue() {}
+func (*DataItemVec3) isDataItemEntryValue() {}
 
 // Marshal reads or writes DataItemVec3 using its canonical wire layout.
 func (x *DataItemVec3) Marshal(io IO) {

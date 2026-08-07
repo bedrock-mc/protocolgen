@@ -11,8 +11,6 @@ type BiomeNoiseGradientSurfaceData struct {
 // Marshal reads or writes BiomeNoiseGradientSurfaceData using its canonical wire layout.
 func (x *BiomeNoiseGradientSurfaceData) Marshal(io IO) {
 	FuncSlice(io, &x.NonReplaceableBlocks, io.Varuint32, io.Uint32)
-	FuncSlice(io, &x.GradientBlocks, io.Varuint32, func(value *SerializedNoiseBlockSpecifier) {
-		value.Marshal(io)
-	})
+	Slice(io, &x.GradientBlocks)
 	x.Noise.Marshal(io)
 }

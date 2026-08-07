@@ -8,7 +8,7 @@ type LegacyTelemetryEventMobBorn struct {
 	BornBabyColor         uint8
 }
 
-func (LegacyTelemetryEventMobBorn) isLegacyTelemetryEventEventData() {}
+func (*LegacyTelemetryEventMobBorn) isLegacyTelemetryEventEventData() {}
 
 // Marshal reads or writes LegacyTelemetryEventMobBorn using its canonical wire layout.
 func (x *LegacyTelemetryEventMobBorn) Marshal(io IO) {

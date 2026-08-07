@@ -7,7 +7,7 @@ type LegacyTelemetryEventCodeBuilderScoreboard struct {
 	Score         int32
 }
 
-func (LegacyTelemetryEventCodeBuilderScoreboard) isLegacyTelemetryEventEventData() {}
+func (*LegacyTelemetryEventCodeBuilderScoreboard) isLegacyTelemetryEventEventData() {}
 
 // Marshal reads or writes LegacyTelemetryEventCodeBuilderScoreboard using its canonical wire layout.
 func (x *LegacyTelemetryEventCodeBuilderScoreboard) Marshal(io IO) {

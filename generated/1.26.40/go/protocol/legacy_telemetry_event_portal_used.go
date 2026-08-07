@@ -7,7 +7,7 @@ type LegacyTelemetryEventPortalUsed struct {
 	TargetDimensionID int32
 }
 
-func (LegacyTelemetryEventPortalUsed) isLegacyTelemetryEventEventData() {}
+func (*LegacyTelemetryEventPortalUsed) isLegacyTelemetryEventEventData() {}
 
 // Marshal reads or writes LegacyTelemetryEventPortalUsed using its canonical wire layout.
 func (x *LegacyTelemetryEventPortalUsed) Marshal(io IO) {

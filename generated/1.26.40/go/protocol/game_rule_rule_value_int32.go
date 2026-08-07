@@ -6,7 +6,7 @@ type GameRuleRuleValueInt32 struct {
 	Value int32
 }
 
-func (GameRuleRuleValueInt32) isGameRuleRuleValue() {}
+func (*GameRuleRuleValueInt32) isGameRuleRuleValue() {}
 
 // Marshal reads or writes GameRuleRuleValueInt32 using its canonical wire layout.
 func (x *GameRuleRuleValueInt32) Marshal(io IO) {

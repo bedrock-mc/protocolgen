@@ -14,19 +14,19 @@ func MarshalResourcePackClientResponseResponse(io IO, x *ResourcePackClientRespo
 			io.Int8(&tag)
 			switch int64(tag) {
 			case 1:
-				var value ResourcePackClientResponseCancel
+				value := new(ResourcePackClientResponseCancel)
 				value.Marshal(io)
 				*x = value
 			case 2:
-				var value ResourcePackClientResponseDownloading
+				value := new(ResourcePackClientResponseDownloading)
 				value.Marshal(io)
 				*x = value
 			case 3:
-				var value ResourcePackClientResponseDownloadingFinished
+				value := new(ResourcePackClientResponseDownloadingFinished)
 				value.Marshal(io)
 				*x = value
 			case 4:
-				var value ResourcePackClientResponseResourcePackStackFinished
+				value := new(ResourcePackClientResponseResourcePackStackFinished)
 				value.Marshal(io)
 				*x = value
 			default:
@@ -35,19 +35,19 @@ func MarshalResourcePackClientResponseResponse(io IO, x *ResourcePackClientRespo
 		},
 		func() {
 			switch value := (*x).(type) {
-			case ResourcePackClientResponseCancel:
+			case *ResourcePackClientResponseCancel:
 				tag := int8(1)
 				io.Int8(&tag)
 				value.Marshal(io)
-			case ResourcePackClientResponseDownloading:
+			case *ResourcePackClientResponseDownloading:
 				tag := int8(2)
 				io.Int8(&tag)
 				value.Marshal(io)
-			case ResourcePackClientResponseDownloadingFinished:
+			case *ResourcePackClientResponseDownloadingFinished:
 				tag := int8(3)
 				io.Int8(&tag)
 				value.Marshal(io)
-			case ResourcePackClientResponseResourcePackStackFinished:
+			case *ResourcePackClientResponseResourcePackStackFinished:
 				tag := int8(4)
 				io.Int8(&tag)
 				value.Marshal(io)

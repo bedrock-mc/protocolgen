@@ -9,10 +9,6 @@ type UpdateSubChunkBlocksChangedInfo struct {
 
 // Marshal reads or writes UpdateSubChunkBlocksChangedInfo using its canonical wire layout.
 func (x *UpdateSubChunkBlocksChangedInfo) Marshal(io IO) {
-	FuncSlice(io, &x.BlocksChangedStandards, io.Varuint32, func(value *UpdateSubChunkNetworkBlockInfo) {
-		value.Marshal(io)
-	})
-	FuncSlice(io, &x.BlocksChangedExtras, io.Varuint32, func(value *UpdateSubChunkNetworkBlockInfo) {
-		value.Marshal(io)
-	})
+	Slice(io, &x.BlocksChangedStandards)
+	Slice(io, &x.BlocksChangedExtras)
 }

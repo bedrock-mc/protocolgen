@@ -14,19 +14,19 @@ func MarshalAttributeLayerSyncPacketData(io IO, x *AttributeLayerSyncPacketData)
 			io.Varuint32(&tag)
 			switch int64(tag) {
 			case 0:
-				var value AttributeLayerSyncPacketDataUpdateAttributeLayersData
+				value := new(AttributeLayerSyncPacketDataUpdateAttributeLayersData)
 				value.Marshal(io)
 				*x = value
 			case 1:
-				var value AttributeLayerSyncPacketDataUpdateAttributeLayerSettingsData
+				value := new(AttributeLayerSyncPacketDataUpdateAttributeLayerSettingsData)
 				value.Marshal(io)
 				*x = value
 			case 2:
-				var value AttributeLayerSyncPacketDataUpdateEnvironmentAttributesData
+				value := new(AttributeLayerSyncPacketDataUpdateEnvironmentAttributesData)
 				value.Marshal(io)
 				*x = value
 			case 3:
-				var value AttributeLayerSyncPacketDataRemoveEnvironmentAttributesData
+				value := new(AttributeLayerSyncPacketDataRemoveEnvironmentAttributesData)
 				value.Marshal(io)
 				*x = value
 			default:
@@ -35,19 +35,19 @@ func MarshalAttributeLayerSyncPacketData(io IO, x *AttributeLayerSyncPacketData)
 		},
 		func() {
 			switch value := (*x).(type) {
-			case AttributeLayerSyncPacketDataUpdateAttributeLayersData:
+			case *AttributeLayerSyncPacketDataUpdateAttributeLayersData:
 				tag := uint32(0)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case AttributeLayerSyncPacketDataUpdateAttributeLayerSettingsData:
+			case *AttributeLayerSyncPacketDataUpdateAttributeLayerSettingsData:
 				tag := uint32(1)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case AttributeLayerSyncPacketDataUpdateEnvironmentAttributesData:
+			case *AttributeLayerSyncPacketDataUpdateEnvironmentAttributesData:
 				tag := uint32(2)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case AttributeLayerSyncPacketDataRemoveEnvironmentAttributesData:
+			case *AttributeLayerSyncPacketDataRemoveEnvironmentAttributesData:
 				tag := uint32(3)
 				io.Varuint32(&tag)
 				value.Marshal(io)

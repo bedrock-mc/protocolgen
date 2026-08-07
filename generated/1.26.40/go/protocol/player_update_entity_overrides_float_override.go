@@ -7,7 +7,7 @@ type PlayerUpdateEntityOverridesFloatOverride struct {
 	Value float32
 }
 
-func (PlayerUpdateEntityOverridesFloatOverride) isPlayerUpdateEntityOverridesUpdate() {}
+func (*PlayerUpdateEntityOverridesFloatOverride) isPlayerUpdateEntityOverridesUpdate() {}
 
 // Marshal reads or writes PlayerUpdateEntityOverridesFloatOverride using its canonical wire layout.
 func (x *PlayerUpdateEntityOverridesFloatOverride) Marshal(io IO) {

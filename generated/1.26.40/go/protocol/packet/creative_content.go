@@ -11,12 +11,8 @@ type CreativeContent struct {
 
 // Marshal reads or writes CreativeContent using its canonical wire layout.
 func (x *CreativeContent) Marshal(io protocol.IO) {
-	protocol.FuncSlice(io, &x.Groups, io.Varuint32, func(value *protocol.CreativeGroupInfo) {
-		value.Marshal(io)
-	})
-	protocol.FuncSlice(io, &x.Entries, io.Varuint32, func(value *protocol.CreativeItemEntry) {
-		value.Marshal(io)
-	})
+	protocol.Slice(io, &x.Groups)
+	protocol.Slice(io, &x.Entries)
 }
 
 // ID returns the protocol ID for CreativeContent.

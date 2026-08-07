@@ -8,13 +8,11 @@ type ItemStackRequestCerealCraftResultsActionData struct {
 	NumCrafts    uint8
 }
 
-func (ItemStackRequestCerealCraftResultsActionData) isItemStackRequestCereal() {}
+func (*ItemStackRequestCerealCraftResultsActionData) isItemStackRequestCereal() {}
 
 // Marshal reads or writes ItemStackRequestCerealCraftResultsActionData using its canonical wire layout.
 func (x *ItemStackRequestCerealCraftResultsActionData) Marshal(io IO) {
 	IntegerFunc(&x.ActionType, io.Uint8)
-	FuncSlice(io, &x.CraftResults, io.Varuint32, func(value *ItemStackRequestCerealNetworkItemInstanceDescriptorData) {
-		value.Marshal(io)
-	})
+	Slice(io, &x.CraftResults)
 	io.Uint8(&x.NumCrafts)
 }

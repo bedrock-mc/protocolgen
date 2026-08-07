@@ -10,9 +10,7 @@ type LocatorBar struct {
 
 // Marshal reads or writes LocatorBar using its canonical wire layout.
 func (x *LocatorBar) Marshal(io protocol.IO) {
-	protocol.FuncSlice(io, &x.Waypoints, io.Varuint32, func(value *protocol.LocatorBarWaypoint) {
-		value.Marshal(io)
-	})
+	protocol.Slice(io, &x.Waypoints)
 }
 
 // ID returns the protocol ID for LocatorBar.

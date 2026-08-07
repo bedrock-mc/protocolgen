@@ -22,7 +22,5 @@ func (x *AttributeData) Marshal(io IO) {
 	io.Float32(&x.DefaultMaxValue)
 	io.Float32(&x.DefaultValue)
 	io.String(&x.Name)
-	FuncSlice(io, &x.Modifiers, io.Varuint32, func(value *AttributeModifier) {
-		value.Marshal(io)
-	})
+	Slice(io, &x.Modifiers)
 }

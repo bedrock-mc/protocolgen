@@ -14,23 +14,23 @@ func MarshalBookEditAction(io IO, x *BookEditAction) {
 			io.Varuint32(&tag)
 			switch int64(tag) {
 			case 0:
-				var value BookEditActionReplacePage
+				value := new(BookEditActionReplacePage)
 				value.Marshal(io)
 				*x = value
 			case 1:
-				var value BookEditActionAddPage
+				value := new(BookEditActionAddPage)
 				value.Marshal(io)
 				*x = value
 			case 2:
-				var value BookEditActionDeletePage
+				value := new(BookEditActionDeletePage)
 				value.Marshal(io)
 				*x = value
 			case 3:
-				var value BookEditActionSwapPages
+				value := new(BookEditActionSwapPages)
 				value.Marshal(io)
 				*x = value
 			case 4:
-				var value BookEditActionFinalize
+				value := new(BookEditActionFinalize)
 				value.Marshal(io)
 				*x = value
 			default:
@@ -39,23 +39,23 @@ func MarshalBookEditAction(io IO, x *BookEditAction) {
 		},
 		func() {
 			switch value := (*x).(type) {
-			case BookEditActionReplacePage:
+			case *BookEditActionReplacePage:
 				tag := uint32(0)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case BookEditActionAddPage:
+			case *BookEditActionAddPage:
 				tag := uint32(1)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case BookEditActionDeletePage:
+			case *BookEditActionDeletePage:
 				tag := uint32(2)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case BookEditActionSwapPages:
+			case *BookEditActionSwapPages:
 				tag := uint32(3)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case BookEditActionFinalize:
+			case *BookEditActionFinalize:
 				tag := uint32(4)
 				io.Varuint32(&tag)
 				value.Marshal(io)

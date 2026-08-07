@@ -8,7 +8,7 @@ type ItemStackRequestCerealCraftLoomActionData struct {
 	NumCrafts     uint8
 }
 
-func (ItemStackRequestCerealCraftLoomActionData) isItemStackRequestCereal() {}
+func (*ItemStackRequestCerealCraftLoomActionData) isItemStackRequestCereal() {}
 
 // Marshal reads or writes ItemStackRequestCerealCraftLoomActionData using its canonical wire layout.
 func (x *ItemStackRequestCerealCraftLoomActionData) Marshal(io IO) {

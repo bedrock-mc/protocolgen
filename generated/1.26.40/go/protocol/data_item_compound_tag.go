@@ -7,7 +7,7 @@ type DataItemCompoundTag struct {
 	Value []byte
 }
 
-func (DataItemCompoundTag) isDataItemEntryValue() {}
+func (*DataItemCompoundTag) isDataItemEntryValue() {}
 
 // Marshal reads or writes DataItemCompoundTag using its canonical wire layout.
 func (x *DataItemCompoundTag) Marshal(io IO) {

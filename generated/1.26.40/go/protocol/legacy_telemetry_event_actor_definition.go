@@ -6,7 +6,7 @@ type LegacyTelemetryEventActorDefinition struct {
 	EventName string
 }
 
-func (LegacyTelemetryEventActorDefinition) isLegacyTelemetryEventEventData() {}
+func (*LegacyTelemetryEventActorDefinition) isLegacyTelemetryEventEventData() {}
 
 // Marshal reads or writes LegacyTelemetryEventActorDefinition using its canonical wire layout.
 func (x *LegacyTelemetryEventActorDefinition) Marshal(io IO) {

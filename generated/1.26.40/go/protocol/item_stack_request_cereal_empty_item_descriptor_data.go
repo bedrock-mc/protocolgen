@@ -6,7 +6,7 @@ type ItemStackRequestCerealEmptyItemDescriptorData struct {
 	DescriptorType ItemStackRequestCerealItemDescriptorType
 }
 
-func (ItemStackRequestCerealEmptyItemDescriptorData) isItemStackRequestCerealRecipeIngredientDataItemDescriptor() {
+func (*ItemStackRequestCerealEmptyItemDescriptorData) isItemStackRequestCerealRecipeIngredientDataItemDescriptor() {
 }
 
 // Marshal reads or writes ItemStackRequestCerealEmptyItemDescriptorData using its canonical wire layout.

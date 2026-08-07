@@ -20,7 +20,5 @@ func (x *AvailableCommandsPacketCommandData) Marshal(io IO) {
 	io.String(&x.PermissionLevel)
 	io.Int32(&x.AliasEnum)
 	FuncSlice(io, &x.CommandDataChainedSubcommandIndexes, io.Varuint32, io.Uint32)
-	FuncSlice(io, &x.Overloads, io.Varuint32, func(value *AvailableCommandsOverloadData) {
-		value.Marshal(io)
-	})
+	Slice(io, &x.Overloads)
 }

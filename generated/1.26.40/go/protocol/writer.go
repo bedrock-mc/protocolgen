@@ -29,8 +29,15 @@ func (*Writer) Reading() bool { return false }
 // Err returns the first encoding error, if any.
 func (w *Writer) Err() error { return w.err }
 
-// Data returns the encoded bytes. The returned slice is owned by the Writer.
+// Data returns the encoded bytes. It aliases the Writer buffer and is invalid
+// after a subsequent write or Reset; copy it when the bytes must be retained.
 func (w *Writer) Data() []byte { return w.data }
+
+// Reset clears the encoded data and error while retaining the buffer capacity.
+func (w *Writer) Reset() {
+	w.data = w.data[:0]
+	w.err = nil
+}
 
 func (w *Writer) fail(err error) {
 	if w.err == nil {
@@ -236,10 +243,11 @@ func (w *Writer) NBT(x *[]byte) {
 }
 
 func (w *Writer) UUID(x *uuid.UUID) {
-	data := append([]byte(nil), x[:]...)
+	var data [16]byte
+	copy(data[:], x[:])
 	reverseBytes(data[:8])
 	reverseBytes(data[8:])
-	w.write(data)
+	w.write(data[:])
 }
 
 func (w *Writer) UUIDBytes(x *[16]byte) {

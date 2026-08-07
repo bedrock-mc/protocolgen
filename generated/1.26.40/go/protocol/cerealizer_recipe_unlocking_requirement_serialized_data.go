@@ -11,8 +11,6 @@ type CerealizerRecipeUnlockingRequirementSerializedData struct {
 func (x *CerealizerRecipeUnlockingRequirementSerializedData) Marshal(io IO) {
 	IntegerFunc(&x.UnlockingContext, io.Varint32)
 	OptionalFunc(io, &x.UnlockingIngredients, func(value *[]CerealizerRecipeIngredientSerializedData) {
-		FuncSlice(io, value, io.Varuint32, func(value *CerealizerRecipeIngredientSerializedData) {
-			value.Marshal(io)
-		})
+		Slice(io, value)
 	})
 }

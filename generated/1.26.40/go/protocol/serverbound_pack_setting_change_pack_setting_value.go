@@ -14,15 +14,15 @@ func MarshalServerboundPackSettingChangePackSettingValue(io IO, x *ServerboundPa
 			io.Varuint32(&tag)
 			switch int64(tag) {
 			case 0:
-				var value ServerboundPackSettingChangePackSettingValueFloat
+				value := new(ServerboundPackSettingChangePackSettingValueFloat)
 				value.Marshal(io)
 				*x = value
 			case 1:
-				var value ServerboundPackSettingChangePackSettingValueBool
+				value := new(ServerboundPackSettingChangePackSettingValueBool)
 				value.Marshal(io)
 				*x = value
 			case 2:
-				var value ServerboundPackSettingChangePackSettingValueString
+				value := new(ServerboundPackSettingChangePackSettingValueString)
 				value.Marshal(io)
 				*x = value
 			default:
@@ -31,15 +31,15 @@ func MarshalServerboundPackSettingChangePackSettingValue(io IO, x *ServerboundPa
 		},
 		func() {
 			switch value := (*x).(type) {
-			case ServerboundPackSettingChangePackSettingValueFloat:
+			case *ServerboundPackSettingChangePackSettingValueFloat:
 				tag := uint32(0)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case ServerboundPackSettingChangePackSettingValueBool:
+			case *ServerboundPackSettingChangePackSettingValueBool:
 				tag := uint32(1)
 				io.Varuint32(&tag)
 				value.Marshal(io)
-			case ServerboundPackSettingChangePackSettingValueString:
+			case *ServerboundPackSettingChangePackSettingValueString:
 				tag := uint32(2)
 				io.Varuint32(&tag)
 				value.Marshal(io)

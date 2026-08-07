@@ -6,7 +6,7 @@ type SoundDataEventSetPitch struct {
 	Pitch float32
 }
 
-func (SoundDataEventSetPitch) isSoundDataEvent() {}
+func (*SoundDataEventSetPitch) isSoundDataEvent() {}
 
 // Marshal reads or writes SoundDataEventSetPitch using its canonical wire layout.
 func (x *SoundDataEventSetPitch) Marshal(io IO) {

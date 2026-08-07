@@ -6,7 +6,7 @@ type ServerboundPackSettingChangePackSettingValueFloat struct {
 	Value float32
 }
 
-func (ServerboundPackSettingChangePackSettingValueFloat) isServerboundPackSettingChangePackSettingValue() {
+func (*ServerboundPackSettingChangePackSettingValueFloat) isServerboundPackSettingChangePackSettingValue() {
 }
 
 // Marshal reads or writes ServerboundPackSettingChangePackSettingValueFloat using its canonical wire layout.

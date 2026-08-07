@@ -7,7 +7,7 @@ type DataItemInt64 struct {
 	Value int64
 }
 
-func (DataItemInt64) isDataItemEntryValue() {}
+func (*DataItemInt64) isDataItemEntryValue() {}
 
 // Marshal reads or writes DataItemInt64 using its canonical wire layout.
 func (x *DataItemInt64) Marshal(io IO) {

@@ -12,9 +12,7 @@ type VoxelShapes struct {
 
 // Marshal reads or writes VoxelShapes using its canonical wire layout.
 func (x *VoxelShapes) Marshal(io protocol.IO) {
-	protocol.FuncSlice(io, &x.Shapes, io.Varuint32, func(value *protocol.VoxelShapesSerializableVoxelShape) {
-		value.Marshal(io)
-	})
+	protocol.Slice(io, &x.Shapes)
 	protocol.OrderedMap(io, &x.NameMap, io.Varuint32, io.String, func(value *protocol.VoxelShapesRegistryHandle) {
 		value.Marshal(io)
 	})

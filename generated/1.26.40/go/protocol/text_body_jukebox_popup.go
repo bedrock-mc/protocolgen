@@ -6,7 +6,7 @@ type TextBodyJukeboxPopup struct {
 	Value TextMessageAndParams
 }
 
-func (TextBodyJukeboxPopup) isTextBody() {}
+func (*TextBodyJukeboxPopup) isTextBody() {}
 
 // Marshal reads or writes TextBodyJukeboxPopup using its canonical wire layout.
 func (x *TextBodyJukeboxPopup) Marshal(io IO) {

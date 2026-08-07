@@ -9,7 +9,7 @@ type ItemStackRequestCerealPlaceActionData struct {
 	Destination ItemStackRequestCerealSlotInfoData
 }
 
-func (ItemStackRequestCerealPlaceActionData) isItemStackRequestCereal() {}
+func (*ItemStackRequestCerealPlaceActionData) isItemStackRequestCereal() {}
 
 // Marshal reads or writes ItemStackRequestCerealPlaceActionData using its canonical wire layout.
 func (x *ItemStackRequestCerealPlaceActionData) Marshal(io IO) {

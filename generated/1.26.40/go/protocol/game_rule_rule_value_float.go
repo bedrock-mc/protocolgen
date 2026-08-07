@@ -6,7 +6,7 @@ type GameRuleRuleValueFloat struct {
 	Value float32
 }
 
-func (GameRuleRuleValueFloat) isGameRuleRuleValue() {}
+func (*GameRuleRuleValueFloat) isGameRuleRuleValue() {}
 
 // Marshal reads or writes GameRuleRuleValueFloat using its canonical wire layout.
 func (x *GameRuleRuleValueFloat) Marshal(io IO) {

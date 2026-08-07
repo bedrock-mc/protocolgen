@@ -10,7 +10,5 @@ type AvailableCommandsChainedSubcommandData struct {
 // Marshal reads or writes AvailableCommandsChainedSubcommandData using its canonical wire layout.
 func (x *AvailableCommandsChainedSubcommandData) Marshal(io IO) {
 	io.String(&x.Name)
-	FuncSlice(io, &x.SubCommandValues, io.Varuint32, func(value *AvailableCommandsChainedSubcommandRelationship) {
-		value.Marshal(io)
-	})
+	Slice(io, &x.SubCommandValues)
 }

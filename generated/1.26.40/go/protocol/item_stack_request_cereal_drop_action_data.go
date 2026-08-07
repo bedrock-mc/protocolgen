@@ -9,7 +9,7 @@ type ItemStackRequestCerealDropActionData struct {
 	Randomly   bool
 }
 
-func (ItemStackRequestCerealDropActionData) isItemStackRequestCereal() {}
+func (*ItemStackRequestCerealDropActionData) isItemStackRequestCereal() {}
 
 // Marshal reads or writes ItemStackRequestCerealDropActionData using its canonical wire layout.
 func (x *ItemStackRequestCerealDropActionData) Marshal(io IO) {

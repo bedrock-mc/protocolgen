@@ -7,7 +7,7 @@ type TextAuthorAndMessage struct {
 	Message    string
 }
 
-func (TextAuthorAndMessage) isTextBody() {}
+func (*TextAuthorAndMessage) isTextBody() {}
 
 // Marshal reads or writes TextAuthorAndMessage using its canonical wire layout.
 func (x *TextAuthorAndMessage) Marshal(io IO) {

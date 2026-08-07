@@ -6,7 +6,7 @@ type PlayerLocationHiddenLocation struct {
 	PacketType PlayerLocationType
 }
 
-func (PlayerLocationHiddenLocation) isPlayerLocationLocation() {}
+func (*PlayerLocationHiddenLocation) isPlayerLocationLocation() {}
 
 // Marshal reads or writes PlayerLocationHiddenLocation using its canonical wire layout.
 func (x *PlayerLocationHiddenLocation) Marshal(io IO) {

@@ -13,8 +13,6 @@ type CommandOutputData struct {
 func (x *CommandOutputData) Marshal(io IO) {
 	io.String(&x.OutputType)
 	io.Uint32(&x.SuccessCount)
-	FuncSlice(io, &x.OutputMessages, io.Varuint32, func(value *CommandOutputMessage) {
-		value.Marshal(io)
-	})
+	Slice(io, &x.OutputMessages)
 	OptionalFunc(io, &x.DataSet, io.String)
 }

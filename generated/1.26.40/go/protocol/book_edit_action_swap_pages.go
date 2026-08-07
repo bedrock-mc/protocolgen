@@ -7,7 +7,7 @@ type BookEditActionSwapPages struct {
 	SwapWithIndex int32
 }
 
-func (BookEditActionSwapPages) isBookEditAction() {}
+func (*BookEditActionSwapPages) isBookEditAction() {}
 
 // Marshal reads or writes BookEditActionSwapPages using its canonical wire layout.
 func (x *BookEditActionSwapPages) Marshal(io IO) {
