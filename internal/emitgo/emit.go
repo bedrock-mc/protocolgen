@@ -618,7 +618,7 @@ func emitDefinition(g *generator, definition typeDefinition) (string, error) {
 		}
 		b.WriteString("}\n\n")
 		for _, union := range definition.Implements {
-			fmt.Fprintf(&b, "func (%s) is%s() {}\n\n", definition.Name, union)
+			fmt.Fprintf(&b, "func (*%s) is%s() {}\n\n", definition.Name, union)
 		}
 		fmt.Fprintf(&b, "// Marshal reads or writes %s using its canonical wire layout.\n", definition.Name)
 		fmt.Fprintf(&b, "func (x *%s) Marshal(io IO) {\n", definition.Name)
@@ -1260,11 +1260,11 @@ func (e *marshalEmitter) union(b *strings.Builder, definition typeDefinition) er
 	}
 	b.WriteString("\t\tswitch int64(tag) {\n")
 	for _, member := range definition.Union {
-		fmt.Fprintf(b, "\t\tcase %d:\n\t\t\tvar value %s\n\t\t\tvalue.Marshal(io)\n\t\t\t*x = value\n", member.Value, member.Name)
+		fmt.Fprintf(b, "\t\tcase %d:\n\t\t\tvalue := new(%s)\n\t\t\tvalue.Marshal(io)\n\t\t\t*x = value\n", member.Value, member.Name)
 	}
 	b.WriteString("\t\tdefault:\n\t\t\tio.InvalidValue(tag, \"unknown union tag\")\n\t\t}\n\t\t},\n\t\tfunc() {\n\t\tswitch value := (*x).(type) {\n")
 	for _, member := range definition.Union {
-		fmt.Fprintf(b, "\t\tcase %s:\n\t\t\ttag := %s(%d)\n", member.Name, tagType, member.Value)
+		fmt.Fprintf(b, "\t\tcase *%s:\n\t\t\ttag := %s(%d)\n", member.Name, tagType, member.Value)
 		if err := e.node(b, controlNode, "tag", definition.Name+"Tag", "\t\t\t", addressStrategy{}); err != nil {
 			return err
 		}

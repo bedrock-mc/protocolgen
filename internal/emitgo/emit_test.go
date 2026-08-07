@@ -187,8 +187,11 @@ func TestGenerateWrapsRepeatedUnionPayloadTypes(t *testing.T) {
 		t.Fatal(err)
 	}
 	marshal := generatedSource(files)
-	if strings.Count(marshal, "case Message:") != 1 || !strings.Contains(marshal, "case ChoiceChoiceSecond:") {
+	if strings.Count(marshal, "case *Message:") != 1 || !strings.Contains(marshal, "case *ChoiceChoiceSecond:") {
 		t.Fatalf("repeated union payloads were not made tag-distinct:\n%s", marshal)
+	}
+	if !strings.Contains(marshal, "value := new(Message)") || !strings.Contains(marshal, "*x = value") {
+		t.Fatalf("union decode does not allocate pointer payloads:\n%s", marshal)
 	}
 }
 
@@ -270,7 +273,7 @@ func TestGenerateUsesTypedUnionInterface(t *testing.T) {
 		t.Fatalf("Generate: %v", err)
 	}
 	source := generatedSource(files)
-	if !strings.Contains(source, "type SoundDataEvent interface") || !strings.Contains(source, "func (SoundDataEventSetVolume) isSoundDataEvent()") || strings.Contains(source, "Tag int64") {
+	if !strings.Contains(source, "type SoundDataEvent interface") || !strings.Contains(source, "func (*SoundDataEventSetVolume) isSoundDataEvent()") || strings.Contains(source, "Tag int64") {
 		t.Fatalf("generated Go did not emit a typed union interface:\n%s", source)
 	}
 }
