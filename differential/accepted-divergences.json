@@ -7,8 +7,22 @@
       "packet": 8,
       "direction": "client",
       "input_hex": "",
+      "kind": "decode-success",
+      "rationale": "Pinned fork bug: its response enum is 0-based (SendPacks=1) while Cloudburst (Status ordinal: REFUSED=1, SEND_PACKS=2), PocketMine, and the reconciled Mojang+Endstone docs all place the pack list at wire value 2. The manifest layout is corroborated; the fork reads the list at the wrong tag. Fix belongs in the fork."
+    },
+    {
+      "packet": 8,
+      "direction": "client",
+      "input_hex": "",
       "kind": "re-encoded-bytes",
       "rationale": "Oracle derives the response name string from the response enum on encode (resource_pack_client_response.go Marshal: resourcePackResponseToString), discarding the wire string; generated preserves it."
+    },
+    {
+      "packet": 8,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "decode-success",
+      "rationale": "Pinned fork bug: its response enum is 0-based (SendPacks=1) while Cloudburst (Status ordinal: REFUSED=1, SEND_PACKS=2), PocketMine, and the reconciled Mojang+Endstone docs all place the pack list at wire value 2. The manifest layout is corroborated; the fork reads the list at the wrong tag. Fix belongs in the fork."
     },
     {
       "packet": 8,
@@ -123,6 +137,20 @@
       "rationale": "Oracle re-derives the event ordinal from the event type on encode (writer.go EventOrdinal: lookupEventOrdinal), discarding the wire ordinal; generated preserves it."
     },
     {
+      "packet": 80,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "decode-success",
+      "rationale": "Oracle reads this packet's NBT payload as rest-of-buffer raw bytes (io.Bytes), consuming any trailing garbage; generated scans NBT structure and rejects bytes past the NBT boundary. Well-formed payloads fill the remainder exactly."
+    },
+    {
+      "packet": 81,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "decode-success",
+      "rationale": "Oracle reads this packet's NBT payload as rest-of-buffer raw bytes (io.Bytes), consuming any trailing garbage; generated scans NBT structure and rejects bytes past the NBT boundary. Well-formed payloads fill the remainder exactly."
+    },
+    {
       "packet": 86,
       "direction": "server",
       "input_hex": "",
@@ -149,6 +177,20 @@
       "input_hex": "",
       "kind": "re-encoded-bytes",
       "rationale": "Oracle derives the scoreboard entry type-name string from the variant on encode (scoreboard.go:44 typeNames), discarding the wire string; generated preserves it."
+    },
+    {
+      "packet": 119,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "decode-success",
+      "rationale": "Oracle reads this packet's NBT payload as rest-of-buffer raw bytes (io.Bytes), consuming any trailing garbage; generated scans NBT structure and rejects bytes past the NBT boundary. Well-formed payloads fill the remainder exactly."
+    },
+    {
+      "packet": 124,
+      "direction": "server",
+      "input_hex": "",
+      "kind": "decode-success",
+      "rationale": "Oracle reads this packet's NBT payload as rest-of-buffer raw bytes (io.Bytes), consuming any trailing garbage; generated scans NBT structure and rejects bytes past the NBT boundary. Well-formed payloads fill the remainder exactly."
     },
     {
       "packet": 148,

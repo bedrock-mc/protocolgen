@@ -125,6 +125,7 @@ impl ResourcePackClientResponse {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct Text {
     pub localize: bool,
+    pub message_category: wire::U8,
     pub body: TextData,
     pub sender_xuid: String,
     pub platform_id: String,

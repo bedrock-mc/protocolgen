@@ -2450,6 +2450,28 @@
         },
         {
           "ordinal": 1,
+          "name": "Message Category",
+          "semantic": "Message Category",
+          "encode": {
+            "kind": "primitive",
+            "primitive": {
+              "code": "u8",
+              "width": 8,
+              "signed": false,
+              "zigzag": false,
+              "endianness": "none"
+            }
+          },
+          "symmetry": "symmetric",
+          "provenance": {
+            "pins": [
+              "endstone",
+              "mojang"
+            ]
+          }
+        },
+        {
+          "ordinal": 2,
           "name": "Body",
           "semantic": "Body",
           "encode": {
@@ -3114,7 +3136,7 @@
           }
         },
         {
-          "ordinal": 2,
+          "ordinal": 3,
           "name": "Sender's XUID",
           "semantic": "Sender's XUID",
           "encode": {
@@ -3141,7 +3163,7 @@
           }
         },
         {
-          "ordinal": 3,
+          "ordinal": 4,
           "name": "Platform Id",
           "semantic": "Platform Id",
           "encode": {
@@ -3168,7 +3190,7 @@
           }
         },
         {
-          "ordinal": 4,
+          "ordinal": 5,
           "name": "Filtered Message",
           "semantic": "Filtered Message",
           "encode": {
@@ -111925,6 +111947,26 @@
       "reason": "The pinned official source identifies this as a binary item user-data blob."
     },
     {
+      "id": "endstone-textpacket-message-category",
+      "target": "packets/TextPacket.json#/fields",
+      "pre_patch_node_sha256": "sha256:02db93676b8f667db4e63453ff316b8515b62242df4c5cbe910c069f0eb5da63",
+      "pre_patch_context_sha256": "sha256:4b138448aa58e2bedbff6fb60b5bf0b76c20aecab01eab2d02a0dcb0b0b9fff7",
+      "post_patch_node_sha256": "sha256:a07f128a117e43b17e6a902a2daabbe3fe223112243f7c8c28e4b8ffe7b5656d",
+      "evidence": [
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/CloudburstMC/Protocol/blob/develop/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v924/serializer/TextSerializer_v924.java",
+          "summary": "Cloudburst's newest Text serializer writes the category byte (writeByte(0) MessageOnly) before the type ordinal."
+        },
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/1653b5407e9b4ce9e8fa272f7713688d42973e3f/minecraft/protocol/packet/text.go",
+          "summary": "Live 1.26.40 fork writes bool, category byte derived from TextType, type byte, then body; chat traffic proxies through it in production."
+        }
+      ],
+      "reason": "Both pinned sources omit the message category byte that the 1.26.40 wire carries between Localize and the message-type tag; production implementations read and write it."
+    },
+    {
       "id": "inventory-slot-container-id-is-fixed-u8",
       "target": "InventorySlotPacketPayload.json#/properties/Container Id/x-serialization-options",
       "pre_patch_node_sha256": "sha256:3da781f5649d9b5cd5af8e188cb9685971100f724a26d6b95ccefd7d996dc6e8",
@@ -112633,6 +112675,41 @@
         }
       ],
       "reason": "The source description explicitly identifies this as a binary blob whose framing happens to match String."
+    },
+    {
+      "id": "mojang-textpacketpayload-message-category",
+      "target": "TextPacketPayload.json#/properties",
+      "pre_patch_node_sha256": "sha256:6d6bc64fc71b58922a2b47432cdd1629a2be96e8df4855038224b9b6e4cb4788",
+      "pre_patch_context_sha256": "sha256:c77826a1e2911dba5b16ac381a834e11090bb04dbf3814fe716d7869a3193fe4",
+      "post_patch_node_sha256": "sha256:93dc90daae6dcd1958dba6f0f7399248dea4b5c109faedc45b88918aa9c46f6a",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/CloudburstMC/Protocol/blob/develop/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v924/serializer/TextSerializer_v924.java",
+          "summary": "Cloudburst's newest Text serializer writes the category byte (writeByte(0) MessageOnly) before the type ordinal."
+        },
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/1653b5407e9b4ce9e8fa272f7713688d42973e3f/minecraft/protocol/packet/text.go",
+          "summary": "Live 1.26.40 fork writes bool, category byte derived from TextType, type byte, then body; chat traffic proxies through it in production."
+        }
+      ],
+      "reason": "Both pinned sources omit the message category byte that the 1.26.40 wire carries between Localize and the message-type tag; production implementations read and write it."
+    },
+    {
+      "id": "mojang-textpacketpayload-message-category-required",
+      "target": "TextPacketPayload.json#/required",
+      "pre_patch_node_sha256": "sha256:7d8446cd7f93a5a89e858ddf554eb90dc5c26e3f5ab0f4dce23c3b1bc950497b",
+      "pre_patch_context_sha256": "sha256:d10ca1173b1599dfedfaac45bf4955c7172832f70319a29f36aebb1e6f9dc11d",
+      "post_patch_node_sha256": "sha256:7d94205f9833a77cc0590e7ca53fdb287089870ad680f8df9fc41abb4eb2f5e5",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/1653b5407e9b4ce9e8fa272f7713688d42973e3f/minecraft/protocol/packet/text.go",
+          "summary": "The category byte is written for every text type."
+        }
+      ],
+      "reason": "The inserted message category byte is unconditional on the wire."
     },
     {
       "id": "mojang-textpacketpayload-required",
