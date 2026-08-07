@@ -66,8 +66,8 @@ func TestGenerateRustFilesUseNativeEnumsAndPacketModules(t *testing.T) {
 	if strings.Contains(enums, "ENUMS") || strings.Contains(enums, "repr(transparent)") {
 		t.Fatalf("enum output retained wrapper constants:\n%s", enums)
 	}
-	if _, ok := files["src/packets/multiplayer_settings.rs"]; !ok {
-		t.Fatalf("packet was not emitted separately: %v", files)
+	if _, ok := files["src/packets.rs"]; !ok {
+		t.Fatalf("packet module was not emitted: %v", files)
 	}
 }
 
@@ -178,7 +178,7 @@ func TestGenerateRustPreservesWirePrimitiveTypesAndOptionalPresence(t *testing.T
 	if err != nil {
 		t.Fatal(err)
 	}
-	packet := files["src/packets/wire.rs"]
+	packet := files["src/packets.rs"]
 	for _, want := range []string{"pub count: wire::VarUInt", "pub delta: wire::ZigZag32", "pub value: wire::U32LE", "pub ratio: wire::F32LE", "/// Wire presence: optional value is preceded by a presence marker."} {
 		if !strings.Contains(packet, want) {
 			t.Fatalf("generated packet omitted %q:\n%s", want, packet)
@@ -222,7 +222,7 @@ func TestGenerateRustEmitsPacketRegistryAndSum(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	packets := files["src/packets/mod.rs"]
+	packets := files["src/packets.rs"]
 	for _, want := range []string{"#[repr(u32)]\npub enum PacketId", "Small = 1", "Large = 9", "pub fn from_raw(raw: u32) -> Option<Self>", "pub enum Packet", "Small(Small)", "Large(Box<Large>)", "impl From<Small> for Packet", "impl From<Large> for Packet"} {
 		if !strings.Contains(packets, want) {
 			t.Fatalf("packet registry omitted %q:\n%s", want, packets)
@@ -239,7 +239,7 @@ func TestGenerateRustUsesDefaultsAndTupleWrappers(t *testing.T) {
 		t.Fatal(err)
 	}
 	types := files["src/types.rs"]
-	packets := files["src/packets/default.rs"]
+	packets := files["src/packets.rs"]
 	for _, want := range []string{"pub struct ActorRuntimeID(pub u64);", "impl wire::WireCodec for ActorRuntimeID", "Default, PartialEq, Eq, Hash"} {
 		if !strings.Contains(types, want) {
 			t.Fatalf("generated types omitted %q:\n%s", want, types)
@@ -269,6 +269,36 @@ func TestGenerateRustBoxesLargeUnionFields(t *testing.T) {
 	}
 }
 
+func TestGenerateRustUsesAddressableModulesAndCrateIdentity(t *testing.T) {
+	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "1.26.40", ProtocolVersion: 2168}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:modules", MinecraftVersion: "1.26.40", ProtocolVersion: 2168}}, Packets: []manifest.Packet{{ID: 1, Name: "FixturePacket", Direction: manifest.DirectionClientbound}}}
+	files, err := GenerateFiles(m)
+	if err != nil {
+		t.Fatal(err)
+	}
+	lib := files["src/lib.rs"]
+	for _, want := range []string{"pub mod enums;", "pub mod types;", "pub mod packets;", "pub mod wire;", "pub const PROTOCOL_VERSION: i32 = 2168;"} {
+		if !strings.Contains(lib, want) {
+			t.Fatalf("lib.rs omitted %q:\n%s", want, lib)
+		}
+	}
+	if strings.Contains(lib, "pub use") || strings.Contains(lib, "allow(dead_code)") {
+		t.Fatalf("lib.rs retained flat/glob API scaffolding:\n%s", lib)
+	}
+	for _, want := range []string{"name = \"bedrock-protocol-1-26-40\"", "version = \"0.1.0\"", "edition = \"2024\""} {
+		if !strings.Contains(files["Cargo.toml"], want) {
+			t.Fatalf("Cargo.toml omitted %q:\n%s", want, files["Cargo.toml"])
+		}
+	}
+	if _, ok := files["src/packets.rs"]; !ok {
+		t.Fatalf("collapsed packets module was not emitted: %v", files)
+	}
+	for path := range files {
+		if strings.HasPrefix(path, "src/packets/") {
+			t.Fatalf("flat packet module retained per-packet file %q", path)
+		}
+	}
+}
+
 func TestGenerateRustKeepsSharedUnionPayloadNamed(t *testing.T) {
 	shared := manifest.Node{Kind: manifest.KindStruct, Semantic: "SharedRecord", TypeID: "SharedRecord", Fields: []manifest.Field{{Ordinal: 0, Name: "Value", Encode: manifest.Primitive("u8"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}
 	union := manifest.Union(manifest.Primitive("u8"), manifest.Variant{Value: 0, Name: "Choice::Shared", Encode: shared})
@@ -288,7 +318,7 @@ func TestGenerateRustEmptyPacketOnlyEmitsDefinitionAndID(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Generate: %v", err)
 	}
-	packet := files["src/packets/empty.rs"]
+	packet := files["src/packets.rs"]
 	if !strings.Contains(packet, "pub struct Empty") || !strings.Contains(packet, "pub const ID: u32 = 4;") || strings.Contains(packet, "encode") || strings.Contains(packet, "decode") {
 		t.Fatalf("empty packet output is not definition-only:\n%s", packet)
 	}
@@ -353,7 +383,7 @@ func TestGenerateRustMapsCanonicalSemanticsToNativeTypes(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	packet := files["src/packets/native.rs"]
+	packet := files["src/packets.rs"]
 	for _, want := range []string{"uuid::Uuid", "glam::Vec3", "Nbt", "bytes::Bytes"} {
 		if !strings.Contains(packet, want) {
 			t.Fatalf("native Rust output omits %q:\n%s", want, packet)

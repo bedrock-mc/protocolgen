@@ -186,30 +186,13 @@ func GenerateFiles(m manifest.Manifest) (map[string]string, error) {
 	}
 	definitions := g.sortedDefinitions()
 	files := map[string]string{
-		"Cargo.toml":   emitCargo(m, g),
-		"src/lib.rs":   emitLib(infos),
-		"src/enums.rs": emitRustEnums(definitions),
-		"src/types.rs": emitRustTypes(definitions, g.usesNbt),
-		"src/wire.rs":  emitWire(),
+		"Cargo.toml":     emitCargo(m, g),
+		"src/lib.rs":     emitLib(m),
+		"src/enums.rs":   emitRustEnums(definitions),
+		"src/types.rs":   emitRustTypes(definitions, g.usesNbt),
+		"src/wire.rs":    emitWire(),
+		"src/packets.rs": emitRustPackets(infos),
 	}
-	usedFiles := map[string]bool{}
-	var modules strings.Builder
-	modules.WriteString("// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\n")
-	for _, info := range infos {
-		base := moduleFileName(info.name)
-		fileName := base + ".rs"
-		moduleName := rustModuleName(base)
-		if usedFiles[fileName] {
-			base += fmt.Sprintf("_%d", info.packet.ID)
-			fileName = base + ".rs"
-			moduleName = rustModuleName(base)
-		}
-		usedFiles[fileName] = true
-		fmt.Fprintf(&modules, "mod %s;\npub use %s::*;\n", moduleName, moduleName)
-		files["src/packets/"+fileName] = emitRustPacket(info)
-	}
-	emitPacketRegistry(&modules, infos)
-	files["src/packets/mod.rs"] = strings.TrimSpace(modules.String()) + "\n"
 	return files, nil
 }
 
@@ -222,19 +205,16 @@ func (g *generator) sortedDefinitions() []definition {
 	return definitions
 }
 
-func emitLib(_ []packetInfo) string {
-	return `// Code generated from canonical protocol manifest v2. DO NOT EDIT.
+func emitLib(m manifest.Manifest) string {
+	return fmt.Sprintf(`// Code generated from canonical protocol manifest v2. DO NOT EDIT.
 
-#![allow(dead_code)]
+pub const PROTOCOL_VERSION: i32 = %d;
 
-mod enums;
-pub use enums::*;
-mod types;
-pub use types::*;
-mod wire;
-mod packets;
-pub use packets::*;
-`
+pub mod enums;
+pub mod types;
+pub mod packets;
+pub mod wire;
+`, m.Target.ProtocolVersion)
 }
 
 func emitRustEnums(definitions []definition) string {
@@ -335,7 +315,8 @@ func emitRustTypes(definitions []definition, usesNbt bool) string {
 func emitCargo(m manifest.Manifest, g *generator) string {
 	var b strings.Builder
 	b.WriteString("# Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\n")
-	fmt.Fprintf(&b, "[package]\nname = \"bedrock-protocol-%d\"\nversion = \"0.0.0\"\nedition = \"2021\"\npublish = false\n", m.Target.ProtocolVersion)
+	crateName := "bedrock-protocol-" + strings.NewReplacer(".", "-", "_", "-").Replace(m.Target.MinecraftVersion)
+	fmt.Fprintf(&b, "[package]\nname = \"%s\"\nversion = \"0.1.0\"\nedition = \"2024\"\npublish = false\n", crateName)
 	if g.usesUUID || g.usesGlam || g.usesBytes {
 		b.WriteString("\n[dependencies]\n")
 		if g.usesBytes {
@@ -491,20 +472,35 @@ impl WireCodec for ZigZag64 {
 `
 }
 
+func emitRustPackets(infos []packetInfo) string {
+	var b strings.Builder
+	b.WriteString("// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\n")
+	b.WriteString("use crate::enums::*;\nuse crate::types::*;\n")
+	b.WriteString("use crate::wire;\n\n")
+	for _, info := range infos {
+		emitRustPacketDefinition(&b, info)
+	}
+	emitPacketRegistry(&b, infos)
+	return strings.TrimSpace(b.String()) + "\n"
+}
+
 func emitRustPacket(info packetInfo) string {
 	var b strings.Builder
 	b.WriteString("// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\n")
-	b.WriteString("#[allow(unused_imports)]\nuse crate::*;\n\n")
-	b.WriteString("use crate::wire;\n\n")
-	fmt.Fprintf(&b, "#[derive(Clone, Debug, Default, PartialEq)]\npub struct %s {\n", info.name)
+	b.WriteString("use crate::enums::*;\nuse crate::types::*;\nuse crate::wire;\n\n")
+	emitRustPacketDefinition(&b, info)
+	return b.String()
+}
+
+func emitRustPacketDefinition(b *strings.Builder, info packetInfo) {
+	fmt.Fprintf(b, "#[derive(Clone, Debug, Default, PartialEq)]\npub struct %s {\n", info.name)
 	for _, field := range info.fields {
 		for _, doc := range field.docs {
-			fmt.Fprintf(&b, "%s\n", doc)
+			fmt.Fprintf(b, "    %s\n", doc)
 		}
-		fmt.Fprintf(&b, "    pub %s: %s,\n", field.name, field.typ)
+		fmt.Fprintf(b, "    pub %s: %s,\n", field.name, field.typ)
 	}
-	fmt.Fprintf(&b, "}\n\nimpl %s {\n    pub const ID: u32 = %d;\n}\n", info.name, info.packet.ID)
-	return b.String()
+	fmt.Fprintf(b, "}\n\nimpl %s {\n    pub const ID: u32 = %d;\n}\n", info.name, info.packet.ID)
 }
 
 func emitPacketRegistry(b *strings.Builder, infos []packetInfo) {
