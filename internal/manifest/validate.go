@@ -50,6 +50,9 @@ func Validate(m Manifest) error {
 		if !validDirection(packet.Direction) {
 			return fmt.Errorf("packet %s has invalid direction %q", packet.Name, packet.Direction)
 		}
+		if packet.Direction == DirectionUnknown {
+			return fmt.Errorf("packet %s has unknown direction", packet.Name)
+		}
 		previous := -1
 		for fieldIndex, field := range packet.Fields {
 			path := fmt.Sprintf("packet %s field[%d]", packet.Name, fieldIndex)

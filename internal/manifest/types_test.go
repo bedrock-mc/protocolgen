@@ -64,6 +64,18 @@ func TestValidateRejectsReachableUnresolvedNode(t *testing.T) {
 	}
 }
 
+func TestValidateRejectsUnknownPacketDirection(t *testing.T) {
+	value := Manifest{
+		SchemaVersion: SchemaVersion,
+		Target:        Target{MinecraftVersion: "fixture", ProtocolVersion: 2168},
+		Sources:       []SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture-2168", Digest: "sha256:fixture"}},
+		Packets:       []Packet{{ID: 1, Name: "UnknownDirection", Direction: DirectionUnknown}},
+	}
+	if err := Validate(value); err == nil || !strings.Contains(err.Error(), "unknown direction") {
+		t.Fatalf("Validate error = %v, want unknown direction failure", err)
+	}
+}
+
 func TestPrimitiveVarintAndZigZagRemainDistinct(t *testing.T) {
 	varint, err := PrimitiveForCode("var_i32")
 	if err != nil {
