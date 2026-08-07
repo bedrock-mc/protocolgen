@@ -58,6 +58,13 @@ go run ./cmd/protocolgen emit-go \
 go run ./cmd/protocolgen emit-rust \
   -manifest /tmp/protocol-2168.json \
   -out /tmp/protocol-rust
+
+# Verify the canonical manifest against the pinned gophertunnel source oracle.
+# Omit -gophertunnel to let protocolgen clone the full-SHA lock into its cache.
+go run ./cmd/protocolgen verify-gophertunnel \
+  -manifest generated/1.26.40/manifest.json \
+  -gophertunnel /path/to/gophertunnel \
+  -report /tmp/gophertunnel-2168-report.json
 ```
 
 This produces:
@@ -175,6 +182,48 @@ wire schema.
 | `emit-go` | Generate Go packet types from a manifest. |
 | `emit-rust` | Generate Rust packet types from a manifest. |
 | `parity` | Compare the manifest with an independently generated Axolotl layout. |
+| `verify-gophertunnel` | Compare the manifest with the pinned gophertunnel `Marshal` source oracle. |
+
+`verify-gophertunnel` reads `tools/gophertunnel-oracle/lock.json`, whose oracle
+commit is a full 40-character SHA. Pass `-gophertunnel` for an existing
+checkout at that exact commit, or omit it to clone into the platform user cache
+at runtime. The locked repository may be a fork; only the exact locked SHA is
+trusted, and the checkout is rejected if `HEAD` is anything else. The command
+parses gophertunnel with `go/ast`; it does not import the checkout, download
+its modules, or compare generated output. The manifest is the only protocol
+shape being verified.
+
+The oracle is not canonical. gophertunnel is a hand-written third-party
+implementation used as one independent verification axis, exactly like the
+Axolotl parity gate. It never edits the manifest: `verify-gophertunnel` writes
+only its report, and no correction, adjudication, or source claim is ever
+derived from it automatically. When the oracle and the manifest disagree, the
+resolution is a pinned, reviewable wire-layout source recorded under
+`generated/<version>/corrections/`, not agreement with gophertunnel.
+
+It writes a machine-readable report with one result per manifest packet and
+prints the same run's human summary:
+
+```text
+AGREEMENT / DIVERGENCE / UNRESOLVED / NO_ORACLE_PACKET
+```
+
+Only an unaccepted `DIVERGENCE` makes the command exit non-zero. Packets whose
+marshal hides bytes behind runtime branches or opaque interface helpers remain
+`UNRESOLVED`; they are never treated as agreement. The comparison normalizes
+only the documented byte-equivalences: signed/unsigned fixed-width integers of
+the same width and endianness, strings versus byte slices with the same length
+prefix, prefixed arrays of one-byte elements versus byte slices, UUIDs as 16
+wire-positioned bytes, and the four named pre-encoded NBT byte fields. Width,
+endianness, fixed versus varint, varint versus zigzag, float versus integer,
+option presence, array prefixes, fixed-array lengths, and union discriminants
+remain distinct. Reviewed exceptions live in
+`tools/gophertunnel-oracle/accepted-divergences.json`; every entry requires a
+reason, evidence locator, and a concrete `what_would_settle_it` statement. An
+entry only silences the exit code for one packet; it is a record of an open
+question, not a decision that gophertunnel is right. Entries whose packets no
+longer diverge are reported as `resolved_accepted` so the baseline cannot keep
+accepting differences that no longer exist.
 
 ## Current scope
 

@@ -15,6 +15,7 @@ import (
 	"protocolgen/internal/claims"
 	"protocolgen/internal/emitgo"
 	"protocolgen/internal/emitrust"
+	"protocolgen/internal/gophertunneloracle"
 	"protocolgen/internal/ingest"
 	"protocolgen/internal/manifest"
 	"protocolgen/internal/parity"
@@ -41,6 +42,8 @@ func main() {
 		err = runEmitRust(os.Args[2:])
 	case "parity":
 		err = runParity(os.Args[2:])
+	case "verify-gophertunnel":
+		err = runVerifyGophertunnel(os.Args[2:])
 	case "hash-source":
 		err = runHashSource(os.Args[2:])
 	default:
@@ -54,13 +57,14 @@ func main() {
 }
 
 func usage() {
-	fmt.Fprintln(os.Stderr, `usage: protocolgen <reconcile|ingest|validate|emit-go|emit-rust|parity|hash-source> [flags]
+	fmt.Fprintln(os.Stderr, `usage: protocolgen <reconcile|ingest|validate|emit-go|emit-rust|parity|verify-gophertunnel|hash-source> [flags]
 
 reconcile lowers one or both explicit source checkouts and writes manifest v2.
 ingest lowers one source to auditable machine-derived claims JSON.
 validate checks a canonical manifest and all fingerprint metadata.
 emit-go and emit-rust consume only a canonical manifest.
 parity compares a canonical manifest with Axolotl's public v1 wire manifest.
+verify-gophertunnel compares a canonical manifest with a pinned gophertunnel checkout and writes a JSON report.
 hash-source prints the deterministic source-tree digest for a lock file.`)
 }
 
@@ -268,6 +272,36 @@ func runParity(args []string) error {
 	}
 	fmt.Println("Axolotl v1 parity: byte-equivalence normalization matched")
 	return nil
+}
+
+func runVerifyGophertunnel(args []string) error {
+	fs := flag.NewFlagSet("verify-gophertunnel", flag.ContinueOnError)
+	manifestPath := fs.String("manifest", "", "canonical manifest v2 JSON")
+	lockPath := fs.String("lock", "tools/gophertunnel-oracle/lock.json", "gophertunnel oracle lock JSON")
+	acceptedPath := fs.String("accepted", "tools/gophertunnel-oracle/accepted-divergences.json", "reviewed accepted-divergences JSON")
+	gophertunnelPath := fs.String("gophertunnel", "", "existing gophertunnel checkout at the locked commit")
+	cacheDir := fs.String("cache-dir", "", "cache directory for a runtime clone when -gophertunnel is omitted")
+	reportPath := fs.String("report", "gophertunnel-report.json", "machine-readable report output JSON")
+	failOnUnaccepted := fs.Bool("fail-on-unaccepted", true, "exit non-zero when a divergence is not in the accepted baseline")
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+	if *manifestPath == "" {
+		return fmt.Errorf("-manifest is required")
+	}
+	report, err := gophertunneloracle.CompareFile(gophertunneloracle.Options{
+		ManifestPath:     *manifestPath,
+		LockPath:         *lockPath,
+		AcceptedPath:     *acceptedPath,
+		GophertunnelPath: *gophertunnelPath,
+		CacheDir:         *cacheDir,
+		ReportPath:       *reportPath,
+		FailOnUnaccepted: *failOnUnaccepted,
+	})
+	if report.SchemaVersion != 0 {
+		fmt.Print(gophertunneloracle.Summary(report, *reportPath))
+	}
+	return err
 }
 
 func runHashSource(args []string) error {
