@@ -74,7 +74,9 @@ This produces:
 canonical 229-packet Cereal manifest, and matching Go and Rust outputs generated
 from the pinned Endstone dump. Its `corrections/` directory contains
 fingerprinted, evidence-backed fixes for source defects; each correction stops
-applying if the pinned source changes.
+applying if the pinned source changes. The Mojang pin points at the raw official
+JSON. protocolgen applies its own corrections while ingesting that source; it
+does not require a preprocessed checkout or bpd-fixer.
 
 For real generation, replace the fixture paths with immutable local Mojang and
 Endstone checkouts and record their revisions and directory hashes in the
@@ -97,6 +99,18 @@ go run ./cmd/protocolgen emit-go \
 go run ./cmd/protocolgen emit-rust \
   -manifest generated/1.26.40/manifest.json \
   -out generated/1.26.40/rust
+```
+
+The raw Mojang side can be inspected independently with:
+
+```sh
+go run ./cmd/protocolgen ingest \
+  -kind mojang \
+  -root /path/to/bedrock-protocol-docs/json \
+  -lock generated/1.26.40/source-lock.json \
+  -id mojang \
+  -corrections generated/1.26.40/corrections/mojang \
+  -out /tmp/mojang-2168-claims.json
 ```
 
 ## Why the manifest matters

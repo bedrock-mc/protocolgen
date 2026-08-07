@@ -7,7 +7,7 @@ locked protocol snapshot, and emitters consume only the resulting manifest:
 ```text
 source lock + pinned source trees
         │
-        ├─ Mojang/bpd-corrected JSON frontend
+        ├─ raw Mojang JSON frontend
         └─ Endstone dump frontend
                     │
              complete claims + pins
@@ -43,14 +43,16 @@ schemas, BDS binaries, captures, Prismarine data, or proprietary corpora.
 The lock and every frontend reject mixing Minecraft 1.26.40/protocol 2168 with
 1.26.50/protocol 2169.
 
-Mojang/bpd-corrected JSON supplies order and declared semantics, but may have
-wrong requiredness, enum values, or types. Endstone/BDS dumps supply a strong
+Raw Mojang JSON supplies order and declared semantics, but may have wrong
+requiredness, enum values, or types. Endstone/BDS dumps supply an independent,
 runtime-shaped skeleton, but C++ `std::string` is not automatically UTF-8.
-bpd-fixer corrections are accepted only through the v2 correction format, in
-which every operation names its source locator, exact pre-patch node hash,
-complete pre-patch context hash, post-patch hash, reason, and evidence. Other
-oracles (Cloudburst, gophertunnel, PMMP) are evidence or assistive inputs, not
-hidden precedence rules.
+Neither source silently wins. Known Mojang defects are represented directly as
+v2 corrections, where every operation names its source locator, exact
+pre-patch node hash, complete pre-patch context hash, post-patch hash, reason,
+and evidence. Cloudburst, gophertunnel, PMMP, and corrected third-party views
+may identify a discrepancy, but no proposed fix becomes canonical without a
+pinned, reviewable wire-layout source. They are evidence or assistive inputs,
+not generation dependencies or hidden precedence rules.
 
 ## Reconciliation and auditability
 

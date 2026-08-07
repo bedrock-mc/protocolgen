@@ -8,9 +8,9 @@
     {
       "id": "mojang",
       "kind": "mojang",
-      "revision": "bpd-fixer:529074ae7b332d1a5990de8fe9775edac16f191d/mojang:0e00fe80f4f3c71572ff6429de40146d1f4412fc",
-      "digest": "sha256:8484bfa294f9dd48b8b2dc6a2c7b9db4111f6e0a2a190c9a1b968f4f0937a246",
-      "locator": "https://github.com/TwistedAsylumMC/bpd-fixer/tree/529074ae7b332d1a5990de8fe9775edac16f191d/output/json",
+      "revision": "0e00fe80f4f3c71572ff6429de40146d1f4412fc",
+      "digest": "sha256:b1f117a011dbdff7fddff96f978d73c13ce8aafa44eea8c6c712a2c79a087c37",
+      "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/0e00fe80f4f3c71572ff6429de40146d1f4412fc/json",
       "minecraft_version": "1.26.40",
       "protocol_version": 2168
     },

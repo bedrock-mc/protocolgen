@@ -179,7 +179,13 @@ func lowerMojangFields(lowerer *mojangLowerer, packetID uint32, packetName strin
 		ordinal int
 	}
 	propertiesSorted := make([]property, 0, len(properties))
-	for name, rawProperty := range properties {
+	names := make([]string, 0, len(properties))
+	for name := range properties {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	for _, name := range names {
+		rawProperty := properties[name]
 		object, ok := asMap(rawProperty)
 		if !ok {
 			return nil, fmt.Errorf("Mojang %s property %s is not an object", file, name)

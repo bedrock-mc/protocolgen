@@ -443,6 +443,17 @@ func TestMojangRejectsMixedProtocolDocuments(t *testing.T) {
 	}
 }
 
+func TestMojangMissingOrdinalDiagnosticIsDeterministic(t *testing.T) {
+	properties := map[string]any{
+		"Value": map[string]any{"type": "integer"},
+		"Key":   map[string]any{"type": "string"},
+	}
+	_, err := lowerMojangFields(nil, 0, "MapEntry", manifest.DirectionUnknown, "MapEntry.json", properties, nil, "")
+	if err == nil || !strings.Contains(err.Error(), "property Key has no explicit ordinal") {
+		t.Fatalf("lowerMojangFields error = %v, want the first lexical property", err)
+	}
+}
+
 func TestEndstoneSpecialUnknownsStayReachableUnresolved(t *testing.T) {
 	lowerer := &endstoneLowerer{types: map[string]any{}, enums: map[string]any{}, active: map[string]bool{}}
 	for _, name := range []string{"cereal::UnknownBuiltin"} {

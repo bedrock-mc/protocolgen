@@ -66,7 +66,7 @@ hash-source prints the deterministic source-tree digest for a lock file.`)
 func runReconcile(args []string) error {
 	fs := flag.NewFlagSet("reconcile", flag.ContinueOnError)
 	lockPath := fs.String("lock", "", "source lock JSON")
-	mojangRoot := fs.String("mojang", "", "local Mojang/bpd-corrected checkout or json directory")
+	mojangRoot := fs.String("mojang", "", "local raw Mojang checkout or json directory")
 	mojangID := fs.String("mojang-id", "mojang", "source-lock id for -mojang")
 	mojangCorrections := fs.String("mojang-corrections", "", "fingerprinted correction directory for -mojang")
 	endstoneRoot := fs.String("endstone", "", "local Endstone dump checkout")
