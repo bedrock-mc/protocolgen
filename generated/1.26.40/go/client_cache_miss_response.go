@@ -8,20 +8,7 @@ type ClientCacheMissResponse struct {
 
 // Marshal reads or writes ClientCacheMissResponse using its canonical wire layout.
 func (x *ClientCacheMissResponse) Marshal(io IO) {
-	if !io.Reading() && uint64(len(x.MissingBlobs)) > uint64(^uint32(0)) {
-		io.InvalidValue(len(x.MissingBlobs), "collection length overflows uint32")
-		return
-	}
-	count1 := uint32(len(x.MissingBlobs))
-	io.Varuint32(&count1)
-	if io.Reading() {
-		if uint64(count1) > uint64(^uint(0)>>1) {
-			io.InvalidValue(count1, "collection length overflows int")
-			return
-		}
-		x.MissingBlobs = make([]MissingBlobData, int(count1))
-	}
-	for index2 := range x.MissingBlobs {
-		x.MissingBlobs[index2].Marshal(io)
-	}
+	FuncSlice(io, &x.MissingBlobs, io.Varuint32, func(value *MissingBlobData) {
+		value.Marshal(io)
+	})
 }

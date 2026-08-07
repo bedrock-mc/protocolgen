@@ -3,12 +3,12 @@
 package protocol2168
 
 type TakeItemActor struct {
-	ItemRuntimeID  ActorRuntimeID
-	ActorRuntimeID ActorRuntimeID
+	ItemRuntimeID  uint64
+	ActorRuntimeID uint64
 }
 
 // Marshal reads or writes TakeItemActor using its canonical wire layout.
 func (x *TakeItemActor) Marshal(io IO) {
-	x.ItemRuntimeID.Marshal(io)
-	x.ActorRuntimeID.Marshal(io)
+	io.ActorRuntimeID(&x.ItemRuntimeID)
+	io.ActorRuntimeID(&x.ActorRuntimeID)
 }

@@ -12,12 +12,5 @@ type StructureTemplateDataResponse struct {
 func (x *StructureTemplateDataResponse) Marshal(io IO) {
 	io.String(&x.StructureName)
 	io.NBT(&x.StructureSNBT)
-	enumValue1 := uint8(x.ResponseType)
-	io.Uint8(&enumValue1)
-	x.ResponseType = StructureTemplateResponseType(enumValue1)
-	switch int64(enumValue1) {
-	case 0, 1, 2:
-	default:
-		io.InvalidValue(enumValue1, "unknown enum value")
-	}
+	IntegerFunc(&x.ResponseType, io.Uint8)
 }

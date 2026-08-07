@@ -3,7 +3,7 @@
 package protocol2168
 
 type Emote struct {
-	ActorRuntimeId   ActorRuntimeID
+	ActorRuntimeId   uint64
 	EmoteId          string
 	EmoteLengthTicks uint32
 	Xuid             string
@@ -13,7 +13,7 @@ type Emote struct {
 
 // Marshal reads or writes Emote using its canonical wire layout.
 func (x *Emote) Marshal(io IO) {
-	x.ActorRuntimeId.Marshal(io)
+	io.ActorRuntimeID(&x.ActorRuntimeId)
 	io.String(&x.EmoteId)
 	io.Varuint32(&x.EmoteLengthTicks)
 	io.String(&x.Xuid)

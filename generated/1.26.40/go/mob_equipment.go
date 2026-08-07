@@ -3,7 +3,7 @@
 package protocol2168
 
 type MobEquipment struct {
-	TargetRuntimeID ActorRuntimeID
+	TargetRuntimeID uint64
 	Item            CerealizerNetworkItemStackDescriptorSerializedData
 	Slot            uint8
 	SelectedSlot    uint8
@@ -12,7 +12,7 @@ type MobEquipment struct {
 
 // Marshal reads or writes MobEquipment using its canonical wire layout.
 func (x *MobEquipment) Marshal(io IO) {
-	x.TargetRuntimeID.Marshal(io)
+	io.ActorRuntimeID(&x.TargetRuntimeID)
 	x.Item.Marshal(io)
 	io.Uint8(&x.Slot)
 	io.Uint8(&x.SelectedSlot)

@@ -10,14 +10,7 @@ type PositionTrackingDBServerBroadcast struct {
 
 // Marshal reads or writes PositionTrackingDBServerBroadcast using its canonical wire layout.
 func (x *PositionTrackingDBServerBroadcast) Marshal(io IO) {
-	enumValue1 := uint8(x.Action)
-	io.Uint8(&enumValue1)
-	x.Action = PositionTrackingDBServerBroadcastAction(enumValue1)
-	switch int64(enumValue1) {
-	case 0, 1, 2:
-	default:
-		io.InvalidValue(enumValue1, "unknown enum value")
-	}
+	IntegerFunc(&x.Action, io.Uint8)
 	x.Id.Marshal(io)
 	io.NBT(&x.PositionTrackingData)
 }

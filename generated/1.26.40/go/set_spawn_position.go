@@ -11,14 +11,7 @@ type SetSpawnPosition struct {
 
 // Marshal reads or writes SetSpawnPosition using its canonical wire layout.
 func (x *SetSpawnPosition) Marshal(io IO) {
-	enumValue1 := int32(x.SpawnPositionType)
-	io.Varint32(&enumValue1)
-	x.SpawnPositionType = SpawnPositionType(enumValue1)
-	switch int64(enumValue1) {
-	case 0, 1:
-	default:
-		io.InvalidValue(enumValue1, "unknown enum value")
-	}
+	IntegerFunc(&x.SpawnPositionType, io.Varint32)
 	x.BlockPosition.Marshal(io)
 	x.DimensionType.Marshal(io)
 	x.SpawnBlockPos.Marshal(io)

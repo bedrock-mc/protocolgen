@@ -7,8 +7,8 @@ type UpdateTrade struct {
 	Type              uint8
 	Size              int32
 	TraderTier        int32
-	EntityUniqueId    ActorUniqueID
-	LastTradingPlayer ActorUniqueID
+	EntityUniqueId    int64
+	LastTradingPlayer int64
 	DisplayName       string
 	UseNewTradeScreen bool
 	UsingEconomyTrade bool
@@ -21,8 +21,8 @@ func (x *UpdateTrade) Marshal(io IO) {
 	io.Uint8(&x.Type)
 	io.Varint32(&x.Size)
 	io.Varint32(&x.TraderTier)
-	x.EntityUniqueId.Marshal(io)
-	x.LastTradingPlayer.Marshal(io)
+	io.ActorUniqueID(&x.EntityUniqueId)
+	io.ActorUniqueID(&x.LastTradingPlayer)
 	io.String(&x.DisplayName)
 	io.Bool(&x.UseNewTradeScreen)
 	io.Bool(&x.UsingEconomyTrade)

@@ -18,11 +18,7 @@ func (x *PlaySound) Marshal(io IO) {
 	io.Float32(&x.Volume)
 	io.Float32(&x.Pitch)
 	io.Varint32(&x.LoopCount)
-	io.Bool(&x.ServerSoundHandle.set)
-	if x.ServerSoundHandle.set {
-		x.ServerSoundHandle.val.Marshal(io)
-	} else if io.Reading() {
-		var zero ServerSoundHandle
-		x.ServerSoundHandle.val = zero
-	}
+	OptionalFunc(io, &x.ServerSoundHandle, func(value *ServerSoundHandle) {
+		value.Marshal(io)
+	})
 }

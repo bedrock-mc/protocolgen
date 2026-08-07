@@ -3,23 +3,16 @@
 package protocol2168
 
 type MovementEffect struct {
-	TargetRuntimeID ActorRuntimeID
+	TargetRuntimeID uint64
 	EffectID        MovementEffectType
 	EffectDuration  int32
-	Tick            PlayerInputTick
+	Tick            uint64
 }
 
 // Marshal reads or writes MovementEffect using its canonical wire layout.
 func (x *MovementEffect) Marshal(io IO) {
-	x.TargetRuntimeID.Marshal(io)
-	enumValue1 := int32(x.EffectID)
-	io.Varint32(&enumValue1)
-	x.EffectID = MovementEffectType(enumValue1)
-	switch int64(enumValue1) {
-	case 0, 1, 2:
-	default:
-		io.InvalidValue(enumValue1, "unknown enum value")
-	}
+	io.ActorRuntimeID(&x.TargetRuntimeID)
+	IntegerFunc(&x.EffectID, io.Varint32)
 	io.Varint32(&x.EffectDuration)
-	x.Tick.Marshal(io)
+	io.PlayerInputTick(&x.Tick)
 }

@@ -33,13 +33,114 @@ func TestGenerateConsumesOnlyCanonicalManifest(t *testing.T) {
 	if !strings.Contains(files["vocabulary.go"], "type Vocabulary struct") || !strings.Contains(files["vocabulary.go"], "Maybe Optional[string]") || !strings.Contains(files["ids.go"], "IDVocabulary uint32 = 1") {
 		t.Fatalf("generated output omitted packet definition or ID:\n%s\n%s", files["vocabulary.go"], files["ids.go"])
 	}
-	for _, want := range []string{"func (x *Vocabulary) Marshal(io IO)", "io.Uint8(&x.Value)", "io.Bool(&x.Maybe.set)", "io.String(&x.Maybe.val)"} {
+	for _, want := range []string{"func (x *Vocabulary) Marshal(io IO)", "io.Uint8(&x.Value)", "OptionalFunc(io, &x.Maybe, io.String)"} {
 		if !strings.Contains(files["vocabulary.go"], want) {
 			t.Fatalf("generated packet marshal omits %q:\n%s", want, files["vocabulary.go"])
 		}
 	}
 	if strings.Contains(files["vocabulary.go"], "Shape{") || strings.Contains(files["vocabulary.go"], "func (p *Vocabulary) Encode") {
 		t.Fatalf("generated packet exposed runtime schema or placeholder codecs:\n%s", files["vocabulary.go"])
+	}
+}
+
+func TestGenerateUsesRuntimeHelpersForEnumsAndOptionals(t *testing.T) {
+	value := manifest.Enum("u8", manifest.EnumValue{Name: "Zero", Value: 0}, manifest.EnumValue{Name: "One", Value: 1})
+	entry := manifest.Struct(manifest.Field{
+		Ordinal:    0,
+		Name:       "Value",
+		Encode:     manifest.Primitive("u8"),
+		Symmetry:   manifest.Symmetric,
+		Provenance: manifest.Provenance{Pins: []string{"fixture"}},
+	})
+	m := manifest.Manifest{
+		SchemaVersion: 2,
+		Target:        manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168},
+		Sources:       []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:helpers", MinecraftVersion: "fixture", ProtocolVersion: 2168}},
+		Packets: []manifest.Packet{{ID: 1, Name: "HelperPacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{
+			{Ordinal: 0, Name: "Kind", Encode: value, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+			{Ordinal: 1, Name: "Maybe", Encode: manifest.Optional(manifest.Primitive("i32le")), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+			{Ordinal: 2, Name: "Kinds", Encode: manifest.Array(manifest.Primitive("var_u32"), value), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+			{Ordinal: 3, Name: "Entries", Encode: manifest.Array(manifest.Primitive("var_u32"), entry), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+			{Ordinal: 4, Name: "MaybeKinds", Encode: manifest.Optional(manifest.Array(manifest.Primitive("var_u32"), value)), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		}}},
+	}
+	files, err := Generate(m, "wiregen")
+	if err != nil {
+		t.Fatalf("Generate: %v", err)
+	}
+	source := files["helper.go"]
+	for _, want := range []string{
+		"IntegerFunc(&x.Kind, io.Uint8)",
+		"OptionalFunc(io, &x.Maybe, io.Int32)",
+		"IntegerFunc(value, io.Uint8)",
+		"value.Marshal(io)",
+	} {
+		if !strings.Contains(source, want) {
+			t.Fatalf("generated packet omitted runtime helper %q:\n%s", want, source)
+		}
+	}
+	if strings.Contains(source, "io.Reading()") || strings.Contains(source, "unknown enum value") {
+		t.Fatalf("ordinary enum/optional mechanics leaked into packet code:\n%s", source)
+	}
+	if strings.Contains(source, "item := *value") || strings.Contains(source, "*value = item") {
+		t.Fatalf("callback codec copied values instead of using the supplied pointer:\n%s", source)
+	}
+	if !strings.Contains(source, "FuncSlice(io, value, io.Varuint32") {
+		t.Fatalf("nested collection callback did not retain the supplied slice pointer:\n%s", source)
+	}
+}
+
+func TestGenerateKeepsUnionValidation(t *testing.T) {
+	union := manifest.Union(manifest.Primitive("u8"),
+		manifest.Variant{Value: 0, Name: "First", Encode: manifest.Void()},
+		manifest.Variant{Value: 1, Name: "Second", Encode: manifest.Void()},
+	)
+	m := manifest.Manifest{
+		SchemaVersion: 2,
+		Target:        manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168},
+		Sources:       []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:union", MinecraftVersion: "fixture", ProtocolVersion: 2168}},
+		Packets:       []manifest.Packet{{ID: 1, Name: "UnionPacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{Ordinal: 0, Name: "Value", Encode: union, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}},
+	}
+	files, err := Generate(m, "wiregen")
+	if err != nil {
+		t.Fatalf("Generate: %v", err)
+	}
+	marshal := generatedSource(files)
+	if !strings.Contains(marshal, "unknown union tag") {
+		t.Fatalf("union discriminator validation was removed:\n%s", marshal)
+	}
+	for name, source := range files {
+		if strings.Contains(source, "unknown union tag") && strings.Contains(source, "io.Reading()") {
+			t.Fatalf("union direction mechanics leaked into %s:\n%s", name, source)
+		}
+	}
+}
+
+func TestGenerateIncludesConcreteCodecRuntime(t *testing.T) {
+	m := manifest.Manifest{
+		SchemaVersion: 2,
+		Target:        manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168},
+		Sources:       []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:runtime", MinecraftVersion: "fixture", ProtocolVersion: 2168}},
+		Packets:       []manifest.Packet{{ID: 1, Name: "RuntimePacket", Direction: manifest.DirectionClientbound}},
+	}
+	files, err := Generate(m, "wiregen")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for name, wants := range map[string][]string{
+		"codec.go":  {"type IO interface", "func IntegerFunc", "func OptionalFunc", "func UnionFunc", "func FuncSlice"},
+		"reader.go": {"type Reader struct", "func NewReader", "func (r *Reader) NBT", "func (r *Reader) SliceLength"},
+		"writer.go": {"type Writer struct", "func NewWriter", "func (w *Writer) NBT", "func (w *Writer) Data"},
+	} {
+		source, ok := files[name]
+		if !ok {
+			t.Fatalf("generated output omits %s", name)
+		}
+		for _, want := range wants {
+			if !strings.Contains(source, want) {
+				t.Fatalf("%s omits %q:\n%s", name, want, source)
+			}
+		}
 	}
 }
 
@@ -56,7 +157,7 @@ func TestGenerateWrapsRepeatedUnionPayloadTypes(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	marshal := files["marshal.go"]
+	marshal := generatedSource(files)
 	if strings.Count(marshal, "case Message:") != 1 || !strings.Contains(marshal, "case ChoiceChoiceSecond:") {
 		t.Fatalf("repeated union payloads were not made tag-distinct:\n%s", marshal)
 	}
@@ -123,7 +224,7 @@ func TestGenerateUsesCanonicalNamedTypesAndOrderedMapEntries(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Generate: %v", err)
 	}
-	source := files["types.go"] + files["biome_definition_list.go"]
+	source := generatedSource(files)
 	if !strings.Contains(source, "type BiomeDefinitionData struct") || !strings.Contains(source, "[]OrderedEntry[uint16, BiomeDefinitionData]") {
 		t.Fatalf("generated Go did not use canonical ordered map definitions:\n%s", source)
 	}
@@ -139,7 +240,7 @@ func TestGenerateUsesTypedUnionInterface(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Generate: %v", err)
 	}
-	source := files["types.go"] + files["sound.go"]
+	source := generatedSource(files)
 	if !strings.Contains(source, "type SoundDataEvent interface") || !strings.Contains(source, "func (SoundDataEventSetVolume) isSoundDataEvent()") || strings.Contains(source, "Tag int64") {
 		t.Fatalf("generated Go did not emit a typed union interface:\n%s", source)
 	}
@@ -151,10 +252,16 @@ func TestGenerateSplitsPacketsAndSharedDefinitions(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, name := range []string{"ids.go", "types.go", "enums.go", "login.go"} {
+	for _, name := range []string{"ids.go", "types.go", "login.go"} {
 		if _, ok := files[name]; !ok {
 			t.Fatalf("generated files omit %s: %v", name, files)
 		}
+	}
+	if _, ok := files["marshal.go"]; ok {
+		t.Fatalf("generated output unexpectedly contains monolithic marshal.go")
+	}
+	if _, ok := files["enums.go"]; ok {
+		t.Fatalf("generated output unexpectedly contains monolithic enums.go")
 	}
 	if strings.Contains(files["login.go"], "LoginPacket") || !strings.Contains(files["login.go"], "type Login struct") {
 		t.Fatalf("packet name was not cleaned:\n%s", files["login.go"])
@@ -162,6 +269,14 @@ func TestGenerateSplitsPacketsAndSharedDefinitions(t *testing.T) {
 	if _, ok := files["wire.go"]; ok {
 		t.Fatalf("definition-only output unexpectedly contains wire.go")
 	}
+}
+
+func generatedSource(files map[string]string) string {
+	var b strings.Builder
+	for _, source := range files {
+		b.WriteString(source)
+	}
+	return b.String()
 }
 
 func TestPublicNamesDropSchemaScaffolding(t *testing.T) {
@@ -181,6 +296,26 @@ func TestPublicNamesDropSchemaScaffolding(t *testing.T) {
 	}
 }
 
+func TestEnumVariantNamesAreIdiomaticGo(t *testing.T) {
+	for input, want := range map[string]string{
+		"NONE":                    "None",
+		"START_ATTACKING":         "StartAttacking",
+		"FISHHOOK_FISHPOS":        "FishhookFishPosition",
+		"FISHHOOK_HOOKTIME":       "FishhookHookTime",
+		"DRAGON_START_DEATH_ANIM": "DragonStartDeathAnimation",
+		"SILVERFISH_MERGE_ANIM":   "SilverfishMergeAnimation",
+		"PRIMED_TNT":              "PrimedTNT",
+		"PRIME_TNTCART":           "PrimeTNTCart",
+		"Primed_Tnt":              "PrimedTNT",
+		"OSX":                     "OSX",
+		"UWP":                     "UWP",
+	} {
+		if got := enumVariantName(input); got != want {
+			t.Fatalf("enumVariantName(%q) = %q, want %q", input, got, want)
+		}
+	}
+}
+
 func TestGenerateMapsCanonicalSemanticsToNativeGoTypes(t *testing.T) {
 	vec3 := manifest.Node{Kind: manifest.KindStruct, Semantic: "Vec3", TypeID: "Vec3", Fields: []manifest.Field{
 		{Ordinal: 0, Name: "X", Encode: manifest.Primitive("f32le"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
@@ -190,18 +325,22 @@ func TestGenerateMapsCanonicalSemanticsToNativeGoTypes(t *testing.T) {
 	colour := manifest.Node{Kind: manifest.KindStruct, Semantic: "mce::Color", TypeID: "mce::Color", Fields: []manifest.Field{
 		{Ordinal: 0, Name: "Color", Encode: manifest.Primitive("i32le"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
 	}}
+	runtimeID := manifest.Node{Kind: manifest.KindStruct, Semantic: "ActorRuntimeID", TypeID: "ActorRuntimeID", Fields: []manifest.Field{{Ordinal: 0, Name: "Value", Encode: manifest.Primitive("var_u64"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}
+	uniqueID := manifest.Node{Kind: manifest.KindStruct, Semantic: "ActorUniqueID", TypeID: "ActorUniqueID", Fields: []manifest.Field{{Ordinal: 0, Name: "Value", Encode: manifest.Primitive("zigzag_i64"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}
 	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:native-go", MinecraftVersion: "fixture", ProtocolVersion: 2168}}, Packets: []manifest.Packet{{ID: 1, Name: "NativePacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{
 		{Ordinal: 0, Name: "ID", Encode: manifest.Primitive("uuid"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
 		{Ordinal: 1, Name: "Position", Encode: vec3, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
 		{Ordinal: 2, Name: "Colour", Encode: colour, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
 		{Ordinal: 3, Name: "Data", Encode: manifest.Primitive("nbt_le"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		{Ordinal: 4, Name: "Runtime", Encode: runtimeID, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		{Ordinal: 5, Name: "Unique", Encode: uniqueID, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
 	}}}}
 	files, err := Generate(m, "wiregen")
 	if err != nil {
 		t.Fatal(err)
 	}
 	source := files["native.go"]
-	for _, want := range []string{"uuid.UUID", "mgl32.Vec3", "color.RGBA", "[]byte", `"github.com/google/uuid"`, `"github.com/go-gl/mathgl/mgl32"`, `"image/color"`} {
+	for _, want := range []string{"uuid.UUID", "mgl32.Vec3", "color.RGBA", "[]byte", "Runtime  uint64", "Unique   int64", `"github.com/google/uuid"`, `"github.com/go-gl/mathgl/mgl32"`, `"image/color"`} {
 		if !strings.Contains(source, want) {
 			t.Fatalf("native Go output omits %q:\n%s", want, source)
 		}
@@ -209,12 +348,46 @@ func TestGenerateMapsCanonicalSemanticsToNativeGoTypes(t *testing.T) {
 	if strings.Contains(files["types.go"], "type Vec3 struct") || strings.Contains(files["types.go"], "type MceColor struct") {
 		t.Fatalf("native Go types were redundantly regenerated:\n%s", files["types.go"])
 	}
+	if !strings.Contains(source, "io.ActorRuntimeID(&x.Runtime)") || !strings.Contains(source, "io.ActorUniqueID(&x.Unique)") {
+		t.Fatalf("semantic ID IO methods were not used:\n%s", source)
+	}
 }
 
 func TestNativeGoTypeRejectsMislabelledVector(t *testing.T) {
 	node := manifest.Node{Kind: manifest.KindStruct, TypeID: "Vec3", Fields: []manifest.Field{{Encode: manifest.Primitive("f64le")}}}
 	if _, matched, err := nativeGoType(node); !matched || err == nil {
 		t.Fatalf("nativeGoType matched=%v error=%v, want a closed failure", matched, err)
+	}
+}
+
+func TestSemanticIOCallUsesExactIdentifierCodecs(t *testing.T) {
+	tests := []struct {
+		typeID string
+		code   string
+		want   string
+	}{
+		{typeID: "ActorRuntimeID", code: "var_u64", want: "ActorRuntimeID"},
+		{typeID: "ActorRuntimeID", code: "zigzag_i64", want: "ActorRuntimeIDVarint64"},
+		{typeID: "ActorRuntimeID", code: "var_u32", want: "ActorRuntimeIDVaruint32"},
+		{typeID: "ActorRuntimeID", code: "var_i64", want: "SignedVarint64"},
+		{typeID: "ActorUniqueID", code: "zigzag_i64", want: "ActorUniqueID"},
+		{typeID: "ActorUniqueID", code: "i64le", want: "ActorUniqueIDInt64"},
+		{typeID: "ActorUniqueID", code: "u64le", want: "ActorUniqueIDUint64"},
+		{typeID: "ActorUniqueID", code: "var_u64", want: "ActorUniqueIDVaruint64"},
+		{typeID: "ActorUniqueID", code: "var_i64", want: "SignedVarint64"},
+	}
+	for _, test := range tests {
+		t.Run(test.typeID+"/"+test.code, func(t *testing.T) {
+			node := manifest.Node{Kind: manifest.KindStruct, TypeID: test.typeID, Fields: []manifest.Field{{Encode: manifest.Primitive(test.code)}}}
+			if method, ok := semanticIOCall(node); !ok || method != test.want {
+				t.Fatalf("semanticIOCall = (%q, %v), want (%q, true)", method, ok, test.want)
+			}
+		})
+	}
+
+	bad := manifest.Node{Kind: manifest.KindStruct, TypeID: "ActorUniqueID", Fields: []manifest.Field{{Encode: manifest.Primitive("f32le")}}}
+	if method, ok := semanticIOCall(bad); ok {
+		t.Fatalf("semanticIOCall returned %q for unsupported identifier layout", method)
 	}
 }
 

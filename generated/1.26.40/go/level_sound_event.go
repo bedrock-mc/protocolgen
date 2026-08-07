@@ -24,11 +24,5 @@ func (x *LevelSoundEvent) Marshal(io IO) {
 	io.Bool(&x.IsBaby)
 	io.Bool(&x.IsGlobal)
 	io.Int64(&x.ActorUniqueId)
-	io.Bool(&x.FireAtPosition.set)
-	if x.FireAtPosition.set {
-		io.Vec3(&x.FireAtPosition.val)
-	} else if io.Reading() {
-		var zero mgl32.Vec3
-		x.FireAtPosition.val = zero
-	}
+	OptionalFunc(io, &x.FireAtPosition, io.Vec3)
 }

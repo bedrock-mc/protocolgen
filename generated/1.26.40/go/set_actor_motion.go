@@ -5,14 +5,14 @@ package protocol2168
 import "github.com/go-gl/mathgl/mgl32"
 
 type SetActorMotion struct {
-	TargetRuntimeID ActorRuntimeID
+	TargetRuntimeID uint64
 	Motion          mgl32.Vec3
-	Tick            PlayerInputTick
+	Tick            uint64
 }
 
 // Marshal reads or writes SetActorMotion using its canonical wire layout.
 func (x *SetActorMotion) Marshal(io IO) {
-	x.TargetRuntimeID.Marshal(io)
+	io.ActorRuntimeID(&x.TargetRuntimeID)
 	io.Vec3(&x.Motion)
-	x.Tick.Marshal(io)
+	io.PlayerInputTick(&x.Tick)
 }

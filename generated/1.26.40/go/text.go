@@ -16,11 +16,5 @@ func (x *Text) Marshal(io IO) {
 	marshalTextBody(io, &x.Body)
 	io.String(&x.SenderSXUID)
 	io.String(&x.PlatformId)
-	io.Bool(&x.FilteredMessage.set)
-	if x.FilteredMessage.set {
-		io.String(&x.FilteredMessage.val)
-	} else if io.Reading() {
-		var zero string
-		x.FilteredMessage.val = zero
-	}
+	OptionalFunc(io, &x.FilteredMessage, io.String)
 }

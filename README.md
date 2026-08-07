@@ -71,19 +71,27 @@ This produces:
 
 - a deterministic JSON manifest containing the canonical wire protocol;
 - typed Go packet structures, one packet per file, with shared semantic types,
-  enums, closed union interfaces, ordered map entries, and real symmetric
-  `Marshal(IO)` methods that operate on the packet values;
+  idiomatic enums, closed union interfaces, ordered map entries, and real
+  symmetric `Marshal(IO)` methods that operate on packet values. The generated
+  package also includes reusable `IntegerFunc`, `OptionalFunc`,
+  `DoubleOptionalFunc`, `FuncSlice`, and `OrderedMap` helpers plus bounded
+  in-memory `Reader` and `Writer` implementations. Readers cap decoded
+  collections by default and expose `NewReaderWithLimit` when an application
+  needs a different bound;
 - typed Rust packet structures, one packet module per file, with shared types,
   native enums, checked `TryFrom<integer>` decoding, ordered map tuples, and
   payload-bearing enums for Cereal unions; and
 - packet IDs in both language outputs.
 
 Packet APIs use concise target-language names: the schema's transport-oriented
-`Packet` and `PacketPayload` suffixes do not leak into public type names. Both
-backends keep common definitions in `types` and `enums`; packet files contain
-only the packet definition. The canonical manifest is the sole wire-schema
-artifact rather than being duplicated as large runtime descriptors in every
-generated language.
+`Packet` and `PacketPayload` suffixes do not leak into public type names. Go
+places `Optional`/`OrderedEntry` in `types.go`, the shared codec helpers in
+`codec.go`, the bounded codecs in `reader.go` and `writer.go`, each named
+definition in its own file, and each packet in its own file. Rust keeps its
+shared definitions in `types.rs` and `enums.rs` and its packet modules under
+`src/packets`. The canonical manifest is the sole wire-schema artifact rather
+than being duplicated as large runtime descriptors in every generated
+language.
 
 Like sqlc's type overrides, each backend maps well-known wire semantics onto
 types native to its ecosystem without changing the manifest. Go uses

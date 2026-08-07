@@ -3,12 +3,12 @@
 package protocol2168
 
 type MapCreateLockedCopy struct {
-	OriginalMapId ActorUniqueID
-	NewMapId      ActorUniqueID
+	OriginalMapId int64
+	NewMapId      int64
 }
 
 // Marshal reads or writes MapCreateLockedCopy using its canonical wire layout.
 func (x *MapCreateLockedCopy) Marshal(io IO) {
-	x.OriginalMapId.Marshal(io)
-	x.NewMapId.Marshal(io)
+	io.ActorUniqueID(&x.OriginalMapId)
+	io.ActorUniqueID(&x.NewMapId)
 }

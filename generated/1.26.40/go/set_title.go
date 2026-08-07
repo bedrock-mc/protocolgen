@@ -15,14 +15,7 @@ type SetTitle struct {
 
 // Marshal reads or writes SetTitle using its canonical wire layout.
 func (x *SetTitle) Marshal(io IO) {
-	enumValue1 := int32(x.TitleType)
-	io.Varint32(&enumValue1)
-	x.TitleType = SetTitleTitleType(enumValue1)
-	switch int64(enumValue1) {
-	case 0, 1, 2, 3, 4, 5, 6, 7, 8:
-	default:
-		io.InvalidValue(enumValue1, "unknown enum value")
-	}
+	IntegerFunc(&x.TitleType, io.Varint32)
 	io.String(&x.TitleText)
 	io.Varint32(&x.FadeInTime)
 	io.Varint32(&x.StayTime)

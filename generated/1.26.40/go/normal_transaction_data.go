@@ -1,0 +1,14 @@
+// Code generated from canonical protocol manifest v2. DO NOT EDIT.
+
+package protocol2168
+
+type NormalTransactionData struct {
+	Actions InventoryTransactionData
+}
+
+func (NormalTransactionData) isInventoryTransactionTransactionValue() {}
+
+// Marshal reads or writes NormalTransactionData using its canonical wire layout.
+func (x *NormalTransactionData) Marshal(io IO) {
+	x.Actions.Marshal(io)
+}

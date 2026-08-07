@@ -30,84 +30,19 @@ func (x *ServerboundDiagnostics) Marshal(io IO) {
 	io.Float32(&x.AvgEndFrameTimeMS)
 	io.Float32(&x.AvgRemainderTimePercent)
 	io.Float32(&x.AvgUnaccountedTimePercent)
-	if !io.Reading() && uint64(len(x.MemoryCategoryValues)) > uint64(^uint32(0)) {
-		io.InvalidValue(len(x.MemoryCategoryValues), "collection length overflows uint32")
-		return
-	}
-	count1 := uint32(len(x.MemoryCategoryValues))
-	io.Varuint32(&count1)
-	if io.Reading() {
-		if uint64(count1) > uint64(^uint(0)>>1) {
-			io.InvalidValue(count1, "collection length overflows int")
-			return
-		}
-		x.MemoryCategoryValues = make([]MemoryMemoryCategoryCounter, int(count1))
-	}
-	for index2 := range x.MemoryCategoryValues {
-		x.MemoryCategoryValues[index2].Marshal(io)
-	}
-	if !io.Reading() && uint64(len(x.EntityDiagnostics)) > uint64(^uint32(0)) {
-		io.InvalidValue(len(x.EntityDiagnostics), "collection length overflows uint32")
-		return
-	}
-	count3 := uint32(len(x.EntityDiagnostics))
-	io.Varuint32(&count3)
-	if io.Reading() {
-		if uint64(count3) > uint64(^uint(0)>>1) {
-			io.InvalidValue(count3, "collection length overflows int")
-			return
-		}
-		x.EntityDiagnostics = make([]ECSProfilingDiagnosticsEntityDiagnosticTimingInfo, int(count3))
-	}
-	for index4 := range x.EntityDiagnostics {
-		x.EntityDiagnostics[index4].Marshal(io)
-	}
-	if !io.Reading() && uint64(len(x.SystemDiagnostics)) > uint64(^uint32(0)) {
-		io.InvalidValue(len(x.SystemDiagnostics), "collection length overflows uint32")
-		return
-	}
-	count5 := uint32(len(x.SystemDiagnostics))
-	io.Varuint32(&count5)
-	if io.Reading() {
-		if uint64(count5) > uint64(^uint(0)>>1) {
-			io.InvalidValue(count5, "collection length overflows int")
-			return
-		}
-		x.SystemDiagnostics = make([]ECSProfilingDiagnosticsSystemDiagnosticTimingInfo, int(count5))
-	}
-	for index6 := range x.SystemDiagnostics {
-		x.SystemDiagnostics[index6].Marshal(io)
-	}
-	if !io.Reading() && uint64(len(x.SystemCategories)) > uint64(^uint32(0)) {
-		io.InvalidValue(len(x.SystemCategories), "collection length overflows uint32")
-		return
-	}
-	count7 := uint32(len(x.SystemCategories))
-	io.Varuint32(&count7)
-	if io.Reading() {
-		if uint64(count7) > uint64(^uint(0)>>1) {
-			io.InvalidValue(count7, "collection length overflows int")
-			return
-		}
-		x.SystemCategories = make([]ECSProfilingDiagnosticsSystemCategory, int(count7))
-	}
-	for index8 := range x.SystemCategories {
-		x.SystemCategories[index8].Marshal(io)
-	}
-	if !io.Reading() && uint64(len(x.WhiskerScopes)) > uint64(^uint32(0)) {
-		io.InvalidValue(len(x.WhiskerScopes), "collection length overflows uint32")
-		return
-	}
-	count9 := uint32(len(x.WhiskerScopes))
-	io.Varuint32(&count9)
-	if io.Reading() {
-		if uint64(count9) > uint64(^uint(0)>>1) {
-			io.InvalidValue(count9, "collection length overflows int")
-			return
-		}
-		x.WhiskerScopes = make([]BedrockProfileWhiskerDiagnosticsScopeDataSummary, int(count9))
-	}
-	for index10 := range x.WhiskerScopes {
-		x.WhiskerScopes[index10].Marshal(io)
-	}
+	FuncSlice(io, &x.MemoryCategoryValues, io.Varuint32, func(value *MemoryMemoryCategoryCounter) {
+		value.Marshal(io)
+	})
+	FuncSlice(io, &x.EntityDiagnostics, io.Varuint32, func(value *ECSProfilingDiagnosticsEntityDiagnosticTimingInfo) {
+		value.Marshal(io)
+	})
+	FuncSlice(io, &x.SystemDiagnostics, io.Varuint32, func(value *ECSProfilingDiagnosticsSystemDiagnosticTimingInfo) {
+		value.Marshal(io)
+	})
+	FuncSlice(io, &x.SystemCategories, io.Varuint32, func(value *ECSProfilingDiagnosticsSystemCategory) {
+		value.Marshal(io)
+	})
+	FuncSlice(io, &x.WhiskerScopes, io.Varuint32, func(value *BedrockProfileWhiskerDiagnosticsScopeDataSummary) {
+		value.Marshal(io)
+	})
 }

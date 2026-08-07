@@ -9,13 +9,6 @@ type PositionTrackingDBClientRequest struct {
 
 // Marshal reads or writes PositionTrackingDBClientRequest using its canonical wire layout.
 func (x *PositionTrackingDBClientRequest) Marshal(io IO) {
-	enumValue1 := uint8(x.Action)
-	io.Uint8(&enumValue1)
-	x.Action = PositionTrackingDBClientRequestAction(enumValue1)
-	switch int64(enumValue1) {
-	case 0:
-	default:
-		io.InvalidValue(enumValue1, "unknown enum value")
-	}
+	IntegerFunc(&x.Action, io.Uint8)
 	x.Id.Marshal(io)
 }

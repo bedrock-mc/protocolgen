@@ -3,12 +3,12 @@
 package protocol2168
 
 type Camera struct {
-	CameraID       ActorUniqueID
-	TargetPlayerID ActorUniqueID
+	CameraID       int64
+	TargetPlayerID int64
 }
 
 // Marshal reads or writes Camera using its canonical wire layout.
 func (x *Camera) Marshal(io IO) {
-	x.CameraID.Marshal(io)
-	x.TargetPlayerID.Marshal(io)
+	io.ActorUniqueID(&x.CameraID)
+	io.ActorUniqueID(&x.TargetPlayerID)
 }

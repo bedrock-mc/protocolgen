@@ -14,19 +14,11 @@ type InventorySlot struct {
 func (x *InventorySlot) Marshal(io IO) {
 	io.Uint8(&x.ContainerId)
 	io.Varuint32(&x.Slot)
-	io.Bool(&x.FullContainerName.set)
-	if x.FullContainerName.set {
-		x.FullContainerName.val.Marshal(io)
-	} else if io.Reading() {
-		var zero FullContainerName
-		x.FullContainerName.val = zero
-	}
-	io.Bool(&x.StorageItem.set)
-	if x.StorageItem.set {
-		x.StorageItem.val.Marshal(io)
-	} else if io.Reading() {
-		var zero CerealizerNetworkItemStackDescriptorSerializedData
-		x.StorageItem.val = zero
-	}
+	OptionalFunc(io, &x.FullContainerName, func(value *FullContainerName) {
+		value.Marshal(io)
+	})
+	OptionalFunc(io, &x.StorageItem, func(value *CerealizerNetworkItemStackDescriptorSerializedData) {
+		value.Marshal(io)
+	})
 	x.Item.Marshal(io)
 }
