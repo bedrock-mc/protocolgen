@@ -38,6 +38,8 @@ pub enum DecodeError {
     NbtDepthExceeded,
     NbtMalformed(&'static str),
     UnknownPacketId(u32),
+    /// A known packet id that the sending peer is not permitted to use.
+    UnexpectedDirection(u32),
     /// Bytes remained inside a region that declared its own length.
     TrailingBytes(usize),
 }
@@ -64,6 +66,9 @@ impl fmt::Display for DecodeError {
             Self::NbtDepthExceeded => write!(f, "NBT nesting exceeds {MAX_NBT_DEPTH}"),
             Self::NbtMalformed(reason) => write!(f, "malformed NBT: {reason}"),
             Self::UnknownPacketId(id) => write!(f, "unknown packet id {id}"),
+            Self::UnexpectedDirection(id) => {
+                write!(f, "packet id {id} cannot be sent by this peer")
+            }
             Self::TrailingBytes(count) => write!(f, "{count} unread bytes in declared region"),
         }
     }
