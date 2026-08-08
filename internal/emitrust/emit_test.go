@@ -620,6 +620,11 @@ func TestGenerateRustEmitsDirectionRegistry(t *testing.T) {
 		"Self::Up => Direction::Serverbound,",
 		"pub fn decode_from(",
 		"if !packet.direction().permits(sender) {",
+		// A direction violation is distinct from an unrecognised id: one is a
+		// protocol violation, the other may just be a newer peer.
+		"return Err(wire::DecodeError::UnexpectedDirection(id));",
+		"pub fn decode_exact_from(",
+		"pub const ALL: &'static [PacketId] = &[",
 	} {
 		if !strings.Contains(packets, want) {
 			t.Fatalf("direction registry omitted %q:\n%s", want, packets)

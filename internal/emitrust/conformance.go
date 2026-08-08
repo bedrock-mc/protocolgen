@@ -15,7 +15,7 @@ func emitRoundtripTest(m manifest.Manifest, infos []packetInfo) string {
 	var b strings.Builder
 	b.WriteString("// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\n")
 	fmt.Fprintf(&b, "use %s::packets::*;\n", crate)
-	fmt.Fprintf(&b, "use %s::wire::{Decode, Encode};\n\n", crate)
+	fmt.Fprintf(&b, "use %s::wire::{self, Decode, Encode};\n\n", crate)
 	b.WriteString(`fn roundtrip<T>(name: &str)
 where
     T: Encode + Decode + Default + PartialEq + std::fmt::Debug,
@@ -35,5 +35,28 @@ fn every_packet_round_trips_its_default() {
 		fmt.Fprintf(&b, "    roundtrip::<%s>(%q);\n", info.name, info.name)
 	}
 	b.WriteString("}\n")
+	b.WriteString(`
+/// The direction table must reject a packet from the peer that cannot send it,
+/// on the id, before any field is read.
+#[test]
+fn every_packet_rejects_the_wrong_sender() {
+    for &id in PacketId::ALL {
+        let raw = id as u32;
+        let wrong = match id.direction() {
+            Direction::Bidirectional => continue,
+            Direction::Clientbound => Peer::Client,
+            Direction::Serverbound => Peer::Server,
+        };
+        let mut reader = wire::Reader::new(&[]);
+        assert!(
+            matches!(
+                Packet::decode_from(raw, wrong, &mut reader),
+                Err(wire::DecodeError::UnexpectedDirection(_))
+            ),
+            "{id:?} accepted a packet from the wrong peer"
+        );
+    }
+}
+`)
 	return b.String()
 }
