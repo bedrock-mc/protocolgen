@@ -11,6 +11,7 @@ impl Encode for bytes::Bytes {
 
 impl Decode for bytes::Bytes {
     fn decode(reader: &mut Reader<'_>) -> DecodeResult<Self> {
-        reader.read_byte_slice().map(bytes::Bytes::copy_from_slice)
+        let slice = reader.read_byte_slice()?;
+        Ok(reader.share(slice))
     }
 }

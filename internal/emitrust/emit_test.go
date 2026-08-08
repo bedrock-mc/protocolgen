@@ -587,11 +587,18 @@ func TestGenerateRustBoundsCollectionsBeforeAllocating(t *testing.T) {
 	packets := files["src/packets.rs"]
 	// Element minimum is 8 bytes, so the count is checked against both the
 	// element limit and the bytes actually remaining.
-	if !strings.Contains(packets, "wire::decode_collection::<wire::U64LE>(reader, 8, wire::MAX_COLLECTION_ELEMENTS)?") {
+	if !strings.Contains(packets, "wire::decode_collection::<wire::U64LE>(reader, 8)?") {
 		t.Fatalf("collection decode is not bounded:\n%s", packets)
 	}
 	wire := files["src/wire.rs"]
-	for _, want := range []string{"pub fn checked_count(", "LengthLimitExceeded", "LengthNotRepresentable"} {
+	for _, want := range []string{
+		"pub fn checked_count(",
+		"LengthLimitExceeded",
+		"LengthNotRepresentable",
+		// The bound is a reader setting, matching the Go backend, so a peer
+		// sending a legitimately large collection is recoverable.
+		"pub fn set_collection_limit(",
+	} {
 		if !strings.Contains(wire, want) {
 			t.Fatalf("wire runtime omitted %q", want)
 		}

@@ -8,10 +8,14 @@
 
 use std::fmt;
 
-/// Largest element count accepted for a length-prefixed collection.
+/// Default bound on the element count of a length-prefixed collection.
+///
+/// It is a default rather than a hard cap because a peer may legitimately send
+/// a larger collection; `Reader::set_collection_limit` raises or lowers it per
+/// decode, matching the Go backend's `NewReaderWithLimit`.
 pub const MAX_COLLECTION_ELEMENTS: usize = 4096;
 
-/// Largest byte count accepted for a length-prefixed byte buffer or string.
+/// Default bound on a length-prefixed byte buffer or string.
 pub const MAX_BYTE_BUFFER_LEN: usize = 16 * 1024 * 1024;
 
 /// Largest compound/list nesting depth accepted by the NBT scanners.
@@ -70,15 +74,70 @@ impl std::error::Error for DecodeError {}
 pub type DecodeResult<T> = Result<T, DecodeError>;
 
 /// Cursor over a byte slice. Every read is bounds-checked; no read allocates.
+///
+/// Constructing with [`Reader::from_shared`] lets byte-buffer and NBT fields
+/// decode as refcounted slices of the original buffer instead of copies.
 #[derive(Clone, Debug)]
 pub struct Reader<'a> {
     buf: &'a [u8],
     pos: usize,
+    shared: Option<&'a bytes::Bytes>,
+    collection_limit: usize,
+    byte_buffer_limit: usize,
 }
 
 impl<'a> Reader<'a> {
     pub fn new(buf: &'a [u8]) -> Self {
-        Self { buf, pos: 0 }
+        Self {
+            buf,
+            pos: 0,
+            shared: None,
+            collection_limit: MAX_COLLECTION_ELEMENTS,
+            byte_buffer_limit: MAX_BYTE_BUFFER_LEN,
+        }
+    }
+
+    /// Reads from `source` and shares its allocation with decoded byte buffers.
+    pub fn from_shared(source: &'a bytes::Bytes) -> Self {
+        Self { shared: Some(source), ..Self::new(source) }
+    }
+
+    pub fn collection_limit(&self) -> usize {
+        self.collection_limit
+    }
+
+    /// Raises or lowers the element bound applied to every length-prefixed
+    /// collection decoded through this reader.
+    pub fn set_collection_limit(&mut self, limit: usize) -> &mut Self {
+        self.collection_limit = limit;
+        self
+    }
+
+    pub fn byte_buffer_limit(&self) -> usize {
+        self.byte_buffer_limit
+    }
+
+    pub fn set_byte_buffer_limit(&mut self, limit: usize) -> &mut Self {
+        self.byte_buffer_limit = limit;
+        self
+    }
+
+    /// Refcounts `slice` against the source buffer when this reader shares one,
+    /// and copies otherwise.
+    ///
+    /// Private because `Bytes::slice_ref` panics on a slice from a different
+    /// allocation. Callers use `take_shared`, which can only pass its own.
+    fn share(&self, slice: &[u8]) -> bytes::Bytes {
+        match self.shared {
+            Some(source) => source.slice_ref(slice),
+            None => bytes::Bytes::copy_from_slice(slice),
+        }
+    }
+
+    /// Reads `count` bytes without copying when this reader shares its source.
+    pub fn take_shared(&mut self, count: usize) -> DecodeResult<bytes::Bytes> {
+        let slice = self.take(count)?;
+        Ok(self.share(slice))
     }
 
     pub fn remaining(&self) -> usize {
@@ -172,7 +231,12 @@ impl<'a> Reader<'a> {
     /// `min_element_size` is the smallest number of bytes one element can
     /// occupy, so a count that could not possibly be covered by the remaining
     /// input is rejected before allocation rather than after a partial read.
-    pub fn checked_count(
+    pub fn checked_count(&self, declared: u64, min_element_size: usize) -> DecodeResult<usize> {
+        self.checked_count_with(declared, min_element_size, self.collection_limit)
+    }
+
+    /// Applies an explicit bound instead of this reader's configured one.
+    pub fn checked_count_with(
         &self,
         declared: u64,
         min_element_size: usize,
@@ -192,7 +256,7 @@ impl<'a> Reader<'a> {
     /// Borrows a length-prefixed UTF-8 string without copying it.
     pub fn read_str(&mut self) -> DecodeResult<&'a str> {
         let declared = self.read_var_u32()? as u64;
-        let count = self.checked_count(declared, 1, MAX_BYTE_BUFFER_LEN)?;
+        let count = self.checked_count_with(declared, 1, self.byte_buffer_limit)?;
         let bytes = self.take(count)?;
         std::str::from_utf8(bytes).map_err(|_| DecodeError::InvalidUtf8)
     }
@@ -200,7 +264,7 @@ impl<'a> Reader<'a> {
     /// Borrows a length-prefixed byte buffer without copying it.
     pub fn read_byte_slice(&mut self) -> DecodeResult<&'a [u8]> {
         let declared = self.read_var_u32()? as u64;
-        let count = self.checked_count(declared, 1, MAX_BYTE_BUFFER_LEN)?;
+        let count = self.checked_count_with(declared, 1, self.byte_buffer_limit)?;
         self.take(count)
     }
 }
@@ -486,14 +550,13 @@ pub fn encode_collection<T: Encode>(writer: &mut Writer, values: &[T]) {
 }
 
 /// Reads a `VarUInt`-prefixed collection, bounding the declared count against
-/// `limit` and the remaining input before reserving.
+/// the reader's collection limit and the remaining input before reserving.
 pub fn decode_collection<T: Decode>(
     reader: &mut Reader<'_>,
     min_element_size: usize,
-    limit: usize,
 ) -> DecodeResult<Vec<T>> {
     let declared = u64::from(reader.read_var_u32()?);
-    let count = reader.checked_count(declared, min_element_size, limit)?;
+    let count = reader.checked_count(declared, min_element_size)?;
     let mut out = Vec::with_capacity(count);
     for _ in 0..count {
         out.push(T::decode(reader)?);
@@ -518,10 +581,9 @@ pub fn encode_collection_u32le<T: Encode>(writer: &mut Writer, values: &[T]) {
 pub fn decode_collection_u32le<T: Decode>(
     reader: &mut Reader<'_>,
     min_element_size: usize,
-    limit: usize,
 ) -> DecodeResult<Vec<T>> {
     let declared = u64::from(u32::from_le_bytes(reader.read_bytes::<4>()?));
-    let count = reader.checked_count(declared, min_element_size, limit)?;
+    let count = reader.checked_count(declared, min_element_size)?;
     let mut out = Vec::with_capacity(count);
     for _ in 0..count {
         out.push(T::decode(reader)?);
@@ -542,10 +604,9 @@ pub fn encode_map<K: Encode, V: Encode>(writer: &mut Writer, entries: &[(K, V)])
 pub fn decode_map<K: Decode, V: Decode>(
     reader: &mut Reader<'_>,
     min_entry_size: usize,
-    limit: usize,
 ) -> DecodeResult<Vec<(K, V)>> {
     let declared = u64::from(reader.read_var_u32()?);
-    let count = reader.checked_count(declared, min_entry_size, limit)?;
+    let count = reader.checked_count(declared, min_entry_size)?;
     let mut out = Vec::with_capacity(count);
     for _ in 0..count {
         let key = K::decode(reader)?;
@@ -635,7 +696,8 @@ impl Encode for bytes::Bytes {
 
 impl Decode for bytes::Bytes {
     fn decode(reader: &mut Reader<'_>) -> DecodeResult<Self> {
-        reader.read_byte_slice().map(bytes::Bytes::copy_from_slice)
+        let slice = reader.read_byte_slice()?;
+        Ok(reader.share(slice))
     }
 }
 
@@ -678,14 +740,14 @@ impl<'a> Reader<'a> {
         if declared < 0 {
             return Err(DecodeError::NegativeLength(declared));
         }
-        self.checked_count(declared as u64, 1, MAX_BYTE_BUFFER_LEN)
+        self.checked_count_with(declared as u64, 1, self.byte_buffer_limit())
     }
 
     fn nbt_name(&mut self, variant: NbtVariant) -> DecodeResult<()> {
         let count = match variant {
             NbtVariant::Network => {
                 let declared = u64::from(self.read_var_u32()?);
-                self.checked_count(declared, 1, MAX_BYTE_BUFFER_LEN)?
+                self.checked_count_with(declared, 1, self.byte_buffer_limit())?
             }
             NbtVariant::Persistent => usize::from(u16::from_le_bytes(self.read_bytes::<2>()?)),
         };
@@ -817,8 +879,8 @@ macro_rules! nbt_codec {
 
         impl Decode for $name {
             fn decode(reader: &mut Reader<'_>) -> DecodeResult<Self> {
-                let bytes = reader.read_nbt($variant)?;
-                Ok(Self(bytes::Bytes::copy_from_slice(bytes)))
+                let payload = reader.read_nbt($variant)?;
+                Ok(Self(reader.share(payload)))
             }
         }
     };
@@ -1012,7 +1074,7 @@ mod runtime_tests {
     fn declared_counts_are_bounded_before_allocation() {
         let reader = Reader::new(&[0u8; 4]);
         assert_eq!(
-            reader.checked_count(u64::from(u32::MAX), 1, MAX_COLLECTION_ELEMENTS),
+            reader.checked_count(u64::from(u32::MAX), 1),
             Err(DecodeError::LengthLimitExceeded {
                 limit: MAX_COLLECTION_ELEMENTS,
                 actual: u32::MAX as usize,
@@ -1020,10 +1082,37 @@ mod runtime_tests {
         );
         // Within the limit, but more elements than the input could hold.
         assert_eq!(
-            reader.checked_count(100, 8, MAX_COLLECTION_ELEMENTS),
+            reader.checked_count(100, 8),
             Err(DecodeError::LengthNotRepresentable { needed: 800, remaining: 4 })
         );
-        assert_eq!(reader.checked_count(4, 1, MAX_COLLECTION_ELEMENTS), Ok(4));
+        assert_eq!(reader.checked_count(4, 1), Ok(4));
+    }
+
+    /// A peer may legitimately exceed the default bound, so the limit is a
+    /// reader setting rather than a hard cap.
+    #[test]
+    fn the_collection_limit_is_configurable() {
+        let data = [0u8; 8192];
+        let mut reader = Reader::new(&data);
+        assert_eq!(reader.collection_limit(), MAX_COLLECTION_ELEMENTS);
+        assert!(reader.checked_count(8192, 1).is_err());
+        reader.set_collection_limit(8192);
+        assert_eq!(reader.checked_count(8192, 1), Ok(8192));
+    }
+
+    /// Byte buffers decoded from a shared source refcount it instead of copying.
+    #[test]
+    fn shared_readers_do_not_copy_byte_buffers() {
+        let source = bytes::Bytes::from_static(&[0x04, 0xde, 0xad, 0xbe, 0xef]);
+        let mut reader = Reader::from_shared(&source);
+        let decoded = <bytes::Bytes as Decode>::decode(&mut reader).expect("decode");
+        assert_eq!(decoded, source.slice(1..));
+        assert_eq!(decoded.as_ptr(), source[1..].as_ptr(), "buffer was copied");
+
+        // An unshared reader still decodes correctly, by copying.
+        let mut reader = Reader::new(&source);
+        let copied = <bytes::Bytes as Decode>::decode(&mut reader).expect("decode");
+        assert_eq!(copied, source.slice(1..));
     }
 
     #[test]

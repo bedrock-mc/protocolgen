@@ -38,14 +38,14 @@ impl<'a> Reader<'a> {
         if declared < 0 {
             return Err(DecodeError::NegativeLength(declared));
         }
-        self.checked_count(declared as u64, 1, MAX_BYTE_BUFFER_LEN)
+        self.checked_count_with(declared as u64, 1, self.byte_buffer_limit())
     }
 
     fn nbt_name(&mut self, variant: NbtVariant) -> DecodeResult<()> {
         let count = match variant {
             NbtVariant::Network => {
                 let declared = u64::from(self.read_var_u32()?);
-                self.checked_count(declared, 1, MAX_BYTE_BUFFER_LEN)?
+                self.checked_count_with(declared, 1, self.byte_buffer_limit())?
             }
             NbtVariant::Persistent => usize::from(u16::from_le_bytes(self.read_bytes::<2>()?)),
         };
@@ -177,8 +177,8 @@ macro_rules! nbt_codec {
 
         impl Decode for $name {
             fn decode(reader: &mut Reader<'_>) -> DecodeResult<Self> {
-                let bytes = reader.read_nbt($variant)?;
-                Ok(Self(bytes::Bytes::copy_from_slice(bytes)))
+                let payload = reader.read_nbt($variant)?;
+                Ok(Self(reader.share(payload)))
             }
         }
     };

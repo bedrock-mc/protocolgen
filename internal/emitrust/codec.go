@@ -7,13 +7,9 @@ import (
 	"protocolgen/internal/manifest"
 )
 
-// Bound applied to every length-prefixed collection. The manifest describes
-// wire shape, not hostile-input policy, so the limit lives here rather than in
-// a source claim.
-const (
-	collectionLimit = "wire::MAX_COLLECTION_ELEMENTS"
-	maxFixedArray   = 32
-)
+// The manifest describes wire shape, not hostile-input policy, so collection
+// bounds come from the reader at decode time rather than from a source claim.
+const maxFixedArray = 32
 
 // codecEmitter walks the same manifest nodes as the type emitter and writes the
 // matching Encode/Decode bodies. It must agree with rustType on every shape
@@ -336,7 +332,7 @@ func (e *codecEmitter) decode(node manifest.Node, hint, indent string) (string, 
 			return "", err
 		}
 		if e.directlyEncodable(*node.Element) {
-			return fmt.Sprintf("wire::%s::<%s>(reader, %d, %s)?", helper, element, min, collectionLimit), nil
+			return fmt.Sprintf("wire::%s::<%s>(reader, %d)?", helper, element, min), nil
 		}
 		return e.decodeCollectionLoop(node, helper, element, min, hint, indent)
 
@@ -354,7 +350,7 @@ func (e *codecEmitter) decode(node manifest.Node, hint, indent string) (string, 
 			return "", err
 		}
 		if e.directlyEncodable(*node.Key) && e.directlyEncodable(*node.Value) {
-			return fmt.Sprintf("wire::decode_map::<%s, %s>(reader, %d, %s)?", keyType, valueType, min, collectionLimit), nil
+			return fmt.Sprintf("wire::decode_map::<%s, %s>(reader, %d)?", keyType, valueType, min), nil
 		}
 		key, err := e.decode(*node.Key, hint+"Key", indent+"        ")
 		if err != nil {
@@ -367,7 +363,7 @@ func (e *codecEmitter) decode(node manifest.Node, hint, indent string) (string, 
 		var b strings.Builder
 		fmt.Fprintf(&b, "{\n")
 		fmt.Fprintf(&b, "%s    let declared = u64::from(reader.read_var_u32()?);\n", indent)
-		fmt.Fprintf(&b, "%s    let count = reader.checked_count(declared, %d, %s)?;\n", indent, min, collectionLimit)
+		fmt.Fprintf(&b, "%s    let count = reader.checked_count(declared, %d)?;\n", indent, min)
 		fmt.Fprintf(&b, "%s    let mut out: Vec<(%s, %s)> = Vec::with_capacity(count);\n", indent, keyType, valueType)
 		fmt.Fprintf(&b, "%s    for _ in 0..count {\n", indent)
 		fmt.Fprintf(&b, "%s        let key = %s;\n", indent, key)
@@ -402,7 +398,7 @@ func (e *codecEmitter) decodeCollectionLoop(node manifest.Node, helper, element 
 	default:
 		return "", fmt.Errorf("unsupported collection prefix %q", code)
 	}
-	fmt.Fprintf(&b, "%s    let count = reader.checked_count(declared, %d, %s)?;\n", indent, min, collectionLimit)
+	fmt.Fprintf(&b, "%s    let count = reader.checked_count(declared, %d)?;\n", indent, min)
 	fmt.Fprintf(&b, "%s    let mut out: Vec<%s> = Vec::with_capacity(count);\n", indent, element)
 	fmt.Fprintf(&b, "%s    for _ in 0..count {\n", indent)
 	fmt.Fprintf(&b, "%s        out.push(%s);\n", indent, item)

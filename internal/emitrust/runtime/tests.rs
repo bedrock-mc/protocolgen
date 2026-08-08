@@ -63,7 +63,7 @@ mod runtime_tests {
     fn declared_counts_are_bounded_before_allocation() {
         let reader = Reader::new(&[0u8; 4]);
         assert_eq!(
-            reader.checked_count(u64::from(u32::MAX), 1, MAX_COLLECTION_ELEMENTS),
+            reader.checked_count(u64::from(u32::MAX), 1),
             Err(DecodeError::LengthLimitExceeded {
                 limit: MAX_COLLECTION_ELEMENTS,
                 actual: u32::MAX as usize,
@@ -71,10 +71,37 @@ mod runtime_tests {
         );
         // Within the limit, but more elements than the input could hold.
         assert_eq!(
-            reader.checked_count(100, 8, MAX_COLLECTION_ELEMENTS),
+            reader.checked_count(100, 8),
             Err(DecodeError::LengthNotRepresentable { needed: 800, remaining: 4 })
         );
-        assert_eq!(reader.checked_count(4, 1, MAX_COLLECTION_ELEMENTS), Ok(4));
+        assert_eq!(reader.checked_count(4, 1), Ok(4));
+    }
+
+    /// A peer may legitimately exceed the default bound, so the limit is a
+    /// reader setting rather than a hard cap.
+    #[test]
+    fn the_collection_limit_is_configurable() {
+        let data = [0u8; 8192];
+        let mut reader = Reader::new(&data);
+        assert_eq!(reader.collection_limit(), MAX_COLLECTION_ELEMENTS);
+        assert!(reader.checked_count(8192, 1).is_err());
+        reader.set_collection_limit(8192);
+        assert_eq!(reader.checked_count(8192, 1), Ok(8192));
+    }
+
+    /// Byte buffers decoded from a shared source refcount it instead of copying.
+    #[test]
+    fn shared_readers_do_not_copy_byte_buffers() {
+        let source = bytes::Bytes::from_static(&[0x04, 0xde, 0xad, 0xbe, 0xef]);
+        let mut reader = Reader::from_shared(&source);
+        let decoded = <bytes::Bytes as Decode>::decode(&mut reader).expect("decode");
+        assert_eq!(decoded, source.slice(1..));
+        assert_eq!(decoded.as_ptr(), source[1..].as_ptr(), "buffer was copied");
+
+        // An unshared reader still decodes correctly, by copying.
+        let mut reader = Reader::new(&source);
+        let copied = <bytes::Bytes as Decode>::decode(&mut reader).expect("decode");
+        assert_eq!(copied, source.slice(1..));
     }
 
     #[test]

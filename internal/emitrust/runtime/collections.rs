@@ -16,10 +16,9 @@ pub fn encode_collection_u32le<T: Encode>(writer: &mut Writer, values: &[T]) {
 pub fn decode_collection_u32le<T: Decode>(
     reader: &mut Reader<'_>,
     min_element_size: usize,
-    limit: usize,
 ) -> DecodeResult<Vec<T>> {
     let declared = u64::from(u32::from_le_bytes(reader.read_bytes::<4>()?));
-    let count = reader.checked_count(declared, min_element_size, limit)?;
+    let count = reader.checked_count(declared, min_element_size)?;
     let mut out = Vec::with_capacity(count);
     for _ in 0..count {
         out.push(T::decode(reader)?);
@@ -40,10 +39,9 @@ pub fn encode_map<K: Encode, V: Encode>(writer: &mut Writer, entries: &[(K, V)])
 pub fn decode_map<K: Decode, V: Decode>(
     reader: &mut Reader<'_>,
     min_entry_size: usize,
-    limit: usize,
 ) -> DecodeResult<Vec<(K, V)>> {
     let declared = u64::from(reader.read_var_u32()?);
-    let count = reader.checked_count(declared, min_entry_size, limit)?;
+    let count = reader.checked_count(declared, min_entry_size)?;
     let mut out = Vec::with_capacity(count);
     for _ in 0..count {
         let key = K::decode(reader)?;
