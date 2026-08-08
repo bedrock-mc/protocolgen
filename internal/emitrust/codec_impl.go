@@ -57,16 +57,19 @@ func (e *codecEmitter) emitStructCodec(b *strings.Builder, item definition) erro
 	if len(item.Fields) == 0 {
 		b.WriteString("        let _ = reader;\n")
 	}
-	b.WriteString("        Ok(Self {\n")
 	for _, field := range item.Fields {
-		expr, err := e.decode(field.Node, item.Name+field.Name, "            ")
+		expr, err := e.decode(field.Node, field.Hint, "        ")
 		if err != nil {
 			return fmt.Errorf("%s.%s: %w", item.Name, field.Name, err)
 		}
 		if _, boxed := boxedInner(field.Type); boxed {
 			expr = "Box::new(" + expr + ")"
 		}
-		fmt.Fprintf(b, "            %s: %s,\n", field.Name, expr)
+		fmt.Fprintf(b, "        let %s = %s;\n", field.Name, expr)
+	}
+	b.WriteString("        Ok(Self {\n")
+	for _, field := range item.Fields {
+		fmt.Fprintf(b, "            %s,\n", field.Name)
 	}
 	b.WriteString("        })\n    }\n}\n\n")
 	return nil
@@ -113,20 +116,23 @@ func (e *codecEmitter) emitUnionCodec(b *strings.Builder, item definition) error
 	for _, variant := range item.Union {
 		switch {
 		case len(variant.Fields) != 0:
-			fmt.Fprintf(b, "            %d => Self::%s {\n", variant.Discriminant, variant.Name)
+			fmt.Fprintf(b, "            %d => {\n", variant.Discriminant)
+			names := make([]string, 0, len(variant.Fields))
 			for _, field := range variant.Fields {
-				expr, err := e.decode(field.Node, item.Name+variant.Name+field.Name, "                ")
+				expr, err := e.decode(field.Node, field.Hint, "                ")
 				if err != nil {
 					return fmt.Errorf("%s::%s.%s: %w", item.Name, variant.Name, field.Name, err)
 				}
 				if _, boxed := boxedInner(field.Type); boxed {
 					expr = "Box::new(" + expr + ")"
 				}
-				fmt.Fprintf(b, "                %s: %s,\n", field.Name, expr)
+				fmt.Fprintf(b, "                let %s = %s;\n", field.Name, expr)
+				names = append(names, field.Name)
 			}
-			b.WriteString("            },\n")
+			fmt.Fprintf(b, "                Self::%s { %s }\n", variant.Name, strings.Join(names, ", "))
+			b.WriteString("            }\n")
 		case variant.Payload != "":
-			expr, err := e.decode(variant.Node, item.Name+variant.Name, "                ")
+			expr, err := e.decode(variant.Node, variant.Hint, "                ")
 			if err != nil {
 				return fmt.Errorf("%s::%s: %w", item.Name, variant.Name, err)
 			}
@@ -185,13 +191,16 @@ func (e *codecEmitter) emitPacketCodec(b *strings.Builder, info packetInfo) erro
 	if len(info.fields) == 0 {
 		b.WriteString("        let _ = reader;\n")
 	}
-	b.WriteString("        Ok(Self {\n")
 	for _, field := range info.fields {
-		expr, err := e.decode(field.node, info.name+field.name, "            ")
+		expr, err := e.decode(field.node, field.hint, "        ")
 		if err != nil {
 			return fmt.Errorf("%s.%s: %w", info.name, field.name, err)
 		}
-		fmt.Fprintf(b, "            %s: %s,\n", field.name, expr)
+		fmt.Fprintf(b, "        let %s = %s;\n", field.name, expr)
+	}
+	b.WriteString("        Ok(Self {\n")
+	for _, field := range info.fields {
+		fmt.Fprintf(b, "            %s,\n", field.name)
 	}
 	b.WriteString("        })\n    }\n}\n\n")
 	return nil

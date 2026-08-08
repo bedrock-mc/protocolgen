@@ -41,6 +41,7 @@ type rustVariant struct {
 	Discriminant int64
 	SourceName   string
 	Node         manifest.Node
+	Hint         string
 }
 
 type rustField struct {
@@ -48,6 +49,7 @@ type rustField struct {
 	Type string
 	Docs []string
 	Node manifest.Node
+	Hint string
 }
 
 type packetInfo struct {
@@ -115,11 +117,12 @@ func prepareWithOptions(m manifest.Manifest, options Options) (*generator, []pac
 				return nil, nil, fmt.Errorf("packet %s field %s: %w", packet.Name, field.Name, err)
 			}
 			fieldName := uniqueField(fieldName(field.Name), used)
-			typ, err := g.rustType(field.Encode, name+typeName(field.Name))
+			hint := name + typeName(field.Name)
+			typ, err := g.rustType(field.Encode, hint)
 			if err != nil {
 				return nil, nil, fmt.Errorf("packet %s field %s: %w", packet.Name, field.Name, err)
 			}
-			fields = append(fields, rustFieldInfo{name: fieldName, typ: typ, docs: g.fieldDocs(packet.Name, field, fieldName), node: field.Encode})
+			fields = append(fields, rustFieldInfo{name: fieldName, typ: typ, docs: g.fieldDocs(packet.Name, field, fieldName), node: field.Encode, hint: hint})
 		}
 		infos = append(infos, packetInfo{packet: packet, name: name, docs: docs.RustComments(g.docs.Type(packet.Name)), fields: fields, size: g.estimatePacketSize(fields)})
 	}
@@ -561,6 +564,7 @@ type rustFieldInfo struct {
 	typ  string
 	docs []string
 	node manifest.Node
+	hint string
 }
 
 func (g *generator) rustType(node manifest.Node, hint string) (string, error) {
@@ -661,7 +665,7 @@ func (g *generator) rustType(node manifest.Node, hint string) (string, error) {
 						payload = "Box<" + payload + ">"
 					}
 				}
-				variants = append(variants, rustVariant{Name: variantName, Payload: payload, Fields: fields, Discriminant: variant.Value, SourceName: variant.Name, Node: variant.Encode})
+				variants = append(variants, rustVariant{Name: variantName, Payload: payload, Fields: fields, Discriminant: variant.Value, SourceName: variant.Name, Node: variant.Encode, Hint: name + variantName})
 			}
 			item := g.definitions[name]
 			item.Union = variants
@@ -766,7 +770,7 @@ func (g *generator) registerStruct(node manifest.Node, hint string) (string, err
 			Name:         name,
 			TypeID:       rustNodeTypeID(node),
 			Kind:         manifest.KindStruct,
-			Fields:       []rustField{{Name: "value", Type: raw, Node: node.Fields[0].Encode}},
+			Fields:       []rustField{{Name: "value", Type: raw, Node: node.Fields[0].Encode, Hint: name + typeName(node.Fields[0].Name)}},
 			Tuple:        true,
 			WrapperCodec: codec,
 		}
@@ -795,11 +799,12 @@ func (g *generator) rustFieldsForUnion(node manifest.Node, parentName string, co
 			continue
 		}
 		fieldName := uniqueField(fieldName(field.Name), used)
-		typ, err := g.rustType(field.Encode, parentName+typeName(field.Name))
+		hint := parentName + typeName(field.Name)
+		typ, err := g.rustType(field.Encode, hint)
 		if err != nil {
 			return nil, err
 		}
-		fields = append(fields, rustField{Name: fieldName, Type: typ, Docs: g.fieldDocs(rustNodeTypeID(node), field, fieldName), Node: field.Encode})
+		fields = append(fields, rustField{Name: fieldName, Type: typ, Docs: g.fieldDocs(rustNodeTypeID(node), field, fieldName), Node: field.Encode, Hint: hint})
 	}
 	if control != nil {
 		g.boxLargeUnionFields(fields)

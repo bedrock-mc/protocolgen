@@ -278,22 +278,27 @@ func collectionHelper(node manifest.Node, base string) (string, error) {
 // decode returns a Rust expression that yields the decoded value. The
 // expression may be a block, so it is always safe to use in value position.
 func (e *codecEmitter) decode(node manifest.Node, hint, indent string) (string, error) {
-	if _, matched, err := e.nativeCall(node); err != nil {
+	if typ, matched, err := e.nativeCall(node); err != nil {
 		return "", err
 	} else if matched {
-		return "wire::Decode::decode(reader)?", nil
+		return decodeCall(typ), nil
 	}
 
 	switch node.Kind {
 	case manifest.KindPrimitive, manifest.KindString, manifest.KindBytes,
 		manifest.KindStruct, manifest.KindEnum, manifest.KindUnion, manifest.KindRecursive:
-		return "wire::Decode::decode(reader)?", nil
+		typ, err := e.g.rustType(node, hint)
+		if err != nil {
+			return "", err
+		}
+		return decodeCall(typ), nil
 
 	case manifest.KindVoid:
 		return "()", nil
 
 	case manifest.KindBitset:
-		return fmt.Sprintf("%s(wire::decode_bitset(reader, %d)?)", e.bitsetName(node), node.Length), nil
+		words := (node.Length + 63) / 64
+		return fmt.Sprintf("%s(wire::decode_bitset::<%d>(reader, %d)?)", e.bitsetName(node), words, node.Length), nil
 
 	case manifest.KindOptional:
 		return e.decodeOptional(node, hint, indent)
@@ -326,18 +331,30 @@ func (e *codecEmitter) decode(node manifest.Node, hint, indent string) (string, 
 			return "", err
 		}
 		min := minSizeOf(*node.Element)
-		if e.directlyEncodable(*node.Element) {
-			return fmt.Sprintf("wire::%s(reader, %d, %s)?", helper, min, collectionLimit), nil
+		element, err := e.g.rustType(*node.Element, hint+"Item")
+		if err != nil {
+			return "", err
 		}
-		return e.decodeCollectionLoop(node, helper, min, hint, indent)
+		if e.directlyEncodable(*node.Element) {
+			return fmt.Sprintf("wire::%s::<%s>(reader, %d, %s)?", helper, element, min, collectionLimit), nil
+		}
+		return e.decodeCollectionLoop(node, helper, element, min, hint, indent)
 
 	case manifest.KindMap:
 		if node.Key == nil || node.Value == nil {
 			return "", fmt.Errorf("map has no key/value")
 		}
 		min := minSizeOf(*node.Key) + minSizeOf(*node.Value)
+		keyType, err := e.g.rustType(*node.Key, hint+"Key")
+		if err != nil {
+			return "", err
+		}
+		valueType, err := e.g.rustType(*node.Value, hint+"Value")
+		if err != nil {
+			return "", err
+		}
 		if e.directlyEncodable(*node.Key) && e.directlyEncodable(*node.Value) {
-			return fmt.Sprintf("wire::decode_map(reader, %d, %s)?", min, collectionLimit), nil
+			return fmt.Sprintf("wire::decode_map::<%s, %s>(reader, %d, %s)?", keyType, valueType, min, collectionLimit), nil
 		}
 		key, err := e.decode(*node.Key, hint+"Key", indent+"        ")
 		if err != nil {
@@ -351,7 +368,7 @@ func (e *codecEmitter) decode(node manifest.Node, hint, indent string) (string, 
 		fmt.Fprintf(&b, "{\n")
 		fmt.Fprintf(&b, "%s    let declared = u64::from(reader.read_var_u32()?);\n", indent)
 		fmt.Fprintf(&b, "%s    let count = reader.checked_count(declared, %d, %s)?;\n", indent, min, collectionLimit)
-		fmt.Fprintf(&b, "%s    let mut out = Vec::with_capacity(count);\n", indent)
+		fmt.Fprintf(&b, "%s    let mut out: Vec<(%s, %s)> = Vec::with_capacity(count);\n", indent, keyType, valueType)
 		fmt.Fprintf(&b, "%s    for _ in 0..count {\n", indent)
 		fmt.Fprintf(&b, "%s        let key = %s;\n", indent, key)
 		fmt.Fprintf(&b, "%s        let value = %s;\n", indent, value)
@@ -366,8 +383,8 @@ func (e *codecEmitter) decode(node manifest.Node, hint, indent string) (string, 
 	}
 }
 
-func (e *codecEmitter) decodeCollectionLoop(node manifest.Node, helper string, min int, hint, indent string) (string, error) {
-	element, err := e.decode(*node.Element, hint+"Item", indent+"        ")
+func (e *codecEmitter) decodeCollectionLoop(node manifest.Node, helper, element string, min int, hint, indent string) (string, error) {
+	item, err := e.decode(*node.Element, hint+"Item", indent+"        ")
 	if err != nil {
 		return "", err
 	}
@@ -386,9 +403,9 @@ func (e *codecEmitter) decodeCollectionLoop(node manifest.Node, helper string, m
 		return "", fmt.Errorf("unsupported collection prefix %q", code)
 	}
 	fmt.Fprintf(&b, "%s    let count = reader.checked_count(declared, %d, %s)?;\n", indent, min, collectionLimit)
-	fmt.Fprintf(&b, "%s    let mut out = Vec::with_capacity(count);\n", indent)
+	fmt.Fprintf(&b, "%s    let mut out: Vec<%s> = Vec::with_capacity(count);\n", indent, element)
 	fmt.Fprintf(&b, "%s    for _ in 0..count {\n", indent)
-	fmt.Fprintf(&b, "%s        out.push(%s);\n", indent, element)
+	fmt.Fprintf(&b, "%s        out.push(%s);\n", indent, item)
 	fmt.Fprintf(&b, "%s    }\n", indent)
 	fmt.Fprintf(&b, "%s    out\n", indent)
 	fmt.Fprintf(&b, "%s}", indent)
@@ -428,6 +445,12 @@ func (e *codecEmitter) decodeOptional(node manifest.Node, hint, indent string) (
 	}
 	fmt.Fprintf(&b, "%s}", indent)
 	return b.String(), nil
+}
+
+// decodeCall names the type at the call site so a disagreement between the
+// type emitter and this walk is a compile error rather than silent inference.
+func decodeCall(typ string) string {
+	return fmt.Sprintf("<%s as wire::Decode>::decode(reader)?", typ)
 }
 
 func (e *codecEmitter) bitsetName(node manifest.Node) string {

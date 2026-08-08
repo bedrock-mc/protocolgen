@@ -21,8 +21,9 @@ impl wire::Encode for ActorDataBoundingBoxComponent {
 
 impl wire::Decode for ActorDataBoundingBoxComponent {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let actor_data_bounding_box = [<wire::F32LE as wire::Decode>::decode(reader)?, <wire::F32LE as wire::Decode>::decode(reader)?, <wire::F32LE as wire::Decode>::decode(reader)?];
         Ok(Self {
-            actor_data_bounding_box: [wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?],
+            actor_data_bounding_box,
         })
     }
 }
@@ -40,8 +41,9 @@ impl wire::Encode for ActorDataFlagComponent {
 
 impl wire::Decode for ActorDataFlagComponent {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let actor_flag_bitset_data = Bitset131(wire::decode_bitset::<3>(reader, 131)?);
         Ok(Self {
-            actor_flag_bitset_data: Bitset131(wire::decode_bitset(reader, 131)?),
+            actor_flag_bitset_data,
         })
     }
 }
@@ -111,13 +113,19 @@ impl wire::Encode for AttributeModifier {
 
 impl wire::Decode for AttributeModifier {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let id = <String as wire::Decode>::decode(reader)?;
+        let name = <String as wire::Decode>::decode(reader)?;
+        let amount = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let operation = <wire::I32LE as wire::Decode>::decode(reader)?;
+        let operand = <wire::I32LE as wire::Decode>::decode(reader)?;
+        let is_serializable = <bool as wire::Decode>::decode(reader)?;
         Ok(Self {
-            id: wire::Decode::decode(reader)?,
-            name: wire::Decode::decode(reader)?,
-            amount: wire::Decode::decode(reader)?,
-            operation: wire::Decode::decode(reader)?,
-            operand: wire::Decode::decode(reader)?,
-            is_serializable: wire::Decode::decode(reader)?,
+            id,
+            name,
+            amount,
+            operation,
+            operand,
+            is_serializable,
         })
     }
 }
@@ -152,15 +160,23 @@ impl wire::Encode for AttributeData {
 
 impl wire::Decode for AttributeData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let min_value = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let max_value = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let current_value = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let default_min_value = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let default_max_value = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let default_value = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let name = <String as wire::Decode>::decode(reader)?;
+        let modifiers = wire::decode_collection::<AttributeModifier>(reader, 15, wire::MAX_COLLECTION_ELEMENTS)?;
         Ok(Self {
-            min_value: wire::Decode::decode(reader)?,
-            max_value: wire::Decode::decode(reader)?,
-            current_value: wire::Decode::decode(reader)?,
-            default_min_value: wire::Decode::decode(reader)?,
-            default_max_value: wire::Decode::decode(reader)?,
-            default_value: wire::Decode::decode(reader)?,
-            name: wire::Decode::decode(reader)?,
-            modifiers: wire::decode_collection(reader, 15, wire::MAX_COLLECTION_ELEMENTS)?,
+            min_value,
+            max_value,
+            current_value,
+            default_min_value,
+            default_max_value,
+            default_value,
+            name,
+            modifiers,
         })
     }
 }
@@ -236,24 +252,28 @@ impl wire::Decode for AttributeLayerSyncData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let discriminant = <wire::VarUInt as wire::Decode>::decode(reader)?.0;
         Ok(match discriminant {
-            0 => Self::UpdateAttributeLayersData {
-                attribute_layers: wire::decode_collection(reader, 14, wire::MAX_COLLECTION_ELEMENTS)?,
-            },
-            1 => Self::UpdateAttributeLayerSettingsData {
-                attribute_layer_name: wire::Decode::decode(reader)?,
-                attribute_layer_dimension: wire::Decode::decode(reader)?,
-                attributes_layer_settings: wire::Decode::decode(reader)?,
-            },
-            2 => Self::UpdateEnvironmentAttributesData {
-                attribute_layer_name: wire::Decode::decode(reader)?,
-                attribute_layer_dimension: wire::Decode::decode(reader)?,
-                attributes: wire::decode_collection(reader, 20, wire::MAX_COLLECTION_ELEMENTS)?,
-            },
-            3 => Self::RemoveEnvironmentAttributesData {
-                attribute_layer_name: wire::Decode::decode(reader)?,
-                attribute_layer_dimension: wire::Decode::decode(reader)?,
-                attributes: wire::decode_collection(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?,
-            },
+            0 => {
+                let attribute_layers = wire::decode_collection::<EASAttributeLayerData>(reader, 14, wire::MAX_COLLECTION_ELEMENTS)?;
+                Self::UpdateAttributeLayersData { attribute_layers }
+            }
+            1 => {
+                let attribute_layer_name = <String as wire::Decode>::decode(reader)?;
+                let attribute_layer_dimension = <DimensionType as wire::Decode>::decode(reader)?;
+                let attributes_layer_settings = <EASAttributeLayerSettings as wire::Decode>::decode(reader)?;
+                Self::UpdateAttributeLayerSettingsData { attribute_layer_name, attribute_layer_dimension, attributes_layer_settings }
+            }
+            2 => {
+                let attribute_layer_name = <String as wire::Decode>::decode(reader)?;
+                let attribute_layer_dimension = <DimensionType as wire::Decode>::decode(reader)?;
+                let attributes = wire::decode_collection::<EASEnvironmentAttributeData>(reader, 20, wire::MAX_COLLECTION_ELEMENTS)?;
+                Self::UpdateEnvironmentAttributesData { attribute_layer_name, attribute_layer_dimension, attributes }
+            }
+            3 => {
+                let attribute_layer_name = <String as wire::Decode>::decode(reader)?;
+                let attribute_layer_dimension = <DimensionType as wire::Decode>::decode(reader)?;
+                let attributes = wire::decode_collection::<String>(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?;
+                Self::RemoveEnvironmentAttributesData { attribute_layer_name, attribute_layer_dimension, attributes }
+            }
             value => {
                 return Err(wire::DecodeError::UnknownVariant {
                     type_name: "AttributeLayerSyncData",
@@ -287,12 +307,17 @@ impl wire::Encode for BedrockProfileWhiskerDiagnosticsScopeDataSummary {
 
 impl wire::Decode for BedrockProfileWhiskerDiagnosticsScopeDataSummary {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let label = <String as wire::Decode>::decode(reader)?;
+        let indentation = <String as wire::Decode>::decode(reader)?;
+        let total_high_cost_ns = <wire::U64LE as wire::Decode>::decode(reader)?;
+        let total_mid_cost_ns = <wire::U64LE as wire::Decode>::decode(reader)?;
+        let total_low_cost_ns = <wire::U64LE as wire::Decode>::decode(reader)?;
         Ok(Self {
-            label: wire::Decode::decode(reader)?,
-            indentation: wire::Decode::decode(reader)?,
-            total_high_cost_ns: wire::Decode::decode(reader)?,
-            total_mid_cost_ns: wire::Decode::decode(reader)?,
-            total_low_cost_ns: wire::Decode::decode(reader)?,
+            label,
+            indentation,
+            total_high_cost_ns,
+            total_mid_cost_ns,
+            total_low_cost_ns,
         })
     }
 }
@@ -314,9 +339,11 @@ impl wire::Encode for BedrockSafetyRedactableString {
 
 impl wire::Decode for BedrockSafetyRedactableString {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let unredacted = <String as wire::Decode>::decode(reader)?;
+        let redacted = <String as wire::Decode>::decode(reader)?;
         Ok(Self {
-            unredacted: wire::Decode::decode(reader)?,
-            redacted: wire::Decode::decode(reader)?,
+            unredacted,
+            redacted,
         })
     }
 }
@@ -372,30 +399,35 @@ impl wire::Encode for BiomeCappedSurfaceData {
 
 impl wire::Decode for BiomeCappedSurfaceData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let floor_blocks = wire::decode_collection::<wire::U32LE>(reader, 4, wire::MAX_COLLECTION_ELEMENTS)?;
+        let ceiling_blocks = wire::decode_collection::<wire::U32LE>(reader, 4, wire::MAX_COLLECTION_ELEMENTS)?;
+        let sea_block = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::U32LE as wire::Decode>::decode(reader)?)
+            }
+        };
+        let foundation_block = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::U32LE as wire::Decode>::decode(reader)?)
+            }
+        };
+        let beach_block = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::U32LE as wire::Decode>::decode(reader)?)
+            }
+        };
         Ok(Self {
-            floor_blocks: wire::decode_collection(reader, 4, wire::MAX_COLLECTION_ELEMENTS)?,
-            ceiling_blocks: wire::decode_collection(reader, 4, wire::MAX_COLLECTION_ELEMENTS)?,
-            sea_block: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            foundation_block: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            beach_block: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
+            floor_blocks,
+            ceiling_blocks,
+            sea_block,
+            foundation_block,
+            beach_block,
         })
     }
 }
@@ -428,11 +460,15 @@ impl wire::Encode for BiomeClimateData {
 
 impl wire::Decode for BiomeClimateData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let temperature = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let downfall = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let snow_accumulation_min = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let snow_accumulation_max = <wire::F32LE as wire::Decode>::decode(reader)?;
         Ok(Self {
-            temperature: wire::Decode::decode(reader)?,
-            downfall: wire::Decode::decode(reader)?,
-            snow_accumulation_min: wire::Decode::decode(reader)?,
-            snow_accumulation_max: wire::Decode::decode(reader)?,
+            temperature,
+            downfall,
+            snow_accumulation_min,
+            snow_accumulation_max,
         })
     }
 }
@@ -456,10 +492,13 @@ impl wire::Encode for BiomeConditionalTransformationData {
 
 impl wire::Decode for BiomeConditionalTransformationData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let transforms_into = wire::decode_collection::<BiomeWeightedData>(reader, 6, wire::MAX_COLLECTION_ELEMENTS)?;
+        let condition_json = <wire::U16LE as wire::Decode>::decode(reader)?;
+        let min_passing_neighbors = <wire::U32LE as wire::Decode>::decode(reader)?;
         Ok(Self {
-            transforms_into: wire::decode_collection(reader, 6, wire::MAX_COLLECTION_ELEMENTS)?,
-            condition_json: wire::Decode::decode(reader)?,
-            min_passing_neighbors: wire::Decode::decode(reader)?,
+            transforms_into,
+            condition_json,
+            min_passing_neighbors,
         })
     }
 }
@@ -491,12 +530,17 @@ impl wire::Encode for BiomeConsolidatedFeatureData {
 
 impl wire::Decode for BiomeConsolidatedFeatureData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let scatter = <BiomeScatterParamData as wire::Decode>::decode(reader)?;
+        let feature = <wire::U16LE as wire::Decode>::decode(reader)?;
+        let identifier = <wire::U16LE as wire::Decode>::decode(reader)?;
+        let pass = <wire::U16LE as wire::Decode>::decode(reader)?;
+        let can_use_internal_feature = <bool as wire::Decode>::decode(reader)?;
         Ok(Self {
-            scatter: wire::Decode::decode(reader)?,
-            feature: wire::Decode::decode(reader)?,
-            identifier: wire::Decode::decode(reader)?,
-            pass: wire::Decode::decode(reader)?,
-            can_use_internal_feature: wire::Decode::decode(reader)?,
+            scatter,
+            feature,
+            identifier,
+            pass,
+            can_use_internal_feature,
         })
     }
 }
@@ -514,8 +558,9 @@ impl wire::Encode for BiomeConsolidatedFeaturesData {
 
 impl wire::Decode for BiomeConsolidatedFeaturesData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let features = wire::decode_collection::<BiomeConsolidatedFeatureData>(reader, 23, wire::MAX_COLLECTION_ELEMENTS)?;
         Ok(Self {
-            features: wire::decode_collection(reader, 23, wire::MAX_COLLECTION_ELEMENTS)?,
+            features,
         })
     }
 }
@@ -557,14 +602,21 @@ impl wire::Encode for BiomeCoordinateData {
 
 impl wire::Decode for BiomeCoordinateData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let min_value_type = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let min_value = <wire::U16LE as wire::Decode>::decode(reader)?;
+        let max_value_type = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let max_value = <wire::U16LE as wire::Decode>::decode(reader)?;
+        let grid_offset = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let grid_step_size = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let distribution = <RandomDistributionType as wire::Decode>::decode(reader)?;
         Ok(Self {
-            min_value_type: wire::Decode::decode(reader)?,
-            min_value: wire::Decode::decode(reader)?,
-            max_value_type: wire::Decode::decode(reader)?,
-            max_value: wire::Decode::decode(reader)?,
-            grid_offset: wire::Decode::decode(reader)?,
-            grid_step_size: wire::Decode::decode(reader)?,
-            distribution: wire::Decode::decode(reader)?,
+            min_value_type,
+            min_value,
+            max_value_type,
+            max_value,
+            grid_offset,
+            grid_step_size,
+            distribution,
         })
     }
 }
@@ -679,84 +731,95 @@ impl wire::Encode for BiomeDefinitionChunkGenData {
 
 impl wire::Decode for BiomeDefinitionChunkGenData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let climate = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<BiomeClimateData as wire::Decode>::decode(reader)?)
+            }
+        };
+        let consolidated_features = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<BiomeConsolidatedFeaturesData as wire::Decode>::decode(reader)?)
+            }
+        };
+        let mountain_params = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<BiomeMountainParamsData as wire::Decode>::decode(reader)?)
+            }
+        };
+        let surface_material_adjustments = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<BiomeSurfaceMaterialAdjustmentData as wire::Decode>::decode(reader)?)
+            }
+        };
+        let overworld_gen_rules = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<BiomeOverworldGenRulesData as wire::Decode>::decode(reader)?)
+            }
+        };
+        let multinoise_gen_rules = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<BiomeMultinoiseGenRulesData as wire::Decode>::decode(reader)?)
+            }
+        };
+        let legacy_world_gen_rules = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<BiomeLegacyWorldGenRulesData as wire::Decode>::decode(reader)?)
+            }
+        };
+        let replacement_biomes = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<BiomeReplacementsData as wire::Decode>::decode(reader)?)
+            }
+        };
+        let village_type = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<VillageType as wire::Decode>::decode(reader)?)
+            }
+        };
+        let surface_builder_data = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<BiomeSurfaceBuilderData as wire::Decode>::decode(reader)?)
+            }
+        };
+        let subsurface_builder_data = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<BiomeSurfaceBuilderData as wire::Decode>::decode(reader)?)
+            }
+        };
         Ok(Self {
-            climate: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            consolidated_features: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            mountain_params: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            surface_material_adjustments: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            overworld_gen_rules: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            multinoise_gen_rules: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            legacy_world_gen_rules: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            replacement_biomes: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            village_type: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            surface_builder_data: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            subsurface_builder_data: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
+            climate,
+            consolidated_features,
+            mountain_params,
+            surface_material_adjustments,
+            overworld_gen_rules,
+            multinoise_gen_rules,
+            legacy_world_gen_rules,
+            replacement_biomes,
+            village_type,
+            surface_builder_data,
+            subsurface_builder_data,
         })
     }
 }
@@ -817,29 +880,39 @@ impl wire::Encode for BiomeDefinitionData {
 
 impl wire::Decode for BiomeDefinitionData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let id = <wire::U16LE as wire::Decode>::decode(reader)?;
+        let temperature = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let downfall = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let foliage_snow = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let depth = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let scale = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let map_water_color_argb = <wire::I32LE as wire::Decode>::decode(reader)?;
+        let rain = <bool as wire::Decode>::decode(reader)?;
+        let tags = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<BiomeTagsData as wire::Decode>::decode(reader)?)
+            }
+        };
+        let chunk_gen_data = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<BiomeDefinitionChunkGenData as wire::Decode>::decode(reader)?)
+            }
+        };
         Ok(Self {
-            id: wire::Decode::decode(reader)?,
-            temperature: wire::Decode::decode(reader)?,
-            downfall: wire::Decode::decode(reader)?,
-            foliage_snow: wire::Decode::decode(reader)?,
-            depth: wire::Decode::decode(reader)?,
-            scale: wire::Decode::decode(reader)?,
-            map_water_color_argb: wire::Decode::decode(reader)?,
-            rain: wire::Decode::decode(reader)?,
-            tags: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            chunk_gen_data: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
+            id,
+            temperature,
+            downfall,
+            foliage_snow,
+            depth,
+            scale,
+            map_water_color_argb,
+            rain,
+            tags,
+            chunk_gen_data,
         })
     }
 }
@@ -881,15 +954,23 @@ impl wire::Encode for BiomeElementData {
 
 impl wire::Decode for BiomeElementData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let noise_freq_scale = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let noise_lower_bound = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let noise_upper_bound = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let height_min_type = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let height_min = <wire::U16LE as wire::Decode>::decode(reader)?;
+        let height_max_type = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let height_max = <wire::U16LE as wire::Decode>::decode(reader)?;
+        let adjusted_materials = <BiomeSurfaceMaterialData as wire::Decode>::decode(reader)?;
         Ok(Self {
-            noise_freq_scale: wire::Decode::decode(reader)?,
-            noise_lower_bound: wire::Decode::decode(reader)?,
-            noise_upper_bound: wire::Decode::decode(reader)?,
-            height_min_type: wire::Decode::decode(reader)?,
-            height_min: wire::Decode::decode(reader)?,
-            height_max_type: wire::Decode::decode(reader)?,
-            height_max: wire::Decode::decode(reader)?,
-            adjusted_materials: wire::Decode::decode(reader)?,
+            noise_freq_scale,
+            noise_lower_bound,
+            noise_upper_bound,
+            height_min_type,
+            height_min,
+            height_max_type,
+            height_max,
+            adjusted_materials,
         })
     }
 }
@@ -907,8 +988,9 @@ impl wire::Encode for BiomeLegacyWorldGenRulesData {
 
 impl wire::Decode for BiomeLegacyWorldGenRulesData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let legacy_pre_hills_edge = wire::decode_collection::<BiomeConditionalTransformationData>(reader, 7, wire::MAX_COLLECTION_ELEMENTS)?;
         Ok(Self {
-            legacy_pre_hills_edge: wire::decode_collection(reader, 7, wire::MAX_COLLECTION_ELEMENTS)?,
+            legacy_pre_hills_edge,
         })
     }
 }
@@ -937,11 +1019,15 @@ impl wire::Encode for BiomeMesaSurfaceData {
 
 impl wire::Decode for BiomeMesaSurfaceData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let clay_material = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let hard_clay_material = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let bryce_pillars = <bool as wire::Decode>::decode(reader)?;
+        let has_forest = <bool as wire::Decode>::decode(reader)?;
         Ok(Self {
-            clay_material: wire::Decode::decode(reader)?,
-            hard_clay_material: wire::Decode::decode(reader)?,
-            bryce_pillars: wire::Decode::decode(reader)?,
-            has_forest: wire::Decode::decode(reader)?,
+            clay_material,
+            hard_clay_material,
+            bryce_pillars,
+            has_forest,
         })
     }
 }
@@ -969,13 +1055,19 @@ impl wire::Encode for BiomeMountainParamsData {
 
 impl wire::Decode for BiomeMountainParamsData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let steep_block = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let north_slopes = <bool as wire::Decode>::decode(reader)?;
+        let south_slopes = <bool as wire::Decode>::decode(reader)?;
+        let west_slopes = <bool as wire::Decode>::decode(reader)?;
+        let east_slopes = <bool as wire::Decode>::decode(reader)?;
+        let top_slide_enabled = <bool as wire::Decode>::decode(reader)?;
         Ok(Self {
-            steep_block: wire::Decode::decode(reader)?,
-            north_slopes: wire::Decode::decode(reader)?,
-            south_slopes: wire::Decode::decode(reader)?,
-            west_slopes: wire::Decode::decode(reader)?,
-            east_slopes: wire::Decode::decode(reader)?,
-            top_slide_enabled: wire::Decode::decode(reader)?,
+            steep_block,
+            north_slopes,
+            south_slopes,
+            west_slopes,
+            east_slopes,
+            top_slide_enabled,
         })
     }
 }
@@ -1001,12 +1093,17 @@ impl wire::Encode for BiomeMultinoiseGenRulesData {
 
 impl wire::Decode for BiomeMultinoiseGenRulesData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let temperature = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let humidity = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let altitude = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let weirdness = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let weight = <wire::F32LE as wire::Decode>::decode(reader)?;
         Ok(Self {
-            temperature: wire::Decode::decode(reader)?,
-            humidity: wire::Decode::decode(reader)?,
-            altitude: wire::Decode::decode(reader)?,
-            weirdness: wire::Decode::decode(reader)?,
-            weight: wire::Decode::decode(reader)?,
+            temperature,
+            humidity,
+            altitude,
+            weirdness,
+            weight,
         })
     }
 }
@@ -1032,10 +1129,13 @@ impl wire::Encode for BiomeNoiseGradientSurfaceData {
 
 impl wire::Decode for BiomeNoiseGradientSurfaceData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let non_replaceable_blocks = wire::decode_collection::<wire::U32LE>(reader, 4, wire::MAX_COLLECTION_ELEMENTS)?;
+        let gradient_blocks = wire::decode_collection::<SerializedNoiseBlockSpecifier>(reader, 17, wire::MAX_COLLECTION_ELEMENTS)?;
+        let noise = <NoiseDescriptor as wire::Decode>::decode(reader)?;
         Ok(Self {
-            non_replaceable_blocks: wire::decode_collection(reader, 4, wire::MAX_COLLECTION_ELEMENTS)?,
-            gradient_blocks: wire::decode_collection(reader, 17, wire::MAX_COLLECTION_ELEMENTS)?,
-            noise: wire::Decode::decode(reader)?,
+            non_replaceable_blocks,
+            gradient_blocks,
+            noise,
         })
     }
 }
@@ -1065,14 +1165,21 @@ impl wire::Encode for BiomeOverworldGenRulesData {
 
 impl wire::Decode for BiomeOverworldGenRulesData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let hills_transformations = wire::decode_collection::<BiomeWeightedData>(reader, 6, wire::MAX_COLLECTION_ELEMENTS)?;
+        let mutate_transformations = wire::decode_collection::<BiomeWeightedData>(reader, 6, wire::MAX_COLLECTION_ELEMENTS)?;
+        let river_transformations = wire::decode_collection::<BiomeWeightedData>(reader, 6, wire::MAX_COLLECTION_ELEMENTS)?;
+        let shore_transformations = wire::decode_collection::<BiomeWeightedData>(reader, 6, wire::MAX_COLLECTION_ELEMENTS)?;
+        let pre_hills_edge = wire::decode_collection::<BiomeConditionalTransformationData>(reader, 7, wire::MAX_COLLECTION_ELEMENTS)?;
+        let post_shore_edge = wire::decode_collection::<BiomeConditionalTransformationData>(reader, 7, wire::MAX_COLLECTION_ELEMENTS)?;
+        let climate = wire::decode_collection::<BiomeWeightedTemperatureData>(reader, 5, wire::MAX_COLLECTION_ELEMENTS)?;
         Ok(Self {
-            hills_transformations: wire::decode_collection(reader, 6, wire::MAX_COLLECTION_ELEMENTS)?,
-            mutate_transformations: wire::decode_collection(reader, 6, wire::MAX_COLLECTION_ELEMENTS)?,
-            river_transformations: wire::decode_collection(reader, 6, wire::MAX_COLLECTION_ELEMENTS)?,
-            shore_transformations: wire::decode_collection(reader, 6, wire::MAX_COLLECTION_ELEMENTS)?,
-            pre_hills_edge: wire::decode_collection(reader, 7, wire::MAX_COLLECTION_ELEMENTS)?,
-            post_shore_edge: wire::decode_collection(reader, 7, wire::MAX_COLLECTION_ELEMENTS)?,
-            climate: wire::decode_collection(reader, 5, wire::MAX_COLLECTION_ELEMENTS)?,
+            hills_transformations,
+            mutate_transformations,
+            river_transformations,
+            shore_transformations,
+            pre_hills_edge,
+            post_shore_edge,
+            climate,
         })
     }
 }
@@ -1106,13 +1213,19 @@ impl wire::Encode for BiomeReplacementData {
 
 impl wire::Decode for BiomeReplacementData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let replacement_biome = <wire::U16LE as wire::Decode>::decode(reader)?;
+        let dimension = <wire::U16LE as wire::Decode>::decode(reader)?;
+        let target_biomes = wire::decode_collection::<wire::U16LE>(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?;
+        let amount = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let noise_frequency_scale = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let replacement_index = <wire::U32LE as wire::Decode>::decode(reader)?;
         Ok(Self {
-            replacement_biome: wire::Decode::decode(reader)?,
-            dimension: wire::Decode::decode(reader)?,
-            target_biomes: wire::decode_collection(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?,
-            amount: wire::Decode::decode(reader)?,
-            noise_frequency_scale: wire::Decode::decode(reader)?,
-            replacement_index: wire::Decode::decode(reader)?,
+            replacement_biome,
+            dimension,
+            target_biomes,
+            amount,
+            noise_frequency_scale,
+            replacement_index,
         })
     }
 }
@@ -1130,8 +1243,9 @@ impl wire::Encode for BiomeReplacementsData {
 
 impl wire::Decode for BiomeReplacementsData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let biome_replacements = wire::decode_collection::<BiomeReplacementData>(reader, 17, wire::MAX_COLLECTION_ELEMENTS)?;
         Ok(Self {
-            biome_replacements: wire::decode_collection(reader, 17, wire::MAX_COLLECTION_ELEMENTS)?,
+            biome_replacements,
         })
     }
 }
@@ -1163,15 +1277,23 @@ impl wire::Encode for BiomeScatterParamData {
 
 impl wire::Decode for BiomeScatterParamData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let coordinates = wire::decode_collection::<BiomeCoordinateData>(reader, 15, wire::MAX_COLLECTION_ELEMENTS)?;
+        let eval_order = <CoordinateEvaluationOrder as wire::Decode>::decode(reader)?;
+        let chance_percent_type = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let chance_percent = <wire::U16LE as wire::Decode>::decode(reader)?;
+        let chance_numerator = <wire::I32LE as wire::Decode>::decode(reader)?;
+        let chance_denominator = <wire::I32LE as wire::Decode>::decode(reader)?;
+        let iterations_type = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let iterations = <wire::U16LE as wire::Decode>::decode(reader)?;
         Ok(Self {
-            coordinates: wire::decode_collection(reader, 15, wire::MAX_COLLECTION_ELEMENTS)?,
-            eval_order: wire::Decode::decode(reader)?,
-            chance_percent_type: wire::Decode::decode(reader)?,
-            chance_percent: wire::Decode::decode(reader)?,
-            chance_numerator: wire::Decode::decode(reader)?,
-            chance_denominator: wire::Decode::decode(reader)?,
-            iterations_type: wire::Decode::decode(reader)?,
-            iterations: wire::Decode::decode(reader)?,
+            coordinates,
+            eval_order,
+            chance_percent_type,
+            chance_percent,
+            chance_numerator,
+            chance_denominator,
+            iterations_type,
+            iterations,
         })
     }
 }
@@ -1189,8 +1311,9 @@ impl wire::Encode for BiomeStringList {
 
 impl wire::Decode for BiomeStringList {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let strings = wire::decode_collection::<String>(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?;
         Ok(Self {
-            strings: wire::decode_collection(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?,
+            strings,
         })
     }
 }
@@ -1261,39 +1384,47 @@ impl wire::Encode for BiomeSurfaceBuilderData {
 
 impl wire::Decode for BiomeSurfaceBuilderData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let surface_materials = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<BiomeSurfaceMaterialData as wire::Decode>::decode(reader)?)
+            }
+        };
+        let has_default_overworld_surface = <bool as wire::Decode>::decode(reader)?;
+        let has_swamp_surface = <bool as wire::Decode>::decode(reader)?;
+        let has_frozen_ocean_surface = <bool as wire::Decode>::decode(reader)?;
+        let has_the_end_surface = <bool as wire::Decode>::decode(reader)?;
+        let mesa_surface = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<BiomeMesaSurfaceData as wire::Decode>::decode(reader)?)
+            }
+        };
+        let capped_surface = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<BiomeCappedSurfaceData as wire::Decode>::decode(reader)?)
+            }
+        };
+        let noise_gradient_surface = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<BiomeNoiseGradientSurfaceData as wire::Decode>::decode(reader)?)
+            }
+        };
         Ok(Self {
-            surface_materials: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            has_default_overworld_surface: wire::Decode::decode(reader)?,
-            has_swamp_surface: wire::Decode::decode(reader)?,
-            has_frozen_ocean_surface: wire::Decode::decode(reader)?,
-            has_the_end_surface: wire::Decode::decode(reader)?,
-            mesa_surface: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            capped_surface: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            noise_gradient_surface: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
+            surface_materials,
+            has_default_overworld_surface,
+            has_swamp_surface,
+            has_frozen_ocean_surface,
+            has_the_end_surface,
+            mesa_surface,
+            capped_surface,
+            noise_gradient_surface,
         })
     }
 }
@@ -1311,8 +1442,9 @@ impl wire::Encode for BiomeSurfaceMaterialAdjustmentData {
 
 impl wire::Decode for BiomeSurfaceMaterialAdjustmentData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let adjustments = wire::decode_collection::<BiomeElementData>(reader, 42, wire::MAX_COLLECTION_ELEMENTS)?;
         Ok(Self {
-            adjustments: wire::decode_collection(reader, 42, wire::MAX_COLLECTION_ELEMENTS)?,
+            adjustments,
         })
     }
 }
@@ -1347,13 +1479,19 @@ impl wire::Encode for BiomeSurfaceMaterialData {
 
 impl wire::Decode for BiomeSurfaceMaterialData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let top_block = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let mid_block = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let sea_floor_block = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let foundation_block = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let sea_block = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let sea_floor_depth = <wire::I32LE as wire::Decode>::decode(reader)?;
         Ok(Self {
-            top_block: wire::Decode::decode(reader)?,
-            mid_block: wire::Decode::decode(reader)?,
-            sea_floor_block: wire::Decode::decode(reader)?,
-            foundation_block: wire::Decode::decode(reader)?,
-            sea_block: wire::Decode::decode(reader)?,
-            sea_floor_depth: wire::Decode::decode(reader)?,
+            top_block,
+            mid_block,
+            sea_floor_block,
+            foundation_block,
+            sea_block,
+            sea_floor_depth,
         })
     }
 }
@@ -1371,8 +1509,9 @@ impl wire::Encode for BiomeTagsData {
 
 impl wire::Decode for BiomeTagsData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let tags = wire::decode_collection::<wire::U16LE>(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?;
         Ok(Self {
-            tags: wire::decode_collection(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?,
+            tags,
         })
     }
 }
@@ -1392,9 +1531,11 @@ impl wire::Encode for BiomeWeightedData {
 
 impl wire::Decode for BiomeWeightedData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let biome_identifier = <wire::U16LE as wire::Decode>::decode(reader)?;
+        let weight = <wire::U32LE as wire::Decode>::decode(reader)?;
         Ok(Self {
-            biome_identifier: wire::Decode::decode(reader)?,
-            weight: wire::Decode::decode(reader)?,
+            biome_identifier,
+            weight,
         })
     }
 }
@@ -1414,9 +1555,11 @@ impl wire::Encode for BiomeWeightedTemperatureData {
 
 impl wire::Decode for BiomeWeightedTemperatureData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let temperature = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let weight = <wire::U32LE as wire::Decode>::decode(reader)?;
         Ok(Self {
-            temperature: wire::Decode::decode(reader)?,
-            weight: wire::Decode::decode(reader)?,
+            temperature,
+            weight,
         })
     }
 }
@@ -1439,9 +1582,11 @@ impl wire::Encode for FloatRange {
 
 impl wire::Decode for FloatRange {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let min = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let max = <wire::F32LE as wire::Decode>::decode(reader)?;
         Ok(Self {
-            min: wire::Decode::decode(reader)?,
-            max: wire::Decode::decode(reader)?,
+            min,
+            max,
         })
     }
 }
@@ -1468,10 +1613,13 @@ impl wire::Encode for NoiseDescriptor {
 
 impl wire::Decode for NoiseDescriptor {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let name = <String as wire::Decode>::decode(reader)?;
+        let first_octave = <wire::I32LE as wire::Decode>::decode(reader)?;
+        let amplitudes = wire::decode_collection::<wire::F32LE>(reader, 4, wire::MAX_COLLECTION_ELEMENTS)?;
         Ok(Self {
-            name: wire::Decode::decode(reader)?,
-            first_octave: wire::Decode::decode(reader)?,
-            amplitudes: wire::decode_collection(reader, 4, wire::MAX_COLLECTION_ELEMENTS)?,
+            name,
+            first_octave,
+            amplitudes,
         })
     }
 }
@@ -1497,10 +1645,13 @@ impl wire::Encode for BlockPos {
 
 impl wire::Decode for BlockPos {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let x = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let y = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let z = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
         Ok(Self {
-            x: wire::Decode::decode(reader)?,
-            y: wire::Decode::decode(reader)?,
-            z: wire::Decode::decode(reader)?,
+            x,
+            y,
+            z,
         })
     }
 }
@@ -1531,11 +1682,15 @@ impl wire::Encode for CameraAimAssistActorPriorityData {
 
 impl wire::Decode for CameraAimAssistActorPriorityData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let preset_index = <wire::I32LE as wire::Decode>::decode(reader)?;
+        let category_index = <wire::I32LE as wire::Decode>::decode(reader)?;
+        let actor_index = <wire::I32LE as wire::Decode>::decode(reader)?;
+        let priority_value = <wire::I32LE as wire::Decode>::decode(reader)?;
         Ok(Self {
-            preset_index: wire::Decode::decode(reader)?,
-            category_index: wire::Decode::decode(reader)?,
-            actor_index: wire::Decode::decode(reader)?,
-            priority_value: wire::Decode::decode(reader)?,
+            preset_index,
+            category_index,
+            actor_index,
+            priority_value,
         })
     }
 }
@@ -1555,9 +1710,11 @@ impl wire::Encode for CameraAimAssistCategoryDefinition {
 
 impl wire::Decode for CameraAimAssistCategoryDefinition {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let name = <String as wire::Decode>::decode(reader)?;
+        let priorities = <CameraAimAssistCategoryPriorities as wire::Decode>::decode(reader)?;
         Ok(Self {
-            name: wire::Decode::decode(reader)?,
-            priorities: wire::Decode::decode(reader)?,
+            name,
+            priorities,
         })
     }
 }
@@ -1599,25 +1756,31 @@ impl wire::Encode for CameraAimAssistCategoryPriorities {
 
 impl wire::Decode for CameraAimAssistCategoryPriorities {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let entities = wire::decode_map::<String, wire::I32LE>(reader, 5, wire::MAX_COLLECTION_ELEMENTS)?;
+        let blocks = wire::decode_map::<String, wire::I32LE>(reader, 5, wire::MAX_COLLECTION_ELEMENTS)?;
+        let block_tags = wire::decode_map::<String, wire::I32LE>(reader, 5, wire::MAX_COLLECTION_ELEMENTS)?;
+        let entity_type_families = wire::decode_map::<String, wire::I32LE>(reader, 5, wire::MAX_COLLECTION_ELEMENTS)?;
+        let entity_default = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::I32LE as wire::Decode>::decode(reader)?)
+            }
+        };
+        let block_default = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::I32LE as wire::Decode>::decode(reader)?)
+            }
+        };
         Ok(Self {
-            entities: wire::decode_map(reader, 5, wire::MAX_COLLECTION_ELEMENTS)?,
-            blocks: wire::decode_map(reader, 5, wire::MAX_COLLECTION_ELEMENTS)?,
-            block_tags: wire::decode_map(reader, 5, wire::MAX_COLLECTION_ELEMENTS)?,
-            entity_type_families: wire::decode_map(reader, 5, wire::MAX_COLLECTION_ELEMENTS)?,
-            entity_default: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            block_default: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
+            entities,
+            blocks,
+            block_tags,
+            entity_type_families,
+            entity_default,
+            block_default,
         })
     }
 }
@@ -1669,35 +1832,39 @@ impl wire::Encode for CameraAimAssistCommandPresetDefinition {
 
 impl wire::Decode for CameraAimAssistCommandPresetDefinition {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let preset_id = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<String as wire::Decode>::decode(reader)?)
+            }
+        };
+        let target_mode = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<CameraAimAssistTargetMode as wire::Decode>::decode(reader)?)
+            }
+        };
+        let view_angle = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<glam::Vec2 as wire::Decode>::decode(reader)?)
+            }
+        };
+        let distance = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::F32LE as wire::Decode>::decode(reader)?)
+            }
+        };
         Ok(Self {
-            preset_id: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            target_mode: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            view_angle: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            distance: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
+            preset_id,
+            target_mode,
+            view_angle,
+            distance,
         })
     }
 }
@@ -1739,25 +1906,31 @@ impl wire::Encode for CameraAimAssistPresetDefinition {
 
 impl wire::Decode for CameraAimAssistPresetDefinition {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let identifier = <String as wire::Decode>::decode(reader)?;
+        let exclusion_settings = <CameraAimAssistPresetExclusionDefinition as wire::Decode>::decode(reader)?;
+        let liquid_targeting_list = wire::decode_collection::<String>(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?;
+        let item_settings = wire::decode_map::<String, String>(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?;
+        let default_item_settings = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<String as wire::Decode>::decode(reader)?)
+            }
+        };
+        let hand_settings = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<String as wire::Decode>::decode(reader)?)
+            }
+        };
         Ok(Self {
-            identifier: wire::Decode::decode(reader)?,
-            exclusion_settings: wire::Decode::decode(reader)?,
-            liquid_targeting_list: wire::decode_collection(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?,
-            item_settings: wire::decode_map(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?,
-            default_item_settings: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            hand_settings: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
+            identifier,
+            exclusion_settings,
+            liquid_targeting_list,
+            item_settings,
+            default_item_settings,
+            hand_settings,
         })
     }
 }
@@ -1781,11 +1954,15 @@ impl wire::Encode for CameraAimAssistPresetExclusionDefinition {
 
 impl wire::Decode for CameraAimAssistPresetExclusionDefinition {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let blocks = wire::decode_collection::<String>(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?;
+        let entities = wire::decode_collection::<String>(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?;
+        let block_tags = wire::decode_collection::<String>(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?;
+        let entity_type_families = wire::decode_collection::<String>(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?;
         Ok(Self {
-            blocks: wire::decode_collection(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?,
-            entities: wire::decode_collection(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?,
-            block_tags: wire::decode_collection(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?,
-            entity_type_families: wire::decode_collection(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?,
+            blocks,
+            entities,
+            block_tags,
+            entity_type_families,
         })
     }
 }
@@ -1808,9 +1985,11 @@ impl wire::Encode for CameraEase {
 
 impl wire::Decode for CameraEase {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let type_ = <wire::U8 as wire::Decode>::decode(reader)?;
+        let time = <wire::F32LE as wire::Decode>::decode(reader)?;
         Ok(Self {
-            type_: wire::Decode::decode(reader)?,
-            time: wire::Decode::decode(reader)?,
+            type_,
+            time,
         })
     }
 }
@@ -1832,10 +2011,13 @@ impl wire::Encode for CameraEntityOffset {
 
 impl wire::Decode for CameraEntityOffset {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let entity_offset_x = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let entity_offset_y = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let entity_offset_z = <wire::F32LE as wire::Decode>::decode(reader)?;
         Ok(Self {
-            entity_offset_x: wire::Decode::decode(reader)?,
-            entity_offset_y: wire::Decode::decode(reader)?,
-            entity_offset_z: wire::Decode::decode(reader)?,
+            entity_offset_x,
+            entity_offset_y,
+            entity_offset_z,
         })
     }
 }
@@ -1853,8 +2035,9 @@ impl wire::Encode for CameraFacing {
 
 impl wire::Decode for CameraFacing {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let pos = <glam::Vec3 as wire::Decode>::decode(reader)?;
         Ok(Self {
-            pos: wire::Decode::decode(reader)?,
+            pos,
         })
     }
 }
@@ -1876,10 +2059,13 @@ impl wire::Encode for CameraFadeColor {
 
 impl wire::Decode for CameraFadeColor {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let red = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let green = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let blue = <wire::F32LE as wire::Decode>::decode(reader)?;
         Ok(Self {
-            red: wire::Decode::decode(reader)?,
-            green: wire::Decode::decode(reader)?,
-            blue: wire::Decode::decode(reader)?,
+            red,
+            green,
+            blue,
         })
     }
 }
@@ -1905,10 +2091,13 @@ impl wire::Encode for CameraFadeTimeData {
 
 impl wire::Decode for CameraFadeTimeData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let fade_in_time = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let hold_time = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let fade_out_time = <wire::F32LE as wire::Decode>::decode(reader)?;
         Ok(Self {
-            fade_in_time: wire::Decode::decode(reader)?,
-            hold_time: wire::Decode::decode(reader)?,
-            fade_out_time: wire::Decode::decode(reader)?,
+            fade_in_time,
+            hold_time,
+            fade_out_time,
         })
     }
 }
@@ -2005,70 +2194,79 @@ impl wire::Encode for CameraInstructionData {
 
 impl wire::Decode for CameraInstructionData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let set = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<CameraInstructionSet as wire::Decode>::decode(reader)?)
+            }
+        };
+        let clear = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<bool as wire::Decode>::decode(reader)?)
+            }
+        };
+        let fade = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<CameraInstructionFade as wire::Decode>::decode(reader)?)
+            }
+        };
+        let target = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<CameraInstructionTargetData as wire::Decode>::decode(reader)?)
+            }
+        };
+        let remove_target = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<bool as wire::Decode>::decode(reader)?)
+            }
+        };
+        let field_of_view = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<CameraInstructionFieldOfView as wire::Decode>::decode(reader)?)
+            }
+        };
+        let spline = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<CameraSplineInstruction as wire::Decode>::decode(reader)?)
+            }
+        };
+        let attach_to_entity = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<CameraInstructionTarget as wire::Decode>::decode(reader)?)
+            }
+        };
+        let detach_from_entity = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<bool as wire::Decode>::decode(reader)?)
+            }
+        };
         Ok(Self {
-            set: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            clear: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            fade: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            target: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            remove_target: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            field_of_view: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            spline: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            attach_to_entity: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            detach_from_entity: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
+            set,
+            clear,
+            fade,
+            target,
+            remove_target,
+            field_of_view,
+            spline,
+            attach_to_entity,
+            detach_from_entity,
         })
     }
 }
@@ -2108,21 +2306,23 @@ impl wire::Encode for CameraInstructionFade {
 
 impl wire::Decode for CameraInstructionFade {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let time = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<CameraFadeTimeData as wire::Decode>::decode(reader)?)
+            }
+        };
+        let color = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<CameraFadeColor as wire::Decode>::decode(reader)?)
+            }
+        };
         Ok(Self {
-            time: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            color: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
+            time,
+            color,
         })
     }
 }
@@ -2148,11 +2348,15 @@ impl wire::Encode for CameraInstructionFieldOfView {
 
 impl wire::Decode for CameraInstructionFieldOfView {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let field_of_view = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let fov_ease_time = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let fov_ease_type = <String as wire::Decode>::decode(reader)?;
+        let field_of_view_clear = <bool as wire::Decode>::decode(reader)?;
         Ok(Self {
-            field_of_view: wire::Decode::decode(reader)?,
-            fov_ease_time: wire::Decode::decode(reader)?,
-            fov_ease_type: wire::Decode::decode(reader)?,
-            field_of_view_clear: wire::Decode::decode(reader)?,
+            field_of_view,
+            fov_ease_time,
+            fov_ease_type,
+            field_of_view_clear,
         })
     }
 }
@@ -2249,58 +2453,67 @@ impl wire::Encode for CameraInstructionSet {
 
 impl wire::Decode for CameraInstructionSet {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let preset = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let ease = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<CameraEase as wire::Decode>::decode(reader)?)
+            }
+        };
+        let pos = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<CameraPosition as wire::Decode>::decode(reader)?)
+            }
+        };
+        let rot = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<CameraRotation as wire::Decode>::decode(reader)?)
+            }
+        };
+        let facing = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<CameraFacing as wire::Decode>::decode(reader)?)
+            }
+        };
+        let view_offset = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<CameraViewOffset as wire::Decode>::decode(reader)?)
+            }
+        };
+        let entity_offset = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<CameraEntityOffset as wire::Decode>::decode(reader)?)
+            }
+        };
+        let default = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<bool as wire::Decode>::decode(reader)?)
+            }
+        };
+        let remove_ignore_starting_values_component = <bool as wire::Decode>::decode(reader)?;
         Ok(Self {
-            preset: wire::Decode::decode(reader)?,
-            ease: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            pos: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            rot: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            facing: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            view_offset: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            entity_offset: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            default: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            remove_ignore_starting_values_component: wire::Decode::decode(reader)?,
+            preset,
+            ease,
+            pos,
+            rot,
+            facing,
+            view_offset,
+            entity_offset,
+            default,
+            remove_ignore_starting_values_component,
         })
     }
 }
@@ -2347,15 +2560,17 @@ impl wire::Encode for CameraInstructionTargetData {
 
 impl wire::Decode for CameraInstructionTargetData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let target_center_offset = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<glam::Vec3 as wire::Decode>::decode(reader)?)
+            }
+        };
+        let target_actor_id = <wire::I64LE as wire::Decode>::decode(reader)?;
         Ok(Self {
-            target_center_offset: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            target_actor_id: wire::Decode::decode(reader)?,
+            target_center_offset,
+            target_actor_id,
         })
     }
 }
@@ -2373,8 +2588,9 @@ impl wire::Encode for CameraPosition {
 
 impl wire::Decode for CameraPosition {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let pos = <glam::Vec3 as wire::Decode>::decode(reader)?;
         Ok(Self {
-            pos: wire::Decode::decode(reader)?,
+            pos,
         })
     }
 }
@@ -2610,149 +2826,171 @@ impl wire::Encode for CameraPreset {
 
 impl wire::Decode for CameraPreset {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let name = <String as wire::Decode>::decode(reader)?;
+        let inherit_from = <String as wire::Decode>::decode(reader)?;
+        let pos_x = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::F32LE as wire::Decode>::decode(reader)?)
+            }
+        };
+        let pos_y = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::F32LE as wire::Decode>::decode(reader)?)
+            }
+        };
+        let pos_z = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::F32LE as wire::Decode>::decode(reader)?)
+            }
+        };
+        let rot_x = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::F32LE as wire::Decode>::decode(reader)?)
+            }
+        };
+        let rot_y = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::F32LE as wire::Decode>::decode(reader)?)
+            }
+        };
+        let rotation_speed = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::F32LE as wire::Decode>::decode(reader)?)
+            }
+        };
+        let snap_to_target = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<bool as wire::Decode>::decode(reader)?)
+            }
+        };
+        let horizontal_rotation_limit = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<glam::Vec2 as wire::Decode>::decode(reader)?)
+            }
+        };
+        let vertical_rotation_limit = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<glam::Vec2 as wire::Decode>::decode(reader)?)
+            }
+        };
+        let continue_targeting = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<bool as wire::Decode>::decode(reader)?)
+            }
+        };
+        let block_listening_radius = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::F32LE as wire::Decode>::decode(reader)?)
+            }
+        };
+        let view_offset = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<glam::Vec2 as wire::Decode>::decode(reader)?)
+            }
+        };
+        let entity_offset = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<glam::Vec3 as wire::Decode>::decode(reader)?)
+            }
+        };
+        let radius = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::F32LE as wire::Decode>::decode(reader)?)
+            }
+        };
+        let yaw_limit_min = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::F32LE as wire::Decode>::decode(reader)?)
+            }
+        };
+        let yaw_limit_max = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::F32LE as wire::Decode>::decode(reader)?)
+            }
+        };
+        let listener = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<CameraPresetAudioListener as wire::Decode>::decode(reader)?)
+            }
+        };
+        let player_effects = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<bool as wire::Decode>::decode(reader)?)
+            }
+        };
+        let aim_assist = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<CameraAimAssistCommandPresetDefinition as wire::Decode>::decode(reader)?)
+            }
+        };
+        let control_scheme = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<ControlScheme as wire::Decode>::decode(reader)?)
+            }
+        };
         Ok(Self {
-            name: wire::Decode::decode(reader)?,
-            inherit_from: wire::Decode::decode(reader)?,
-            pos_x: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            pos_y: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            pos_z: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            rot_x: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            rot_y: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            rotation_speed: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            snap_to_target: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            horizontal_rotation_limit: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            vertical_rotation_limit: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            continue_targeting: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            block_listening_radius: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            view_offset: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            entity_offset: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            radius: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            yaw_limit_min: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            yaw_limit_max: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            listener: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            player_effects: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            aim_assist: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            control_scheme: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
+            name,
+            inherit_from,
+            pos_x,
+            pos_y,
+            pos_z,
+            rot_x,
+            rot_y,
+            rotation_speed,
+            snap_to_target,
+            horizontal_rotation_limit,
+            vertical_rotation_limit,
+            continue_targeting,
+            block_listening_radius,
+            view_offset,
+            entity_offset,
+            radius,
+            yaw_limit_min,
+            yaw_limit_max,
+            listener,
+            player_effects,
+            aim_assist,
+            control_scheme,
         })
     }
 }
@@ -2770,8 +3008,9 @@ impl wire::Encode for CameraPresetList {
 
 impl wire::Decode for CameraPresetList {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let presets = wire::decode_collection::<CameraPreset>(reader, 22, wire::MAX_COLLECTION_ELEMENTS)?;
         Ok(Self {
-            presets: wire::decode_collection(reader, 22, wire::MAX_COLLECTION_ELEMENTS)?,
+            presets,
         })
     }
 }
@@ -2794,10 +3033,13 @@ impl wire::Encode for CameraProgressOption {
 
 impl wire::Decode for CameraProgressOption {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let key_frame_value = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let key_frame_time = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let key_frame_easing_func = <String as wire::Decode>::decode(reader)?;
         Ok(Self {
-            key_frame_value: wire::Decode::decode(reader)?,
-            key_frame_time: wire::Decode::decode(reader)?,
-            key_frame_easing_func: wire::Decode::decode(reader)?,
+            key_frame_value,
+            key_frame_time,
+            key_frame_easing_func,
         })
     }
 }
@@ -2817,9 +3059,11 @@ impl wire::Encode for CameraRotation {
 
 impl wire::Decode for CameraRotation {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let x = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let y = <wire::F32LE as wire::Decode>::decode(reader)?;
         Ok(Self {
-            x: wire::Decode::decode(reader)?,
-            y: wire::Decode::decode(reader)?,
+            x,
+            y,
         })
     }
 }
@@ -2842,10 +3086,13 @@ impl wire::Encode for CameraRotationOption {
 
 impl wire::Decode for CameraRotationOption {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let key_frame_value = <glam::Vec3 as wire::Decode>::decode(reader)?;
+        let key_frame_time = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let key_frame_easing_func = <String as wire::Decode>::decode(reader)?;
         Ok(Self {
-            key_frame_value: wire::Decode::decode(reader)?,
-            key_frame_time: wire::Decode::decode(reader)?,
-            key_frame_easing_func: wire::Decode::decode(reader)?,
+            key_frame_value,
+            key_frame_time,
+            key_frame_easing_func,
         })
     }
 }
@@ -2863,8 +3110,9 @@ impl wire::Encode for CameraSplineControlPoint {
 
 impl wire::Decode for CameraSplineControlPoint {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let position = <glam::Vec3 as wire::Decode>::decode(reader)?;
         Ok(Self {
-            position: wire::Decode::decode(reader)?,
+            position,
         })
     }
 }
@@ -2899,13 +3147,19 @@ impl wire::Encode for CameraSplineDefinition {
 
 impl wire::Decode for CameraSplineDefinition {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let name = <String as wire::Decode>::decode(reader)?;
+        let total_time = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let spline_type = <String as wire::Decode>::decode(reader)?;
+        let control_points = wire::decode_collection::<CameraSplineControlPoint>(reader, 12, wire::MAX_COLLECTION_ELEMENTS)?;
+        let progress_key_frames = wire::decode_collection::<CameraSplineProgressKeyFrame>(reader, 9, wire::MAX_COLLECTION_ELEMENTS)?;
+        let rotation_key_frames = wire::decode_collection::<CameraSplineRotationKeyFrame>(reader, 17, wire::MAX_COLLECTION_ELEMENTS)?;
         Ok(Self {
-            name: wire::Decode::decode(reader)?,
-            total_time: wire::Decode::decode(reader)?,
-            spline_type: wire::Decode::decode(reader)?,
-            control_points: wire::decode_collection(reader, 12, wire::MAX_COLLECTION_ELEMENTS)?,
-            progress_key_frames: wire::decode_collection(reader, 9, wire::MAX_COLLECTION_ELEMENTS)?,
-            rotation_key_frames: wire::decode_collection(reader, 17, wire::MAX_COLLECTION_ELEMENTS)?,
+            name,
+            total_time,
+            spline_type,
+            control_points,
+            progress_key_frames,
+            rotation_key_frames,
         })
     }
 }
@@ -2943,14 +3197,21 @@ impl wire::Encode for CameraSplineInstruction {
 
 impl wire::Decode for CameraSplineInstruction {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let total_time = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let type_ = <wire::U8 as wire::Decode>::decode(reader)?;
+        let curve = wire::decode_collection::<glam::Vec3>(reader, 12, wire::MAX_COLLECTION_ELEMENTS)?;
+        let progress_key_frames = wire::decode_collection::<CameraProgressOption>(reader, 9, wire::MAX_COLLECTION_ELEMENTS)?;
+        let rotation_option = wire::decode_collection::<CameraRotationOption>(reader, 17, wire::MAX_COLLECTION_ELEMENTS)?;
+        let spline_identifier = <String as wire::Decode>::decode(reader)?;
+        let load_from_json = <bool as wire::Decode>::decode(reader)?;
         Ok(Self {
-            total_time: wire::Decode::decode(reader)?,
-            type_: wire::Decode::decode(reader)?,
-            curve: wire::decode_collection(reader, 12, wire::MAX_COLLECTION_ELEMENTS)?,
-            progress_key_frames: wire::decode_collection(reader, 9, wire::MAX_COLLECTION_ELEMENTS)?,
-            rotation_option: wire::decode_collection(reader, 17, wire::MAX_COLLECTION_ELEMENTS)?,
-            spline_identifier: wire::Decode::decode(reader)?,
-            load_from_json: wire::Decode::decode(reader)?,
+            total_time,
+            type_,
+            curve,
+            progress_key_frames,
+            rotation_option,
+            spline_identifier,
+            load_from_json,
         })
     }
 }
@@ -2979,16 +3240,19 @@ impl wire::Encode for CameraSplineProgressKeyFrame {
 
 impl wire::Decode for CameraSplineProgressKeyFrame {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let progress = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let time = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let easing = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<String as wire::Decode>::decode(reader)?)
+            }
+        };
         Ok(Self {
-            progress: wire::Decode::decode(reader)?,
-            time: wire::Decode::decode(reader)?,
-            easing: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
+            progress,
+            time,
+            easing,
         })
     }
 }
@@ -3017,16 +3281,19 @@ impl wire::Encode for CameraSplineRotationKeyFrame {
 
 impl wire::Decode for CameraSplineRotationKeyFrame {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let rotation = <glam::Vec3 as wire::Decode>::decode(reader)?;
+        let time = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let easing = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<String as wire::Decode>::decode(reader)?)
+            }
+        };
         Ok(Self {
-            rotation: wire::Decode::decode(reader)?,
-            time: wire::Decode::decode(reader)?,
-            easing: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
+            rotation,
+            time,
+            easing,
         })
     }
 }
@@ -3046,9 +3313,11 @@ impl wire::Encode for CameraViewOffset {
 
 impl wire::Decode for CameraViewOffset {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let x = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let y = <wire::F32LE as wire::Decode>::decode(reader)?;
         Ok(Self {
-            x: wire::Decode::decode(reader)?,
-            y: wire::Decode::decode(reader)?,
+            x,
+            y,
         })
     }
 }
@@ -3072,9 +3341,11 @@ impl wire::Encode for ChunkPos {
 
 impl wire::Decode for ChunkPos {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let x = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let z = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
         Ok(Self {
-            x: wire::Decode::decode(reader)?,
-            z: wire::Decode::decode(reader)?,
+            x,
+            z,
         })
     }
 }
@@ -3098,10 +3369,13 @@ impl wire::Encode for SubChunkPos {
 
 impl wire::Decode for SubChunkPos {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let subchunk_position_x = <wire::I32LE as wire::Decode>::decode(reader)?;
+        let subchunk_position_y = <wire::I32LE as wire::Decode>::decode(reader)?;
+        let subchunk_position_z = <wire::I32LE as wire::Decode>::decode(reader)?;
         Ok(Self {
-            subchunk_position_x: wire::Decode::decode(reader)?,
-            subchunk_position_y: wire::Decode::decode(reader)?,
-            subchunk_position_z: wire::Decode::decode(reader)?,
+            subchunk_position_x,
+            subchunk_position_y,
+            subchunk_position_z,
         })
     }
 }
@@ -3129,10 +3403,13 @@ impl wire::Encode for SyncWorldClockStateData {
 
 impl wire::Decode for SyncWorldClockStateData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let clock_id = <wire::VarULong as wire::Decode>::decode(reader)?;
+        let time = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let is_paused = <bool as wire::Decode>::decode(reader)?;
         Ok(Self {
-            clock_id: wire::Decode::decode(reader)?,
-            time: wire::Decode::decode(reader)?,
-            is_paused: wire::Decode::decode(reader)?,
+            clock_id,
+            time,
+            is_paused,
         })
     }
 }
@@ -3168,17 +3445,21 @@ impl wire::Encode for TimeMarkerData {
 
 impl wire::Decode for TimeMarkerData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let id = <wire::VarULong as wire::Decode>::decode(reader)?;
+        let name = <String as wire::Decode>::decode(reader)?;
+        let time = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let period = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::I32LE as wire::Decode>::decode(reader)?)
+            }
+        };
         Ok(Self {
-            id: wire::Decode::decode(reader)?,
-            name: wire::Decode::decode(reader)?,
-            time: wire::Decode::decode(reader)?,
-            period: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
+            id,
+            name,
+            time,
+            period,
         })
     }
 }
@@ -3210,12 +3491,17 @@ impl wire::Encode for WorldClockData {
 
 impl wire::Decode for WorldClockData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let id = <wire::VarULong as wire::Decode>::decode(reader)?;
+        let name = <String as wire::Decode>::decode(reader)?;
+        let time = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let is_paused = <bool as wire::Decode>::decode(reader)?;
+        let time_markers = wire::decode_collection::<TimeMarkerData>(reader, 4, wire::MAX_COLLECTION_ELEMENTS)?;
         Ok(Self {
-            id: wire::Decode::decode(reader)?,
-            name: wire::Decode::decode(reader)?,
-            time: wire::Decode::decode(reader)?,
-            is_paused: wire::Decode::decode(reader)?,
-            time_markers: wire::decode_collection(reader, 4, wire::MAX_COLLECTION_ELEMENTS)?,
+            id,
+            name,
+            time,
+            is_paused,
+            time_markers,
         })
     }
 }
@@ -3242,9 +3528,11 @@ impl wire::Encode for ChainedSubcommand {
 
 impl wire::Decode for ChainedSubcommand {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let name = <String as wire::Decode>::decode(reader)?;
+        let sub_command_values = wire::decode_collection::<ChainedSubcommandValue>(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?;
         Ok(Self {
-            name: wire::Decode::decode(reader)?,
-            sub_command_values: wire::decode_collection(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?,
+            name,
+            sub_command_values,
         })
     }
 }
@@ -3271,9 +3559,11 @@ impl wire::Encode for ChainedSubcommandValue {
 
 impl wire::Decode for ChainedSubcommandValue {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let sub_command_first_value = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let sub_command_second_value = <wire::VarUInt as wire::Decode>::decode(reader)?;
         Ok(Self {
-            sub_command_first_value: wire::Decode::decode(reader)?,
-            sub_command_second_value: wire::Decode::decode(reader)?,
+            sub_command_first_value,
+            sub_command_second_value,
         })
     }
 }
@@ -3317,14 +3607,21 @@ impl wire::Encode for Command {
 
 impl wire::Decode for Command {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let name = <String as wire::Decode>::decode(reader)?;
+        let description = <String as wire::Decode>::decode(reader)?;
+        let flags = <wire::U16LE as wire::Decode>::decode(reader)?;
+        let permission_level = <String as wire::Decode>::decode(reader)?;
+        let alias_enum = <wire::I32LE as wire::Decode>::decode(reader)?;
+        let command_data_chained_subcommand_indexes = wire::decode_collection::<wire::U32LE>(reader, 4, wire::MAX_COLLECTION_ELEMENTS)?;
+        let overloads = wire::decode_collection::<CommandOverload>(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?;
         Ok(Self {
-            name: wire::Decode::decode(reader)?,
-            description: wire::Decode::decode(reader)?,
-            flags: wire::Decode::decode(reader)?,
-            permission_level: wire::Decode::decode(reader)?,
-            alias_enum: wire::Decode::decode(reader)?,
-            command_data_chained_subcommand_indexes: wire::decode_collection(reader, 4, wire::MAX_COLLECTION_ELEMENTS)?,
-            overloads: wire::decode_collection(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?,
+            name,
+            description,
+            flags,
+            permission_level,
+            alias_enum,
+            command_data_chained_subcommand_indexes,
+            overloads,
         })
     }
 }
@@ -3380,15 +3677,17 @@ impl wire::Decode for CommandBlockUpdateData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let discriminant = <wire::VarUInt as wire::Decode>::decode(reader)?.0;
         Ok(match discriminant {
-            0 => Self::EntityCommandTarget {
-                target_runtime_id: wire::Decode::decode(reader)?,
-            },
-            1 => Self::BlockCommandData {
-                block_position: wire::Decode::decode(reader)?,
-                command_block_mode: wire::Decode::decode(reader)?,
-                redstone_mode: wire::Decode::decode(reader)?,
-                is_conditional: wire::Decode::decode(reader)?,
-            },
+            0 => {
+                let target_runtime_id = <ActorRuntimeID as wire::Decode>::decode(reader)?;
+                Self::EntityCommandTarget { target_runtime_id }
+            }
+            1 => {
+                let block_position = <BlockPos as wire::Decode>::decode(reader)?;
+                let command_block_mode = <wire::VarUInt as wire::Decode>::decode(reader)?;
+                let redstone_mode = <bool as wire::Decode>::decode(reader)?;
+                let is_conditional = <bool as wire::Decode>::decode(reader)?;
+                Self::BlockCommandData { block_position, command_block_mode, redstone_mode, is_conditional }
+            }
             value => {
                 return Err(wire::DecodeError::UnknownVariant {
                     type_name: "CommandBlockUpdateData",
@@ -3422,9 +3721,11 @@ impl wire::Encode for CommandEnum {
 
 impl wire::Decode for CommandEnum {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let name = <String as wire::Decode>::decode(reader)?;
+        let values = wire::decode_collection::<wire::U32LE>(reader, 4, wire::MAX_COLLECTION_ELEMENTS)?;
         Ok(Self {
-            name: wire::Decode::decode(reader)?,
-            values: wire::decode_collection(reader, 4, wire::MAX_COLLECTION_ELEMENTS)?,
+            name,
+            values,
         })
     }
 }
@@ -3453,10 +3754,13 @@ impl wire::Encode for CommandEnumConstraint {
 
 impl wire::Decode for CommandEnumConstraint {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let enum_value_symbol = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let enum_symbol = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let constraint_indices = wire::decode_collection::<wire::U8>(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?;
         Ok(Self {
-            enum_value_symbol: wire::Decode::decode(reader)?,
-            enum_symbol: wire::Decode::decode(reader)?,
-            constraint_indices: wire::decode_collection(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?,
+            enum_value_symbol,
+            enum_symbol,
+            constraint_indices,
         })
     }
 }
@@ -3488,11 +3792,15 @@ impl wire::Encode for CommandOriginData {
 
 impl wire::Decode for CommandOriginData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let type_ = <String as wire::Decode>::decode(reader)?;
+        let uuid = <uuid::Uuid as wire::Decode>::decode(reader)?;
+        let request_id = <String as wire::Decode>::decode(reader)?;
+        let player_id = <wire::I64LE as wire::Decode>::decode(reader)?;
         Ok(Self {
-            type_: wire::Decode::decode(reader)?,
-            uuid: wire::Decode::decode(reader)?,
-            request_id: wire::Decode::decode(reader)?,
-            player_id: wire::Decode::decode(reader)?,
+            type_,
+            uuid,
+            request_id,
+            player_id,
         })
     }
 }
@@ -3523,17 +3831,21 @@ impl wire::Encode for CommandOutputData {
 
 impl wire::Decode for CommandOutputData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let output_type = <String as wire::Decode>::decode(reader)?;
+        let success_count = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let output_messages = wire::decode_collection::<CommandOutputMessage>(reader, 3, wire::MAX_COLLECTION_ELEMENTS)?;
+        let data_set = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<String as wire::Decode>::decode(reader)?)
+            }
+        };
         Ok(Self {
-            output_type: wire::Decode::decode(reader)?,
-            success_count: wire::Decode::decode(reader)?,
-            output_messages: wire::decode_collection(reader, 3, wire::MAX_COLLECTION_ELEMENTS)?,
-            data_set: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
+            output_type,
+            success_count,
+            output_messages,
+            data_set,
         })
     }
 }
@@ -3560,10 +3872,13 @@ impl wire::Encode for CommandOutputMessage {
 
 impl wire::Decode for CommandOutputMessage {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let message_id = <String as wire::Decode>::decode(reader)?;
+        let successful = <bool as wire::Decode>::decode(reader)?;
+        let parameters = wire::decode_collection::<String>(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?;
         Ok(Self {
-            message_id: wire::Decode::decode(reader)?,
-            successful: wire::Decode::decode(reader)?,
-            parameters: wire::decode_collection(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?,
+            message_id,
+            successful,
+            parameters,
         })
     }
 }
@@ -3589,9 +3904,11 @@ impl wire::Encode for CommandOverload {
 
 impl wire::Decode for CommandOverload {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let is_chaining = <bool as wire::Decode>::decode(reader)?;
+        let parameter_data = wire::decode_collection::<CommandParameter>(reader, 7, wire::MAX_COLLECTION_ELEMENTS)?;
         Ok(Self {
-            is_chaining: wire::Decode::decode(reader)?,
-            parameter_data: wire::decode_collection(reader, 7, wire::MAX_COLLECTION_ELEMENTS)?,
+            is_chaining,
+            parameter_data,
         })
     }
 }
@@ -3623,11 +3940,15 @@ impl wire::Encode for CommandParameter {
 
 impl wire::Decode for CommandParameter {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let name = <String as wire::Decode>::decode(reader)?;
+        let parse_symbol = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let is_optional = <bool as wire::Decode>::decode(reader)?;
+        let options = <wire::U8 as wire::Decode>::decode(reader)?;
         Ok(Self {
-            name: wire::Decode::decode(reader)?,
-            parse_symbol: wire::Decode::decode(reader)?,
-            is_optional: wire::Decode::decode(reader)?,
-            options: wire::Decode::decode(reader)?,
+            name,
+            parse_symbol,
+            is_optional,
+            options,
         })
     }
 }
@@ -3653,9 +3974,11 @@ impl wire::Encode for DynamicEnum {
 
 impl wire::Decode for DynamicEnum {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let enum_name = <String as wire::Decode>::decode(reader)?;
+        let enum_options = wire::decode_collection::<String>(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?;
         Ok(Self {
-            enum_name: wire::Decode::decode(reader)?,
-            enum_options: wire::decode_collection(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?,
+            enum_name,
+            enum_options,
         })
     }
 }
@@ -3679,10 +4002,13 @@ impl wire::Encode for ContainerMixDataEntry {
 
 impl wire::Decode for ContainerMixDataEntry {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let from_item_id = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let reagent_item_id = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let to_item_id = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
         Ok(Self {
-            from_item_id: wire::Decode::decode(reader)?,
-            reagent_item_id: wire::Decode::decode(reader)?,
-            to_item_id: wire::Decode::decode(reader)?,
+            from_item_id,
+            reagent_item_id,
+            to_item_id,
         })
     }
 }
@@ -3714,15 +4040,17 @@ impl wire::Encode for FullContainerName {
 
 impl wire::Decode for FullContainerName {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let container_name = <ContainerEnumName as wire::Decode>::decode(reader)?;
+        let dynamic_id = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::U32LE as wire::Decode>::decode(reader)?)
+            }
+        };
         Ok(Self {
-            container_name: wire::Decode::decode(reader)?,
-            dynamic_id: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
+            container_name,
+            dynamic_id,
         })
     }
 }
@@ -3751,10 +4079,13 @@ impl wire::Encode for CreativeGroupInfo {
 
 impl wire::Decode for CreativeGroupInfo {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let creative_category = <CreativeItemCategory as wire::Decode>::decode(reader)?;
+        let name = <String as wire::Decode>::decode(reader)?;
+        let group_icon_item = <NetworkItemInstanceDescriptorSerializedData as wire::Decode>::decode(reader)?;
         Ok(Self {
-            creative_category: wire::Decode::decode(reader)?,
-            name: wire::Decode::decode(reader)?,
-            group_icon_item: wire::Decode::decode(reader)?,
+            creative_category,
+            name,
+            group_icon_item,
         })
     }
 }
@@ -3776,10 +4107,13 @@ impl wire::Encode for CreativeItemEntry {
 
 impl wire::Decode for CreativeItemEntry {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let creative_net_id = <CreativeItemNetID as wire::Decode>::decode(reader)?;
+        let item_instance = <NetworkItemInstanceDescriptorSerializedData as wire::Decode>::decode(reader)?;
+        let group_index = <wire::VarUInt as wire::Decode>::decode(reader)?;
         Ok(Self {
-            creative_net_id: wire::Decode::decode(reader)?,
-            item_instance: wire::Decode::decode(reader)?,
-            group_index: wire::Decode::decode(reader)?,
+            creative_net_id,
+            item_instance,
+            group_index,
         })
     }
 }
@@ -3846,29 +4180,39 @@ impl wire::Encode for EducationLevelSettings {
 
 impl wire::Decode for EducationLevelSettings {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let code_builder_default_uri = <String as wire::Decode>::decode(reader)?;
+        let code_builder_title = <String as wire::Decode>::decode(reader)?;
+        let can_resize_code_builder = <bool as wire::Decode>::decode(reader)?;
+        let disable_legacy_title_bar = <bool as wire::Decode>::decode(reader)?;
+        let post_process_filter = <String as wire::Decode>::decode(reader)?;
+        let screenshot_border_resource_path = <String as wire::Decode>::decode(reader)?;
+        let agent_capabilities = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<bool as wire::Decode>::decode(reader)?)
+            }
+        };
+        let local_settings = <EducationLocalLevelSettings as wire::Decode>::decode(reader)?;
+        let deprecated_always_false = <bool as wire::Decode>::decode(reader)?;
+        let external_link_settings = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<ExternalLinkSettings as wire::Decode>::decode(reader)?)
+            }
+        };
         Ok(Self {
-            code_builder_default_uri: wire::Decode::decode(reader)?,
-            code_builder_title: wire::Decode::decode(reader)?,
-            can_resize_code_builder: wire::Decode::decode(reader)?,
-            disable_legacy_title_bar: wire::Decode::decode(reader)?,
-            post_process_filter: wire::Decode::decode(reader)?,
-            screenshot_border_resource_path: wire::Decode::decode(reader)?,
-            agent_capabilities: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            local_settings: wire::Decode::decode(reader)?,
-            deprecated_always_false: wire::Decode::decode(reader)?,
-            external_link_settings: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
+            code_builder_default_uri,
+            code_builder_title,
+            can_resize_code_builder,
+            disable_legacy_title_bar,
+            post_process_filter,
+            screenshot_border_resource_path,
+            agent_capabilities,
+            local_settings,
+            deprecated_always_false,
+            external_link_settings,
         })
     }
 }
@@ -3893,14 +4237,15 @@ impl wire::Encode for EducationLocalLevelSettings {
 
 impl wire::Decode for EducationLocalLevelSettings {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let code_builder_override_uri = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<String as wire::Decode>::decode(reader)?)
+            }
+        };
         Ok(Self {
-            code_builder_override_uri: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
+            code_builder_override_uri,
         })
     }
 }
@@ -3924,9 +4269,11 @@ impl wire::Encode for EnchantmentInstance {
 
 impl wire::Decode for EnchantmentInstance {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let enchant_type = <EnchantType as wire::Decode>::decode(reader)?;
+        let enchant_level = <wire::U8 as wire::Decode>::decode(reader)?;
         Ok(Self {
-            enchant_type: wire::Decode::decode(reader)?,
-            enchant_level: wire::Decode::decode(reader)?,
+            enchant_type,
+            enchant_level,
         })
     }
 }
@@ -3978,13 +4325,19 @@ impl wire::Encode for EntityLink {
 
 impl wire::Decode for EntityLink {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let target_a = <ActorUniqueID as wire::Decode>::decode(reader)?;
+        let target_b = <ActorUniqueID as wire::Decode>::decode(reader)?;
+        let type_ = <ActorLinkType as wire::Decode>::decode(reader)?;
+        let immediate = <bool as wire::Decode>::decode(reader)?;
+        let passenger_initiated = <bool as wire::Decode>::decode(reader)?;
+        let vehicle_angular_velocity = <wire::F32LE as wire::Decode>::decode(reader)?;
         Ok(Self {
-            target_a: wire::Decode::decode(reader)?,
-            target_b: wire::Decode::decode(reader)?,
-            type_: wire::Decode::decode(reader)?,
-            immediate: wire::Decode::decode(reader)?,
-            passenger_initiated: wire::Decode::decode(reader)?,
-            vehicle_angular_velocity: wire::Decode::decode(reader)?,
+            target_a,
+            target_b,
+            type_,
+            immediate,
+            passenger_initiated,
+            vehicle_angular_velocity,
         })
     }
 }
@@ -4236,100 +4589,121 @@ impl wire::Decode for EventData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let discriminant = <wire::VarUInt as wire::Decode>::decode(reader)?.0;
         Ok(match discriminant {
-            0 => Self::Achievement {
-                achievement_id: wire::Decode::decode(reader)?,
-            },
-            1 => Self::Interaction {
-                interacted_entity_id: wire::Decode::decode(reader)?,
-                interaction_type: wire::Decode::decode(reader)?,
-                interaction_actor_type: wire::Decode::decode(reader)?,
-                interaction_actor_variant: wire::Decode::decode(reader)?,
-                interaction_actor_color: wire::Decode::decode(reader)?,
-            },
-            2 => Self::PortalCreated {
-                dimension_id: wire::Decode::decode(reader)?,
-            },
-            3 => Self::PortalUsed {
-                source_dimension_id: wire::Decode::decode(reader)?,
-                target_dimension_id: wire::Decode::decode(reader)?,
-            },
-            4 => Self::MobKilled {
-                instigator_actor_id: wire::Decode::decode(reader)?,
-                target_actor_id: wire::Decode::decode(reader)?,
-                instigator_child_actor_type: wire::Decode::decode(reader)?,
-                damage_source: wire::Decode::decode(reader)?,
-                trade_tier: wire::Decode::decode(reader)?,
-                trader_name: wire::Decode::decode(reader)?,
-            },
-            5 => Self::CauldronUsed {
-                contents_color: wire::Decode::decode(reader)?,
-                contents_type: wire::Decode::decode(reader)?,
-                fill_level: wire::Decode::decode(reader)?,
-            },
-            6 => Self::PlayerDied {
-                instigator_actor_id: wire::Decode::decode(reader)?,
-                instigator_mob_variant: wire::Decode::decode(reader)?,
-                damage_source: wire::Decode::decode(reader)?,
-                died_in_raid: wire::Decode::decode(reader)?,
-            },
-            7 => Self::BossKilled {
-                boss_actor_id: wire::Decode::decode(reader)?,
-                party_size: wire::Decode::decode(reader)?,
-                boss_type: wire::Decode::decode(reader)?,
-            },
-            8 => Self::SlashCommand {
-                success_count: wire::Decode::decode(reader)?,
-                error_count: wire::Decode::decode(reader)?,
-                command_name: wire::Decode::decode(reader)?,
-                error_list: wire::Decode::decode(reader)?,
-            },
-            9 => Self::MobBorn {
-                born_baby_entity_type: wire::Decode::decode(reader)?,
-                born_baby_entity_variant: wire::Decode::decode(reader)?,
-                born_baby_color: wire::Decode::decode(reader)?,
-            },
-            10 => Self::PoiCauldronUsed {
-                block_interaction_type: wire::Decode::decode(reader)?,
-                item_id: wire::Decode::decode(reader)?,
-            },
-            11 => Self::ComposterUsed {
-                block_interaction_type: wire::Decode::decode(reader)?,
-                item_id: wire::Decode::decode(reader)?,
-            },
-            12 => Self::BellUsed {
-                item_id: wire::Decode::decode(reader)?,
-            },
-            13 => Self::ActorDefinition {
-                event_name: wire::Decode::decode(reader)?,
-            },
-            14 => Self::RaidUpdate {
-                current_wave: wire::Decode::decode(reader)?,
-                total_waves: wire::Decode::decode(reader)?,
-                success: wire::Decode::decode(reader)?,
-            },
-            15 => Self::TargetBlockHit {
-                redstone_level: wire::Decode::decode(reader)?,
-            },
-            16 => Self::PiglinBarter {
-                item_id: wire::Decode::decode(reader)?,
-                was_targeting_bartering_player: wire::Decode::decode(reader)?,
-            },
-            17 => Self::PlayerWaxedOrUnwaxedCopper {
-                player_waxed_or_unwaxed_copper_block_id: wire::Decode::decode(reader)?,
-            },
-            18 => Self::CodeBuilderRuntimeAction {
-                code_builder_runtime_action: wire::Decode::decode(reader)?,
-            },
-            19 => Self::CodeBuilderScoreboard {
-                objective_name: wire::Decode::decode(reader)?,
-                score: wire::Decode::decode(reader)?,
-            },
-            20 => Self::ItemUsed {
-                item_id: wire::Decode::decode(reader)?,
-                item_aux: wire::Decode::decode(reader)?,
-                use_method: wire::Decode::decode(reader)?,
-                count: wire::Decode::decode(reader)?,
-            },
+            0 => {
+                let achievement_id = <MinecraftEventingAchievementIds as wire::Decode>::decode(reader)?;
+                Self::Achievement { achievement_id }
+            }
+            1 => {
+                let interacted_entity_id = <wire::ZigZag64 as wire::Decode>::decode(reader)?;
+                let interaction_type = <MinecraftEventingInteractionType as wire::Decode>::decode(reader)?;
+                let interaction_actor_type = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                let interaction_actor_variant = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                let interaction_actor_color = <wire::U8 as wire::Decode>::decode(reader)?;
+                Self::Interaction { interacted_entity_id, interaction_type, interaction_actor_type, interaction_actor_variant, interaction_actor_color }
+            }
+            2 => {
+                let dimension_id = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                Self::PortalCreated { dimension_id }
+            }
+            3 => {
+                let source_dimension_id = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                let target_dimension_id = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                Self::PortalUsed { source_dimension_id, target_dimension_id }
+            }
+            4 => {
+                let instigator_actor_id = <wire::ZigZag64 as wire::Decode>::decode(reader)?;
+                let target_actor_id = <wire::ZigZag64 as wire::Decode>::decode(reader)?;
+                let instigator_child_actor_type = <ActorType as wire::Decode>::decode(reader)?;
+                let damage_source = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                let trade_tier = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                let trader_name = <String as wire::Decode>::decode(reader)?;
+                Self::MobKilled { instigator_actor_id, target_actor_id, instigator_child_actor_type, damage_source, trade_tier, trader_name }
+            }
+            5 => {
+                let contents_color = <wire::VarUInt as wire::Decode>::decode(reader)?;
+                let contents_type = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                let fill_level = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                Self::CauldronUsed { contents_color, contents_type, fill_level }
+            }
+            6 => {
+                let instigator_actor_id = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                let instigator_mob_variant = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                let damage_source = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                let died_in_raid = <bool as wire::Decode>::decode(reader)?;
+                Self::PlayerDied { instigator_actor_id, instigator_mob_variant, damage_source, died_in_raid }
+            }
+            7 => {
+                let boss_actor_id = <wire::ZigZag64 as wire::Decode>::decode(reader)?;
+                let party_size = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                let boss_type = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                Self::BossKilled { boss_actor_id, party_size, boss_type }
+            }
+            8 => {
+                let success_count = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                let error_count = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                let command_name = <String as wire::Decode>::decode(reader)?;
+                let error_list = <String as wire::Decode>::decode(reader)?;
+                Self::SlashCommand { success_count, error_count, command_name, error_list }
+            }
+            9 => {
+                let born_baby_entity_type = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                let born_baby_entity_variant = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                let born_baby_color = <wire::U8 as wire::Decode>::decode(reader)?;
+                Self::MobBorn { born_baby_entity_type, born_baby_entity_variant, born_baby_color }
+            }
+            10 => {
+                let block_interaction_type = <MinecraftEventingPOIBlockInteractionType as wire::Decode>::decode(reader)?;
+                let item_id = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                Self::PoiCauldronUsed { block_interaction_type, item_id }
+            }
+            11 => {
+                let block_interaction_type = <MinecraftEventingPOIBlockInteractionType as wire::Decode>::decode(reader)?;
+                let item_id = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                Self::ComposterUsed { block_interaction_type, item_id }
+            }
+            12 => {
+                let item_id = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                Self::BellUsed { item_id }
+            }
+            13 => {
+                let event_name = <String as wire::Decode>::decode(reader)?;
+                Self::ActorDefinition { event_name }
+            }
+            14 => {
+                let current_wave = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                let total_waves = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                let success = <bool as wire::Decode>::decode(reader)?;
+                Self::RaidUpdate { current_wave, total_waves, success }
+            }
+            15 => {
+                let redstone_level = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                Self::TargetBlockHit { redstone_level }
+            }
+            16 => {
+                let item_id = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                let was_targeting_bartering_player = <bool as wire::Decode>::decode(reader)?;
+                Self::PiglinBarter { item_id, was_targeting_bartering_player }
+            }
+            17 => {
+                let player_waxed_or_unwaxed_copper_block_id = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                Self::PlayerWaxedOrUnwaxedCopper { player_waxed_or_unwaxed_copper_block_id }
+            }
+            18 => {
+                let code_builder_runtime_action = <String as wire::Decode>::decode(reader)?;
+                Self::CodeBuilderRuntimeAction { code_builder_runtime_action }
+            }
+            19 => {
+                let objective_name = <String as wire::Decode>::decode(reader)?;
+                let score = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                Self::CodeBuilderScoreboard { objective_name, score }
+            }
+            20 => {
+                let item_id = <wire::I16LE as wire::Decode>::decode(reader)?;
+                let item_aux = <wire::I32LE as wire::Decode>::decode(reader)?;
+                let use_method = <wire::I32LE as wire::Decode>::decode(reader)?;
+                let count = <wire::I32LE as wire::Decode>::decode(reader)?;
+                Self::ItemUsed { item_id, item_aux, use_method, count }
+            }
             21 => Self::Empty,
             value => {
                 return Err(wire::DecodeError::UnknownVariant {
@@ -4358,9 +4732,11 @@ impl wire::Encode for ExperimentToggle {
 
 impl wire::Decode for ExperimentToggle {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let name = <String as wire::Decode>::decode(reader)?;
+        let enabled = <bool as wire::Decode>::decode(reader)?;
         Ok(Self {
-            name: wire::Decode::decode(reader)?,
-            enabled: wire::Decode::decode(reader)?,
+            name,
+            enabled,
         })
     }
 }
@@ -4390,10 +4766,13 @@ impl wire::Encode for GameRule {
 
 impl wire::Decode for GameRule {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let rule_name = <String as wire::Decode>::decode(reader)?;
+        let rule_can_be_modified = <bool as wire::Decode>::decode(reader)?;
+        let rule_value = <GameRuleValue as wire::Decode>::decode(reader)?;
         Ok(Self {
-            rule_name: wire::Decode::decode(reader)?,
-            rule_can_be_modified: wire::Decode::decode(reader)?,
-            rule_value: wire::Decode::decode(reader)?,
+            rule_name,
+            rule_can_be_modified,
+            rule_value,
         })
     }
 }
@@ -4444,9 +4823,9 @@ impl wire::Decode for BedrockDDUIDataStoreUpdateData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let discriminant = <wire::VarUInt as wire::Decode>::decode(reader)?.0;
         Ok(match discriminant {
-            0 => Self::Double(wire::Decode::decode(reader)?),
-            1 => Self::Bool(wire::Decode::decode(reader)?),
-            2 => Self::String(wire::Decode::decode(reader)?),
+            0 => Self::Double(<wire::F64LE as wire::Decode>::decode(reader)?),
+            1 => Self::Bool(<bool as wire::Decode>::decode(reader)?),
+            2 => Self::String(<String as wire::Decode>::decode(reader)?),
             value => {
                 return Err(wire::DecodeError::UnknownVariant {
                     type_name: "BedrockDDUIDataStoreUpdateData",
@@ -4567,33 +4946,42 @@ impl wire::Decode for DataItemEntryValue {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let discriminant = <wire::U8 as wire::Decode>::decode(reader)?.0;
         Ok(match discriminant {
-            0 => Self::DataItemByte {
-                value: wire::Decode::decode(reader)?,
-            },
-            1 => Self::DataItemShort {
-                value: wire::Decode::decode(reader)?,
-            },
-            2 => Self::DataItemInt {
-                value: wire::Decode::decode(reader)?,
-            },
-            3 => Self::DataItemFloat {
-                value: wire::Decode::decode(reader)?,
-            },
-            4 => Self::DataItemString {
-                value: wire::Decode::decode(reader)?,
-            },
-            5 => Self::DataItemCompoundTag {
-                value: wire::Decode::decode(reader)?,
-            },
-            6 => Self::DataItemPos {
-                value: wire::Decode::decode(reader)?,
-            },
-            7 => Self::DataItemInt64 {
-                value: wire::Decode::decode(reader)?,
-            },
-            8 => Self::DataItemVec3 {
-                value: wire::Decode::decode(reader)?,
-            },
+            0 => {
+                let value = <wire::I8 as wire::Decode>::decode(reader)?;
+                Self::DataItemByte { value }
+            }
+            1 => {
+                let value = <wire::I16LE as wire::Decode>::decode(reader)?;
+                Self::DataItemShort { value }
+            }
+            2 => {
+                let value = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                Self::DataItemInt { value }
+            }
+            3 => {
+                let value = <wire::F32LE as wire::Decode>::decode(reader)?;
+                Self::DataItemFloat { value }
+            }
+            4 => {
+                let value = <String as wire::Decode>::decode(reader)?;
+                Self::DataItemString { value }
+            }
+            5 => {
+                let value = <wire::NetworkNbt as wire::Decode>::decode(reader)?;
+                Self::DataItemCompoundTag { value }
+            }
+            6 => {
+                let value = <BlockPos as wire::Decode>::decode(reader)?;
+                Self::DataItemPos { value }
+            }
+            7 => {
+                let value = <wire::ZigZag64 as wire::Decode>::decode(reader)?;
+                Self::DataItemInt64 { value }
+            }
+            8 => {
+                let value = <glam::Vec3 as wire::Decode>::decode(reader)?;
+                Self::DataItemVec3 { value }
+            }
             value => {
                 return Err(wire::DecodeError::UnknownVariant {
                     type_name: "DataItemEntryValue",
@@ -4649,10 +5037,11 @@ impl wire::Decode for DisconnectMessages {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let discriminant = <wire::VarUInt as wire::Decode>::decode(reader)?.0;
         Ok(match discriminant {
-            0 => Self::DisconnectPacketMessages {
-                message: wire::Decode::decode(reader)?,
-                filtered_message: wire::Decode::decode(reader)?,
-            },
+            0 => {
+                let message = <String as wire::Decode>::decode(reader)?;
+                let filtered_message = <String as wire::Decode>::decode(reader)?;
+                Self::DisconnectPacketMessages { message, filtered_message }
+            }
             1 => Self::Empty,
             value => {
                 return Err(wire::DecodeError::UnknownVariant {
@@ -4708,9 +5097,9 @@ impl wire::Decode for GameRuleValue {
         let discriminant = <wire::VarUInt as wire::Decode>::decode(reader)?.0;
         Ok(match discriminant {
             0 => Self::Empty,
-            1 => Self::Bool(wire::Decode::decode(reader)?),
-            2 => Self::Int32(wire::Decode::decode(reader)?),
-            3 => Self::Float(wire::Decode::decode(reader)?),
+            1 => Self::Bool(<bool as wire::Decode>::decode(reader)?),
+            2 => Self::Int32(<wire::I32LE as wire::Decode>::decode(reader)?),
+            3 => Self::Float(<wire::F32LE as wire::Decode>::decode(reader)?),
             value => {
                 return Err(wire::DecodeError::UnknownVariant {
                     type_name: "GameRuleValue",
@@ -4805,29 +5194,33 @@ impl wire::Decode for InventoryTransactionValue {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let discriminant = <wire::VarUInt as wire::Decode>::decode(reader)?.0;
         Ok(match discriminant {
-            0 => Self::NormalTransactionData {
-                actions: wire::Decode::decode(reader)?,
-            },
-            1 => Self::InventoryMismatchData {
-                actions: wire::Decode::decode(reader)?,
-            },
-            2 => Self::ItemUseInventoryTransaction(Box::new(wire::Decode::decode(reader)?)),
-            3 => Self::ItemUseOnActorInventoryTransaction {
-                actions: wire::Decode::decode(reader)?,
-                runtime_id: wire::Decode::decode(reader)?,
-                action_type: wire::Decode::decode(reader)?,
-                slot: wire::Decode::decode(reader)?,
-                item: wire::Decode::decode(reader)?,
-                from_position: wire::Decode::decode(reader)?,
-                hit_position: wire::Decode::decode(reader)?,
-            },
-            4 => Self::ItemReleaseInventoryTransaction {
-                actions: wire::Decode::decode(reader)?,
-                action_type: wire::Decode::decode(reader)?,
-                slot: wire::Decode::decode(reader)?,
-                item: wire::Decode::decode(reader)?,
-                from_position: wire::Decode::decode(reader)?,
-            },
+            0 => {
+                let actions = <InventoryTransactionData as wire::Decode>::decode(reader)?;
+                Self::NormalTransactionData { actions }
+            }
+            1 => {
+                let actions = <InventoryTransactionData as wire::Decode>::decode(reader)?;
+                Self::InventoryMismatchData { actions }
+            }
+            2 => Self::ItemUseInventoryTransaction(Box::new(<ItemUseInventoryTransaction as wire::Decode>::decode(reader)?)),
+            3 => {
+                let actions = <InventoryTransactionData as wire::Decode>::decode(reader)?;
+                let runtime_id = <ActorRuntimeID as wire::Decode>::decode(reader)?;
+                let action_type = <ItemUseOnActorInventoryTransactionActionType as wire::Decode>::decode(reader)?;
+                let slot = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                let item = <NetworkItemStackDescriptorSerializedData as wire::Decode>::decode(reader)?;
+                let from_position = <glam::Vec3 as wire::Decode>::decode(reader)?;
+                let hit_position = <glam::Vec3 as wire::Decode>::decode(reader)?;
+                Self::ItemUseOnActorInventoryTransaction { actions, runtime_id, action_type, slot, item, from_position, hit_position }
+            }
+            4 => {
+                let actions = <InventoryTransactionData as wire::Decode>::decode(reader)?;
+                let action_type = <ItemReleaseInventoryTransactionActionType as wire::Decode>::decode(reader)?;
+                let slot = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                let item = <NetworkItemStackDescriptorSerializedData as wire::Decode>::decode(reader)?;
+                let from_position = <glam::Vec3 as wire::Decode>::decode(reader)?;
+                Self::ItemReleaseInventoryTransaction { actions, action_type, slot, item, from_position }
+            }
             value => {
                 return Err(wire::DecodeError::UnknownVariant {
                     type_name: "InventoryTransactionValue",
@@ -5016,85 +5409,94 @@ impl wire::Decode for PrimitiveShapeExtraShapeData {
         let discriminant = <wire::VarUInt as wire::Decode>::decode(reader)?.0;
         Ok(match discriminant {
             0 => Self::Empty,
-            1 => Self::ArrowData {
-                arrow_end_location: {
+            1 => {
+                let arrow_end_location = {
                     if reader.read_u8()? == 0 {
                         None
                     } else {
-                        Some(wire::Decode::decode(reader)?)
+                        Some(<glam::Vec3 as wire::Decode>::decode(reader)?)
                     }
-                },
-                arrow_head_length: {
+                };
+                let arrow_head_length = {
                     if reader.read_u8()? == 0 {
                         None
                     } else {
-                        Some(wire::Decode::decode(reader)?)
+                        Some(<wire::F32LE as wire::Decode>::decode(reader)?)
                     }
-                },
-                arrow_head_radius: {
+                };
+                let arrow_head_radius = {
                     if reader.read_u8()? == 0 {
                         None
                     } else {
-                        Some(wire::Decode::decode(reader)?)
+                        Some(<wire::F32LE as wire::Decode>::decode(reader)?)
                     }
-                },
-                num_segments: {
+                };
+                let num_segments = {
                     if reader.read_u8()? == 0 {
                         None
                     } else {
-                        Some(wire::Decode::decode(reader)?)
+                        Some(<wire::U8 as wire::Decode>::decode(reader)?)
                     }
-                },
-            },
-            2 => Self::TextData {
-                text: wire::Decode::decode(reader)?,
-                use_rotation: wire::Decode::decode(reader)?,
-                background_color: {
+                };
+                Self::ArrowData { arrow_end_location, arrow_head_length, arrow_head_radius, num_segments }
+            }
+            2 => {
+                let text = <String as wire::Decode>::decode(reader)?;
+                let use_rotation = <bool as wire::Decode>::decode(reader)?;
+                let background_color = {
                     if reader.read_u8()? == 0 {
                         None
                     } else {
-                        Some(wire::Decode::decode(reader)?)
+                        Some(<MceColor as wire::Decode>::decode(reader)?)
                     }
-                },
-                depth_test: wire::Decode::decode(reader)?,
-                show_backface: wire::Decode::decode(reader)?,
-                show_text_backface: wire::Decode::decode(reader)?,
-            },
-            3 => Self::BoxData {
-                box_bound: wire::Decode::decode(reader)?,
-            },
-            4 => Self::LineData {
-                line_end_location: wire::Decode::decode(reader)?,
-            },
-            5 => Self::SphereData {
-                num_segments: wire::Decode::decode(reader)?,
-            },
-            6 => Self::CylinderData {
-                radius_x: wire::Decode::decode(reader)?,
-                radius_z: wire::Decode::decode(reader)?,
-                height: wire::Decode::decode(reader)?,
-                num_segments: wire::Decode::decode(reader)?,
-            },
-            7 => Self::PyramidData {
-                width: wire::Decode::decode(reader)?,
-                depth: {
+                };
+                let depth_test = <bool as wire::Decode>::decode(reader)?;
+                let show_backface = <bool as wire::Decode>::decode(reader)?;
+                let show_text_backface = <bool as wire::Decode>::decode(reader)?;
+                Self::TextData { text, use_rotation, background_color, depth_test, show_backface, show_text_backface }
+            }
+            3 => {
+                let box_bound = <glam::Vec3 as wire::Decode>::decode(reader)?;
+                Self::BoxData { box_bound }
+            }
+            4 => {
+                let line_end_location = <glam::Vec3 as wire::Decode>::decode(reader)?;
+                Self::LineData { line_end_location }
+            }
+            5 => {
+                let num_segments = <wire::U8 as wire::Decode>::decode(reader)?;
+                Self::SphereData { num_segments }
+            }
+            6 => {
+                let radius_x = <glam::Vec2 as wire::Decode>::decode(reader)?;
+                let radius_z = <glam::Vec2 as wire::Decode>::decode(reader)?;
+                let height = <wire::F32LE as wire::Decode>::decode(reader)?;
+                let num_segments = <wire::U8 as wire::Decode>::decode(reader)?;
+                Self::CylinderData { radius_x, radius_z, height, num_segments }
+            }
+            7 => {
+                let width = <wire::F32LE as wire::Decode>::decode(reader)?;
+                let depth = {
                     if reader.read_u8()? == 0 {
                         None
                     } else {
-                        Some(wire::Decode::decode(reader)?)
+                        Some(<wire::F32LE as wire::Decode>::decode(reader)?)
                     }
-                },
-                height: wire::Decode::decode(reader)?,
-            },
-            8 => Self::EllipsoidData {
-                radii: wire::Decode::decode(reader)?,
-                segments_per_axis: wire::Decode::decode(reader)?,
-            },
-            9 => Self::ConeData {
-                radii: wire::Decode::decode(reader)?,
-                height: wire::Decode::decode(reader)?,
-                num_segments: wire::Decode::decode(reader)?,
-            },
+                };
+                let height = <wire::F32LE as wire::Decode>::decode(reader)?;
+                Self::PyramidData { width, depth, height }
+            }
+            8 => {
+                let radii = <glam::Vec3 as wire::Decode>::decode(reader)?;
+                let segments_per_axis = <wire::U8 as wire::Decode>::decode(reader)?;
+                Self::EllipsoidData { radii, segments_per_axis }
+            }
+            9 => {
+                let radii = <glam::Vec2 as wire::Decode>::decode(reader)?;
+                let height = <wire::F32LE as wire::Decode>::decode(reader)?;
+                let num_segments = <wire::U8 as wire::Decode>::decode(reader)?;
+                Self::ConeData { radii, height, num_segments }
+            }
             value => {
                 return Err(wire::DecodeError::UnknownVariant {
                     type_name: "PrimitiveShapeExtraShapeData",
@@ -5149,9 +5551,9 @@ impl wire::Decode for ServerboundPackSettingChangePackSettingValue {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let discriminant = <wire::VarUInt as wire::Decode>::decode(reader)?.0;
         Ok(match discriminant {
-            0 => Self::Float(wire::Decode::decode(reader)?),
-            1 => Self::Bool(wire::Decode::decode(reader)?),
-            2 => Self::String(wire::Decode::decode(reader)?),
+            0 => Self::Float(<wire::F32LE as wire::Decode>::decode(reader)?),
+            1 => Self::Bool(<bool as wire::Decode>::decode(reader)?),
+            2 => Self::String(<String as wire::Decode>::decode(reader)?),
             value => {
                 return Err(wire::DecodeError::UnknownVariant {
                     type_name: "ServerboundPackSettingChangePackSettingValue",
@@ -5258,38 +5660,42 @@ impl wire::Decode for SetScoreInfoItem {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let discriminant = <wire::U8 as wire::Decode>::decode(reader)?.0;
         Ok(match discriminant {
-            0 => Self::RemoveScore {
-                action: wire::Decode::decode(reader)?,
-                scoreboard_id: wire::Decode::decode(reader)?,
-                objective_name: {
+            0 => {
+                let action = <String as wire::Decode>::decode(reader)?;
+                let scoreboard_id = <ScoreboardId as wire::Decode>::decode(reader)?;
+                let objective_name = {
                     if reader.read_u8()? == 0 {
                         None
                     } else {
-                        Some(wire::Decode::decode(reader)?)
+                        Some(<String as wire::Decode>::decode(reader)?)
                     }
-                },
-            },
-            1 => Self::ChangePlayerScore {
-                action: wire::Decode::decode(reader)?,
-                scoreboard_id: wire::Decode::decode(reader)?,
-                objective_name: wire::Decode::decode(reader)?,
-                score_value: wire::Decode::decode(reader)?,
-                player_unique_id: wire::Decode::decode(reader)?,
-            },
-            2 => Self::ChangeEntityScore {
-                action: wire::Decode::decode(reader)?,
-                scoreboard_id: wire::Decode::decode(reader)?,
-                objective_name: wire::Decode::decode(reader)?,
-                score_value: wire::Decode::decode(reader)?,
-                actor_id: wire::Decode::decode(reader)?,
-            },
-            3 => Self::ChangeFakePlayerScore {
-                action: wire::Decode::decode(reader)?,
-                scoreboard_id: wire::Decode::decode(reader)?,
-                objective_name: wire::Decode::decode(reader)?,
-                score_value: wire::Decode::decode(reader)?,
-                fake_player_name: wire::Decode::decode(reader)?,
-            },
+                };
+                Self::RemoveScore { action, scoreboard_id, objective_name }
+            }
+            1 => {
+                let action = <String as wire::Decode>::decode(reader)?;
+                let scoreboard_id = <ScoreboardId as wire::Decode>::decode(reader)?;
+                let objective_name = <String as wire::Decode>::decode(reader)?;
+                let score_value = <wire::I32LE as wire::Decode>::decode(reader)?;
+                let player_unique_id = <PlayerScoreboardId as wire::Decode>::decode(reader)?;
+                Self::ChangePlayerScore { action, scoreboard_id, objective_name, score_value, player_unique_id }
+            }
+            2 => {
+                let action = <String as wire::Decode>::decode(reader)?;
+                let scoreboard_id = <ScoreboardId as wire::Decode>::decode(reader)?;
+                let objective_name = <String as wire::Decode>::decode(reader)?;
+                let score_value = <wire::I32LE as wire::Decode>::decode(reader)?;
+                let actor_id = <ActorUniqueID as wire::Decode>::decode(reader)?;
+                Self::ChangeEntityScore { action, scoreboard_id, objective_name, score_value, actor_id }
+            }
+            3 => {
+                let action = <String as wire::Decode>::decode(reader)?;
+                let scoreboard_id = <ScoreboardId as wire::Decode>::decode(reader)?;
+                let objective_name = <String as wire::Decode>::decode(reader)?;
+                let score_value = <wire::I32LE as wire::Decode>::decode(reader)?;
+                let fake_player_name = <String as wire::Decode>::decode(reader)?;
+                Self::ChangeFakePlayerScore { action, scoreboard_id, objective_name, score_value, fake_player_name }
+            }
             value => {
                 return Err(wire::DecodeError::UnknownVariant {
                     type_name: "SetScoreInfoItem",
@@ -5324,11 +5730,15 @@ impl wire::Encode for InventoryAction {
 
 impl wire::Decode for InventoryAction {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let source = <InventorySource as wire::Decode>::decode(reader)?;
+        let slot = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let from_item = <NetworkItemStackDescriptorSerializedData as wire::Decode>::decode(reader)?;
+        let to_item = <NetworkItemStackDescriptorSerializedData as wire::Decode>::decode(reader)?;
         Ok(Self {
-            source: wire::Decode::decode(reader)?,
-            slot: wire::Decode::decode(reader)?,
-            from_item: wire::Decode::decode(reader)?,
-            to_item: wire::Decode::decode(reader)?,
+            source,
+            slot,
+            from_item,
+            to_item,
         })
     }
 }
@@ -5354,12 +5764,17 @@ impl wire::Encode for InventoryOptions {
 
 impl wire::Decode for InventoryOptions {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let left_inventory_tab = <InventoryLeftTabIndex as wire::Decode>::decode(reader)?;
+        let right_inventory_tab = <InventoryRightTabIndex as wire::Decode>::decode(reader)?;
+        let filtering = <bool as wire::Decode>::decode(reader)?;
+        let layout_inv = <InventoryLayout as wire::Decode>::decode(reader)?;
+        let layout_craft = <InventoryLayout as wire::Decode>::decode(reader)?;
         Ok(Self {
-            left_inventory_tab: wire::Decode::decode(reader)?,
-            right_inventory_tab: wire::Decode::decode(reader)?,
-            filtering: wire::Decode::decode(reader)?,
-            layout_inv: wire::Decode::decode(reader)?,
-            layout_craft: wire::Decode::decode(reader)?,
+            left_inventory_tab,
+            right_inventory_tab,
+            filtering,
+            layout_inv,
+            layout_craft,
         })
     }
 }
@@ -5397,22 +5812,25 @@ impl wire::Encode for InventorySource {
 
 impl wire::Decode for InventorySource {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let source_type = <InventorySourceType as wire::Decode>::decode(reader)?;
+        let container_id = {
+            if reader.read_u8()? != 0 && reader.read_u8()? != 0 {
+                Some(<wire::I8 as wire::Decode>::decode(reader)?)
+            } else {
+                None
+            }
+        };
+        let bit_flags = {
+            if reader.read_u8()? != 0 && reader.read_u8()? != 0 {
+                Some(<InventorySourceInventorySourceFlags as wire::Decode>::decode(reader)?)
+            } else {
+                None
+            }
+        };
         Ok(Self {
-            source_type: wire::Decode::decode(reader)?,
-            container_id: {
-                if reader.read_u8()? != 0 && reader.read_u8()? != 0 {
-                    Some(wire::Decode::decode(reader)?)
-                } else {
-                    None
-                }
-            },
-            bit_flags: {
-                if reader.read_u8()? != 0 && reader.read_u8()? != 0 {
-                    Some(wire::Decode::decode(reader)?)
-                } else {
-                    None
-                }
-            },
+            source_type,
+            container_id,
+            bit_flags,
         })
     }
 }
@@ -5439,14 +5857,15 @@ impl wire::Encode for InventoryTransactionData {
 
 impl wire::Decode for InventoryTransactionData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let actions = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(wire::decode_collection::<InventoryAction>(reader, 20, wire::MAX_COLLECTION_ELEMENTS)?)
+            }
+        };
         Ok(Self {
-            actions: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::decode_collection(reader, 20, wire::MAX_COLLECTION_ELEMENTS)?)
-                }
-            },
+            actions,
         })
     }
 }
@@ -5474,12 +5893,17 @@ impl wire::Encode for ItemData {
 
 impl wire::Decode for ItemData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let item_name = <String as wire::Decode>::decode(reader)?;
+        let item_id = <wire::I16LE as wire::Decode>::decode(reader)?;
+        let is_component_based = <bool as wire::Decode>::decode(reader)?;
+        let item_version = <ItemVersion as wire::Decode>::decode(reader)?;
+        let item_component_data = <wire::NetworkNbt as wire::Decode>::decode(reader)?;
         Ok(Self {
-            item_name: wire::Decode::decode(reader)?,
-            item_id: wire::Decode::decode(reader)?,
-            is_component_based: wire::Decode::decode(reader)?,
-            item_version: wire::Decode::decode(reader)?,
-            item_component_data: wire::Decode::decode(reader)?,
+            item_name,
+            item_id,
+            is_component_based,
+            item_version,
+            item_component_data,
         })
     }
 }
@@ -5503,11 +5927,15 @@ impl wire::Encode for ItemEnchantOption {
 
 impl wire::Decode for ItemEnchantOption {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let cost = <wire::U8 as wire::Decode>::decode(reader)?;
+        let enchants = <ItemEnchants as wire::Decode>::decode(reader)?;
+        let enchant_name = <String as wire::Decode>::decode(reader)?;
+        let enchant_net_id = <RecipeNetID as wire::Decode>::decode(reader)?;
         Ok(Self {
-            cost: wire::Decode::decode(reader)?,
-            enchants: wire::Decode::decode(reader)?,
-            enchant_name: wire::Decode::decode(reader)?,
-            enchant_net_id: wire::Decode::decode(reader)?,
+            cost,
+            enchants,
+            enchant_name,
+            enchant_net_id,
         })
     }
 }
@@ -5529,9 +5957,11 @@ impl wire::Encode for ItemEnchants {
 
 impl wire::Decode for ItemEnchants {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let slot = <wire::I32LE as wire::Decode>::decode(reader)?;
+        let item_enchants = [wire::decode_collection::<EnchantmentInstance>(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?, wire::decode_collection::<EnchantmentInstance>(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?, wire::decode_collection::<EnchantmentInstance>(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?];
         Ok(Self {
-            slot: wire::Decode::decode(reader)?,
-            item_enchants: [wire::decode_collection(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?, wire::decode_collection(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?, wire::decode_collection(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?],
+            slot,
+            item_enchants,
         })
     }
 }
@@ -5557,11 +5987,15 @@ impl wire::Encode for ItemInstance {
 
 impl wire::Decode for ItemInstance {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let item_descriptor = <ItemDescriptor as wire::Decode>::decode(reader)?;
+        let stack_size = <wire::U16LE as wire::Decode>::decode(reader)?;
+        let block_runtime_id = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let user_data_buffer = <bytes::Bytes as wire::Decode>::decode(reader)?;
         Ok(Self {
-            item_descriptor: wire::Decode::decode(reader)?,
-            stack_size: wire::Decode::decode(reader)?,
-            block_runtime_id: wire::Decode::decode(reader)?,
-            user_data_buffer: wire::Decode::decode(reader)?,
+            item_descriptor,
+            stack_size,
+            block_runtime_id,
+            user_data_buffer,
         })
     }
 }
@@ -5601,19 +6035,31 @@ impl wire::Encode for ItemUseInventoryTransaction {
 
 impl wire::Decode for ItemUseInventoryTransaction {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let actions = <InventoryTransactionData as wire::Decode>::decode(reader)?;
+        let action_type = <ItemUseInventoryTransactionActionType as wire::Decode>::decode(reader)?;
+        let trigger_type = <ItemUseInventoryTransactionTriggerType as wire::Decode>::decode(reader)?;
+        let position = <BlockPos as wire::Decode>::decode(reader)?;
+        let face = <wire::U8 as wire::Decode>::decode(reader)?;
+        let slot = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let item = <NetworkItemStackDescriptorSerializedData as wire::Decode>::decode(reader)?;
+        let from_position = <glam::Vec3 as wire::Decode>::decode(reader)?;
+        let click_position = <glam::Vec3 as wire::Decode>::decode(reader)?;
+        let target_block_id = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let client_interact_prediction = <ItemUseInventoryTransactionPredictedResult as wire::Decode>::decode(reader)?;
+        let client_cooldown_state = <ItemUseInventoryTransactionClientCooldownState as wire::Decode>::decode(reader)?;
         Ok(Self {
-            actions: wire::Decode::decode(reader)?,
-            action_type: wire::Decode::decode(reader)?,
-            trigger_type: wire::Decode::decode(reader)?,
-            position: wire::Decode::decode(reader)?,
-            face: wire::Decode::decode(reader)?,
-            slot: wire::Decode::decode(reader)?,
-            item: wire::Decode::decode(reader)?,
-            from_position: wire::Decode::decode(reader)?,
-            click_position: wire::Decode::decode(reader)?,
-            target_block_id: wire::Decode::decode(reader)?,
-            client_interact_prediction: wire::Decode::decode(reader)?,
-            client_cooldown_state: wire::Decode::decode(reader)?,
+            actions,
+            action_type,
+            trigger_type,
+            position,
+            face,
+            slot,
+            item,
+            from_position,
+            click_position,
+            target_block_id,
+            client_interact_prediction,
+            client_cooldown_state,
         })
     }
 }
@@ -5691,23 +6137,27 @@ impl wire::Decode for ItemDescriptor {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let discriminant = <wire::VarUInt as wire::Decode>::decode(reader)?.0;
         Ok(match discriminant {
-            0 => Self::EmptyItemDescriptorData {
-                descriptor_type: wire::Decode::decode(reader)?,
-            },
-            1 => Self::ItemNameDescriptorData {
-                descriptor_type: wire::Decode::decode(reader)?,
-                full_name: wire::Decode::decode(reader)?,
-                aux_value: wire::Decode::decode(reader)?,
-            },
-            2 => Self::MolangItemDescriptorData {
-                descriptor_type: wire::Decode::decode(reader)?,
-                tag_expression: wire::Decode::decode(reader)?,
-                molang_version: wire::Decode::decode(reader)?,
-            },
-            3 => Self::ItemTagDescriptorData {
-                descriptor_type: wire::Decode::decode(reader)?,
-                item_tag: wire::Decode::decode(reader)?,
-            },
+            0 => {
+                let descriptor_type = <ItemDescriptorType as wire::Decode>::decode(reader)?;
+                Self::EmptyItemDescriptorData { descriptor_type }
+            }
+            1 => {
+                let descriptor_type = <ItemDescriptorType as wire::Decode>::decode(reader)?;
+                let full_name = <String as wire::Decode>::decode(reader)?;
+                let aux_value = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                Self::ItemNameDescriptorData { descriptor_type, full_name, aux_value }
+            }
+            2 => {
+                let descriptor_type = <ItemDescriptorType as wire::Decode>::decode(reader)?;
+                let tag_expression = <String as wire::Decode>::decode(reader)?;
+                let molang_version = <MoLangVersion as wire::Decode>::decode(reader)?;
+                Self::MolangItemDescriptorData { descriptor_type, tag_expression, molang_version }
+            }
+            3 => {
+                let descriptor_type = <ItemDescriptorType as wire::Decode>::decode(reader)?;
+                let item_tag = <String as wire::Decode>::decode(reader)?;
+                Self::ItemTagDescriptorData { descriptor_type, item_tag }
+            }
             value => {
                 return Err(wire::DecodeError::UnknownVariant {
                     type_name: "ItemDescriptor",
@@ -5968,97 +6418,115 @@ impl wire::Decode for StackRequestAction {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let discriminant = <wire::VarUInt as wire::Decode>::decode(reader)?.0;
         Ok(match discriminant {
-            0 => Self::TakeActionData {
-                action_type: wire::Decode::decode(reader)?,
-                amount: wire::Decode::decode(reader)?,
-                source: wire::Decode::decode(reader)?,
-                destination: wire::Decode::decode(reader)?,
-            },
-            1 => Self::PlaceActionData {
-                action_type: wire::Decode::decode(reader)?,
-                amount: wire::Decode::decode(reader)?,
-                source: wire::Decode::decode(reader)?,
-                destination: wire::Decode::decode(reader)?,
-            },
-            2 => Self::SwapActionData {
-                action_type: wire::Decode::decode(reader)?,
-                source: wire::Decode::decode(reader)?,
-                destination: wire::Decode::decode(reader)?,
-            },
-            3 => Self::DropActionData {
-                action_type: wire::Decode::decode(reader)?,
-                amount: wire::Decode::decode(reader)?,
-                source: wire::Decode::decode(reader)?,
-                randomly: wire::Decode::decode(reader)?,
-            },
-            4 => Self::DestroyActionData {
-                action_type: wire::Decode::decode(reader)?,
-                amount: wire::Decode::decode(reader)?,
-                source: wire::Decode::decode(reader)?,
-            },
-            5 => Self::ConsumeActionData {
-                action_type: wire::Decode::decode(reader)?,
-                amount: wire::Decode::decode(reader)?,
-                source: wire::Decode::decode(reader)?,
-            },
-            6 => Self::CreateActionData {
-                action_type: wire::Decode::decode(reader)?,
-                results_index: wire::Decode::decode(reader)?,
-            },
-            7 => Self::LabTableCombineActionData {
-                action_type: wire::Decode::decode(reader)?,
-            },
-            8 => Self::BeaconPaymentActionData {
-                action_type: wire::Decode::decode(reader)?,
-                primary_effect_id: wire::Decode::decode(reader)?,
-                secondary_effect_id: wire::Decode::decode(reader)?,
-            },
-            9 => Self::MineBlockActionData {
-                action_type: wire::Decode::decode(reader)?,
-                slot: wire::Decode::decode(reader)?,
-                predicted_durability: wire::Decode::decode(reader)?,
-                net_id_variant: wire::Decode::decode(reader)?,
-            },
-            10 => Self::CraftRecipeActionData {
-                action_type: wire::Decode::decode(reader)?,
-                recipe_net_id: wire::Decode::decode(reader)?,
-                number_of_requested_crafts: wire::Decode::decode(reader)?,
-            },
-            11 => Self::CraftRecipeAutoActionData {
-                action_type: wire::Decode::decode(reader)?,
-                recipe_net_id: wire::Decode::decode(reader)?,
-                number_of_requested_crafts: wire::Decode::decode(reader)?,
-                ingredients: wire::decode_collection(reader, 4, wire::MAX_COLLECTION_ELEMENTS)?,
-            },
-            12 => Self::CraftCreativeActionData {
-                action_type: wire::Decode::decode(reader)?,
-                creative_item_net_id: wire::Decode::decode(reader)?,
-                number_of_requested_crafts: wire::Decode::decode(reader)?,
-            },
-            13 => Self::CraftRecipeOptionalActionData {
-                action_type: wire::Decode::decode(reader)?,
-                recipe_net_id: wire::Decode::decode(reader)?,
-                filtered_string_index: wire::Decode::decode(reader)?,
-            },
-            14 => Self::CraftRepairAndDisenchantActionData {
-                action_type: wire::Decode::decode(reader)?,
-                recipe_net_id: wire::Decode::decode(reader)?,
-                number_of_requested_crafts: wire::Decode::decode(reader)?,
-                repair_cost: wire::Decode::decode(reader)?,
-            },
-            15 => Self::CraftLoomActionData {
-                action_type: wire::Decode::decode(reader)?,
-                pattern_name_id: wire::Decode::decode(reader)?,
-                num_crafts: wire::Decode::decode(reader)?,
-            },
-            16 => Self::CraftNonImplementedActionData {
-                action_type: wire::Decode::decode(reader)?,
-            },
-            17 => Self::CraftResultsActionData {
-                action_type: wire::Decode::decode(reader)?,
-                craft_results: wire::decode_collection(reader, 6, wire::MAX_COLLECTION_ELEMENTS)?,
-                num_crafts: wire::Decode::decode(reader)?,
-            },
+            0 => {
+                let action_type = <ItemStackRequestActionType as wire::Decode>::decode(reader)?;
+                let amount = <wire::U8 as wire::Decode>::decode(reader)?;
+                let source = <StackRequestSlotInfo as wire::Decode>::decode(reader)?;
+                let destination = <StackRequestSlotInfo as wire::Decode>::decode(reader)?;
+                Self::TakeActionData { action_type, amount, source, destination }
+            }
+            1 => {
+                let action_type = <ItemStackRequestActionType as wire::Decode>::decode(reader)?;
+                let amount = <wire::U8 as wire::Decode>::decode(reader)?;
+                let source = <StackRequestSlotInfo as wire::Decode>::decode(reader)?;
+                let destination = <StackRequestSlotInfo as wire::Decode>::decode(reader)?;
+                Self::PlaceActionData { action_type, amount, source, destination }
+            }
+            2 => {
+                let action_type = <ItemStackRequestActionType as wire::Decode>::decode(reader)?;
+                let source = <StackRequestSlotInfo as wire::Decode>::decode(reader)?;
+                let destination = <StackRequestSlotInfo as wire::Decode>::decode(reader)?;
+                Self::SwapActionData { action_type, source, destination }
+            }
+            3 => {
+                let action_type = <ItemStackRequestActionType as wire::Decode>::decode(reader)?;
+                let amount = <wire::U8 as wire::Decode>::decode(reader)?;
+                let source = <StackRequestSlotInfo as wire::Decode>::decode(reader)?;
+                let randomly = <bool as wire::Decode>::decode(reader)?;
+                Self::DropActionData { action_type, amount, source, randomly }
+            }
+            4 => {
+                let action_type = <ItemStackRequestActionType as wire::Decode>::decode(reader)?;
+                let amount = <wire::U8 as wire::Decode>::decode(reader)?;
+                let source = <StackRequestSlotInfo as wire::Decode>::decode(reader)?;
+                Self::DestroyActionData { action_type, amount, source }
+            }
+            5 => {
+                let action_type = <ItemStackRequestActionType as wire::Decode>::decode(reader)?;
+                let amount = <wire::U8 as wire::Decode>::decode(reader)?;
+                let source = <StackRequestSlotInfo as wire::Decode>::decode(reader)?;
+                Self::ConsumeActionData { action_type, amount, source }
+            }
+            6 => {
+                let action_type = <ItemStackRequestActionType as wire::Decode>::decode(reader)?;
+                let results_index = <wire::U8 as wire::Decode>::decode(reader)?;
+                Self::CreateActionData { action_type, results_index }
+            }
+            7 => {
+                let action_type = <ItemStackRequestActionType as wire::Decode>::decode(reader)?;
+                Self::LabTableCombineActionData { action_type }
+            }
+            8 => {
+                let action_type = <ItemStackRequestActionType as wire::Decode>::decode(reader)?;
+                let primary_effect_id = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                let secondary_effect_id = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                Self::BeaconPaymentActionData { action_type, primary_effect_id, secondary_effect_id }
+            }
+            9 => {
+                let action_type = <ItemStackRequestActionType as wire::Decode>::decode(reader)?;
+                let slot = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                let predicted_durability = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                let net_id_variant = <wire::I32LE as wire::Decode>::decode(reader)?;
+                Self::MineBlockActionData { action_type, slot, predicted_durability, net_id_variant }
+            }
+            10 => {
+                let action_type = <ItemStackRequestActionType as wire::Decode>::decode(reader)?;
+                let recipe_net_id = <RecipeNetID as wire::Decode>::decode(reader)?;
+                let number_of_requested_crafts = <wire::U8 as wire::Decode>::decode(reader)?;
+                Self::CraftRecipeActionData { action_type, recipe_net_id, number_of_requested_crafts }
+            }
+            11 => {
+                let action_type = <ItemStackRequestActionType as wire::Decode>::decode(reader)?;
+                let recipe_net_id = <RecipeNetID as wire::Decode>::decode(reader)?;
+                let number_of_requested_crafts = <wire::U8 as wire::Decode>::decode(reader)?;
+                let ingredients = wire::decode_collection::<RecipeIngredient>(reader, 4, wire::MAX_COLLECTION_ELEMENTS)?;
+                Self::CraftRecipeAutoActionData { action_type, recipe_net_id, number_of_requested_crafts, ingredients }
+            }
+            12 => {
+                let action_type = <ItemStackRequestActionType as wire::Decode>::decode(reader)?;
+                let creative_item_net_id = <wire::VarUInt as wire::Decode>::decode(reader)?;
+                let number_of_requested_crafts = <wire::U8 as wire::Decode>::decode(reader)?;
+                Self::CraftCreativeActionData { action_type, creative_item_net_id, number_of_requested_crafts }
+            }
+            13 => {
+                let action_type = <ItemStackRequestActionType as wire::Decode>::decode(reader)?;
+                let recipe_net_id = <RecipeNetID as wire::Decode>::decode(reader)?;
+                let filtered_string_index = <wire::I32LE as wire::Decode>::decode(reader)?;
+                Self::CraftRecipeOptionalActionData { action_type, recipe_net_id, filtered_string_index }
+            }
+            14 => {
+                let action_type = <ItemStackRequestActionType as wire::Decode>::decode(reader)?;
+                let recipe_net_id = <wire::I32LE as wire::Decode>::decode(reader)?;
+                let number_of_requested_crafts = <wire::U8 as wire::Decode>::decode(reader)?;
+                let repair_cost = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                Self::CraftRepairAndDisenchantActionData { action_type, recipe_net_id, number_of_requested_crafts, repair_cost }
+            }
+            15 => {
+                let action_type = <ItemStackRequestActionType as wire::Decode>::decode(reader)?;
+                let pattern_name_id = <String as wire::Decode>::decode(reader)?;
+                let num_crafts = <wire::U8 as wire::Decode>::decode(reader)?;
+                Self::CraftLoomActionData { action_type, pattern_name_id, num_crafts }
+            }
+            16 => {
+                let action_type = <ItemStackRequestActionType as wire::Decode>::decode(reader)?;
+                Self::CraftNonImplementedActionData { action_type }
+            }
+            17 => {
+                let action_type = <ItemStackRequestActionType as wire::Decode>::decode(reader)?;
+                let craft_results = wire::decode_collection::<ItemInstance>(reader, 6, wire::MAX_COLLECTION_ELEMENTS)?;
+                let num_crafts = <wire::U8 as wire::Decode>::decode(reader)?;
+                Self::CraftResultsActionData { action_type, craft_results, num_crafts }
+            }
             value => {
                 return Err(wire::DecodeError::UnknownVariant {
                     type_name: "StackRequestAction",
@@ -6125,11 +6593,15 @@ impl wire::Encode for ItemStackRequestData {
 
 impl wire::Decode for ItemStackRequestData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let client_request_id = <ItemStackRequestID as wire::Decode>::decode(reader)?;
+        let actions = wire::decode_collection::<StackRequestAction>(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?;
+        let strings_to_filter = wire::decode_collection::<String>(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?;
+        let strings_to_filter_origin = <TextProcessingEventOrigin as wire::Decode>::decode(reader)?;
         Ok(Self {
-            client_request_id: wire::Decode::decode(reader)?,
-            actions: wire::decode_collection(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?,
-            strings_to_filter: wire::decode_collection(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?,
-            strings_to_filter_origin: wire::Decode::decode(reader)?,
+            client_request_id,
+            actions,
+            strings_to_filter,
+            strings_to_filter_origin,
         })
     }
 }
@@ -6168,11 +6640,15 @@ impl wire::Encode for ItemStackRequestPacketData {
 
 impl wire::Decode for ItemStackRequestPacketData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let client_request_id = <ItemStackRequestID as wire::Decode>::decode(reader)?;
+        let actions = wire::decode_collection::<StackRequestAction>(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?;
+        let strings_to_filter = wire::decode_collection::<String>(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?;
+        let strings_to_filter_origin = <TextProcessingEventOrigin as wire::Decode>::decode(reader)?;
         Ok(Self {
-            client_request_id: wire::Decode::decode(reader)?,
-            actions: wire::decode_collection(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?,
-            strings_to_filter: wire::decode_collection(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?,
-            strings_to_filter_origin: wire::Decode::decode(reader)?,
+            client_request_id,
+            actions,
+            strings_to_filter,
+            strings_to_filter_origin,
         })
     }
 }
@@ -6192,9 +6668,11 @@ impl wire::Encode for ItemStackResponseContainerInfo {
 
 impl wire::Decode for ItemStackResponseContainerInfo {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let full_container_name = <FullContainerName as wire::Decode>::decode(reader)?;
+        let slots = wire::decode_collection::<ItemStackResponseSlotInfo>(reader, 7, wire::MAX_COLLECTION_ELEMENTS)?;
         Ok(Self {
-            full_container_name: wire::Decode::decode(reader)?,
-            slots: wire::decode_collection(reader, 7, wire::MAX_COLLECTION_ELEMENTS)?,
+            full_container_name,
+            slots,
         })
     }
 }
@@ -6225,16 +6703,19 @@ impl wire::Encode for ItemStackResponseInfo {
 
 impl wire::Decode for ItemStackResponseInfo {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let result = <ItemStackNetResult as wire::Decode>::decode(reader)?;
+        let client_request_id = <ItemStackRequestID as wire::Decode>::decode(reader)?;
+        let containers = {
+            if reader.read_u8()? != 0 && reader.read_u8()? != 0 {
+                Some(wire::decode_collection::<ItemStackResponseContainerInfo>(reader, 3, wire::MAX_COLLECTION_ELEMENTS)?)
+            } else {
+                None
+            }
+        };
         Ok(Self {
-            result: wire::Decode::decode(reader)?,
-            client_request_id: wire::Decode::decode(reader)?,
-            containers: {
-                if reader.read_u8()? != 0 && reader.read_u8()? != 0 {
-                    Some(wire::decode_collection(reader, 3, wire::MAX_COLLECTION_ELEMENTS)?)
-                } else {
-                    None
-                }
-            },
+            result,
+            client_request_id,
+            containers,
         })
     }
 }
@@ -6270,19 +6751,25 @@ impl wire::Encode for ItemStackResponseSlotInfo {
 
 impl wire::Decode for ItemStackResponseSlotInfo {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let requested_slot = <wire::U8 as wire::Decode>::decode(reader)?;
+        let slot = <wire::U8 as wire::Decode>::decode(reader)?;
+        let amount = <wire::U8 as wire::Decode>::decode(reader)?;
+        let item_stack_net_id = {
+            if reader.read_u8()? != 0 && reader.read_u8()? != 0 {
+                Some(<ItemStackNetID as wire::Decode>::decode(reader)?)
+            } else {
+                None
+            }
+        };
+        let custom_name = <BedrockSafetyRedactableString as wire::Decode>::decode(reader)?;
+        let durability_correction = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
         Ok(Self {
-            requested_slot: wire::Decode::decode(reader)?,
-            slot: wire::Decode::decode(reader)?,
-            amount: wire::Decode::decode(reader)?,
-            item_stack_net_id: {
-                if reader.read_u8()? != 0 && reader.read_u8()? != 0 {
-                    Some(wire::Decode::decode(reader)?)
-                } else {
-                    None
-                }
-            },
-            custom_name: wire::Decode::decode(reader)?,
-            durability_correction: wire::Decode::decode(reader)?,
+            requested_slot,
+            slot,
+            amount,
+            item_stack_net_id,
+            custom_name,
+            durability_correction,
         })
     }
 }
@@ -6306,10 +6793,13 @@ impl wire::Encode for StackRequestSlotInfo {
 
 impl wire::Decode for StackRequestSlotInfo {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let full_container_name = <FullContainerName as wire::Decode>::decode(reader)?;
+        let slot = <wire::U8 as wire::Decode>::decode(reader)?;
+        let net_id_variant = <wire::I32LE as wire::Decode>::decode(reader)?;
         Ok(Self {
-            full_container_name: wire::Decode::decode(reader)?,
-            slot: wire::Decode::decode(reader)?,
-            net_id_variant: wire::Decode::decode(reader)?,
+            full_container_name,
+            slot,
+            net_id_variant,
         })
     }
 }
@@ -6346,13 +6836,19 @@ impl wire::Encode for MapDecoration {
 
 impl wire::Decode for MapDecoration {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let image_type = <MapDecorationType as wire::Decode>::decode(reader)?;
+        let rotation = <wire::U8 as wire::Decode>::decode(reader)?;
+        let x = <wire::U8 as wire::Decode>::decode(reader)?;
+        let y = <wire::U8 as wire::Decode>::decode(reader)?;
+        let label = <String as wire::Decode>::decode(reader)?;
+        let color = <MceColor as wire::Decode>::decode(reader)?;
         Ok(Self {
-            image_type: wire::Decode::decode(reader)?,
-            rotation: wire::Decode::decode(reader)?,
-            x: wire::Decode::decode(reader)?,
-            y: wire::Decode::decode(reader)?,
-            label: wire::Decode::decode(reader)?,
-            color: wire::Decode::decode(reader)?,
+            image_type,
+            rotation,
+            x,
+            y,
+            label,
+            color,
         })
     }
 }
@@ -6388,22 +6884,25 @@ impl wire::Encode for MapItemTrackedActorUniqueId {
 
 impl wire::Decode for MapItemTrackedActorUniqueId {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let type_ = <MapItemTrackedActorType as wire::Decode>::decode(reader)?;
+        let entity_id = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<ActorUniqueID as wire::Decode>::decode(reader)?)
+            }
+        };
+        let block_position = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<BlockPos as wire::Decode>::decode(reader)?)
+            }
+        };
         Ok(Self {
-            type_: wire::Decode::decode(reader)?,
-            entity_id: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            block_position: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
+            type_,
+            entity_id,
+            block_position,
         })
     }
 }
@@ -6424,9 +6923,11 @@ impl wire::Encode for PixelRequest {
 
 impl wire::Decode for PixelRequest {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let pixel = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let index = <wire::U16LE as wire::Decode>::decode(reader)?;
         Ok(Self {
-            pixel: wire::Decode::decode(reader)?,
-            index: wire::Decode::decode(reader)?,
+            pixel,
+            index,
         })
     }
 }
@@ -6450,9 +6951,11 @@ impl wire::Encode for MemoryCategoryCounter {
 
 impl wire::Decode for MemoryCategoryCounter {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let category = <MemoryCategory as wire::Decode>::decode(reader)?;
+        let current_bytes = <wire::U64LE as wire::Decode>::decode(reader)?;
         Ok(Self {
-            category: wire::Decode::decode(reader)?,
-            current_bytes: wire::Decode::decode(reader)?,
+            category,
+            current_bytes,
         })
     }
 }
@@ -6480,12 +6983,17 @@ impl wire::Encode for AdventureSettings {
 
 impl wire::Decode for AdventureSettings {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let no_pvm = <bool as wire::Decode>::decode(reader)?;
+        let no_mvp = <bool as wire::Decode>::decode(reader)?;
+        let immutable_world = <bool as wire::Decode>::decode(reader)?;
+        let show_name_tags = <bool as wire::Decode>::decode(reader)?;
+        let auto_jump = <bool as wire::Decode>::decode(reader)?;
         Ok(Self {
-            no_pvm: wire::Decode::decode(reader)?,
-            no_mvp: wire::Decode::decode(reader)?,
-            immutable_world: wire::Decode::decode(reader)?,
-            show_name_tags: wire::Decode::decode(reader)?,
-            auto_jump: wire::Decode::decode(reader)?,
+            no_pvm,
+            no_mvp,
+            immutable_world,
+            show_name_tags,
+            auto_jump,
         })
     }
 }
@@ -6509,11 +7017,15 @@ impl wire::Encode for AnimatedImageData {
 
 impl wire::Decode for AnimatedImageData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let skin_image = <SkinImage as wire::Decode>::decode(reader)?;
+        let animated_texture_type = <PersonaAnimatedTextureType as wire::Decode>::decode(reader)?;
+        let frames = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let animation_expression = <PersonaAnimationExpression as wire::Decode>::decode(reader)?;
         Ok(Self {
-            skin_image: wire::Decode::decode(reader)?,
-            animated_texture_type: wire::Decode::decode(reader)?,
-            frames: wire::Decode::decode(reader)?,
-            animation_expression: wire::Decode::decode(reader)?,
+            skin_image,
+            animated_texture_type,
+            frames,
+            animation_expression,
         })
     }
 }
@@ -6533,9 +7045,11 @@ impl wire::Encode for ArmorSlotAndDamagePair {
 
 impl wire::Decode for ArmorSlotAndDamagePair {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let armor_slot = <LegacyArmorSlot as wire::Decode>::decode(reader)?;
+        let damage = <wire::I16LE as wire::Decode>::decode(reader)?;
         Ok(Self {
-            armor_slot: wire::Decode::decode(reader)?,
-            damage: wire::Decode::decode(reader)?,
+            armor_slot,
+            damage,
         })
     }
 }
@@ -6594,16 +7108,18 @@ impl wire::Decode for BedrockDDUI {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let discriminant = <wire::VarUInt as wire::Decode>::decode(reader)?.0;
         Ok(match discriminant {
-            0 => Self::DataStoreUpdate(wire::Decode::decode(reader)?),
-            1 => Self::DataStoreChange {
-                data_store_name: wire::Decode::decode(reader)?,
-                property: wire::Decode::decode(reader)?,
-                update_count: wire::Decode::decode(reader)?,
-                the_new_property_value: wire::Decode::decode(reader)?,
-            },
-            2 => Self::DataStoreRemoval {
-                data_store_name: wire::Decode::decode(reader)?,
-            },
+            0 => Self::DataStoreUpdate(<BedrockDDUIDataStoreUpdate as wire::Decode>::decode(reader)?),
+            1 => {
+                let data_store_name = <String as wire::Decode>::decode(reader)?;
+                let property = <String as wire::Decode>::decode(reader)?;
+                let update_count = <wire::U32LE as wire::Decode>::decode(reader)?;
+                let the_new_property_value = <DynamicValue as wire::Decode>::decode(reader)?;
+                Self::DataStoreChange { data_store_name, property, update_count, the_new_property_value }
+            }
+            2 => {
+                let data_store_name = <String as wire::Decode>::decode(reader)?;
+                Self::DataStoreRemoval { data_store_name }
+            }
             value => {
                 return Err(wire::DecodeError::UnknownVariant {
                     type_name: "BedrockDDUI",
@@ -6637,13 +7153,19 @@ impl wire::Encode for BedrockDDUIDataStoreUpdate {
 
 impl wire::Decode for BedrockDDUIDataStoreUpdate {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let data_store_name = <String as wire::Decode>::decode(reader)?;
+        let property = <String as wire::Decode>::decode(reader)?;
+        let path = <String as wire::Decode>::decode(reader)?;
+        let data = <BedrockDDUIDataStoreUpdateData as wire::Decode>::decode(reader)?;
+        let property_update_count = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let path_update_count = <wire::U32LE as wire::Decode>::decode(reader)?;
         Ok(Self {
-            data_store_name: wire::Decode::decode(reader)?,
-            property: wire::Decode::decode(reader)?,
-            path: wire::Decode::decode(reader)?,
-            data: wire::Decode::decode(reader)?,
-            property_update_count: wire::Decode::decode(reader)?,
-            path_update_count: wire::Decode::decode(reader)?,
+            data_store_name,
+            property,
+            path,
+            data,
+            property_update_count,
+            path_update_count,
         })
     }
 }
@@ -6730,28 +7252,33 @@ impl wire::Decode for BookEditAction {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let discriminant = <wire::VarUInt as wire::Decode>::decode(reader)?.0;
         Ok(match discriminant {
-            0 => Self::ReplacePage {
-                page_index: wire::Decode::decode(reader)?,
-                page_text: wire::Decode::decode(reader)?,
-                photo_name: wire::Decode::decode(reader)?,
-            },
-            1 => Self::AddPage {
-                page_index: wire::Decode::decode(reader)?,
-                page_text: wire::Decode::decode(reader)?,
-                photo_name: wire::Decode::decode(reader)?,
-            },
-            2 => Self::DeletePage {
-                page_index: wire::Decode::decode(reader)?,
-            },
-            3 => Self::SwapPages {
-                page_index: wire::Decode::decode(reader)?,
-                swap_with_index: wire::Decode::decode(reader)?,
-            },
-            4 => Self::Finalize {
-                title: wire::Decode::decode(reader)?,
-                author: wire::Decode::decode(reader)?,
-                xuid: wire::Decode::decode(reader)?,
-            },
+            0 => {
+                let page_index = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                let page_text = <String as wire::Decode>::decode(reader)?;
+                let photo_name = <String as wire::Decode>::decode(reader)?;
+                Self::ReplacePage { page_index, page_text, photo_name }
+            }
+            1 => {
+                let page_index = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                let page_text = <String as wire::Decode>::decode(reader)?;
+                let photo_name = <String as wire::Decode>::decode(reader)?;
+                Self::AddPage { page_index, page_text, photo_name }
+            }
+            2 => {
+                let page_index = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                Self::DeletePage { page_index }
+            }
+            3 => {
+                let page_index = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                let swap_with_index = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+                Self::SwapPages { page_index, swap_with_index }
+            }
+            4 => {
+                let title = <String as wire::Decode>::decode(reader)?;
+                let author = <String as wire::Decode>::decode(reader)?;
+                let xuid = <String as wire::Decode>::decode(reader)?;
+                Self::Finalize { title, author, xuid }
+            }
             value => {
                 return Err(wire::DecodeError::UnknownVariant {
                     type_name: "BookEditAction",
@@ -6775,8 +7302,9 @@ impl wire::Encode for ContentIdentity {
 
 impl wire::Decode for ContentIdentity {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let identity = <String as wire::Decode>::decode(reader)?;
         Ok(Self {
-            identity: wire::Decode::decode(reader)?,
+            identity,
         })
     }
 }
@@ -6796,9 +7324,11 @@ impl wire::Encode for DataItemEntry {
 
 impl wire::Decode for DataItemEntry {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let id = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let payload = <DataItemEntryValue as wire::Decode>::decode(reader)?;
         Ok(Self {
-            id: wire::Decode::decode(reader)?,
-            payload: wire::Decode::decode(reader)?,
+            id,
+            payload,
         })
     }
 }
@@ -6822,11 +7352,15 @@ impl wire::Encode for DebugMarkerData {
 
 impl wire::Decode for DebugMarkerData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let text = <String as wire::Decode>::decode(reader)?;
+        let position = <glam::Vec3 as wire::Decode>::decode(reader)?;
+        let color = <MceColor as wire::Decode>::decode(reader)?;
+        let duration = <wire::U64LE as wire::Decode>::decode(reader)?;
         Ok(Self {
-            text: wire::Decode::decode(reader)?,
-            position: wire::Decode::decode(reader)?,
-            color: wire::Decode::decode(reader)?,
-            duration: wire::Decode::decode(reader)?,
+            text,
+            position,
+            color,
+            duration,
         })
     }
 }
@@ -6904,12 +7438,12 @@ impl wire::Decode for DynamicValue {
         let discriminant = <wire::I32LE as wire::Decode>::decode(reader)?.0;
         Ok(match discriminant {
             0 => Self::None,
-            1 => Self::Bool(wire::Decode::decode(reader)?),
-            2 => Self::Int64(wire::Decode::decode(reader)?),
-            3 => Self::Double(wire::Decode::decode(reader)?),
-            4 => Self::String(wire::Decode::decode(reader)?),
-            5 => Self::List(wire::decode_collection(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?),
-            6 => Self::Map(wire::decode_map(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?),
+            1 => Self::Bool(<bool as wire::Decode>::decode(reader)?),
+            2 => Self::Int64(<wire::I64LE as wire::Decode>::decode(reader)?),
+            3 => Self::Double(<wire::F64LE as wire::Decode>::decode(reader)?),
+            4 => Self::String(<String as wire::Decode>::decode(reader)?),
+            5 => Self::List(wire::decode_collection::<DynamicValue>(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?),
+            6 => Self::Map(wire::decode_map::<String, DynamicValue>(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?),
             value => {
                 return Err(wire::DecodeError::UnknownVariant {
                     type_name: "DynamicValue",
@@ -6999,32 +7533,35 @@ impl wire::Decode for EAS {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let discriminant = <wire::VarUInt as wire::Decode>::decode(reader)?.0;
         Ok(match discriminant {
-            0 => Self::BoolAttributeData {
-                value: wire::Decode::decode(reader)?,
-                operation: wire::Decode::decode(reader)?,
-            },
-            1 => Self::FloatAttributeData {
-                value: wire::Decode::decode(reader)?,
-                operation: wire::Decode::decode(reader)?,
-                constraint_min: {
+            0 => {
+                let value = <bool as wire::Decode>::decode(reader)?;
+                let operation = <String as wire::Decode>::decode(reader)?;
+                Self::BoolAttributeData { value, operation }
+            }
+            1 => {
+                let value = <wire::F32LE as wire::Decode>::decode(reader)?;
+                let operation = <String as wire::Decode>::decode(reader)?;
+                let constraint_min = {
                     if reader.read_u8()? == 0 {
                         None
                     } else {
-                        Some(wire::Decode::decode(reader)?)
+                        Some(<wire::F32LE as wire::Decode>::decode(reader)?)
                     }
-                },
-                constraint_max: {
+                };
+                let constraint_max = {
                     if reader.read_u8()? == 0 {
                         None
                     } else {
-                        Some(wire::Decode::decode(reader)?)
+                        Some(<wire::F32LE as wire::Decode>::decode(reader)?)
                     }
-                },
-            },
-            2 => Self::ColorAttributeData {
-                value: [wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?],
-                operation: wire::Decode::decode(reader)?,
-            },
+                };
+                Self::FloatAttributeData { value, operation, constraint_min, constraint_max }
+            }
+            2 => {
+                let value = [<wire::I32LE as wire::Decode>::decode(reader)?, <wire::I32LE as wire::Decode>::decode(reader)?, <wire::I32LE as wire::Decode>::decode(reader)?, <wire::I32LE as wire::Decode>::decode(reader)?];
+                let operation = <String as wire::Decode>::decode(reader)?;
+                Self::ColorAttributeData { value, operation }
+            }
             value => {
                 return Err(wire::DecodeError::UnknownVariant {
                     type_name: "EAS",
@@ -7063,18 +7600,23 @@ impl wire::Encode for EASAttributeLayerData {
 
 impl wire::Decode for EASAttributeLayerData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let name = <String as wire::Decode>::decode(reader)?;
+        let noise_name = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<String as wire::Decode>::decode(reader)?)
+            }
+        };
+        let dimension = <DimensionType as wire::Decode>::decode(reader)?;
+        let settings = <EASAttributeLayerSettings as wire::Decode>::decode(reader)?;
+        let attributes = wire::decode_collection::<EASEnvironmentAttributeData>(reader, 20, wire::MAX_COLLECTION_ELEMENTS)?;
         Ok(Self {
-            name: wire::Decode::decode(reader)?,
-            noise_name: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            dimension: wire::Decode::decode(reader)?,
-            settings: wire::Decode::decode(reader)?,
-            attributes: wire::decode_collection(reader, 20, wire::MAX_COLLECTION_ELEMENTS)?,
+            name,
+            noise_name,
+            dimension,
+            settings,
+            attributes,
         })
     }
 }
@@ -7098,11 +7640,15 @@ impl wire::Encode for EASAttributeLayerSettings {
 
 impl wire::Decode for EASAttributeLayerSettings {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let priority = <wire::I32LE as wire::Decode>::decode(reader)?;
+        let weight = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let enabled = <bool as wire::Decode>::decode(reader)?;
+        let transitions_paused = <bool as wire::Decode>::decode(reader)?;
         Ok(Self {
-            priority: wire::Decode::decode(reader)?,
-            weight: wire::Decode::decode(reader)?,
-            enabled: wire::Decode::decode(reader)?,
-            transitions_paused: wire::Decode::decode(reader)?,
+            priority,
+            weight,
+            enabled,
+            transitions_paused,
         })
     }
 }
@@ -7150,28 +7696,37 @@ impl wire::Encode for EASEnvironmentAttributeData {
 
 impl wire::Decode for EASEnvironmentAttributeData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let attribute_name = <String as wire::Decode>::decode(reader)?;
+        let from_attribute = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<EAS as wire::Decode>::decode(reader)?)
+            }
+        };
+        let attribute = <EAS as wire::Decode>::decode(reader)?;
+        let to_attribute = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<EAS as wire::Decode>::decode(reader)?)
+            }
+        };
+        let current_transition_ticks = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let total_transition_ticks = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let easing = <String as wire::Decode>::decode(reader)?;
+        let local_transition_ticks = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let noise_transition = <bool as wire::Decode>::decode(reader)?;
         Ok(Self {
-            attribute_name: wire::Decode::decode(reader)?,
-            from_attribute: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            attribute: wire::Decode::decode(reader)?,
-            to_attribute: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            current_transition_ticks: wire::Decode::decode(reader)?,
-            total_transition_ticks: wire::Decode::decode(reader)?,
-            easing: wire::Decode::decode(reader)?,
-            local_transition_ticks: wire::Decode::decode(reader)?,
-            noise_transition: wire::Decode::decode(reader)?,
+            attribute_name,
+            from_attribute,
+            attribute,
+            to_attribute,
+            current_transition_ticks,
+            total_transition_ticks,
+            easing,
+            local_transition_ticks,
+            noise_transition,
         })
     }
 }
@@ -7195,11 +7750,15 @@ impl wire::Encode for ECSProfilingDiagnosticsEntityDiagnosticTimingInfo {
 
 impl wire::Decode for ECSProfilingDiagnosticsEntityDiagnosticTimingInfo {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let display_name = <String as wire::Decode>::decode(reader)?;
+        let entity = <String as wire::Decode>::decode(reader)?;
+        let time_in_ns = <wire::U64LE as wire::Decode>::decode(reader)?;
+        let percent_of_total = <wire::U8 as wire::Decode>::decode(reader)?;
         Ok(Self {
-            display_name: wire::Decode::decode(reader)?,
-            entity: wire::Decode::decode(reader)?,
-            time_in_ns: wire::Decode::decode(reader)?,
-            percent_of_total: wire::Decode::decode(reader)?,
+            display_name,
+            entity,
+            time_in_ns,
+            percent_of_total,
         })
     }
 }
@@ -7219,9 +7778,11 @@ impl wire::Encode for ECSProfilingDiagnosticsSystemCategory {
 
 impl wire::Decode for ECSProfilingDiagnosticsSystemCategory {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let category_name = <String as wire::Decode>::decode(reader)?;
+        let system_index = <wire::U64LE as wire::Decode>::decode(reader)?;
         Ok(Self {
-            category_name: wire::Decode::decode(reader)?,
-            system_index: wire::Decode::decode(reader)?,
+            category_name,
+            system_index,
         })
     }
 }
@@ -7245,11 +7806,15 @@ impl wire::Encode for ECSProfilingDiagnosticsSystemDiagnosticTimingInfo {
 
 impl wire::Decode for ECSProfilingDiagnosticsSystemDiagnosticTimingInfo {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let display_name = <String as wire::Decode>::decode(reader)?;
+        let system_index = <wire::U64LE as wire::Decode>::decode(reader)?;
+        let time_in_ns = <wire::U64LE as wire::Decode>::decode(reader)?;
+        let percent_of_total = <wire::U8 as wire::Decode>::decode(reader)?;
         Ok(Self {
-            display_name: wire::Decode::decode(reader)?,
-            system_index: wire::Decode::decode(reader)?,
-            time_in_ns: wire::Decode::decode(reader)?,
-            percent_of_total: wire::Decode::decode(reader)?,
+            display_name,
+            system_index,
+            time_in_ns,
+            percent_of_total,
         })
     }
 }
@@ -7269,9 +7834,11 @@ impl wire::Encode for EduSharedUriResource {
 
 impl wire::Decode for EduSharedUriResource {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let button_name = <String as wire::Decode>::decode(reader)?;
+        let link_uri = <String as wire::Decode>::decode(reader)?;
         Ok(Self {
-            button_name: wire::Decode::decode(reader)?,
-            link_uri: wire::Decode::decode(reader)?,
+            button_name,
+            link_uri,
         })
     }
 }
@@ -7291,9 +7858,11 @@ impl wire::Encode for Experiments {
 
 impl wire::Decode for Experiments {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let toggles = wire::decode_collection_u32le::<ExperimentToggle>(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?;
+        let experiments_ever_toggled = <bool as wire::Decode>::decode(reader)?;
         Ok(Self {
-            toggles: wire::decode_collection_u32le(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?,
-            experiments_ever_toggled: wire::Decode::decode(reader)?,
+            toggles,
+            experiments_ever_toggled,
         })
     }
 }
@@ -7313,9 +7882,11 @@ impl wire::Encode for ExternalLinkSettings {
 
 impl wire::Decode for ExternalLinkSettings {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let url = <String as wire::Decode>::decode(reader)?;
+        let display_name = <String as wire::Decode>::decode(reader)?;
         Ok(Self {
-            url: wire::Decode::decode(reader)?,
-            display_name: wire::Decode::decode(reader)?,
+            url,
+            display_name,
         })
     }
 }
@@ -7335,9 +7906,11 @@ impl wire::Encode for FeatureRegistryFeatureBinaryJsonFormat {
 
 impl wire::Decode for FeatureRegistryFeatureBinaryJsonFormat {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let feature_name = <String as wire::Decode>::decode(reader)?;
+        let binary_json_output = <String as wire::Decode>::decode(reader)?;
         Ok(Self {
-            feature_name: wire::Decode::decode(reader)?,
-            binary_json_output: wire::Decode::decode(reader)?,
+            feature_name,
+            binary_json_output,
         })
     }
 }
@@ -7355,8 +7928,9 @@ impl wire::Encode for GameRulesChangedData {
 
 impl wire::Decode for GameRulesChangedData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let rules_list = wire::decode_collection::<GameRule>(reader, 3, wire::MAX_COLLECTION_ELEMENTS)?;
         Ok(Self {
-            rules_list: wire::decode_collection(reader, 3, wire::MAX_COLLECTION_ELEMENTS)?,
+            rules_list,
         })
     }
 }
@@ -7402,23 +7976,27 @@ impl wire::Encode for HeightmapData {
 
 impl wire::Decode for HeightmapData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let height_map_type = <HeightMapDataType as wire::Decode>::decode(reader)?;
+        let subchunk_height_map = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some([[<wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?], [<wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?], [<wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?], [<wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?], [<wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?], [<wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?], [<wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?], [<wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?], [<wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?], [<wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?], [<wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?], [<wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?], [<wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?], [<wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?], [<wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?], [<wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?]])
+            }
+        };
+        let render_height_map_type = <HeightMapDataType as wire::Decode>::decode(reader)?;
+        let subchunk_render_height_map = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some([[<wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?], [<wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?], [<wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?], [<wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?], [<wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?], [<wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?], [<wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?], [<wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?], [<wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?], [<wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?], [<wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?], [<wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?], [<wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?], [<wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?], [<wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?], [<wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?, <wire::I8 as wire::Decode>::decode(reader)?]])
+            }
+        };
         Ok(Self {
-            height_map_type: wire::Decode::decode(reader)?,
-            subchunk_height_map: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some([[wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?], [wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?], [wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?], [wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?], [wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?], [wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?], [wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?], [wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?], [wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?], [wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?], [wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?], [wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?], [wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?], [wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?], [wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?], [wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?]])
-                }
-            },
-            render_height_map_type: wire::Decode::decode(reader)?,
-            subchunk_render_height_map: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some([[wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?], [wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?], [wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?], [wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?], [wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?], [wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?], [wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?], [wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?], [wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?], [wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?], [wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?], [wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?], [wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?], [wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?], [wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?], [wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?]])
-                }
-            },
+            height_map_type,
+            subchunk_height_map,
+            render_height_map_type,
+            subchunk_render_height_map,
         })
     }
 }
@@ -7438,9 +8016,11 @@ impl wire::Encode for LegacySetSlot {
 
 impl wire::Decode for LegacySetSlot {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let container_enum = <ContainerEnumName as wire::Decode>::decode(reader)?;
+        let slots = wire::decode_collection::<wire::U8>(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?;
         Ok(Self {
-            container_enum: wire::Decode::decode(reader)?,
-            slots: wire::decode_collection(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?,
+            container_enum,
+            slots,
         })
     }
 }
@@ -7563,63 +8143,113 @@ impl wire::Encode for LevelSettings {
 
 impl wire::Decode for LevelSettings {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let seed = <wire::U64LE as wire::Decode>::decode(reader)?;
+        let spawn_settings = <SpawnSettings as wire::Decode>::decode(reader)?;
+        let generator_type = <GeneratorType as wire::Decode>::decode(reader)?;
+        let game_type = <GameType as wire::Decode>::decode(reader)?;
+        let is_hardcore = <bool as wire::Decode>::decode(reader)?;
+        let game_difficulty = <LegacyDifficulty as wire::Decode>::decode(reader)?;
+        let default_spawn_block_position = <BlockPos as wire::Decode>::decode(reader)?;
+        let achievements_disabled = <bool as wire::Decode>::decode(reader)?;
+        let editor_world_type = <EditorWorldType as wire::Decode>::decode(reader)?;
+        let is_created_in_editor = <bool as wire::Decode>::decode(reader)?;
+        let is_exported_from_editor = <bool as wire::Decode>::decode(reader)?;
+        let day_cycle_stop_time = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let education_edition_offer = <EducationEditionOffer as wire::Decode>::decode(reader)?;
+        let education_features_enabled = <bool as wire::Decode>::decode(reader)?;
+        let education_product_id = <String as wire::Decode>::decode(reader)?;
+        let rain_level = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let lightning_level = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let has_confirmed_platform_locked_content = <bool as wire::Decode>::decode(reader)?;
+        let multiplayer_game_intent = <bool as wire::Decode>::decode(reader)?;
+        let lan_broadcast_intent = <bool as wire::Decode>::decode(reader)?;
+        let xbox_live_broadcast_setting = <SocialGamePublishSetting as wire::Decode>::decode(reader)?;
+        let platform_broadcast_setting = <SocialGamePublishSetting as wire::Decode>::decode(reader)?;
+        let commands_enabled = <bool as wire::Decode>::decode(reader)?;
+        let texture_packs_required = <bool as wire::Decode>::decode(reader)?;
+        let rule_data = <GameRulesChangedData as wire::Decode>::decode(reader)?;
+        let experiments = <Experiments as wire::Decode>::decode(reader)?;
+        let has_bonus_chest_enabled = <bool as wire::Decode>::decode(reader)?;
+        let start_with_map_enabled = <bool as wire::Decode>::decode(reader)?;
+        let player_permissions = <PlayerPermissionLevel as wire::Decode>::decode(reader)?;
+        let server_chunk_tick_range = <wire::I32LE as wire::Decode>::decode(reader)?;
+        let has_locked_behavior_pack = <bool as wire::Decode>::decode(reader)?;
+        let has_locked_resource_pack = <bool as wire::Decode>::decode(reader)?;
+        let is_from_locked_template = <bool as wire::Decode>::decode(reader)?;
+        let use_msa_gamertags_only = <bool as wire::Decode>::decode(reader)?;
+        let is_from_world_template = <bool as wire::Decode>::decode(reader)?;
+        let is_world_template_option_locked = <bool as wire::Decode>::decode(reader)?;
+        let only_spawn_v1_villagers = <bool as wire::Decode>::decode(reader)?;
+        let persona_disabled = <bool as wire::Decode>::decode(reader)?;
+        let custom_skins_disabled = <bool as wire::Decode>::decode(reader)?;
+        let emote_chat_muted = <bool as wire::Decode>::decode(reader)?;
+        let base_game_version = <String as wire::Decode>::decode(reader)?;
+        let limited_world_width = <wire::I32LE as wire::Decode>::decode(reader)?;
+        let limited_world_depth = <wire::I32LE as wire::Decode>::decode(reader)?;
+        let nether_type = <bool as wire::Decode>::decode(reader)?;
+        let edu_shared_uri_resource = <EduSharedUriResource as wire::Decode>::decode(reader)?;
+        let override_force_experimental_gameplay = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<bool as wire::Decode>::decode(reader)?)
+            }
+        };
+        let chat_restriction_level = <ChatRestrictionLevel as wire::Decode>::decode(reader)?;
+        let disable_player_interactions = <bool as wire::Decode>::decode(reader)?;
+        let server_editor_connection_policy = <ServerEditorConnectionPolicy as wire::Decode>::decode(reader)?;
+        let allow_anonymous_block_drops_in_editor_worlds = <bool as wire::Decode>::decode(reader)?;
         Ok(Self {
-            seed: wire::Decode::decode(reader)?,
-            spawn_settings: wire::Decode::decode(reader)?,
-            generator_type: wire::Decode::decode(reader)?,
-            game_type: wire::Decode::decode(reader)?,
-            is_hardcore: wire::Decode::decode(reader)?,
-            game_difficulty: wire::Decode::decode(reader)?,
-            default_spawn_block_position: wire::Decode::decode(reader)?,
-            achievements_disabled: wire::Decode::decode(reader)?,
-            editor_world_type: wire::Decode::decode(reader)?,
-            is_created_in_editor: wire::Decode::decode(reader)?,
-            is_exported_from_editor: wire::Decode::decode(reader)?,
-            day_cycle_stop_time: wire::Decode::decode(reader)?,
-            education_edition_offer: wire::Decode::decode(reader)?,
-            education_features_enabled: wire::Decode::decode(reader)?,
-            education_product_id: wire::Decode::decode(reader)?,
-            rain_level: wire::Decode::decode(reader)?,
-            lightning_level: wire::Decode::decode(reader)?,
-            has_confirmed_platform_locked_content: wire::Decode::decode(reader)?,
-            multiplayer_game_intent: wire::Decode::decode(reader)?,
-            lan_broadcast_intent: wire::Decode::decode(reader)?,
-            xbox_live_broadcast_setting: wire::Decode::decode(reader)?,
-            platform_broadcast_setting: wire::Decode::decode(reader)?,
-            commands_enabled: wire::Decode::decode(reader)?,
-            texture_packs_required: wire::Decode::decode(reader)?,
-            rule_data: wire::Decode::decode(reader)?,
-            experiments: wire::Decode::decode(reader)?,
-            has_bonus_chest_enabled: wire::Decode::decode(reader)?,
-            start_with_map_enabled: wire::Decode::decode(reader)?,
-            player_permissions: wire::Decode::decode(reader)?,
-            server_chunk_tick_range: wire::Decode::decode(reader)?,
-            has_locked_behavior_pack: wire::Decode::decode(reader)?,
-            has_locked_resource_pack: wire::Decode::decode(reader)?,
-            is_from_locked_template: wire::Decode::decode(reader)?,
-            use_msa_gamertags_only: wire::Decode::decode(reader)?,
-            is_from_world_template: wire::Decode::decode(reader)?,
-            is_world_template_option_locked: wire::Decode::decode(reader)?,
-            only_spawn_v1_villagers: wire::Decode::decode(reader)?,
-            persona_disabled: wire::Decode::decode(reader)?,
-            custom_skins_disabled: wire::Decode::decode(reader)?,
-            emote_chat_muted: wire::Decode::decode(reader)?,
-            base_game_version: wire::Decode::decode(reader)?,
-            limited_world_width: wire::Decode::decode(reader)?,
-            limited_world_depth: wire::Decode::decode(reader)?,
-            nether_type: wire::Decode::decode(reader)?,
-            edu_shared_uri_resource: wire::Decode::decode(reader)?,
-            override_force_experimental_gameplay: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            chat_restriction_level: wire::Decode::decode(reader)?,
-            disable_player_interactions: wire::Decode::decode(reader)?,
-            server_editor_connection_policy: wire::Decode::decode(reader)?,
-            allow_anonymous_block_drops_in_editor_worlds: wire::Decode::decode(reader)?,
+            seed,
+            spawn_settings,
+            generator_type,
+            game_type,
+            is_hardcore,
+            game_difficulty,
+            default_spawn_block_position,
+            achievements_disabled,
+            editor_world_type,
+            is_created_in_editor,
+            is_exported_from_editor,
+            day_cycle_stop_time,
+            education_edition_offer,
+            education_features_enabled,
+            education_product_id,
+            rain_level,
+            lightning_level,
+            has_confirmed_platform_locked_content,
+            multiplayer_game_intent,
+            lan_broadcast_intent,
+            xbox_live_broadcast_setting,
+            platform_broadcast_setting,
+            commands_enabled,
+            texture_packs_required,
+            rule_data,
+            experiments,
+            has_bonus_chest_enabled,
+            start_with_map_enabled,
+            player_permissions,
+            server_chunk_tick_range,
+            has_locked_behavior_pack,
+            has_locked_resource_pack,
+            is_from_locked_template,
+            use_msa_gamertags_only,
+            is_from_world_template,
+            is_world_template_option_locked,
+            only_spawn_v1_villagers,
+            persona_disabled,
+            custom_skins_disabled,
+            emote_chat_muted,
+            base_game_version,
+            limited_world_width,
+            limited_world_depth,
+            nether_type,
+            edu_shared_uri_resource,
+            override_force_experimental_gameplay,
+            chat_restriction_level,
+            disable_player_interactions,
+            server_editor_connection_policy,
+            allow_anonymous_block_drops_in_editor_worlds,
         })
     }
 }
@@ -7639,9 +8269,11 @@ impl wire::Encode for MaterialReducerDataEntry {
 
 impl wire::Decode for MaterialReducerDataEntry {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let from_item_key = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let item_ids_and_counts = wire::decode_collection::<MaterialReducerEntryOutput>(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?;
         Ok(Self {
-            from_item_key: wire::Decode::decode(reader)?,
-            item_ids_and_counts: wire::decode_collection(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?,
+            from_item_key,
+            item_ids_and_counts,
         })
     }
 }
@@ -7661,9 +8293,11 @@ impl wire::Encode for MaterialReducerEntryOutput {
 
 impl wire::Decode for MaterialReducerEntryOutput {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let item_id = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let item_count = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
         Ok(Self {
-            item_id: wire::Decode::decode(reader)?,
-            item_count: wire::Decode::decode(reader)?,
+            item_id,
+            item_count,
         })
     }
 }
@@ -7698,9 +8332,11 @@ impl wire::Encode for MissingBlobData {
 
 impl wire::Decode for MissingBlobData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let blob_id = <wire::U64LE as wire::Decode>::decode(reader)?;
+        let blob_data = <bytes::Bytes as wire::Decode>::decode(reader)?;
         Ok(Self {
-            blob_id: wire::Decode::decode(reader)?,
-            blob_data: wire::Decode::decode(reader)?,
+            blob_id,
+            blob_data,
         })
     }
 }
@@ -7728,13 +8364,19 @@ impl wire::Encode for MoveActorAbsoluteData {
 
 impl wire::Decode for MoveActorAbsoluteData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let actor_runtime_id = <ActorRuntimeID as wire::Decode>::decode(reader)?;
+        let header = <wire::U8 as wire::Decode>::decode(reader)?;
+        let position = <glam::Vec3 as wire::Decode>::decode(reader)?;
+        let rotation_x = <wire::U8 as wire::Decode>::decode(reader)?;
+        let rotation_y = <wire::U8 as wire::Decode>::decode(reader)?;
+        let rotation_y_head = <wire::U8 as wire::Decode>::decode(reader)?;
         Ok(Self {
-            actor_runtime_id: wire::Decode::decode(reader)?,
-            header: wire::Decode::decode(reader)?,
-            position: wire::Decode::decode(reader)?,
-            rotation_x: wire::Decode::decode(reader)?,
-            rotation_y: wire::Decode::decode(reader)?,
-            rotation_y_head: wire::Decode::decode(reader)?,
+            actor_runtime_id,
+            header,
+            position,
+            rotation_x,
+            rotation_y,
+            rotation_y_head,
         })
     }
 }
@@ -7814,54 +8456,65 @@ impl wire::Encode for MoveActorDeltaData {
 
 impl wire::Decode for MoveActorDeltaData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let actor_runtime_id = <ActorRuntimeID as wire::Decode>::decode(reader)?;
+        let new_position_x = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::F32LE as wire::Decode>::decode(reader)?)
+            }
+        };
+        let new_position_y = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::F32LE as wire::Decode>::decode(reader)?)
+            }
+        };
+        let new_position_z = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::F32LE as wire::Decode>::decode(reader)?)
+            }
+        };
+        let rotation_x = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::I8 as wire::Decode>::decode(reader)?)
+            }
+        };
+        let rotation_y = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::I8 as wire::Decode>::decode(reader)?)
+            }
+        };
+        let rotation_y_head = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::I8 as wire::Decode>::decode(reader)?)
+            }
+        };
+        let is_on_ground = <bool as wire::Decode>::decode(reader)?;
+        let force_move = <bool as wire::Decode>::decode(reader)?;
+        let force_move_local_entity = <bool as wire::Decode>::decode(reader)?;
+        let force_completion = <bool as wire::Decode>::decode(reader)?;
         Ok(Self {
-            actor_runtime_id: wire::Decode::decode(reader)?,
-            new_position_x: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            new_position_y: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            new_position_z: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            rotation_x: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            rotation_y: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            rotation_y_head: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            is_on_ground: wire::Decode::decode(reader)?,
-            force_move: wire::Decode::decode(reader)?,
-            force_move_local_entity: wire::Decode::decode(reader)?,
-            force_completion: wire::Decode::decode(reader)?,
+            actor_runtime_id,
+            new_position_x,
+            new_position_y,
+            new_position_z,
+            rotation_x,
+            rotation_y,
+            rotation_y_head,
+            is_on_ground,
+            force_move,
+            force_move_local_entity,
+            force_completion,
         })
     }
 }
@@ -7881,9 +8534,11 @@ impl wire::Encode for MovePlayerTeleportData {
 
 impl wire::Decode for MovePlayerTeleportData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let teleportation_cause = <wire::I32LE as wire::Decode>::decode(reader)?;
+        let source_actor_type = <wire::I32LE as wire::Decode>::decode(reader)?;
         Ok(Self {
-            teleportation_cause: wire::Decode::decode(reader)?,
-            source_actor_type: wire::Decode::decode(reader)?,
+            teleportation_cause,
+            source_actor_type,
         })
     }
 }
@@ -7909,12 +8564,17 @@ impl wire::Encode for NetworkItemInstanceDescriptorSerializedData {
 
 impl wire::Decode for NetworkItemInstanceDescriptorSerializedData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let id = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let stack_size = <wire::U16LE as wire::Decode>::decode(reader)?;
+        let aux_value = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let block_runtime_id = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let user_data_buffer = <bytes::Bytes as wire::Decode>::decode(reader)?;
         Ok(Self {
-            id: wire::Decode::decode(reader)?,
-            stack_size: wire::Decode::decode(reader)?,
-            aux_value: wire::Decode::decode(reader)?,
-            block_runtime_id: wire::Decode::decode(reader)?,
-            user_data_buffer: wire::Decode::decode(reader)?,
+            id,
+            stack_size,
+            aux_value,
+            block_runtime_id,
+            user_data_buffer,
         })
     }
 }
@@ -7949,19 +8609,25 @@ impl wire::Encode for NetworkItemStackDescriptorSerializedData {
 
 impl wire::Decode for NetworkItemStackDescriptorSerializedData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let id = <wire::I16LE as wire::Decode>::decode(reader)?;
+        let stack_size = <wire::U16LE as wire::Decode>::decode(reader)?;
+        let aux_value = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let net_id_variant = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::ZigZag32 as wire::Decode>::decode(reader)?)
+            }
+        };
+        let block_runtime_id = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let user_data_buffer = <bytes::Bytes as wire::Decode>::decode(reader)?;
         Ok(Self {
-            id: wire::Decode::decode(reader)?,
-            stack_size: wire::Decode::decode(reader)?,
-            aux_value: wire::Decode::decode(reader)?,
-            net_id_variant: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            block_runtime_id: wire::Decode::decode(reader)?,
-            user_data_buffer: wire::Decode::decode(reader)?,
+            id,
+            stack_size,
+            aux_value,
+            net_id_variant,
+            block_runtime_id,
+            user_data_buffer,
         })
     }
 }
@@ -7979,8 +8645,9 @@ impl wire::Encode for NetworkPermissions {
 
 impl wire::Decode for NetworkPermissions {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let server_auth_sound_enabled = <bool as wire::Decode>::decode(reader)?;
         Ok(Self {
-            server_auth_sound_enabled: wire::Decode::decode(reader)?,
+            server_auth_sound_enabled,
         })
     }
 }
@@ -8016,22 +8683,25 @@ impl wire::Encode for PackedItemUseLegacyInventoryTransaction {
 
 impl wire::Decode for PackedItemUseLegacyInventoryTransaction {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let legacy_request_id = <ItemStackLegacyRequestID as wire::Decode>::decode(reader)?;
+        let legacy_set_item_slots = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(wire::decode_collection::<LegacySetSlot>(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?)
+            }
+        };
+        let item_use_transaction = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<ItemUseInventoryTransaction as wire::Decode>::decode(reader)?)
+            }
+        };
         Ok(Self {
-            legacy_request_id: wire::Decode::decode(reader)?,
-            legacy_set_item_slots: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::decode_collection(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?)
-                }
-            },
-            item_use_transaction: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
+            legacy_request_id,
+            legacy_set_item_slots,
+            item_use_transaction,
         })
     }
 }
@@ -8059,13 +8729,19 @@ impl wire::Encode for PotionMixDataEntry {
 
 impl wire::Decode for PotionMixDataEntry {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let from_potion_id = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let from_item_aux = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let reagent_item_id = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let reagent_item_aux = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let to_potion_id = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let to_item_aux = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
         Ok(Self {
-            from_potion_id: wire::Decode::decode(reader)?,
-            from_item_aux: wire::Decode::decode(reader)?,
-            reagent_item_id: wire::Decode::decode(reader)?,
-            reagent_item_aux: wire::Decode::decode(reader)?,
-            to_potion_id: wire::Decode::decode(reader)?,
-            to_item_aux: wire::Decode::decode(reader)?,
+            from_potion_id,
+            from_item_aux,
+            reagent_item_id,
+            reagent_item_aux,
+            to_potion_id,
+            to_item_aux,
         })
     }
 }
@@ -8085,9 +8761,11 @@ impl wire::Encode for PropertySyncData {
 
 impl wire::Decode for PropertySyncData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let int_entries_list = wire::decode_collection::<PropertySyncDataPropertySyncIntEntry>(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?;
+        let float_entries_list = wire::decode_collection::<PropertySyncDataPropertySyncFloatEntry>(reader, 5, wire::MAX_COLLECTION_ELEMENTS)?;
         Ok(Self {
-            int_entries_list: wire::decode_collection(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?,
-            float_entries_list: wire::decode_collection(reader, 5, wire::MAX_COLLECTION_ELEMENTS)?,
+            int_entries_list,
+            float_entries_list,
         })
     }
 }
@@ -8107,9 +8785,11 @@ impl wire::Encode for PropertySyncDataPropertySyncFloatEntry {
 
 impl wire::Decode for PropertySyncDataPropertySyncFloatEntry {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let property_index = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let data = <wire::F32LE as wire::Decode>::decode(reader)?;
         Ok(Self {
-            property_index: wire::Decode::decode(reader)?,
-            data: wire::Decode::decode(reader)?,
+            property_index,
+            data,
         })
     }
 }
@@ -8129,9 +8809,11 @@ impl wire::Encode for PropertySyncDataPropertySyncIntEntry {
 
 impl wire::Decode for PropertySyncDataPropertySyncIntEntry {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let property_index = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let data = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
         Ok(Self {
-            property_index: wire::Decode::decode(reader)?,
-            data: wire::Decode::decode(reader)?,
+            property_index,
+            data,
         })
     }
 }
@@ -8149,8 +8831,9 @@ impl wire::Encode for SemVersion {
 
 impl wire::Decode for SemVersion {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let version = <String as wire::Decode>::decode(reader)?;
         Ok(Self {
-            version: wire::Decode::decode(reader)?,
+            version,
         })
     }
 }
@@ -8168,8 +8851,9 @@ impl wire::Encode for SemVersionData {
 
 impl wire::Decode for SemVersionData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let version = <String as wire::Decode>::decode(reader)?;
         Ok(Self {
-            version: wire::Decode::decode(reader)?,
+            version,
         })
     }
 }
@@ -8193,11 +8877,15 @@ impl wire::Encode for SerializedAbilitiesData {
 
 impl wire::Decode for SerializedAbilitiesData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let target_player_raw_id = <wire::I64LE as wire::Decode>::decode(reader)?;
+        let player_permissions = <PlayerPermissionLevel as wire::Decode>::decode(reader)?;
+        let command_permissions = <CommandPermissionLevel as wire::Decode>::decode(reader)?;
+        let layers = wire::decode_collection::<SerializedAbilitiesDataSerializedLayer>(reader, 22, wire::MAX_COLLECTION_ELEMENTS)?;
         Ok(Self {
-            target_player_raw_id: wire::Decode::decode(reader)?,
-            player_permissions: wire::Decode::decode(reader)?,
-            command_permissions: wire::Decode::decode(reader)?,
-            layers: wire::decode_collection(reader, 22, wire::MAX_COLLECTION_ELEMENTS)?,
+            target_player_raw_id,
+            player_permissions,
+            command_permissions,
+            layers,
         })
     }
 }
@@ -8225,13 +8913,19 @@ impl wire::Encode for SerializedAbilitiesDataSerializedLayer {
 
 impl wire::Decode for SerializedAbilitiesDataSerializedLayer {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let serialized_layer = <wire::U16LE as wire::Decode>::decode(reader)?;
+        let abilities_set = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let ability_values = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let fly_speed = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let vertical_fly_speed = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let walk_speed = <wire::F32LE as wire::Decode>::decode(reader)?;
         Ok(Self {
-            serialized_layer: wire::Decode::decode(reader)?,
-            abilities_set: wire::Decode::decode(reader)?,
-            ability_values: wire::Decode::decode(reader)?,
-            fly_speed: wire::Decode::decode(reader)?,
-            vertical_fly_speed: wire::Decode::decode(reader)?,
-            walk_speed: wire::Decode::decode(reader)?,
+            serialized_layer,
+            abilities_set,
+            ability_values,
+            fly_speed,
+            vertical_fly_speed,
+            walk_speed,
         })
     }
 }
@@ -8255,11 +8949,15 @@ impl wire::Encode for SerializedNoiseBlockSpecifier {
 
 impl wire::Decode for SerializedNoiseBlockSpecifier {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let noise = <String as wire::Decode>::decode(reader)?;
+        let threshold = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let range = <FloatRange as wire::Decode>::decode(reader)?;
+        let block = <wire::U32LE as wire::Decode>::decode(reader)?;
         Ok(Self {
-            noise: wire::Decode::decode(reader)?,
-            threshold: wire::Decode::decode(reader)?,
-            range: wire::Decode::decode(reader)?,
-            block: wire::Decode::decode(reader)?,
+            noise,
+            threshold,
+            range,
+            block,
         })
     }
 }
@@ -8285,12 +8983,17 @@ impl wire::Encode for SerializedPersonaPieceHandle {
 
 impl wire::Decode for SerializedPersonaPieceHandle {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let piece_id = <String as wire::Decode>::decode(reader)?;
+        let piece_type = <PersonaPieceType as wire::Decode>::decode(reader)?;
+        let pack_id = <uuid::Uuid as wire::Decode>::decode(reader)?;
+        let is_default_piece = <bool as wire::Decode>::decode(reader)?;
+        let product_id = <String as wire::Decode>::decode(reader)?;
         Ok(Self {
-            piece_id: wire::Decode::decode(reader)?,
-            piece_type: wire::Decode::decode(reader)?,
-            pack_id: wire::Decode::decode(reader)?,
-            is_default_piece: wire::Decode::decode(reader)?,
-            product_id: wire::Decode::decode(reader)?,
+            piece_id,
+            piece_type,
+            pack_id,
+            is_default_piece,
+            product_id,
         })
     }
 }
@@ -8350,29 +9053,51 @@ impl wire::Encode for SerializedSkinRef {
 
 impl wire::Decode for SerializedSkinRef {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let id = <String as wire::Decode>::decode(reader)?;
+        let play_fab_id = <String as wire::Decode>::decode(reader)?;
+        let resource_patch = <String as wire::Decode>::decode(reader)?;
+        let image_data = <SkinImage as wire::Decode>::decode(reader)?;
+        let animated_image_data = wire::decode_collection::<AnimatedImageData>(reader, 15, wire::MAX_COLLECTION_ELEMENTS)?;
+        let cape_image_data = <SkinImage as wire::Decode>::decode(reader)?;
+        let geometry_data = <String as wire::Decode>::decode(reader)?;
+        let geometry_data_min_engine_version = <String as wire::Decode>::decode(reader)?;
+        let animation_data = <String as wire::Decode>::decode(reader)?;
+        let cape_id = <String as wire::Decode>::decode(reader)?;
+        let full_id = <String as wire::Decode>::decode(reader)?;
+        let arm_size = <PersonaArmSizeType as wire::Decode>::decode(reader)?;
+        let skin_color = <MceColor as wire::Decode>::decode(reader)?;
+        let persona_pieces = wire::decode_collection::<SerializedPersonaPieceHandle>(reader, 23, wire::MAX_COLLECTION_ELEMENTS)?;
+        let piece_tint_colors = wire::decode_map::<String, TintMapColor>(reader, 17, wire::MAX_COLLECTION_ELEMENTS)?;
+        let is_premium = <bool as wire::Decode>::decode(reader)?;
+        let is_persona = <bool as wire::Decode>::decode(reader)?;
+        let is_persona_cape_on_classic_skin = <bool as wire::Decode>::decode(reader)?;
+        let is_primary_user = <bool as wire::Decode>::decode(reader)?;
+        let overrides_player_appearance = <bool as wire::Decode>::decode(reader)?;
+        let trusted_skin_flag = <String as wire::Decode>::decode(reader)?;
+        let profile_hash = <String as wire::Decode>::decode(reader)?;
         Ok(Self {
-            id: wire::Decode::decode(reader)?,
-            play_fab_id: wire::Decode::decode(reader)?,
-            resource_patch: wire::Decode::decode(reader)?,
-            image_data: wire::Decode::decode(reader)?,
-            animated_image_data: wire::decode_collection(reader, 15, wire::MAX_COLLECTION_ELEMENTS)?,
-            cape_image_data: wire::Decode::decode(reader)?,
-            geometry_data: wire::Decode::decode(reader)?,
-            geometry_data_min_engine_version: wire::Decode::decode(reader)?,
-            animation_data: wire::Decode::decode(reader)?,
-            cape_id: wire::Decode::decode(reader)?,
-            full_id: wire::Decode::decode(reader)?,
-            arm_size: wire::Decode::decode(reader)?,
-            skin_color: wire::Decode::decode(reader)?,
-            persona_pieces: wire::decode_collection(reader, 23, wire::MAX_COLLECTION_ELEMENTS)?,
-            piece_tint_colors: wire::decode_map(reader, 17, wire::MAX_COLLECTION_ELEMENTS)?,
-            is_premium: wire::Decode::decode(reader)?,
-            is_persona: wire::Decode::decode(reader)?,
-            is_persona_cape_on_classic_skin: wire::Decode::decode(reader)?,
-            is_primary_user: wire::Decode::decode(reader)?,
-            overrides_player_appearance: wire::Decode::decode(reader)?,
-            trusted_skin_flag: wire::Decode::decode(reader)?,
-            profile_hash: wire::Decode::decode(reader)?,
+            id,
+            play_fab_id,
+            resource_patch,
+            image_data,
+            animated_image_data,
+            cape_image_data,
+            geometry_data,
+            geometry_data_min_engine_version,
+            animation_data,
+            cape_id,
+            full_id,
+            arm_size,
+            skin_color,
+            persona_pieces,
+            piece_tint_colors,
+            is_premium,
+            is_persona,
+            is_persona_cape_on_classic_skin,
+            is_primary_user,
+            overrides_player_appearance,
+            trusted_skin_flag,
+            profile_hash,
         })
     }
 }
@@ -8392,9 +9117,11 @@ impl wire::Encode for ServerBlockProperty {
 
 impl wire::Decode for ServerBlockProperty {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let block_name = <String as wire::Decode>::decode(reader)?;
+        let block_definition = <wire::NetworkNbt as wire::Decode>::decode(reader)?;
         Ok(Self {
-            block_name: wire::Decode::decode(reader)?,
-            block_definition: wire::Decode::decode(reader)?,
+            block_name,
+            block_definition,
         })
     }
 }
@@ -8414,9 +9141,11 @@ impl wire::Encode for ServerConfigurationClientStoreEntryPointConfiguration {
 
 impl wire::Decode for ServerConfigurationClientStoreEntryPointConfiguration {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let store_id = <String as wire::Decode>::decode(reader)?;
+        let store_name = <String as wire::Decode>::decode(reader)?;
         Ok(Self {
-            store_id: wire::Decode::decode(reader)?,
-            store_name: wire::Decode::decode(reader)?,
+            store_id,
+            store_name,
         })
     }
 }
@@ -8483,45 +9212,53 @@ impl wire::Encode for ServerConfigurationGatheringsConfigurationJoinInfo {
 
 impl wire::Decode for ServerConfigurationGatheringsConfigurationJoinInfo {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let experience_id = <uuid::Uuid as wire::Decode>::decode(reader)?;
+        let experience_name = <String as wire::Decode>::decode(reader)?;
+        let world_id = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<uuid::Uuid as wire::Decode>::decode(reader)?)
+            }
+        };
+        let world_name = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<String as wire::Decode>::decode(reader)?)
+            }
+        };
+        let creator_id = <String as wire::Decode>::decode(reader)?;
+        let target_id = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<uuid::Uuid as wire::Decode>::decode(reader)?)
+            }
+        };
+        let scenario_id = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<String as wire::Decode>::decode(reader)?)
+            }
+        };
+        let server_id = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<String as wire::Decode>::decode(reader)?)
+            }
+        };
         Ok(Self {
-            experience_id: wire::Decode::decode(reader)?,
-            experience_name: wire::Decode::decode(reader)?,
-            world_id: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            world_name: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            creator_id: wire::Decode::decode(reader)?,
-            target_id: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            scenario_id: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            server_id: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
+            experience_id,
+            experience_name,
+            world_id,
+            world_name,
+            creator_id,
+            target_id,
+            scenario_id,
+            server_id,
         })
     }
 }
@@ -8546,14 +9283,15 @@ impl wire::Encode for ServerConfigurationPresenceConfiguration {
 
 impl wire::Decode for ServerConfigurationPresenceConfiguration {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let rich_presence_id = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<String as wire::Decode>::decode(reader)?)
+            }
+        };
         Ok(Self {
-            rich_presence_id: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
+            rich_presence_id,
         })
     }
 }
@@ -8596,28 +9334,31 @@ impl wire::Encode for ServerConfigurationServerConfigurationJoinInfo {
 
 impl wire::Decode for ServerConfigurationServerConfigurationJoinInfo {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let gathering = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<ServerConfigurationGatheringsConfigurationJoinInfo as wire::Decode>::decode(reader)?)
+            }
+        };
+        let client_store_entry_point = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<ServerConfigurationClientStoreEntryPointConfiguration as wire::Decode>::decode(reader)?)
+            }
+        };
+        let presence = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<ServerConfigurationPresenceConfiguration as wire::Decode>::decode(reader)?)
+            }
+        };
         Ok(Self {
-            gathering: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            client_store_entry_point: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            presence: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
+            gathering,
+            client_store_entry_point,
+            presence,
         })
     }
 }
@@ -8713,57 +9454,65 @@ impl wire::Encode for ServerWaypoint {
 
 impl wire::Decode for ServerWaypoint {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let update_flag = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let is_visible = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<bool as wire::Decode>::decode(reader)?)
+            }
+        };
+        let world_position = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<WorldPosition as wire::Decode>::decode(reader)?)
+            }
+        };
+        let texture_path = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<String as wire::Decode>::decode(reader)?)
+            }
+        };
+        let icon_size = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<glam::Vec2 as wire::Decode>::decode(reader)?)
+            }
+        };
+        let color = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<MceColor as wire::Decode>::decode(reader)?)
+            }
+        };
+        let client_position_authority = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<bool as wire::Decode>::decode(reader)?)
+            }
+        };
+        let actor_unique_id = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<ActorUniqueID as wire::Decode>::decode(reader)?)
+            }
+        };
         Ok(Self {
-            update_flag: wire::Decode::decode(reader)?,
-            is_visible: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            world_position: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            texture_path: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            icon_size: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            color: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            client_position_authority: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            actor_unique_id: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
+            update_flag,
+            is_visible,
+            world_position,
+            texture_path,
+            icon_size,
+            color,
+            client_position_authority,
+            actor_unique_id,
         })
     }
 }
@@ -8787,11 +9536,15 @@ impl wire::Encode for SocialEventsServerTelemetryData {
 
 impl wire::Decode for SocialEventsServerTelemetryData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let server_id = <String as wire::Decode>::decode(reader)?;
+        let scenario_id = <String as wire::Decode>::decode(reader)?;
+        let world_id = <String as wire::Decode>::decode(reader)?;
+        let owner_id = <String as wire::Decode>::decode(reader)?;
         Ok(Self {
-            server_id: wire::Decode::decode(reader)?,
-            scenario_id: wire::Decode::decode(reader)?,
-            world_id: wire::Decode::decode(reader)?,
-            owner_id: wire::Decode::decode(reader)?,
+            server_id,
+            scenario_id,
+            world_id,
+            owner_id,
         })
     }
 }
@@ -8813,10 +9566,13 @@ impl wire::Encode for SpawnSettings {
 
 impl wire::Decode for SpawnSettings {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let spawn_biome_type = <SpawnBiomeType as wire::Decode>::decode(reader)?;
+        let user_defined_biome_name = <String as wire::Decode>::decode(reader)?;
+        let dimension = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
         Ok(Self {
-            spawn_biome_type: wire::Decode::decode(reader)?,
-            user_defined_biome_name: wire::Decode::decode(reader)?,
-            dimension: wire::Decode::decode(reader)?,
+            spawn_biome_type,
+            user_defined_biome_name,
+            dimension,
         })
     }
 }
@@ -8840,11 +9596,15 @@ impl wire::Encode for SyncedAttribute {
 
 impl wire::Decode for SyncedAttribute {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let attribute_name = <String as wire::Decode>::decode(reader)?;
+        let min_value = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let current_value = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let max_value = <wire::F32LE as wire::Decode>::decode(reader)?;
         Ok(Self {
-            attribute_name: wire::Decode::decode(reader)?,
-            min_value: wire::Decode::decode(reader)?,
-            current_value: wire::Decode::decode(reader)?,
-            max_value: wire::Decode::decode(reader)?,
+            attribute_name,
+            min_value,
+            current_value,
+            max_value,
         })
     }
 }
@@ -8864,9 +9624,11 @@ impl wire::Encode for SyncedPlayerMovementSettings {
 
 impl wire::Decode for SyncedPlayerMovementSettings {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let rewind_history_size = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let server_authoritative_block_breaking = <bool as wire::Decode>::decode(reader)?;
         Ok(Self {
-            rewind_history_size: wire::Decode::decode(reader)?,
-            server_authoritative_block_breaking: wire::Decode::decode(reader)?,
+            rewind_history_size,
+            server_authoritative_block_breaking,
         })
     }
 }
@@ -8884,8 +9646,9 @@ impl wire::Encode for SynchedActorDataCopyableDataList {
 
 impl wire::Decode for SynchedActorDataCopyableDataList {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let data = wire::decode_collection::<DataItemEntry>(reader, 4, wire::MAX_COLLECTION_ELEMENTS)?;
         Ok(Self {
-            data: wire::decode_collection(reader, 4, wire::MAX_COLLECTION_ELEMENTS)?,
+            data,
         })
     }
 }
@@ -8905,8 +9668,9 @@ impl wire::Encode for TintMapColor {
 
 impl wire::Decode for TintMapColor {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let colors = [<MceColor as wire::Decode>::decode(reader)?, <MceColor as wire::Decode>::decode(reader)?, <MceColor as wire::Decode>::decode(reader)?, <MceColor as wire::Decode>::decode(reader)?];
         Ok(Self {
-            colors: [wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?, wire::Decode::decode(reader)?],
+            colors,
         })
     }
 }
@@ -8926,9 +9690,11 @@ impl wire::Encode for UpdateSubChunkBlocksChangedInfo {
 
 impl wire::Decode for UpdateSubChunkBlocksChangedInfo {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let blocks_changed_standards = wire::decode_collection::<UpdateSubChunkNetworkBlockInfo>(reader, 7, wire::MAX_COLLECTION_ELEMENTS)?;
+        let blocks_changed_extras = wire::decode_collection::<UpdateSubChunkNetworkBlockInfo>(reader, 7, wire::MAX_COLLECTION_ELEMENTS)?;
         Ok(Self {
-            blocks_changed_standards: wire::decode_collection(reader, 7, wire::MAX_COLLECTION_ELEMENTS)?,
-            blocks_changed_extras: wire::decode_collection(reader, 7, wire::MAX_COLLECTION_ELEMENTS)?,
+            blocks_changed_standards,
+            blocks_changed_extras,
         })
     }
 }
@@ -8954,12 +9720,17 @@ impl wire::Encode for UpdateSubChunkNetworkBlockInfo {
 
 impl wire::Decode for UpdateSubChunkNetworkBlockInfo {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let pos = <BlockPos as wire::Decode>::decode(reader)?;
+        let runtime_id = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let update_flags = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let sync_message_entity_unique_id = <wire::VarULong as wire::Decode>::decode(reader)?;
+        let sync_message_message = <wire::VarUInt as wire::Decode>::decode(reader)?;
         Ok(Self {
-            pos: wire::Decode::decode(reader)?,
-            runtime_id: wire::Decode::decode(reader)?,
-            update_flags: wire::Decode::decode(reader)?,
-            sync_message_entity_unique_id: wire::Decode::decode(reader)?,
-            sync_message_message: wire::Decode::decode(reader)?,
+            pos,
+            runtime_id,
+            update_flags,
+            sync_message_entity_unique_id,
+            sync_message_message,
         })
     }
 }
@@ -8977,8 +9748,9 @@ impl wire::Encode for WebSocketData {
 
 impl wire::Decode for WebSocketData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let websocket_server_uri = <String as wire::Decode>::decode(reader)?;
         Ok(Self {
-            websocket_server_uri: wire::Decode::decode(reader)?,
+            websocket_server_uri,
         })
     }
 }
@@ -9000,9 +9772,11 @@ impl wire::Encode for PackIDVersionData {
 
 impl wire::Decode for PackIDVersionData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let pack_uuid = <uuid::Uuid as wire::Decode>::decode(reader)?;
+        let pack_version = <SemVersionData as wire::Decode>::decode(reader)?;
         Ok(Self {
-            pack_uuid: wire::Decode::decode(reader)?,
-            pack_version: wire::Decode::decode(reader)?,
+            pack_uuid,
+            pack_version,
         })
     }
 }
@@ -9022,9 +9796,11 @@ impl wire::Encode for PackIdVersion {
 
 impl wire::Decode for PackIdVersion {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let pack_uuid = <uuid::Uuid as wire::Decode>::decode(reader)?;
+        let pack_version = <SemVersion as wire::Decode>::decode(reader)?;
         Ok(Self {
-            pack_uuid: wire::Decode::decode(reader)?,
-            pack_version: wire::Decode::decode(reader)?,
+            pack_uuid,
+            pack_version,
         })
     }
 }
@@ -9058,16 +9834,25 @@ impl wire::Encode for PackInfoData {
 
 impl wire::Decode for PackInfoData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let pack_id_version = <PackIDVersionData as wire::Decode>::decode(reader)?;
+        let pack_size = <wire::U64LE as wire::Decode>::decode(reader)?;
+        let content_key = <String as wire::Decode>::decode(reader)?;
+        let subpack_name = <String as wire::Decode>::decode(reader)?;
+        let content_identity = <ContentIdentity as wire::Decode>::decode(reader)?;
+        let has_scripts = <bool as wire::Decode>::decode(reader)?;
+        let is_addon_pack = <bool as wire::Decode>::decode(reader)?;
+        let is_ray_tracing_capable = <bool as wire::Decode>::decode(reader)?;
+        let cdn_url = <String as wire::Decode>::decode(reader)?;
         Ok(Self {
-            pack_id_version: wire::Decode::decode(reader)?,
-            pack_size: wire::Decode::decode(reader)?,
-            content_key: wire::Decode::decode(reader)?,
-            subpack_name: wire::Decode::decode(reader)?,
-            content_identity: wire::Decode::decode(reader)?,
-            has_scripts: wire::Decode::decode(reader)?,
-            is_addon_pack: wire::Decode::decode(reader)?,
-            is_ray_tracing_capable: wire::Decode::decode(reader)?,
-            cdn_url: wire::Decode::decode(reader)?,
+            pack_id_version,
+            pack_size,
+            content_key,
+            subpack_name,
+            content_identity,
+            has_scripts,
+            is_addon_pack,
+            is_ray_tracing_capable,
+            cdn_url,
         })
     }
 }
@@ -9089,10 +9874,13 @@ impl wire::Encode for PackInstanceId {
 
 impl wire::Decode for PackInstanceId {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let pack_id = <String as wire::Decode>::decode(reader)?;
+        let version = <String as wire::Decode>::decode(reader)?;
+        let sub_pack_name = <String as wire::Decode>::decode(reader)?;
         Ok(Self {
-            pack_id: wire::Decode::decode(reader)?,
-            version: wire::Decode::decode(reader)?,
-            sub_pack_name: wire::Decode::decode(reader)?,
+            pack_id,
+            version,
+            sub_pack_name,
         })
     }
 }
@@ -9117,10 +9905,13 @@ impl wire::Encode for PlayerBlockActionData {
 
 impl wire::Decode for PlayerBlockActionData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let player_action_type = <PlayerActionType as wire::Decode>::decode(reader)?;
+        let position = <BlockPos as wire::Decode>::decode(reader)?;
+        let facing = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
         Ok(Self {
-            player_action_type: wire::Decode::decode(reader)?,
-            position: wire::Decode::decode(reader)?,
-            facing: wire::Decode::decode(reader)?,
+            player_action_type,
+            position,
+            facing,
         })
     }
 }
@@ -9215,22 +10006,24 @@ impl wire::Decode for PlayerListData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let discriminant = <wire::U8 as wire::Decode>::decode(reader)?.0;
         Ok(match discriminant {
-            0 => Self::Add {
-                uuid: wire::Decode::decode(reader)?,
-                actor_unique_id: wire::Decode::decode(reader)?,
-                player_name: wire::Decode::decode(reader)?,
-                xbl_xuid: wire::Decode::decode(reader)?,
-                platform_online_id: wire::Decode::decode(reader)?,
-                build_platform: wire::Decode::decode(reader)?,
-                serialized_skin: Box::new(wire::Decode::decode(reader)?),
-                is_teacher: wire::Decode::decode(reader)?,
-                is_host: wire::Decode::decode(reader)?,
-                is_sub_client: wire::Decode::decode(reader)?,
-                player_color: wire::Decode::decode(reader)?,
-            },
-            1 => Self::Remove {
-                uuid: wire::Decode::decode(reader)?,
-            },
+            0 => {
+                let uuid = <uuid::Uuid as wire::Decode>::decode(reader)?;
+                let actor_unique_id = <ActorUniqueID as wire::Decode>::decode(reader)?;
+                let player_name = <String as wire::Decode>::decode(reader)?;
+                let xbl_xuid = <String as wire::Decode>::decode(reader)?;
+                let platform_online_id = <String as wire::Decode>::decode(reader)?;
+                let build_platform = <BuildPlatform as wire::Decode>::decode(reader)?;
+                let serialized_skin = Box::new(<SerializedSkinRef as wire::Decode>::decode(reader)?);
+                let is_teacher = <bool as wire::Decode>::decode(reader)?;
+                let is_host = <bool as wire::Decode>::decode(reader)?;
+                let is_sub_client = <bool as wire::Decode>::decode(reader)?;
+                let player_color = <MceColor as wire::Decode>::decode(reader)?;
+                Self::Add { uuid, actor_unique_id, player_name, xbl_xuid, platform_online_id, build_platform, serialized_skin, is_teacher, is_host, is_sub_client, player_color }
+            }
+            1 => {
+                let uuid = <uuid::Uuid as wire::Decode>::decode(reader)?;
+                Self::Remove { uuid }
+            }
             value => {
                 return Err(wire::DecodeError::UnknownVariant {
                     type_name: "PlayerListData",
@@ -9289,13 +10082,15 @@ impl wire::Decode for PlayerLocationData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let discriminant = <wire::VarUInt as wire::Decode>::decode(reader)?.0;
         Ok(match discriminant {
-            0 => Self::PlayerLocationCoordinates {
-                packet_type: wire::Decode::decode(reader)?,
-                position: wire::Decode::decode(reader)?,
-            },
-            1 => Self::PlayerLocationHide {
-                packet_type: wire::Decode::decode(reader)?,
-            },
+            0 => {
+                let packet_type = <PlayerLocationType as wire::Decode>::decode(reader)?;
+                let position = <glam::Vec3 as wire::Decode>::decode(reader)?;
+                Self::PlayerLocationCoordinates { packet_type, position }
+            }
+            1 => {
+                let packet_type = <PlayerLocationType as wire::Decode>::decode(reader)?;
+                Self::PlayerLocationHide { packet_type }
+            }
             value => {
                 return Err(wire::DecodeError::UnknownVariant {
                     type_name: "PlayerLocationData",
@@ -9321,9 +10116,11 @@ impl wire::Encode for PlayerPartyInfo {
 
 impl wire::Decode for PlayerPartyInfo {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let party_id = <String as wire::Decode>::decode(reader)?;
+        let is_party_leader = <bool as wire::Decode>::decode(reader)?;
         Ok(Self {
-            party_id: wire::Decode::decode(reader)?,
-            is_party_leader: wire::Decode::decode(reader)?,
+            party_id,
+            is_party_leader,
         })
     }
 }
@@ -9406,20 +10203,24 @@ impl wire::Decode for PlayerUpdateEntityOverridesData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let discriminant = <wire::U8 as wire::Decode>::decode(reader)?.0;
         Ok(match discriminant {
-            0 => Self::ClearOverride {
-                type_: wire::Decode::decode(reader)?,
-            },
-            1 => Self::RemoveOverride {
-                type_: wire::Decode::decode(reader)?,
-            },
-            2 => Self::IntOverride {
-                type_: wire::Decode::decode(reader)?,
-                value: wire::Decode::decode(reader)?,
-            },
-            3 => Self::FloatOverride {
-                type_: wire::Decode::decode(reader)?,
-                value: wire::Decode::decode(reader)?,
-            },
+            0 => {
+                let type_ = <String as wire::Decode>::decode(reader)?;
+                Self::ClearOverride { type_ }
+            }
+            1 => {
+                let type_ = <String as wire::Decode>::decode(reader)?;
+                Self::RemoveOverride { type_ }
+            }
+            2 => {
+                let type_ = <String as wire::Decode>::decode(reader)?;
+                let value = <wire::I32LE as wire::Decode>::decode(reader)?;
+                Self::IntOverride { type_, value }
+            }
+            3 => {
+                let type_ = <String as wire::Decode>::decode(reader)?;
+                let value = <wire::F32LE as wire::Decode>::decode(reader)?;
+                Self::FloatOverride { type_, value }
+            }
             value => {
                 return Err(wire::DecodeError::UnknownVariant {
                     type_name: "PlayerUpdateEntityOverridesData",
@@ -9467,10 +10268,11 @@ impl wire::Decode for PlayerVideoCaptureData {
         let discriminant = <wire::U8 as wire::Decode>::decode(reader)?.0;
         Ok(match discriminant {
             0 => Self::StopVideoCapture,
-            1 => Self::StartVideoCapture {
-                frame_rate: wire::Decode::decode(reader)?,
-                file_prefix: wire::Decode::decode(reader)?,
-            },
+            1 => {
+                let frame_rate = <wire::U32LE as wire::Decode>::decode(reader)?;
+                let file_prefix = <String as wire::Decode>::decode(reader)?;
+                Self::StartVideoCapture { frame_rate, file_prefix }
+            }
             value => {
                 return Err(wire::DecodeError::UnknownVariant {
                     type_name: "PlayerVideoCaptureData",
@@ -9516,9 +10318,11 @@ impl wire::Encode for MultiRecipe {
 
 impl wire::Decode for MultiRecipe {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let multi_recipe_uuid = <uuid::Uuid as wire::Decode>::decode(reader)?;
+        let net_id = <RecipeNetID as wire::Decode>::decode(reader)?;
         Ok(Self {
-            multi_recipe_uuid: wire::Decode::decode(reader)?,
-            net_id: wire::Decode::decode(reader)?,
+            multi_recipe_uuid,
+            net_id,
         })
     }
 }
@@ -9538,9 +10342,11 @@ impl wire::Encode for RecipeIngredient {
 
 impl wire::Decode for RecipeIngredient {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let item_descriptor = <ItemDescriptor as wire::Decode>::decode(reader)?;
+        let stack_size = <wire::U16LE as wire::Decode>::decode(reader)?;
         Ok(Self {
-            item_descriptor: wire::Decode::decode(reader)?,
-            stack_size: wire::Decode::decode(reader)?,
+            item_descriptor,
+            stack_size,
         })
     }
 }
@@ -9562,10 +10368,13 @@ impl wire::Encode for RecipeIngredientSerializedData {
 
 impl wire::Decode for RecipeIngredientSerializedData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let descriptor = wire::decode_map::<String, String>(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?;
+        let aux_value = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let stack_size = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
         Ok(Self {
-            descriptor: wire::decode_map(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?,
-            aux_value: wire::Decode::decode(reader)?,
-            stack_size: wire::Decode::decode(reader)?,
+            descriptor,
+            aux_value,
+            stack_size,
         })
     }
 }
@@ -9607,15 +10416,17 @@ impl wire::Encode for RecipeUnlockRequirementSerializedData {
 
 impl wire::Decode for RecipeUnlockRequirementSerializedData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let unlocking_context = <RecipeUnlockingRequirementUnlockingContext as wire::Decode>::decode(reader)?;
+        let unlocking_ingredients = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(wire::decode_collection::<RecipeIngredientSerializedData>(reader, 3, wire::MAX_COLLECTION_ELEMENTS)?)
+            }
+        };
         Ok(Self {
-            unlocking_context: wire::Decode::decode(reader)?,
-            unlocking_ingredients: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::decode_collection(reader, 3, wire::MAX_COLLECTION_ELEMENTS)?)
-                }
-            },
+            unlocking_context,
+            unlocking_ingredients,
         })
     }
 }
@@ -9673,24 +10484,35 @@ impl wire::Encode for ShapedRecipe {
 
 impl wire::Decode for ShapedRecipe {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let recipe_id = <String as wire::Decode>::decode(reader)?;
+        let width = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let height = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let ingredients = wire::decode_collection::<RecipeIngredientSerializedData>(reader, 3, wire::MAX_COLLECTION_ELEMENTS)?;
+        let results = wire::decode_collection::<NetworkItemInstanceDescriptorSerializedData>(reader, 6, wire::MAX_COLLECTION_ELEMENTS)?;
+        let uuid = <uuid::Uuid as wire::Decode>::decode(reader)?;
+        let tag = <String as wire::Decode>::decode(reader)?;
+        let priority = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let assume_symmetry = <bool as wire::Decode>::decode(reader)?;
+        let unlocking_requirement = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<RecipeUnlockRequirementSerializedData as wire::Decode>::decode(reader)?)
+            }
+        };
+        let net_id = <RecipeNetID as wire::Decode>::decode(reader)?;
         Ok(Self {
-            recipe_id: wire::Decode::decode(reader)?,
-            width: wire::Decode::decode(reader)?,
-            height: wire::Decode::decode(reader)?,
-            ingredients: wire::decode_collection(reader, 3, wire::MAX_COLLECTION_ELEMENTS)?,
-            results: wire::decode_collection(reader, 6, wire::MAX_COLLECTION_ELEMENTS)?,
-            uuid: wire::Decode::decode(reader)?,
-            tag: wire::Decode::decode(reader)?,
-            priority: wire::Decode::decode(reader)?,
-            assume_symmetry: wire::Decode::decode(reader)?,
-            unlocking_requirement: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            net_id: wire::Decode::decode(reader)?,
+            recipe_id,
+            width,
+            height,
+            ingredients,
+            results,
+            uuid,
+            tag,
+            priority,
+            assume_symmetry,
+            unlocking_requirement,
+            net_id,
         })
     }
 }
@@ -9736,21 +10558,29 @@ impl wire::Encode for ShapelessRecipe {
 
 impl wire::Decode for ShapelessRecipe {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let recipe_id = <String as wire::Decode>::decode(reader)?;
+        let ingredients = wire::decode_collection::<RecipeIngredientSerializedData>(reader, 3, wire::MAX_COLLECTION_ELEMENTS)?;
+        let results = wire::decode_collection::<NetworkItemInstanceDescriptorSerializedData>(reader, 6, wire::MAX_COLLECTION_ELEMENTS)?;
+        let uuid = <uuid::Uuid as wire::Decode>::decode(reader)?;
+        let tag = <String as wire::Decode>::decode(reader)?;
+        let priority = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let unlocking_requirement = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<RecipeUnlockRequirementSerializedData as wire::Decode>::decode(reader)?)
+            }
+        };
+        let net_id = <RecipeNetID as wire::Decode>::decode(reader)?;
         Ok(Self {
-            recipe_id: wire::Decode::decode(reader)?,
-            ingredients: wire::decode_collection(reader, 3, wire::MAX_COLLECTION_ELEMENTS)?,
-            results: wire::decode_collection(reader, 6, wire::MAX_COLLECTION_ELEMENTS)?,
-            uuid: wire::Decode::decode(reader)?,
-            tag: wire::Decode::decode(reader)?,
-            priority: wire::Decode::decode(reader)?,
-            unlocking_requirement: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            net_id: wire::Decode::decode(reader)?,
+            recipe_id,
+            ingredients,
+            results,
+            uuid,
+            tag,
+            priority,
+            unlocking_requirement,
+            net_id,
         })
     }
 }
@@ -9785,14 +10615,21 @@ impl wire::Encode for SmithingTransformRecipe {
 
 impl wire::Decode for SmithingTransformRecipe {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let recipe_id = <String as wire::Decode>::decode(reader)?;
+        let template_ingredient = <RecipeIngredientSerializedData as wire::Decode>::decode(reader)?;
+        let base_ingredient = <RecipeIngredientSerializedData as wire::Decode>::decode(reader)?;
+        let addition_ingredient = <RecipeIngredientSerializedData as wire::Decode>::decode(reader)?;
+        let result = <NetworkItemInstanceDescriptorSerializedData as wire::Decode>::decode(reader)?;
+        let tag = <String as wire::Decode>::decode(reader)?;
+        let net_id = <RecipeNetID as wire::Decode>::decode(reader)?;
         Ok(Self {
-            recipe_id: wire::Decode::decode(reader)?,
-            template_ingredient: wire::Decode::decode(reader)?,
-            base_ingredient: wire::Decode::decode(reader)?,
-            addition_ingredient: wire::Decode::decode(reader)?,
-            result: wire::Decode::decode(reader)?,
-            tag: wire::Decode::decode(reader)?,
-            net_id: wire::Decode::decode(reader)?,
+            recipe_id,
+            template_ingredient,
+            base_ingredient,
+            addition_ingredient,
+            result,
+            tag,
+            net_id,
         })
     }
 }
@@ -9824,13 +10661,19 @@ impl wire::Encode for SmithingTrimRecipe {
 
 impl wire::Decode for SmithingTrimRecipe {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let recipe_id = <String as wire::Decode>::decode(reader)?;
+        let template_ingredient = <RecipeIngredientSerializedData as wire::Decode>::decode(reader)?;
+        let base_ingredient = <RecipeIngredientSerializedData as wire::Decode>::decode(reader)?;
+        let addition_ingredient = <RecipeIngredientSerializedData as wire::Decode>::decode(reader)?;
+        let tag = <String as wire::Decode>::decode(reader)?;
+        let net_id = <RecipeNetID as wire::Decode>::decode(reader)?;
         Ok(Self {
-            recipe_id: wire::Decode::decode(reader)?,
-            template_ingredient: wire::Decode::decode(reader)?,
-            base_ingredient: wire::Decode::decode(reader)?,
-            addition_ingredient: wire::Decode::decode(reader)?,
-            tag: wire::Decode::decode(reader)?,
-            net_id: wire::Decode::decode(reader)?,
+            recipe_id,
+            template_ingredient,
+            base_ingredient,
+            addition_ingredient,
+            tag,
+            net_id,
         })
     }
 }
@@ -9898,19 +10741,23 @@ impl wire::Decode for ResourcePackClientResponseData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let discriminant = <wire::I8 as wire::Decode>::decode(reader)?.0;
         Ok(match discriminant {
-            1 => Self::Cancel {
-                response_type: wire::Decode::decode(reader)?,
-            },
-            2 => Self::Downloading {
-                response_type: wire::Decode::decode(reader)?,
-                downloading_packs: wire::decode_collection(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?,
-            },
-            3 => Self::DownloadingFinished {
-                response_type: wire::Decode::decode(reader)?,
-            },
-            4 => Self::ResourcePackStackFinished {
-                response_type: wire::Decode::decode(reader)?,
-            },
+            1 => {
+                let response_type = <String as wire::Decode>::decode(reader)?;
+                Self::Cancel { response_type }
+            }
+            2 => {
+                let response_type = <String as wire::Decode>::decode(reader)?;
+                let downloading_packs = wire::decode_collection::<String>(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?;
+                Self::Downloading { response_type, downloading_packs }
+            }
+            3 => {
+                let response_type = <String as wire::Decode>::decode(reader)?;
+                Self::DownloadingFinished { response_type }
+            }
+            4 => {
+                let response_type = <String as wire::Decode>::decode(reader)?;
+                Self::ResourcePackStackFinished { response_type }
+            }
             value => {
                 return Err(wire::DecodeError::UnknownVariant {
                     type_name: "ResourcePackClientResponseData",
@@ -9960,15 +10807,17 @@ impl wire::Encode for ScoreboardIdentityPacketInfo {
 
 impl wire::Decode for ScoreboardIdentityPacketInfo {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let scoreboard_id = <ScoreboardId as wire::Decode>::decode(reader)?;
+        let player_unique_id = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::ZigZag64 as wire::Decode>::decode(reader)?)
+            }
+        };
         Ok(Self {
-            scoreboard_id: wire::Decode::decode(reader)?,
-            player_unique_id: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
+            scoreboard_id,
+            player_unique_id,
         })
     }
 }
@@ -10087,72 +10936,83 @@ impl wire::Encode for PrimitiveShape {
 
 impl wire::Decode for PrimitiveShape {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let network_id = <wire::VarULong as wire::Decode>::decode(reader)?;
+        let shape_type = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<ScriptModuleMinecraftScriptPrimitiveShapeType as wire::Decode>::decode(reader)?)
+            }
+        };
+        let location = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<glam::Vec3 as wire::Decode>::decode(reader)?)
+            }
+        };
+        let scale = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::F32LE as wire::Decode>::decode(reader)?)
+            }
+        };
+        let rotation = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<glam::Vec3 as wire::Decode>::decode(reader)?)
+            }
+        };
+        let total_time_left = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::F32LE as wire::Decode>::decode(reader)?)
+            }
+        };
+        let maximum_render_distance = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::F32LE as wire::Decode>::decode(reader)?)
+            }
+        };
+        let color = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<MceColor as wire::Decode>::decode(reader)?)
+            }
+        };
+        let dimension_id = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<DimensionType as wire::Decode>::decode(reader)?)
+            }
+        };
+        let attached_to_entity_id = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<ActorUniqueID as wire::Decode>::decode(reader)?)
+            }
+        };
+        let extra_shape_data = <PrimitiveShapeExtraShapeData as wire::Decode>::decode(reader)?;
         Ok(Self {
-            network_id: wire::Decode::decode(reader)?,
-            shape_type: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            location: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            scale: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            rotation: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            total_time_left: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            maximum_render_distance: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            color: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            dimension_id: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            attached_to_entity_id: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            extra_shape_data: wire::Decode::decode(reader)?,
+            network_id,
+            shape_type,
+            location,
+            scale,
+            rotation,
+            total_time_left,
+            maximum_render_distance,
+            color,
+            dimension_id,
+            attached_to_entity_id,
+            extra_shape_data,
         })
     }
 }
@@ -10176,10 +11036,13 @@ impl wire::Encode for SkinImage {
 
 impl wire::Decode for SkinImage {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let width = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let height = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let image_bytes = wire::decode_collection::<wire::U8>(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?;
         Ok(Self {
-            width: wire::Decode::decode(reader)?,
-            height: wire::Decode::decode(reader)?,
-            image_bytes: wire::decode_collection(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?,
+            width,
+            height,
+            image_bytes,
         })
     }
 }
@@ -10250,19 +11113,23 @@ impl wire::Decode for SoundDataEvent {
         let discriminant = <wire::VarUInt as wire::Decode>::decode(reader)?.0;
         Ok(match discriminant {
             0 => Self::Stop,
-            1 => Self::SetVolume {
-                volume: wire::Decode::decode(reader)?,
-            },
-            2 => Self::SetPitch {
-                pitch: wire::Decode::decode(reader)?,
-            },
-            3 => Self::Fade {
-                duration: wire::Decode::decode(reader)?,
-                target_volume: wire::Decode::decode(reader)?,
-            },
-            4 => Self::SeekTo {
-                seconds: wire::Decode::decode(reader)?,
-            },
+            1 => {
+                let volume = <wire::F32LE as wire::Decode>::decode(reader)?;
+                Self::SetVolume { volume }
+            }
+            2 => {
+                let pitch = <wire::F32LE as wire::Decode>::decode(reader)?;
+                Self::SetPitch { pitch }
+            }
+            3 => {
+                let duration = <wire::F32LE as wire::Decode>::decode(reader)?;
+                let target_volume = <wire::F32LE as wire::Decode>::decode(reader)?;
+                Self::Fade { duration, target_volume }
+            }
+            4 => {
+                let seconds = <wire::F32LE as wire::Decode>::decode(reader)?;
+                Self::SeekTo { seconds }
+            }
             5 => Self::Pause,
             6 => Self::Resume,
             value => {
@@ -10302,14 +11169,21 @@ impl wire::Encode for StructureEditorData {
 
 impl wire::Decode for StructureEditorData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let structure_name = <BedrockSafetyRedactableString as wire::Decode>::decode(reader)?;
+        let data_field = <String as wire::Decode>::decode(reader)?;
+        let should_include_players = <bool as wire::Decode>::decode(reader)?;
+        let should_show_bounding_box = <bool as wire::Decode>::decode(reader)?;
+        let structure_block_type = <StructureBlockType as wire::Decode>::decode(reader)?;
+        let structure_settings = <StructureSettings as wire::Decode>::decode(reader)?;
+        let redstone_save_mode = <StructureRedstoneSaveMode as wire::Decode>::decode(reader)?;
         Ok(Self {
-            structure_name: wire::Decode::decode(reader)?,
-            data_field: wire::Decode::decode(reader)?,
-            should_include_players: wire::Decode::decode(reader)?,
-            should_show_bounding_box: wire::Decode::decode(reader)?,
-            structure_block_type: wire::Decode::decode(reader)?,
-            structure_settings: wire::Decode::decode(reader)?,
-            redstone_save_mode: wire::Decode::decode(reader)?,
+            structure_name,
+            data_field,
+            should_include_players,
+            should_show_bounding_box,
+            structure_block_type,
+            structure_settings,
+            redstone_save_mode,
         })
     }
 }
@@ -10360,21 +11234,35 @@ impl wire::Encode for StructureSettings {
 
 impl wire::Decode for StructureSettings {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let structure_palette_name = <String as wire::Decode>::decode(reader)?;
+        let should_ignore_entities = <bool as wire::Decode>::decode(reader)?;
+        let should_ignore_blocks = <bool as wire::Decode>::decode(reader)?;
+        let should_allow_non_ticking_player_and_ticking_area_chunks = <bool as wire::Decode>::decode(reader)?;
+        let structure_size = <BlockPos as wire::Decode>::decode(reader)?;
+        let structure_offset = <BlockPos as wire::Decode>::decode(reader)?;
+        let last_edit_player = <ActorUniqueID as wire::Decode>::decode(reader)?;
+        let rotation = <Rotation as wire::Decode>::decode(reader)?;
+        let mirror = <Mirror as wire::Decode>::decode(reader)?;
+        let animation_mode = <AnimationMode as wire::Decode>::decode(reader)?;
+        let animation_seconds = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let integrity_value = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let integrity_seed = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let rotation_pivot = <glam::Vec3 as wire::Decode>::decode(reader)?;
         Ok(Self {
-            structure_palette_name: wire::Decode::decode(reader)?,
-            should_ignore_entities: wire::Decode::decode(reader)?,
-            should_ignore_blocks: wire::Decode::decode(reader)?,
-            should_allow_non_ticking_player_and_ticking_area_chunks: wire::Decode::decode(reader)?,
-            structure_size: wire::Decode::decode(reader)?,
-            structure_offset: wire::Decode::decode(reader)?,
-            last_edit_player: wire::Decode::decode(reader)?,
-            rotation: wire::Decode::decode(reader)?,
-            mirror: wire::Decode::decode(reader)?,
-            animation_mode: wire::Decode::decode(reader)?,
-            animation_seconds: wire::Decode::decode(reader)?,
-            integrity_value: wire::Decode::decode(reader)?,
-            integrity_seed: wire::Decode::decode(reader)?,
-            rotation_pivot: wire::Decode::decode(reader)?,
+            structure_palette_name,
+            should_ignore_entities,
+            should_ignore_blocks,
+            should_allow_non_ticking_player_and_ticking_area_chunks,
+            structure_size,
+            structure_offset,
+            last_edit_player,
+            rotation,
+            mirror,
+            animation_mode,
+            animation_seconds,
+            integrity_value,
+            integrity_seed,
+            rotation_pivot,
         })
     }
 }
@@ -10416,24 +11304,29 @@ impl wire::Encode for SubChunkData {
 
 impl wire::Decode for SubChunkData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let sub_chunk_pos_offset = <SubChunkPosOffset as wire::Decode>::decode(reader)?;
+        let sub_chunk_request_result = <SubChunkRequestResult as wire::Decode>::decode(reader)?;
+        let serialized_sub_chunk = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<String as wire::Decode>::decode(reader)?)
+            }
+        };
+        let height_map_data = <HeightmapData as wire::Decode>::decode(reader)?;
+        let blob_id = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::U64LE as wire::Decode>::decode(reader)?)
+            }
+        };
         Ok(Self {
-            sub_chunk_pos_offset: wire::Decode::decode(reader)?,
-            sub_chunk_request_result: wire::Decode::decode(reader)?,
-            serialized_sub_chunk: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
-            height_map_data: wire::Decode::decode(reader)?,
-            blob_id: {
-                if reader.read_u8()? == 0 {
-                    None
-                } else {
-                    Some(wire::Decode::decode(reader)?)
-                }
-            },
+            sub_chunk_pos_offset,
+            sub_chunk_request_result,
+            serialized_sub_chunk,
+            height_map_data,
+            blob_id,
         })
     }
 }
@@ -10470,10 +11363,13 @@ impl wire::Encode for SubChunkPosOffset {
 
 impl wire::Decode for SubChunkPosOffset {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let subchunk_offset_x = <wire::I8 as wire::Decode>::decode(reader)?;
+        let subchunk_offset_y = <wire::I8 as wire::Decode>::decode(reader)?;
+        let subchunk_offset_z = <wire::I8 as wire::Decode>::decode(reader)?;
         Ok(Self {
-            subchunk_offset_x: wire::Decode::decode(reader)?,
-            subchunk_offset_y: wire::Decode::decode(reader)?,
-            subchunk_offset_z: wire::Decode::decode(reader)?,
+            subchunk_offset_x,
+            subchunk_offset_y,
+            subchunk_offset_z,
         })
     }
 }
@@ -10543,20 +11439,24 @@ impl wire::Decode for SyncWorldClocksData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let discriminant = <wire::VarUInt as wire::Decode>::decode(reader)?.0;
         Ok(match discriminant {
-            0 => Self::SyncStateData {
-                clock_data: wire::decode_collection(reader, 3, wire::MAX_COLLECTION_ELEMENTS)?,
-            },
-            1 => Self::InitializeRegistryData {
-                clock_data: wire::decode_collection(reader, 5, wire::MAX_COLLECTION_ELEMENTS)?,
-            },
-            2 => Self::AddTimeMarkerData {
-                clock_id: wire::Decode::decode(reader)?,
-                time_markers: wire::decode_collection(reader, 4, wire::MAX_COLLECTION_ELEMENTS)?,
-            },
-            3 => Self::RemoveTimeMarkerData {
-                clock_id: wire::Decode::decode(reader)?,
-                time_marker_ids: wire::decode_collection(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?,
-            },
+            0 => {
+                let clock_data = wire::decode_collection::<SyncWorldClockStateData>(reader, 3, wire::MAX_COLLECTION_ELEMENTS)?;
+                Self::SyncStateData { clock_data }
+            }
+            1 => {
+                let clock_data = wire::decode_collection::<WorldClockData>(reader, 5, wire::MAX_COLLECTION_ELEMENTS)?;
+                Self::InitializeRegistryData { clock_data }
+            }
+            2 => {
+                let clock_id = <wire::VarULong as wire::Decode>::decode(reader)?;
+                let time_markers = wire::decode_collection::<TimeMarkerData>(reader, 4, wire::MAX_COLLECTION_ELEMENTS)?;
+                Self::AddTimeMarkerData { clock_id, time_markers }
+            }
+            3 => {
+                let clock_id = <wire::VarULong as wire::Decode>::decode(reader)?;
+                let time_marker_ids = wire::decode_collection::<wire::VarULong>(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?;
+                Self::RemoveTimeMarkerData { clock_id, time_marker_ids }
+            }
             value => {
                 return Err(wire::DecodeError::UnknownVariant {
                     type_name: "SyncWorldClocksData",
@@ -10696,48 +11596,60 @@ impl wire::Decode for TextData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let discriminant = <wire::U8 as wire::Decode>::decode(reader)?.0;
         Ok(match discriminant {
-            0 => Self::Raw {
-                message: wire::Decode::decode(reader)?,
-            },
-            1 => Self::Chat {
-                player_name: wire::Decode::decode(reader)?,
-                message: wire::Decode::decode(reader)?,
-            },
-            2 => Self::Translate {
-                message: wire::Decode::decode(reader)?,
-                parameter_list: wire::decode_collection(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?,
-            },
-            3 => Self::Popup {
-                message: wire::Decode::decode(reader)?,
-                parameter_list: wire::decode_collection(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?,
-            },
-            4 => Self::JukeboxPopup {
-                message: wire::Decode::decode(reader)?,
-                parameter_list: wire::decode_collection(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?,
-            },
-            5 => Self::Tip {
-                message: wire::Decode::decode(reader)?,
-            },
-            6 => Self::SystemMessage {
-                message: wire::Decode::decode(reader)?,
-            },
-            7 => Self::Whisper {
-                player_name: wire::Decode::decode(reader)?,
-                message: wire::Decode::decode(reader)?,
-            },
-            8 => Self::Announcement {
-                player_name: wire::Decode::decode(reader)?,
-                message: wire::Decode::decode(reader)?,
-            },
-            9 => Self::TextObjectWhisper {
-                message: wire::Decode::decode(reader)?,
-            },
-            10 => Self::TextObject {
-                message: wire::Decode::decode(reader)?,
-            },
-            11 => Self::TextObjectAnnouncement {
-                message: wire::Decode::decode(reader)?,
-            },
+            0 => {
+                let message = <String as wire::Decode>::decode(reader)?;
+                Self::Raw { message }
+            }
+            1 => {
+                let player_name = <String as wire::Decode>::decode(reader)?;
+                let message = <String as wire::Decode>::decode(reader)?;
+                Self::Chat { player_name, message }
+            }
+            2 => {
+                let message = <String as wire::Decode>::decode(reader)?;
+                let parameter_list = wire::decode_collection::<String>(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?;
+                Self::Translate { message, parameter_list }
+            }
+            3 => {
+                let message = <String as wire::Decode>::decode(reader)?;
+                let parameter_list = wire::decode_collection::<String>(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?;
+                Self::Popup { message, parameter_list }
+            }
+            4 => {
+                let message = <String as wire::Decode>::decode(reader)?;
+                let parameter_list = wire::decode_collection::<String>(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?;
+                Self::JukeboxPopup { message, parameter_list }
+            }
+            5 => {
+                let message = <String as wire::Decode>::decode(reader)?;
+                Self::Tip { message }
+            }
+            6 => {
+                let message = <String as wire::Decode>::decode(reader)?;
+                Self::SystemMessage { message }
+            }
+            7 => {
+                let player_name = <String as wire::Decode>::decode(reader)?;
+                let message = <String as wire::Decode>::decode(reader)?;
+                Self::Whisper { player_name, message }
+            }
+            8 => {
+                let player_name = <String as wire::Decode>::decode(reader)?;
+                let message = <String as wire::Decode>::decode(reader)?;
+                Self::Announcement { player_name, message }
+            }
+            9 => {
+                let message = <String as wire::Decode>::decode(reader)?;
+                Self::TextObjectWhisper { message }
+            }
+            10 => {
+                let message = <String as wire::Decode>::decode(reader)?;
+                Self::TextObject { message }
+            }
+            11 => {
+                let message = <String as wire::Decode>::decode(reader)?;
+                Self::TextObjectAnnouncement { message }
+            }
             value => {
                 return Err(wire::DecodeError::UnknownVariant {
                     type_name: "TextData",
@@ -10772,10 +11684,13 @@ impl wire::Encode for TrimMaterial {
 
 impl wire::Decode for TrimMaterial {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let material_id = <String as wire::Decode>::decode(reader)?;
+        let color = <String as wire::Decode>::decode(reader)?;
+        let item_name = <String as wire::Decode>::decode(reader)?;
         Ok(Self {
-            material_id: wire::Decode::decode(reader)?,
-            color: wire::Decode::decode(reader)?,
-            item_name: wire::Decode::decode(reader)?,
+            material_id,
+            color,
+            item_name,
         })
     }
 }
@@ -10800,9 +11715,11 @@ impl wire::Encode for TrimPattern {
 
 impl wire::Decode for TrimPattern {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let item_name = <String as wire::Decode>::decode(reader)?;
+        let pattern_id = <String as wire::Decode>::decode(reader)?;
         Ok(Self {
-            item_name: wire::Decode::decode(reader)?,
-            pattern_id: wire::Decode::decode(reader)?,
+            item_name,
+            pattern_id,
         })
     }
 }
@@ -10843,11 +11760,15 @@ impl wire::Encode for VoxelShapesSerializableCells {
 
 impl wire::Decode for VoxelShapesSerializableCells {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let x_size = <wire::U8 as wire::Decode>::decode(reader)?;
+        let y_size = <wire::U8 as wire::Decode>::decode(reader)?;
+        let z_size = <wire::U8 as wire::Decode>::decode(reader)?;
+        let storage = wire::decode_collection::<wire::U8>(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?;
         Ok(Self {
-            x_size: wire::Decode::decode(reader)?,
-            y_size: wire::Decode::decode(reader)?,
-            z_size: wire::Decode::decode(reader)?,
-            storage: wire::decode_collection(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?,
+            x_size,
+            y_size,
+            z_size,
+            storage,
         })
     }
 }
@@ -10871,11 +11792,15 @@ impl wire::Encode for VoxelShapesSerializableVoxelShape {
 
 impl wire::Decode for VoxelShapesSerializableVoxelShape {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let cells = <VoxelShapesSerializableCells as wire::Decode>::decode(reader)?;
+        let x_coordinates = wire::decode_collection::<wire::F32LE>(reader, 4, wire::MAX_COLLECTION_ELEMENTS)?;
+        let y_coordinates = wire::decode_collection::<wire::F32LE>(reader, 4, wire::MAX_COLLECTION_ELEMENTS)?;
+        let z_coordinates = wire::decode_collection::<wire::F32LE>(reader, 4, wire::MAX_COLLECTION_ELEMENTS)?;
         Ok(Self {
-            cells: wire::Decode::decode(reader)?,
-            x_coordinates: wire::decode_collection(reader, 4, wire::MAX_COLLECTION_ELEMENTS)?,
-            y_coordinates: wire::decode_collection(reader, 4, wire::MAX_COLLECTION_ELEMENTS)?,
-            z_coordinates: wire::decode_collection(reader, 4, wire::MAX_COLLECTION_ELEMENTS)?,
+            cells,
+            x_coordinates,
+            y_coordinates,
+            z_coordinates,
         })
     }
 }
@@ -10901,10 +11826,13 @@ impl wire::Encode for LocatorBarWaypoint {
 
 impl wire::Decode for LocatorBarWaypoint {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let group_handle = <WaypointGroupWaypointHandle as wire::Decode>::decode(reader)?;
+        let server_waypoint_payload = <ServerWaypoint as wire::Decode>::decode(reader)?;
+        let action_flag = <ServerWaypointGroupAction as wire::Decode>::decode(reader)?;
         Ok(Self {
-            group_handle: wire::Decode::decode(reader)?,
-            server_waypoint_payload: wire::Decode::decode(reader)?,
-            action_flag: wire::Decode::decode(reader)?,
+            group_handle,
+            server_waypoint_payload,
+            action_flag,
         })
     }
 }
@@ -10922,8 +11850,9 @@ impl wire::Encode for WaypointGroupWaypointHandle {
 
 impl wire::Decode for WaypointGroupWaypointHandle {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let uuid = <uuid::Uuid as wire::Decode>::decode(reader)?;
         Ok(Self {
-            uuid: wire::Decode::decode(reader)?,
+            uuid,
         })
     }
 }
@@ -10957,12 +11886,17 @@ impl wire::Encode for DimensionDefinition {
 
 impl wire::Decode for DimensionDefinition {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let height_maximum = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let height_minimum = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let generator_type = <GeneratorType as wire::Decode>::decode(reader)?;
+        let dimension_type = <DimensionType as wire::Decode>::decode(reader)?;
+        let pack_id = <uuid::Uuid as wire::Decode>::decode(reader)?;
         Ok(Self {
-            height_maximum: wire::Decode::decode(reader)?,
-            height_minimum: wire::Decode::decode(reader)?,
-            generator_type: wire::Decode::decode(reader)?,
-            dimension_type: wire::Decode::decode(reader)?,
-            pack_id: wire::Decode::decode(reader)?,
+            height_maximum,
+            height_minimum,
+            generator_type,
+            dimension_type,
+            pack_id,
         })
     }
 }
@@ -10982,9 +11916,11 @@ impl wire::Encode for WorldPosition {
 
 impl wire::Decode for WorldPosition {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let position = <glam::Vec3 as wire::Decode>::decode(reader)?;
+        let dimension_type = <DimensionType as wire::Decode>::decode(reader)?;
         Ok(Self {
-            position: wire::Decode::decode(reader)?,
-            dimension_type: wire::Decode::decode(reader)?,
+            position,
+            dimension_type,
         })
     }
 }

@@ -564,7 +564,9 @@ func TestGenerateRustEmitsPacketCodecs(t *testing.T) {
 		"impl wire::Encode for Codec {",
 		"impl wire::Decode for Codec {",
 		"self.count.encode(writer);",
-		"count: wire::Decode::decode(reader)?,",
+		// The decode site names its type, so a disagreement with the type
+		// emitter is a compile error rather than silent inference.
+		"let count = <wire::VarUInt as wire::Decode>::decode(reader)?;",
 	} {
 		if !strings.Contains(packets, want) {
 			t.Fatalf("packet codec omitted %q:\n%s", want, packets)
@@ -585,7 +587,7 @@ func TestGenerateRustBoundsCollectionsBeforeAllocating(t *testing.T) {
 	packets := files["src/packets.rs"]
 	// Element minimum is 8 bytes, so the count is checked against both the
 	// element limit and the bytes actually remaining.
-	if !strings.Contains(packets, "wire::decode_collection(reader, 8, wire::MAX_COLLECTION_ELEMENTS)?") {
+	if !strings.Contains(packets, "wire::decode_collection::<wire::U64LE>(reader, 8, wire::MAX_COLLECTION_ELEMENTS)?") {
 		t.Fatalf("collection decode is not bounded:\n%s", packets)
 	}
 	wire := files["src/wire.rs"]
