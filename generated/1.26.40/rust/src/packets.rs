@@ -18,6 +18,24 @@ pub struct Login {
 impl Login {
     pub const ID: u32 = 1;
 }
+impl wire::Encode for Login {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.client_network_version.encode(writer);
+        self.connection_request.encode(writer);
+    }
+}
+
+impl wire::Decode for Login {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let client_network_version = <wire::I32BE as wire::Decode>::decode(reader)?;
+        let connection_request = <String as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            client_network_version,
+            connection_request,
+        })
+    }
+}
+
 /// PlayStatus is sent by the server to update a player on the play status. This includes failed
 /// statuses due to a mismatched version, but also success statuses.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -29,6 +47,21 @@ pub struct PlayStatus {
 impl PlayStatus {
     pub const ID: u32 = 2;
 }
+impl wire::Encode for PlayStatus {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.status.encode(writer);
+    }
+}
+
+impl wire::Decode for PlayStatus {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let status = <PlayStatusType as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            status,
+        })
+    }
+}
+
 /// ServerToClientHandshake is sent by the server to the client to complete the key exchange in
 /// order to initialise encryption on client and server side. It is followed up by a
 /// ClientToServerHandshake packet from the client.
@@ -40,6 +73,21 @@ pub struct ServerToClientHandshake {
 impl ServerToClientHandshake {
     pub const ID: u32 = 3;
 }
+impl wire::Encode for ServerToClientHandshake {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.handshake_web_token.encode(writer);
+    }
+}
+
+impl wire::Decode for ServerToClientHandshake {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let handshake_web_token = <String as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            handshake_web_token,
+        })
+    }
+}
+
 /// ClientToServerHandshake is sent by the client in response to a ServerToClientHandshake packet
 /// sent by the server. It is the first encrypted packet in the login handshake and serves as a
 /// confirmation that encryption is correctly initialised client side.
@@ -50,6 +98,20 @@ pub struct ClientToServerHandshake {
 impl ClientToServerHandshake {
     pub const ID: u32 = 4;
 }
+impl wire::Encode for ClientToServerHandshake {
+    fn encode(&self, writer: &mut wire::Writer) {
+        let _ = writer;
+    }
+}
+
+impl wire::Decode for ClientToServerHandshake {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let _ = reader;
+        Ok(Self {
+        })
+    }
+}
+
 /// Disconnect may be sent by the server to disconnect the client using an optional message to send
 /// as the disconnect screen.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -63,6 +125,24 @@ pub struct Disconnect {
 impl Disconnect {
     pub const ID: u32 = 5;
 }
+impl wire::Encode for Disconnect {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.reason.encode(writer);
+        self.messages.encode(writer);
+    }
+}
+
+impl wire::Decode for Disconnect {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let reason = <ConnectionDisconnectFailReason as wire::Decode>::decode(reader)?;
+        let messages = <DisconnectMessages as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            reason,
+            messages,
+        })
+    }
+}
+
 /// ResourcePacksInfo is sent by the server to inform the client on what resource packs the server
 /// has. It sends a list of the resource packs it has and basic information on them like the version
 /// and description.
@@ -84,6 +164,36 @@ pub struct ResourcePacksInfo {
 impl ResourcePacksInfo {
     pub const ID: u32 = 6;
 }
+impl wire::Encode for ResourcePacksInfo {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.resource_pack_required.encode(writer);
+        self.has_addon_packs.encode(writer);
+        self.has_scripts.encode(writer);
+        self.force_disable_vibrant_visuals.encode(writer);
+        self.world_template_id_and_version.encode(writer);
+        wire::encode_collection(writer, self.resource_packs.as_slice());
+    }
+}
+
+impl wire::Decode for ResourcePacksInfo {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let resource_pack_required = <bool as wire::Decode>::decode(reader)?;
+        let has_addon_packs = <bool as wire::Decode>::decode(reader)?;
+        let has_scripts = <bool as wire::Decode>::decode(reader)?;
+        let force_disable_vibrant_visuals = <bool as wire::Decode>::decode(reader)?;
+        let world_template_id_and_version = <PackIdVersion as wire::Decode>::decode(reader)?;
+        let resource_packs = wire::decode_collection::<PackInfoData>(reader, 32, wire::MAX_COLLECTION_ELEMENTS)?;
+        Ok(Self {
+            resource_pack_required,
+            has_addon_packs,
+            has_scripts,
+            force_disable_vibrant_visuals,
+            world_template_id_and_version,
+            resource_packs,
+        })
+    }
+}
+
 /// ResourcePackStack is sent by the server to send the order in which resource packs and behaviour
 /// packs should be applied (and downloaded) by the client.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -108,6 +218,33 @@ pub struct ResourcePackStack {
 impl ResourcePackStack {
     pub const ID: u32 = 7;
 }
+impl wire::Encode for ResourcePackStack {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.texture_pack_required.encode(writer);
+        wire::encode_collection(writer, self.texture_pack_list.as_slice());
+        self.base_game_version.encode(writer);
+        self.experiments.encode(writer);
+        self.include_editor_packs.encode(writer);
+    }
+}
+
+impl wire::Decode for ResourcePackStack {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let texture_pack_required = <bool as wire::Decode>::decode(reader)?;
+        let texture_pack_list = wire::decode_collection::<PackInstanceId>(reader, 3, wire::MAX_COLLECTION_ELEMENTS)?;
+        let base_game_version = <String as wire::Decode>::decode(reader)?;
+        let experiments = <Experiments as wire::Decode>::decode(reader)?;
+        let include_editor_packs = <bool as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            texture_pack_required,
+            texture_pack_list,
+            base_game_version,
+            experiments,
+            include_editor_packs,
+        })
+    }
+}
+
 /// ResourcePackClientResponse is sent by the client in response to resource packets sent by the
 /// server. It is used to let the server know what action needs to be taken for the client to have
 /// all resource packs ready and set.
@@ -120,6 +257,21 @@ pub struct ResourcePackClientResponse {
 impl ResourcePackClientResponse {
     pub const ID: u32 = 8;
 }
+impl wire::Encode for ResourcePackClientResponse {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.response.encode(writer);
+    }
+}
+
+impl wire::Decode for ResourcePackClientResponse {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let response = <ResourcePackClientResponseData as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            response,
+        })
+    }
+}
+
 /// Text is sent by the client to the server to send chat messages, and by the server to the client
 /// to forward or send messages, which may be chat, popups, tips etc.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -139,6 +291,48 @@ pub struct Text {
 impl Text {
     pub const ID: u32 = 9;
 }
+impl wire::Encode for Text {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.localize.encode(writer);
+        self.message_category.encode(writer);
+        self.body.encode(writer);
+        self.sender_xuid.encode(writer);
+        self.platform_id.encode(writer);
+        match &self.filtered_message {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+    }
+}
+
+impl wire::Decode for Text {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let localize = <bool as wire::Decode>::decode(reader)?;
+        let message_category = <wire::U8 as wire::Decode>::decode(reader)?;
+        let body = <TextData as wire::Decode>::decode(reader)?;
+        let sender_xuid = <String as wire::Decode>::decode(reader)?;
+        let platform_id = <String as wire::Decode>::decode(reader)?;
+        let filtered_message = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<String as wire::Decode>::decode(reader)?)
+            }
+        };
+        Ok(Self {
+            localize,
+            message_category,
+            body,
+            sender_xuid,
+            platform_id,
+            filtered_message,
+        })
+    }
+}
+
 /// SetTime is sent by the server to update the current time client-side. The client actually
 /// advances time client-side by itself, so this packet does not need to be sent each tick. It is
 /// merely a means of synchronising time between server and client.
@@ -152,6 +346,21 @@ pub struct SetTime {
 impl SetTime {
     pub const ID: u32 = 10;
 }
+impl wire::Encode for SetTime {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.time.encode(writer);
+    }
+}
+
+impl wire::Decode for SetTime {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let time = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            time,
+        })
+    }
+}
+
 /// StartGame is sent by the server to send information about the world the player will be spawned
 /// in. It contains information about the position the player spawns in, and information about the
 /// world in general such as its game rules.
@@ -198,6 +407,105 @@ pub struct StartGame {
 impl StartGame {
     pub const ID: u32 = 11;
 }
+impl wire::Encode for StartGame {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.entity_id.encode(writer);
+        self.runtime_id.encode(writer);
+        self.game_type.encode(writer);
+        self.position.encode(writer);
+        self.rotation.encode(writer);
+        self.settings.encode(writer);
+        self.level_id.encode(writer);
+        self.level_name.encode(writer);
+        self.template_content_identity.encode(writer);
+        self.is_trial.encode(writer);
+        self.movement_settings.encode(writer);
+        self.level_current_time.encode(writer);
+        self.enchantment_seed.encode(writer);
+        wire::encode_collection(writer, self.block_properties.as_slice());
+        self.multiplayer_correlation_id.encode(writer);
+        self.enable_item_stack_net_manager.encode(writer);
+        self.server_version.encode(writer);
+        self.player_property_data.encode(writer);
+        self.server_block_type_registry_checksum.encode(writer);
+        self.world_template_id.encode(writer);
+        self.server_enabled_client_side_generation.encode(writer);
+        self.block_network_ids_are_hashes.encode(writer);
+        self.network_permissions.encode(writer);
+        match &self.server_configuration_join_info {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+        self.server_telemetry_data.encode(writer);
+    }
+}
+
+impl wire::Decode for StartGame {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let entity_id = <ActorUniqueID as wire::Decode>::decode(reader)?;
+        let runtime_id = <ActorRuntimeID as wire::Decode>::decode(reader)?;
+        let game_type = <GameType as wire::Decode>::decode(reader)?;
+        let position = <glam::Vec3 as wire::Decode>::decode(reader)?;
+        let rotation = <glam::Vec2 as wire::Decode>::decode(reader)?;
+        let settings = <LevelSettings as wire::Decode>::decode(reader)?;
+        let level_id = <String as wire::Decode>::decode(reader)?;
+        let level_name = <String as wire::Decode>::decode(reader)?;
+        let template_content_identity = <String as wire::Decode>::decode(reader)?;
+        let is_trial = <bool as wire::Decode>::decode(reader)?;
+        let movement_settings = <SyncedPlayerMovementSettings as wire::Decode>::decode(reader)?;
+        let level_current_time = <wire::U64LE as wire::Decode>::decode(reader)?;
+        let enchantment_seed = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let block_properties = wire::decode_collection::<ServerBlockProperty>(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?;
+        let multiplayer_correlation_id = <String as wire::Decode>::decode(reader)?;
+        let enable_item_stack_net_manager = <bool as wire::Decode>::decode(reader)?;
+        let server_version = <String as wire::Decode>::decode(reader)?;
+        let player_property_data = <wire::NetworkNbt as wire::Decode>::decode(reader)?;
+        let server_block_type_registry_checksum = <wire::U64LE as wire::Decode>::decode(reader)?;
+        let world_template_id = <uuid::Uuid as wire::Decode>::decode(reader)?;
+        let server_enabled_client_side_generation = <bool as wire::Decode>::decode(reader)?;
+        let block_network_ids_are_hashes = <bool as wire::Decode>::decode(reader)?;
+        let network_permissions = <NetworkPermissions as wire::Decode>::decode(reader)?;
+        let server_configuration_join_info = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<ServerConfigurationServerConfigurationJoinInfo as wire::Decode>::decode(reader)?)
+            }
+        };
+        let server_telemetry_data = <SocialEventsServerTelemetryData as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            entity_id,
+            runtime_id,
+            game_type,
+            position,
+            rotation,
+            settings,
+            level_id,
+            level_name,
+            template_content_identity,
+            is_trial,
+            movement_settings,
+            level_current_time,
+            enchantment_seed,
+            block_properties,
+            multiplayer_correlation_id,
+            enable_item_stack_net_manager,
+            server_version,
+            player_property_data,
+            server_block_type_registry_checksum,
+            world_template_id,
+            server_enabled_client_side_generation,
+            block_network_ids_are_hashes,
+            network_permissions,
+            server_configuration_join_info,
+            server_telemetry_data,
+        })
+    }
+}
+
 /// AddPlayer is sent by the server to the client to make a player entity show up client-side. It is
 /// one of the few entities that cannot be sent using the AddActor packet.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -237,6 +545,66 @@ pub struct AddPlayer {
 impl AddPlayer {
     pub const ID: u32 = 12;
 }
+impl wire::Encode for AddPlayer {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.uuid.encode(writer);
+        self.player_name.encode(writer);
+        self.target_runtime_id.encode(writer);
+        self.platform_chat_id.encode(writer);
+        self.position.encode(writer);
+        self.velocity.encode(writer);
+        self.rotation.encode(writer);
+        self.y_head_rotation.encode(writer);
+        self.carried_item.encode(writer);
+        self.player_game_type.encode(writer);
+        self.entity_data.encode(writer);
+        self.synched_properties.encode(writer);
+        self.abilities_data.encode(writer);
+        wire::encode_collection(writer, self.actor_links.as_slice());
+        self.device_id.encode(writer);
+        self.build_platform.encode(writer);
+    }
+}
+
+impl wire::Decode for AddPlayer {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let uuid = <uuid::Uuid as wire::Decode>::decode(reader)?;
+        let player_name = <String as wire::Decode>::decode(reader)?;
+        let target_runtime_id = <ActorRuntimeID as wire::Decode>::decode(reader)?;
+        let platform_chat_id = <String as wire::Decode>::decode(reader)?;
+        let position = <glam::Vec3 as wire::Decode>::decode(reader)?;
+        let velocity = <glam::Vec3 as wire::Decode>::decode(reader)?;
+        let rotation = <glam::Vec2 as wire::Decode>::decode(reader)?;
+        let y_head_rotation = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let carried_item = <NetworkItemStackDescriptorSerializedData as wire::Decode>::decode(reader)?;
+        let player_game_type = <GameType as wire::Decode>::decode(reader)?;
+        let entity_data = <SynchedActorDataCopyableDataList as wire::Decode>::decode(reader)?;
+        let synched_properties = <PropertySyncData as wire::Decode>::decode(reader)?;
+        let abilities_data = <SerializedAbilitiesData as wire::Decode>::decode(reader)?;
+        let actor_links = wire::decode_collection::<EntityLink>(reader, 9, wire::MAX_COLLECTION_ELEMENTS)?;
+        let device_id = <String as wire::Decode>::decode(reader)?;
+        let build_platform = <BuildPlatform as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            uuid,
+            player_name,
+            target_runtime_id,
+            platform_chat_id,
+            position,
+            velocity,
+            rotation,
+            y_head_rotation,
+            carried_item,
+            player_game_type,
+            entity_data,
+            synched_properties,
+            abilities_data,
+            actor_links,
+            device_id,
+            build_platform,
+        })
+    }
+}
+
 /// AddActor is sent by the server to the client to spawn an entity to the player. It is used for
 /// every entity except other players, for which the AddPlayer packet is used.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -262,6 +630,54 @@ pub struct AddActor {
 impl AddActor {
     pub const ID: u32 = 13;
 }
+impl wire::Encode for AddActor {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.target_actor_id.encode(writer);
+        self.target_runtime_id.encode(writer);
+        self.actor_type.encode(writer);
+        self.position.encode(writer);
+        self.velocity.encode(writer);
+        self.rotation.encode(writer);
+        self.y_head_rotation.encode(writer);
+        self.y_body_rotation.encode(writer);
+        wire::encode_collection(writer, self.attributes_list.as_slice());
+        self.actor_data.encode(writer);
+        self.synched_properties.encode(writer);
+        wire::encode_collection(writer, self.actor_links.as_slice());
+    }
+}
+
+impl wire::Decode for AddActor {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let target_actor_id = <ActorUniqueID as wire::Decode>::decode(reader)?;
+        let target_runtime_id = <ActorRuntimeID as wire::Decode>::decode(reader)?;
+        let actor_type = <String as wire::Decode>::decode(reader)?;
+        let position = <glam::Vec3 as wire::Decode>::decode(reader)?;
+        let velocity = <glam::Vec3 as wire::Decode>::decode(reader)?;
+        let rotation = <glam::Vec2 as wire::Decode>::decode(reader)?;
+        let y_head_rotation = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let y_body_rotation = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let attributes_list = wire::decode_collection::<SyncedAttribute>(reader, 13, wire::MAX_COLLECTION_ELEMENTS)?;
+        let actor_data = <SynchedActorDataCopyableDataList as wire::Decode>::decode(reader)?;
+        let synched_properties = <PropertySyncData as wire::Decode>::decode(reader)?;
+        let actor_links = wire::decode_collection::<EntityLink>(reader, 9, wire::MAX_COLLECTION_ELEMENTS)?;
+        Ok(Self {
+            target_actor_id,
+            target_runtime_id,
+            actor_type,
+            position,
+            velocity,
+            rotation,
+            y_head_rotation,
+            y_body_rotation,
+            attributes_list,
+            actor_data,
+            synched_properties,
+            actor_links,
+        })
+    }
+}
+
 /// RemoveActor is sent by the server to remove an entity that currently exists in the world from
 /// the client- side. Sending this packet if the client cannot already see this entity will have no
 /// effect.
@@ -273,6 +689,21 @@ pub struct RemoveActor {
 impl RemoveActor {
     pub const ID: u32 = 14;
 }
+impl wire::Encode for RemoveActor {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.target_actor_id.encode(writer);
+    }
+}
+
+impl wire::Decode for RemoveActor {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let target_actor_id = <ActorUniqueID as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            target_actor_id,
+        })
+    }
+}
+
 /// AddItemActor is sent by the server to the client to make an item entity show up. It is one of
 /// the few entities that cannot be sent using the AddActor packet
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -295,6 +726,39 @@ pub struct AddItemActor {
 impl AddItemActor {
     pub const ID: u32 = 15;
 }
+impl wire::Encode for AddItemActor {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.target_actor_id.encode(writer);
+        self.target_runtime_id.encode(writer);
+        self.item.encode(writer);
+        self.position.encode(writer);
+        self.velocity.encode(writer);
+        self.entity_data.encode(writer);
+        self.is_from_fishing.encode(writer);
+    }
+}
+
+impl wire::Decode for AddItemActor {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let target_actor_id = <ActorUniqueID as wire::Decode>::decode(reader)?;
+        let target_runtime_id = <ActorRuntimeID as wire::Decode>::decode(reader)?;
+        let item = <NetworkItemStackDescriptorSerializedData as wire::Decode>::decode(reader)?;
+        let position = <glam::Vec3 as wire::Decode>::decode(reader)?;
+        let velocity = <glam::Vec3 as wire::Decode>::decode(reader)?;
+        let entity_data = <SynchedActorDataCopyableDataList as wire::Decode>::decode(reader)?;
+        let is_from_fishing = <bool as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            target_actor_id,
+            target_runtime_id,
+            item,
+            position,
+            velocity,
+            entity_data,
+            is_from_fishing,
+        })
+    }
+}
+
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ServerPlayerPostMovePosition {
     pub pos: glam::Vec3,
@@ -303,6 +767,21 @@ pub struct ServerPlayerPostMovePosition {
 impl ServerPlayerPostMovePosition {
     pub const ID: u32 = 16;
 }
+impl wire::Encode for ServerPlayerPostMovePosition {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.pos.encode(writer);
+    }
+}
+
+impl wire::Decode for ServerPlayerPostMovePosition {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let pos = <glam::Vec3 as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            pos,
+        })
+    }
+}
+
 /// TakeItemActor is sent by the server when a player picks up an item entity. It makes the item
 /// entity disappear to viewers and shows the pick-up animation.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -314,6 +793,24 @@ pub struct TakeItemActor {
 impl TakeItemActor {
     pub const ID: u32 = 17;
 }
+impl wire::Encode for TakeItemActor {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.item_runtime_id.encode(writer);
+        self.actor_runtime_id.encode(writer);
+    }
+}
+
+impl wire::Decode for TakeItemActor {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let item_runtime_id = <ActorRuntimeID as wire::Decode>::decode(reader)?;
+        let actor_runtime_id = <ActorRuntimeID as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            item_runtime_id,
+            actor_runtime_id,
+        })
+    }
+}
+
 /// MoveActorAbsolute is sent by the server to move an entity to an absolute position. It is
 /// typically used for movements where high accuracy isn't needed, such as for long range
 /// teleporting.
@@ -325,6 +822,21 @@ pub struct MoveActorAbsolute {
 impl MoveActorAbsolute {
     pub const ID: u32 = 18;
 }
+impl wire::Encode for MoveActorAbsolute {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.move_data.encode(writer);
+    }
+}
+
+impl wire::Decode for MoveActorAbsolute {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let move_data = <MoveActorAbsoluteData as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            move_data,
+        })
+    }
+}
+
 /// MovePlayer is sent by players to send their movement to the server, and by the server to update
 /// the movement of player entities to other players.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -350,6 +862,57 @@ pub struct MovePlayer {
 impl MovePlayer {
     pub const ID: u32 = 19;
 }
+impl wire::Encode for MovePlayer {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.player_runtime_id.encode(writer);
+        self.position.encode(writer);
+        self.rotation.encode(writer);
+        self.y_head_rotation.encode(writer);
+        self.position_mode.encode(writer);
+        self.on_ground.encode(writer);
+        self.riding_runtime_id.encode(writer);
+        match &self.teleport_data {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+        self.tick.encode(writer);
+    }
+}
+
+impl wire::Decode for MovePlayer {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let player_runtime_id = <ActorRuntimeID as wire::Decode>::decode(reader)?;
+        let position = <glam::Vec3 as wire::Decode>::decode(reader)?;
+        let rotation = <glam::Vec2 as wire::Decode>::decode(reader)?;
+        let y_head_rotation = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let position_mode = <PlayerPositionModeComponentPositionMode as wire::Decode>::decode(reader)?;
+        let on_ground = <bool as wire::Decode>::decode(reader)?;
+        let riding_runtime_id = <ActorRuntimeID as wire::Decode>::decode(reader)?;
+        let teleport_data = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<MovePlayerTeleportData as wire::Decode>::decode(reader)?)
+            }
+        };
+        let tick = <PlayerInputTick as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            player_runtime_id,
+            position,
+            rotation,
+            y_head_rotation,
+            position_mode,
+            on_ground,
+            riding_runtime_id,
+            teleport_data,
+            tick,
+        })
+    }
+}
+
 /// UpdateBlock is sent by the server to update a block client-side, without resending the entire
 /// chunk that the block is located in. It is particularly useful for small modifications like block
 /// breaking/placing.
@@ -373,6 +936,30 @@ pub struct UpdateBlock {
 impl UpdateBlock {
     pub const ID: u32 = 21;
 }
+impl wire::Encode for UpdateBlock {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.block_position.encode(writer);
+        self.block_runtime_id.encode(writer);
+        self.flags.encode(writer);
+        self.layer.encode(writer);
+    }
+}
+
+impl wire::Decode for UpdateBlock {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let block_position = <BlockPos as wire::Decode>::decode(reader)?;
+        let block_runtime_id = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let flags = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let layer = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            block_position,
+            block_runtime_id,
+            flags,
+            layer,
+        })
+    }
+}
+
 /// AddPainting is sent by the server to the client to make a painting entity show up. It is one of
 /// the few entities that cannot be sent using the AddActor packet.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -390,6 +977,33 @@ pub struct AddPainting {
 impl AddPainting {
     pub const ID: u32 = 22;
 }
+impl wire::Encode for AddPainting {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.target_actor_id.encode(writer);
+        self.target_runtime_id.encode(writer);
+        self.position.encode(writer);
+        self.direction.encode(writer);
+        self.motif.encode(writer);
+    }
+}
+
+impl wire::Decode for AddPainting {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let target_actor_id = <ActorUniqueID as wire::Decode>::decode(reader)?;
+        let target_runtime_id = <ActorRuntimeID as wire::Decode>::decode(reader)?;
+        let position = <glam::Vec3 as wire::Decode>::decode(reader)?;
+        let direction = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let motif = <String as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            target_actor_id,
+            target_runtime_id,
+            position,
+            direction,
+            motif,
+        })
+    }
+}
+
 /// LevelEvent is sent by the server to make a certain event in the level occur. It ranges from
 /// particles, to sounds, and other events such as starting rain and block breaking.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -408,6 +1022,27 @@ pub struct LevelEvent {
 impl LevelEvent {
     pub const ID: u32 = 25;
 }
+impl wire::Encode for LevelEvent {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.event_id.encode(writer);
+        self.position.encode(writer);
+        self.data.encode(writer);
+    }
+}
+
+impl wire::Decode for LevelEvent {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let event_id = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let position = <glam::Vec3 as wire::Decode>::decode(reader)?;
+        let data = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            event_id,
+            position,
+            data,
+        })
+    }
+}
+
 /// BlockEvent is sent by the server to initiate a certain event that has something to do with
 /// blocks in specific, for example opening a chest.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -425,6 +1060,27 @@ pub struct BlockEvent {
 impl BlockEvent {
     pub const ID: u32 = 26;
 }
+impl wire::Encode for BlockEvent {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.block_position.encode(writer);
+        self.event_type.encode(writer);
+        self.event_value.encode(writer);
+    }
+}
+
+impl wire::Decode for BlockEvent {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let block_position = <BlockPos as wire::Decode>::decode(reader)?;
+        let event_type = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let event_value = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            block_position,
+            event_type,
+            event_value,
+        })
+    }
+}
+
 /// ActorEvent is sent by the server when a particular event happens that has to do with an entity.
 /// Some of these events are entity-specific, for example a wolf shaking itself dry, but others are
 /// used for each entity, such as dying.
@@ -442,6 +1098,42 @@ pub struct ActorEvent {
 impl ActorEvent {
     pub const ID: u32 = 27;
 }
+impl wire::Encode for ActorEvent {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.target_runtime_id.encode(writer);
+        self.event_id.encode(writer);
+        self.data.encode(writer);
+        match &self.fire_at_position {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+    }
+}
+
+impl wire::Decode for ActorEvent {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let target_runtime_id = <ActorRuntimeID as wire::Decode>::decode(reader)?;
+        let event_id = <ActorEventType as wire::Decode>::decode(reader)?;
+        let data = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let fire_at_position = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<glam::Vec3 as wire::Decode>::decode(reader)?)
+            }
+        };
+        Ok(Self {
+            target_runtime_id,
+            event_id,
+            data,
+            fire_at_position,
+        })
+    }
+}
+
 /// MobEffect is sent by the server to apply an effect to the player, for example an effect like
 /// poison. It may also be used to modify existing effects, or removing them completely.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -463,6 +1155,42 @@ pub struct MobEffect {
 impl MobEffect {
     pub const ID: u32 = 28;
 }
+impl wire::Encode for MobEffect {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.target_runtime_id.encode(writer);
+        self.event_id.encode(writer);
+        self.effect_id.encode(writer);
+        self.effect_amplifier.encode(writer);
+        self.show_particles.encode(writer);
+        self.effect_duration_ticks.encode(writer);
+        self.tick.encode(writer);
+        self.ambient.encode(writer);
+    }
+}
+
+impl wire::Decode for MobEffect {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let target_runtime_id = <ActorRuntimeID as wire::Decode>::decode(reader)?;
+        let event_id = <MobEffectEvent as wire::Decode>::decode(reader)?;
+        let effect_id = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let effect_amplifier = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let show_particles = <bool as wire::Decode>::decode(reader)?;
+        let effect_duration_ticks = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let tick = <PlayerInputTick as wire::Decode>::decode(reader)?;
+        let ambient = <bool as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            target_runtime_id,
+            event_id,
+            effect_id,
+            effect_amplifier,
+            show_particles,
+            effect_duration_ticks,
+            tick,
+            ambient,
+        })
+    }
+}
+
 /// UpdateAttributes is sent by the server to update an amount of attributes of any entity in the
 /// world. These attributes include ones such as the health or the movement speed of the entity.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -477,6 +1205,27 @@ pub struct UpdateAttributes {
 impl UpdateAttributes {
     pub const ID: u32 = 29;
 }
+impl wire::Encode for UpdateAttributes {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.target_runtime_id.encode(writer);
+        wire::encode_collection(writer, self.attribute_list.as_slice());
+        self.tick.encode(writer);
+    }
+}
+
+impl wire::Decode for UpdateAttributes {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let target_runtime_id = <ActorRuntimeID as wire::Decode>::decode(reader)?;
+        let attribute_list = wire::decode_collection::<AttributeData>(reader, 26, wire::MAX_COLLECTION_ELEMENTS)?;
+        let tick = <PlayerInputTick as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            target_runtime_id,
+            attribute_list,
+            tick,
+        })
+    }
+}
+
 /// InventoryTransaction is a packet sent by the client. It essentially exists out of multiple
 /// sub-packets, each of which have something to do with the inventory in one way or another. Some
 /// of these sub-packets directly relate to the inventory, others relate to interaction with the
@@ -503,6 +1252,51 @@ pub struct InventoryTransaction {
 impl InventoryTransaction {
     pub const ID: u32 = 30;
 }
+impl wire::Encode for InventoryTransaction {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.legacy_request_id.encode(writer);
+        match &self.legacy_set_item_slots {
+            Some(value) => {
+                writer.write_u8(1);
+                wire::encode_collection(writer, value.as_slice());
+            }
+            None => writer.write_u8(0),
+        }
+        match &self.transaction {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+    }
+}
+
+impl wire::Decode for InventoryTransaction {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let legacy_request_id = <ItemStackLegacyRequestID as wire::Decode>::decode(reader)?;
+        let legacy_set_item_slots = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(wire::decode_collection::<LegacySetSlot>(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?)
+            }
+        };
+        let transaction = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<InventoryTransactionValue as wire::Decode>::decode(reader)?)
+            }
+        };
+        Ok(Self {
+            legacy_request_id,
+            legacy_set_item_slots,
+            transaction,
+        })
+    }
+}
+
 /// MobEquipment is sent by the client to the server and the server to the client to make the other
 /// side aware of the new item that an entity is holding. It is used to show the item in the hand of
 /// entities such as zombies too.
@@ -518,6 +1312,33 @@ pub struct MobEquipment {
 impl MobEquipment {
     pub const ID: u32 = 31;
 }
+impl wire::Encode for MobEquipment {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.target_runtime_id.encode(writer);
+        self.item.encode(writer);
+        self.slot.encode(writer);
+        self.selected_slot.encode(writer);
+        self.container_id.encode(writer);
+    }
+}
+
+impl wire::Decode for MobEquipment {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let target_runtime_id = <ActorRuntimeID as wire::Decode>::decode(reader)?;
+        let item = <NetworkItemStackDescriptorSerializedData as wire::Decode>::decode(reader)?;
+        let slot = <wire::U8 as wire::Decode>::decode(reader)?;
+        let selected_slot = <wire::U8 as wire::Decode>::decode(reader)?;
+        let container_id = <wire::U8 as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            target_runtime_id,
+            item,
+            slot,
+            selected_slot,
+            container_id,
+        })
+    }
+}
+
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct MobArmorEquipment {
     pub target_runtime_id: ActorRuntimeID,
@@ -531,6 +1352,36 @@ pub struct MobArmorEquipment {
 impl MobArmorEquipment {
     pub const ID: u32 = 32;
 }
+impl wire::Encode for MobArmorEquipment {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.target_runtime_id.encode(writer);
+        self.head.encode(writer);
+        self.torso.encode(writer);
+        self.legs.encode(writer);
+        self.feet.encode(writer);
+        self.body.encode(writer);
+    }
+}
+
+impl wire::Decode for MobArmorEquipment {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let target_runtime_id = <ActorRuntimeID as wire::Decode>::decode(reader)?;
+        let head = <NetworkItemStackDescriptorSerializedData as wire::Decode>::decode(reader)?;
+        let torso = <NetworkItemStackDescriptorSerializedData as wire::Decode>::decode(reader)?;
+        let legs = <NetworkItemStackDescriptorSerializedData as wire::Decode>::decode(reader)?;
+        let feet = <NetworkItemStackDescriptorSerializedData as wire::Decode>::decode(reader)?;
+        let body = <NetworkItemStackDescriptorSerializedData as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            target_runtime_id,
+            head,
+            torso,
+            legs,
+            feet,
+            body,
+        })
+    }
+}
+
 /// Interact is sent by the client when it interacts with another entity in some way. It used to be
 /// used for normal entity and block interaction, but this is no longer the case now.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -548,6 +1399,39 @@ pub struct Interact {
 impl Interact {
     pub const ID: u32 = 33;
 }
+impl wire::Encode for Interact {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.action.encode(writer);
+        self.target_runtime_id.encode(writer);
+        match &self.position {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+    }
+}
+
+impl wire::Decode for Interact {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let action = <InteractAction as wire::Decode>::decode(reader)?;
+        let target_runtime_id = <ActorRuntimeID as wire::Decode>::decode(reader)?;
+        let position = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<glam::Vec3 as wire::Decode>::decode(reader)?)
+            }
+        };
+        Ok(Self {
+            action,
+            target_runtime_id,
+            position,
+        })
+    }
+}
+
 /// BlockPickRequest is sent by the client when it requests to pick a block in the world and place
 /// its item in their inventory.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -562,6 +1446,27 @@ pub struct BlockPickRequest {
 impl BlockPickRequest {
     pub const ID: u32 = 34;
 }
+impl wire::Encode for BlockPickRequest {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.position.encode(writer);
+        self.with_data.encode(writer);
+        self.max_slots.encode(writer);
+    }
+}
+
+impl wire::Decode for BlockPickRequest {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let position = <BlockPos as wire::Decode>::decode(reader)?;
+        let with_data = <bool as wire::Decode>::decode(reader)?;
+        let max_slots = <wire::U8 as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            position,
+            with_data,
+            max_slots,
+        })
+    }
+}
+
 /// ActorPickRequest is sent by the client when it tries to pick an entity, so that it gets a spawn
 /// egg which can spawn that entity.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -575,6 +1480,27 @@ pub struct ActorPickRequest {
 impl ActorPickRequest {
     pub const ID: u32 = 35;
 }
+impl wire::Encode for ActorPickRequest {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.actor_id.encode(writer);
+        self.max_slots.encode(writer);
+        self.with_data.encode(writer);
+    }
+}
+
+impl wire::Decode for ActorPickRequest {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let actor_id = <wire::I64LE as wire::Decode>::decode(reader)?;
+        let max_slots = <wire::U8 as wire::Decode>::decode(reader)?;
+        let with_data = <bool as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            actor_id,
+            max_slots,
+            with_data,
+        })
+    }
+}
+
 /// PlayerAction is sent by the client when it executes any action, for example starting to sprint,
 /// swim, starting the breaking of a block, dropping an item, etc.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -591,6 +1517,33 @@ pub struct PlayerAction {
 impl PlayerAction {
     pub const ID: u32 = 36;
 }
+impl wire::Encode for PlayerAction {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.player_runtime_id.encode(writer);
+        self.action.encode(writer);
+        self.block_position.encode(writer);
+        self.result_pos.encode(writer);
+        self.face.encode(writer);
+    }
+}
+
+impl wire::Decode for PlayerAction {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let player_runtime_id = <ActorRuntimeID as wire::Decode>::decode(reader)?;
+        let action = <PlayerActionType as wire::Decode>::decode(reader)?;
+        let block_position = <BlockPos as wire::Decode>::decode(reader)?;
+        let result_pos = <BlockPos as wire::Decode>::decode(reader)?;
+        let face = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            player_runtime_id,
+            action,
+            block_position,
+            result_pos,
+            face,
+        })
+    }
+}
+
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct HurtArmor {
     pub cause: wire::ZigZag32,
@@ -601,6 +1554,27 @@ pub struct HurtArmor {
 impl HurtArmor {
     pub const ID: u32 = 38;
 }
+impl wire::Encode for HurtArmor {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.cause.encode(writer);
+        self.damage.encode(writer);
+        self.armor_slots.encode(writer);
+    }
+}
+
+impl wire::Decode for HurtArmor {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let cause = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let damage = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let armor_slots = <wire::VarULong as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            cause,
+            damage,
+            armor_slots,
+        })
+    }
+}
+
 /// SetActorData is sent by the server to update the entity metadata of an entity. It includes flags
 /// such as if the entity is on fire, but also properties such as the air it has left until it
 /// starts drowning.
@@ -617,6 +1591,30 @@ pub struct SetActorData {
 impl SetActorData {
     pub const ID: u32 = 39;
 }
+impl wire::Encode for SetActorData {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.target_runtime_id.encode(writer);
+        self.actor_data.encode(writer);
+        self.synched_properties.encode(writer);
+        self.tick.encode(writer);
+    }
+}
+
+impl wire::Decode for SetActorData {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let target_runtime_id = <ActorRuntimeID as wire::Decode>::decode(reader)?;
+        let actor_data = <SynchedActorDataCopyableDataList as wire::Decode>::decode(reader)?;
+        let synched_properties = <PropertySyncData as wire::Decode>::decode(reader)?;
+        let tick = <PlayerInputTick as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            target_runtime_id,
+            actor_data,
+            synched_properties,
+            tick,
+        })
+    }
+}
+
 /// SetActorMotion is sent by the server to change the client-side velocity of an entity. It is
 /// usually used in combination with server-side movement calculation.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -631,6 +1629,27 @@ pub struct SetActorMotion {
 impl SetActorMotion {
     pub const ID: u32 = 40;
 }
+impl wire::Encode for SetActorMotion {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.target_runtime_id.encode(writer);
+        self.motion.encode(writer);
+        self.tick.encode(writer);
+    }
+}
+
+impl wire::Decode for SetActorMotion {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let target_runtime_id = <ActorRuntimeID as wire::Decode>::decode(reader)?;
+        let motion = <glam::Vec3 as wire::Decode>::decode(reader)?;
+        let tick = <PlayerInputTick as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            target_runtime_id,
+            motion,
+            tick,
+        })
+    }
+}
+
 /// SetActorLink is sent by the server to initiate an entity link client-side, meaning one entity
 /// will start riding another.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -644,6 +1663,21 @@ pub struct SetActorLink {
 impl SetActorLink {
     pub const ID: u32 = 41;
 }
+impl wire::Encode for SetActorLink {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.link.encode(writer);
+    }
+}
+
+impl wire::Decode for SetActorLink {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let link = <EntityLink as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            link,
+        })
+    }
+}
+
 /// SetHealth is sent by the server. It sets the health of the player it is sent to. The SetHealth
 /// packet should no longer be used. Instead, the health attribute should be used so that the health
 /// and maximum health may be changed directly.
@@ -656,6 +1690,21 @@ pub struct SetHealth {
 impl SetHealth {
     pub const ID: u32 = 42;
 }
+impl wire::Encode for SetHealth {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.health.encode(writer);
+    }
+}
+
+impl wire::Decode for SetHealth {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let health = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            health,
+        })
+    }
+}
+
 /// SetSpawnPosition is sent by the server to update the spawn position of a player, for example
 /// when sleeping in a bed.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -669,6 +1718,30 @@ pub struct SetSpawnPosition {
 impl SetSpawnPosition {
     pub const ID: u32 = 43;
 }
+impl wire::Encode for SetSpawnPosition {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.spawn_position_type.encode(writer);
+        self.block_position.encode(writer);
+        self.dimension_type.encode(writer);
+        self.spawn_block_pos.encode(writer);
+    }
+}
+
+impl wire::Decode for SetSpawnPosition {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let spawn_position_type = <SpawnPositionType as wire::Decode>::decode(reader)?;
+        let block_position = <BlockPos as wire::Decode>::decode(reader)?;
+        let dimension_type = <DimensionType as wire::Decode>::decode(reader)?;
+        let spawn_block_pos = <BlockPos as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            spawn_position_type,
+            block_position,
+            dimension_type,
+            spawn_block_pos,
+        })
+    }
+}
+
 /// Animate is sent by the server to send a player animation from one player to all viewers of that
 /// player. It is used for a couple of actions, such as arm swimming and critical hits.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -686,6 +1759,42 @@ pub struct Animate {
 impl Animate {
     pub const ID: u32 = 44;
 }
+impl wire::Encode for Animate {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.action.encode(writer);
+        self.target_actor_runtime_id.encode(writer);
+        self.data.encode(writer);
+        match &self.swing_source {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+    }
+}
+
+impl wire::Decode for Animate {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let action = <AnimateAction as wire::Decode>::decode(reader)?;
+        let target_actor_runtime_id = <ActorRuntimeID as wire::Decode>::decode(reader)?;
+        let data = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let swing_source = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<String as wire::Decode>::decode(reader)?)
+            }
+        };
+        Ok(Self {
+            action,
+            target_actor_runtime_id,
+            data,
+            swing_source,
+        })
+    }
+}
+
 /// Respawn is sent by the server to make a player respawn client-side. It is sent in response to a
 /// PlayerAction packet with ActionType PlayerActionRespawn. As of 1.13, the server sends two of
 /// these packets with different states, and the client sends one of these back in order to complete
@@ -704,6 +1813,27 @@ pub struct Respawn {
 impl Respawn {
     pub const ID: u32 = 45;
 }
+impl wire::Encode for Respawn {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.position.encode(writer);
+        self.state.encode(writer);
+        self.player_runtime_id.encode(writer);
+    }
+}
+
+impl wire::Decode for Respawn {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let position = <glam::Vec3 as wire::Decode>::decode(reader)?;
+        let state = <PlayerRespawnState as wire::Decode>::decode(reader)?;
+        let player_runtime_id = <ActorRuntimeID as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            position,
+            state,
+            player_runtime_id,
+        })
+    }
+}
+
 /// ContainerOpen is sent by the server to open a container client-side. This container must be
 /// physically present in the world, for the packet to have any effect. Unlike Java Edition, Bedrock
 /// Edition requires that chests for example must be present and in range to open its inventory.
@@ -721,6 +1851,30 @@ pub struct ContainerOpen {
 impl ContainerOpen {
     pub const ID: u32 = 46;
 }
+impl wire::Encode for ContainerOpen {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.container_id.encode(writer);
+        self.container_type.encode(writer);
+        self.position.encode(writer);
+        self.target_actor_id.encode(writer);
+    }
+}
+
+impl wire::Decode for ContainerOpen {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let container_id = <wire::U8 as wire::Decode>::decode(reader)?;
+        let container_type = <wire::U8 as wire::Decode>::decode(reader)?;
+        let position = <BlockPos as wire::Decode>::decode(reader)?;
+        let target_actor_id = <ActorUniqueID as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            container_id,
+            container_type,
+            position,
+            target_actor_id,
+        })
+    }
+}
+
 /// ContainerClose is sent by the server to close a container the player currently has opened, which
 /// was opened using the ContainerOpen packet, or by the client to tell the server it closed a
 /// particular container, such as the crafting grid.
@@ -736,6 +1890,27 @@ pub struct ContainerClose {
 impl ContainerClose {
     pub const ID: u32 = 47;
 }
+impl wire::Encode for ContainerClose {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.container_id.encode(writer);
+        self.container_type.encode(writer);
+        self.server_initiated_close.encode(writer);
+    }
+}
+
+impl wire::Decode for ContainerClose {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let container_id = <wire::U8 as wire::Decode>::decode(reader)?;
+        let container_type = <wire::U8 as wire::Decode>::decode(reader)?;
+        let server_initiated_close = <bool as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            container_id,
+            container_type,
+            server_initiated_close,
+        })
+    }
+}
+
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PlayerHotbar {
     pub selected_slot: wire::VarUInt,
@@ -746,6 +1921,27 @@ pub struct PlayerHotbar {
 impl PlayerHotbar {
     pub const ID: u32 = 48;
 }
+impl wire::Encode for PlayerHotbar {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.selected_slot.encode(writer);
+        self.container_id.encode(writer);
+        self.should_select_slot.encode(writer);
+    }
+}
+
+impl wire::Decode for PlayerHotbar {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let selected_slot = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let container_id = <wire::U8 as wire::Decode>::decode(reader)?;
+        let should_select_slot = <bool as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            selected_slot,
+            container_id,
+            should_select_slot,
+        })
+    }
+}
+
 /// InventoryContent is sent by the server to update the full content of a particular inventory. It
 /// is usually sent for the main inventory of the player, but also works for other inventories that
 /// are currently opened by the player.
@@ -769,6 +1965,30 @@ pub struct InventoryContent {
 impl InventoryContent {
     pub const ID: u32 = 49;
 }
+impl wire::Encode for InventoryContent {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.container_id.encode(writer);
+        wire::encode_collection(writer, self.slots.as_slice());
+        self.full_container_name.encode(writer);
+        self.storage_item.encode(writer);
+    }
+}
+
+impl wire::Decode for InventoryContent {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let container_id = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let slots = wire::decode_collection::<NetworkItemStackDescriptorSerializedData>(reader, 8, wire::MAX_COLLECTION_ELEMENTS)?;
+        let full_container_name = <FullContainerName as wire::Decode>::decode(reader)?;
+        let storage_item = <NetworkItemStackDescriptorSerializedData as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            container_id,
+            slots,
+            full_container_name,
+            storage_item,
+        })
+    }
+}
+
 /// InventorySlot is sent by the server to update a single slot in one of the inventory windows that
 /// the client currently has opened. Usually this is the main inventory, but it may also be the off
 /// hand or, for example, a chest inventory.
@@ -797,6 +2017,57 @@ pub struct InventorySlot {
 impl InventorySlot {
     pub const ID: u32 = 50;
 }
+impl wire::Encode for InventorySlot {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.container_id.encode(writer);
+        self.slot.encode(writer);
+        match &self.full_container_name {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+        match &self.storage_item {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+        self.item.encode(writer);
+    }
+}
+
+impl wire::Decode for InventorySlot {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let container_id = <wire::U8 as wire::Decode>::decode(reader)?;
+        let slot = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let full_container_name = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<FullContainerName as wire::Decode>::decode(reader)?)
+            }
+        };
+        let storage_item = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<NetworkItemStackDescriptorSerializedData as wire::Decode>::decode(reader)?)
+            }
+        };
+        let item = <NetworkItemStackDescriptorSerializedData as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            container_id,
+            slot,
+            full_container_name,
+            storage_item,
+            item,
+        })
+    }
+}
+
 /// ContainerSetData is sent by the server to update specific data of a single container, meaning a
 /// block such as a furnace or a brewing stand. This data is usually used by the client to display
 /// certain features client-side.
@@ -811,6 +2082,27 @@ pub struct ContainerSetData {
 impl ContainerSetData {
     pub const ID: u32 = 51;
 }
+impl wire::Encode for ContainerSetData {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.container_id.encode(writer);
+        self.id.encode(writer);
+        self.value.encode(writer);
+    }
+}
+
+impl wire::Decode for ContainerSetData {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let container_id = <wire::U8 as wire::Decode>::decode(reader)?;
+        let id = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let value = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            container_id,
+            id,
+            value,
+        })
+    }
+}
+
 /// CraftingData is sent by the server to let the client know all crafting data that the server
 /// maintains. This includes shapeless crafting, crafting table recipes, furnace recipes etc. Each
 /// crafting station's recipes are included in it.
@@ -843,6 +2135,54 @@ pub struct CraftingData {
 impl CraftingData {
     pub const ID: u32 = 52;
 }
+impl wire::Encode for CraftingData {
+    fn encode(&self, writer: &mut wire::Writer) {
+        wire::encode_collection(writer, self.shaped_recipes.as_slice());
+        wire::encode_collection(writer, self.shapeless_recipes.as_slice());
+        wire::encode_collection(writer, self.multi_recipes.as_slice());
+        wire::encode_collection(writer, self.user_data_shapeless_recipes.as_slice());
+        wire::encode_collection(writer, self.shapeless_chemistry_recipes.as_slice());
+        wire::encode_collection(writer, self.shaped_chemistry_recipes.as_slice());
+        wire::encode_collection(writer, self.smithing_transform_recipes.as_slice());
+        wire::encode_collection(writer, self.smithing_trim_recipes.as_slice());
+        wire::encode_collection(writer, self.potion_mixes.as_slice());
+        wire::encode_collection(writer, self.container_mixes.as_slice());
+        wire::encode_collection(writer, self.material_reducers.as_slice());
+        self.clear_recipes.encode(writer);
+    }
+}
+
+impl wire::Decode for CraftingData {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let shaped_recipes = wire::decode_collection::<ShapedRecipe>(reader, 26, wire::MAX_COLLECTION_ELEMENTS)?;
+        let shapeless_recipes = wire::decode_collection::<ShapelessRecipe>(reader, 23, wire::MAX_COLLECTION_ELEMENTS)?;
+        let multi_recipes = wire::decode_collection::<MultiRecipe>(reader, 17, wire::MAX_COLLECTION_ELEMENTS)?;
+        let user_data_shapeless_recipes = wire::decode_collection::<ShapelessRecipe>(reader, 23, wire::MAX_COLLECTION_ELEMENTS)?;
+        let shapeless_chemistry_recipes = wire::decode_collection::<ShapelessRecipe>(reader, 23, wire::MAX_COLLECTION_ELEMENTS)?;
+        let shaped_chemistry_recipes = wire::decode_collection::<ShapedRecipe>(reader, 26, wire::MAX_COLLECTION_ELEMENTS)?;
+        let smithing_transform_recipes = wire::decode_collection::<SmithingTransformRecipe>(reader, 18, wire::MAX_COLLECTION_ELEMENTS)?;
+        let smithing_trim_recipes = wire::decode_collection::<SmithingTrimRecipe>(reader, 12, wire::MAX_COLLECTION_ELEMENTS)?;
+        let potion_mixes = wire::decode_collection::<PotionMixDataEntry>(reader, 6, wire::MAX_COLLECTION_ELEMENTS)?;
+        let container_mixes = wire::decode_collection::<ContainerMixDataEntry>(reader, 3, wire::MAX_COLLECTION_ELEMENTS)?;
+        let material_reducers = wire::decode_collection::<MaterialReducerDataEntry>(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?;
+        let clear_recipes = <bool as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            shaped_recipes,
+            shapeless_recipes,
+            multi_recipes,
+            user_data_shapeless_recipes,
+            shapeless_chemistry_recipes,
+            shaped_chemistry_recipes,
+            smithing_transform_recipes,
+            smithing_trim_recipes,
+            potion_mixes,
+            container_mixes,
+            material_reducers,
+            clear_recipes,
+        })
+    }
+}
+
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct GuiDataPickItem {
     pub item_name: String,
@@ -853,6 +2193,27 @@ pub struct GuiDataPickItem {
 impl GuiDataPickItem {
     pub const ID: u32 = 54;
 }
+impl wire::Encode for GuiDataPickItem {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.item_name.encode(writer);
+        self.item_effect_name.encode(writer);
+        self.slot.encode(writer);
+    }
+}
+
+impl wire::Decode for GuiDataPickItem {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let item_name = <String as wire::Decode>::decode(reader)?;
+        let item_effect_name = <String as wire::Decode>::decode(reader)?;
+        let slot = <wire::I32LE as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            item_name,
+            item_effect_name,
+            slot,
+        })
+    }
+}
+
 /// BlockActorData is sent by the server to update data of a block entity client-side, for example
 /// the data of a chest.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -864,6 +2225,24 @@ pub struct BlockActorData {
 impl BlockActorData {
     pub const ID: u32 = 56;
 }
+impl wire::Encode for BlockActorData {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.block_position.encode(writer);
+        self.actor_data_tags.encode(writer);
+    }
+}
+
+impl wire::Decode for BlockActorData {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let block_position = <BlockPos as wire::Decode>::decode(reader)?;
+        let actor_data_tags = <wire::NetworkNbt as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            block_position,
+            actor_data_tags,
+        })
+    }
+}
+
 /// LevelChunk is sent by the server to provide the client with a chunk of a world data (16xYx16
 /// blocks). Typically, a certain amount of chunks is sent to the client before sending it the spawn
 /// PlayStatus packet, so that the client spawns in a loaded world.
@@ -887,6 +2266,51 @@ pub struct LevelChunk {
 impl LevelChunk {
     pub const ID: u32 = 58;
 }
+impl wire::Encode for LevelChunk {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.chunk_position.encode(writer);
+        self.dimension_id.encode(writer);
+        self.sub_chunks_count.encode(writer);
+        match &self.client_request_sub_chunk_limit {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+        self.cache_enabled.encode(writer);
+        wire::encode_collection(writer, self.cache_metadata.as_slice());
+        self.serialized_chunk_data.encode(writer);
+    }
+}
+
+impl wire::Decode for LevelChunk {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let chunk_position = <ChunkPos as wire::Decode>::decode(reader)?;
+        let dimension_id = <DimensionType as wire::Decode>::decode(reader)?;
+        let sub_chunks_count = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let client_request_sub_chunk_limit = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::ZigZag32 as wire::Decode>::decode(reader)?)
+            }
+        };
+        let cache_enabled = <bool as wire::Decode>::decode(reader)?;
+        let cache_metadata = wire::decode_collection::<SubChunkMetadata>(reader, 8, wire::MAX_COLLECTION_ELEMENTS)?;
+        let serialized_chunk_data = <bytes::Bytes as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            chunk_position,
+            dimension_id,
+            sub_chunks_count,
+            client_request_sub_chunk_limit,
+            cache_enabled,
+            cache_metadata,
+            serialized_chunk_data,
+        })
+    }
+}
+
 /// SetCommandsEnabled is sent by the server to enable or disable the ability to execute commands
 /// for the client. If disabled, the client itself will stop the execution of commands.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -898,6 +2322,21 @@ pub struct SetCommandsEnabled {
 impl SetCommandsEnabled {
     pub const ID: u32 = 59;
 }
+impl wire::Encode for SetCommandsEnabled {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.commands_enabled.encode(writer);
+    }
+}
+
+impl wire::Decode for SetCommandsEnabled {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let commands_enabled = <bool as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            commands_enabled,
+        })
+    }
+}
+
 /// SetDifficulty is sent by the server to update the client-side difficulty of the client. The
 /// actual effect of this packet on the client isn't very significant, as the difficulty is handled
 /// server-side.
@@ -910,6 +2349,21 @@ pub struct SetDifficulty {
 impl SetDifficulty {
     pub const ID: u32 = 60;
 }
+impl wire::Encode for SetDifficulty {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.difficulty.encode(writer);
+    }
+}
+
+impl wire::Decode for SetDifficulty {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let difficulty = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            difficulty,
+        })
+    }
+}
+
 /// ChangeDimension is sent by the server to the client to send a dimension change screen
 /// client-side. Once the screen is cleared client-side, the client will send a PlayerAction packet
 /// with PlayerActionDimensionChangeDone.
@@ -934,6 +2388,42 @@ pub struct ChangeDimension {
 impl ChangeDimension {
     pub const ID: u32 = 61;
 }
+impl wire::Encode for ChangeDimension {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.dimension_id.encode(writer);
+        self.position.encode(writer);
+        self.respawn.encode(writer);
+        match &self.loading_screen_id {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+    }
+}
+
+impl wire::Decode for ChangeDimension {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let dimension_id = <DimensionType as wire::Decode>::decode(reader)?;
+        let position = <glam::Vec3 as wire::Decode>::decode(reader)?;
+        let respawn = <bool as wire::Decode>::decode(reader)?;
+        let loading_screen_id = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::U32LE as wire::Decode>::decode(reader)?)
+            }
+        };
+        Ok(Self {
+            dimension_id,
+            position,
+            respawn,
+            loading_screen_id,
+        })
+    }
+}
+
 /// SetPlayerGameType is sent by the server to update the game type, which is otherwise known as the
 /// game mode, of a player.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -944,6 +2434,21 @@ pub struct SetPlayerGameType {
 impl SetPlayerGameType {
     pub const ID: u32 = 62;
 }
+impl wire::Encode for SetPlayerGameType {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.player_game_type.encode(writer);
+    }
+}
+
+impl wire::Decode for SetPlayerGameType {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let player_game_type = <GameType as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            player_game_type,
+        })
+    }
+}
+
 /// PlayerList is sent by the server to update the client-side player list in the in-game menu
 /// screen. It shows the icon of each player if the correct XUID is written in the packet. Sending
 /// the PlayerList packet is obligatory when sending an AddPlayer packet. The added player will not
@@ -959,6 +2464,21 @@ pub struct PlayerList {
 impl PlayerList {
     pub const ID: u32 = 63;
 }
+impl wire::Encode for PlayerList {
+    fn encode(&self, writer: &mut wire::Writer) {
+        wire::encode_collection(writer, self.entries.as_slice());
+    }
+}
+
+impl wire::Decode for PlayerList {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let entries = wire::decode_collection::<PlayerListData>(reader, 17, wire::MAX_COLLECTION_ELEMENTS)?;
+        Ok(Self {
+            entries,
+        })
+    }
+}
+
 /// SimpleEvent is used for enabling or disabling commands and for unlocking world template settings
 /// (both unlocking UI buttons on client and the actual setting on the server). This is fired from
 /// the client to the server and a SetCommandsEnabled is sent back when enabling commands.
@@ -970,6 +2490,21 @@ pub struct SimpleEvent {
 impl SimpleEvent {
     pub const ID: u32 = 64;
 }
+impl wire::Encode for SimpleEvent {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.type_.encode(writer);
+    }
+}
+
+impl wire::Decode for SimpleEvent {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let type_ = <Subtype as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            type_,
+        })
+    }
+}
+
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct LegacyTelemetryEvent {
     pub target_actor_id: ActorUniqueID,
@@ -981,6 +2516,30 @@ pub struct LegacyTelemetryEvent {
 impl LegacyTelemetryEvent {
     pub const ID: u32 = 65;
 }
+impl wire::Encode for LegacyTelemetryEvent {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.target_actor_id.encode(writer);
+        self.event_type.encode(writer);
+        self.use_player_id.encode(writer);
+        self.event_data.encode(writer);
+    }
+}
+
+impl wire::Decode for LegacyTelemetryEvent {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let target_actor_id = <ActorUniqueID as wire::Decode>::decode(reader)?;
+        let event_type = <LegacyTelemetryType as wire::Decode>::decode(reader)?;
+        let use_player_id = <bool as wire::Decode>::decode(reader)?;
+        let event_data = <EventData as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            target_actor_id,
+            event_type,
+            use_player_id,
+            event_data,
+        })
+    }
+}
+
 /// SpawnExperienceOrb is sent by the server to spawn an experience orb entity client-side. Much
 /// like the AddPainting packet, it is one of the few packets that spawn an entity without using the
 /// AddActor packet.
@@ -999,6 +2558,24 @@ pub struct SpawnExperienceOrb {
 impl SpawnExperienceOrb {
     pub const ID: u32 = 66;
 }
+impl wire::Encode for SpawnExperienceOrb {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.position.encode(writer);
+        self.xp_value.encode(writer);
+    }
+}
+
+impl wire::Decode for SpawnExperienceOrb {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let position = <glam::Vec3 as wire::Decode>::decode(reader)?;
+        let xp_value = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            position,
+            xp_value,
+        })
+    }
+}
+
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ClientboundMapItemData {
     pub map_id: ActorUniqueID,
@@ -1028,6 +2605,165 @@ pub struct ClientboundMapItemData {
 impl ClientboundMapItemData {
     pub const ID: u32 = 67;
 }
+impl wire::Encode for ClientboundMapItemData {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.map_id.encode(writer);
+        self.dimension.encode(writer);
+        self.is_locked.encode(writer);
+        self.map_origin.encode(writer);
+        match &self.creation_map_ids {
+            Some(value) => {
+                writer.write_u8(1);
+                wire::encode_collection(writer, value.as_slice());
+            }
+            None => writer.write_u8(0),
+        }
+        match &self.scale {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+        match &self.tracked_actor_ids {
+            Some(value) => {
+                writer.write_u8(1);
+                wire::encode_collection(writer, value.as_slice());
+            }
+            None => writer.write_u8(0),
+        }
+        match &self.decorations {
+            Some(value) => {
+                writer.write_u8(1);
+                wire::encode_collection(writer, value.as_slice());
+            }
+            None => writer.write_u8(0),
+        }
+        match &self.width {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+        match &self.height {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+        match &self.start_x {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+        match &self.start_y {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+        match &self.pixels {
+            Some(value) => {
+                writer.write_u8(1);
+                wire::encode_collection(writer, value.as_slice());
+            }
+            None => writer.write_u8(0),
+        }
+    }
+}
+
+impl wire::Decode for ClientboundMapItemData {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let map_id = <ActorUniqueID as wire::Decode>::decode(reader)?;
+        let dimension = <wire::U8 as wire::Decode>::decode(reader)?;
+        let is_locked = <bool as wire::Decode>::decode(reader)?;
+        let map_origin = <BlockPos as wire::Decode>::decode(reader)?;
+        let creation_map_ids = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(wire::decode_collection::<ActorUniqueID>(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?)
+            }
+        };
+        let scale = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::I8 as wire::Decode>::decode(reader)?)
+            }
+        };
+        let tracked_actor_ids = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(wire::decode_collection::<MapItemTrackedActorUniqueId>(reader, 6, wire::MAX_COLLECTION_ELEMENTS)?)
+            }
+        };
+        let decorations = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(wire::decode_collection::<MapDecoration>(reader, 9, wire::MAX_COLLECTION_ELEMENTS)?)
+            }
+        };
+        let width = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::ZigZag32 as wire::Decode>::decode(reader)?)
+            }
+        };
+        let height = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::ZigZag32 as wire::Decode>::decode(reader)?)
+            }
+        };
+        let start_x = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::ZigZag32 as wire::Decode>::decode(reader)?)
+            }
+        };
+        let start_y = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::ZigZag32 as wire::Decode>::decode(reader)?)
+            }
+        };
+        let pixels = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(wire::decode_collection::<wire::U32LE>(reader, 4, wire::MAX_COLLECTION_ELEMENTS)?)
+            }
+        };
+        Ok(Self {
+            map_id,
+            dimension,
+            is_locked,
+            map_origin,
+            creation_map_ids,
+            scale,
+            tracked_actor_ids,
+            decorations,
+            width,
+            height,
+            start_x,
+            start_y,
+            pixels,
+        })
+    }
+}
+
 /// MapInfoRequest is sent by the client to request the server to deliver information of a certain
 /// map in the inventory of the player. The server should respond with a ClientBoundMapItemData
 /// packet.
@@ -1040,6 +2776,24 @@ pub struct MapInfoRequest {
 impl MapInfoRequest {
     pub const ID: u32 = 68;
 }
+impl wire::Encode for MapInfoRequest {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.map_unique_id.encode(writer);
+        wire::encode_collection_u32le(writer, self.client_pixels_list.as_slice());
+    }
+}
+
+impl wire::Decode for MapInfoRequest {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let map_unique_id = <ActorUniqueID as wire::Decode>::decode(reader)?;
+        let client_pixels_list = wire::decode_collection_u32le::<PixelRequest>(reader, 6, wire::MAX_COLLECTION_ELEMENTS)?;
+        Ok(Self {
+            map_unique_id,
+            client_pixels_list,
+        })
+    }
+}
+
 /// RequestChunkRadius is sent by the client to the server to update the server on the chunk view
 /// radius that it has set in the settings. The server may respond with a ChunkRadiusUpdated packet
 /// with either the chunk radius requested, or a different chunk radius if the server chooses so.
@@ -1056,6 +2810,24 @@ pub struct RequestChunkRadius {
 impl RequestChunkRadius {
     pub const ID: u32 = 69;
 }
+impl wire::Encode for RequestChunkRadius {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.chunk_radius.encode(writer);
+        self.max_chunk_radius.encode(writer);
+    }
+}
+
+impl wire::Decode for RequestChunkRadius {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let chunk_radius = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let max_chunk_radius = <wire::U8 as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            chunk_radius,
+            max_chunk_radius,
+        })
+    }
+}
+
 /// ChunkRadiusUpdated is sent by the server in response to a RequestChunkRadius packet. It defines
 /// the chunk radius that the server allows the client to have. This may be lower than the chunk
 /// radius requested by the client in the RequestChunkRadius packet.
@@ -1069,6 +2841,21 @@ pub struct ChunkRadiusUpdated {
 impl ChunkRadiusUpdated {
     pub const ID: u32 = 70;
 }
+impl wire::Encode for ChunkRadiusUpdated {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.chunk_radius.encode(writer);
+    }
+}
+
+impl wire::Decode for ChunkRadiusUpdated {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let chunk_radius = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            chunk_radius,
+        })
+    }
+}
+
 /// GameRulesChanged is sent by the server to the client to update client-side game rules, such as
 /// game rules like the 'showCoordinates' game rule.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -1079,6 +2866,21 @@ pub struct GameRulesChanged {
 impl GameRulesChanged {
     pub const ID: u32 = 72;
 }
+impl wire::Encode for GameRulesChanged {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.rule_data.encode(writer);
+    }
+}
+
+impl wire::Decode for GameRulesChanged {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let rule_data = <GameRulesChangedData as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            rule_data,
+        })
+    }
+}
+
 /// Camera is sent by the server to use an Education Edition camera on a player. It produces an
 /// image client-side.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -1090,6 +2892,24 @@ pub struct Camera {
 impl Camera {
     pub const ID: u32 = 73;
 }
+impl wire::Encode for Camera {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.camera_id.encode(writer);
+        self.target_player_id.encode(writer);
+    }
+}
+
+impl wire::Decode for Camera {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let camera_id = <ActorUniqueID as wire::Decode>::decode(reader)?;
+        let target_player_id = <ActorUniqueID as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            camera_id,
+            target_player_id,
+        })
+    }
+}
+
 /// BossEvent is sent by the server to make a specific 'boss event' occur in the world. It includes
 /// features such as showing a boss bar to the player and turning the sky dark.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -1110,6 +2930,42 @@ pub struct BossEvent {
 impl BossEvent {
     pub const ID: u32 = 74;
 }
+impl wire::Encode for BossEvent {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.target_actor_id.encode(writer);
+        self.player_id.encode(writer);
+        self.event_type.encode(writer);
+        self.name.encode(writer);
+        self.filtered_name.encode(writer);
+        self.health_percent.encode(writer);
+        self.color.encode(writer);
+        self.overlay.encode(writer);
+    }
+}
+
+impl wire::Decode for BossEvent {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let target_actor_id = <ActorUniqueID as wire::Decode>::decode(reader)?;
+        let player_id = <ActorUniqueID as wire::Decode>::decode(reader)?;
+        let event_type = <BossEventUpdateType as wire::Decode>::decode(reader)?;
+        let name = <String as wire::Decode>::decode(reader)?;
+        let filtered_name = <String as wire::Decode>::decode(reader)?;
+        let health_percent = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let color = <BossBarColor as wire::Decode>::decode(reader)?;
+        let overlay = <BossBarOverlay as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            target_actor_id,
+            player_id,
+            event_type,
+            name,
+            filtered_name,
+            health_percent,
+            color,
+            overlay,
+        })
+    }
+}
+
 /// ShowCredits is sent by the server to show the Minecraft credits screen to the client. It is
 /// typically sent when the player beats the ender dragon and leaves the End.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -1123,6 +2979,24 @@ pub struct ShowCredits {
 impl ShowCredits {
     pub const ID: u32 = 75;
 }
+impl wire::Encode for ShowCredits {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.player_runtime_id.encode(writer);
+        self.credits_state.encode(writer);
+    }
+}
+
+impl wire::Decode for ShowCredits {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let player_runtime_id = <ActorRuntimeID as wire::Decode>::decode(reader)?;
+        let credits_state = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            player_runtime_id,
+            credits_state,
+        })
+    }
+}
+
 /// AvailableCommands is sent by the server to send a list of all commands that the player is able
 /// to use on the server. This packet holds all the arguments of each commands as well, making it
 /// possible for the client to provide auto-completion and command usages. AvailableCommands packets
@@ -1161,6 +3035,42 @@ pub struct AvailableCommands {
 impl AvailableCommands {
     pub const ID: u32 = 76;
 }
+impl wire::Encode for AvailableCommands {
+    fn encode(&self, writer: &mut wire::Writer) {
+        wire::encode_collection(writer, self.enum_values.as_slice());
+        wire::encode_collection(writer, self.chained_subcommand_values.as_slice());
+        wire::encode_collection(writer, self.post_fixes.as_slice());
+        wire::encode_collection(writer, self.enum_data.as_slice());
+        wire::encode_collection(writer, self.chained_subcommand_data.as_slice());
+        wire::encode_collection(writer, self.commands.as_slice());
+        wire::encode_collection(writer, self.soft_enums.as_slice());
+        wire::encode_collection(writer, self.constraints.as_slice());
+    }
+}
+
+impl wire::Decode for AvailableCommands {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let enum_values = wire::decode_collection::<String>(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?;
+        let chained_subcommand_values = wire::decode_collection::<String>(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?;
+        let post_fixes = wire::decode_collection::<String>(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?;
+        let enum_data = wire::decode_collection::<CommandEnum>(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?;
+        let chained_subcommand_data = wire::decode_collection::<ChainedSubcommand>(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?;
+        let commands = wire::decode_collection::<Command>(reader, 11, wire::MAX_COLLECTION_ELEMENTS)?;
+        let soft_enums = wire::decode_collection::<DynamicEnum>(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?;
+        let constraints = wire::decode_collection::<CommandEnumConstraint>(reader, 9, wire::MAX_COLLECTION_ELEMENTS)?;
+        Ok(Self {
+            enum_values,
+            chained_subcommand_values,
+            post_fixes,
+            enum_data,
+            chained_subcommand_data,
+            commands,
+            soft_enums,
+            constraints,
+        })
+    }
+}
+
 /// CommandRequest is sent by the client to request the execution of a server-side command. Although
 /// some servers support sending commands using the Text packet, this packet is guaranteed to have
 /// the correct result.
@@ -1183,6 +3093,30 @@ pub struct CommandRequest {
 impl CommandRequest {
     pub const ID: u32 = 77;
 }
+impl wire::Encode for CommandRequest {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.command.encode(writer);
+        self.origin.encode(writer);
+        self.is_internal.encode(writer);
+        self.version.encode(writer);
+    }
+}
+
+impl wire::Decode for CommandRequest {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let command = <String as wire::Decode>::decode(reader)?;
+        let origin = <CommandOriginData as wire::Decode>::decode(reader)?;
+        let is_internal = <bool as wire::Decode>::decode(reader)?;
+        let version = <String as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            command,
+            origin,
+            is_internal,
+            version,
+        })
+    }
+}
+
 /// CommandBlockUpdate is sent by the client to update a command block at a specific position. The
 /// command block may be either a physical block or an entity.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -1213,6 +3147,42 @@ pub struct CommandBlockUpdate {
 impl CommandBlockUpdate {
     pub const ID: u32 = 78;
 }
+impl wire::Encode for CommandBlockUpdate {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.target.encode(writer);
+        self.command.encode(writer);
+        self.last_output.encode(writer);
+        self.name.encode(writer);
+        self.filtered_name.encode(writer);
+        self.track_output.encode(writer);
+        self.tick_delay.encode(writer);
+        self.execute_on_first_tick.encode(writer);
+    }
+}
+
+impl wire::Decode for CommandBlockUpdate {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let target = <CommandBlockUpdateData as wire::Decode>::decode(reader)?;
+        let command = <String as wire::Decode>::decode(reader)?;
+        let last_output = <String as wire::Decode>::decode(reader)?;
+        let name = <String as wire::Decode>::decode(reader)?;
+        let filtered_name = <String as wire::Decode>::decode(reader)?;
+        let track_output = <bool as wire::Decode>::decode(reader)?;
+        let tick_delay = <wire::I32LE as wire::Decode>::decode(reader)?;
+        let execute_on_first_tick = <bool as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            target,
+            command,
+            last_output,
+            name,
+            filtered_name,
+            track_output,
+            tick_delay,
+            execute_on_first_tick,
+        })
+    }
+}
+
 /// CommandOutput is sent by the server to the client to send text as output of a command. Most
 /// servers do not use this packet and instead simply send Text packets, but there is reason to send
 /// it. If the origin of a CommandRequest packet is not the player itself, but, for example, a
@@ -1228,6 +3198,24 @@ pub struct CommandOutput {
 impl CommandOutput {
     pub const ID: u32 = 79;
 }
+impl wire::Encode for CommandOutput {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.origin_data.encode(writer);
+        self.output.encode(writer);
+    }
+}
+
+impl wire::Decode for CommandOutput {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let origin_data = <CommandOriginData as wire::Decode>::decode(reader)?;
+        let output = <CommandOutputData as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            origin_data,
+            output,
+        })
+    }
+}
+
 /// UpdateTrade is sent by the server to update the trades offered by a villager to a player. It is
 /// sent at the moment that a player interacts with a villager.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -1252,6 +3240,48 @@ pub struct UpdateTrade {
 impl UpdateTrade {
     pub const ID: u32 = 80;
 }
+impl wire::Encode for UpdateTrade {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.container_id.encode(writer);
+        self.type_.encode(writer);
+        self.size.encode(writer);
+        self.trader_tier.encode(writer);
+        self.entity_unique_id.encode(writer);
+        self.last_trading_player.encode(writer);
+        self.display_name.encode(writer);
+        self.use_new_trade_screen.encode(writer);
+        self.using_economy_trade.encode(writer);
+        self.data.encode(writer);
+    }
+}
+
+impl wire::Decode for UpdateTrade {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let container_id = <wire::U8 as wire::Decode>::decode(reader)?;
+        let type_ = <wire::U8 as wire::Decode>::decode(reader)?;
+        let size = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let trader_tier = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let entity_unique_id = <ActorUniqueID as wire::Decode>::decode(reader)?;
+        let last_trading_player = <ActorUniqueID as wire::Decode>::decode(reader)?;
+        let display_name = <String as wire::Decode>::decode(reader)?;
+        let use_new_trade_screen = <bool as wire::Decode>::decode(reader)?;
+        let using_economy_trade = <bool as wire::Decode>::decode(reader)?;
+        let data = <wire::NetworkNbt as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            container_id,
+            type_,
+            size,
+            trader_tier,
+            entity_unique_id,
+            last_trading_player,
+            display_name,
+            use_new_trade_screen,
+            using_economy_trade,
+            data,
+        })
+    }
+}
+
 /// UpdateEquip is sent by the server to the client upon opening a horse inventory. It is used to
 /// set the content of the inventory and specify additional properties, such as the items that are
 /// allowed to be put in slots of the inventory.
@@ -1271,6 +3301,33 @@ pub struct UpdateEquip {
 impl UpdateEquip {
     pub const ID: u32 = 81;
 }
+impl wire::Encode for UpdateEquip {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.container_id.encode(writer);
+        self.type_.encode(writer);
+        self.size.encode(writer);
+        self.entity_unique_id.encode(writer);
+        self.data.encode(writer);
+    }
+}
+
+impl wire::Decode for UpdateEquip {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let container_id = <wire::U8 as wire::Decode>::decode(reader)?;
+        let type_ = <wire::U8 as wire::Decode>::decode(reader)?;
+        let size = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let entity_unique_id = <ActorUniqueID as wire::Decode>::decode(reader)?;
+        let data = <wire::NetworkNbt as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            container_id,
+            type_,
+            size,
+            entity_unique_id,
+            data,
+        })
+    }
+}
+
 /// ResourcePackDataInfo is sent by the server to the client to inform the client about the data
 /// contained in one of the resource packs that are about to be sent.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -1289,6 +3346,39 @@ pub struct ResourcePackDataInfo {
 impl ResourcePackDataInfo {
     pub const ID: u32 = 82;
 }
+impl wire::Encode for ResourcePackDataInfo {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.resource_name.encode(writer);
+        self.chunk_size.encode(writer);
+        self.number_of_chunks.encode(writer);
+        self.file_size.encode(writer);
+        self.file_hash.encode(writer);
+        self.is_premium_pack.encode(writer);
+        self.pack_type.encode(writer);
+    }
+}
+
+impl wire::Decode for ResourcePackDataInfo {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let resource_name = <String as wire::Decode>::decode(reader)?;
+        let chunk_size = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let number_of_chunks = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let file_size = <wire::U64LE as wire::Decode>::decode(reader)?;
+        let file_hash = <String as wire::Decode>::decode(reader)?;
+        let is_premium_pack = <bool as wire::Decode>::decode(reader)?;
+        let pack_type = <wire::U8 as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            resource_name,
+            chunk_size,
+            number_of_chunks,
+            file_size,
+            file_hash,
+            is_premium_pack,
+            pack_type,
+        })
+    }
+}
+
 /// ResourcePackChunkData is sent to the client so that the client can download the resource pack.
 /// Each packet holds a chunk of the compressed resource pack, of which the size is defined in the
 /// ResourcePackDataInfo packet sent before.
@@ -1310,6 +3400,30 @@ pub struct ResourcePackChunkData {
 impl ResourcePackChunkData {
     pub const ID: u32 = 83;
 }
+impl wire::Encode for ResourcePackChunkData {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.resource_name.encode(writer);
+        self.chunk_id.encode(writer);
+        self.byte_offset.encode(writer);
+        self.chunk_data.encode(writer);
+    }
+}
+
+impl wire::Decode for ResourcePackChunkData {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let resource_name = <String as wire::Decode>::decode(reader)?;
+        let chunk_id = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let byte_offset = <wire::U64LE as wire::Decode>::decode(reader)?;
+        let chunk_data = <bytes::Bytes as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            resource_name,
+            chunk_id,
+            byte_offset,
+            chunk_data,
+        })
+    }
+}
+
 /// ResourcePackChunkRequest is sent by the client to request a chunk of data from a particular
 /// resource pack, that it has obtained information about in a ResourcePackDataInfo packet.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -1324,6 +3438,24 @@ pub struct ResourcePackChunkRequest {
 impl ResourcePackChunkRequest {
     pub const ID: u32 = 84;
 }
+impl wire::Encode for ResourcePackChunkRequest {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.resource_name.encode(writer);
+        self.chunk.encode(writer);
+    }
+}
+
+impl wire::Decode for ResourcePackChunkRequest {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let resource_name = <String as wire::Decode>::decode(reader)?;
+        let chunk = <wire::I32LE as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            resource_name,
+            chunk,
+        })
+    }
+}
+
 /// Transfer is sent by the server to transfer a player from the current server to another. Doing so
 /// will fully disconnect the client, bring it back to the main menu and make it connect to the next
 /// server.
@@ -1345,6 +3477,42 @@ pub struct Transfer {
 impl Transfer {
     pub const ID: u32 = 85;
 }
+impl wire::Encode for Transfer {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.server_address.encode(writer);
+        self.server_port.encode(writer);
+        self.reload_world.encode(writer);
+        match &self.gatherings_configuration {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+    }
+}
+
+impl wire::Decode for Transfer {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let server_address = <String as wire::Decode>::decode(reader)?;
+        let server_port = <wire::U16LE as wire::Decode>::decode(reader)?;
+        let reload_world = <bool as wire::Decode>::decode(reader)?;
+        let gatherings_configuration = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<ServerConfigurationGatheringsConfigurationJoinInfo as wire::Decode>::decode(reader)?)
+            }
+        };
+        Ok(Self {
+            server_address,
+            server_port,
+            reload_world,
+            gatherings_configuration,
+        })
+    }
+}
+
 /// PlaySound is sent by the server to play a sound to the client. Some of the sounds may only be
 /// started using this packet and must be stopped using the StopSound packet.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -1373,6 +3541,48 @@ pub struct PlaySound {
 impl PlaySound {
     pub const ID: u32 = 86;
 }
+impl wire::Encode for PlaySound {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.name.encode(writer);
+        self.position.encode(writer);
+        self.volume.encode(writer);
+        self.pitch.encode(writer);
+        self.loop_count.encode(writer);
+        match &self.server_sound_handle {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+    }
+}
+
+impl wire::Decode for PlaySound {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let name = <String as wire::Decode>::decode(reader)?;
+        let position = <BlockPos as wire::Decode>::decode(reader)?;
+        let volume = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let pitch = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let loop_count = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let server_sound_handle = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<ServerSoundHandle as wire::Decode>::decode(reader)?)
+            }
+        };
+        Ok(Self {
+            name,
+            position,
+            volume,
+            pitch,
+            loop_count,
+            server_sound_handle,
+        })
+    }
+}
+
 /// StopSound is sent by the server to stop a sound playing to the player, such as a playing music
 /// disk track or other long-lasting sounds.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -1390,6 +3600,27 @@ pub struct StopSound {
 impl StopSound {
     pub const ID: u32 = 87;
 }
+impl wire::Encode for StopSound {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.sound_name.encode(writer);
+        self.stop_all_sounds.encode(writer);
+        self.stop_music_legacy.encode(writer);
+    }
+}
+
+impl wire::Decode for StopSound {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let sound_name = <String as wire::Decode>::decode(reader)?;
+        let stop_all_sounds = <bool as wire::Decode>::decode(reader)?;
+        let stop_music_legacy = <bool as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            sound_name,
+            stop_all_sounds,
+            stop_music_legacy,
+        })
+    }
+}
+
 /// SetTitle is sent by the server to make a title, subtitle or action bar shown to a player. It has
 /// several fields that allow setting the duration of the titles.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -1411,6 +3642,42 @@ pub struct SetTitle {
 impl SetTitle {
     pub const ID: u32 = 88;
 }
+impl wire::Encode for SetTitle {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.title_type.encode(writer);
+        self.title_text.encode(writer);
+        self.fade_in_time.encode(writer);
+        self.stay_time.encode(writer);
+        self.fade_out_time.encode(writer);
+        self.xuid.encode(writer);
+        self.platform_online_id.encode(writer);
+        self.filtered_title_message.encode(writer);
+    }
+}
+
+impl wire::Decode for SetTitle {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let title_type = <TitleType as wire::Decode>::decode(reader)?;
+        let title_text = <String as wire::Decode>::decode(reader)?;
+        let fade_in_time = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let stay_time = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let fade_out_time = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let xuid = <String as wire::Decode>::decode(reader)?;
+        let platform_online_id = <String as wire::Decode>::decode(reader)?;
+        let filtered_title_message = <String as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            title_type,
+            title_text,
+            fade_in_time,
+            stay_time,
+            fade_out_time,
+            xuid,
+            platform_online_id,
+            filtered_title_message,
+        })
+    }
+}
+
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct AddBehaviorTree {
     pub behavior_tree_structure_json: String,
@@ -1419,6 +3686,21 @@ pub struct AddBehaviorTree {
 impl AddBehaviorTree {
     pub const ID: u32 = 89;
 }
+impl wire::Encode for AddBehaviorTree {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.behavior_tree_structure_json.encode(writer);
+    }
+}
+
+impl wire::Decode for AddBehaviorTree {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let behavior_tree_structure_json = <String as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            behavior_tree_structure_json,
+        })
+    }
+}
+
 /// StructureBlockUpdate is sent by the client when it updates a structure block using the in-game
 /// UI. The data it contains depends on the type of structure block that it is. In Minecraft Bedrock
 /// Edition v1.11, there is only the Export structure block type, but in v1.13 the ones present in
@@ -1434,6 +3716,30 @@ pub struct StructureBlockUpdate {
 impl StructureBlockUpdate {
     pub const ID: u32 = 90;
 }
+impl wire::Encode for StructureBlockUpdate {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.block_position.encode(writer);
+        self.structure_data.encode(writer);
+        self.trigger.encode(writer);
+        self.is_waterlogged.encode(writer);
+    }
+}
+
+impl wire::Decode for StructureBlockUpdate {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let block_position = <BlockPos as wire::Decode>::decode(reader)?;
+        let structure_data = <StructureEditorData as wire::Decode>::decode(reader)?;
+        let trigger = <bool as wire::Decode>::decode(reader)?;
+        let is_waterlogged = <bool as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            block_position,
+            structure_data,
+            trigger,
+            is_waterlogged,
+        })
+    }
+}
+
 /// ShowStoreOffer is sent by the server to show a Marketplace store offer to a player. It opens a
 /// window client-side that displays the item. The ShowStoreOffer packet only works on the partnered
 /// servers: Servers that are not partnered will not have a store buttons show up in the in-game
@@ -1450,6 +3756,24 @@ pub struct ShowStoreOffer {
 impl ShowStoreOffer {
     pub const ID: u32 = 91;
 }
+impl wire::Encode for ShowStoreOffer {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.offer_id.encode(writer);
+        self.redirect_type.encode(writer);
+    }
+}
+
+impl wire::Decode for ShowStoreOffer {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let offer_id = <uuid::Uuid as wire::Decode>::decode(reader)?;
+        let redirect_type = <ShowStoreOfferRedirectType as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            offer_id,
+            redirect_type,
+        })
+    }
+}
+
 /// PurchaseReceipt is sent by the client to the server to notify the server it purchased an item
 /// from the Marketplace store that was offered by the server. The packet is only used for partnered
 /// servers.
@@ -1463,6 +3787,21 @@ pub struct PurchaseReceipt {
 impl PurchaseReceipt {
     pub const ID: u32 = 92;
 }
+impl wire::Encode for PurchaseReceipt {
+    fn encode(&self, writer: &mut wire::Writer) {
+        wire::encode_collection(writer, self.purchase_receipts.as_slice());
+    }
+}
+
+impl wire::Decode for PurchaseReceipt {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let purchase_receipts = wire::decode_collection::<String>(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?;
+        Ok(Self {
+            purchase_receipts,
+        })
+    }
+}
+
 /// PlayerSkin is sent by the client to the server when it updates its own skin using the in-game
 /// skin picker. It is relayed by the server, or sent if the server changes the skin of a player on
 /// its own accord. Note that the packet can only be sent for players that are in the player list at
@@ -1480,6 +3819,30 @@ pub struct PlayerSkin {
 impl PlayerSkin {
     pub const ID: u32 = 93;
 }
+impl wire::Encode for PlayerSkin {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.uuid.encode(writer);
+        self.serialized_skin.encode(writer);
+        self.localized_new_skin_name.encode(writer);
+        self.localized_old_skin_name.encode(writer);
+    }
+}
+
+impl wire::Decode for PlayerSkin {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let uuid = <uuid::Uuid as wire::Decode>::decode(reader)?;
+        let serialized_skin = <SerializedSkinRef as wire::Decode>::decode(reader)?;
+        let localized_new_skin_name = <String as wire::Decode>::decode(reader)?;
+        let localized_old_skin_name = <String as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            uuid,
+            serialized_skin,
+            localized_new_skin_name,
+            localized_old_skin_name,
+        })
+    }
+}
+
 /// SubClientLogin is sent when a sub-client joins the server while another client is already
 /// connected to it. The packet is sent as a result of split-screen game play, and allows up to four
 /// players to play using the same network connection. After an initial Login packet from the 'main'
@@ -1492,6 +3855,21 @@ pub struct SubClientLogin {
 impl SubClientLogin {
     pub const ID: u32 = 94;
 }
+impl wire::Encode for SubClientLogin {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.sub_client_connection_request.encode(writer);
+    }
+}
+
+impl wire::Decode for SubClientLogin {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let sub_client_connection_request = <String as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            sub_client_connection_request,
+        })
+    }
+}
+
 /// AutomationClientConnect is used to make the client connect to a websocket server. This websocket
 /// server has the ability to execute commands on the behalf of the client and it can listen for
 /// certain events fired by the client.
@@ -1503,6 +3881,21 @@ pub struct AutomationClientConnect {
 impl AutomationClientConnect {
     pub const ID: u32 = 95;
 }
+impl wire::Encode for AutomationClientConnect {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.web_socket_data.encode(writer);
+    }
+}
+
+impl wire::Decode for AutomationClientConnect {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let web_socket_data = <WebSocketData as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            web_socket_data,
+        })
+    }
+}
+
 /// SetLastHurtBy is sent by the server to let the client know what entity type it was last hurt by.
 /// At this moment, the packet is useless and should not be used. There is no behaviour that depends
 /// on if this packet is sent or not.
@@ -1514,6 +3907,21 @@ pub struct SetLastHurtBy {
 impl SetLastHurtBy {
     pub const ID: u32 = 96;
 }
+impl wire::Encode for SetLastHurtBy {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.last_hurt_by.encode(writer);
+    }
+}
+
+impl wire::Decode for SetLastHurtBy {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let last_hurt_by = <ActorType as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            last_hurt_by,
+        })
+    }
+}
+
 /// BookEdit is sent by the client when it edits a book. It is sent each time a modification was
 /// made and the player stops its typing 'session', rather than simply after closing the book.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -1525,6 +3933,24 @@ pub struct BookEdit {
 impl BookEdit {
     pub const ID: u32 = 97;
 }
+impl wire::Encode for BookEdit {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.book_slot.encode(writer);
+        self.operation.encode(writer);
+    }
+}
+
+impl wire::Decode for BookEdit {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let book_slot = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let operation = <BookEditAction as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            book_slot,
+            operation,
+        })
+    }
+}
+
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct NpcRequest {
     pub npc_runtime_id: ActorRuntimeID,
@@ -1537,6 +3963,33 @@ pub struct NpcRequest {
 impl NpcRequest {
     pub const ID: u32 = 98;
 }
+impl wire::Encode for NpcRequest {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.npc_runtime_id.encode(writer);
+        self.request_type.encode(writer);
+        self.actions.encode(writer);
+        self.action_index.encode(writer);
+        self.scene_name.encode(writer);
+    }
+}
+
+impl wire::Decode for NpcRequest {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let npc_runtime_id = <ActorRuntimeID as wire::Decode>::decode(reader)?;
+        let request_type = <RequestType as wire::Decode>::decode(reader)?;
+        let actions = <String as wire::Decode>::decode(reader)?;
+        let action_index = <wire::U8 as wire::Decode>::decode(reader)?;
+        let scene_name = <String as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            npc_runtime_id,
+            request_type,
+            actions,
+            action_index,
+            scene_name,
+        })
+    }
+}
+
 /// PhotoTransfer is sent by the server to transfer a photo (image) file to the client. It is
 /// typically used to transfer photos so that the client can display it in a portfolio in Education
 /// Edition. While previously usable in the default Bedrock Edition, the displaying of photos in
@@ -1566,6 +4019,39 @@ pub struct PhotoTransfer {
 impl PhotoTransfer {
     pub const ID: u32 = 99;
 }
+impl wire::Encode for PhotoTransfer {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.photo_name.encode(writer);
+        self.photo_data.encode(writer);
+        self.book_id.encode(writer);
+        self.type_.encode(writer);
+        self.source_type.encode(writer);
+        self.owner_id.encode(writer);
+        self.new_photo_name.encode(writer);
+    }
+}
+
+impl wire::Decode for PhotoTransfer {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let photo_name = <String as wire::Decode>::decode(reader)?;
+        let photo_data = <bytes::Bytes as wire::Decode>::decode(reader)?;
+        let book_id = <String as wire::Decode>::decode(reader)?;
+        let type_ = <PhotoType as wire::Decode>::decode(reader)?;
+        let source_type = <PhotoType as wire::Decode>::decode(reader)?;
+        let owner_id = <wire::I64LE as wire::Decode>::decode(reader)?;
+        let new_photo_name = <String as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            photo_name,
+            photo_data,
+            book_id,
+            type_,
+            source_type,
+            owner_id,
+            new_photo_name,
+        })
+    }
+}
+
 /// ModalFormRequest is sent by the server to make the client open a form. This form may be either a
 /// modal form which has two options, a menu form for a selection of options and a custom form for
 /// properties.
@@ -1580,6 +4066,24 @@ pub struct ModalFormRequest {
 impl ModalFormRequest {
     pub const ID: u32 = 100;
 }
+impl wire::Encode for ModalFormRequest {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.form_id.encode(writer);
+        self.form_ui_json.encode(writer);
+    }
+}
+
+impl wire::Decode for ModalFormRequest {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let form_id = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let form_ui_json = <String as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            form_id,
+            form_ui_json,
+        })
+    }
+}
+
 /// ModalFormResponse is sent by the client in response to a ModalFormRequest, after the player has
 /// submitted the form sent. It contains the options/properties selected by the player, or a JSON
 /// encoded 'null' if the form was closed by clicking the X at the top right corner of the form.
@@ -1603,6 +4107,51 @@ pub struct ModalFormResponse {
 impl ModalFormResponse {
     pub const ID: u32 = 101;
 }
+impl wire::Encode for ModalFormResponse {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.form_id.encode(writer);
+        match &self.json_response {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+        match &self.form_cancel_reason {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+    }
+}
+
+impl wire::Decode for ModalFormResponse {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let form_id = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let json_response = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<String as wire::Decode>::decode(reader)?)
+            }
+        };
+        let form_cancel_reason = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<ModalFormCancelReason as wire::Decode>::decode(reader)?)
+            }
+        };
+        Ok(Self {
+            form_id,
+            json_response,
+            form_cancel_reason,
+        })
+    }
+}
+
 /// ServerSettingsRequest is sent by the client to request the settings specific to the server.
 /// These settings are shown in a separate tab client-side, and have the same structure as a custom
 /// form.
@@ -1613,6 +4162,20 @@ pub struct ServerSettingsRequest {
 impl ServerSettingsRequest {
     pub const ID: u32 = 102;
 }
+impl wire::Encode for ServerSettingsRequest {
+    fn encode(&self, writer: &mut wire::Writer) {
+        let _ = writer;
+    }
+}
+
+impl wire::Decode for ServerSettingsRequest {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let _ = reader;
+        Ok(Self {
+        })
+    }
+}
+
 /// ServerSettingsResponse is optionally sent by the server in response to a ServerSettingsRequest
 /// from the client. It is structured the same as a ModalFormRequest packet, and if filled out
 /// correctly, will show a specific tab for the server in the settings of the client. A
@@ -1629,6 +4192,24 @@ pub struct ServerSettingsResponse {
 impl ServerSettingsResponse {
     pub const ID: u32 = 103;
 }
+impl wire::Encode for ServerSettingsResponse {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.form_id.encode(writer);
+        self.form_ui_json.encode(writer);
+    }
+}
+
+impl wire::Decode for ServerSettingsResponse {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let form_id = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let form_ui_json = <String as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            form_id,
+            form_ui_json,
+        })
+    }
+}
+
 /// ShowProfile is sent by the server to show the XBOX Live profile of one player to another.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ShowProfile {
@@ -1640,6 +4221,21 @@ pub struct ShowProfile {
 impl ShowProfile {
     pub const ID: u32 = 104;
 }
+impl wire::Encode for ShowProfile {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.player_xuid.encode(writer);
+    }
+}
+
+impl wire::Decode for ShowProfile {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let player_xuid = <String as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            player_xuid,
+        })
+    }
+}
+
 /// SetDefaultGameType is sent by the client when it toggles the default game type in the settings
 /// UI, and is sent by the server when it actually changes the default game type, resulting in the
 /// toggle being changed in the settings UI.
@@ -1651,6 +4247,21 @@ pub struct SetDefaultGameType {
 impl SetDefaultGameType {
     pub const ID: u32 = 105;
 }
+impl wire::Encode for SetDefaultGameType {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.default_game_type.encode(writer);
+    }
+}
+
+impl wire::Decode for SetDefaultGameType {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let default_game_type = <GameType as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            default_game_type,
+        })
+    }
+}
+
 /// RemoveObjective is sent by the server to remove a scoreboard objective. It is used to stop
 /// showing a scoreboard to a player.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -1663,6 +4274,21 @@ pub struct RemoveObjective {
 impl RemoveObjective {
     pub const ID: u32 = 106;
 }
+impl wire::Encode for RemoveObjective {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.objective_name.encode(writer);
+    }
+}
+
+impl wire::Decode for RemoveObjective {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let objective_name = <String as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            objective_name,
+        })
+    }
+}
+
 /// SetDisplayObjective is sent by the server to display an object as a scoreboard to the player.
 /// Once sent, it should be followed up by a SetScore packet to set the lines of the packet.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -1686,6 +4312,33 @@ pub struct SetDisplayObjective {
 impl SetDisplayObjective {
     pub const ID: u32 = 107;
 }
+impl wire::Encode for SetDisplayObjective {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.display_slot_name.encode(writer);
+        self.objective_name.encode(writer);
+        self.objective_display_name.encode(writer);
+        self.criteria_name.encode(writer);
+        self.sort_order.encode(writer);
+    }
+}
+
+impl wire::Decode for SetDisplayObjective {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let display_slot_name = <String as wire::Decode>::decode(reader)?;
+        let objective_name = <String as wire::Decode>::decode(reader)?;
+        let objective_display_name = <String as wire::Decode>::decode(reader)?;
+        let criteria_name = <String as wire::Decode>::decode(reader)?;
+        let sort_order = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            display_slot_name,
+            objective_name,
+            objective_display_name,
+            criteria_name,
+            sort_order,
+        })
+    }
+}
+
 /// SetScore is sent by the server to send the contents of a scoreboard to the player. It may be
 /// used to either add, remove or edit entries on the scoreboard.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -1698,6 +4351,21 @@ pub struct SetScore {
 impl SetScore {
     pub const ID: u32 = 108;
 }
+impl wire::Encode for SetScore {
+    fn encode(&self, writer: &mut wire::Writer) {
+        wire::encode_collection(writer, self.score_info.as_slice());
+    }
+}
+
+impl wire::Decode for SetScore {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let score_info = wire::decode_collection::<SetScoreInfoItem>(reader, 4, wire::MAX_COLLECTION_ELEMENTS)?;
+        Ok(Self {
+            score_info,
+        })
+    }
+}
+
 /// LabTable is sent by the client to let the server know it started a chemical reaction in
 /// Education Edition, and is sent by the server to other clients to show the effects. The packet is
 /// only functional if Education features are enabled.
@@ -1718,6 +4386,27 @@ pub struct LabTable {
 impl LabTable {
     pub const ID: u32 = 109;
 }
+impl wire::Encode for LabTable {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.type_.encode(writer);
+        self.position.encode(writer);
+        self.reaction.encode(writer);
+    }
+}
+
+impl wire::Decode for LabTable {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let type_ = <LabTableType as wire::Decode>::decode(reader)?;
+        let position = <BlockPos as wire::Decode>::decode(reader)?;
+        let reaction = <LabTableReactionType as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            type_,
+            position,
+            reaction,
+        })
+    }
+}
+
 /// UpdateBlockSynced is sent by the server to synchronise the falling of a falling block entity
 /// with the transitioning back and forth from and to a solid block. It is used to prevent the
 /// entity from flickering, and is used in places such as the pushing of blocks with pistons.
@@ -1749,6 +4438,36 @@ pub struct UpdateBlockSynced {
 impl UpdateBlockSynced {
     pub const ID: u32 = 110;
 }
+impl wire::Encode for UpdateBlockSynced {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.block_position.encode(writer);
+        self.block_runtime_id.encode(writer);
+        self.flags.encode(writer);
+        self.layer.encode(writer);
+        self.unique_actor_id.encode(writer);
+        self.actor_sync_message.encode(writer);
+    }
+}
+
+impl wire::Decode for UpdateBlockSynced {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let block_position = <BlockPos as wire::Decode>::decode(reader)?;
+        let block_runtime_id = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let flags = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let layer = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let unique_actor_id = <wire::VarULong as wire::Decode>::decode(reader)?;
+        let actor_sync_message = <wire::VarULong as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            block_position,
+            block_runtime_id,
+            flags,
+            layer,
+            unique_actor_id,
+            actor_sync_message,
+        })
+    }
+}
+
 /// MoveActorDelta is sent by the server to move an entity. The packet is specifically optimised to
 /// save as much space as possible, by only writing non-zero fields. As of 1.16.100, this packet no
 /// longer actually contains any deltas.
@@ -1760,6 +4479,21 @@ pub struct MoveActorDelta {
 impl MoveActorDelta {
     pub const ID: u32 = 111;
 }
+impl wire::Encode for MoveActorDelta {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.move_data.encode(writer);
+    }
+}
+
+impl wire::Decode for MoveActorDelta {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let move_data = <MoveActorDeltaData as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            move_data,
+        })
+    }
+}
+
 /// SetScoreboardIdentity is sent by the server to change the identity type of one of the entries on
 /// a scoreboard. This is used to change, for example, an entry pointing to a player, to a fake
 /// player when it leaves the server, and to change it back to a real player when it joins again. In
@@ -1779,6 +4513,24 @@ pub struct SetScoreboardIdentity {
 impl SetScoreboardIdentity {
     pub const ID: u32 = 112;
 }
+impl wire::Encode for SetScoreboardIdentity {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.scoreboard_identity_packet_type.encode(writer);
+        wire::encode_collection(writer, self.scoreboard_identity_info.as_slice());
+    }
+}
+
+impl wire::Decode for SetScoreboardIdentity {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let scoreboard_identity_packet_type = <ScoreboardIdentityPacketType as wire::Decode>::decode(reader)?;
+        let scoreboard_identity_info = wire::decode_collection::<ScoreboardIdentityPacketInfo>(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?;
+        Ok(Self {
+            scoreboard_identity_packet_type,
+            scoreboard_identity_info,
+        })
+    }
+}
+
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SetLocalPlayerAsInitialized {
     pub player_id: ActorRuntimeID,
@@ -1787,6 +4539,21 @@ pub struct SetLocalPlayerAsInitialized {
 impl SetLocalPlayerAsInitialized {
     pub const ID: u32 = 113;
 }
+impl wire::Encode for SetLocalPlayerAsInitialized {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.player_id.encode(writer);
+    }
+}
+
+impl wire::Decode for SetLocalPlayerAsInitialized {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let player_id = <ActorRuntimeID as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            player_id,
+        })
+    }
+}
+
 /// UpdateSoftEnum is sent by the server to update a soft enum, also known as a dynamic enum,
 /// previously sent in the AvailableCommands packet. It is sent whenever the enum should get new
 /// options or when some of its options should be removed. The UpdateSoftEnum packet will apply for
@@ -1809,6 +4576,27 @@ pub struct UpdateSoftEnum {
 impl UpdateSoftEnum {
     pub const ID: u32 = 114;
 }
+impl wire::Encode for UpdateSoftEnum {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.enum_name.encode(writer);
+        wire::encode_collection(writer, self.values.as_slice());
+        self.update_type.encode(writer);
+    }
+}
+
+impl wire::Decode for UpdateSoftEnum {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let enum_name = <String as wire::Decode>::decode(reader)?;
+        let values = wire::decode_collection::<String>(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?;
+        let update_type = <SoftEnumUpdateType as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            enum_name,
+            values,
+            update_type,
+        })
+    }
+}
+
 /// NetworkStackLatency is sent by the server (and the client, on development builds) to measure the
 /// latency over the entire Minecraft stack, rather than the RakNet latency. It has other usages
 /// too, such as the ability to be used as some kind of acknowledgement packet, to know when the
@@ -1822,6 +4610,24 @@ pub struct NetworkStackLatency {
 impl NetworkStackLatency {
     pub const ID: u32 = 115;
 }
+impl wire::Encode for NetworkStackLatency {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.creation_time.encode(writer);
+        self.is_from_server.encode(writer);
+    }
+}
+
+impl wire::Decode for NetworkStackLatency {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let creation_time = <wire::U64LE as wire::Decode>::decode(reader)?;
+        let is_from_server = <bool as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            creation_time,
+            is_from_server,
+        })
+    }
+}
+
 /// SpawnParticleEffect is sent by the server to spawn a particle effect client-side. Unlike other
 /// packets that result in the appearing of particles, this packet can show particles that are not
 /// hardcoded in the client. They can be added and changed through behaviour packs to implement
@@ -1844,6 +4650,45 @@ pub struct SpawnParticleEffect {
 impl SpawnParticleEffect {
     pub const ID: u32 = 118;
 }
+impl wire::Encode for SpawnParticleEffect {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.dimension_id.encode(writer);
+        self.actor_id.encode(writer);
+        self.position.encode(writer);
+        self.effect_name.encode(writer);
+        match &self.molang_variables {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+    }
+}
+
+impl wire::Decode for SpawnParticleEffect {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let dimension_id = <wire::U8 as wire::Decode>::decode(reader)?;
+        let actor_id = <ActorUniqueID as wire::Decode>::decode(reader)?;
+        let position = <glam::Vec3 as wire::Decode>::decode(reader)?;
+        let effect_name = <String as wire::Decode>::decode(reader)?;
+        let molang_variables = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<String as wire::Decode>::decode(reader)?)
+            }
+        };
+        Ok(Self {
+            dimension_id,
+            actor_id,
+            position,
+            effect_name,
+            molang_variables,
+        })
+    }
+}
+
 /// AvailableActorIdentifiers is sent by the server at the start of the game to let the client know
 /// all entities that are available on the server.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -1854,6 +4699,21 @@ pub struct AvailableActorIdentifiers {
 impl AvailableActorIdentifiers {
     pub const ID: u32 = 119;
 }
+impl wire::Encode for AvailableActorIdentifiers {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.identifier_list.encode(writer);
+    }
+}
+
+impl wire::Decode for AvailableActorIdentifiers {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let identifier_list = <wire::NetworkNbt as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            identifier_list,
+        })
+    }
+}
+
 /// NetworkChunkPublisherUpdate is sent by the server to change the point around which chunks are
 /// and remain loaded. This is useful for mini-game servers, where only one area is ever loaded, in
 /// which case the NetworkChunkPublisherUpdate packet can be sent in the middle of it, so that no
@@ -1878,6 +4738,27 @@ pub struct NetworkChunkPublisherUpdate {
 impl NetworkChunkPublisherUpdate {
     pub const ID: u32 = 121;
 }
+impl wire::Encode for NetworkChunkPublisherUpdate {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.new_position_for_view.encode(writer);
+        self.new_radius_for_view.encode(writer);
+        wire::encode_collection_u32le(writer, self.server_built_chunks_list.as_slice());
+    }
+}
+
+impl wire::Decode for NetworkChunkPublisherUpdate {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let new_position_for_view = <BlockPos as wire::Decode>::decode(reader)?;
+        let new_radius_for_view = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let server_built_chunks_list = wire::decode_collection_u32le::<ChunkPos>(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?;
+        Ok(Self {
+            new_position_for_view,
+            new_radius_for_view,
+            server_built_chunks_list,
+        })
+    }
+}
+
 /// BiomeDefinitionList is sent by the server to let the client know all biomes that are available
 /// and implemented on the server side. When enabled, it also includes information for the client to
 /// accurately recreate the server-side generation in vanilla worlds/servers for increased
@@ -1894,6 +4775,24 @@ pub struct BiomeDefinitionList {
 impl BiomeDefinitionList {
     pub const ID: u32 = 122;
 }
+impl wire::Encode for BiomeDefinitionList {
+    fn encode(&self, writer: &mut wire::Writer) {
+        wire::encode_map(writer, self.map_of_biome_names_to_data.as_slice());
+        self.string_list.encode(writer);
+    }
+}
+
+impl wire::Decode for BiomeDefinitionList {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let map_of_biome_names_to_data = wire::decode_map::<wire::U16LE, BiomeDefinitionData>(reader, 31, wire::MAX_COLLECTION_ELEMENTS)?;
+        let string_list = <BiomeStringList as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            map_of_biome_names_to_data,
+            string_list,
+        })
+    }
+}
+
 /// LevelSoundEvent is sent by the server to make any kind of built-in sound heard to a player. It
 /// is sent to, for example, play a stepping sound or a shear sound. The packet is also sent by the
 /// client, in which case it could be forwarded by the server to the other players online. If
@@ -1933,6 +4832,54 @@ pub struct LevelSoundEvent {
 impl LevelSoundEvent {
     pub const ID: u32 = 123;
 }
+impl wire::Encode for LevelSoundEvent {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.sound_event.encode(writer);
+        self.position.encode(writer);
+        self.data.encode(writer);
+        self.actor_identifier.encode(writer);
+        self.is_baby.encode(writer);
+        self.is_global.encode(writer);
+        self.actor_unique_id.encode(writer);
+        match &self.fire_at_position {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+    }
+}
+
+impl wire::Decode for LevelSoundEvent {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let sound_event = <String as wire::Decode>::decode(reader)?;
+        let position = <glam::Vec3 as wire::Decode>::decode(reader)?;
+        let data = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let actor_identifier = <String as wire::Decode>::decode(reader)?;
+        let is_baby = <bool as wire::Decode>::decode(reader)?;
+        let is_global = <bool as wire::Decode>::decode(reader)?;
+        let actor_unique_id = <wire::I64LE as wire::Decode>::decode(reader)?;
+        let fire_at_position = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<glam::Vec3 as wire::Decode>::decode(reader)?)
+            }
+        };
+        Ok(Self {
+            sound_event,
+            position,
+            data,
+            actor_identifier,
+            is_baby,
+            is_global,
+            actor_unique_id,
+            fire_at_position,
+        })
+    }
+}
+
 /// LevelEventGeneric is sent by the server to send a 'generic' level event to the client. This
 /// packet sends an NBT serialised object and may for that reason be used for any event holding
 /// additional data.
@@ -1947,6 +4894,24 @@ pub struct LevelEventGeneric {
 impl LevelEventGeneric {
     pub const ID: u32 = 124;
 }
+impl wire::Encode for LevelEventGeneric {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.event_id.encode(writer);
+        self.ctd.encode(writer);
+    }
+}
+
+impl wire::Decode for LevelEventGeneric {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let event_id = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let ctd = <wire::NetworkNbt as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            event_id,
+            ctd,
+        })
+    }
+}
+
 /// LecternUpdate is sent by the client to update the server on which page was opened in a book on a
 /// lectern, or if the book should be removed from it.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -1959,6 +4924,27 @@ pub struct LecternUpdate {
 impl LecternUpdate {
     pub const ID: u32 = 125;
 }
+impl wire::Encode for LecternUpdate {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.new_page_to_show.encode(writer);
+        self.total_pages.encode(writer);
+        self.position_of_lectern_to_update.encode(writer);
+    }
+}
+
+impl wire::Decode for LecternUpdate {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let new_page_to_show = <wire::U8 as wire::Decode>::decode(reader)?;
+        let total_pages = <wire::U8 as wire::Decode>::decode(reader)?;
+        let position_of_lectern_to_update = <BlockPos as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            new_page_to_show,
+            total_pages,
+            position_of_lectern_to_update,
+        })
+    }
+}
+
 /// ClientCacheStatus is sent by the client to the server at the start of the game. It is sent to
 /// let the server know if it supports the client-side blob cache. Clients such as Nintendo Switch
 /// do not support the cache, and attempting to use it anyway will fail.
@@ -1972,6 +4958,21 @@ pub struct ClientCacheStatus {
 impl ClientCacheStatus {
     pub const ID: u32 = 129;
 }
+impl wire::Encode for ClientCacheStatus {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.is_cache_supported.encode(writer);
+    }
+}
+
+impl wire::Decode for ClientCacheStatus {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let is_cache_supported = <bool as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            is_cache_supported,
+        })
+    }
+}
+
 /// OnScreenTextureAnimation is sent by the server to show a certain animation on the screen of the
 /// player. The packet is used, as an example, for when a raid is triggered and when a raid is
 /// defeated.
@@ -1985,6 +4986,21 @@ pub struct OnScreenTextureAnimation {
 impl OnScreenTextureAnimation {
     pub const ID: u32 = 130;
 }
+impl wire::Encode for OnScreenTextureAnimation {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.effect_id.encode(writer);
+    }
+}
+
+impl wire::Decode for OnScreenTextureAnimation {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let effect_id = <wire::U32LE as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            effect_id,
+        })
+    }
+}
+
 /// MapCreateLockedCopy is sent by the client to create a locked copy of one map into another map.
 /// In vanilla, it is used in the cartography table to create a map that is locked and cannot be
 /// modified.
@@ -2001,6 +5017,24 @@ pub struct MapCreateLockedCopy {
 impl MapCreateLockedCopy {
     pub const ID: u32 = 131;
 }
+impl wire::Encode for MapCreateLockedCopy {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.original_map_id.encode(writer);
+        self.new_map_id.encode(writer);
+    }
+}
+
+impl wire::Decode for MapCreateLockedCopy {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let original_map_id = <ActorUniqueID as wire::Decode>::decode(reader)?;
+        let new_map_id = <ActorUniqueID as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            original_map_id,
+            new_map_id,
+        })
+    }
+}
+
 /// StructureTemplateDataRequest is sent by the client to request data of a structure.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct StructureTemplateDataRequest {
@@ -2021,6 +5055,30 @@ pub struct StructureTemplateDataRequest {
 impl StructureTemplateDataRequest {
     pub const ID: u32 = 132;
 }
+impl wire::Encode for StructureTemplateDataRequest {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.structure_name.encode(writer);
+        self.structure_position.encode(writer);
+        self.structure_settings.encode(writer);
+        self.requested_operation.encode(writer);
+    }
+}
+
+impl wire::Decode for StructureTemplateDataRequest {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let structure_name = <String as wire::Decode>::decode(reader)?;
+        let structure_position = <BlockPos as wire::Decode>::decode(reader)?;
+        let structure_settings = <StructureSettings as wire::Decode>::decode(reader)?;
+        let requested_operation = <StructureTemplateRequestOperation as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            structure_name,
+            structure_position,
+            structure_settings,
+            requested_operation,
+        })
+    }
+}
+
 /// StructureTemplateDataResponse is sent by the server to send data of a structure to the client in
 /// response to a StructureTemplateDataRequest packet.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -2037,6 +5095,27 @@ pub struct StructureTemplateDataResponse {
 impl StructureTemplateDataResponse {
     pub const ID: u32 = 133;
 }
+impl wire::Encode for StructureTemplateDataResponse {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.structure_name.encode(writer);
+        self.structure_nbt.encode(writer);
+        self.response_type.encode(writer);
+    }
+}
+
+impl wire::Decode for StructureTemplateDataResponse {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let structure_name = <String as wire::Decode>::decode(reader)?;
+        let structure_nbt = <wire::NetworkNbt as wire::Decode>::decode(reader)?;
+        let response_type = <StructureTemplateResponseType as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            structure_name,
+            structure_nbt,
+            response_type,
+        })
+    }
+}
+
 /// ClientCacheBlobStatus is part of the blob cache protocol. It is sent by the client to let the
 /// server know what blobs it needs and which blobs it already has, in an ACK type system.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -2052,6 +5131,24 @@ pub struct ClientCacheBlobStatus {
 impl ClientCacheBlobStatus {
     pub const ID: u32 = 135;
 }
+impl wire::Encode for ClientCacheBlobStatus {
+    fn encode(&self, writer: &mut wire::Writer) {
+        wire::encode_collection(writer, self.missing_ids.as_slice());
+        wire::encode_collection(writer, self.found_ids.as_slice());
+    }
+}
+
+impl wire::Decode for ClientCacheBlobStatus {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let missing_ids = wire::decode_collection::<wire::U64LE>(reader, 8, wire::MAX_COLLECTION_ELEMENTS)?;
+        let found_ids = wire::decode_collection::<wire::U64LE>(reader, 8, wire::MAX_COLLECTION_ELEMENTS)?;
+        Ok(Self {
+            missing_ids,
+            found_ids,
+        })
+    }
+}
+
 /// ClientCacheMissResponse is part of the blob cache protocol. It is sent by the server in response
 /// to a ClientCacheBlobStatus packet and contains the blob data of all blobs that the client
 /// acknowledged not to have yet.
@@ -2066,6 +5163,21 @@ pub struct ClientCacheMissResponse {
 impl ClientCacheMissResponse {
     pub const ID: u32 = 136;
 }
+impl wire::Encode for ClientCacheMissResponse {
+    fn encode(&self, writer: &mut wire::Writer) {
+        wire::encode_collection(writer, self.missing_blobs.as_slice());
+    }
+}
+
+impl wire::Decode for ClientCacheMissResponse {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let missing_blobs = wire::decode_collection::<MissingBlobData>(reader, 9, wire::MAX_COLLECTION_ELEMENTS)?;
+        Ok(Self {
+            missing_blobs,
+        })
+    }
+}
+
 /// EducationSettings is a packet sent by the server to update Minecraft: Education Edition related
 /// settings. It is unused by the normal base game.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -2076,6 +5188,21 @@ pub struct EducationSettings {
 impl EducationSettings {
     pub const ID: u32 = 137;
 }
+impl wire::Encode for EducationSettings {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.education_level_settings.encode(writer);
+    }
+}
+
+impl wire::Decode for EducationSettings {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let education_level_settings = <EducationLevelSettings as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            education_level_settings,
+        })
+    }
+}
+
 /// Emote is sent by both the server and the client. When the client sends an emote, it sends this
 /// packet to the server, after which the server will broadcast the packet to other players online.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -2099,6 +5226,36 @@ pub struct Emote {
 impl Emote {
     pub const ID: u32 = 138;
 }
+impl wire::Encode for Emote {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.actor_runtime_id.encode(writer);
+        self.emote_id.encode(writer);
+        self.emote_length_ticks.encode(writer);
+        self.xuid.encode(writer);
+        self.platform_id.encode(writer);
+        self.flags.encode(writer);
+    }
+}
+
+impl wire::Decode for Emote {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let actor_runtime_id = <ActorRuntimeID as wire::Decode>::decode(reader)?;
+        let emote_id = <String as wire::Decode>::decode(reader)?;
+        let emote_length_ticks = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let xuid = <String as wire::Decode>::decode(reader)?;
+        let platform_id = <String as wire::Decode>::decode(reader)?;
+        let flags = <wire::U8 as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            actor_runtime_id,
+            emote_id,
+            emote_length_ticks,
+            xuid,
+            platform_id,
+            flags,
+        })
+    }
+}
+
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct MultiplayerSettings {
     pub packet_type: MultiplayerSettingsType,
@@ -2107,6 +5264,21 @@ pub struct MultiplayerSettings {
 impl MultiplayerSettings {
     pub const ID: u32 = 139;
 }
+impl wire::Encode for MultiplayerSettings {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.packet_type.encode(writer);
+    }
+}
+
+impl wire::Decode for MultiplayerSettings {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let packet_type = <MultiplayerSettingsType as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            packet_type,
+        })
+    }
+}
+
 /// SettingsCommand is sent by the client when it changes a setting in the settings that results in
 /// the issuing of a command to the server, such as when Show Coordinates is enabled.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -2123,6 +5295,24 @@ pub struct SettingsCommand {
 impl SettingsCommand {
     pub const ID: u32 = 140;
 }
+impl wire::Encode for SettingsCommand {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.command.encode(writer);
+        self.suppress_output.encode(writer);
+    }
+}
+
+impl wire::Decode for SettingsCommand {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let command = <String as wire::Decode>::decode(reader)?;
+        let suppress_output = <bool as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            command,
+            suppress_output,
+        })
+    }
+}
+
 /// AnvilDamage is sent by the client to request the dealing damage to an anvil. This packet is
 /// completely pointless and the server should never listen to it.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -2134,6 +5324,21 @@ pub struct AnvilDamage {
 impl AnvilDamage {
     pub const ID: u32 = 141;
 }
+impl wire::Encode for AnvilDamage {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.block_position.encode(writer);
+    }
+}
+
+impl wire::Decode for AnvilDamage {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let block_position = <BlockPos as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            block_position,
+        })
+    }
+}
+
 /// CompletedUsingItem is sent by the server to tell the client that it should be done using the
 /// item it is currently using.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -2149,6 +5354,24 @@ pub struct CompletedUsingItem {
 impl CompletedUsingItem {
     pub const ID: u32 = 142;
 }
+impl wire::Encode for CompletedUsingItem {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.item_id.encode(writer);
+        self.item_use_method.encode(writer);
+    }
+}
+
+impl wire::Decode for CompletedUsingItem {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let item_id = <wire::I16LE as wire::Decode>::decode(reader)?;
+        let item_use_method = <wire::I32LE as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            item_id,
+            item_use_method,
+        })
+    }
+}
+
 /// NetworkSettings is sent by the server to update a variety of network settings. These settings
 /// modify the way packets are sent over the network stack.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -2171,6 +5394,33 @@ pub struct NetworkSettings {
 impl NetworkSettings {
     pub const ID: u32 = 143;
 }
+impl wire::Encode for NetworkSettings {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.compression_threshold.encode(writer);
+        self.compression_algorithm.encode(writer);
+        self.client_throttle_enabled.encode(writer);
+        self.client_throttle_threshold.encode(writer);
+        self.client_throttle_scalar.encode(writer);
+    }
+}
+
+impl wire::Decode for NetworkSettings {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let compression_threshold = <wire::U16LE as wire::Decode>::decode(reader)?;
+        let compression_algorithm = <PacketCompressionAlgorithm as wire::Decode>::decode(reader)?;
+        let client_throttle_enabled = <bool as wire::Decode>::decode(reader)?;
+        let client_throttle_threshold = <wire::U8 as wire::Decode>::decode(reader)?;
+        let client_throttle_scalar = <wire::F32LE as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            compression_threshold,
+            compression_algorithm,
+            client_throttle_enabled,
+            client_throttle_threshold,
+            client_throttle_scalar,
+        })
+    }
+}
+
 /// PlayerAuthInput is sent by the client to allow for server authoritative movement. It is used to
 /// synchronise the player input with the position server-side. The client sends this packet when
 /// the ServerAuthoritativeMovementMode field in the StartGame packet is set to true, instead of the
@@ -2224,6 +5474,152 @@ pub struct PlayerAuthInput {
 impl PlayerAuthInput {
     pub const ID: u32 = 144;
 }
+impl wire::Encode for PlayerAuthInput {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.player_rotation.encode(writer);
+        self.position.encode(writer);
+        self.move_vector.encode(writer);
+        self.player_head_rotation.encode(writer);
+        match &self.input_data {
+            Some(value) => {
+                writer.write_u8(1);
+                wire::encode_collection(writer, value.as_slice());
+            }
+            None => writer.write_u8(0),
+        }
+        self.input_mode.encode(writer);
+        self.play_mode.encode(writer);
+        self.new_interaction_model.encode(writer);
+        self.interact_rotation.encode(writer);
+        self.client_tick.encode(writer);
+        self.pos_delta.encode(writer);
+        writer.write_u8(1);
+        match &self.item_use_transaction {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+        writer.write_u8(1);
+        match &self.item_stack_request {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+        writer.write_u8(1);
+        match &self.player_block_actions {
+            Some(value) => {
+                writer.write_u8(1);
+                wire::encode_collection(writer, value.as_slice());
+            }
+            None => writer.write_u8(0),
+        }
+        writer.write_u8(1);
+        match &self.vehicle_rotation {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+        writer.write_u8(1);
+        match &self.client_predicted_vehicle {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+        self.analog_move_vector.encode(writer);
+        self.camera_orientation.encode(writer);
+        self.raw_move_vector.encode(writer);
+    }
+}
+
+impl wire::Decode for PlayerAuthInput {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let player_rotation = <glam::Vec2 as wire::Decode>::decode(reader)?;
+        let position = <glam::Vec3 as wire::Decode>::decode(reader)?;
+        let move_vector = <glam::Vec2 as wire::Decode>::decode(reader)?;
+        let player_head_rotation = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let input_data = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(wire::decode_collection::<InputData>(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?)
+            }
+        };
+        let input_mode = <InputMode as wire::Decode>::decode(reader)?;
+        let play_mode = <ClientPlayMode as wire::Decode>::decode(reader)?;
+        let new_interaction_model = <NewInteractionModel as wire::Decode>::decode(reader)?;
+        let interact_rotation = <glam::Vec2 as wire::Decode>::decode(reader)?;
+        let client_tick = <PlayerInputTick as wire::Decode>::decode(reader)?;
+        let pos_delta = <glam::Vec3 as wire::Decode>::decode(reader)?;
+        let item_use_transaction = {
+            if reader.read_u8()? != 0 && reader.read_u8()? != 0 {
+                Some(<PackedItemUseLegacyInventoryTransaction as wire::Decode>::decode(reader)?)
+            } else {
+                None
+            }
+        };
+        let item_stack_request = {
+            if reader.read_u8()? != 0 && reader.read_u8()? != 0 {
+                Some(<ItemStackRequestData as wire::Decode>::decode(reader)?)
+            } else {
+                None
+            }
+        };
+        let player_block_actions = {
+            if reader.read_u8()? != 0 && reader.read_u8()? != 0 {
+                Some(wire::decode_collection::<PlayerBlockActionData>(reader, 5, wire::MAX_COLLECTION_ELEMENTS)?)
+            } else {
+                None
+            }
+        };
+        let vehicle_rotation = {
+            if reader.read_u8()? != 0 && reader.read_u8()? != 0 {
+                Some(<glam::Vec2 as wire::Decode>::decode(reader)?)
+            } else {
+                None
+            }
+        };
+        let client_predicted_vehicle = {
+            if reader.read_u8()? != 0 && reader.read_u8()? != 0 {
+                Some(<ActorUniqueID as wire::Decode>::decode(reader)?)
+            } else {
+                None
+            }
+        };
+        let analog_move_vector = <glam::Vec2 as wire::Decode>::decode(reader)?;
+        let camera_orientation = <glam::Vec3 as wire::Decode>::decode(reader)?;
+        let raw_move_vector = <glam::Vec2 as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            player_rotation,
+            position,
+            move_vector,
+            player_head_rotation,
+            input_data,
+            input_mode,
+            play_mode,
+            new_interaction_model,
+            interact_rotation,
+            client_tick,
+            pos_delta,
+            item_use_transaction,
+            item_stack_request,
+            player_block_actions,
+            vehicle_rotation,
+            client_predicted_vehicle,
+            analog_move_vector,
+            camera_orientation,
+            raw_move_vector,
+        })
+    }
+}
+
 /// CreativeContent is a packet sent by the server to set the creative inventory's content for a
 /// player. Introduced in 1.16, this packet replaces the previous method - sending an
 /// InventoryContent packet with creative inventory window ID. As of v1.21.60, this packet is no
@@ -2256,6 +5652,24 @@ pub struct CreativeContent {
 impl CreativeContent {
     pub const ID: u32 = 145;
 }
+impl wire::Encode for CreativeContent {
+    fn encode(&self, writer: &mut wire::Writer) {
+        wire::encode_collection(writer, self.groups.as_slice());
+        wire::encode_collection(writer, self.entries.as_slice());
+    }
+}
+
+impl wire::Decode for CreativeContent {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let groups = wire::decode_collection::<CreativeGroupInfo>(reader, 8, wire::MAX_COLLECTION_ELEMENTS)?;
+        let entries = wire::decode_collection::<CreativeItemEntry>(reader, 8, wire::MAX_COLLECTION_ELEMENTS)?;
+        Ok(Self {
+            groups,
+            entries,
+        })
+    }
+}
+
 /// PlayerEnchantOptions is sent by the server to update the enchantment options displayed when the
 /// user opens the enchantment table and puts an item in. This packet was added in 1.16 and allows
 /// the server to decide on the enchantments that can be selected by the player. The
@@ -2273,6 +5687,21 @@ pub struct PlayerEnchantOptions {
 impl PlayerEnchantOptions {
     pub const ID: u32 = 146;
 }
+impl wire::Encode for PlayerEnchantOptions {
+    fn encode(&self, writer: &mut wire::Writer) {
+        wire::encode_collection(writer, self.options.as_slice());
+    }
+}
+
+impl wire::Decode for PlayerEnchantOptions {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let options = wire::decode_collection::<ItemEnchantOption>(reader, 10, wire::MAX_COLLECTION_ELEMENTS)?;
+        Ok(Self {
+            options,
+        })
+    }
+}
+
 /// ItemStackRequest is sent by the client to change item stacks in an inventory. It is essentially
 /// a replacement of the InventoryTransaction packet added in 1.16 for inventory specific actions,
 /// such as moving items around or crafting. The InventoryTransaction packet is still used for
@@ -2287,6 +5716,21 @@ pub struct ItemStackRequest {
 impl ItemStackRequest {
     pub const ID: u32 = 147;
 }
+impl wire::Encode for ItemStackRequest {
+    fn encode(&self, writer: &mut wire::Writer) {
+        wire::encode_collection(writer, self.requests.as_slice());
+    }
+}
+
+impl wire::Decode for ItemStackRequest {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let requests = wire::decode_collection::<ItemStackRequestPacketData>(reader, 7, wire::MAX_COLLECTION_ELEMENTS)?;
+        Ok(Self {
+            requests,
+        })
+    }
+}
+
 /// ItemStackResponse is sent by the server in response to an ItemStackRequest packet from the
 /// client. This packet is used to either approve or reject ItemStackRequests from the client. If a
 /// request is approved, the client will simply continue as normal. If rejected, the client will
@@ -2302,6 +5746,21 @@ pub struct ItemStackResponse {
 impl ItemStackResponse {
     pub const ID: u32 = 148;
 }
+impl wire::Encode for ItemStackResponse {
+    fn encode(&self, writer: &mut wire::Writer) {
+        wire::encode_collection(writer, self.responses.as_slice());
+    }
+}
+
+impl wire::Decode for ItemStackResponse {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let responses = wire::decode_collection::<ItemStackResponseInfo>(reader, 3, wire::MAX_COLLECTION_ELEMENTS)?;
+        Ok(Self {
+            responses,
+        })
+    }
+}
+
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PlayerArmorDamage {
     pub armor_slot_and_damage_pairs: Vec<ArmorSlotAndDamagePair>,
@@ -2310,6 +5769,21 @@ pub struct PlayerArmorDamage {
 impl PlayerArmorDamage {
     pub const ID: u32 = 149;
 }
+impl wire::Encode for PlayerArmorDamage {
+    fn encode(&self, writer: &mut wire::Writer) {
+        wire::encode_collection(writer, self.armor_slot_and_damage_pairs.as_slice());
+    }
+}
+
+impl wire::Decode for PlayerArmorDamage {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let armor_slot_and_damage_pairs = wire::decode_collection::<ArmorSlotAndDamagePair>(reader, 3, wire::MAX_COLLECTION_ELEMENTS)?;
+        Ok(Self {
+            armor_slot_and_damage_pairs,
+        })
+    }
+}
+
 /// CodeBuilder is an Education Edition packet sent by the server to the client to open the URL to a
 /// Code Builder (websocket) server.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -2325,6 +5799,24 @@ pub struct CodeBuilder {
 impl CodeBuilder {
     pub const ID: u32 = 150;
 }
+impl wire::Encode for CodeBuilder {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.url.encode(writer);
+        self.should_open_code_builder.encode(writer);
+    }
+}
+
+impl wire::Decode for CodeBuilder {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let url = <String as wire::Decode>::decode(reader)?;
+        let should_open_code_builder = <bool as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            url,
+            should_open_code_builder,
+        })
+    }
+}
+
 /// UpdatePlayerGameType is sent by the server to change the game mode of a player. It is
 /// functionally identical to the SetPlayerGameType packet.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -2339,6 +5831,27 @@ pub struct UpdatePlayerGameType {
 impl UpdatePlayerGameType {
     pub const ID: u32 = 151;
 }
+impl wire::Encode for UpdatePlayerGameType {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.player_game_type.encode(writer);
+        self.target_player.encode(writer);
+        self.tick.encode(writer);
+    }
+}
+
+impl wire::Decode for UpdatePlayerGameType {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let player_game_type = <GameType as wire::Decode>::decode(reader)?;
+        let target_player = <ActorUniqueID as wire::Decode>::decode(reader)?;
+        let tick = <PlayerInputTick as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            player_game_type,
+            target_player,
+            tick,
+        })
+    }
+}
+
 /// EmoteList is sent by the client every time it joins the server and when it equips new emotes. It
 /// may be used by the server to find out which emotes the client has available. If the player has
 /// no emotes equipped, this packet is not sent. Under certain circumstances, this packet is also
@@ -2352,6 +5865,24 @@ pub struct EmoteList {
 impl EmoteList {
     pub const ID: u32 = 152;
 }
+impl wire::Encode for EmoteList {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.runtime_id.encode(writer);
+        wire::encode_collection(writer, self.emote_piece_ids.as_slice());
+    }
+}
+
+impl wire::Decode for EmoteList {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let runtime_id = <ActorRuntimeID as wire::Decode>::decode(reader)?;
+        let emote_piece_ids = wire::decode_collection::<uuid::Uuid>(reader, 16, wire::MAX_COLLECTION_ELEMENTS)?;
+        Ok(Self {
+            runtime_id,
+            emote_piece_ids,
+        })
+    }
+}
+
 /// PositionTrackingDBServerBroadcast is sent by the server in response to the
 /// PositionTrackingDBClientRequest packet. This packet is, as of 1.16, currently only used for
 /// lodestones. The server maintains a database with tracking IDs and their position and dimension.
@@ -2370,6 +5901,27 @@ pub struct PositionTrackingDBServerBroadcast {
 impl PositionTrackingDBServerBroadcast {
     pub const ID: u32 = 153;
 }
+impl wire::Encode for PositionTrackingDBServerBroadcast {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.action.encode(writer);
+        self.id.encode(writer);
+        self.position_tracking_data.encode(writer);
+    }
+}
+
+impl wire::Decode for PositionTrackingDBServerBroadcast {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let action = <PositionTrackingDBServerBroadcastAction as wire::Decode>::decode(reader)?;
+        let id = <PositionTrackingId as wire::Decode>::decode(reader)?;
+        let position_tracking_data = <wire::NetworkNbt as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            action,
+            id,
+            position_tracking_data,
+        })
+    }
+}
+
 /// PositionTrackingDBClientRequest is a packet sent by the client to request the position and
 /// dimension of a 'tracking ID'. These IDs are tracked in a database by the server. In 1.16, this
 /// is used for lodestones. The client will send this request to find the position a lodestone
@@ -2385,6 +5937,24 @@ pub struct PositionTrackingDBClientRequest {
 impl PositionTrackingDBClientRequest {
     pub const ID: u32 = 154;
 }
+impl wire::Encode for PositionTrackingDBClientRequest {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.action.encode(writer);
+        self.id.encode(writer);
+    }
+}
+
+impl wire::Decode for PositionTrackingDBClientRequest {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let action = <PositionTrackingDBClientRequestAction as wire::Decode>::decode(reader)?;
+        let id = <PositionTrackingId as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            action,
+            id,
+        })
+    }
+}
+
 /// DebugInfo is a packet sent by the server to the client. It does not seem to do anything when
 /// sent to the normal client in 1.16.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -2397,6 +5967,24 @@ pub struct DebugInfo {
 impl DebugInfo {
     pub const ID: u32 = 155;
 }
+impl wire::Encode for DebugInfo {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.actor_id.encode(writer);
+        self.data.encode(writer);
+    }
+}
+
+impl wire::Decode for DebugInfo {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let actor_id = <ActorUniqueID as wire::Decode>::decode(reader)?;
+        let data = <String as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            actor_id,
+            data,
+        })
+    }
+}
+
 /// PacketViolationWarning is sent by the client when it receives an invalid packet from the server.
 /// It holds some information on the error that occurred. noinspection GoNameStartsWithPackageName
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -2411,6 +5999,30 @@ pub struct PacketViolationWarning {
 impl PacketViolationWarning {
     pub const ID: u32 = 156;
 }
+impl wire::Encode for PacketViolationWarning {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.violation_type.encode(writer);
+        self.violation_severity.encode(writer);
+        self.violation_packet_id.encode(writer);
+        self.violation_context.encode(writer);
+    }
+}
+
+impl wire::Decode for PacketViolationWarning {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let violation_type = <PacketViolationType as wire::Decode>::decode(reader)?;
+        let violation_severity = <PacketViolationSeverity as wire::Decode>::decode(reader)?;
+        let violation_packet_id = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let violation_context = <String as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            violation_type,
+            violation_severity,
+            violation_packet_id,
+            violation_context,
+        })
+    }
+}
+
 /// MotionPredictionHints is sent by the server to the client. There is a predictive movement
 /// component for entities. This packet fills the "history" of that component and entity movement is
 /// computed based on the points. Vanilla sends this packet instead of the SetActorMotion packet
@@ -2425,6 +6037,27 @@ pub struct MotionPredictionHints {
 impl MotionPredictionHints {
     pub const ID: u32 = 157;
 }
+impl wire::Encode for MotionPredictionHints {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.m_runtime_id.encode(writer);
+        self.m_motion.encode(writer);
+        self.m_on_ground.encode(writer);
+    }
+}
+
+impl wire::Decode for MotionPredictionHints {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let m_runtime_id = <ActorRuntimeID as wire::Decode>::decode(reader)?;
+        let m_motion = <glam::Vec3 as wire::Decode>::decode(reader)?;
+        let m_on_ground = <bool as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            m_runtime_id,
+            m_motion,
+            m_on_ground,
+        })
+    }
+}
+
 /// AnimateEntity is sent by the server to animate an entity client-side. It may be used to play a
 /// single animation, or to activate a controller which can start a sequence of animations based on
 /// different conditions specified in an animation controller. Much of the documentation of this
@@ -2454,6 +6087,39 @@ pub struct AnimateEntity {
 impl AnimateEntity {
     pub const ID: u32 = 158;
 }
+impl wire::Encode for AnimateEntity {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.m_animation.encode(writer);
+        self.m_next_state.encode(writer);
+        self.m_stop_expression.encode(writer);
+        self.m_stop_expression_version.encode(writer);
+        self.m_controller.encode(writer);
+        self.m_blend_out_time.encode(writer);
+        wire::encode_collection(writer, self.m_runtime_ids.as_slice());
+    }
+}
+
+impl wire::Decode for AnimateEntity {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let m_animation = <String as wire::Decode>::decode(reader)?;
+        let m_next_state = <String as wire::Decode>::decode(reader)?;
+        let m_stop_expression = <String as wire::Decode>::decode(reader)?;
+        let m_stop_expression_version = <wire::I32LE as wire::Decode>::decode(reader)?;
+        let m_controller = <String as wire::Decode>::decode(reader)?;
+        let m_blend_out_time = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let m_runtime_ids = wire::decode_collection::<ActorRuntimeID>(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?;
+        Ok(Self {
+            m_animation,
+            m_next_state,
+            m_stop_expression,
+            m_stop_expression_version,
+            m_controller,
+            m_blend_out_time,
+            m_runtime_ids,
+        })
+    }
+}
+
 /// CameraShake is sent by the server to make the camera shake client-side. This feature was added
 /// for map- making partners.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -2469,6 +6135,30 @@ pub struct CameraShake {
 impl CameraShake {
     pub const ID: u32 = 159;
 }
+impl wire::Encode for CameraShake {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.intensity.encode(writer);
+        self.seconds.encode(writer);
+        self.shake_type.encode(writer);
+        self.shake_action.encode(writer);
+    }
+}
+
+impl wire::Decode for CameraShake {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let intensity = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let seconds = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let shake_type = <CameraShakeType as wire::Decode>::decode(reader)?;
+        let shake_action = <CameraShakeAction as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            intensity,
+            seconds,
+            shake_type,
+            shake_action,
+        })
+    }
+}
+
 /// PlayerFog is sent by the server to render the different fogs in the Stack. The types of fog are
 /// controlled by resource packs to change how they are rendered, and the ability to create custom
 /// fog.
@@ -2482,6 +6172,21 @@ pub struct PlayerFog {
 impl PlayerFog {
     pub const ID: u32 = 160;
 }
+impl wire::Encode for PlayerFog {
+    fn encode(&self, writer: &mut wire::Writer) {
+        wire::encode_collection(writer, self.fog_stack.as_slice());
+    }
+}
+
+impl wire::Decode for PlayerFog {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let fog_stack = wire::decode_collection::<String>(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?;
+        Ok(Self {
+            fog_stack,
+        })
+    }
+}
+
 /// CorrectPlayerMovePrediction is sent by the server if and only if
 /// StartGame.ServerAuthoritativeMovementMode is set to AuthoritativeMovementModeServerWithRewind.
 /// The packet is used to correct movement at a specific point in time.
@@ -2506,6 +6211,51 @@ pub struct CorrectPlayerMovePrediction {
 impl CorrectPlayerMovePrediction {
     pub const ID: u32 = 161;
 }
+impl wire::Encode for CorrectPlayerMovePrediction {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.prediction_type.encode(writer);
+        self.pos.encode(writer);
+        self.pos_delta.encode(writer);
+        self.rotation.encode(writer);
+        match &self.vehicle_angular_velocity {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+        self.on_ground.encode(writer);
+        self.tick.encode(writer);
+    }
+}
+
+impl wire::Decode for CorrectPlayerMovePrediction {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let prediction_type = <RewindType as wire::Decode>::decode(reader)?;
+        let pos = <glam::Vec3 as wire::Decode>::decode(reader)?;
+        let pos_delta = <glam::Vec3 as wire::Decode>::decode(reader)?;
+        let rotation = <glam::Vec2 as wire::Decode>::decode(reader)?;
+        let vehicle_angular_velocity = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::F32LE as wire::Decode>::decode(reader)?)
+            }
+        };
+        let on_ground = <bool as wire::Decode>::decode(reader)?;
+        let tick = <PlayerInputTick as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            prediction_type,
+            pos,
+            pos_delta,
+            rotation,
+            vehicle_angular_velocity,
+            on_ground,
+            tick,
+        })
+    }
+}
+
 /// ItemRegistry is sent by the server to send the client a list of available items and attach
 /// client-side components to a custom item. This packet was formerly known as the ItemComponent
 /// packet before 1.21.60, which did not include item definitions but only the components.
@@ -2520,6 +6270,21 @@ pub struct ItemRegistry {
 impl ItemRegistry {
     pub const ID: u32 = 162;
 }
+impl wire::Encode for ItemRegistry {
+    fn encode(&self, writer: &mut wire::Writer) {
+        wire::encode_collection(writer, self.item_data.as_slice());
+    }
+}
+
+impl wire::Decode for ItemRegistry {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let item_data = wire::decode_collection::<ItemData>(reader, 6, wire::MAX_COLLECTION_ELEMENTS)?;
+        Ok(Self {
+            item_data,
+        })
+    }
+}
+
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ClientboundDebugRenderer {
     pub type_: String,
@@ -2530,6 +6295,36 @@ pub struct ClientboundDebugRenderer {
 impl ClientboundDebugRenderer {
     pub const ID: u32 = 164;
 }
+impl wire::Encode for ClientboundDebugRenderer {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.type_.encode(writer);
+        match &self.debug_marker_data {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+    }
+}
+
+impl wire::Decode for ClientboundDebugRenderer {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let type_ = <String as wire::Decode>::decode(reader)?;
+        let debug_marker_data = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<DebugMarkerData as wire::Decode>::decode(reader)?)
+            }
+        };
+        Ok(Self {
+            type_,
+            debug_marker_data,
+        })
+    }
+}
+
 /// SyncActorProperty is an alternative to synced actor data.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SyncActorProperty {
@@ -2540,6 +6335,21 @@ pub struct SyncActorProperty {
 impl SyncActorProperty {
     pub const ID: u32 = 165;
 }
+impl wire::Encode for SyncActorProperty {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.property_data.encode(writer);
+    }
+}
+
+impl wire::Decode for SyncActorProperty {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let property_data = <wire::NetworkNbt as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            property_data,
+        })
+    }
+}
+
 /// AddVolumeEntity sends a volume entity's definition and metadata from server to client.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct AddVolumeEntity {
@@ -2557,6 +6367,42 @@ pub struct AddVolumeEntity {
 impl AddVolumeEntity {
     pub const ID: u32 = 166;
 }
+impl wire::Encode for AddVolumeEntity {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.entity_network_id.encode(writer);
+        self.components.encode(writer);
+        self.json_identifier.encode(writer);
+        self.instance_name.encode(writer);
+        self.min_bounds.encode(writer);
+        self.max_bounds.encode(writer);
+        self.dimension_type.encode(writer);
+        self.engine_version.encode(writer);
+    }
+}
+
+impl wire::Decode for AddVolumeEntity {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let entity_network_id = <EntityNetId as wire::Decode>::decode(reader)?;
+        let components = <wire::NetworkNbt as wire::Decode>::decode(reader)?;
+        let json_identifier = <String as wire::Decode>::decode(reader)?;
+        let instance_name = <String as wire::Decode>::decode(reader)?;
+        let min_bounds = <BlockPos as wire::Decode>::decode(reader)?;
+        let max_bounds = <BlockPos as wire::Decode>::decode(reader)?;
+        let dimension_type = <DimensionType as wire::Decode>::decode(reader)?;
+        let engine_version = <String as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            entity_network_id,
+            components,
+            json_identifier,
+            instance_name,
+            min_bounds,
+            max_bounds,
+            dimension_type,
+            engine_version,
+        })
+    }
+}
+
 /// RemoveVolumeEntity indicates a volume entity to be removed from server to client.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct RemoveVolumeEntity {
@@ -2567,6 +6413,24 @@ pub struct RemoveVolumeEntity {
 impl RemoveVolumeEntity {
     pub const ID: u32 = 167;
 }
+impl wire::Encode for RemoveVolumeEntity {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.entity_network_id.encode(writer);
+        self.dimension_type.encode(writer);
+    }
+}
+
+impl wire::Decode for RemoveVolumeEntity {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let entity_network_id = <EntityNetId as wire::Decode>::decode(reader)?;
+        let dimension_type = <DimensionType as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            entity_network_id,
+            dimension_type,
+        })
+    }
+}
+
 /// SimulationType is an in-progress packet. We currently do not know the use case.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SimulationType {
@@ -2577,6 +6441,21 @@ pub struct SimulationType {
 impl SimulationType {
     pub const ID: u32 = 168;
 }
+impl wire::Encode for SimulationType {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.sim_type.encode(writer);
+    }
+}
+
+impl wire::Decode for SimulationType {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let sim_type = <SimulationTypeEnum as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            sim_type,
+        })
+    }
+}
+
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct NpcDialogue {
     pub npc_id_raw_id: wire::U64LE,
@@ -2590,6 +6469,36 @@ pub struct NpcDialogue {
 impl NpcDialogue {
     pub const ID: u32 = 169;
 }
+impl wire::Encode for NpcDialogue {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.npc_id_raw_id.encode(writer);
+        self.npc_dialogue_action_type.encode(writer);
+        self.dialogue.encode(writer);
+        self.scene_name.encode(writer);
+        self.npc_name.encode(writer);
+        self.action_json.encode(writer);
+    }
+}
+
+impl wire::Decode for NpcDialogue {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let npc_id_raw_id = <wire::U64LE as wire::Decode>::decode(reader)?;
+        let npc_dialogue_action_type = <NpcDialogueActionType as wire::Decode>::decode(reader)?;
+        let dialogue = <String as wire::Decode>::decode(reader)?;
+        let scene_name = <String as wire::Decode>::decode(reader)?;
+        let npc_name = <String as wire::Decode>::decode(reader)?;
+        let action_json = <String as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            npc_id_raw_id,
+            npc_dialogue_action_type,
+            dialogue,
+            scene_name,
+            npc_name,
+            action_json,
+        })
+    }
+}
+
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct EduUriResource {
     pub edu_shared_uri_resource: EduSharedUriResource,
@@ -2598,6 +6507,21 @@ pub struct EduUriResource {
 impl EduUriResource {
     pub const ID: u32 = 170;
 }
+impl wire::Encode for EduUriResource {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.edu_shared_uri_resource.encode(writer);
+    }
+}
+
+impl wire::Decode for EduUriResource {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let edu_shared_uri_resource = <EduSharedUriResource as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            edu_shared_uri_resource,
+        })
+    }
+}
+
 /// CreatePhoto is a packet that allows players to export photos from their portfolios into items in
 /// their inventory. This packet only works on the Education Edition version of Minecraft.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -2611,6 +6535,27 @@ pub struct CreatePhoto {
 impl CreatePhoto {
     pub const ID: u32 = 171;
 }
+impl wire::Encode for CreatePhoto {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.raw_id.encode(writer);
+        self.photo_name.encode(writer);
+        self.photo_item_name.encode(writer);
+    }
+}
+
+impl wire::Decode for CreatePhoto {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let raw_id = <wire::U64LE as wire::Decode>::decode(reader)?;
+        let photo_name = <String as wire::Decode>::decode(reader)?;
+        let photo_item_name = <String as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            raw_id,
+            photo_name,
+            photo_item_name,
+        })
+    }
+}
+
 /// UpdateSubChunkBlocks is essentially just UpdateBlock packet, however for a set of blocks in a
 /// sub-chunk.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -2622,6 +6567,24 @@ pub struct UpdateSubChunkBlocks {
 impl UpdateSubChunkBlocks {
     pub const ID: u32 = 172;
 }
+impl wire::Encode for UpdateSubChunkBlocks {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.sub_chunk_block_position.encode(writer);
+        self.blocks_changed.encode(writer);
+    }
+}
+
+impl wire::Decode for UpdateSubChunkBlocks {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let sub_chunk_block_position = <BlockPos as wire::Decode>::decode(reader)?;
+        let blocks_changed = <UpdateSubChunkBlocksChangedInfo as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            sub_chunk_block_position,
+            blocks_changed,
+        })
+    }
+}
+
 /// SubChunk sends data about multiple sub-chunks around a center point.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SubChunk {
@@ -2635,6 +6598,30 @@ pub struct SubChunk {
 impl SubChunk {
     pub const ID: u32 = 174;
 }
+impl wire::Encode for SubChunk {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.cache_enabled.encode(writer);
+        self.dimension_type.encode(writer);
+        self.center_pos.encode(writer);
+        wire::encode_collection(writer, self.sub_chunk_data.as_slice());
+    }
+}
+
+impl wire::Decode for SubChunk {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let cache_enabled = <bool as wire::Decode>::decode(reader)?;
+        let dimension_type = <DimensionType as wire::Decode>::decode(reader)?;
+        let center_pos = <SubChunkPos as wire::Decode>::decode(reader)?;
+        let sub_chunk_data = wire::decode_collection::<SubChunkData>(reader, 10, wire::MAX_COLLECTION_ELEMENTS)?;
+        Ok(Self {
+            cache_enabled,
+            dimension_type,
+            center_pos,
+            sub_chunk_data,
+        })
+    }
+}
+
 /// SubChunkRequest requests specific sub-chunks from the server using a center point.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SubChunkRequest {
@@ -2646,6 +6633,27 @@ pub struct SubChunkRequest {
 impl SubChunkRequest {
     pub const ID: u32 = 175;
 }
+impl wire::Encode for SubChunkRequest {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.dimension_type.encode(writer);
+        wire::encode_collection(writer, self.sub_chunk_position_offset_list.as_slice());
+        self.center_pos.encode(writer);
+    }
+}
+
+impl wire::Decode for SubChunkRequest {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let dimension_type = <DimensionType as wire::Decode>::decode(reader)?;
+        let sub_chunk_position_offset_list = wire::decode_collection::<SubChunkPosOffset>(reader, 3, wire::MAX_COLLECTION_ELEMENTS)?;
+        let center_pos = <SubChunkPos as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            dimension_type,
+            sub_chunk_position_offset_list,
+            center_pos,
+        })
+    }
+}
+
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PlayerStartItemCooldown {
     pub item_category: String,
@@ -2655,6 +6663,24 @@ pub struct PlayerStartItemCooldown {
 impl PlayerStartItemCooldown {
     pub const ID: u32 = 176;
 }
+impl wire::Encode for PlayerStartItemCooldown {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.item_category.encode(writer);
+        self.duration_ticks.encode(writer);
+    }
+}
+
+impl wire::Decode for PlayerStartItemCooldown {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let item_category = <String as wire::Decode>::decode(reader)?;
+        let duration_ticks = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            item_category,
+            duration_ticks,
+        })
+    }
+}
+
 /// ScriptMessage is used to communicate custom messages from the client to the server, or from the
 /// server to the client. While the name may suggest this packet is used for the discontinued
 /// scripting API, it is likely instead for the GameTest framework.
@@ -2667,6 +6693,24 @@ pub struct ScriptMessage {
 impl ScriptMessage {
     pub const ID: u32 = 177;
 }
+impl wire::Encode for ScriptMessage {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.message_id.encode(writer);
+        self.message_value.encode(writer);
+    }
+}
+
+impl wire::Decode for ScriptMessage {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let message_id = <String as wire::Decode>::decode(reader)?;
+        let message_value = <String as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            message_id,
+            message_value,
+        })
+    }
+}
+
 /// CodeBuilderSource is an Education Edition packet sent by the client to the server to run an
 /// operation with a code builder.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -2684,6 +6728,27 @@ pub struct CodeBuilderSource {
 impl CodeBuilderSource {
     pub const ID: u32 = 178;
 }
+impl wire::Encode for CodeBuilderSource {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.operation.encode(writer);
+        self.category.encode(writer);
+        self.code_status.encode(writer);
+    }
+}
+
+impl wire::Decode for CodeBuilderSource {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let operation = <CodeBuilderStorageQueryOptionsOperation as wire::Decode>::decode(reader)?;
+        let category = <CodeBuilderStorageQueryOptionsCategory as wire::Decode>::decode(reader)?;
+        let code_status = <CodeBuilderExecutionStateCodeStatus as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            operation,
+            category,
+            code_status,
+        })
+    }
+}
+
 /// TickingAreasLoadStatus is sent by the server to the client to notify the client of a ticking
 /// area's loading status.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -2695,6 +6760,21 @@ pub struct TickingAreasLoadStatus {
 impl TickingAreasLoadStatus {
     pub const ID: u32 = 179;
 }
+impl wire::Encode for TickingAreasLoadStatus {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.waiting_for_preload.encode(writer);
+    }
+}
+
+impl wire::Decode for TickingAreasLoadStatus {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let waiting_for_preload = <bool as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            waiting_for_preload,
+        })
+    }
+}
+
 /// DimensionData is a packet sent from the server to the client containing information about
 /// data-driven dimensions that the server may have registered. This packet does not seem to be sent
 /// by default, rather only being sent when any data-driven dimensions are registered.
@@ -2707,6 +6787,21 @@ pub struct DimensionData {
 impl DimensionData {
     pub const ID: u32 = 180;
 }
+impl wire::Encode for DimensionData {
+    fn encode(&self, writer: &mut wire::Writer) {
+        wire::encode_map(writer, self.definitions.as_slice());
+    }
+}
+
+impl wire::Decode for DimensionData {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let definitions = wire::decode_map::<String, DimensionDefinition>(reader, 21, wire::MAX_COLLECTION_ELEMENTS)?;
+        Ok(Self {
+            definitions,
+        })
+    }
+}
+
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct AgentActionEvent {
     pub request_id: String,
@@ -2717,6 +6812,27 @@ pub struct AgentActionEvent {
 impl AgentActionEvent {
     pub const ID: u32 = 181;
 }
+impl wire::Encode for AgentActionEvent {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.request_id.encode(writer);
+        self.action.encode(writer);
+        self.response.encode(writer);
+    }
+}
+
+impl wire::Decode for AgentActionEvent {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let request_id = <String as wire::Decode>::decode(reader)?;
+        let action = <AgentActionType as wire::Decode>::decode(reader)?;
+        let response = <String as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            request_id,
+            action,
+            response,
+        })
+    }
+}
+
 /// ChangeMobProperty is a packet sent from the server to the client to change one of the properties
 /// of a mob client-side.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -2732,6 +6848,36 @@ pub struct ChangeMobProperty {
 impl ChangeMobProperty {
     pub const ID: u32 = 182;
 }
+impl wire::Encode for ChangeMobProperty {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.actor_id.encode(writer);
+        self.property_name.encode(writer);
+        self.bool_component_value.encode(writer);
+        self.string_component_value.encode(writer);
+        self.int_component_value.encode(writer);
+        self.float_component_value.encode(writer);
+    }
+}
+
+impl wire::Decode for ChangeMobProperty {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let actor_id = <ActorUniqueID as wire::Decode>::decode(reader)?;
+        let property_name = <String as wire::Decode>::decode(reader)?;
+        let bool_component_value = <bool as wire::Decode>::decode(reader)?;
+        let string_component_value = <String as wire::Decode>::decode(reader)?;
+        let int_component_value = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let float_component_value = <wire::F32LE as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            actor_id,
+            property_name,
+            bool_component_value,
+            string_component_value,
+            int_component_value,
+            float_component_value,
+        })
+    }
+}
+
 /// LessonProgress is a packet sent by the server to the client to inform the client of updated
 /// progress on a lesson. This packet only functions on the Minecraft: Education Edition version of
 /// the game.
@@ -2746,6 +6892,27 @@ pub struct LessonProgress {
 impl LessonProgress {
     pub const ID: u32 = 183;
 }
+impl wire::Encode for LessonProgress {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.lesson_action.encode(writer);
+        self.score.encode(writer);
+        self.activity_id.encode(writer);
+    }
+}
+
+impl wire::Decode for LessonProgress {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let lesson_action = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let score = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let activity_id = <String as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            lesson_action,
+            score,
+            activity_id,
+        })
+    }
+}
+
 /// RequestAbility is a packet sent by the client to the server to request permission for a specific
 /// ability from the server. These abilities are defined above.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -2761,6 +6928,30 @@ pub struct RequestAbility {
 impl RequestAbility {
     pub const ID: u32 = 184;
 }
+impl wire::Encode for RequestAbility {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.ability.encode(writer);
+        self.value_type.encode(writer);
+        self.bool.encode(writer);
+        self.float.encode(writer);
+    }
+}
+
+impl wire::Decode for RequestAbility {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let ability = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let value_type = <RequestAbilityType as wire::Decode>::decode(reader)?;
+        let bool = <bool as wire::Decode>::decode(reader)?;
+        let float = <wire::F32LE as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            ability,
+            value_type,
+            bool,
+            float,
+        })
+    }
+}
+
 /// RequestPermissions is a packet sent from the client to the server to request permissions that
 /// the client does not currently have. It can only be sent by operators and host in vanilla
 /// Minecraft.
@@ -2780,6 +6971,27 @@ pub struct RequestPermissions {
 impl RequestPermissions {
     pub const ID: u32 = 185;
 }
+impl wire::Encode for RequestPermissions {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.target_player_id_raw_id.encode(writer);
+        self.player_permission_level.encode(writer);
+        self.custom_permission_flags.encode(writer);
+    }
+}
+
+impl wire::Decode for RequestPermissions {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let target_player_id_raw_id = <wire::I64LE as wire::Decode>::decode(reader)?;
+        let player_permission_level = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let custom_permission_flags = <wire::U16LE as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            target_player_id_raw_id,
+            player_permission_level,
+            custom_permission_flags,
+        })
+    }
+}
+
 /// ToastRequest is a packet sent from the server to the client to display a toast to the top of the
 /// screen. These toasts are the same as the ones seen when, for example, loading a new resource
 /// pack or obtaining an achievement.
@@ -2794,6 +7006,24 @@ pub struct ToastRequest {
 impl ToastRequest {
     pub const ID: u32 = 186;
 }
+impl wire::Encode for ToastRequest {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.title.encode(writer);
+        self.content.encode(writer);
+    }
+}
+
+impl wire::Decode for ToastRequest {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let title = <String as wire::Decode>::decode(reader)?;
+        let content = <String as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            title,
+            content,
+        })
+    }
+}
+
 /// UpdateAbilities is a packet sent from the server to the client to update the abilities of the
 /// player. It, along with the UpdateAdventureSettings packet, are replacements of the
 /// AdventureSettings packet since v1.19.10.
@@ -2807,6 +7037,21 @@ pub struct UpdateAbilities {
 impl UpdateAbilities {
     pub const ID: u32 = 187;
 }
+impl wire::Encode for UpdateAbilities {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.data.encode(writer);
+    }
+}
+
+impl wire::Decode for UpdateAbilities {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let data = <SerializedAbilitiesData as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            data,
+        })
+    }
+}
+
 /// UpdateAdventureSettings is a packet sent from the server to the client to update the adventure
 /// settings of the player. It, along with the UpdateAbilities packet, are replacements of the
 /// AdventureSettings packet since v1.19.10.
@@ -2818,6 +7063,21 @@ pub struct UpdateAdventureSettings {
 impl UpdateAdventureSettings {
     pub const ID: u32 = 188;
 }
+impl wire::Encode for UpdateAdventureSettings {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.adventure_settings.encode(writer);
+    }
+}
+
+impl wire::Decode for UpdateAdventureSettings {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let adventure_settings = <AdventureSettings as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            adventure_settings,
+        })
+    }
+}
+
 /// DeathInfo is a packet sent from the server to the client expected to be sent when a player dies.
 /// It contains messages related to the player's death, which are shown on the death screen as of
 /// v1.19.10.
@@ -2833,6 +7093,24 @@ pub struct DeathInfo {
 impl DeathInfo {
     pub const ID: u32 = 189;
 }
+impl wire::Encode for DeathInfo {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.death_cause_attack_name.encode(writer);
+        wire::encode_collection(writer, self.death_cause_message_list.as_slice());
+    }
+}
+
+impl wire::Decode for DeathInfo {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let death_cause_attack_name = <String as wire::Decode>::decode(reader)?;
+        let death_cause_message_list = wire::decode_collection::<String>(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?;
+        Ok(Self {
+            death_cause_attack_name,
+            death_cause_message_list,
+        })
+    }
+}
+
 /// EditorNetwork is a packet sent from the server to the client and vise-versa to communicate
 /// editor-mode related information. It carries a single compound tag containing the relevant
 /// information.
@@ -2847,6 +7125,24 @@ pub struct EditorNetwork {
 impl EditorNetwork {
     pub const ID: u32 = 190;
 }
+impl wire::Encode for EditorNetwork {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.route_to_manager.encode(writer);
+        self.payload.encode(writer);
+    }
+}
+
+impl wire::Decode for EditorNetwork {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let route_to_manager = <bool as wire::Decode>::decode(reader)?;
+        let payload = <wire::NetworkNbt as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            route_to_manager,
+            payload,
+        })
+    }
+}
+
 /// FeatureRegistry is a packet used to notify the client about the world generation features the
 /// server is currently using. This is used in combination with the client-side world generation
 /// system introduced in v1.19.20, allowing the client to completely generate the chunks of the
@@ -2860,6 +7156,21 @@ pub struct FeatureRegistry {
 impl FeatureRegistry {
     pub const ID: u32 = 191;
 }
+impl wire::Encode for FeatureRegistry {
+    fn encode(&self, writer: &mut wire::Writer) {
+        wire::encode_collection(writer, self.features_data_list.as_slice());
+    }
+}
+
+impl wire::Decode for FeatureRegistry {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let features_data_list = wire::decode_collection::<FeatureRegistryFeatureBinaryJsonFormat>(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?;
+        Ok(Self {
+            features_data_list,
+        })
+    }
+}
+
 /// ServerStats is a packet sent from the server to the client to update the client on server
 /// statistics. It is purely used for telemetry.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -2873,6 +7184,24 @@ pub struct ServerStats {
 impl ServerStats {
     pub const ID: u32 = 192;
 }
+impl wire::Encode for ServerStats {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.server_time.encode(writer);
+        self.network_time.encode(writer);
+    }
+}
+
+impl wire::Decode for ServerStats {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let server_time = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let network_time = <wire::F32LE as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            server_time,
+            network_time,
+        })
+    }
+}
+
 /// RequestNetworkSettings is sent by the client to request network settings, such as compression,
 /// from the server.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -2885,6 +7214,21 @@ pub struct RequestNetworkSettings {
 impl RequestNetworkSettings {
     pub const ID: u32 = 193;
 }
+impl wire::Encode for RequestNetworkSettings {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.client_network_version.encode(writer);
+    }
+}
+
+impl wire::Decode for RequestNetworkSettings {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let client_network_version = <wire::I32BE as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            client_network_version,
+        })
+    }
+}
+
 /// GameTestRequest ...
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct GameTestRequest {
@@ -2903,6 +7247,39 @@ pub struct GameTestRequest {
 impl GameTestRequest {
     pub const ID: u32 = 194;
 }
+impl wire::Encode for GameTestRequest {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.max_tests_per_batch.encode(writer);
+        self.repeat_count.encode(writer);
+        self.rotation.encode(writer);
+        self.stop_on_failure.encode(writer);
+        self.test_pos.encode(writer);
+        self.tests_per_row.encode(writer);
+        self.test_name.encode(writer);
+    }
+}
+
+impl wire::Decode for GameTestRequest {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let max_tests_per_batch = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let repeat_count = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let rotation = <Rotation as wire::Decode>::decode(reader)?;
+        let stop_on_failure = <bool as wire::Decode>::decode(reader)?;
+        let test_pos = <BlockPos as wire::Decode>::decode(reader)?;
+        let tests_per_row = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let test_name = <String as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            max_tests_per_batch,
+            repeat_count,
+            rotation,
+            stop_on_failure,
+            test_pos,
+            tests_per_row,
+            test_name,
+        })
+    }
+}
+
 /// GameTestResults is a packet sent in response to the GameTestRequest packet, with a boolean
 /// indicating whether the test was successful or not, and an error string if the test failed.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -2917,6 +7294,27 @@ pub struct GameTestResults {
 impl GameTestResults {
     pub const ID: u32 = 195;
 }
+impl wire::Encode for GameTestResults {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.succeeded.encode(writer);
+        self.error.encode(writer);
+        self.test_name.encode(writer);
+    }
+}
+
+impl wire::Decode for GameTestResults {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let succeeded = <bool as wire::Decode>::decode(reader)?;
+        let error = <String as wire::Decode>::decode(reader)?;
+        let test_name = <String as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            succeeded,
+            error,
+            test_name,
+        })
+    }
+}
+
 /// UpdateClientInputLocks is sent by the server to the client to lock specific player inputs such
 /// as camera rotation, movement, jumping, sneaking, mounting or individual directional movement.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -2930,6 +7328,21 @@ pub struct UpdateClientInputLocks {
 impl UpdateClientInputLocks {
     pub const ID: u32 = 196;
 }
+impl wire::Encode for UpdateClientInputLocks {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.input_lock_component_data.encode(writer);
+    }
+}
+
+impl wire::Decode for UpdateClientInputLocks {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let input_lock_component_data = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            input_lock_component_data,
+        })
+    }
+}
+
 /// CameraPresets gives the client a list of custom camera presets.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CameraPresets {
@@ -2939,6 +7352,21 @@ pub struct CameraPresets {
 impl CameraPresets {
     pub const ID: u32 = 198;
 }
+impl wire::Encode for CameraPresets {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.camera_presets.encode(writer);
+    }
+}
+
+impl wire::Decode for CameraPresets {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let camera_presets = <CameraPresetList as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            camera_presets,
+        })
+    }
+}
+
 /// UnlockedRecipes gives the client a list of recipes that have been unlocked, restricting the
 /// recipes that appear in the recipe book.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -2950,6 +7378,24 @@ pub struct UnlockedRecipes {
 impl UnlockedRecipes {
     pub const ID: u32 = 199;
 }
+impl wire::Encode for UnlockedRecipes {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.packet_type.encode(writer);
+        wire::encode_collection(writer, self.unlocked_recipes_list.as_slice());
+    }
+}
+
+impl wire::Decode for UnlockedRecipes {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let packet_type = <PacketType as wire::Decode>::decode(reader)?;
+        let unlocked_recipes_list = wire::decode_collection::<String>(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?;
+        Ok(Self {
+            packet_type,
+            unlocked_recipes_list,
+        })
+    }
+}
+
 /// CameraInstruction gives a custom camera specific instructions to operate.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CameraInstruction {
@@ -2959,6 +7405,21 @@ pub struct CameraInstruction {
 impl CameraInstruction {
     pub const ID: u32 = 300;
 }
+impl wire::Encode for CameraInstruction {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.camera_instruction.encode(writer);
+    }
+}
+
+impl wire::Decode for CameraInstruction {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let camera_instruction = <CameraInstructionData as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            camera_instruction,
+        })
+    }
+}
+
 /// TrimData is sent by the server to the client when they first join the server. It contains a list
 /// of all the patterns and materials that can be applied via armour trims.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -2974,6 +7435,24 @@ pub struct TrimData {
 impl TrimData {
     pub const ID: u32 = 302;
 }
+impl wire::Encode for TrimData {
+    fn encode(&self, writer: &mut wire::Writer) {
+        wire::encode_collection(writer, self.trim_pattern_list.as_slice());
+        wire::encode_collection(writer, self.trim_material_list.as_slice());
+    }
+}
+
+impl wire::Decode for TrimData {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let trim_pattern_list = wire::decode_collection::<TrimPattern>(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?;
+        let trim_material_list = wire::decode_collection::<TrimMaterial>(reader, 3, wire::MAX_COLLECTION_ELEMENTS)?;
+        Ok(Self {
+            trim_pattern_list,
+            trim_material_list,
+        })
+    }
+}
+
 /// OpenSign is sent by the server to open a sign for editing. As of 1.19.80, the player can
 /// interact with a sign to edit the text on both sides instead of just the front.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -2989,6 +7468,24 @@ pub struct OpenSign {
 impl OpenSign {
     pub const ID: u32 = 303;
 }
+impl wire::Encode for OpenSign {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.pos.encode(writer);
+        self.is_front_side.encode(writer);
+    }
+}
+
+impl wire::Decode for OpenSign {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let pos = <BlockPos as wire::Decode>::decode(reader)?;
+        let is_front_side = <bool as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            pos,
+            is_front_side,
+        })
+    }
+}
+
 /// AgentAnimation is an Education Edition packet sent from the server to the client to make an
 /// agent perform an animation.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -3000,6 +7497,24 @@ pub struct AgentAnimation {
 impl AgentAnimation {
     pub const ID: u32 = 304;
 }
+impl wire::Encode for AgentAnimation {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.agent_animation.encode(writer);
+        self.runtime_id.encode(writer);
+    }
+}
+
+impl wire::Decode for AgentAnimation {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let agent_animation = <AgentAnimationType as wire::Decode>::decode(reader)?;
+        let runtime_id = <ActorRuntimeID as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            agent_animation,
+            runtime_id,
+        })
+    }
+}
+
 /// RefreshEntitlements is sent by the client to the server to refresh the entitlements of the
 /// player.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -3009,6 +7524,20 @@ pub struct RefreshEntitlements {
 impl RefreshEntitlements {
     pub const ID: u32 = 305;
 }
+impl wire::Encode for RefreshEntitlements {
+    fn encode(&self, writer: &mut wire::Writer) {
+        let _ = writer;
+    }
+}
+
+impl wire::Decode for RefreshEntitlements {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let _ = reader;
+        Ok(Self {
+        })
+    }
+}
+
 /// PlayerToggleCrafterSlotRequest is sent by the client when it tries to toggle the state of a slot
 /// within a Crafter.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -3026,6 +7555,33 @@ pub struct PlayerToggleCrafterSlotRequest {
 impl PlayerToggleCrafterSlotRequest {
     pub const ID: u32 = 306;
 }
+impl wire::Encode for PlayerToggleCrafterSlotRequest {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.pos_x.encode(writer);
+        self.pos_y.encode(writer);
+        self.pos_z.encode(writer);
+        self.slot_index.encode(writer);
+        self.is_disabled.encode(writer);
+    }
+}
+
+impl wire::Decode for PlayerToggleCrafterSlotRequest {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let pos_x = <wire::I32LE as wire::Decode>::decode(reader)?;
+        let pos_y = <wire::I32LE as wire::Decode>::decode(reader)?;
+        let pos_z = <wire::I32LE as wire::Decode>::decode(reader)?;
+        let slot_index = <wire::U8 as wire::Decode>::decode(reader)?;
+        let is_disabled = <bool as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            pos_x,
+            pos_y,
+            pos_z,
+            slot_index,
+            is_disabled,
+        })
+    }
+}
+
 /// SetPlayerInventoryOptions is a bidirectional packet that can be used to update the inventory
 /// options of a player.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -3036,6 +7592,21 @@ pub struct SetPlayerInventoryOptions {
 impl SetPlayerInventoryOptions {
     pub const ID: u32 = 307;
 }
+impl wire::Encode for SetPlayerInventoryOptions {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.inventory_options.encode(writer);
+    }
+}
+
+impl wire::Decode for SetPlayerInventoryOptions {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let inventory_options = <InventoryOptions as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            inventory_options,
+        })
+    }
+}
+
 /// SetHud is sent by the server to set the visibility of individual HUD elements on the client.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SetHud {
@@ -3046,6 +7617,24 @@ pub struct SetHud {
 impl SetHud {
     pub const ID: u32 = 308;
 }
+impl wire::Encode for SetHud {
+    fn encode(&self, writer: &mut wire::Writer) {
+        wire::encode_collection(writer, self.hud_element.as_slice());
+        self.hud_visible.encode(writer);
+    }
+}
+
+impl wire::Decode for SetHud {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let hud_element = wire::decode_collection::<HudElement>(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?;
+        let hud_visible = <HudVisibility as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            hud_element,
+            hud_visible,
+        })
+    }
+}
+
 /// AwardAchievement is sent by the server to award an achievement to a player.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct AwardAchievement {
@@ -3057,6 +7646,21 @@ pub struct AwardAchievement {
 impl AwardAchievement {
     pub const ID: u32 = 309;
 }
+impl wire::Encode for AwardAchievement {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.achievement_id.encode(writer);
+    }
+}
+
+impl wire::Decode for AwardAchievement {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let achievement_id = <wire::I32LE as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            achievement_id,
+        })
+    }
+}
+
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ClientboundCloseForm {
 }
@@ -3064,6 +7668,20 @@ pub struct ClientboundCloseForm {
 impl ClientboundCloseForm {
     pub const ID: u32 = 310;
 }
+impl wire::Encode for ClientboundCloseForm {
+    fn encode(&self, writer: &mut wire::Writer) {
+        let _ = writer;
+    }
+}
+
+impl wire::Decode for ClientboundCloseForm {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let _ = reader;
+        Ok(Self {
+        })
+    }
+}
+
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ServerboundLoadingScreen {
     pub loading_screen_packet_type: ServerboundLoadingScreenType,
@@ -3074,6 +7692,36 @@ pub struct ServerboundLoadingScreen {
 impl ServerboundLoadingScreen {
     pub const ID: u32 = 312;
 }
+impl wire::Encode for ServerboundLoadingScreen {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.loading_screen_packet_type.encode(writer);
+        match &self.loading_screen_id {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+    }
+}
+
+impl wire::Decode for ServerboundLoadingScreen {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let loading_screen_packet_type = <ServerboundLoadingScreenType as wire::Decode>::decode(reader)?;
+        let loading_screen_id = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::U32LE as wire::Decode>::decode(reader)?)
+            }
+        };
+        Ok(Self {
+            loading_screen_packet_type,
+            loading_screen_id,
+        })
+    }
+}
+
 /// JigsawStructureData is sent by the server to let the client know all the rules for jigsaw
 /// structures.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -3084,6 +7732,21 @@ pub struct JigsawStructureData {
 impl JigsawStructureData {
     pub const ID: u32 = 313;
 }
+impl wire::Encode for JigsawStructureData {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.jigsaw_structure_data_tag.encode(writer);
+    }
+}
+
+impl wire::Decode for JigsawStructureData {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let jigsaw_structure_data_tag = <wire::NetworkNbt as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            jigsaw_structure_data_tag,
+        })
+    }
+}
+
 /// CurrentStructureFeature is sent by the server to let the client know the name of the structure
 /// feature that the player is currently occupying.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -3096,6 +7759,21 @@ pub struct CurrentStructureFeature {
 impl CurrentStructureFeature {
     pub const ID: u32 = 314;
 }
+impl wire::Encode for CurrentStructureFeature {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.current_structure_feature.encode(writer);
+    }
+}
+
+impl wire::Decode for CurrentStructureFeature {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let current_structure_feature = <String as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            current_structure_feature,
+        })
+    }
+}
+
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ServerboundDiagnostics {
     pub avg_fps: wire::F32LE,
@@ -3117,6 +7795,60 @@ pub struct ServerboundDiagnostics {
 impl ServerboundDiagnostics {
     pub const ID: u32 = 315;
 }
+impl wire::Encode for ServerboundDiagnostics {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.avg_fps.encode(writer);
+        self.avg_server_sim_tick_time_ms.encode(writer);
+        self.avg_client_sim_tick_time_ms.encode(writer);
+        self.avg_begin_frame_time_ms.encode(writer);
+        self.avg_input_time_ms.encode(writer);
+        self.avg_render_time_ms.encode(writer);
+        self.avg_end_frame_time_ms.encode(writer);
+        self.avg_remainder_time_percent.encode(writer);
+        self.avg_unaccounted_time_percent.encode(writer);
+        wire::encode_collection(writer, self.memory_category_values.as_slice());
+        wire::encode_collection(writer, self.entity_diagnostics.as_slice());
+        wire::encode_collection(writer, self.system_diagnostics.as_slice());
+        wire::encode_collection(writer, self.system_categories.as_slice());
+        wire::encode_collection(writer, self.whisker_scopes.as_slice());
+    }
+}
+
+impl wire::Decode for ServerboundDiagnostics {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let avg_fps = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let avg_server_sim_tick_time_ms = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let avg_client_sim_tick_time_ms = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let avg_begin_frame_time_ms = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let avg_input_time_ms = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let avg_render_time_ms = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let avg_end_frame_time_ms = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let avg_remainder_time_percent = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let avg_unaccounted_time_percent = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let memory_category_values = wire::decode_collection::<MemoryCategoryCounter>(reader, 9, wire::MAX_COLLECTION_ELEMENTS)?;
+        let entity_diagnostics = wire::decode_collection::<ECSProfilingDiagnosticsEntityDiagnosticTimingInfo>(reader, 11, wire::MAX_COLLECTION_ELEMENTS)?;
+        let system_diagnostics = wire::decode_collection::<ECSProfilingDiagnosticsSystemDiagnosticTimingInfo>(reader, 18, wire::MAX_COLLECTION_ELEMENTS)?;
+        let system_categories = wire::decode_collection::<ECSProfilingDiagnosticsSystemCategory>(reader, 9, wire::MAX_COLLECTION_ELEMENTS)?;
+        let whisker_scopes = wire::decode_collection::<BedrockProfileWhiskerDiagnosticsScopeDataSummary>(reader, 26, wire::MAX_COLLECTION_ELEMENTS)?;
+        Ok(Self {
+            avg_fps,
+            avg_server_sim_tick_time_ms,
+            avg_client_sim_tick_time_ms,
+            avg_begin_frame_time_ms,
+            avg_input_time_ms,
+            avg_render_time_ms,
+            avg_end_frame_time_ms,
+            avg_remainder_time_percent,
+            avg_unaccounted_time_percent,
+            memory_category_values,
+            entity_diagnostics,
+            system_diagnostics,
+            system_categories,
+            whisker_scopes,
+        })
+    }
+}
+
 /// CameraAimAssist is sent by the server to the client to set up aim assist for the client's
 /// camera.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -3143,6 +7875,36 @@ pub struct CameraAimAssist {
 impl CameraAimAssist {
     pub const ID: u32 = 316;
 }
+impl wire::Encode for CameraAimAssist {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.preset_id.encode(writer);
+        self.view_angle.encode(writer);
+        self.distance.encode(writer);
+        self.target_mode.encode(writer);
+        self.action.encode(writer);
+        self.show_debug_render.encode(writer);
+    }
+}
+
+impl wire::Decode for CameraAimAssist {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let preset_id = <String as wire::Decode>::decode(reader)?;
+        let view_angle = <glam::Vec2 as wire::Decode>::decode(reader)?;
+        let distance = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let target_mode = <TargetMode as wire::Decode>::decode(reader)?;
+        let action = <CameraAimAssistAction as wire::Decode>::decode(reader)?;
+        let show_debug_render = <bool as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            preset_id,
+            view_angle,
+            distance,
+            target_mode,
+            action,
+            show_debug_render,
+        })
+    }
+}
+
 /// ContainerRegistryCleanup is sent by the server to trigger a client-side cleanup of the dynamic
 /// container registry.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -3155,6 +7917,21 @@ pub struct ContainerRegistryCleanup {
 impl ContainerRegistryCleanup {
     pub const ID: u32 = 317;
 }
+impl wire::Encode for ContainerRegistryCleanup {
+    fn encode(&self, writer: &mut wire::Writer) {
+        wire::encode_collection(writer, self.removed_containers.as_slice());
+    }
+}
+
+impl wire::Decode for ContainerRegistryCleanup {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let removed_containers = wire::decode_collection::<FullContainerName>(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?;
+        Ok(Self {
+            removed_containers,
+        })
+    }
+}
+
 /// MovementEffect is sent by the server to the client to update specific movement effects to allow
 /// the client to predict its movement. For example, fireworks used during gliding will send this
 /// packet to tell the client the exact duration of the boost.
@@ -3171,6 +7948,30 @@ pub struct MovementEffect {
 impl MovementEffect {
     pub const ID: u32 = 318;
 }
+impl wire::Encode for MovementEffect {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.target_runtime_id.encode(writer);
+        self.effect_id.encode(writer);
+        self.effect_duration.encode(writer);
+        self.tick.encode(writer);
+    }
+}
+
+impl wire::Decode for MovementEffect {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let target_runtime_id = <ActorRuntimeID as wire::Decode>::decode(reader)?;
+        let effect_id = <MovementEffectType as wire::Decode>::decode(reader)?;
+        let effect_duration = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let tick = <PlayerInputTick as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            target_runtime_id,
+            effect_id,
+            effect_duration,
+            tick,
+        })
+    }
+}
+
 /// CameraAimAssistPresets is sent by the server to the client to provide a list of categories and
 /// presets that can be used when sending a CameraAimAssist packet or a CameraInstruction including
 /// aim assist.
@@ -3189,6 +7990,27 @@ pub struct CameraAimAssistPresets {
 impl CameraAimAssistPresets {
     pub const ID: u32 = 320;
 }
+impl wire::Encode for CameraAimAssistPresets {
+    fn encode(&self, writer: &mut wire::Writer) {
+        wire::encode_collection(writer, self.camera_aim_assist_presets.as_slice());
+        wire::encode_collection(writer, self.camera_aim_assist_categories.as_slice());
+        self.operation.encode(writer);
+    }
+}
+
+impl wire::Decode for CameraAimAssistPresets {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let camera_aim_assist_presets = wire::decode_collection::<CameraAimAssistCategoryDefinition>(reader, 7, wire::MAX_COLLECTION_ELEMENTS)?;
+        let camera_aim_assist_categories = wire::decode_collection::<CameraAimAssistPresetDefinition>(reader, 9, wire::MAX_COLLECTION_ELEMENTS)?;
+        let operation = <CameraAimAssistPresetOperation as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            camera_aim_assist_presets,
+            camera_aim_assist_categories,
+            operation,
+        })
+    }
+}
+
 /// ClientCameraAimAssist is sent by the server to send a player animation from one player to all
 /// viewers of that player. It is used for a couple of actions, such as arm swimming and critical
 /// hits.
@@ -3206,6 +8028,27 @@ pub struct ClientCameraAimAssist {
 impl ClientCameraAimAssist {
     pub const ID: u32 = 321;
 }
+impl wire::Encode for ClientCameraAimAssist {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.camera_preset_id.encode(writer);
+        self.action.encode(writer);
+        self.allow_aim_assist.encode(writer);
+    }
+}
+
+impl wire::Decode for ClientCameraAimAssist {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let camera_preset_id = <String as wire::Decode>::decode(reader)?;
+        let action = <ClientCameraAimAssistAction as wire::Decode>::decode(reader)?;
+        let allow_aim_assist = <bool as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            camera_preset_id,
+            action,
+            allow_aim_assist,
+        })
+    }
+}
+
 /// ClientMovementPredictionSync is sent by the client to the server periodically if the client has
 /// received movement corrections from the server, containing information about client-predictions
 /// that are relevant to movement.
@@ -3221,6 +8064,35 @@ pub struct ClientMovementPredictionSync {
 impl ClientMovementPredictionSync {
     pub const ID: u32 = 322;
 }
+impl wire::Encode for ClientMovementPredictionSync {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.actor_data_flag.encode(writer);
+        self.actor_bounding_box.encode(writer);
+        for item in self.movement_attributes.iter() {
+            item.encode(writer);
+        }
+        self.actor_unique_id.encode(writer);
+        self.actor_flying_state.encode(writer);
+    }
+}
+
+impl wire::Decode for ClientMovementPredictionSync {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let actor_data_flag = <ActorDataFlagComponent as wire::Decode>::decode(reader)?;
+        let actor_bounding_box = <ActorDataBoundingBoxComponent as wire::Decode>::decode(reader)?;
+        let movement_attributes = [<wire::F32LE as wire::Decode>::decode(reader)?, <wire::F32LE as wire::Decode>::decode(reader)?, <wire::F32LE as wire::Decode>::decode(reader)?, <wire::F32LE as wire::Decode>::decode(reader)?, <wire::F32LE as wire::Decode>::decode(reader)?, <wire::F32LE as wire::Decode>::decode(reader)?, <wire::F32LE as wire::Decode>::decode(reader)?, <wire::F32LE as wire::Decode>::decode(reader)?, <wire::F32LE as wire::Decode>::decode(reader)?];
+        let actor_unique_id = <ActorUniqueID as wire::Decode>::decode(reader)?;
+        let actor_flying_state = <bool as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            actor_data_flag,
+            actor_bounding_box,
+            movement_attributes,
+            actor_unique_id,
+            actor_flying_state,
+        })
+    }
+}
+
 /// UpdateClientOptions is sent by the client when some of the client's options are updated, such as
 /// the graphics mode.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -3237,6 +8109,48 @@ pub struct UpdateClientOptions {
 impl UpdateClientOptions {
     pub const ID: u32 = 323;
 }
+impl wire::Encode for UpdateClientOptions {
+    fn encode(&self, writer: &mut wire::Writer) {
+        match &self.graphics_mode_change {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+        match &self.filter_profanity_change {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+    }
+}
+
+impl wire::Decode for UpdateClientOptions {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let graphics_mode_change = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<GraphicsMode as wire::Decode>::decode(reader)?)
+            }
+        };
+        let filter_profanity_change = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<bool as wire::Decode>::decode(reader)?)
+            }
+        };
+        Ok(Self {
+            graphics_mode_change,
+            filter_profanity_change,
+        })
+    }
+}
+
 /// PlayerVideoCapture packet is sent by the server to start or stop video recording for a player.
 /// This packet only works on development builds and has no effect on retail builds. When recording,
 /// the client will save individual frames to '/LocalCache/minecraftpe' in the format specified
@@ -3250,6 +8164,21 @@ pub struct PlayerVideoCapture {
 impl PlayerVideoCapture {
     pub const ID: u32 = 324;
 }
+impl wire::Encode for PlayerVideoCapture {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.action.encode(writer);
+    }
+}
+
+impl wire::Decode for PlayerVideoCapture {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let action = <PlayerVideoCaptureData as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            action,
+        })
+    }
+}
+
 /// PlayerUpdateEntityOverrides is sent by the server to modify an entity's properties individually.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PlayerUpdateEntityOverrides {
@@ -3263,6 +8192,27 @@ pub struct PlayerUpdateEntityOverrides {
 impl PlayerUpdateEntityOverrides {
     pub const ID: u32 = 325;
 }
+impl wire::Encode for PlayerUpdateEntityOverrides {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.target_id.encode(writer);
+        self.property_index.encode(writer);
+        self.update.encode(writer);
+    }
+}
+
+impl wire::Decode for PlayerUpdateEntityOverrides {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let target_id = <ActorUniqueID as wire::Decode>::decode(reader)?;
+        let property_index = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let update = <PlayerUpdateEntityOverridesData as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            target_id,
+            property_index,
+            update,
+        })
+    }
+}
+
 /// PlayerLocation is sent by the server to the client to either update a player's position on the
 /// locator bar, or remove them completely. The client will determine how to render the player on
 /// the locator bar based on their own distance to Position.
@@ -3275,6 +8225,24 @@ pub struct PlayerLocation {
 impl PlayerLocation {
     pub const ID: u32 = 326;
 }
+impl wire::Encode for PlayerLocation {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.target_actor_id.encode(writer);
+        self.location.encode(writer);
+    }
+}
+
+impl wire::Decode for PlayerLocation {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let target_actor_id = <ActorUniqueID as wire::Decode>::decode(reader)?;
+        let location = <PlayerLocationData as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            target_actor_id,
+            location,
+        })
+    }
+}
+
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ClientboundControlSchemeSet {
     pub control_scheme: ControlScheme,
@@ -3283,6 +8251,21 @@ pub struct ClientboundControlSchemeSet {
 impl ClientboundControlSchemeSet {
     pub const ID: u32 = 327;
 }
+impl wire::Encode for ClientboundControlSchemeSet {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.control_scheme.encode(writer);
+    }
+}
+
+impl wire::Decode for ClientboundControlSchemeSet {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let control_scheme = <ControlScheme as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            control_scheme,
+        })
+    }
+}
+
 /// PrimitiveShapes is a packet sent by the server to instruct the client to render one or more
 /// shapes in the world. Shapes can be added, removed or updated based on the data provided
 /// individually.
@@ -3296,6 +8279,21 @@ pub struct PrimitiveShapes {
 impl PrimitiveShapes {
     pub const ID: u32 = 328;
 }
+impl wire::Encode for PrimitiveShapes {
+    fn encode(&self, writer: &mut wire::Writer) {
+        wire::encode_collection(writer, self.array_of_primitive_shapes_can_be_a_mix_of_new_updated_or_removed.as_slice());
+    }
+}
+
+impl wire::Decode for PrimitiveShapes {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let array_of_primitive_shapes_can_be_a_mix_of_new_updated_or_removed = wire::decode_collection::<PrimitiveShape>(reader, 11, wire::MAX_COLLECTION_ELEMENTS)?;
+        Ok(Self {
+            array_of_primitive_shapes_can_be_a_mix_of_new_updated_or_removed,
+        })
+    }
+}
+
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ServerboundPackSettingChange {
     pub pack_id: uuid::Uuid,
@@ -3306,6 +8304,27 @@ pub struct ServerboundPackSettingChange {
 impl ServerboundPackSettingChange {
     pub const ID: u32 = 329;
 }
+impl wire::Encode for ServerboundPackSettingChange {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.pack_id.encode(writer);
+        self.pack_setting_name.encode(writer);
+        self.pack_setting_value.encode(writer);
+    }
+}
+
+impl wire::Decode for ServerboundPackSettingChange {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let pack_id = <uuid::Uuid as wire::Decode>::decode(reader)?;
+        let pack_setting_name = <String as wire::Decode>::decode(reader)?;
+        let pack_setting_value = <ServerboundPackSettingChangePackSettingValue as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            pack_id,
+            pack_setting_name,
+            pack_setting_value,
+        })
+    }
+}
+
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ClientboundDataStore {
     pub updates: Vec<BedrockDDUI>,
@@ -3314,6 +8333,21 @@ pub struct ClientboundDataStore {
 impl ClientboundDataStore {
     pub const ID: u32 = 330;
 }
+impl wire::Encode for ClientboundDataStore {
+    fn encode(&self, writer: &mut wire::Writer) {
+        wire::encode_collection(writer, self.updates.as_slice());
+    }
+}
+
+impl wire::Decode for ClientboundDataStore {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let updates = wire::decode_collection::<BedrockDDUI>(reader, 2, wire::MAX_COLLECTION_ELEMENTS)?;
+        Ok(Self {
+            updates,
+        })
+    }
+}
+
 /// GraphicsOverrideParameter is sent by the server to override graphics parameters.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct GraphicsOverrideParameter {
@@ -3337,6 +8371,75 @@ pub struct GraphicsOverrideParameter {
 impl GraphicsOverrideParameter {
     pub const ID: u32 = 331;
 }
+impl wire::Encode for GraphicsOverrideParameter {
+    fn encode(&self, writer: &mut wire::Writer) {
+        wire::encode_map(writer, self.parameter_keyframe_values.as_slice());
+        match &self.float_value {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+        match &self.vec3_value {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+        self.biome_identifier.encode(writer);
+        match &self.player_identifier {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+        self.identifier_for_parameter.encode(writer);
+        self.reset_parameter.encode(writer);
+    }
+}
+
+impl wire::Decode for GraphicsOverrideParameter {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let parameter_keyframe_values = wire::decode_map::<wire::F32LE, glam::Vec3>(reader, 16, wire::MAX_COLLECTION_ELEMENTS)?;
+        let float_value = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::F32LE as wire::Decode>::decode(reader)?)
+            }
+        };
+        let vec3_value = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<glam::Vec3 as wire::Decode>::decode(reader)?)
+            }
+        };
+        let biome_identifier = <String as wire::Decode>::decode(reader)?;
+        let player_identifier = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<String as wire::Decode>::decode(reader)?)
+            }
+        };
+        let identifier_for_parameter = <GraphicsOverrideParameterType as wire::Decode>::decode(reader)?;
+        let reset_parameter = <bool as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            parameter_keyframe_values,
+            float_value,
+            vec3_value,
+            biome_identifier,
+            player_identifier,
+            identifier_for_parameter,
+            reset_parameter,
+        })
+    }
+}
+
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ServerboundDataStore {
     pub update: BedrockDDUIDataStoreUpdate,
@@ -3345,6 +8448,21 @@ pub struct ServerboundDataStore {
 impl ServerboundDataStore {
     pub const ID: u32 = 332;
 }
+impl wire::Encode for ServerboundDataStore {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.update.encode(writer);
+    }
+}
+
+impl wire::Decode for ServerboundDataStore {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let update = <BedrockDDUIDataStoreUpdate as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            update,
+        })
+    }
+}
+
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ClientboundDataDrivenUIShowScreen {
     pub screen_id: String,
@@ -3356,6 +8474,39 @@ pub struct ClientboundDataDrivenUIShowScreen {
 impl ClientboundDataDrivenUIShowScreen {
     pub const ID: u32 = 333;
 }
+impl wire::Encode for ClientboundDataDrivenUIShowScreen {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.screen_id.encode(writer);
+        self.form_id.encode(writer);
+        match &self.data_instance_id {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+    }
+}
+
+impl wire::Decode for ClientboundDataDrivenUIShowScreen {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let screen_id = <String as wire::Decode>::decode(reader)?;
+        let form_id = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let data_instance_id = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::U32LE as wire::Decode>::decode(reader)?)
+            }
+        };
+        Ok(Self {
+            screen_id,
+            form_id,
+            data_instance_id,
+        })
+    }
+}
+
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ClientboundDataDrivenUICloseScreen {
     /// Wire presence: optional value is preceded by a presence marker.
@@ -3365,6 +8516,33 @@ pub struct ClientboundDataDrivenUICloseScreen {
 impl ClientboundDataDrivenUICloseScreen {
     pub const ID: u32 = 334;
 }
+impl wire::Encode for ClientboundDataDrivenUICloseScreen {
+    fn encode(&self, writer: &mut wire::Writer) {
+        match &self.form_id {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+    }
+}
+
+impl wire::Decode for ClientboundDataDrivenUICloseScreen {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let form_id = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<wire::U32LE as wire::Decode>::decode(reader)?)
+            }
+        };
+        Ok(Self {
+            form_id,
+        })
+    }
+}
+
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ClientboundDataDrivenUIReload {
 }
@@ -3372,6 +8550,20 @@ pub struct ClientboundDataDrivenUIReload {
 impl ClientboundDataDrivenUIReload {
     pub const ID: u32 = 335;
 }
+impl wire::Encode for ClientboundDataDrivenUIReload {
+    fn encode(&self, writer: &mut wire::Writer) {
+        let _ = writer;
+    }
+}
+
+impl wire::Decode for ClientboundDataDrivenUIReload {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let _ = reader;
+        Ok(Self {
+        })
+    }
+}
+
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ClientboundTextureShift {
     pub action_id: ClientboundTextureShiftAction,
@@ -3387,6 +8579,42 @@ pub struct ClientboundTextureShift {
 impl ClientboundTextureShift {
     pub const ID: u32 = 336;
 }
+impl wire::Encode for ClientboundTextureShift {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.action_id.encode(writer);
+        self.collection_name.encode(writer);
+        self.from_step.encode(writer);
+        self.to_step.encode(writer);
+        wire::encode_collection(writer, self.all_steps.as_slice());
+        self.current_length_in_ticks.encode(writer);
+        self.total_length_in_ticks.encode(writer);
+        self.enabled.encode(writer);
+    }
+}
+
+impl wire::Decode for ClientboundTextureShift {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let action_id = <ClientboundTextureShiftAction as wire::Decode>::decode(reader)?;
+        let collection_name = <String as wire::Decode>::decode(reader)?;
+        let from_step = <String as wire::Decode>::decode(reader)?;
+        let to_step = <String as wire::Decode>::decode(reader)?;
+        let all_steps = wire::decode_collection::<String>(reader, 1, wire::MAX_COLLECTION_ELEMENTS)?;
+        let current_length_in_ticks = <wire::VarULong as wire::Decode>::decode(reader)?;
+        let total_length_in_ticks = <wire::VarULong as wire::Decode>::decode(reader)?;
+        let enabled = <bool as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            action_id,
+            collection_name,
+            from_step,
+            to_step,
+            all_steps,
+            current_length_in_ticks,
+            total_length_in_ticks,
+            enabled,
+        })
+    }
+}
+
 /// VoxelShapes is sent by the server to send voxel shape data to the client.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct VoxelShapes {
@@ -3401,6 +8629,27 @@ pub struct VoxelShapes {
 impl VoxelShapes {
     pub const ID: u32 = 337;
 }
+impl wire::Encode for VoxelShapes {
+    fn encode(&self, writer: &mut wire::Writer) {
+        wire::encode_collection(writer, self.shapes.as_slice());
+        wire::encode_map(writer, self.name_map.as_slice());
+        self.custom_shape_count.encode(writer);
+    }
+}
+
+impl wire::Decode for VoxelShapes {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let shapes = wire::decode_collection::<VoxelShapesSerializableVoxelShape>(reader, 7, wire::MAX_COLLECTION_ELEMENTS)?;
+        let name_map = wire::decode_map::<String, VoxelShapesRegistryHandle>(reader, 3, wire::MAX_COLLECTION_ELEMENTS)?;
+        let custom_shape_count = <wire::U16LE as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            shapes,
+            name_map,
+            custom_shape_count,
+        })
+    }
+}
+
 /// CameraSpline is sent by the server to define camera spline paths.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CameraSpline {
@@ -3411,6 +8660,21 @@ pub struct CameraSpline {
 impl CameraSpline {
     pub const ID: u32 = 338;
 }
+impl wire::Encode for CameraSpline {
+    fn encode(&self, writer: &mut wire::Writer) {
+        wire::encode_collection(writer, self.camera_data_splines.as_slice());
+    }
+}
+
+impl wire::Decode for CameraSpline {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let camera_data_splines = wire::decode_collection::<CameraSplineDefinition>(reader, 9, wire::MAX_COLLECTION_ELEMENTS)?;
+        Ok(Self {
+            camera_data_splines,
+        })
+    }
+}
+
 /// CameraAimAssistActorPriority is sent by the server to define actor-specific aim assist
 /// priorities.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -3422,6 +8686,21 @@ pub struct CameraAimAssistActorPriority {
 impl CameraAimAssistActorPriority {
     pub const ID: u32 = 339;
 }
+impl wire::Encode for CameraAimAssistActorPriority {
+    fn encode(&self, writer: &mut wire::Writer) {
+        wire::encode_collection(writer, self.camera_aim_assist_actor_priority_list.as_slice());
+    }
+}
+
+impl wire::Decode for CameraAimAssistActorPriority {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let camera_aim_assist_actor_priority_list = wire::decode_collection::<CameraAimAssistActorPriorityData>(reader, 16, wire::MAX_COLLECTION_ELEMENTS)?;
+        Ok(Self {
+            camera_aim_assist_actor_priority_list,
+        })
+    }
+}
+
 /// ResourcePacksReadyForValidation is sent by the client to inform the server that the client has
 /// finished loading resource packs and is ready for validation.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -3431,6 +8710,20 @@ pub struct ResourcePacksReadyForValidation {
 impl ResourcePacksReadyForValidation {
     pub const ID: u32 = 340;
 }
+impl wire::Encode for ResourcePacksReadyForValidation {
+    fn encode(&self, writer: &mut wire::Writer) {
+        let _ = writer;
+    }
+}
+
+impl wire::Decode for ResourcePacksReadyForValidation {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let _ = reader;
+        Ok(Self {
+        })
+    }
+}
+
 /// LocatorBar is sent by the server to add, remove or update waypoints on the client's locator bar.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct LocatorBar {
@@ -3441,6 +8734,21 @@ pub struct LocatorBar {
 impl LocatorBar {
     pub const ID: u32 = 341;
 }
+impl wire::Encode for LocatorBar {
+    fn encode(&self, writer: &mut wire::Writer) {
+        wire::encode_collection(writer, self.waypoints.as_slice());
+    }
+}
+
+impl wire::Decode for LocatorBar {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let waypoints = wire::decode_collection::<LocatorBarWaypoint>(reader, 28, wire::MAX_COLLECTION_ELEMENTS)?;
+        Ok(Self {
+            waypoints,
+        })
+    }
+}
+
 /// PartyChanged is sent by the client to the server to indicate that the player's party ID has
 /// changed.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -3452,6 +8760,33 @@ pub struct PartyChanged {
 impl PartyChanged {
     pub const ID: u32 = 342;
 }
+impl wire::Encode for PartyChanged {
+    fn encode(&self, writer: &mut wire::Writer) {
+        match &self.party_info {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+    }
+}
+
+impl wire::Decode for PartyChanged {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let party_info = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<PlayerPartyInfo as wire::Decode>::decode(reader)?)
+            }
+        };
+        Ok(Self {
+            party_info,
+        })
+    }
+}
+
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ServerboundDataDrivenScreenClosed {
     pub form_id: wire::U32LE,
@@ -3461,6 +8796,24 @@ pub struct ServerboundDataDrivenScreenClosed {
 impl ServerboundDataDrivenScreenClosed {
     pub const ID: u32 = 343;
 }
+impl wire::Encode for ServerboundDataDrivenScreenClosed {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.form_id.encode(writer);
+        self.close_reason.encode(writer);
+    }
+}
+
+impl wire::Decode for ServerboundDataDrivenScreenClosed {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let form_id = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let close_reason = <String as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            form_id,
+            close_reason,
+        })
+    }
+}
+
 /// SyncWorldClocks is sent by the server to initialise and synchronise world clocks with the
 /// client.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -3471,6 +8824,21 @@ pub struct SyncWorldClocks {
 impl SyncWorldClocks {
     pub const ID: u32 = 344;
 }
+impl wire::Encode for SyncWorldClocks {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.data.encode(writer);
+    }
+}
+
+impl wire::Decode for SyncWorldClocks {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let data = <SyncWorldClocksData as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            data,
+        })
+    }
+}
+
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ClientboundAttributeLayerSync {
     pub data: AttributeLayerSyncData,
@@ -3479,6 +8847,21 @@ pub struct ClientboundAttributeLayerSync {
 impl ClientboundAttributeLayerSync {
     pub const ID: u32 = 345;
 }
+impl wire::Encode for ClientboundAttributeLayerSync {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.data.encode(writer);
+    }
+}
+
+impl wire::Decode for ClientboundAttributeLayerSync {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let data = <AttributeLayerSyncData as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            data,
+        })
+    }
+}
+
 /// ServerStoreInfo is sent by the server to provide the client with a store entry point. Like the
 /// ShowStoreOffer packet, this only has an effect on partnered servers.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -3492,6 +8875,33 @@ pub struct ServerStoreInfo {
 impl ServerStoreInfo {
     pub const ID: u32 = 346;
 }
+impl wire::Encode for ServerStoreInfo {
+    fn encode(&self, writer: &mut wire::Writer) {
+        match &self.client_store_entry_point_configuration {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+    }
+}
+
+impl wire::Decode for ServerStoreInfo {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let client_store_entry_point_configuration = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<ServerConfigurationClientStoreEntryPointConfiguration as wire::Decode>::decode(reader)?)
+            }
+        };
+        Ok(Self {
+            client_store_entry_point_configuration,
+        })
+    }
+}
+
 /// ServerPresenceInfo is sent by the server to provide the client with presence info.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ServerPresenceInfo {
@@ -3503,6 +8913,33 @@ pub struct ServerPresenceInfo {
 impl ServerPresenceInfo {
     pub const ID: u32 = 347;
 }
+impl wire::Encode for ServerPresenceInfo {
+    fn encode(&self, writer: &mut wire::Writer) {
+        match &self.presence_configuration {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+    }
+}
+
+impl wire::Decode for ServerPresenceInfo {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let presence_configuration = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<ServerConfigurationPresenceConfiguration as wire::Decode>::decode(reader)?)
+            }
+        };
+        Ok(Self {
+            presence_configuration,
+        })
+    }
+}
+
 /// ClientboundUpdateSoundData is sent by the server to update a sound that is currently playing,
 /// identified by the handle that the server sent in the PlaySound packet that started it. Each
 /// optional field is a Cereal union slot that may hold any SoundDataUpdate variant; its name does
@@ -3530,6 +8967,126 @@ pub struct ClientboundUpdateSoundData {
 impl ClientboundUpdateSoundData {
     pub const ID: u32 = 348;
 }
+impl wire::Encode for ClientboundUpdateSoundData {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.server_sound_handle.encode(writer);
+        match &self.stop {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+        match &self.set_volume {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+        match &self.set_pitch {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+        match &self.fade {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+        match &self.seek_to {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+        match &self.pause {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+        match &self.resume {
+            Some(value) => {
+                writer.write_u8(1);
+                value.encode(writer);
+            }
+            None => writer.write_u8(0),
+        }
+    }
+}
+
+impl wire::Decode for ClientboundUpdateSoundData {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let server_sound_handle = <ServerSoundHandle as wire::Decode>::decode(reader)?;
+        let stop = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<SoundDataEvent as wire::Decode>::decode(reader)?)
+            }
+        };
+        let set_volume = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<SoundDataEvent as wire::Decode>::decode(reader)?)
+            }
+        };
+        let set_pitch = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<SoundDataEvent as wire::Decode>::decode(reader)?)
+            }
+        };
+        let fade = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<SoundDataEvent as wire::Decode>::decode(reader)?)
+            }
+        };
+        let seek_to = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<SoundDataEvent as wire::Decode>::decode(reader)?)
+            }
+        };
+        let pause = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<SoundDataEvent as wire::Decode>::decode(reader)?)
+            }
+        };
+        let resume = {
+            if reader.read_u8()? == 0 {
+                None
+            } else {
+                Some(<SoundDataEvent as wire::Decode>::decode(reader)?)
+            }
+        };
+        Ok(Self {
+            server_sound_handle,
+            stop,
+            set_volume,
+            set_pitch,
+            fade,
+            seek_to,
+            pause,
+            resume,
+        })
+    }
+}
+
 /// SendPartyDestinationCookie is sent by the server to a client with a party destination cookie.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SendPartyDestinationCookie {
@@ -3544,6 +9101,27 @@ pub struct SendPartyDestinationCookie {
 impl SendPartyDestinationCookie {
     pub const ID: u32 = 349;
 }
+impl wire::Encode for SendPartyDestinationCookie {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.cookie.encode(writer);
+        self.intent.encode(writer);
+        self.destination_name.encode(writer);
+    }
+}
+
+impl wire::Decode for SendPartyDestinationCookie {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let cookie = <String as wire::Decode>::decode(reader)?;
+        let intent = <String as wire::Decode>::decode(reader)?;
+        let destination_name = <String as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            cookie,
+            intent,
+            destination_name,
+        })
+    }
+}
+
 /// PartyDestinationCookieResponse is sent by the client to the server in response to a
 /// SendPartyDestinationCookie packet.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -3558,6 +9136,24 @@ pub struct PartyDestinationCookieResponse {
 impl PartyDestinationCookieResponse {
     pub const ID: u32 = 350;
 }
+impl wire::Encode for PartyDestinationCookieResponse {
+    fn encode(&self, writer: &mut wire::Writer) {
+        self.cookie.encode(writer);
+        self.accepted.encode(writer);
+    }
+}
+
+impl wire::Decode for PartyDestinationCookieResponse {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        let cookie = <String as wire::Decode>::decode(reader)?;
+        let accepted = <bool as wire::Decode>::decode(reader)?;
+        Ok(Self {
+            cookie,
+            accepted,
+        })
+    }
+}
+
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 #[repr(u32)]
@@ -5634,5 +11230,986 @@ impl From<SendPartyDestinationCookie> for Packet {
 impl From<PartyDestinationCookieResponse> for Packet {
     fn from(value: PartyDestinationCookieResponse) -> Self {
         Self::PartyDestinationCookieResponse(value)
+    }
+}
+
+
+/// Which peer may send a packet.
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+pub enum Direction {
+    Clientbound,
+    Serverbound,
+    Bidirectional,
+}
+
+impl Direction {
+    /// Reports whether a packet with this direction may be sent by the peer.
+    pub const fn permits(self, sender: Peer) -> bool {
+        matches!(
+            (self, sender),
+            (Self::Bidirectional, _)
+                | (Self::Clientbound, Peer::Server)
+                | (Self::Serverbound, Peer::Client)
+        )
+    }
+}
+
+/// The peer that produced a packet.
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+pub enum Peer {
+    Client,
+    Server,
+}
+
+impl PacketId {
+    pub const fn direction(self) -> Direction {
+        match self {
+            Self::Login => Direction::Bidirectional,
+            Self::PlayStatus => Direction::Clientbound,
+            Self::ServerToClientHandshake => Direction::Clientbound,
+            Self::ClientToServerHandshake => Direction::Bidirectional,
+            Self::Disconnect => Direction::Clientbound,
+            Self::ResourcePacksInfo => Direction::Clientbound,
+            Self::ResourcePackStack => Direction::Clientbound,
+            Self::ResourcePackClientResponse => Direction::Bidirectional,
+            Self::Text => Direction::Bidirectional,
+            Self::SetTime => Direction::Clientbound,
+            Self::StartGame => Direction::Clientbound,
+            Self::AddPlayer => Direction::Clientbound,
+            Self::AddActor => Direction::Clientbound,
+            Self::RemoveActor => Direction::Clientbound,
+            Self::AddItemActor => Direction::Clientbound,
+            Self::ServerPlayerPostMovePosition => Direction::Clientbound,
+            Self::TakeItemActor => Direction::Clientbound,
+            Self::MoveActorAbsolute => Direction::Clientbound,
+            Self::MovePlayer => Direction::Bidirectional,
+            Self::UpdateBlock => Direction::Bidirectional,
+            Self::AddPainting => Direction::Clientbound,
+            Self::LevelEvent => Direction::Clientbound,
+            Self::BlockEvent => Direction::Clientbound,
+            Self::ActorEvent => Direction::Bidirectional,
+            Self::MobEffect => Direction::Clientbound,
+            Self::UpdateAttributes => Direction::Clientbound,
+            Self::InventoryTransaction => Direction::Bidirectional,
+            Self::MobEquipment => Direction::Bidirectional,
+            Self::MobArmorEquipment => Direction::Clientbound,
+            Self::Interact => Direction::Bidirectional,
+            Self::BlockPickRequest => Direction::Bidirectional,
+            Self::ActorPickRequest => Direction::Bidirectional,
+            Self::PlayerAction => Direction::Bidirectional,
+            Self::HurtArmor => Direction::Clientbound,
+            Self::SetActorData => Direction::Clientbound,
+            Self::SetActorMotion => Direction::Clientbound,
+            Self::SetActorLink => Direction::Bidirectional,
+            Self::SetHealth => Direction::Clientbound,
+            Self::SetSpawnPosition => Direction::Clientbound,
+            Self::Animate => Direction::Bidirectional,
+            Self::Respawn => Direction::Bidirectional,
+            Self::ContainerOpen => Direction::Bidirectional,
+            Self::ContainerClose => Direction::Bidirectional,
+            Self::PlayerHotbar => Direction::Clientbound,
+            Self::InventoryContent => Direction::Clientbound,
+            Self::InventorySlot => Direction::Clientbound,
+            Self::ContainerSetData => Direction::Clientbound,
+            Self::CraftingData => Direction::Clientbound,
+            Self::GuiDataPickItem => Direction::Clientbound,
+            Self::BlockActorData => Direction::Bidirectional,
+            Self::LevelChunk => Direction::Clientbound,
+            Self::SetCommandsEnabled => Direction::Clientbound,
+            Self::SetDifficulty => Direction::Bidirectional,
+            Self::ChangeDimension => Direction::Clientbound,
+            Self::SetPlayerGameType => Direction::Bidirectional,
+            Self::PlayerList => Direction::Clientbound,
+            Self::SimpleEvent => Direction::Bidirectional,
+            Self::LegacyTelemetryEvent => Direction::Clientbound,
+            Self::SpawnExperienceOrb => Direction::Bidirectional,
+            Self::ClientboundMapItemData => Direction::Clientbound,
+            Self::MapInfoRequest => Direction::Bidirectional,
+            Self::RequestChunkRadius => Direction::Bidirectional,
+            Self::ChunkRadiusUpdated => Direction::Clientbound,
+            Self::GameRulesChanged => Direction::Clientbound,
+            Self::Camera => Direction::Clientbound,
+            Self::BossEvent => Direction::Bidirectional,
+            Self::ShowCredits => Direction::Bidirectional,
+            Self::AvailableCommands => Direction::Clientbound,
+            Self::CommandRequest => Direction::Bidirectional,
+            Self::CommandBlockUpdate => Direction::Bidirectional,
+            Self::CommandOutput => Direction::Clientbound,
+            Self::UpdateTrade => Direction::Clientbound,
+            Self::UpdateEquip => Direction::Clientbound,
+            Self::ResourcePackDataInfo => Direction::Clientbound,
+            Self::ResourcePackChunkData => Direction::Clientbound,
+            Self::ResourcePackChunkRequest => Direction::Bidirectional,
+            Self::Transfer => Direction::Clientbound,
+            Self::PlaySound => Direction::Clientbound,
+            Self::StopSound => Direction::Clientbound,
+            Self::SetTitle => Direction::Clientbound,
+            Self::AddBehaviorTree => Direction::Clientbound,
+            Self::StructureBlockUpdate => Direction::Bidirectional,
+            Self::ShowStoreOffer => Direction::Clientbound,
+            Self::PurchaseReceipt => Direction::Bidirectional,
+            Self::PlayerSkin => Direction::Bidirectional,
+            Self::SubClientLogin => Direction::Bidirectional,
+            Self::AutomationClientConnect => Direction::Bidirectional,
+            Self::SetLastHurtBy => Direction::Clientbound,
+            Self::BookEdit => Direction::Bidirectional,
+            Self::NpcRequest => Direction::Bidirectional,
+            Self::PhotoTransfer => Direction::Clientbound,
+            Self::ModalFormRequest => Direction::Clientbound,
+            Self::ModalFormResponse => Direction::Bidirectional,
+            Self::ServerSettingsRequest => Direction::Bidirectional,
+            Self::ServerSettingsResponse => Direction::Clientbound,
+            Self::ShowProfile => Direction::Clientbound,
+            Self::SetDefaultGameType => Direction::Bidirectional,
+            Self::RemoveObjective => Direction::Clientbound,
+            Self::SetDisplayObjective => Direction::Clientbound,
+            Self::SetScore => Direction::Clientbound,
+            Self::LabTable => Direction::Bidirectional,
+            Self::UpdateBlockSynced => Direction::Clientbound,
+            Self::MoveActorDelta => Direction::Clientbound,
+            Self::SetScoreboardIdentity => Direction::Clientbound,
+            Self::SetLocalPlayerAsInitialized => Direction::Bidirectional,
+            Self::UpdateSoftEnum => Direction::Clientbound,
+            Self::NetworkStackLatency => Direction::Bidirectional,
+            Self::SpawnParticleEffect => Direction::Clientbound,
+            Self::AvailableActorIdentifiers => Direction::Clientbound,
+            Self::NetworkChunkPublisherUpdate => Direction::Clientbound,
+            Self::BiomeDefinitionList => Direction::Clientbound,
+            Self::LevelSoundEvent => Direction::Bidirectional,
+            Self::LevelEventGeneric => Direction::Clientbound,
+            Self::LecternUpdate => Direction::Bidirectional,
+            Self::ClientCacheStatus => Direction::Bidirectional,
+            Self::OnScreenTextureAnimation => Direction::Clientbound,
+            Self::MapCreateLockedCopy => Direction::Bidirectional,
+            Self::StructureTemplateDataRequest => Direction::Bidirectional,
+            Self::StructureTemplateDataResponse => Direction::Bidirectional,
+            Self::ClientCacheBlobStatus => Direction::Bidirectional,
+            Self::ClientCacheMissResponse => Direction::Clientbound,
+            Self::EducationSettings => Direction::Clientbound,
+            Self::Emote => Direction::Bidirectional,
+            Self::MultiplayerSettings => Direction::Bidirectional,
+            Self::SettingsCommand => Direction::Bidirectional,
+            Self::AnvilDamage => Direction::Bidirectional,
+            Self::CompletedUsingItem => Direction::Clientbound,
+            Self::NetworkSettings => Direction::Clientbound,
+            Self::PlayerAuthInput => Direction::Bidirectional,
+            Self::CreativeContent => Direction::Clientbound,
+            Self::PlayerEnchantOptions => Direction::Clientbound,
+            Self::ItemStackRequest => Direction::Bidirectional,
+            Self::ItemStackResponse => Direction::Clientbound,
+            Self::PlayerArmorDamage => Direction::Clientbound,
+            Self::CodeBuilder => Direction::Clientbound,
+            Self::UpdatePlayerGameType => Direction::Bidirectional,
+            Self::EmoteList => Direction::Bidirectional,
+            Self::PositionTrackingDBServerBroadcast => Direction::Clientbound,
+            Self::PositionTrackingDBClientRequest => Direction::Bidirectional,
+            Self::DebugInfo => Direction::Bidirectional,
+            Self::PacketViolationWarning => Direction::Bidirectional,
+            Self::MotionPredictionHints => Direction::Clientbound,
+            Self::AnimateEntity => Direction::Clientbound,
+            Self::CameraShake => Direction::Clientbound,
+            Self::PlayerFog => Direction::Clientbound,
+            Self::CorrectPlayerMovePrediction => Direction::Clientbound,
+            Self::ItemRegistry => Direction::Clientbound,
+            Self::ClientboundDebugRenderer => Direction::Clientbound,
+            Self::SyncActorProperty => Direction::Clientbound,
+            Self::AddVolumeEntity => Direction::Clientbound,
+            Self::RemoveVolumeEntity => Direction::Clientbound,
+            Self::SimulationType => Direction::Clientbound,
+            Self::NpcDialogue => Direction::Clientbound,
+            Self::EduUriResource => Direction::Clientbound,
+            Self::CreatePhoto => Direction::Bidirectional,
+            Self::UpdateSubChunkBlocks => Direction::Clientbound,
+            Self::SubChunk => Direction::Clientbound,
+            Self::SubChunkRequest => Direction::Bidirectional,
+            Self::PlayerStartItemCooldown => Direction::Clientbound,
+            Self::ScriptMessage => Direction::Bidirectional,
+            Self::CodeBuilderSource => Direction::Bidirectional,
+            Self::TickingAreasLoadStatus => Direction::Clientbound,
+            Self::DimensionData => Direction::Clientbound,
+            Self::AgentActionEvent => Direction::Clientbound,
+            Self::ChangeMobProperty => Direction::Clientbound,
+            Self::LessonProgress => Direction::Clientbound,
+            Self::RequestAbility => Direction::Bidirectional,
+            Self::RequestPermissions => Direction::Bidirectional,
+            Self::ToastRequest => Direction::Clientbound,
+            Self::UpdateAbilities => Direction::Clientbound,
+            Self::UpdateAdventureSettings => Direction::Clientbound,
+            Self::DeathInfo => Direction::Clientbound,
+            Self::EditorNetwork => Direction::Bidirectional,
+            Self::FeatureRegistry => Direction::Clientbound,
+            Self::ServerStats => Direction::Clientbound,
+            Self::RequestNetworkSettings => Direction::Bidirectional,
+            Self::GameTestRequest => Direction::Clientbound,
+            Self::GameTestResults => Direction::Bidirectional,
+            Self::UpdateClientInputLocks => Direction::Clientbound,
+            Self::CameraPresets => Direction::Clientbound,
+            Self::UnlockedRecipes => Direction::Clientbound,
+            Self::CameraInstruction => Direction::Clientbound,
+            Self::TrimData => Direction::Clientbound,
+            Self::OpenSign => Direction::Bidirectional,
+            Self::AgentAnimation => Direction::Clientbound,
+            Self::RefreshEntitlements => Direction::Clientbound,
+            Self::PlayerToggleCrafterSlotRequest => Direction::Bidirectional,
+            Self::SetPlayerInventoryOptions => Direction::Bidirectional,
+            Self::SetHud => Direction::Clientbound,
+            Self::AwardAchievement => Direction::Clientbound,
+            Self::ClientboundCloseForm => Direction::Clientbound,
+            Self::ServerboundLoadingScreen => Direction::Bidirectional,
+            Self::JigsawStructureData => Direction::Clientbound,
+            Self::CurrentStructureFeature => Direction::Clientbound,
+            Self::ServerboundDiagnostics => Direction::Bidirectional,
+            Self::CameraAimAssist => Direction::Clientbound,
+            Self::ContainerRegistryCleanup => Direction::Clientbound,
+            Self::MovementEffect => Direction::Clientbound,
+            Self::CameraAimAssistPresets => Direction::Clientbound,
+            Self::ClientCameraAimAssist => Direction::Bidirectional,
+            Self::ClientMovementPredictionSync => Direction::Bidirectional,
+            Self::UpdateClientOptions => Direction::Bidirectional,
+            Self::PlayerVideoCapture => Direction::Clientbound,
+            Self::PlayerUpdateEntityOverrides => Direction::Clientbound,
+            Self::PlayerLocation => Direction::Clientbound,
+            Self::ClientboundControlSchemeSet => Direction::Clientbound,
+            Self::PrimitiveShapes => Direction::Clientbound,
+            Self::ServerboundPackSettingChange => Direction::Bidirectional,
+            Self::ClientboundDataStore => Direction::Clientbound,
+            Self::GraphicsOverrideParameter => Direction::Clientbound,
+            Self::ServerboundDataStore => Direction::Serverbound,
+            Self::ClientboundDataDrivenUIShowScreen => Direction::Clientbound,
+            Self::ClientboundDataDrivenUICloseScreen => Direction::Clientbound,
+            Self::ClientboundDataDrivenUIReload => Direction::Clientbound,
+            Self::ClientboundTextureShift => Direction::Clientbound,
+            Self::VoxelShapes => Direction::Clientbound,
+            Self::CameraSpline => Direction::Clientbound,
+            Self::CameraAimAssistActorPriority => Direction::Clientbound,
+            Self::ResourcePacksReadyForValidation => Direction::Serverbound,
+            Self::LocatorBar => Direction::Clientbound,
+            Self::PartyChanged => Direction::Serverbound,
+            Self::ServerboundDataDrivenScreenClosed => Direction::Serverbound,
+            Self::SyncWorldClocks => Direction::Clientbound,
+            Self::ClientboundAttributeLayerSync => Direction::Clientbound,
+            Self::ServerStoreInfo => Direction::Clientbound,
+            Self::ServerPresenceInfo => Direction::Clientbound,
+            Self::ClientboundUpdateSoundData => Direction::Clientbound,
+            Self::SendPartyDestinationCookie => Direction::Clientbound,
+            Self::PartyDestinationCookieResponse => Direction::Serverbound,
+        }
+    }
+}
+
+impl Packet {
+    pub const fn id(&self) -> PacketId {
+        match self {
+            Self::Login(..) => PacketId::Login,
+            Self::PlayStatus(..) => PacketId::PlayStatus,
+            Self::ServerToClientHandshake(..) => PacketId::ServerToClientHandshake,
+            Self::ClientToServerHandshake(..) => PacketId::ClientToServerHandshake,
+            Self::Disconnect(..) => PacketId::Disconnect,
+            Self::ResourcePacksInfo(..) => PacketId::ResourcePacksInfo,
+            Self::ResourcePackStack(..) => PacketId::ResourcePackStack,
+            Self::ResourcePackClientResponse(..) => PacketId::ResourcePackClientResponse,
+            Self::Text(..) => PacketId::Text,
+            Self::SetTime(..) => PacketId::SetTime,
+            Self::StartGame(..) => PacketId::StartGame,
+            Self::AddPlayer(..) => PacketId::AddPlayer,
+            Self::AddActor(..) => PacketId::AddActor,
+            Self::RemoveActor(..) => PacketId::RemoveActor,
+            Self::AddItemActor(..) => PacketId::AddItemActor,
+            Self::ServerPlayerPostMovePosition(..) => PacketId::ServerPlayerPostMovePosition,
+            Self::TakeItemActor(..) => PacketId::TakeItemActor,
+            Self::MoveActorAbsolute(..) => PacketId::MoveActorAbsolute,
+            Self::MovePlayer(..) => PacketId::MovePlayer,
+            Self::UpdateBlock(..) => PacketId::UpdateBlock,
+            Self::AddPainting(..) => PacketId::AddPainting,
+            Self::LevelEvent(..) => PacketId::LevelEvent,
+            Self::BlockEvent(..) => PacketId::BlockEvent,
+            Self::ActorEvent(..) => PacketId::ActorEvent,
+            Self::MobEffect(..) => PacketId::MobEffect,
+            Self::UpdateAttributes(..) => PacketId::UpdateAttributes,
+            Self::InventoryTransaction(..) => PacketId::InventoryTransaction,
+            Self::MobEquipment(..) => PacketId::MobEquipment,
+            Self::MobArmorEquipment(..) => PacketId::MobArmorEquipment,
+            Self::Interact(..) => PacketId::Interact,
+            Self::BlockPickRequest(..) => PacketId::BlockPickRequest,
+            Self::ActorPickRequest(..) => PacketId::ActorPickRequest,
+            Self::PlayerAction(..) => PacketId::PlayerAction,
+            Self::HurtArmor(..) => PacketId::HurtArmor,
+            Self::SetActorData(..) => PacketId::SetActorData,
+            Self::SetActorMotion(..) => PacketId::SetActorMotion,
+            Self::SetActorLink(..) => PacketId::SetActorLink,
+            Self::SetHealth(..) => PacketId::SetHealth,
+            Self::SetSpawnPosition(..) => PacketId::SetSpawnPosition,
+            Self::Animate(..) => PacketId::Animate,
+            Self::Respawn(..) => PacketId::Respawn,
+            Self::ContainerOpen(..) => PacketId::ContainerOpen,
+            Self::ContainerClose(..) => PacketId::ContainerClose,
+            Self::PlayerHotbar(..) => PacketId::PlayerHotbar,
+            Self::InventoryContent(..) => PacketId::InventoryContent,
+            Self::InventorySlot(..) => PacketId::InventorySlot,
+            Self::ContainerSetData(..) => PacketId::ContainerSetData,
+            Self::CraftingData(..) => PacketId::CraftingData,
+            Self::GuiDataPickItem(..) => PacketId::GuiDataPickItem,
+            Self::BlockActorData(..) => PacketId::BlockActorData,
+            Self::LevelChunk(..) => PacketId::LevelChunk,
+            Self::SetCommandsEnabled(..) => PacketId::SetCommandsEnabled,
+            Self::SetDifficulty(..) => PacketId::SetDifficulty,
+            Self::ChangeDimension(..) => PacketId::ChangeDimension,
+            Self::SetPlayerGameType(..) => PacketId::SetPlayerGameType,
+            Self::PlayerList(..) => PacketId::PlayerList,
+            Self::SimpleEvent(..) => PacketId::SimpleEvent,
+            Self::LegacyTelemetryEvent(..) => PacketId::LegacyTelemetryEvent,
+            Self::SpawnExperienceOrb(..) => PacketId::SpawnExperienceOrb,
+            Self::ClientboundMapItemData(..) => PacketId::ClientboundMapItemData,
+            Self::MapInfoRequest(..) => PacketId::MapInfoRequest,
+            Self::RequestChunkRadius(..) => PacketId::RequestChunkRadius,
+            Self::ChunkRadiusUpdated(..) => PacketId::ChunkRadiusUpdated,
+            Self::GameRulesChanged(..) => PacketId::GameRulesChanged,
+            Self::Camera(..) => PacketId::Camera,
+            Self::BossEvent(..) => PacketId::BossEvent,
+            Self::ShowCredits(..) => PacketId::ShowCredits,
+            Self::AvailableCommands(..) => PacketId::AvailableCommands,
+            Self::CommandRequest(..) => PacketId::CommandRequest,
+            Self::CommandBlockUpdate(..) => PacketId::CommandBlockUpdate,
+            Self::CommandOutput(..) => PacketId::CommandOutput,
+            Self::UpdateTrade(..) => PacketId::UpdateTrade,
+            Self::UpdateEquip(..) => PacketId::UpdateEquip,
+            Self::ResourcePackDataInfo(..) => PacketId::ResourcePackDataInfo,
+            Self::ResourcePackChunkData(..) => PacketId::ResourcePackChunkData,
+            Self::ResourcePackChunkRequest(..) => PacketId::ResourcePackChunkRequest,
+            Self::Transfer(..) => PacketId::Transfer,
+            Self::PlaySound(..) => PacketId::PlaySound,
+            Self::StopSound(..) => PacketId::StopSound,
+            Self::SetTitle(..) => PacketId::SetTitle,
+            Self::AddBehaviorTree(..) => PacketId::AddBehaviorTree,
+            Self::StructureBlockUpdate(..) => PacketId::StructureBlockUpdate,
+            Self::ShowStoreOffer(..) => PacketId::ShowStoreOffer,
+            Self::PurchaseReceipt(..) => PacketId::PurchaseReceipt,
+            Self::PlayerSkin(..) => PacketId::PlayerSkin,
+            Self::SubClientLogin(..) => PacketId::SubClientLogin,
+            Self::AutomationClientConnect(..) => PacketId::AutomationClientConnect,
+            Self::SetLastHurtBy(..) => PacketId::SetLastHurtBy,
+            Self::BookEdit(..) => PacketId::BookEdit,
+            Self::NpcRequest(..) => PacketId::NpcRequest,
+            Self::PhotoTransfer(..) => PacketId::PhotoTransfer,
+            Self::ModalFormRequest(..) => PacketId::ModalFormRequest,
+            Self::ModalFormResponse(..) => PacketId::ModalFormResponse,
+            Self::ServerSettingsRequest(..) => PacketId::ServerSettingsRequest,
+            Self::ServerSettingsResponse(..) => PacketId::ServerSettingsResponse,
+            Self::ShowProfile(..) => PacketId::ShowProfile,
+            Self::SetDefaultGameType(..) => PacketId::SetDefaultGameType,
+            Self::RemoveObjective(..) => PacketId::RemoveObjective,
+            Self::SetDisplayObjective(..) => PacketId::SetDisplayObjective,
+            Self::SetScore(..) => PacketId::SetScore,
+            Self::LabTable(..) => PacketId::LabTable,
+            Self::UpdateBlockSynced(..) => PacketId::UpdateBlockSynced,
+            Self::MoveActorDelta(..) => PacketId::MoveActorDelta,
+            Self::SetScoreboardIdentity(..) => PacketId::SetScoreboardIdentity,
+            Self::SetLocalPlayerAsInitialized(..) => PacketId::SetLocalPlayerAsInitialized,
+            Self::UpdateSoftEnum(..) => PacketId::UpdateSoftEnum,
+            Self::NetworkStackLatency(..) => PacketId::NetworkStackLatency,
+            Self::SpawnParticleEffect(..) => PacketId::SpawnParticleEffect,
+            Self::AvailableActorIdentifiers(..) => PacketId::AvailableActorIdentifiers,
+            Self::NetworkChunkPublisherUpdate(..) => PacketId::NetworkChunkPublisherUpdate,
+            Self::BiomeDefinitionList(..) => PacketId::BiomeDefinitionList,
+            Self::LevelSoundEvent(..) => PacketId::LevelSoundEvent,
+            Self::LevelEventGeneric(..) => PacketId::LevelEventGeneric,
+            Self::LecternUpdate(..) => PacketId::LecternUpdate,
+            Self::ClientCacheStatus(..) => PacketId::ClientCacheStatus,
+            Self::OnScreenTextureAnimation(..) => PacketId::OnScreenTextureAnimation,
+            Self::MapCreateLockedCopy(..) => PacketId::MapCreateLockedCopy,
+            Self::StructureTemplateDataRequest(..) => PacketId::StructureTemplateDataRequest,
+            Self::StructureTemplateDataResponse(..) => PacketId::StructureTemplateDataResponse,
+            Self::ClientCacheBlobStatus(..) => PacketId::ClientCacheBlobStatus,
+            Self::ClientCacheMissResponse(..) => PacketId::ClientCacheMissResponse,
+            Self::EducationSettings(..) => PacketId::EducationSettings,
+            Self::Emote(..) => PacketId::Emote,
+            Self::MultiplayerSettings(..) => PacketId::MultiplayerSettings,
+            Self::SettingsCommand(..) => PacketId::SettingsCommand,
+            Self::AnvilDamage(..) => PacketId::AnvilDamage,
+            Self::CompletedUsingItem(..) => PacketId::CompletedUsingItem,
+            Self::NetworkSettings(..) => PacketId::NetworkSettings,
+            Self::PlayerAuthInput(..) => PacketId::PlayerAuthInput,
+            Self::CreativeContent(..) => PacketId::CreativeContent,
+            Self::PlayerEnchantOptions(..) => PacketId::PlayerEnchantOptions,
+            Self::ItemStackRequest(..) => PacketId::ItemStackRequest,
+            Self::ItemStackResponse(..) => PacketId::ItemStackResponse,
+            Self::PlayerArmorDamage(..) => PacketId::PlayerArmorDamage,
+            Self::CodeBuilder(..) => PacketId::CodeBuilder,
+            Self::UpdatePlayerGameType(..) => PacketId::UpdatePlayerGameType,
+            Self::EmoteList(..) => PacketId::EmoteList,
+            Self::PositionTrackingDBServerBroadcast(..) => PacketId::PositionTrackingDBServerBroadcast,
+            Self::PositionTrackingDBClientRequest(..) => PacketId::PositionTrackingDBClientRequest,
+            Self::DebugInfo(..) => PacketId::DebugInfo,
+            Self::PacketViolationWarning(..) => PacketId::PacketViolationWarning,
+            Self::MotionPredictionHints(..) => PacketId::MotionPredictionHints,
+            Self::AnimateEntity(..) => PacketId::AnimateEntity,
+            Self::CameraShake(..) => PacketId::CameraShake,
+            Self::PlayerFog(..) => PacketId::PlayerFog,
+            Self::CorrectPlayerMovePrediction(..) => PacketId::CorrectPlayerMovePrediction,
+            Self::ItemRegistry(..) => PacketId::ItemRegistry,
+            Self::ClientboundDebugRenderer(..) => PacketId::ClientboundDebugRenderer,
+            Self::SyncActorProperty(..) => PacketId::SyncActorProperty,
+            Self::AddVolumeEntity(..) => PacketId::AddVolumeEntity,
+            Self::RemoveVolumeEntity(..) => PacketId::RemoveVolumeEntity,
+            Self::SimulationType(..) => PacketId::SimulationType,
+            Self::NpcDialogue(..) => PacketId::NpcDialogue,
+            Self::EduUriResource(..) => PacketId::EduUriResource,
+            Self::CreatePhoto(..) => PacketId::CreatePhoto,
+            Self::UpdateSubChunkBlocks(..) => PacketId::UpdateSubChunkBlocks,
+            Self::SubChunk(..) => PacketId::SubChunk,
+            Self::SubChunkRequest(..) => PacketId::SubChunkRequest,
+            Self::PlayerStartItemCooldown(..) => PacketId::PlayerStartItemCooldown,
+            Self::ScriptMessage(..) => PacketId::ScriptMessage,
+            Self::CodeBuilderSource(..) => PacketId::CodeBuilderSource,
+            Self::TickingAreasLoadStatus(..) => PacketId::TickingAreasLoadStatus,
+            Self::DimensionData(..) => PacketId::DimensionData,
+            Self::AgentActionEvent(..) => PacketId::AgentActionEvent,
+            Self::ChangeMobProperty(..) => PacketId::ChangeMobProperty,
+            Self::LessonProgress(..) => PacketId::LessonProgress,
+            Self::RequestAbility(..) => PacketId::RequestAbility,
+            Self::RequestPermissions(..) => PacketId::RequestPermissions,
+            Self::ToastRequest(..) => PacketId::ToastRequest,
+            Self::UpdateAbilities(..) => PacketId::UpdateAbilities,
+            Self::UpdateAdventureSettings(..) => PacketId::UpdateAdventureSettings,
+            Self::DeathInfo(..) => PacketId::DeathInfo,
+            Self::EditorNetwork(..) => PacketId::EditorNetwork,
+            Self::FeatureRegistry(..) => PacketId::FeatureRegistry,
+            Self::ServerStats(..) => PacketId::ServerStats,
+            Self::RequestNetworkSettings(..) => PacketId::RequestNetworkSettings,
+            Self::GameTestRequest(..) => PacketId::GameTestRequest,
+            Self::GameTestResults(..) => PacketId::GameTestResults,
+            Self::UpdateClientInputLocks(..) => PacketId::UpdateClientInputLocks,
+            Self::CameraPresets(..) => PacketId::CameraPresets,
+            Self::UnlockedRecipes(..) => PacketId::UnlockedRecipes,
+            Self::CameraInstruction(..) => PacketId::CameraInstruction,
+            Self::TrimData(..) => PacketId::TrimData,
+            Self::OpenSign(..) => PacketId::OpenSign,
+            Self::AgentAnimation(..) => PacketId::AgentAnimation,
+            Self::RefreshEntitlements(..) => PacketId::RefreshEntitlements,
+            Self::PlayerToggleCrafterSlotRequest(..) => PacketId::PlayerToggleCrafterSlotRequest,
+            Self::SetPlayerInventoryOptions(..) => PacketId::SetPlayerInventoryOptions,
+            Self::SetHud(..) => PacketId::SetHud,
+            Self::AwardAchievement(..) => PacketId::AwardAchievement,
+            Self::ClientboundCloseForm(..) => PacketId::ClientboundCloseForm,
+            Self::ServerboundLoadingScreen(..) => PacketId::ServerboundLoadingScreen,
+            Self::JigsawStructureData(..) => PacketId::JigsawStructureData,
+            Self::CurrentStructureFeature(..) => PacketId::CurrentStructureFeature,
+            Self::ServerboundDiagnostics(..) => PacketId::ServerboundDiagnostics,
+            Self::CameraAimAssist(..) => PacketId::CameraAimAssist,
+            Self::ContainerRegistryCleanup(..) => PacketId::ContainerRegistryCleanup,
+            Self::MovementEffect(..) => PacketId::MovementEffect,
+            Self::CameraAimAssistPresets(..) => PacketId::CameraAimAssistPresets,
+            Self::ClientCameraAimAssist(..) => PacketId::ClientCameraAimAssist,
+            Self::ClientMovementPredictionSync(..) => PacketId::ClientMovementPredictionSync,
+            Self::UpdateClientOptions(..) => PacketId::UpdateClientOptions,
+            Self::PlayerVideoCapture(..) => PacketId::PlayerVideoCapture,
+            Self::PlayerUpdateEntityOverrides(..) => PacketId::PlayerUpdateEntityOverrides,
+            Self::PlayerLocation(..) => PacketId::PlayerLocation,
+            Self::ClientboundControlSchemeSet(..) => PacketId::ClientboundControlSchemeSet,
+            Self::PrimitiveShapes(..) => PacketId::PrimitiveShapes,
+            Self::ServerboundPackSettingChange(..) => PacketId::ServerboundPackSettingChange,
+            Self::ClientboundDataStore(..) => PacketId::ClientboundDataStore,
+            Self::GraphicsOverrideParameter(..) => PacketId::GraphicsOverrideParameter,
+            Self::ServerboundDataStore(..) => PacketId::ServerboundDataStore,
+            Self::ClientboundDataDrivenUIShowScreen(..) => PacketId::ClientboundDataDrivenUIShowScreen,
+            Self::ClientboundDataDrivenUICloseScreen(..) => PacketId::ClientboundDataDrivenUICloseScreen,
+            Self::ClientboundDataDrivenUIReload(..) => PacketId::ClientboundDataDrivenUIReload,
+            Self::ClientboundTextureShift(..) => PacketId::ClientboundTextureShift,
+            Self::VoxelShapes(..) => PacketId::VoxelShapes,
+            Self::CameraSpline(..) => PacketId::CameraSpline,
+            Self::CameraAimAssistActorPriority(..) => PacketId::CameraAimAssistActorPriority,
+            Self::ResourcePacksReadyForValidation(..) => PacketId::ResourcePacksReadyForValidation,
+            Self::LocatorBar(..) => PacketId::LocatorBar,
+            Self::PartyChanged(..) => PacketId::PartyChanged,
+            Self::ServerboundDataDrivenScreenClosed(..) => PacketId::ServerboundDataDrivenScreenClosed,
+            Self::SyncWorldClocks(..) => PacketId::SyncWorldClocks,
+            Self::ClientboundAttributeLayerSync(..) => PacketId::ClientboundAttributeLayerSync,
+            Self::ServerStoreInfo(..) => PacketId::ServerStoreInfo,
+            Self::ServerPresenceInfo(..) => PacketId::ServerPresenceInfo,
+            Self::ClientboundUpdateSoundData(..) => PacketId::ClientboundUpdateSoundData,
+            Self::SendPartyDestinationCookie(..) => PacketId::SendPartyDestinationCookie,
+            Self::PartyDestinationCookieResponse(..) => PacketId::PartyDestinationCookieResponse,
+        }
+    }
+
+    pub fn encode(&self, writer: &mut wire::Writer) {
+        match self {
+            Self::Login(value) => wire::Encode::encode(value, writer),
+            Self::PlayStatus(value) => wire::Encode::encode(value, writer),
+            Self::ServerToClientHandshake(value) => wire::Encode::encode(value, writer),
+            Self::ClientToServerHandshake(value) => wire::Encode::encode(value, writer),
+            Self::Disconnect(value) => wire::Encode::encode(value, writer),
+            Self::ResourcePacksInfo(value) => wire::Encode::encode(value, writer),
+            Self::ResourcePackStack(value) => wire::Encode::encode(value, writer),
+            Self::ResourcePackClientResponse(value) => wire::Encode::encode(value, writer),
+            Self::Text(value) => wire::Encode::encode(value, writer),
+            Self::SetTime(value) => wire::Encode::encode(value, writer),
+            Self::StartGame(value) => wire::Encode::encode(value.as_ref(), writer),
+            Self::AddPlayer(value) => wire::Encode::encode(value.as_ref(), writer),
+            Self::AddActor(value) => wire::Encode::encode(value.as_ref(), writer),
+            Self::RemoveActor(value) => wire::Encode::encode(value, writer),
+            Self::AddItemActor(value) => wire::Encode::encode(value, writer),
+            Self::ServerPlayerPostMovePosition(value) => wire::Encode::encode(value, writer),
+            Self::TakeItemActor(value) => wire::Encode::encode(value, writer),
+            Self::MoveActorAbsolute(value) => wire::Encode::encode(value, writer),
+            Self::MovePlayer(value) => wire::Encode::encode(value.as_ref(), writer),
+            Self::UpdateBlock(value) => wire::Encode::encode(value, writer),
+            Self::AddPainting(value) => wire::Encode::encode(value, writer),
+            Self::LevelEvent(value) => wire::Encode::encode(value, writer),
+            Self::BlockEvent(value) => wire::Encode::encode(value, writer),
+            Self::ActorEvent(value) => wire::Encode::encode(value, writer),
+            Self::MobEffect(value) => wire::Encode::encode(value.as_ref(), writer),
+            Self::UpdateAttributes(value) => wire::Encode::encode(value, writer),
+            Self::InventoryTransaction(value) => wire::Encode::encode(value, writer),
+            Self::MobEquipment(value) => wire::Encode::encode(value, writer),
+            Self::MobArmorEquipment(value) => wire::Encode::encode(value, writer),
+            Self::Interact(value) => wire::Encode::encode(value, writer),
+            Self::BlockPickRequest(value) => wire::Encode::encode(value, writer),
+            Self::ActorPickRequest(value) => wire::Encode::encode(value, writer),
+            Self::PlayerAction(value) => wire::Encode::encode(value, writer),
+            Self::HurtArmor(value) => wire::Encode::encode(value, writer),
+            Self::SetActorData(value) => wire::Encode::encode(value, writer),
+            Self::SetActorMotion(value) => wire::Encode::encode(value, writer),
+            Self::SetActorLink(value) => wire::Encode::encode(value, writer),
+            Self::SetHealth(value) => wire::Encode::encode(value, writer),
+            Self::SetSpawnPosition(value) => wire::Encode::encode(value, writer),
+            Self::Animate(value) => wire::Encode::encode(value, writer),
+            Self::Respawn(value) => wire::Encode::encode(value, writer),
+            Self::ContainerOpen(value) => wire::Encode::encode(value, writer),
+            Self::ContainerClose(value) => wire::Encode::encode(value, writer),
+            Self::PlayerHotbar(value) => wire::Encode::encode(value, writer),
+            Self::InventoryContent(value) => wire::Encode::encode(value, writer),
+            Self::InventorySlot(value) => wire::Encode::encode(value, writer),
+            Self::ContainerSetData(value) => wire::Encode::encode(value, writer),
+            Self::CraftingData(value) => wire::Encode::encode(value.as_ref(), writer),
+            Self::GuiDataPickItem(value) => wire::Encode::encode(value, writer),
+            Self::BlockActorData(value) => wire::Encode::encode(value, writer),
+            Self::LevelChunk(value) => wire::Encode::encode(value, writer),
+            Self::SetCommandsEnabled(value) => wire::Encode::encode(value, writer),
+            Self::SetDifficulty(value) => wire::Encode::encode(value, writer),
+            Self::ChangeDimension(value) => wire::Encode::encode(value, writer),
+            Self::SetPlayerGameType(value) => wire::Encode::encode(value, writer),
+            Self::PlayerList(value) => wire::Encode::encode(value, writer),
+            Self::SimpleEvent(value) => wire::Encode::encode(value, writer),
+            Self::LegacyTelemetryEvent(value) => wire::Encode::encode(value, writer),
+            Self::SpawnExperienceOrb(value) => wire::Encode::encode(value, writer),
+            Self::ClientboundMapItemData(value) => wire::Encode::encode(value.as_ref(), writer),
+            Self::MapInfoRequest(value) => wire::Encode::encode(value, writer),
+            Self::RequestChunkRadius(value) => wire::Encode::encode(value, writer),
+            Self::ChunkRadiusUpdated(value) => wire::Encode::encode(value, writer),
+            Self::GameRulesChanged(value) => wire::Encode::encode(value, writer),
+            Self::Camera(value) => wire::Encode::encode(value, writer),
+            Self::BossEvent(value) => wire::Encode::encode(value.as_ref(), writer),
+            Self::ShowCredits(value) => wire::Encode::encode(value, writer),
+            Self::AvailableCommands(value) => wire::Encode::encode(value.as_ref(), writer),
+            Self::CommandRequest(value) => wire::Encode::encode(value, writer),
+            Self::CommandBlockUpdate(value) => wire::Encode::encode(value.as_ref(), writer),
+            Self::CommandOutput(value) => wire::Encode::encode(value, writer),
+            Self::UpdateTrade(value) => wire::Encode::encode(value.as_ref(), writer),
+            Self::UpdateEquip(value) => wire::Encode::encode(value, writer),
+            Self::ResourcePackDataInfo(value) => wire::Encode::encode(value, writer),
+            Self::ResourcePackChunkData(value) => wire::Encode::encode(value, writer),
+            Self::ResourcePackChunkRequest(value) => wire::Encode::encode(value, writer),
+            Self::Transfer(value) => wire::Encode::encode(value, writer),
+            Self::PlaySound(value) => wire::Encode::encode(value, writer),
+            Self::StopSound(value) => wire::Encode::encode(value, writer),
+            Self::SetTitle(value) => wire::Encode::encode(value.as_ref(), writer),
+            Self::AddBehaviorTree(value) => wire::Encode::encode(value, writer),
+            Self::StructureBlockUpdate(value) => wire::Encode::encode(value, writer),
+            Self::ShowStoreOffer(value) => wire::Encode::encode(value, writer),
+            Self::PurchaseReceipt(value) => wire::Encode::encode(value, writer),
+            Self::PlayerSkin(value) => wire::Encode::encode(value, writer),
+            Self::SubClientLogin(value) => wire::Encode::encode(value, writer),
+            Self::AutomationClientConnect(value) => wire::Encode::encode(value, writer),
+            Self::SetLastHurtBy(value) => wire::Encode::encode(value, writer),
+            Self::BookEdit(value) => wire::Encode::encode(value, writer),
+            Self::NpcRequest(value) => wire::Encode::encode(value, writer),
+            Self::PhotoTransfer(value) => wire::Encode::encode(value, writer),
+            Self::ModalFormRequest(value) => wire::Encode::encode(value, writer),
+            Self::ModalFormResponse(value) => wire::Encode::encode(value, writer),
+            Self::ServerSettingsRequest(value) => wire::Encode::encode(value, writer),
+            Self::ServerSettingsResponse(value) => wire::Encode::encode(value, writer),
+            Self::ShowProfile(value) => wire::Encode::encode(value, writer),
+            Self::SetDefaultGameType(value) => wire::Encode::encode(value, writer),
+            Self::RemoveObjective(value) => wire::Encode::encode(value, writer),
+            Self::SetDisplayObjective(value) => wire::Encode::encode(value, writer),
+            Self::SetScore(value) => wire::Encode::encode(value, writer),
+            Self::LabTable(value) => wire::Encode::encode(value, writer),
+            Self::UpdateBlockSynced(value) => wire::Encode::encode(value, writer),
+            Self::MoveActorDelta(value) => wire::Encode::encode(value, writer),
+            Self::SetScoreboardIdentity(value) => wire::Encode::encode(value, writer),
+            Self::SetLocalPlayerAsInitialized(value) => wire::Encode::encode(value, writer),
+            Self::UpdateSoftEnum(value) => wire::Encode::encode(value, writer),
+            Self::NetworkStackLatency(value) => wire::Encode::encode(value, writer),
+            Self::SpawnParticleEffect(value) => wire::Encode::encode(value, writer),
+            Self::AvailableActorIdentifiers(value) => wire::Encode::encode(value, writer),
+            Self::NetworkChunkPublisherUpdate(value) => wire::Encode::encode(value, writer),
+            Self::BiomeDefinitionList(value) => wire::Encode::encode(value, writer),
+            Self::LevelSoundEvent(value) => wire::Encode::encode(value.as_ref(), writer),
+            Self::LevelEventGeneric(value) => wire::Encode::encode(value, writer),
+            Self::LecternUpdate(value) => wire::Encode::encode(value, writer),
+            Self::ClientCacheStatus(value) => wire::Encode::encode(value, writer),
+            Self::OnScreenTextureAnimation(value) => wire::Encode::encode(value, writer),
+            Self::MapCreateLockedCopy(value) => wire::Encode::encode(value, writer),
+            Self::StructureTemplateDataRequest(value) => wire::Encode::encode(value, writer),
+            Self::StructureTemplateDataResponse(value) => wire::Encode::encode(value, writer),
+            Self::ClientCacheBlobStatus(value) => wire::Encode::encode(value, writer),
+            Self::ClientCacheMissResponse(value) => wire::Encode::encode(value, writer),
+            Self::EducationSettings(value) => wire::Encode::encode(value, writer),
+            Self::Emote(value) => wire::Encode::encode(value, writer),
+            Self::MultiplayerSettings(value) => wire::Encode::encode(value, writer),
+            Self::SettingsCommand(value) => wire::Encode::encode(value, writer),
+            Self::AnvilDamage(value) => wire::Encode::encode(value, writer),
+            Self::CompletedUsingItem(value) => wire::Encode::encode(value, writer),
+            Self::NetworkSettings(value) => wire::Encode::encode(value, writer),
+            Self::PlayerAuthInput(value) => wire::Encode::encode(value.as_ref(), writer),
+            Self::CreativeContent(value) => wire::Encode::encode(value, writer),
+            Self::PlayerEnchantOptions(value) => wire::Encode::encode(value, writer),
+            Self::ItemStackRequest(value) => wire::Encode::encode(value, writer),
+            Self::ItemStackResponse(value) => wire::Encode::encode(value, writer),
+            Self::PlayerArmorDamage(value) => wire::Encode::encode(value, writer),
+            Self::CodeBuilder(value) => wire::Encode::encode(value, writer),
+            Self::UpdatePlayerGameType(value) => wire::Encode::encode(value, writer),
+            Self::EmoteList(value) => wire::Encode::encode(value, writer),
+            Self::PositionTrackingDBServerBroadcast(value) => wire::Encode::encode(value, writer),
+            Self::PositionTrackingDBClientRequest(value) => wire::Encode::encode(value, writer),
+            Self::DebugInfo(value) => wire::Encode::encode(value, writer),
+            Self::PacketViolationWarning(value) => wire::Encode::encode(value, writer),
+            Self::MotionPredictionHints(value) => wire::Encode::encode(value, writer),
+            Self::AnimateEntity(value) => wire::Encode::encode(value, writer),
+            Self::CameraShake(value) => wire::Encode::encode(value, writer),
+            Self::PlayerFog(value) => wire::Encode::encode(value, writer),
+            Self::CorrectPlayerMovePrediction(value) => wire::Encode::encode(value, writer),
+            Self::ItemRegistry(value) => wire::Encode::encode(value, writer),
+            Self::ClientboundDebugRenderer(value) => wire::Encode::encode(value, writer),
+            Self::SyncActorProperty(value) => wire::Encode::encode(value, writer),
+            Self::AddVolumeEntity(value) => wire::Encode::encode(value.as_ref(), writer),
+            Self::RemoveVolumeEntity(value) => wire::Encode::encode(value, writer),
+            Self::SimulationType(value) => wire::Encode::encode(value, writer),
+            Self::NpcDialogue(value) => wire::Encode::encode(value, writer),
+            Self::EduUriResource(value) => wire::Encode::encode(value, writer),
+            Self::CreatePhoto(value) => wire::Encode::encode(value, writer),
+            Self::UpdateSubChunkBlocks(value) => wire::Encode::encode(value, writer),
+            Self::SubChunk(value) => wire::Encode::encode(value, writer),
+            Self::SubChunkRequest(value) => wire::Encode::encode(value, writer),
+            Self::PlayerStartItemCooldown(value) => wire::Encode::encode(value, writer),
+            Self::ScriptMessage(value) => wire::Encode::encode(value, writer),
+            Self::CodeBuilderSource(value) => wire::Encode::encode(value, writer),
+            Self::TickingAreasLoadStatus(value) => wire::Encode::encode(value, writer),
+            Self::DimensionData(value) => wire::Encode::encode(value, writer),
+            Self::AgentActionEvent(value) => wire::Encode::encode(value, writer),
+            Self::ChangeMobProperty(value) => wire::Encode::encode(value, writer),
+            Self::LessonProgress(value) => wire::Encode::encode(value, writer),
+            Self::RequestAbility(value) => wire::Encode::encode(value, writer),
+            Self::RequestPermissions(value) => wire::Encode::encode(value, writer),
+            Self::ToastRequest(value) => wire::Encode::encode(value, writer),
+            Self::UpdateAbilities(value) => wire::Encode::encode(value, writer),
+            Self::UpdateAdventureSettings(value) => wire::Encode::encode(value, writer),
+            Self::DeathInfo(value) => wire::Encode::encode(value, writer),
+            Self::EditorNetwork(value) => wire::Encode::encode(value, writer),
+            Self::FeatureRegistry(value) => wire::Encode::encode(value, writer),
+            Self::ServerStats(value) => wire::Encode::encode(value, writer),
+            Self::RequestNetworkSettings(value) => wire::Encode::encode(value, writer),
+            Self::GameTestRequest(value) => wire::Encode::encode(value, writer),
+            Self::GameTestResults(value) => wire::Encode::encode(value, writer),
+            Self::UpdateClientInputLocks(value) => wire::Encode::encode(value, writer),
+            Self::CameraPresets(value) => wire::Encode::encode(value, writer),
+            Self::UnlockedRecipes(value) => wire::Encode::encode(value, writer),
+            Self::CameraInstruction(value) => wire::Encode::encode(value, writer),
+            Self::TrimData(value) => wire::Encode::encode(value, writer),
+            Self::OpenSign(value) => wire::Encode::encode(value, writer),
+            Self::AgentAnimation(value) => wire::Encode::encode(value, writer),
+            Self::RefreshEntitlements(value) => wire::Encode::encode(value, writer),
+            Self::PlayerToggleCrafterSlotRequest(value) => wire::Encode::encode(value, writer),
+            Self::SetPlayerInventoryOptions(value) => wire::Encode::encode(value, writer),
+            Self::SetHud(value) => wire::Encode::encode(value, writer),
+            Self::AwardAchievement(value) => wire::Encode::encode(value, writer),
+            Self::ClientboundCloseForm(value) => wire::Encode::encode(value, writer),
+            Self::ServerboundLoadingScreen(value) => wire::Encode::encode(value, writer),
+            Self::JigsawStructureData(value) => wire::Encode::encode(value, writer),
+            Self::CurrentStructureFeature(value) => wire::Encode::encode(value, writer),
+            Self::ServerboundDiagnostics(value) => wire::Encode::encode(value.as_ref(), writer),
+            Self::CameraAimAssist(value) => wire::Encode::encode(value, writer),
+            Self::ContainerRegistryCleanup(value) => wire::Encode::encode(value, writer),
+            Self::MovementEffect(value) => wire::Encode::encode(value, writer),
+            Self::CameraAimAssistPresets(value) => wire::Encode::encode(value, writer),
+            Self::ClientCameraAimAssist(value) => wire::Encode::encode(value, writer),
+            Self::ClientMovementPredictionSync(value) => wire::Encode::encode(value, writer),
+            Self::UpdateClientOptions(value) => wire::Encode::encode(value, writer),
+            Self::PlayerVideoCapture(value) => wire::Encode::encode(value, writer),
+            Self::PlayerUpdateEntityOverrides(value) => wire::Encode::encode(value, writer),
+            Self::PlayerLocation(value) => wire::Encode::encode(value, writer),
+            Self::ClientboundControlSchemeSet(value) => wire::Encode::encode(value, writer),
+            Self::PrimitiveShapes(value) => wire::Encode::encode(value, writer),
+            Self::ServerboundPackSettingChange(value) => wire::Encode::encode(value, writer),
+            Self::ClientboundDataStore(value) => wire::Encode::encode(value, writer),
+            Self::GraphicsOverrideParameter(value) => wire::Encode::encode(value, writer),
+            Self::ServerboundDataStore(value) => wire::Encode::encode(value, writer),
+            Self::ClientboundDataDrivenUIShowScreen(value) => wire::Encode::encode(value, writer),
+            Self::ClientboundDataDrivenUICloseScreen(value) => wire::Encode::encode(value, writer),
+            Self::ClientboundDataDrivenUIReload(value) => wire::Encode::encode(value, writer),
+            Self::ClientboundTextureShift(value) => wire::Encode::encode(value.as_ref(), writer),
+            Self::VoxelShapes(value) => wire::Encode::encode(value, writer),
+            Self::CameraSpline(value) => wire::Encode::encode(value, writer),
+            Self::CameraAimAssistActorPriority(value) => wire::Encode::encode(value, writer),
+            Self::ResourcePacksReadyForValidation(value) => wire::Encode::encode(value, writer),
+            Self::LocatorBar(value) => wire::Encode::encode(value, writer),
+            Self::PartyChanged(value) => wire::Encode::encode(value, writer),
+            Self::ServerboundDataDrivenScreenClosed(value) => wire::Encode::encode(value, writer),
+            Self::SyncWorldClocks(value) => wire::Encode::encode(value, writer),
+            Self::ClientboundAttributeLayerSync(value) => wire::Encode::encode(value, writer),
+            Self::ServerStoreInfo(value) => wire::Encode::encode(value, writer),
+            Self::ServerPresenceInfo(value) => wire::Encode::encode(value, writer),
+            Self::ClientboundUpdateSoundData(value) => wire::Encode::encode(value.as_ref(), writer),
+            Self::SendPartyDestinationCookie(value) => wire::Encode::encode(value, writer),
+            Self::PartyDestinationCookieResponse(value) => wire::Encode::encode(value, writer),
+        }
+    }
+
+    /// Decodes a packet body by id, rejecting ids the sender may not use.
+    pub fn decode_from(
+        id: u32,
+        sender: Peer,
+        reader: &mut wire::Reader<'_>,
+    ) -> wire::DecodeResult<Self> {
+        let packet = PacketId::from_raw(id).ok_or(wire::DecodeError::UnknownPacketId(id))?;
+        if !packet.direction().permits(sender) {
+            return Err(wire::DecodeError::UnknownPacketId(id));
+        }
+        Self::decode_body(packet, reader)
+    }
+
+    pub fn decode_body(id: PacketId, reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        Ok(match id {
+            PacketId::Login => Self::Login(<Login as wire::Decode>::decode(reader)?),
+            PacketId::PlayStatus => Self::PlayStatus(<PlayStatus as wire::Decode>::decode(reader)?),
+            PacketId::ServerToClientHandshake => Self::ServerToClientHandshake(<ServerToClientHandshake as wire::Decode>::decode(reader)?),
+            PacketId::ClientToServerHandshake => Self::ClientToServerHandshake(<ClientToServerHandshake as wire::Decode>::decode(reader)?),
+            PacketId::Disconnect => Self::Disconnect(<Disconnect as wire::Decode>::decode(reader)?),
+            PacketId::ResourcePacksInfo => Self::ResourcePacksInfo(<ResourcePacksInfo as wire::Decode>::decode(reader)?),
+            PacketId::ResourcePackStack => Self::ResourcePackStack(<ResourcePackStack as wire::Decode>::decode(reader)?),
+            PacketId::ResourcePackClientResponse => Self::ResourcePackClientResponse(<ResourcePackClientResponse as wire::Decode>::decode(reader)?),
+            PacketId::Text => Self::Text(<Text as wire::Decode>::decode(reader)?),
+            PacketId::SetTime => Self::SetTime(<SetTime as wire::Decode>::decode(reader)?),
+            PacketId::StartGame => Self::StartGame(Box::new(<StartGame as wire::Decode>::decode(reader)?)),
+            PacketId::AddPlayer => Self::AddPlayer(Box::new(<AddPlayer as wire::Decode>::decode(reader)?)),
+            PacketId::AddActor => Self::AddActor(Box::new(<AddActor as wire::Decode>::decode(reader)?)),
+            PacketId::RemoveActor => Self::RemoveActor(<RemoveActor as wire::Decode>::decode(reader)?),
+            PacketId::AddItemActor => Self::AddItemActor(<AddItemActor as wire::Decode>::decode(reader)?),
+            PacketId::ServerPlayerPostMovePosition => Self::ServerPlayerPostMovePosition(<ServerPlayerPostMovePosition as wire::Decode>::decode(reader)?),
+            PacketId::TakeItemActor => Self::TakeItemActor(<TakeItemActor as wire::Decode>::decode(reader)?),
+            PacketId::MoveActorAbsolute => Self::MoveActorAbsolute(<MoveActorAbsolute as wire::Decode>::decode(reader)?),
+            PacketId::MovePlayer => Self::MovePlayer(Box::new(<MovePlayer as wire::Decode>::decode(reader)?)),
+            PacketId::UpdateBlock => Self::UpdateBlock(<UpdateBlock as wire::Decode>::decode(reader)?),
+            PacketId::AddPainting => Self::AddPainting(<AddPainting as wire::Decode>::decode(reader)?),
+            PacketId::LevelEvent => Self::LevelEvent(<LevelEvent as wire::Decode>::decode(reader)?),
+            PacketId::BlockEvent => Self::BlockEvent(<BlockEvent as wire::Decode>::decode(reader)?),
+            PacketId::ActorEvent => Self::ActorEvent(<ActorEvent as wire::Decode>::decode(reader)?),
+            PacketId::MobEffect => Self::MobEffect(Box::new(<MobEffect as wire::Decode>::decode(reader)?)),
+            PacketId::UpdateAttributes => Self::UpdateAttributes(<UpdateAttributes as wire::Decode>::decode(reader)?),
+            PacketId::InventoryTransaction => Self::InventoryTransaction(<InventoryTransaction as wire::Decode>::decode(reader)?),
+            PacketId::MobEquipment => Self::MobEquipment(<MobEquipment as wire::Decode>::decode(reader)?),
+            PacketId::MobArmorEquipment => Self::MobArmorEquipment(<MobArmorEquipment as wire::Decode>::decode(reader)?),
+            PacketId::Interact => Self::Interact(<Interact as wire::Decode>::decode(reader)?),
+            PacketId::BlockPickRequest => Self::BlockPickRequest(<BlockPickRequest as wire::Decode>::decode(reader)?),
+            PacketId::ActorPickRequest => Self::ActorPickRequest(<ActorPickRequest as wire::Decode>::decode(reader)?),
+            PacketId::PlayerAction => Self::PlayerAction(<PlayerAction as wire::Decode>::decode(reader)?),
+            PacketId::HurtArmor => Self::HurtArmor(<HurtArmor as wire::Decode>::decode(reader)?),
+            PacketId::SetActorData => Self::SetActorData(<SetActorData as wire::Decode>::decode(reader)?),
+            PacketId::SetActorMotion => Self::SetActorMotion(<SetActorMotion as wire::Decode>::decode(reader)?),
+            PacketId::SetActorLink => Self::SetActorLink(<SetActorLink as wire::Decode>::decode(reader)?),
+            PacketId::SetHealth => Self::SetHealth(<SetHealth as wire::Decode>::decode(reader)?),
+            PacketId::SetSpawnPosition => Self::SetSpawnPosition(<SetSpawnPosition as wire::Decode>::decode(reader)?),
+            PacketId::Animate => Self::Animate(<Animate as wire::Decode>::decode(reader)?),
+            PacketId::Respawn => Self::Respawn(<Respawn as wire::Decode>::decode(reader)?),
+            PacketId::ContainerOpen => Self::ContainerOpen(<ContainerOpen as wire::Decode>::decode(reader)?),
+            PacketId::ContainerClose => Self::ContainerClose(<ContainerClose as wire::Decode>::decode(reader)?),
+            PacketId::PlayerHotbar => Self::PlayerHotbar(<PlayerHotbar as wire::Decode>::decode(reader)?),
+            PacketId::InventoryContent => Self::InventoryContent(<InventoryContent as wire::Decode>::decode(reader)?),
+            PacketId::InventorySlot => Self::InventorySlot(<InventorySlot as wire::Decode>::decode(reader)?),
+            PacketId::ContainerSetData => Self::ContainerSetData(<ContainerSetData as wire::Decode>::decode(reader)?),
+            PacketId::CraftingData => Self::CraftingData(Box::new(<CraftingData as wire::Decode>::decode(reader)?)),
+            PacketId::GuiDataPickItem => Self::GuiDataPickItem(<GuiDataPickItem as wire::Decode>::decode(reader)?),
+            PacketId::BlockActorData => Self::BlockActorData(<BlockActorData as wire::Decode>::decode(reader)?),
+            PacketId::LevelChunk => Self::LevelChunk(<LevelChunk as wire::Decode>::decode(reader)?),
+            PacketId::SetCommandsEnabled => Self::SetCommandsEnabled(<SetCommandsEnabled as wire::Decode>::decode(reader)?),
+            PacketId::SetDifficulty => Self::SetDifficulty(<SetDifficulty as wire::Decode>::decode(reader)?),
+            PacketId::ChangeDimension => Self::ChangeDimension(<ChangeDimension as wire::Decode>::decode(reader)?),
+            PacketId::SetPlayerGameType => Self::SetPlayerGameType(<SetPlayerGameType as wire::Decode>::decode(reader)?),
+            PacketId::PlayerList => Self::PlayerList(<PlayerList as wire::Decode>::decode(reader)?),
+            PacketId::SimpleEvent => Self::SimpleEvent(<SimpleEvent as wire::Decode>::decode(reader)?),
+            PacketId::LegacyTelemetryEvent => Self::LegacyTelemetryEvent(<LegacyTelemetryEvent as wire::Decode>::decode(reader)?),
+            PacketId::SpawnExperienceOrb => Self::SpawnExperienceOrb(<SpawnExperienceOrb as wire::Decode>::decode(reader)?),
+            PacketId::ClientboundMapItemData => Self::ClientboundMapItemData(Box::new(<ClientboundMapItemData as wire::Decode>::decode(reader)?)),
+            PacketId::MapInfoRequest => Self::MapInfoRequest(<MapInfoRequest as wire::Decode>::decode(reader)?),
+            PacketId::RequestChunkRadius => Self::RequestChunkRadius(<RequestChunkRadius as wire::Decode>::decode(reader)?),
+            PacketId::ChunkRadiusUpdated => Self::ChunkRadiusUpdated(<ChunkRadiusUpdated as wire::Decode>::decode(reader)?),
+            PacketId::GameRulesChanged => Self::GameRulesChanged(<GameRulesChanged as wire::Decode>::decode(reader)?),
+            PacketId::Camera => Self::Camera(<Camera as wire::Decode>::decode(reader)?),
+            PacketId::BossEvent => Self::BossEvent(Box::new(<BossEvent as wire::Decode>::decode(reader)?)),
+            PacketId::ShowCredits => Self::ShowCredits(<ShowCredits as wire::Decode>::decode(reader)?),
+            PacketId::AvailableCommands => Self::AvailableCommands(Box::new(<AvailableCommands as wire::Decode>::decode(reader)?)),
+            PacketId::CommandRequest => Self::CommandRequest(<CommandRequest as wire::Decode>::decode(reader)?),
+            PacketId::CommandBlockUpdate => Self::CommandBlockUpdate(Box::new(<CommandBlockUpdate as wire::Decode>::decode(reader)?)),
+            PacketId::CommandOutput => Self::CommandOutput(<CommandOutput as wire::Decode>::decode(reader)?),
+            PacketId::UpdateTrade => Self::UpdateTrade(Box::new(<UpdateTrade as wire::Decode>::decode(reader)?)),
+            PacketId::UpdateEquip => Self::UpdateEquip(<UpdateEquip as wire::Decode>::decode(reader)?),
+            PacketId::ResourcePackDataInfo => Self::ResourcePackDataInfo(<ResourcePackDataInfo as wire::Decode>::decode(reader)?),
+            PacketId::ResourcePackChunkData => Self::ResourcePackChunkData(<ResourcePackChunkData as wire::Decode>::decode(reader)?),
+            PacketId::ResourcePackChunkRequest => Self::ResourcePackChunkRequest(<ResourcePackChunkRequest as wire::Decode>::decode(reader)?),
+            PacketId::Transfer => Self::Transfer(<Transfer as wire::Decode>::decode(reader)?),
+            PacketId::PlaySound => Self::PlaySound(<PlaySound as wire::Decode>::decode(reader)?),
+            PacketId::StopSound => Self::StopSound(<StopSound as wire::Decode>::decode(reader)?),
+            PacketId::SetTitle => Self::SetTitle(Box::new(<SetTitle as wire::Decode>::decode(reader)?)),
+            PacketId::AddBehaviorTree => Self::AddBehaviorTree(<AddBehaviorTree as wire::Decode>::decode(reader)?),
+            PacketId::StructureBlockUpdate => Self::StructureBlockUpdate(<StructureBlockUpdate as wire::Decode>::decode(reader)?),
+            PacketId::ShowStoreOffer => Self::ShowStoreOffer(<ShowStoreOffer as wire::Decode>::decode(reader)?),
+            PacketId::PurchaseReceipt => Self::PurchaseReceipt(<PurchaseReceipt as wire::Decode>::decode(reader)?),
+            PacketId::PlayerSkin => Self::PlayerSkin(<PlayerSkin as wire::Decode>::decode(reader)?),
+            PacketId::SubClientLogin => Self::SubClientLogin(<SubClientLogin as wire::Decode>::decode(reader)?),
+            PacketId::AutomationClientConnect => Self::AutomationClientConnect(<AutomationClientConnect as wire::Decode>::decode(reader)?),
+            PacketId::SetLastHurtBy => Self::SetLastHurtBy(<SetLastHurtBy as wire::Decode>::decode(reader)?),
+            PacketId::BookEdit => Self::BookEdit(<BookEdit as wire::Decode>::decode(reader)?),
+            PacketId::NpcRequest => Self::NpcRequest(<NpcRequest as wire::Decode>::decode(reader)?),
+            PacketId::PhotoTransfer => Self::PhotoTransfer(<PhotoTransfer as wire::Decode>::decode(reader)?),
+            PacketId::ModalFormRequest => Self::ModalFormRequest(<ModalFormRequest as wire::Decode>::decode(reader)?),
+            PacketId::ModalFormResponse => Self::ModalFormResponse(<ModalFormResponse as wire::Decode>::decode(reader)?),
+            PacketId::ServerSettingsRequest => Self::ServerSettingsRequest(<ServerSettingsRequest as wire::Decode>::decode(reader)?),
+            PacketId::ServerSettingsResponse => Self::ServerSettingsResponse(<ServerSettingsResponse as wire::Decode>::decode(reader)?),
+            PacketId::ShowProfile => Self::ShowProfile(<ShowProfile as wire::Decode>::decode(reader)?),
+            PacketId::SetDefaultGameType => Self::SetDefaultGameType(<SetDefaultGameType as wire::Decode>::decode(reader)?),
+            PacketId::RemoveObjective => Self::RemoveObjective(<RemoveObjective as wire::Decode>::decode(reader)?),
+            PacketId::SetDisplayObjective => Self::SetDisplayObjective(<SetDisplayObjective as wire::Decode>::decode(reader)?),
+            PacketId::SetScore => Self::SetScore(<SetScore as wire::Decode>::decode(reader)?),
+            PacketId::LabTable => Self::LabTable(<LabTable as wire::Decode>::decode(reader)?),
+            PacketId::UpdateBlockSynced => Self::UpdateBlockSynced(<UpdateBlockSynced as wire::Decode>::decode(reader)?),
+            PacketId::MoveActorDelta => Self::MoveActorDelta(<MoveActorDelta as wire::Decode>::decode(reader)?),
+            PacketId::SetScoreboardIdentity => Self::SetScoreboardIdentity(<SetScoreboardIdentity as wire::Decode>::decode(reader)?),
+            PacketId::SetLocalPlayerAsInitialized => Self::SetLocalPlayerAsInitialized(<SetLocalPlayerAsInitialized as wire::Decode>::decode(reader)?),
+            PacketId::UpdateSoftEnum => Self::UpdateSoftEnum(<UpdateSoftEnum as wire::Decode>::decode(reader)?),
+            PacketId::NetworkStackLatency => Self::NetworkStackLatency(<NetworkStackLatency as wire::Decode>::decode(reader)?),
+            PacketId::SpawnParticleEffect => Self::SpawnParticleEffect(<SpawnParticleEffect as wire::Decode>::decode(reader)?),
+            PacketId::AvailableActorIdentifiers => Self::AvailableActorIdentifiers(<AvailableActorIdentifiers as wire::Decode>::decode(reader)?),
+            PacketId::NetworkChunkPublisherUpdate => Self::NetworkChunkPublisherUpdate(<NetworkChunkPublisherUpdate as wire::Decode>::decode(reader)?),
+            PacketId::BiomeDefinitionList => Self::BiomeDefinitionList(<BiomeDefinitionList as wire::Decode>::decode(reader)?),
+            PacketId::LevelSoundEvent => Self::LevelSoundEvent(Box::new(<LevelSoundEvent as wire::Decode>::decode(reader)?)),
+            PacketId::LevelEventGeneric => Self::LevelEventGeneric(<LevelEventGeneric as wire::Decode>::decode(reader)?),
+            PacketId::LecternUpdate => Self::LecternUpdate(<LecternUpdate as wire::Decode>::decode(reader)?),
+            PacketId::ClientCacheStatus => Self::ClientCacheStatus(<ClientCacheStatus as wire::Decode>::decode(reader)?),
+            PacketId::OnScreenTextureAnimation => Self::OnScreenTextureAnimation(<OnScreenTextureAnimation as wire::Decode>::decode(reader)?),
+            PacketId::MapCreateLockedCopy => Self::MapCreateLockedCopy(<MapCreateLockedCopy as wire::Decode>::decode(reader)?),
+            PacketId::StructureTemplateDataRequest => Self::StructureTemplateDataRequest(<StructureTemplateDataRequest as wire::Decode>::decode(reader)?),
+            PacketId::StructureTemplateDataResponse => Self::StructureTemplateDataResponse(<StructureTemplateDataResponse as wire::Decode>::decode(reader)?),
+            PacketId::ClientCacheBlobStatus => Self::ClientCacheBlobStatus(<ClientCacheBlobStatus as wire::Decode>::decode(reader)?),
+            PacketId::ClientCacheMissResponse => Self::ClientCacheMissResponse(<ClientCacheMissResponse as wire::Decode>::decode(reader)?),
+            PacketId::EducationSettings => Self::EducationSettings(<EducationSettings as wire::Decode>::decode(reader)?),
+            PacketId::Emote => Self::Emote(<Emote as wire::Decode>::decode(reader)?),
+            PacketId::MultiplayerSettings => Self::MultiplayerSettings(<MultiplayerSettings as wire::Decode>::decode(reader)?),
+            PacketId::SettingsCommand => Self::SettingsCommand(<SettingsCommand as wire::Decode>::decode(reader)?),
+            PacketId::AnvilDamage => Self::AnvilDamage(<AnvilDamage as wire::Decode>::decode(reader)?),
+            PacketId::CompletedUsingItem => Self::CompletedUsingItem(<CompletedUsingItem as wire::Decode>::decode(reader)?),
+            PacketId::NetworkSettings => Self::NetworkSettings(<NetworkSettings as wire::Decode>::decode(reader)?),
+            PacketId::PlayerAuthInput => Self::PlayerAuthInput(Box::new(<PlayerAuthInput as wire::Decode>::decode(reader)?)),
+            PacketId::CreativeContent => Self::CreativeContent(<CreativeContent as wire::Decode>::decode(reader)?),
+            PacketId::PlayerEnchantOptions => Self::PlayerEnchantOptions(<PlayerEnchantOptions as wire::Decode>::decode(reader)?),
+            PacketId::ItemStackRequest => Self::ItemStackRequest(<ItemStackRequest as wire::Decode>::decode(reader)?),
+            PacketId::ItemStackResponse => Self::ItemStackResponse(<ItemStackResponse as wire::Decode>::decode(reader)?),
+            PacketId::PlayerArmorDamage => Self::PlayerArmorDamage(<PlayerArmorDamage as wire::Decode>::decode(reader)?),
+            PacketId::CodeBuilder => Self::CodeBuilder(<CodeBuilder as wire::Decode>::decode(reader)?),
+            PacketId::UpdatePlayerGameType => Self::UpdatePlayerGameType(<UpdatePlayerGameType as wire::Decode>::decode(reader)?),
+            PacketId::EmoteList => Self::EmoteList(<EmoteList as wire::Decode>::decode(reader)?),
+            PacketId::PositionTrackingDBServerBroadcast => Self::PositionTrackingDBServerBroadcast(<PositionTrackingDBServerBroadcast as wire::Decode>::decode(reader)?),
+            PacketId::PositionTrackingDBClientRequest => Self::PositionTrackingDBClientRequest(<PositionTrackingDBClientRequest as wire::Decode>::decode(reader)?),
+            PacketId::DebugInfo => Self::DebugInfo(<DebugInfo as wire::Decode>::decode(reader)?),
+            PacketId::PacketViolationWarning => Self::PacketViolationWarning(<PacketViolationWarning as wire::Decode>::decode(reader)?),
+            PacketId::MotionPredictionHints => Self::MotionPredictionHints(<MotionPredictionHints as wire::Decode>::decode(reader)?),
+            PacketId::AnimateEntity => Self::AnimateEntity(<AnimateEntity as wire::Decode>::decode(reader)?),
+            PacketId::CameraShake => Self::CameraShake(<CameraShake as wire::Decode>::decode(reader)?),
+            PacketId::PlayerFog => Self::PlayerFog(<PlayerFog as wire::Decode>::decode(reader)?),
+            PacketId::CorrectPlayerMovePrediction => Self::CorrectPlayerMovePrediction(<CorrectPlayerMovePrediction as wire::Decode>::decode(reader)?),
+            PacketId::ItemRegistry => Self::ItemRegistry(<ItemRegistry as wire::Decode>::decode(reader)?),
+            PacketId::ClientboundDebugRenderer => Self::ClientboundDebugRenderer(<ClientboundDebugRenderer as wire::Decode>::decode(reader)?),
+            PacketId::SyncActorProperty => Self::SyncActorProperty(<SyncActorProperty as wire::Decode>::decode(reader)?),
+            PacketId::AddVolumeEntity => Self::AddVolumeEntity(Box::new(<AddVolumeEntity as wire::Decode>::decode(reader)?)),
+            PacketId::RemoveVolumeEntity => Self::RemoveVolumeEntity(<RemoveVolumeEntity as wire::Decode>::decode(reader)?),
+            PacketId::SimulationType => Self::SimulationType(<SimulationType as wire::Decode>::decode(reader)?),
+            PacketId::NpcDialogue => Self::NpcDialogue(<NpcDialogue as wire::Decode>::decode(reader)?),
+            PacketId::EduUriResource => Self::EduUriResource(<EduUriResource as wire::Decode>::decode(reader)?),
+            PacketId::CreatePhoto => Self::CreatePhoto(<CreatePhoto as wire::Decode>::decode(reader)?),
+            PacketId::UpdateSubChunkBlocks => Self::UpdateSubChunkBlocks(<UpdateSubChunkBlocks as wire::Decode>::decode(reader)?),
+            PacketId::SubChunk => Self::SubChunk(<SubChunk as wire::Decode>::decode(reader)?),
+            PacketId::SubChunkRequest => Self::SubChunkRequest(<SubChunkRequest as wire::Decode>::decode(reader)?),
+            PacketId::PlayerStartItemCooldown => Self::PlayerStartItemCooldown(<PlayerStartItemCooldown as wire::Decode>::decode(reader)?),
+            PacketId::ScriptMessage => Self::ScriptMessage(<ScriptMessage as wire::Decode>::decode(reader)?),
+            PacketId::CodeBuilderSource => Self::CodeBuilderSource(<CodeBuilderSource as wire::Decode>::decode(reader)?),
+            PacketId::TickingAreasLoadStatus => Self::TickingAreasLoadStatus(<TickingAreasLoadStatus as wire::Decode>::decode(reader)?),
+            PacketId::DimensionData => Self::DimensionData(<DimensionData as wire::Decode>::decode(reader)?),
+            PacketId::AgentActionEvent => Self::AgentActionEvent(<AgentActionEvent as wire::Decode>::decode(reader)?),
+            PacketId::ChangeMobProperty => Self::ChangeMobProperty(<ChangeMobProperty as wire::Decode>::decode(reader)?),
+            PacketId::LessonProgress => Self::LessonProgress(<LessonProgress as wire::Decode>::decode(reader)?),
+            PacketId::RequestAbility => Self::RequestAbility(<RequestAbility as wire::Decode>::decode(reader)?),
+            PacketId::RequestPermissions => Self::RequestPermissions(<RequestPermissions as wire::Decode>::decode(reader)?),
+            PacketId::ToastRequest => Self::ToastRequest(<ToastRequest as wire::Decode>::decode(reader)?),
+            PacketId::UpdateAbilities => Self::UpdateAbilities(<UpdateAbilities as wire::Decode>::decode(reader)?),
+            PacketId::UpdateAdventureSettings => Self::UpdateAdventureSettings(<UpdateAdventureSettings as wire::Decode>::decode(reader)?),
+            PacketId::DeathInfo => Self::DeathInfo(<DeathInfo as wire::Decode>::decode(reader)?),
+            PacketId::EditorNetwork => Self::EditorNetwork(<EditorNetwork as wire::Decode>::decode(reader)?),
+            PacketId::FeatureRegistry => Self::FeatureRegistry(<FeatureRegistry as wire::Decode>::decode(reader)?),
+            PacketId::ServerStats => Self::ServerStats(<ServerStats as wire::Decode>::decode(reader)?),
+            PacketId::RequestNetworkSettings => Self::RequestNetworkSettings(<RequestNetworkSettings as wire::Decode>::decode(reader)?),
+            PacketId::GameTestRequest => Self::GameTestRequest(<GameTestRequest as wire::Decode>::decode(reader)?),
+            PacketId::GameTestResults => Self::GameTestResults(<GameTestResults as wire::Decode>::decode(reader)?),
+            PacketId::UpdateClientInputLocks => Self::UpdateClientInputLocks(<UpdateClientInputLocks as wire::Decode>::decode(reader)?),
+            PacketId::CameraPresets => Self::CameraPresets(<CameraPresets as wire::Decode>::decode(reader)?),
+            PacketId::UnlockedRecipes => Self::UnlockedRecipes(<UnlockedRecipes as wire::Decode>::decode(reader)?),
+            PacketId::CameraInstruction => Self::CameraInstruction(<CameraInstruction as wire::Decode>::decode(reader)?),
+            PacketId::TrimData => Self::TrimData(<TrimData as wire::Decode>::decode(reader)?),
+            PacketId::OpenSign => Self::OpenSign(<OpenSign as wire::Decode>::decode(reader)?),
+            PacketId::AgentAnimation => Self::AgentAnimation(<AgentAnimation as wire::Decode>::decode(reader)?),
+            PacketId::RefreshEntitlements => Self::RefreshEntitlements(<RefreshEntitlements as wire::Decode>::decode(reader)?),
+            PacketId::PlayerToggleCrafterSlotRequest => Self::PlayerToggleCrafterSlotRequest(<PlayerToggleCrafterSlotRequest as wire::Decode>::decode(reader)?),
+            PacketId::SetPlayerInventoryOptions => Self::SetPlayerInventoryOptions(<SetPlayerInventoryOptions as wire::Decode>::decode(reader)?),
+            PacketId::SetHud => Self::SetHud(<SetHud as wire::Decode>::decode(reader)?),
+            PacketId::AwardAchievement => Self::AwardAchievement(<AwardAchievement as wire::Decode>::decode(reader)?),
+            PacketId::ClientboundCloseForm => Self::ClientboundCloseForm(<ClientboundCloseForm as wire::Decode>::decode(reader)?),
+            PacketId::ServerboundLoadingScreen => Self::ServerboundLoadingScreen(<ServerboundLoadingScreen as wire::Decode>::decode(reader)?),
+            PacketId::JigsawStructureData => Self::JigsawStructureData(<JigsawStructureData as wire::Decode>::decode(reader)?),
+            PacketId::CurrentStructureFeature => Self::CurrentStructureFeature(<CurrentStructureFeature as wire::Decode>::decode(reader)?),
+            PacketId::ServerboundDiagnostics => Self::ServerboundDiagnostics(Box::new(<ServerboundDiagnostics as wire::Decode>::decode(reader)?)),
+            PacketId::CameraAimAssist => Self::CameraAimAssist(<CameraAimAssist as wire::Decode>::decode(reader)?),
+            PacketId::ContainerRegistryCleanup => Self::ContainerRegistryCleanup(<ContainerRegistryCleanup as wire::Decode>::decode(reader)?),
+            PacketId::MovementEffect => Self::MovementEffect(<MovementEffect as wire::Decode>::decode(reader)?),
+            PacketId::CameraAimAssistPresets => Self::CameraAimAssistPresets(<CameraAimAssistPresets as wire::Decode>::decode(reader)?),
+            PacketId::ClientCameraAimAssist => Self::ClientCameraAimAssist(<ClientCameraAimAssist as wire::Decode>::decode(reader)?),
+            PacketId::ClientMovementPredictionSync => Self::ClientMovementPredictionSync(<ClientMovementPredictionSync as wire::Decode>::decode(reader)?),
+            PacketId::UpdateClientOptions => Self::UpdateClientOptions(<UpdateClientOptions as wire::Decode>::decode(reader)?),
+            PacketId::PlayerVideoCapture => Self::PlayerVideoCapture(<PlayerVideoCapture as wire::Decode>::decode(reader)?),
+            PacketId::PlayerUpdateEntityOverrides => Self::PlayerUpdateEntityOverrides(<PlayerUpdateEntityOverrides as wire::Decode>::decode(reader)?),
+            PacketId::PlayerLocation => Self::PlayerLocation(<PlayerLocation as wire::Decode>::decode(reader)?),
+            PacketId::ClientboundControlSchemeSet => Self::ClientboundControlSchemeSet(<ClientboundControlSchemeSet as wire::Decode>::decode(reader)?),
+            PacketId::PrimitiveShapes => Self::PrimitiveShapes(<PrimitiveShapes as wire::Decode>::decode(reader)?),
+            PacketId::ServerboundPackSettingChange => Self::ServerboundPackSettingChange(<ServerboundPackSettingChange as wire::Decode>::decode(reader)?),
+            PacketId::ClientboundDataStore => Self::ClientboundDataStore(<ClientboundDataStore as wire::Decode>::decode(reader)?),
+            PacketId::GraphicsOverrideParameter => Self::GraphicsOverrideParameter(<GraphicsOverrideParameter as wire::Decode>::decode(reader)?),
+            PacketId::ServerboundDataStore => Self::ServerboundDataStore(<ServerboundDataStore as wire::Decode>::decode(reader)?),
+            PacketId::ClientboundDataDrivenUIShowScreen => Self::ClientboundDataDrivenUIShowScreen(<ClientboundDataDrivenUIShowScreen as wire::Decode>::decode(reader)?),
+            PacketId::ClientboundDataDrivenUICloseScreen => Self::ClientboundDataDrivenUICloseScreen(<ClientboundDataDrivenUICloseScreen as wire::Decode>::decode(reader)?),
+            PacketId::ClientboundDataDrivenUIReload => Self::ClientboundDataDrivenUIReload(<ClientboundDataDrivenUIReload as wire::Decode>::decode(reader)?),
+            PacketId::ClientboundTextureShift => Self::ClientboundTextureShift(Box::new(<ClientboundTextureShift as wire::Decode>::decode(reader)?)),
+            PacketId::VoxelShapes => Self::VoxelShapes(<VoxelShapes as wire::Decode>::decode(reader)?),
+            PacketId::CameraSpline => Self::CameraSpline(<CameraSpline as wire::Decode>::decode(reader)?),
+            PacketId::CameraAimAssistActorPriority => Self::CameraAimAssistActorPriority(<CameraAimAssistActorPriority as wire::Decode>::decode(reader)?),
+            PacketId::ResourcePacksReadyForValidation => Self::ResourcePacksReadyForValidation(<ResourcePacksReadyForValidation as wire::Decode>::decode(reader)?),
+            PacketId::LocatorBar => Self::LocatorBar(<LocatorBar as wire::Decode>::decode(reader)?),
+            PacketId::PartyChanged => Self::PartyChanged(<PartyChanged as wire::Decode>::decode(reader)?),
+            PacketId::ServerboundDataDrivenScreenClosed => Self::ServerboundDataDrivenScreenClosed(<ServerboundDataDrivenScreenClosed as wire::Decode>::decode(reader)?),
+            PacketId::SyncWorldClocks => Self::SyncWorldClocks(<SyncWorldClocks as wire::Decode>::decode(reader)?),
+            PacketId::ClientboundAttributeLayerSync => Self::ClientboundAttributeLayerSync(<ClientboundAttributeLayerSync as wire::Decode>::decode(reader)?),
+            PacketId::ServerStoreInfo => Self::ServerStoreInfo(<ServerStoreInfo as wire::Decode>::decode(reader)?),
+            PacketId::ServerPresenceInfo => Self::ServerPresenceInfo(<ServerPresenceInfo as wire::Decode>::decode(reader)?),
+            PacketId::ClientboundUpdateSoundData => Self::ClientboundUpdateSoundData(Box::new(<ClientboundUpdateSoundData as wire::Decode>::decode(reader)?)),
+            PacketId::SendPartyDestinationCookie => Self::SendPartyDestinationCookie(<SendPartyDestinationCookie as wire::Decode>::decode(reader)?),
+            PacketId::PartyDestinationCookieResponse => Self::PartyDestinationCookieResponse(<PartyDestinationCookieResponse as wire::Decode>::decode(reader)?),
+        })
     }
 }
