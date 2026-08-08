@@ -289,9 +289,19 @@ packet registration: `Packet::decode_from` rejects an id the sending peer may
 not use before reading a field. The generator fails instead of emitting generic
 fallback types for unsupported sequence or unresolved nodes.
 
-Borrowed packet views are not emitted yet, so a decoded packet owns its strings
-and byte buffers. Codebase-specific merge rules also remain future backend
-work.
+Collection and byte-buffer bounds are reader settings rather than hard caps, so
+a peer that legitimately exceeds the default is recoverable:
+
+```rust
+let mut reader = wire::Reader::from_shared(&payload);
+reader.set_collection_limit(16_384);
+let packet = packets::Packet::decode_from(id, packets::Peer::Server, &mut reader)?;
+```
+
+`Reader::from_shared` decodes byte-buffer and NBT fields as refcounted slices of
+the source buffer instead of copies, which matters most on the chunk payloads.
+Borrowed string views are not emitted yet, so a decoded packet still owns its
+strings. Codebase-specific merge rules also remain future backend work.
 
 The superseded v1 experiments are not inputs to the canonical pipeline; the
 historical Axolotl protocol work remains under `migration/`.

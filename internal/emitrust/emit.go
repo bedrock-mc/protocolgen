@@ -458,11 +458,11 @@ func emitCargo(m manifest.Manifest, g *generator) string {
 	b.WriteString("# Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\n")
 	crateName := "bedrock-protocol-" + strings.NewReplacer(".", "-", "_", "-").Replace(m.Target.MinecraftVersion)
 	fmt.Fprintf(&b, "[package]\nname = \"%s\"\nversion = \"0.1.0\"\nedition = \"2024\"\npublish = false\n", crateName)
-	if g.usesUUID || g.usesGlam || g.usesBytes {
+	// bytes is unconditional: the wire runtime's shared-buffer path is part of
+	// the reader contract, not a per-manifest feature.
+	{
 		b.WriteString("\n[dependencies]\n")
-		if g.usesBytes {
-			b.WriteString("bytes = \"1\"\n")
-		}
+		b.WriteString("bytes = \"1\"\n")
 		if g.usesGlam {
 			b.WriteString("glam = \"0.30\"\n")
 		}
