@@ -28,10 +28,6 @@ type definition struct {
 	BitLength    uint64
 	Tuple        bool
 	WrapperCodec string
-	// Wire codes retained so the codec emitter can pick a runtime codec
-	// without re-deriving the shape.
-	PrimitiveCode string
-	ControlCode   string
 }
 
 type rustVariant struct {
@@ -40,16 +36,12 @@ type rustVariant struct {
 	Fields       []rustField
 	Discriminant int64
 	SourceName   string
-	Node         manifest.Node
-	Hint         string
 }
 
 type rustField struct {
 	Name string
 	Type string
 	Docs []string
-	Node manifest.Node
-	Hint string
 }
 
 type packetInfo struct {
@@ -117,12 +109,11 @@ func prepareWithOptions(m manifest.Manifest, options Options) (*generator, []pac
 				return nil, nil, fmt.Errorf("packet %s field %s: %w", packet.Name, field.Name, err)
 			}
 			fieldName := uniqueField(fieldName(field.Name), used)
-			hint := name + typeName(field.Name)
-			typ, err := g.rustType(field.Encode, hint)
+			typ, err := g.rustType(field.Encode, name+typeName(field.Name))
 			if err != nil {
 				return nil, nil, fmt.Errorf("packet %s field %s: %w", packet.Name, field.Name, err)
 			}
-			fields = append(fields, rustFieldInfo{name: fieldName, typ: typ, docs: g.fieldDocs(packet.Name, field, fieldName), node: field.Encode, hint: hint})
+			fields = append(fields, rustFieldInfo{name: fieldName, typ: typ, docs: g.fieldDocs(packet.Name, field, fieldName)})
 		}
 		infos = append(infos, packetInfo{packet: packet, name: name, docs: docs.RustComments(g.docs.Type(packet.Name)), fields: fields, size: g.estimatePacketSize(fields)})
 	}
@@ -240,26 +231,13 @@ func GenerateFilesWithOptions(m manifest.Manifest, options Options) (map[string]
 		return nil, err
 	}
 	definitions := g.sortedDefinitions()
-	enums, err := g.emitRustEnums(definitions)
-	if err != nil {
-		return nil, err
-	}
-	types, err := g.emitRustTypes(definitions)
-	if err != nil {
-		return nil, err
-	}
-	packets, err := g.emitRustPackets(infos)
-	if err != nil {
-		return nil, err
-	}
 	files := map[string]string{
-		"Cargo.toml":         emitCargo(m, g),
-		"src/lib.rs":         emitLib(m),
-		"src/enums.rs":       enums,
-		"src/types.rs":       types,
-		"src/wire.rs":        emitWire(g),
-		"src/packets.rs":     packets,
-		"tests/roundtrip.rs": emitRoundtripTest(m, infos),
+		"Cargo.toml":     emitCargo(m, g),
+		"src/lib.rs":     emitLib(m),
+		"src/enums.rs":   emitRustEnums(definitions),
+		"src/types.rs":   emitRustTypes(definitions),
+		"src/wire.rs":    emitWire(g.usesNbt),
+		"src/packets.rs": emitRustPackets(infos),
 	}
 	return files, nil
 }
@@ -315,31 +293,25 @@ pub mod wire;
 `, m.Target.MinecraftVersion, m.Target.ProtocolVersion)
 }
 
-func (g *generator) emitRustEnums(definitions []definition) (string, error) {
+func emitRustEnums(definitions []definition) string {
 	var b strings.Builder
 	b.WriteString("// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\n")
-	b.WriteString("use crate::wire;\n\n")
 	lastDomain := ""
-	codec := &codecEmitter{g: g}
 	for _, item := range definitions {
 		if item.Kind == manifest.KindEnum {
 			writeRustDomainHeader(&b, item, &lastDomain)
 			emitRustEnum(&b, item)
-			if err := codec.emitDefinitionCodec(&b, item); err != nil {
-				return "", err
-			}
 		}
 	}
-	return strings.TrimSpace(b.String()) + "\n", nil
+	return strings.TrimSpace(b.String()) + "\n"
 }
 
-func (g *generator) emitRustTypes(definitions []definition) (string, error) {
+func emitRustTypes(definitions []definition) string {
 	var b strings.Builder
 	b.WriteString("// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\n")
 	b.WriteString("use crate::enums::*;\n\n")
 	b.WriteString("use crate::wire;\n\n")
 	lastDomain := ""
-	codec := &codecEmitter{g: g}
 	for _, item := range definitions {
 		if item.Kind == manifest.KindStruct || item.Kind == manifest.KindUnion || item.Kind == manifest.KindBitset {
 			writeRustDomainHeader(&b, item, &lastDomain)
@@ -355,8 +327,8 @@ func (g *generator) emitRustTypes(definitions []definition) (string, error) {
 					derive += ", Eq, Hash"
 				}
 				fmt.Fprintf(&b, "#[derive(%s)]\npub struct %s(pub %s);\n\n", derive, item.Name, item.Fields[0].Type)
-				if err := codec.emitDefinitionCodec(&b, item); err != nil {
-					return "", err
+				if item.WrapperCodec != "" {
+					fmt.Fprintf(&b, "impl wire::WireCodec for %s {\n    fn encode<W: std::io::Write>(&self, writer: &mut W) -> std::io::Result<()> {\n        <wire::%s as wire::WireCodec>::encode(&wire::%s(self.0), writer)\n    }\n\n    fn decode<R: std::io::Read>(reader: &mut R) -> std::io::Result<Self> {\n        <wire::%s as wire::WireCodec>::decode(reader).map(|value| Self(value.0))\n    }\n}\n\n", item.Name, item.WrapperCodec, item.WrapperCodec, item.WrapperCodec)
 				}
 				continue
 			}
@@ -435,14 +407,8 @@ func (g *generator) emitRustTypes(definitions []definition) (string, error) {
 			fmt.Fprintf(&b, "/// Stores the %d-bit value used by the wire bitset encoding.\n", item.BitLength)
 			fmt.Fprintf(&b, "#[derive(Clone, Debug, Default, PartialEq, Eq)]\npub struct %s(pub [u64; %d]);\n\n", item.Name, (item.BitLength+63)/64)
 		}
-		switch item.Kind {
-		case manifest.KindStruct, manifest.KindUnion, manifest.KindBitset:
-			if err := codec.emitDefinitionCodec(&b, item); err != nil {
-				return "", err
-			}
-		}
 	}
-	return strings.TrimSpace(b.String()) + "\n", nil
+	return strings.TrimSpace(b.String()) + "\n"
 }
 
 func writeRustDomainHeader(b *strings.Builder, item definition, lastDomain *string) {
@@ -473,21 +439,174 @@ func emitCargo(m manifest.Manifest, g *generator) string {
 	return b.String()
 }
 
-func (g *generator) emitRustPackets(infos []packetInfo) (string, error) {
+func emitWire(usesNbt bool) string {
+	source := `// Code generated from canonical protocol manifest v2. DO NOT EDIT.
+
+use std::io::{self, Read, Write};
+
+pub trait WireCodec: Sized {
+    fn encode<W: Write>(&self, writer: &mut W) -> io::Result<()>;
+    fn decode<R: Read>(reader: &mut R) -> io::Result<Self>;
+}
+
+macro_rules! fixed_codec {
+    ($name:ident, $inner:ty, $size:expr, $write:ident, $read:ident) => {
+        #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
+        pub struct $name(pub $inner);
+
+        impl WireCodec for $name {
+            fn encode<W: Write>(&self, writer: &mut W) -> io::Result<()> {
+                writer.write_all(&self.0.$write())
+            }
+
+            fn decode<R: Read>(reader: &mut R) -> io::Result<Self> {
+                let mut bytes = [0u8; $size];
+                reader.read_exact(&mut bytes)?;
+                Ok(Self(<$inner>::$read(bytes)))
+            }
+        }
+    };
+}
+
+macro_rules! fixed_float_codec {
+    ($name:ident, $inner:ty, $size:expr, $write:ident, $read:ident) => {
+        #[derive(Clone, Copy, Debug, Default, PartialEq)]
+        pub struct $name(pub $inner);
+
+        impl WireCodec for $name {
+            fn encode<W: Write>(&self, writer: &mut W) -> io::Result<()> {
+                writer.write_all(&self.0.$write())
+            }
+
+            fn decode<R: Read>(reader: &mut R) -> io::Result<Self> {
+                let mut bytes = [0u8; $size];
+                reader.read_exact(&mut bytes)?;
+                Ok(Self(<$inner>::$read(bytes)))
+            }
+        }
+    };
+}
+
+fixed_codec!(I8, i8, 1, to_ne_bytes, from_ne_bytes);
+fixed_codec!(U8, u8, 1, to_ne_bytes, from_ne_bytes);
+fixed_codec!(I16LE, i16, 2, to_le_bytes, from_le_bytes);
+fixed_codec!(I16BE, i16, 2, to_be_bytes, from_be_bytes);
+fixed_codec!(U16LE, u16, 2, to_le_bytes, from_le_bytes);
+fixed_codec!(U16BE, u16, 2, to_be_bytes, from_be_bytes);
+fixed_codec!(I32LE, i32, 4, to_le_bytes, from_le_bytes);
+fixed_codec!(I32BE, i32, 4, to_be_bytes, from_be_bytes);
+fixed_codec!(U32LE, u32, 4, to_le_bytes, from_le_bytes);
+fixed_codec!(U32BE, u32, 4, to_be_bytes, from_be_bytes);
+fixed_codec!(I64LE, i64, 8, to_le_bytes, from_le_bytes);
+fixed_codec!(I64BE, i64, 8, to_be_bytes, from_be_bytes);
+fixed_codec!(U64LE, u64, 8, to_le_bytes, from_le_bytes);
+fixed_codec!(U64BE, u64, 8, to_be_bytes, from_be_bytes);
+fixed_float_codec!(F32LE, f32, 4, to_le_bytes, from_le_bytes);
+fixed_float_codec!(F32BE, f32, 4, to_be_bytes, from_be_bytes);
+fixed_float_codec!(F64LE, f64, 8, to_le_bytes, from_le_bytes);
+fixed_float_codec!(F64BE, f64, 8, to_be_bytes, from_be_bytes);
+
+fn write_var_u64<W: Write>(writer: &mut W, mut value: u64) -> io::Result<()> {
+    while value >= 0x80 {
+        writer.write_all(&[(value as u8) | 0x80])?;
+        value >>= 7;
+    }
+    writer.write_all(&[value as u8])
+}
+
+fn read_var_u64<R: Read>(reader: &mut R) -> io::Result<u64> {
+    let mut value = 0u64;
+    for shift in (0..64).step_by(7) {
+        let mut byte = [0u8; 1];
+        reader.read_exact(&mut byte)?;
+        value |= u64::from(byte[0] & 0x7f) << shift;
+        if byte[0] & 0x80 == 0 {
+            return Ok(value);
+        }
+    }
+    Err(io::Error::new(io::ErrorKind::InvalidData, "varint too large"))
+}
+
+macro_rules! var_codec {
+    ($name:ident, $inner:ty) => {
+        #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
+        pub struct $name(pub $inner);
+
+        impl WireCodec for $name {
+            fn encode<W: Write>(&self, writer: &mut W) -> io::Result<()> {
+                write_var_u64(writer, self.0 as u64)
+            }
+
+            fn decode<R: Read>(reader: &mut R) -> io::Result<Self> {
+                Ok(Self(read_var_u64(reader)? as $inner))
+            }
+        }
+    };
+}
+
+var_codec!(VarInt, i32);
+var_codec!(VarUInt, u32);
+var_codec!(VarLong, i64);
+var_codec!(VarULong, u64);
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
+pub struct ZigZag32(pub i32);
+
+impl WireCodec for ZigZag32 {
+    fn encode<W: Write>(&self, writer: &mut W) -> io::Result<()> {
+        write_var_u64(writer, ((self.0 << 1) ^ (self.0 >> 31)) as u32 as u64)
+    }
+
+    fn decode<R: Read>(reader: &mut R) -> io::Result<Self> {
+        let raw = read_var_u64(reader)? as u32;
+        Ok(Self(((raw >> 1) as i32) ^ -((raw & 1) as i32)))
+    }
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
+pub struct ZigZag64(pub i64);
+
+impl WireCodec for ZigZag64 {
+    fn encode<W: Write>(&self, writer: &mut W) -> io::Result<()> {
+        write_var_u64(writer, ((self.0 << 1) ^ (self.0 >> 63)) as u64)
+    }
+
+    fn decode<R: Read>(reader: &mut R) -> io::Result<Self> {
+        let raw = read_var_u64(reader)?;
+        Ok(Self(((raw >> 1) as i64) ^ -((raw & 1) as i64)))
+    }
+}
+`
+	if usesNbt {
+		source += `
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub struct NetworkNbt(pub bytes::Bytes);
+
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub struct PersistentNbt(pub bytes::Bytes);
+`
+	}
+	return source
+}
+
+func emitRustPackets(infos []packetInfo) string {
 	var b strings.Builder
 	b.WriteString("// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\n")
 	b.WriteString("use crate::enums::*;\nuse crate::types::*;\n")
 	b.WriteString("use crate::wire;\n\n")
-	codec := &codecEmitter{g: g}
 	for _, info := range infos {
 		emitRustPacketDefinition(&b, info)
-		if err := codec.emitPacketCodec(&b, info); err != nil {
-			return "", err
-		}
 	}
 	emitPacketRegistry(&b, infos)
-	emitDirectionRegistry(&b, infos)
-	return strings.TrimSpace(b.String()) + "\n", nil
+	return strings.TrimSpace(b.String()) + "\n"
+}
+
+func emitRustPacket(info packetInfo) string {
+	var b strings.Builder
+	b.WriteString("// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\n")
+	b.WriteString("use crate::enums::*;\nuse crate::types::*;\nuse crate::wire;\n\n")
+	emitRustPacketDefinition(&b, info)
+	return b.String()
 }
 
 func emitRustPacketDefinition(b *strings.Builder, info packetInfo) {
@@ -563,8 +682,6 @@ type rustFieldInfo struct {
 	name string
 	typ  string
 	docs []string
-	node manifest.Node
-	hint string
 }
 
 func (g *generator) rustType(node manifest.Node, hint string) (string, error) {
@@ -643,7 +760,7 @@ func (g *generator) rustType(node manifest.Node, hint string) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			g.definitions[name] = definition{Name: name, TypeID: rustNodeTypeID(node), Kind: manifest.KindUnion, Control: control, ControlCode: node.Control.Primitive.Code}
+			g.definitions[name] = definition{Name: name, TypeID: rustNodeTypeID(node), Kind: manifest.KindUnion, Control: control}
 			variants := make([]rustVariant, 0, len(node.Variants))
 			used := map[string]bool{}
 			for _, variant := range node.Variants {
@@ -665,7 +782,7 @@ func (g *generator) rustType(node manifest.Node, hint string) (string, error) {
 						payload = "Box<" + payload + ">"
 					}
 				}
-				variants = append(variants, rustVariant{Name: variantName, Payload: payload, Fields: fields, Discriminant: variant.Value, SourceName: variant.Name, Node: variant.Encode, Hint: name + variantName})
+				variants = append(variants, rustVariant{Name: variantName, Payload: payload, Fields: fields, Discriminant: variant.Value, SourceName: variant.Name})
 			}
 			item := g.definitions[name]
 			item.Union = variants
@@ -685,7 +802,7 @@ func (g *generator) rustType(node manifest.Node, hint string) (string, error) {
 			return "", err
 		}
 		if _, ok := g.definitions[name]; !ok {
-			g.definitions[name] = definition{Name: name, TypeID: rustNodeTypeID(node), Kind: manifest.KindEnum, Underlying: underlying, Variants: append([]manifest.Variant(nil), node.Variants...), PrimitiveCode: node.Primitive.Code}
+			g.definitions[name] = definition{Name: name, TypeID: rustNodeTypeID(node), Kind: manifest.KindEnum, Underlying: underlying, Variants: append([]manifest.Variant(nil), node.Variants...)}
 		}
 		return name, nil
 	case manifest.KindReserved, manifest.KindIgnored:
@@ -770,7 +887,7 @@ func (g *generator) registerStruct(node manifest.Node, hint string) (string, err
 			Name:         name,
 			TypeID:       rustNodeTypeID(node),
 			Kind:         manifest.KindStruct,
-			Fields:       []rustField{{Name: "value", Type: raw, Node: node.Fields[0].Encode, Hint: name + typeName(node.Fields[0].Name)}},
+			Fields:       []rustField{{Name: "value", Type: raw}},
 			Tuple:        true,
 			WrapperCodec: codec,
 		}
@@ -799,12 +916,11 @@ func (g *generator) rustFieldsForUnion(node manifest.Node, parentName string, co
 			continue
 		}
 		fieldName := uniqueField(fieldName(field.Name), used)
-		hint := parentName + typeName(field.Name)
-		typ, err := g.rustType(field.Encode, hint)
+		typ, err := g.rustType(field.Encode, parentName+typeName(field.Name))
 		if err != nil {
 			return nil, err
 		}
-		fields = append(fields, rustField{Name: fieldName, Type: typ, Docs: g.fieldDocs(rustNodeTypeID(node), field, fieldName), Node: field.Encode, Hint: hint})
+		fields = append(fields, rustField{Name: fieldName, Type: typ, Docs: g.fieldDocs(rustNodeTypeID(node), field, fieldName)})
 	}
 	if control != nil {
 		g.boxLargeUnionFields(fields)

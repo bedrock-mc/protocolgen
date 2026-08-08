@@ -1,7 +1,5 @@
 // Code generated from canonical protocol manifest v2. DO NOT EDIT.
 
-use crate::wire;
-
 // Domain: actor
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
@@ -215,18 +213,6 @@ impl From<ActorEventType> for u8 {
     }
 }
 
-impl wire::Encode for ActorEventType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for ActorEventType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum ActorLinkType {
     #[default]
@@ -261,18 +247,6 @@ impl ActorLinkType {
 impl From<ActorLinkType> for u8 {
     fn from(value: ActorLinkType) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for ActorLinkType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for ActorLinkType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -781,18 +755,6 @@ impl From<ActorType> for i32 {
     }
 }
 
-impl wire::Encode for ActorType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::ZigZag32(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for ActorType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 // Domain: camera
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
@@ -826,18 +788,6 @@ impl CameraAimAssistAction {
 impl From<CameraAimAssistAction> for u8 {
     fn from(value: CameraAimAssistAction) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for CameraAimAssistAction {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for CameraAimAssistAction {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -875,18 +825,6 @@ impl From<CameraAimAssistPresetOperation> for u8 {
     }
 }
 
-impl wire::Encode for CameraAimAssistPresetOperation {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for CameraAimAssistPresetOperation {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum CameraAimAssistTargetMode {
     #[default]
@@ -918,18 +856,6 @@ impl CameraAimAssistTargetMode {
 impl From<CameraAimAssistTargetMode> for i32 {
     fn from(value: CameraAimAssistTargetMode) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for CameraAimAssistTargetMode {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::I32LE(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for CameraAimAssistTargetMode {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::I32LE as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -967,18 +893,6 @@ impl From<CameraPresetAudioListener> for u8 {
     }
 }
 
-impl wire::Encode for CameraPresetAudioListener {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for CameraPresetAudioListener {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum CameraShakeAction {
     #[default]
@@ -1013,18 +927,6 @@ impl From<CameraShakeAction> for u8 {
     }
 }
 
-impl wire::Encode for CameraShakeAction {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for CameraShakeAction {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum CameraShakeType {
     #[default]
@@ -1056,18 +958,6 @@ impl CameraShakeType {
 impl From<CameraShakeType> for u8 {
     fn from(value: CameraShakeType) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for CameraShakeType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for CameraShakeType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -1116,18 +1006,6 @@ impl CommandPermissionLevel {
 impl From<CommandPermissionLevel> for u8 {
     fn from(value: CommandPermissionLevel) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for CommandPermissionLevel {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for CommandPermissionLevel {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -1362,18 +1240,6 @@ impl From<ContainerEnumName> for u8 {
     }
 }
 
-impl wire::Encode for ContainerEnumName {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for ContainerEnumName {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 // Domain: creative
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
@@ -1419,18 +1285,6 @@ impl From<CreativeItemCategory> for u8 {
     }
 }
 
-impl wire::Encode for CreativeItemCategory {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for CreativeItemCategory {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 // Domain: education
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
@@ -1467,18 +1321,6 @@ impl EducationEditionOffer {
 impl From<EducationEditionOffer> for u32 {
     fn from(value: EducationEditionOffer) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for EducationEditionOffer {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::VarUInt(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for EducationEditionOffer {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::VarUInt as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -1644,18 +1486,6 @@ impl From<EnchantType> for u8 {
     }
 }
 
-impl wire::Encode for EnchantType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for EnchantType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 // Domain: inventory
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
@@ -1695,18 +1525,6 @@ impl InventoryLayout {
 impl From<InventoryLayout> for i32 {
     fn from(value: InventoryLayout) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for InventoryLayout {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::ZigZag32(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for InventoryLayout {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -1759,18 +1577,6 @@ impl From<InventoryLeftTabIndex> for i32 {
     }
 }
 
-impl wire::Encode for InventoryLeftTabIndex {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::ZigZag32(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for InventoryLeftTabIndex {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum InventoryRightTabIndex {
     #[default]
@@ -1811,18 +1617,6 @@ impl From<InventoryRightTabIndex> for i32 {
     }
 }
 
-impl wire::Encode for InventoryRightTabIndex {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::ZigZag32(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for InventoryRightTabIndex {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum InventorySourceInventorySourceFlags {
     #[default]
@@ -1854,18 +1648,6 @@ impl InventorySourceInventorySourceFlags {
 impl From<InventorySourceInventorySourceFlags> for u32 {
     fn from(value: InventorySourceInventorySourceFlags) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for InventorySourceInventorySourceFlags {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::VarUInt(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for InventorySourceInventorySourceFlags {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::VarUInt as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -1912,18 +1694,6 @@ impl From<InventorySourceType> for u32 {
     }
 }
 
-impl wire::Encode for InventorySourceType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::VarUInt(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for InventorySourceType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::VarUInt as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 // Domain: item
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
@@ -1957,18 +1727,6 @@ impl ItemReleaseInventoryTransactionActionType {
 impl From<ItemReleaseInventoryTransactionActionType> for i32 {
     fn from(value: ItemReleaseInventoryTransactionActionType) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for ItemReleaseInventoryTransactionActionType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::ZigZag32(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for ItemReleaseInventoryTransactionActionType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -2012,18 +1770,6 @@ impl From<ItemUseInventoryTransactionActionType> for i32 {
     }
 }
 
-impl wire::Encode for ItemUseInventoryTransactionActionType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::ZigZag32(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for ItemUseInventoryTransactionActionType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum ItemUseInventoryTransactionClientCooldownState {
     #[default]
@@ -2058,18 +1804,6 @@ impl From<ItemUseInventoryTransactionClientCooldownState> for u8 {
     }
 }
 
-impl wire::Encode for ItemUseInventoryTransactionClientCooldownState {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for ItemUseInventoryTransactionClientCooldownState {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum ItemUseInventoryTransactionPredictedResult {
     #[default]
@@ -2101,18 +1835,6 @@ impl ItemUseInventoryTransactionPredictedResult {
 impl From<ItemUseInventoryTransactionPredictedResult> for u8 {
     fn from(value: ItemUseInventoryTransactionPredictedResult) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for ItemUseInventoryTransactionPredictedResult {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for ItemUseInventoryTransactionPredictedResult {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -2153,18 +1875,6 @@ impl From<ItemUseInventoryTransactionTriggerType> for u8 {
     }
 }
 
-impl wire::Encode for ItemUseInventoryTransactionTriggerType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for ItemUseInventoryTransactionTriggerType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum ItemUseOnActorInventoryTransactionActionType {
     #[default]
@@ -2202,18 +1912,6 @@ impl From<ItemUseOnActorInventoryTransactionActionType> for i32 {
     }
 }
 
-impl wire::Encode for ItemUseOnActorInventoryTransactionActionType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::ZigZag32(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for ItemUseOnActorInventoryTransactionActionType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum ItemVersion {
     #[default]
@@ -2248,18 +1946,6 @@ impl ItemVersion {
 impl From<ItemVersion> for i32 {
     fn from(value: ItemVersion) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for ItemVersion {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::ZigZag32(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for ItemVersion {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -2304,18 +1990,6 @@ impl ItemDescriptorType {
 impl From<ItemDescriptorType> for u8 {
     fn from(value: ItemDescriptorType) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for ItemDescriptorType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for ItemDescriptorType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -2553,18 +2227,6 @@ impl From<ItemStackNetResult> for u8 {
     }
 }
 
-impl wire::Encode for ItemStackNetResult {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for ItemStackNetResult {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum ItemStackRequestActionType {
     #[default]
@@ -2650,18 +2312,6 @@ impl ItemStackRequestActionType {
 impl From<ItemStackRequestActionType> for u8 {
     fn from(value: ItemStackRequestActionType) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for ItemStackRequestActionType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for ItemStackRequestActionType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -2775,18 +2425,6 @@ impl From<MapDecorationType> for i8 {
     }
 }
 
-impl wire::Encode for MapDecorationType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::I8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for MapDecorationType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::I8 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum MapItemTrackedActorType {
     #[default]
@@ -2821,18 +2459,6 @@ impl MapItemTrackedActorType {
 impl From<MapItemTrackedActorType> for i32 {
     fn from(value: MapItemTrackedActorType) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for MapItemTrackedActorType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::I32LE(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for MapItemTrackedActorType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::I32LE as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -3199,18 +2825,6 @@ impl From<MemoryCategory> for u8 {
     }
 }
 
-impl wire::Encode for MemoryCategory {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for MemoryCategory {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 // Domain: misc
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
@@ -3295,18 +2909,6 @@ impl From<AgentActionType> for i32 {
     }
 }
 
-impl wire::Encode for AgentActionType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::I32LE(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for AgentActionType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::I32LE as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum AgentAnimationType {
     #[default]
@@ -3338,18 +2940,6 @@ impl AgentAnimationType {
 impl From<AgentAnimationType> for u8 {
     fn from(value: AgentAnimationType) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for AgentAnimationType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for AgentAnimationType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -3396,18 +2986,6 @@ impl From<AnimateAction> for u8 {
     }
 }
 
-impl wire::Encode for AnimateAction {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for AnimateAction {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum AnimationMode {
     #[default]
@@ -3442,18 +3020,6 @@ impl AnimationMode {
 impl From<AnimationMode> for u8 {
     fn from(value: AnimationMode) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for AnimationMode {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for AnimationMode {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -3509,18 +3075,6 @@ impl From<BossBarColor> for u8 {
     }
 }
 
-impl wire::Encode for BossBarColor {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for BossBarColor {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum BossBarOverlay {
     #[default]
@@ -3561,18 +3115,6 @@ impl BossBarOverlay {
 impl From<BossBarOverlay> for u8 {
     fn from(value: BossBarOverlay) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for BossBarOverlay {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for BossBarOverlay {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -3628,18 +3170,6 @@ impl BossEventUpdateType {
 impl From<BossEventUpdateType> for u8 {
     fn from(value: BossEventUpdateType) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for BossEventUpdateType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for BossEventUpdateType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -3716,18 +3246,6 @@ impl From<BuildPlatform> for i32 {
     }
 }
 
-impl wire::Encode for BuildPlatform {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::I32LE(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for BuildPlatform {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::I32LE as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum ChatRestrictionLevel {
     #[default]
@@ -3765,18 +3283,6 @@ impl From<ChatRestrictionLevel> for u8 {
     }
 }
 
-impl wire::Encode for ChatRestrictionLevel {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for ChatRestrictionLevel {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum ClientCameraAimAssistAction {
     #[default]
@@ -3808,18 +3314,6 @@ impl ClientCameraAimAssistAction {
 impl From<ClientCameraAimAssistAction> for u8 {
     fn from(value: ClientCameraAimAssistAction) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for ClientCameraAimAssistAction {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for ClientCameraAimAssistAction {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -3881,18 +3375,6 @@ impl From<ClientPlayMode> for u32 {
     }
 }
 
-impl wire::Encode for ClientPlayMode {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::VarUInt(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for ClientPlayMode {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::VarUInt as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum ClientboundTextureShiftAction {
     #[default]
@@ -3933,18 +3415,6 @@ impl ClientboundTextureShiftAction {
 impl From<ClientboundTextureShiftAction> for u8 {
     fn from(value: ClientboundTextureShiftAction) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for ClientboundTextureShiftAction {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for ClientboundTextureShiftAction {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -3994,18 +3464,6 @@ impl From<CodeBuilderExecutionStateCodeStatus> for u8 {
     }
 }
 
-impl wire::Encode for CodeBuilderExecutionStateCodeStatus {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for CodeBuilderExecutionStateCodeStatus {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum CodeBuilderStorageQueryOptionsCategory {
     #[default]
@@ -4040,18 +3498,6 @@ impl CodeBuilderStorageQueryOptionsCategory {
 impl From<CodeBuilderStorageQueryOptionsCategory> for u8 {
     fn from(value: CodeBuilderStorageQueryOptionsCategory) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for CodeBuilderStorageQueryOptionsCategory {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for CodeBuilderStorageQueryOptionsCategory {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -4092,18 +3538,6 @@ impl CodeBuilderStorageQueryOptionsOperation {
 impl From<CodeBuilderStorageQueryOptionsOperation> for u8 {
     fn from(value: CodeBuilderStorageQueryOptionsOperation) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for CodeBuilderStorageQueryOptionsOperation {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for CodeBuilderStorageQueryOptionsOperation {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -4579,18 +4013,6 @@ impl From<ConnectionDisconnectFailReason> for i32 {
     }
 }
 
-impl wire::Encode for ConnectionDisconnectFailReason {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::ZigZag32(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for ConnectionDisconnectFailReason {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum ControlScheme {
     #[default]
@@ -4631,18 +4053,6 @@ impl ControlScheme {
 impl From<ControlScheme> for u8 {
     fn from(value: ControlScheme) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for ControlScheme {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for ControlScheme {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -4692,18 +4102,6 @@ impl From<CoordinateEvaluationOrder> for i32 {
     }
 }
 
-impl wire::Encode for CoordinateEvaluationOrder {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::ZigZag32(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for CoordinateEvaluationOrder {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum EditorWorldType {
     #[default]
@@ -4741,18 +4139,6 @@ impl EditorWorldType {
 impl From<EditorWorldType> for i32 {
     fn from(value: EditorWorldType) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for EditorWorldType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::ZigZag32(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for EditorWorldType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -4799,18 +4185,6 @@ impl GameType {
 impl From<GameType> for i32 {
     fn from(value: GameType) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for GameType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::ZigZag32(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for GameType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -4863,18 +4237,6 @@ impl From<GeneratorType> for i32 {
     }
 }
 
-impl wire::Encode for GeneratorType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::ZigZag32(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for GeneratorType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum GraphicsMode {
     #[default]
@@ -4912,18 +4274,6 @@ impl GraphicsMode {
 impl From<GraphicsMode> for u8 {
     fn from(value: GraphicsMode) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for GraphicsMode {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for GraphicsMode {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -5111,18 +4461,6 @@ impl From<GraphicsOverrideParameterType> for u8 {
     }
 }
 
-impl wire::Encode for GraphicsOverrideParameterType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for GraphicsOverrideParameterType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum HeightMapDataType {
     #[default]
@@ -5160,18 +4498,6 @@ impl HeightMapDataType {
 impl From<HeightMapDataType> for u8 {
     fn from(value: HeightMapDataType) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for HeightMapDataType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for HeightMapDataType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -5242,18 +4568,6 @@ impl From<HudElement> for i32 {
     }
 }
 
-impl wire::Encode for HudElement {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::ZigZag32(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for HudElement {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum HudVisibility {
     #[default]
@@ -5285,18 +4599,6 @@ impl HudVisibility {
 impl From<HudVisibility> for i32 {
     fn from(value: HudVisibility) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for HudVisibility {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::ZigZag32(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for HudVisibility {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -5526,18 +4828,6 @@ impl From<InputData> for i32 {
     }
 }
 
-impl wire::Encode for InputData {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::ZigZag32(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for InputData {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum InputMode {
     #[default]
@@ -5584,18 +4874,6 @@ impl From<InputMode> for u32 {
     }
 }
 
-impl wire::Encode for InputMode {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::VarUInt(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for InputMode {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::VarUInt as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum InteractAction {
     #[default]
@@ -5636,18 +4914,6 @@ impl InteractAction {
 impl From<InteractAction> for u8 {
     fn from(value: InteractAction) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for InteractAction {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for InteractAction {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -5718,18 +4984,6 @@ impl From<LabTableReactionType> for u8 {
     }
 }
 
-impl wire::Encode for LabTableReactionType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for LabTableReactionType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum LabTableType {
     #[default]
@@ -5764,18 +5018,6 @@ impl LabTableType {
 impl From<LabTableType> for u8 {
     fn from(value: LabTableType) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for LabTableType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for LabTableType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -5822,18 +5064,6 @@ impl From<LegacyArmorSlot> for i32 {
     }
 }
 
-impl wire::Encode for LegacyArmorSlot {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::ZigZag32(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for LegacyArmorSlot {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum LegacyDifficulty {
     #[default]
@@ -5877,18 +5107,6 @@ impl LegacyDifficulty {
 impl From<LegacyDifficulty> for i32 {
     fn from(value: LegacyDifficulty) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for LegacyDifficulty {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::ZigZag32(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for LegacyDifficulty {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -6166,18 +5384,6 @@ impl From<MinecraftEventingAchievementIds> for u8 {
     }
 }
 
-impl wire::Encode for MinecraftEventingAchievementIds {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for MinecraftEventingAchievementIds {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum MinecraftEventingInteractionType {
     #[default]
@@ -6254,18 +5460,6 @@ impl MinecraftEventingInteractionType {
 impl From<MinecraftEventingInteractionType> for u8 {
     fn from(value: MinecraftEventingInteractionType) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for MinecraftEventingInteractionType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for MinecraftEventingInteractionType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -6375,18 +5569,6 @@ impl From<MinecraftEventingPOIBlockInteractionType> for u8 {
     }
 }
 
-impl wire::Encode for MinecraftEventingPOIBlockInteractionType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for MinecraftEventingPOIBlockInteractionType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum Mirror {
     #[default]
@@ -6424,18 +5606,6 @@ impl Mirror {
 impl From<Mirror> for u8 {
     fn from(value: Mirror) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for Mirror {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for Mirror {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -6515,18 +5685,6 @@ impl From<MoLangVersion> for i16 {
     }
 }
 
-impl wire::Encode for MoLangVersion {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::I16LE(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for MoLangVersion {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::I16LE as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum MobEffectEvent {
     #[default]
@@ -6567,18 +5725,6 @@ impl From<MobEffectEvent> for u8 {
     }
 }
 
-impl wire::Encode for MobEffectEvent {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for MobEffectEvent {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum ModalFormCancelReason {
     #[default]
@@ -6610,18 +5756,6 @@ impl ModalFormCancelReason {
 impl From<ModalFormCancelReason> for u8 {
     fn from(value: ModalFormCancelReason) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for ModalFormCancelReason {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for ModalFormCancelReason {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -6662,18 +5796,6 @@ impl From<MovementEffectType> for i32 {
     }
 }
 
-impl wire::Encode for MovementEffectType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::ZigZag32(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for MovementEffectType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum MultiplayerSettingsType {
     #[default]
@@ -6708,18 +5830,6 @@ impl MultiplayerSettingsType {
 impl From<MultiplayerSettingsType> for i32 {
     fn from(value: MultiplayerSettingsType) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for MultiplayerSettingsType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::ZigZag32(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for MultiplayerSettingsType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -6763,18 +5873,6 @@ impl From<NewInteractionModel> for i32 {
     }
 }
 
-impl wire::Encode for NewInteractionModel {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::ZigZag32(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for NewInteractionModel {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum PacketCompressionAlgorithm {
     #[default]
@@ -6809,18 +5907,6 @@ impl PacketCompressionAlgorithm {
 impl From<PacketCompressionAlgorithm> for u16 {
     fn from(value: PacketCompressionAlgorithm) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for PacketCompressionAlgorithm {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U16LE(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for PacketCompressionAlgorithm {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U16LE as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -6867,18 +5953,6 @@ impl From<PacketType> for u32 {
     }
 }
 
-impl wire::Encode for PacketType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U32LE(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for PacketType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U32LE as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum PacketViolationSeverity {
     #[default]
@@ -6919,18 +5993,6 @@ impl From<PacketViolationSeverity> for i32 {
     }
 }
 
-impl wire::Encode for PacketViolationSeverity {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::ZigZag32(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for PacketViolationSeverity {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum PacketViolationType {
     #[default]
@@ -6962,18 +6024,6 @@ impl PacketViolationType {
 impl From<PacketViolationType> for i32 {
     fn from(value: PacketViolationType) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for PacketViolationType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::ZigZag32(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for PacketViolationType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -7014,18 +6064,6 @@ impl From<PersonaAnimatedTextureType> for u32 {
     }
 }
 
-impl wire::Encode for PersonaAnimatedTextureType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::VarUInt(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for PersonaAnimatedTextureType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::VarUInt as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum PersonaAnimationExpression {
     #[default]
@@ -7057,18 +6095,6 @@ impl PersonaAnimationExpression {
 impl From<PersonaAnimationExpression> for u32 {
     fn from(value: PersonaAnimationExpression) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for PersonaAnimationExpression {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::VarUInt(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for PersonaAnimationExpression {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::VarUInt as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -7106,18 +6132,6 @@ impl From<PersonaArmSizeType> for u8 {
     }
 }
 
-impl wire::Encode for PersonaArmSizeType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for PersonaArmSizeType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum PhotoType {
     #[default]
@@ -7152,18 +6166,6 @@ impl PhotoType {
 impl From<PhotoType> for u8 {
     fn from(value: PhotoType) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for PhotoType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for PhotoType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -7225,18 +6227,6 @@ impl From<PlayStatusType> for i32 {
     }
 }
 
-impl wire::Encode for PlayStatusType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::I32BE(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for PlayStatusType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::I32BE as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum RandomDistributionType {
     #[default]
@@ -7286,18 +6276,6 @@ impl From<RandomDistributionType> for i32 {
     }
 }
 
-impl wire::Encode for RandomDistributionType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::ZigZag32(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for RandomDistributionType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum RequestAbilityType {
     #[default]
@@ -7332,18 +6310,6 @@ impl RequestAbilityType {
 impl From<RequestAbilityType> for u8 {
     fn from(value: RequestAbilityType) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for RequestAbilityType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for RequestAbilityType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -7396,18 +6362,6 @@ impl From<RequestType> for u8 {
     }
 }
 
-impl wire::Encode for RequestType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for RequestType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum RewindType {
     #[default]
@@ -7439,18 +6393,6 @@ impl RewindType {
 impl From<RewindType> for u8 {
     fn from(value: RewindType) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for RewindType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for RewindType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -7491,18 +6433,6 @@ impl Rotation {
 impl From<Rotation> for u8 {
     fn from(value: Rotation) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for Rotation {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for Rotation {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -7564,18 +6494,6 @@ impl From<ScriptModuleMinecraftScriptPrimitiveShapeType> for u8 {
     }
 }
 
-impl wire::Encode for ScriptModuleMinecraftScriptPrimitiveShapeType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for ScriptModuleMinecraftScriptPrimitiveShapeType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum ServerEditorConnectionPolicy {
     #[default]
@@ -7613,18 +6531,6 @@ impl ServerEditorConnectionPolicy {
 impl From<ServerEditorConnectionPolicy> for i32 {
     fn from(value: ServerEditorConnectionPolicy) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for ServerEditorConnectionPolicy {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::ZigZag32(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for ServerEditorConnectionPolicy {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -7668,18 +6574,6 @@ impl From<ServerWaypointGroupAction> for u8 {
     }
 }
 
-impl wire::Encode for ServerWaypointGroupAction {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for ServerWaypointGroupAction {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum ServerboundLoadingScreenType {
     #[default]
@@ -7711,18 +6605,6 @@ impl ServerboundLoadingScreenType {
 impl From<ServerboundLoadingScreenType> for i32 {
     fn from(value: ServerboundLoadingScreenType) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for ServerboundLoadingScreenType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::ZigZag32(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for ServerboundLoadingScreenType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -7763,18 +6645,6 @@ impl From<ShowStoreOfferRedirectType> for u8 {
     }
 }
 
-impl wire::Encode for ShowStoreOfferRedirectType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for ShowStoreOfferRedirectType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum SimulationTypeEnum {
     #[default]
@@ -7812,18 +6682,6 @@ impl SimulationTypeEnum {
 impl From<SimulationTypeEnum> for u8 {
     fn from(value: SimulationTypeEnum) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for SimulationTypeEnum {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for SimulationTypeEnum {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -7870,18 +6728,6 @@ impl From<SocialGamePublishSetting> for i32 {
     }
 }
 
-impl wire::Encode for SocialGamePublishSetting {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::ZigZag32(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for SocialGamePublishSetting {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum SoftEnumUpdateType {
     #[default]
@@ -7919,18 +6765,6 @@ impl From<SoftEnumUpdateType> for u8 {
     }
 }
 
-impl wire::Encode for SoftEnumUpdateType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for SoftEnumUpdateType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum SpawnBiomeType {
     #[default]
@@ -7965,18 +6799,6 @@ impl From<SpawnBiomeType> for i16 {
     }
 }
 
-impl wire::Encode for SpawnBiomeType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::I16LE(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for SpawnBiomeType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::I16LE as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum SpawnPositionType {
     #[default]
@@ -8008,18 +6830,6 @@ impl SpawnPositionType {
 impl From<SpawnPositionType> for i32 {
     fn from(value: SpawnPositionType) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for SpawnPositionType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::ZigZag32(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for SpawnPositionType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -8063,18 +6873,6 @@ impl From<Subtype> for u16 {
     }
 }
 
-impl wire::Encode for Subtype {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U16LE(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for Subtype {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U16LE as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum TargetMode {
     #[default]
@@ -8106,18 +6904,6 @@ impl TargetMode {
 impl From<TargetMode> for u8 {
     fn from(value: TargetMode) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for TargetMode {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for TargetMode {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -8176,18 +6962,6 @@ impl From<TitleType> for i32 {
     }
 }
 
-impl wire::Encode for TitleType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::ZigZag32(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for TitleType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum VillageType {
     #[default]
@@ -8231,18 +7005,6 @@ impl From<VillageType> for u8 {
     }
 }
 
-impl wire::Encode for VillageType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for VillageType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 // Domain: npc
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
@@ -8276,18 +7038,6 @@ impl NpcDialogueActionType {
 impl From<NpcDialogueActionType> for i32 {
     fn from(value: NpcDialogueActionType) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for NpcDialogueActionType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::ZigZag32(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for NpcDialogueActionType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -8444,18 +7194,6 @@ impl From<PlayerActionType> for i32 {
     }
 }
 
-impl wire::Encode for PlayerActionType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::ZigZag32(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for PlayerActionType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum PlayerLocationType {
     #[default]
@@ -8484,18 +7222,6 @@ impl PlayerLocationType {
 impl From<PlayerLocationType> for i32 {
     fn from(value: PlayerLocationType) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for PlayerLocationType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::ZigZag32(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for PlayerLocationType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -8539,18 +7265,6 @@ impl From<PlayerPermissionLevel> for i8 {
     }
 }
 
-impl wire::Encode for PlayerPermissionLevel {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::I8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for PlayerPermissionLevel {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::I8 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum PlayerPositionModeComponentPositionMode {
     #[default]
@@ -8591,18 +7305,6 @@ impl From<PlayerPositionModeComponentPositionMode> for u8 {
     }
 }
 
-impl wire::Encode for PlayerPositionModeComponentPositionMode {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for PlayerPositionModeComponentPositionMode {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum PlayerRespawnState {
     #[default]
@@ -8640,18 +7342,6 @@ impl From<PlayerRespawnState> for u8 {
     }
 }
 
-impl wire::Encode for PlayerRespawnState {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for PlayerRespawnState {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 // Domain: position_tracking
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
@@ -8682,18 +7372,6 @@ impl PositionTrackingDBClientRequestAction {
 impl From<PositionTrackingDBClientRequestAction> for u8 {
     fn from(value: PositionTrackingDBClientRequestAction) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for PositionTrackingDBClientRequestAction {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for PositionTrackingDBClientRequestAction {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -8731,18 +7409,6 @@ impl PositionTrackingDBServerBroadcastAction {
 impl From<PositionTrackingDBServerBroadcastAction> for u8 {
     fn from(value: PositionTrackingDBServerBroadcastAction) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for PositionTrackingDBServerBroadcastAction {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for PositionTrackingDBServerBroadcastAction {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -8788,18 +7454,6 @@ impl From<RecipeUnlockingRequirementUnlockingContext> for i32 {
     }
 }
 
-impl wire::Encode for RecipeUnlockingRequirementUnlockingContext {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::ZigZag32(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for RecipeUnlockingRequirementUnlockingContext {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 // Domain: scoreboard
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
@@ -8833,18 +7487,6 @@ impl ScoreboardIdentityPacketType {
 impl From<ScoreboardIdentityPacketType> for u8 {
     fn from(value: ScoreboardIdentityPacketType) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for ScoreboardIdentityPacketType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for ScoreboardIdentityPacketType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -8960,18 +7602,6 @@ impl From<PersonaPieceType> for u32 {
     }
 }
 
-impl wire::Encode for PersonaPieceType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U32LE(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for PersonaPieceType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U32LE as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 // Domain: structure
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
@@ -9020,18 +7650,6 @@ impl From<StructureBlockType> for i32 {
     }
 }
 
-impl wire::Encode for StructureBlockType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::ZigZag32(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for StructureBlockType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum StructureRedstoneSaveMode {
     #[default]
@@ -9063,18 +7681,6 @@ impl StructureRedstoneSaveMode {
 impl From<StructureRedstoneSaveMode> for u8 {
     fn from(value: StructureRedstoneSaveMode) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for StructureRedstoneSaveMode {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for StructureRedstoneSaveMode {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -9118,18 +7724,6 @@ impl From<StructureTemplateRequestOperation> for u8 {
     }
 }
 
-impl wire::Encode for StructureTemplateRequestOperation {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for StructureTemplateRequestOperation {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum StructureTemplateResponseType {
     #[default]
@@ -9164,18 +7758,6 @@ impl StructureTemplateResponseType {
 impl From<StructureTemplateResponseType> for u8 {
     fn from(value: StructureTemplateResponseType) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for StructureTemplateResponseType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for StructureTemplateResponseType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -9224,18 +7806,6 @@ impl SubChunkRequestResult {
 impl From<SubChunkRequestResult> for u8 {
     fn from(value: SubChunkRequestResult) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for SubChunkRequestResult {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for SubChunkRequestResult {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
     }
 }
 
@@ -9365,18 +7935,6 @@ impl From<LegacyTelemetryType> for i32 {
     }
 }
 
-impl wire::Encode for LegacyTelemetryType {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::ZigZag32(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for LegacyTelemetryType {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
-    }
-}
-
 // Domain: text
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
@@ -9455,17 +8013,5 @@ impl TextProcessingEventOrigin {
 impl From<TextProcessingEventOrigin> for i32 {
     fn from(value: TextProcessingEventOrigin) -> Self {
         value.to_raw()
-    }
-}
-
-impl wire::Encode for TextProcessingEventOrigin {
-    fn encode(&self, writer: &mut wire::Writer) {
-        wire::I32LE(self.to_raw()).encode(writer);
-    }
-}
-
-impl wire::Decode for TextProcessingEventOrigin {
-    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::I32LE as wire::Decode>::decode(reader)?.0))
     }
 }

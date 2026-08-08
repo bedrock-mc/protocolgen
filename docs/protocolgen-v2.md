@@ -197,11 +197,10 @@ rebuilt from actual run output rather than carried forward.
 - NBT requires a bounded/profile codec in the synthetic interpreter; recursive
   nodes require a profile codec; conditional decode needs discriminator
   context.
-- The Rust emitter provides symmetric encode/decode over an owning slice
-  runtime; borrowed packet views remain downstream work. Go emits canonical
-  Marshal logic, but a concrete standalone byte reader/writer or gophertunnel
-  adapter remains downstream work. The older gophertunnel generator remains a
-  narrow `go/ast` assistive adapter.
+- The Rust emitter does not yet provide the complete Axolotl encode/decode
+  runtime. Go emits canonical Marshal logic, but a concrete standalone byte
+  reader/writer or gophertunnel adapter remains downstream work. The older
+  gophertunnel generator remains a narrow `go/ast` assistive adapter.
 - Superseded v1 generators are retired; migration history remains under
   `migration/axolotl-protocol/`.
   They are not v2 inputs or emitters and do not weaken v2 validation.

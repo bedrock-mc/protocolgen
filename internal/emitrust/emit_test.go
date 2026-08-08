@@ -240,7 +240,7 @@ func TestGenerateRustPreservesWirePrimitiveTypesAndOptionalPresence(t *testing.T
 		}
 	}
 	wire := files["src/wire.rs"]
-	for _, want := range []string{"var_codec!(VarUInt, u32, 32, write_var_u32, read_var_u32)", "var_codec!(ZigZag32, i32, 32, write_zigzag_i32, read_zigzag_i32)", "fixed_codec!(U32LE, u32", "fixed_float_codec!(F32LE, f32", "fn encode"} {
+	for _, want := range []string{"var_codec!(VarUInt, u32)", "pub struct ZigZag32(pub i32)", "fixed_codec!(U32LE, u32", "fixed_float_codec!(F32LE, f32", "fn encode"} {
 		if !strings.Contains(wire, want) {
 			t.Fatalf("wire module omitted %q:\n%s", want, wire)
 		}
@@ -295,7 +295,7 @@ func TestGenerateRustUsesDefaultsAndTupleWrappers(t *testing.T) {
 	}
 	types := files["src/types.rs"]
 	packets := files["src/packets.rs"]
-	for _, want := range []string{"pub struct ActorRuntimeID(pub u64);", "impl wire::Encode for ActorRuntimeID", "impl wire::Decode for ActorRuntimeID", "Default, PartialEq, Eq, Hash"} {
+	for _, want := range []string{"pub struct ActorRuntimeID(pub u64);", "impl wire::WireCodec for ActorRuntimeID", "Default, PartialEq, Eq, Hash"} {
 		if !strings.Contains(types, want) {
 			t.Fatalf("generated types omitted %q:\n%s", want, types)
 		}
@@ -374,21 +374,10 @@ func TestGenerateRustEmptyPacketOnlyEmitsDefinitionAndID(t *testing.T) {
 		t.Fatalf("Generate: %v", err)
 	}
 	packet := files["src/packets.rs"]
-	if !strings.Contains(packet, "pub struct Empty") || !strings.Contains(packet, "pub const ID: u32 = 4;") {
-		t.Fatalf("empty packet omitted its definition or ID:\n%s", packet)
-	}
-	// A fieldless packet still round trips, reading and writing nothing.
-	for _, want := range []string{
-		"impl wire::Encode for Empty {\n    fn encode(&self, writer: &mut wire::Writer) {\n        let _ = writer;\n    }\n}",
-		"        Ok(Self {\n        })",
-	} {
-		if !strings.Contains(packet, want) {
-			t.Fatalf("empty packet codec omitted %q:\n%s", want, packet)
-		}
+	if !strings.Contains(packet, "pub struct Empty") || !strings.Contains(packet, "pub const ID: u32 = 4;") || strings.Contains(packet, "encode") || strings.Contains(packet, "decode") {
+		t.Fatalf("empty packet output is not definition-only:\n%s", packet)
 	}
 }
-
-func ptr(node manifest.Node) *manifest.Node { return &node }
 
 func TestGenerateRustKeepsUnrelatedAnonymousUnionsDistinct(t *testing.T) {
 	first := manifest.Union(manifest.Primitive("u8"), manifest.Variant{Value: 0, Name: "First", Encode: manifest.Void()})
@@ -467,7 +456,7 @@ func TestGenerateRustMapsCanonicalSemanticsToNativeTypes(t *testing.T) {
 			t.Fatalf("native Rust output omits %q:\n%s", want, packet)
 		}
 	}
-	if !strings.Contains(files["src/wire.rs"], "nbt_codec!(\n    NetworkNbt,\n    NbtVariant::Network,") || strings.Contains(files["src/types.rs"], "pub struct Vec3") {
+	if !strings.Contains(files["src/wire.rs"], "pub struct NetworkNbt(pub bytes::Bytes);") || strings.Contains(files["src/types.rs"], "pub struct Vec3") {
 		t.Fatalf("Rust shared types do not reflect native mapping:\n%s", files["src/types.rs"])
 	}
 	for _, dependency := range []string{`bytes = "1"`, `glam = "0.30"`, `uuid = "1"`} {
@@ -544,112 +533,9 @@ func TestGenerateRustPreservesNBTEncodingTypes(t *testing.T) {
 		}
 	}
 	wire := files["src/wire.rs"]
-	for _, want := range []string{"NetworkNbt,\n    NbtVariant::Network,", "PersistentNbt,\n    NbtVariant::Persistent,"} {
+	for _, want := range []string{"pub struct NetworkNbt(pub bytes::Bytes);", "pub struct PersistentNbt(pub bytes::Bytes);"} {
 		if !strings.Contains(wire, want) {
 			t.Fatalf("wire module omitted %q:\n%s", want, wire)
 		}
-	}
-}
-
-func TestGenerateRustEmitsPacketCodecs(t *testing.T) {
-	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:codec", MinecraftVersion: "fixture", ProtocolVersion: 2168}}, Packets: []manifest.Packet{{ID: 1, Name: "CodecPacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{
-		{Ordinal: 0, Name: "Count", Encode: manifest.Primitive("var_u32"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
-	}}}}
-	files, err := GenerateFiles(m)
-	if err != nil {
-		t.Fatal(err)
-	}
-	packets := files["src/packets.rs"]
-	for _, want := range []string{
-		"impl wire::Encode for Codec {",
-		"impl wire::Decode for Codec {",
-		"self.count.encode(writer);",
-		// The decode site names its type, so a disagreement with the type
-		// emitter is a compile error rather than silent inference.
-		"let count = <wire::VarUInt as wire::Decode>::decode(reader)?;",
-	} {
-		if !strings.Contains(packets, want) {
-			t.Fatalf("packet codec omitted %q:\n%s", want, packets)
-		}
-	}
-}
-
-// A declared collection length must be bounded before it is used to reserve.
-func TestGenerateRustBoundsCollectionsBeforeAllocating(t *testing.T) {
-	array := manifest.Node{Kind: manifest.KindArray, Prefix: ptr(manifest.Primitive("var_u32")), Element: ptr(manifest.Primitive("u64le"))}
-	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:bounds", MinecraftVersion: "fixture", ProtocolVersion: 2168}}, Packets: []manifest.Packet{{ID: 1, Name: "BoundsPacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{
-		{Ordinal: 0, Name: "Items", Encode: array, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
-	}}}}
-	files, err := GenerateFiles(m)
-	if err != nil {
-		t.Fatal(err)
-	}
-	packets := files["src/packets.rs"]
-	// Element minimum is 8 bytes, so the count is checked against both the
-	// element limit and the bytes actually remaining.
-	if !strings.Contains(packets, "wire::decode_collection::<wire::U64LE>(reader, 8, wire::MAX_COLLECTION_ELEMENTS)?") {
-		t.Fatalf("collection decode is not bounded:\n%s", packets)
-	}
-	wire := files["src/wire.rs"]
-	for _, want := range []string{"pub fn checked_count(", "LengthLimitExceeded", "LengthNotRepresentable"} {
-		if !strings.Contains(wire, want) {
-			t.Fatalf("wire runtime omitted %q", want)
-		}
-	}
-}
-
-func TestGenerateRustEmitsDirectionRegistry(t *testing.T) {
-	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:direction", MinecraftVersion: "fixture", ProtocolVersion: 2168}}, Packets: []manifest.Packet{
-		{ID: 1, Name: "DownPacket", Direction: manifest.DirectionClientbound},
-		{ID: 2, Name: "UpPacket", Direction: manifest.DirectionServerbound},
-	}}
-	files, err := GenerateFiles(m)
-	if err != nil {
-		t.Fatal(err)
-	}
-	packets := files["src/packets.rs"]
-	for _, want := range []string{
-		"Self::Down => Direction::Clientbound,",
-		"Self::Up => Direction::Serverbound,",
-		"pub fn decode_from(",
-		"if !packet.direction().permits(sender) {",
-	} {
-		if !strings.Contains(packets, want) {
-			t.Fatalf("direction registry omitted %q:\n%s", want, packets)
-		}
-	}
-}
-
-// Cereal's always-present outer optional keeps both markers on the wire even
-// though the Rust type exposes only the inner state.
-func TestGenerateRustWritesBothNestedOptionalMarkers(t *testing.T) {
-	nested := manifest.Optional(manifest.Optional(manifest.Primitive("u8")))
-	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:nested", MinecraftVersion: "fixture", ProtocolVersion: 2168}}, Packets: []manifest.Packet{{ID: 1, Name: "NestedPacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{
-		{Ordinal: 0, Name: "Value", Encode: nested, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
-	}}}}
-	files, err := GenerateFiles(m)
-	if err != nil {
-		t.Fatal(err)
-	}
-	packets := files["src/packets.rs"]
-	if !strings.Contains(packets, "writer.write_u8(1);\n        match &self.value {") {
-		t.Fatalf("nested optional did not write the outer marker:\n%s", packets)
-	}
-	if got := strings.Count(packets, "reader.read_u8()? != 0"); got != 2 {
-		t.Fatalf("nested optional read %d presence markers, want 2:\n%s", got, packets)
-	}
-}
-
-func TestGenerateRustRejectsUnknownUnionDiscriminant(t *testing.T) {
-	union := manifest.Union(manifest.Primitive("u8"),
-		manifest.Variant{Value: 1, Name: "First", Encode: manifest.Void()},
-	)
-	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:union-unknown", MinecraftVersion: "fixture", ProtocolVersion: 2168}}, Packets: []manifest.Packet{{ID: 1, Name: "UnionUnknownPacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{Ordinal: 0, Name: "Value", Encode: union, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}}}
-	source, err := generatedRustSource(m)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !strings.Contains(source, "wire::DecodeError::UnknownVariant {") {
-		t.Fatalf("union decode does not reject unknown discriminants:\n%s", source)
 	}
 }

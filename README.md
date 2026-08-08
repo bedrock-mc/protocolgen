@@ -84,9 +84,8 @@ This produces:
   interface, generated ID methods, and direction-aware constructor pools
   (`NewPacket`, `NewClientPacket`, and `NewServerPacket`);
 - typed Rust packet structures, one packet module per file, with shared types,
-  native enums whose total `From<integer>` conversion preserves unrecognised
-  discriminants, symmetric `Encode`/`Decode` implementations over a slice-based
-  runtime, ordered map tuples, and payload-bearing enums for Cereal unions; and
+  native enums, checked `TryFrom<integer>` decoding, ordered map tuples, and
+  payload-bearing enums for Cereal unions; and
 - packet IDs in both language outputs.
 
 Packet APIs use concise target-language names: the schema's transport-oriented
@@ -281,17 +280,11 @@ schema interpreter. Union decoding constructs the selected concrete variant;
 repeated payload shapes receive distinct wrappers so their wire tags remain
 representable.
 
-The Rust backend emits value-aware `Encode` and fallible `Decode`
-implementations over a slice-based runtime, so decoding bounds every declared
-length against the bytes actually remaining before it reserves. It carries a
-typed `DecodeError`, both NBT scanners, seven-bit bitsets, and direction-aware
-packet registration: `Packet::decode_from` rejects an id the sending peer may
-not use before reading a field. The generator fails instead of emitting generic
+The Rust backend currently generates definitions only. Separate value-aware
+`Encode` and fallible `Decode` traits, a concrete zero-copy runtime, an NBT
+scanner, direction-aware packet registration, and codebase-specific merge rules
+remain future backend work. The generator fails instead of emitting generic
 fallback types for unsupported sequence or unresolved nodes.
-
-Borrowed packet views are not emitted yet, so a decoded packet owns its strings
-and byte buffers. Codebase-specific merge rules also remain future backend
-work.
 
 The superseded v1 experiments are not inputs to the canonical pipeline; the
 historical Axolotl protocol work remains under `migration/`.
