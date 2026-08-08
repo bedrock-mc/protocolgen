@@ -460,15 +460,12 @@ func emitCargo(m manifest.Manifest, g *generator) string {
 	fmt.Fprintf(&b, "[package]\nname = \"%s\"\nversion = \"0.1.0\"\nedition = \"2024\"\npublish = false\n", crateName)
 	// bytes is unconditional: the wire runtime's shared-buffer path is part of
 	// the reader contract, not a per-manifest feature.
-	{
-		b.WriteString("\n[dependencies]\n")
-		b.WriteString("bytes = \"1\"\n")
-		if g.usesGlam {
-			b.WriteString("glam = \"0.30\"\n")
-		}
-		if g.usesUUID {
-			b.WriteString("uuid = \"1\"\n")
-		}
+	b.WriteString("\n[dependencies]\nbytes = \"1\"\n")
+	if g.usesGlam {
+		b.WriteString("glam = \"0.30\"\n")
+	}
+	if g.usesUUID {
+		b.WriteString("uuid = \"1\"\n")
 	}
 	return b.String()
 }
