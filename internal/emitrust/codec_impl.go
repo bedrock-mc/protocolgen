@@ -250,7 +250,13 @@ pub enum Peer {
 		}
 		fmt.Fprintf(b, "            Self::%s => Direction::%s,\n", info.name, direction)
 	}
-	b.WriteString("        }\n    }\n}\n\n")
+	b.WriteString("        }\n    }\n\n")
+	b.WriteString("    /// Every packet id in the canonical manifest, in id order.\n")
+	b.WriteString("    pub const ALL: &'static [PacketId] = &[\n")
+	for _, info := range infos {
+		fmt.Fprintf(b, "        Self::%s,\n", info.name)
+	}
+	b.WriteString("    ];\n}\n\n")
 
 	b.WriteString("impl Packet {\n    pub const fn id(&self) -> PacketId {\n        match self {\n")
 	for _, info := range infos {
@@ -276,9 +282,20 @@ pub enum Peer {
     ) -> wire::DecodeResult<Self> {
         let packet = PacketId::from_raw(id).ok_or(wire::DecodeError::UnknownPacketId(id))?;
         if !packet.direction().permits(sender) {
-            return Err(wire::DecodeError::UnknownPacketId(id));
+            return Err(wire::DecodeError::UnexpectedDirection(id));
         }
         Self::decode_body(packet, reader)
+    }
+
+    /// Decodes a packet body and rejects bytes left inside the declared entry.
+    pub fn decode_exact_from(
+        id: u32,
+        sender: Peer,
+        reader: &mut wire::Reader<'_>,
+    ) -> wire::DecodeResult<Self> {
+        let packet = Self::decode_from(id, sender, reader)?;
+        reader.expect_consumed()?;
+        Ok(packet)
     }
 
 `)

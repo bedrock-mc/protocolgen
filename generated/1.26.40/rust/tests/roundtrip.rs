@@ -1,7 +1,7 @@
 // Code generated from canonical protocol manifest v2. DO NOT EDIT.
 
 use bedrock_protocol_1_26_40::packets::*;
-use bedrock_protocol_1_26_40::wire::{Decode, Encode};
+use bedrock_protocol_1_26_40::wire::{self, Decode, Encode};
 
 fn roundtrip<T>(name: &str)
 where
@@ -246,4 +246,26 @@ fn every_packet_round_trips_its_default() {
     roundtrip::<ClientboundUpdateSoundData>("ClientboundUpdateSoundData");
     roundtrip::<SendPartyDestinationCookie>("SendPartyDestinationCookie");
     roundtrip::<PartyDestinationCookieResponse>("PartyDestinationCookieResponse");
+}
+
+/// The direction table must reject a packet from the peer that cannot send it,
+/// on the id, before any field is read.
+#[test]
+fn every_packet_rejects_the_wrong_sender() {
+    for &id in PacketId::ALL {
+        let raw = id as u32;
+        let wrong = match id.direction() {
+            Direction::Bidirectional => continue,
+            Direction::Clientbound => Peer::Client,
+            Direction::Serverbound => Peer::Server,
+        };
+        let mut reader = wire::Reader::new(&[]);
+        assert!(
+            matches!(
+                Packet::decode_from(raw, wrong, &mut reader),
+                Err(wire::DecodeError::UnexpectedDirection(_))
+            ),
+            "{id:?} accepted a packet from the wrong peer"
+        );
+    }
 }
