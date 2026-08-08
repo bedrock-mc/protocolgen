@@ -123,8 +123,11 @@ impl<'a> Reader<'a> {
     }
 
     /// Refcounts `slice` against the source buffer when this reader shares one,
-    /// and copies otherwise. `slice` must have come from this reader.
-    pub fn share(&self, slice: &[u8]) -> bytes::Bytes {
+    /// and copies otherwise.
+    ///
+    /// Private because `Bytes::slice_ref` panics on a slice from a different
+    /// allocation. Callers use `take_shared`, which can only pass its own.
+    fn share(&self, slice: &[u8]) -> bytes::Bytes {
         match self.shared {
             Some(source) => source.slice_ref(slice),
             None => bytes::Bytes::copy_from_slice(slice),
