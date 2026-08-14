@@ -7,22 +7,8 @@
       "packet": 8,
       "direction": "client",
       "input_hex": "",
-      "kind": "decode-success",
-      "rationale": "Pinned fork bug: its response enum is 0-based (SendPacks=1) while Cloudburst (Status ordinal: REFUSED=1, SEND_PACKS=2), PocketMine, and the reconciled Mojang+Endstone docs all place the pack list at wire value 2. The manifest layout is corroborated; the fork reads the list at the wrong tag. Fix belongs in the fork."
-    },
-    {
-      "packet": 8,
-      "direction": "client",
-      "input_hex": "",
       "kind": "re-encoded-bytes",
       "rationale": "Oracle derives the response name string from the response enum on encode (resource_pack_client_response.go Marshal: resourcePackResponseToString), discarding the wire string; generated preserves it."
-    },
-    {
-      "packet": 8,
-      "direction": "server",
-      "input_hex": "",
-      "kind": "decode-success",
-      "rationale": "Pinned fork bug: its response enum is 0-based (SendPacks=1) while Cloudburst (Status ordinal: REFUSED=1, SEND_PACKS=2), PocketMine, and the reconciled Mojang+Endstone docs all place the pack list at wire value 2. The manifest layout is corroborated; the fork reads the list at the wrong tag. Fix belongs in the fork."
     },
     {
       "packet": 8,
