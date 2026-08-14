@@ -26,6 +26,7 @@ import (
 	"protocolgen/internal/parity"
 	"protocolgen/internal/reconcile"
 	"protocolgen/internal/sourcelock"
+	"protocolgen/internal/updateguide"
 )
 
 func main() {
@@ -49,6 +50,8 @@ func main() {
 		err = runParity(os.Args[2:])
 	case "verify-gophertunnel":
 		err = runVerifyGophertunnel(os.Args[2:])
+	case "update-guide":
+		err = runUpdateGuide(os.Args[2:])
 	case "hash-source":
 		err = runHashSource(os.Args[2:])
 	default:
@@ -62,7 +65,7 @@ func main() {
 }
 
 func usage() {
-	fmt.Fprintln(os.Stderr, `usage: protocolgen <reconcile|ingest|validate|emit-go|emit-rust|parity|verify-gophertunnel|hash-source> [flags]
+	fmt.Fprintln(os.Stderr, `usage: protocolgen <reconcile|ingest|validate|emit-go|emit-rust|parity|verify-gophertunnel|update-guide|hash-source> [flags]
 
 reconcile lowers one or both explicit source checkouts and writes manifest v2.
 ingest lowers one source to auditable machine-derived claims JSON.
@@ -70,7 +73,36 @@ validate checks a canonical manifest and all fingerprint metadata.
 emit-go and emit-rust consume only a canonical manifest.
 parity compares a canonical manifest with Axolotl's public v1 wire manifest.
 verify-gophertunnel compares a canonical manifest with a pinned gophertunnel checkout and writes a JSON report.
+update-guide turns a protocol changelog and its target corrected schemas into gophertunnel transcription snippets.
 hash-source prints the deterministic source-tree digest for a lock file.`)
+}
+
+func runUpdateGuide(args []string) error {
+	fs := flag.NewFlagSet("update-guide", flag.ContinueOnError)
+	changelogPath := fs.String("changelog", "", "human-readable protocol changelog Markdown")
+	schemasPath := fs.String("schemas", "", "target corrected Mojang JSON schema directory")
+	outPath := fs.String("out", "", "gophertunnel update guide Markdown output")
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+	if *changelogPath == "" || *schemasPath == "" || *outPath == "" {
+		return fmt.Errorf("-changelog, -schemas, and -out are required")
+	}
+	changelog, err := os.ReadFile(*changelogPath)
+	if err != nil {
+		return fmt.Errorf("read changelog: %w", err)
+	}
+	guide, err := updateguide.Generate(changelog, *schemasPath)
+	if err != nil {
+		return err
+	}
+	if err := os.MkdirAll(filepath.Dir(*outPath), 0o755); err != nil {
+		return fmt.Errorf("create update guide directory: %w", err)
+	}
+	if err := os.WriteFile(*outPath, guide, 0o644); err != nil {
+		return fmt.Errorf("write update guide: %w", err)
+	}
+	return nil
 }
 
 func runReconcile(args []string) error {

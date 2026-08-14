@@ -68,6 +68,13 @@ go run ./cmd/protocolgen verify-gophertunnel \
   -manifest generated/1.26.40/manifest.json \
   -gophertunnel /path/to/gophertunnel \
   -report /tmp/gophertunnel-2168-report.json
+
+# Turn a human-readable schema changelog into implementation-oriented Go
+# snippets for every changed packet, shared type, and enum.
+go run ./cmd/protocolgen update-guide \
+  -changelog /path/to/changelog.md \
+  -schemas /path/to/bpd-fixer/output/json \
+  -out /tmp/gophertunnel-update.md
 ```
 
 This produces:
@@ -223,6 +230,17 @@ wire schema.
 | `emit-rust` | Generate Rust packet types from a manifest. |
 | `parity` | Compare the manifest with an independently generated Axolotl layout. |
 | `verify-gophertunnel` | Compare the manifest with the pinned gophertunnel `Marshal` source oracle. |
+| `update-guide` | Render target-version gophertunnel transcription snippets for definitions named by a protocol changelog. |
+
+`update-guide` deliberately takes the human-readable changelog as its change
+inventory. It does not guess that every textual schema difference changes the
+wire. For each packet, shared type, or enum heading in the changelog, it resolves
+the target corrected schema, preserves ordinal field order and optionality, and
+emits a complete target-version struct, `Marshal`, packet `ID`, or enum constant
+block. Removed definitions receive removal guidance instead of a target snippet.
+The generated Go is a transcription aid: schema names may differ from the
+established gophertunnel API, and maintainers must still reconcile names and
+source evidence before applying it.
 
 `verify-gophertunnel` reads `tools/gophertunnel-oracle/lock.json`, whose oracle
 commit is a full 40-character SHA. Pass `-gophertunnel` for an existing
