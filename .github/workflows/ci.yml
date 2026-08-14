@@ -93,3 +93,11 @@ jobs:
           else
             cargo clippy -- -D warnings
           fi
+
+      - name: Cargo test
+        run: |
+          if [ -f Cargo.lock ]; then
+            cargo test --locked
+          else
+            cargo test
+          fi
