@@ -12,6 +12,7 @@ import (
 	"sort"
 	"strings"
 
+	"protocolgen/internal/changelog"
 	"protocolgen/internal/claims"
 	"protocolgen/internal/direction"
 	"protocolgen/internal/docs"
@@ -52,6 +53,8 @@ func main() {
 		err = runVerifyGophertunnel(os.Args[2:])
 	case "update-guide":
 		err = runUpdateGuide(os.Args[2:])
+	case "changelog":
+		err = runChangelog(os.Args[2:])
 	case "hash-source":
 		err = runHashSource(os.Args[2:])
 	default:
@@ -65,7 +68,7 @@ func main() {
 }
 
 func usage() {
-	fmt.Fprintln(os.Stderr, `usage: protocolgen <reconcile|ingest|validate|emit-go|emit-rust|parity|verify-gophertunnel|update-guide|hash-source> [flags]
+	fmt.Fprintln(os.Stderr, `usage: protocolgen <reconcile|ingest|validate|emit-go|emit-rust|parity|verify-gophertunnel|changelog|update-guide|hash-source> [flags]
 
 reconcile lowers one or both explicit source checkouts and writes manifest v2.
 ingest lowers one source to auditable machine-derived claims JSON.
@@ -73,8 +76,51 @@ validate checks a canonical manifest and all fingerprint metadata.
 emit-go and emit-rust consume only a canonical manifest.
 parity compares a canonical manifest with Axolotl's public v1 wire manifest.
 verify-gophertunnel compares a canonical manifest with a pinned gophertunnel checkout and writes a JSON report.
+changelog diffs two corrected Mojang schema directories into human-readable Markdown.
 update-guide turns a protocol changelog and its target corrected schemas into gophertunnel transcription snippets.
 hash-source prints the deterministic source-tree digest for a lock file.`)
+}
+
+func runChangelog(args []string) error {
+	fs := flag.NewFlagSet("changelog", flag.ContinueOnError)
+	fromPath := fs.String("from", "", "previous corrected Mojang JSON schema directory")
+	toPath := fs.String("to", "", "target corrected Mojang JSON schema directory")
+	fromBranch := fs.String("from-branch", "", "previous upstream branch")
+	toBranch := fs.String("to-branch", "", "target upstream branch")
+	fromUpstream := fs.String("from-upstream", "", "previous upstream commit")
+	toUpstream := fs.String("to-upstream", "", "target upstream commit")
+	fromFixer := fs.String("from-fixer", "", "previous fixer commit")
+	toFixer := fs.String("to-fixer", "", "target fixer commit")
+	outPath := fs.String("out", "", "human-readable protocol changelog Markdown output")
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+	if *fromPath == "" || *toPath == "" || *outPath == "" {
+		return fmt.Errorf("-from, -to, and -out are required")
+	}
+	if *fromBranch == "" || *toBranch == "" || *fromUpstream == "" || *toUpstream == "" || *fromFixer == "" || *toFixer == "" {
+		return fmt.Errorf("provenance flags -from-branch, -to-branch, -from-upstream, -to-upstream, -from-fixer, and -to-fixer are required")
+	}
+	data, err := changelog.Generate(changelog.Config{
+		FromDir:      *fromPath,
+		ToDir:        *toPath,
+		FromBranch:   *fromBranch,
+		ToBranch:     *toBranch,
+		FromUpstream: *fromUpstream,
+		ToUpstream:   *toUpstream,
+		FromFixer:    *fromFixer,
+		ToFixer:      *toFixer,
+	})
+	if err != nil {
+		return err
+	}
+	if err := os.MkdirAll(filepath.Dir(*outPath), 0o755); err != nil {
+		return fmt.Errorf("create changelog directory: %w", err)
+	}
+	if err := os.WriteFile(*outPath, data, 0o644); err != nil {
+		return fmt.Errorf("write changelog: %w", err)
+	}
+	return nil
 }
 
 func runUpdateGuide(args []string) error {

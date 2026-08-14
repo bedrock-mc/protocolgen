@@ -69,10 +69,22 @@ go run ./cmd/protocolgen verify-gophertunnel \
   -gophertunnel /path/to/gophertunnel \
   -report /tmp/gophertunnel-2168-report.json
 
-# Turn a human-readable schema changelog into implementation-oriented Go
-# snippets for every changed packet, shared type, and enum.
+# Diff two corrected schema snapshots into a human-readable changelog.
+go run ./cmd/protocolgen changelog \
+  -from /path/to/previous/bpd-fixer/output/json \
+  -to /path/to/target/bpd-fixer/output/json \
+  -from-branch automated/1.26.40 \
+  -to-branch r/26_u4 \
+  -from-upstream 0e00fe80f4 \
+  -to-upstream 0f6a0bff19 \
+  -from-fixer 9fa8eb75f9 \
+  -to-fixer 9fa8eb75f9 \
+  -out /tmp/changelog.md
+
+# Turn that generated changelog into implementation-oriented Go snippets for
+# every changed packet, shared type, and enum.
 go run ./cmd/protocolgen update-guide \
-  -changelog /path/to/changelog.md \
+  -changelog /tmp/changelog.md \
   -schemas /path/to/bpd-fixer/output/json \
   -out /tmp/gophertunnel-update.md
 ```

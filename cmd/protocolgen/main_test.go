@@ -3,8 +3,16 @@ package main
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
+
+func TestRunChangelogRequiresProvenanceFlags(t *testing.T) {
+	err := runChangelog([]string{"-from", "old", "-to", "new", "-out", "changes.md"})
+	if err == nil || !strings.Contains(err.Error(), "provenance") {
+		t.Fatalf("runChangelog error = %v, want missing provenance error", err)
+	}
+}
 
 func TestWriteFilesSupportsModulesAndRemovesOnlyStaleGeneratedFiles(t *testing.T) {
 	directory := t.TempDir()
