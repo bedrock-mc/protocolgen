@@ -53,6 +53,7 @@ func Generate(changelog []byte, schemasDir string) ([]byte, error) {
 	fmt.Fprintln(&output)
 	fmt.Fprintln(&output, "**The Go below is a transcription aid, not a patch.** Names come from the schema, so they may not match gophertunnel's existing names. Field comments are emitted only when Mojang provides a description.")
 
+	emitted := map[string]bool{}
 	for _, section := range parsed.sections {
 		fmt.Fprintf(&output, "\n## %s\n", section.title)
 		for _, item := range section.items {
@@ -73,6 +74,11 @@ func Generate(changelog []byte, schemasDir string) ([]byte, error) {
 				fmt.Fprintln(&output, "\nRemove the corresponding target definition and its registrations or references.")
 				continue
 			}
+			key := section.kind + "\x00" + item.name
+			if emitted[key] {
+				fmt.Fprintln(&output, "\nUse the target definition emitted above; this section records an additional change to it.")
+				continue
+			}
 			document, ok := documents.byTitle[item.name]
 			if !ok {
 				return nil, fmt.Errorf("changed schema %q is not present in %s", item.name, schemasDir)
@@ -86,6 +92,7 @@ func Generate(changelog []byte, schemasDir string) ([]byte, error) {
 				return nil, fmt.Errorf("format %s: %w", item.name, err)
 			}
 			fmt.Fprintf(&output, "\n```go\n%s\n```\n", snippet)
+			emitted[key] = true
 		}
 	}
 	return output.Bytes(), nil

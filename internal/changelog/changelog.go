@@ -22,27 +22,25 @@ type Config struct {
 
 type schema struct {
 	Name       string
-	Title      string                 `json:"title"`
 	Version    string                 `json:"x-minecraft-version"`
 	Protocol   int                    `json:"x-protocol-version"`
-	Type       string                 `json:"type"`
 	Ref        string                 `json:"$ref"`
 	Properties map[string]property    `json:"properties"`
 	Required   []string               `json:"required"`
 	Enum       []string               `json:"enum"`
+	EnumValues []interface{}          `json:"x-enum-values"`
 	Underlying string                 `json:"x-underlying-type"`
 	Meta       map[string]interface{} `json:"$metaProperties"`
 	Raw        map[string]interface{}
 }
 
 type property struct {
-	Description string                 `json:"description"`
-	Type        string                 `json:"type"`
-	Ref         string                 `json:"$ref"`
-	Underlying  string                 `json:"x-underlying-type"`
-	Ordinal     int                    `json:"x-ordinal-index"`
-	Items       map[string]interface{} `json:"items"`
-	Raw         map[string]interface{}
+	Type       string                 `json:"type"`
+	Ref        string                 `json:"$ref"`
+	Underlying string                 `json:"x-underlying-type"`
+	Ordinal    int                    `json:"x-ordinal-index"`
+	Items      map[string]interface{} `json:"items"`
+	Raw        map[string]interface{}
 }
 
 type set map[string]bool
@@ -51,8 +49,6 @@ type change struct {
 	Name       string
 	Kind       string
 	PacketID   int
-	Before     *schema
-	After      *schema
 	Bullets    []string
 	Wire       bool
 	Affected   []string
@@ -98,20 +94,37 @@ func Generate(cfg Config) ([]byte, error) {
 
 	renames := packetRenames(fromPackets, toPackets)
 	added, removed := addedRemovedDefinitions(from, to, fromPackets, toPackets, packetPayloads, renames)
+	addedForGuide, removedForGuide := append([]definition{}, added...), append([]definition{}, removed...)
+	reverseRenames := map[string]string{}
+	for old, name := range renames {
+		reverseRenames[name] = old
+		addedForGuide = append(addedForGuide, definition{Name: name, Kind: "packet", PacketID: packetID(toPackets[name])})
+		removedForGuide = append(removedForGuide, definition{Name: old, Kind: "packet", PacketID: packetID(fromPackets[old])})
+	}
+	sortDefinitions(addedForGuide)
+	sortDefinitions(removedForGuide)
 	var packetChanges, typeChanges, enumChanges []change
 	modifiedPackets := set{}
 	for name, after := range toPackets {
 		before := fromPackets[name]
+		if before == nil && reverseRenames[name] != "" {
+			before = fromPackets[reverseRenames[name]]
+		}
 		if before == nil {
 			continue
 		}
 		b := resolveRoot(before, from)
 		a := resolveRoot(after, to)
-		if equalWire(b.Raw, a.Raw) {
+		idChanged := packetID(before) != packetID(after)
+		if equalWire(b.Raw, a.Raw) && !idChanged {
 			continue
 		}
 		c := compareObjects(name, "packet", b, a)
 		c.PacketID = packetID(after)
+		if idChanged {
+			c.Bullets = append([]string{fmt.Sprintf("packet id changed from `%d` to `%d`", packetID(before), packetID(after))}, c.Bullets...)
+			c.Wire = true
+		}
 		if len(c.Bullets) == 0 {
 			c.Bullets = []string{"schema changed"}
 		}
@@ -129,6 +142,9 @@ func Generate(cfg Config) ([]byte, error) {
 		var c change
 		if len(after.Enum) != 0 || len(before.Enum) != 0 {
 			c = compareEnums(name, before, after)
+			if len(c.Bullets) == 0 {
+				c.Bullets = []string{"schema changed"}
+			}
 			enumChanges = append(enumChanges, c)
 		} else {
 			c = compareObjects(name, "struct", before, after)
@@ -174,6 +190,16 @@ func Generate(cfg Config) ([]byte, error) {
 		individual += len(c.Bullets)
 	}
 	for _, c := range packetChanges {
+		if c.Wire {
+			wireTypes++
+		}
+	}
+	for _, c := range enumChanges {
+		if c.Wire {
+			wireTypes++
+		}
+	}
+	for _, c := range packetChanges {
 		individual += len(c.Bullets)
 	}
 	for _, c := range enumChanges {
@@ -207,10 +233,10 @@ func Generate(cfg Config) ([]byte, error) {
 	fmt.Fprintf(&out, "- **%d** packet(s) touched, counting those that only embed a changed type\n", len(modifiedPackets))
 	fmt.Fprintf(&out, "- **%d** individual changes\n\n", individual)
 	out.WriteString("_Derived by diffing bpd-fixer's corrected schemas for the two versions. \"Wire break\" means the byte layout moves; it says nothing about whether your code needs a version gate — see the per-project guides for that._\n")
-	renderDefinitionSections(&out, "Added", added)
-	renderDefinitionSections(&out, "Removed", removed)
+	renderDefinitionSections(&out, "Added", addedForGuide)
+	renderDefinitionSections(&out, "Removed", removedForGuide)
 	if len(renames) != 0 {
-		out.WriteString("\n## Renamed Packets\n")
+		out.WriteString("\n## Renames\n")
 		oldNames := make([]string, 0, len(renames))
 		for old := range renames {
 			oldNames = append(oldNames, old)
@@ -265,10 +291,13 @@ func loadDir(dir string) (map[string]*schema, string, int, error) {
 		}
 		var s schema
 		if err := json.Unmarshal(data, &s); err != nil {
-			return nil, "", 0, err
+			return nil, "", 0, fmt.Errorf("%s: %w", entry.Name(), err)
 		}
 		s.Name = strings.TrimSuffix(entry.Name(), ".json")
 		s.Raw = raw
+		if len(s.EnumValues) != 0 && len(s.EnumValues) != len(s.Enum) {
+			return nil, "", 0, fmt.Errorf("%s: x-enum-values must contain one value for every enum name", entry.Name())
+		}
 		for name, p := range s.Properties {
 			if node, ok := raw["properties"].(map[string]interface{})[name].(map[string]interface{}); ok {
 				p.Raw = node
@@ -276,7 +305,7 @@ func loadDir(dir string) (map[string]*schema, string, int, error) {
 			}
 		}
 		if s.Protocol == 0 || s.Version == "" {
-			continue
+			return nil, "", 0, fmt.Errorf("%s: missing x-minecraft-version or x-protocol-version", entry.Name())
 		}
 		if protocol != 0 && protocol != s.Protocol {
 			return nil, "", 0, fmt.Errorf("inconsistent protocol version: %d and %d", protocol, s.Protocol)
@@ -288,6 +317,24 @@ func loadDir(dir string) (map[string]*schema, string, int, error) {
 	}
 	if len(all) == 0 {
 		return nil, "", 0, fmt.Errorf("no versioned schemas found in %s", dir)
+	}
+	packetNamesByID := map[int]string{}
+	allPackets := packets(all)
+	packetNames := make([]string, 0, len(allPackets))
+	for name := range allPackets {
+		packetNames = append(packetNames, name)
+	}
+	sort.Strings(packetNames)
+	for _, name := range packetNames {
+		packet := allPackets[name]
+		id, ok := packetIDValue(packet)
+		if !ok {
+			return nil, "", 0, fmt.Errorf("%s.json: [cereal:packet] must be a numeric packet id", name)
+		}
+		if previous := packetNamesByID[id]; previous != "" {
+			return nil, "", 0, fmt.Errorf("duplicate packet id %d in %s.json and %s.json", id, previous, name)
+		}
+		packetNamesByID[id] = name
 	}
 	return all, version, protocol, nil
 }
@@ -302,10 +349,12 @@ func packets(all map[string]*schema) map[string]*schema {
 	return out
 }
 func packetID(s *schema) int {
-	if v, ok := s.Meta["[cereal:packet]"].(float64); ok {
-		return int(v)
-	}
-	return 0
+	id, _ := packetIDValue(s)
+	return id
+}
+func packetIDValue(s *schema) (int, bool) {
+	v, ok := s.Meta["[cereal:packet]"].(float64)
+	return int(v), ok && v == float64(int(v)) && v >= 0
 }
 func resolveRoot(s *schema, all map[string]*schema) *schema {
 	if target := all[refName(s.Ref)]; target != nil {
@@ -315,21 +364,26 @@ func resolveRoot(s *schema, all map[string]*schema) *schema {
 }
 func refName(ref string) string { return strings.TrimSuffix(filepath.Base(ref), ".json") }
 
-func normalized(v interface{}) interface{} {
+func normalized(v interface{}) interface{} { return normalizeSchema(v, true) }
+func normalizeSchema(v interface{}, schemaKeywords bool) interface{} {
 	switch x := v.(type) {
 	case map[string]interface{}:
 		out := map[string]interface{}{}
 		for k, child := range x {
-			if k == "x-minecraft-version" || k == "x-protocol-version" || k == "x-format-version" || k == "$schema" || k == "$id" || k == "description" || k == "default" || k == "x-runtime-constraint-description" {
+			if schemaKeywords && (k == "x-minecraft-version" || k == "x-protocol-version" || k == "x-format-version" || k == "$schema" || k == "$id" || k == "title" || k == "description" || k == "default" || k == "x-runtime-constraint-description") {
 				continue
 			}
-			out[k] = normalized(child)
+			if k == "properties" {
+				out[k] = normalizeSchema(child, false)
+			} else {
+				out[k] = normalizeSchema(child, true)
+			}
 		}
 		return out
 	case []interface{}:
 		out := make([]interface{}, len(x))
 		for i := range x {
-			out[i] = normalized(x[i])
+			out[i] = normalizeSchema(x[i], true)
 		}
 		return out
 	default:
@@ -370,14 +424,18 @@ func fieldType(p property) string {
 	if base == "number" {
 		base = "float"
 	}
-	if base == "integer" {
-		base = "integer"
-	}
 	if p.Type == "array" {
 		if r, ok := p.Items["$ref"].(string); ok {
 			base = "array of " + refName(r)
 		} else {
+			itemType, _ := p.Items["x-underlying-type"].(string)
+			if itemType == "" {
+				itemType, _ = p.Items["type"].(string)
+			}
 			base = "array"
+			if itemType != "" {
+				base += " of " + itemType
+			}
 		}
 	}
 	if base == "" {
@@ -397,7 +455,7 @@ func fieldType(p property) string {
 
 func compareObjects(name, kind string, before, after *schema) change {
 	b, a := fields(before), fields(after)
-	c := change{Name: name, Kind: kind, Before: before, After: after, BeforeRows: b, AfterRows: a}
+	c := change{Name: name, Kind: kind, BeforeRows: b, AfterRows: a}
 	bm, am := map[string]field{}, map[string]field{}
 	for _, f := range b {
 		bm[f.Name] = f
@@ -463,7 +521,7 @@ func number(v interface{}) string {
 }
 
 func compareEnums(name string, before, after *schema) change {
-	c := change{Name: name, Kind: "enum", Before: before, After: after}
+	c := change{Name: name, Kind: "enum"}
 	b := set{}
 	for _, n := range before.Enum {
 		b[n] = true
@@ -474,15 +532,59 @@ func compareEnums(name string, before, after *schema) change {
 	}
 	for i, n := range after.Enum {
 		if !b[n] {
-			c.Bullets = append(c.Bullets, fmt.Sprintf("added value `%s` = %d", n, i))
+			c.Bullets = append(c.Bullets, fmt.Sprintf("added value `%s` = %s", n, enumValue(after, i)))
 		}
 	}
 	for i, n := range before.Enum {
 		if !a[n] {
-			c.Bullets = append(c.Bullets, fmt.Sprintf("removed value `%s` = %d", n, i))
+			c.Bullets = append(c.Bullets, fmt.Sprintf("removed value `%s` = %s", n, enumValue(before, i)))
+		}
+	}
+	if len(c.Bullets) == 0 && !equalStringSlices(before.Enum, after.Enum) {
+		c.Bullets = append(c.Bullets, fmt.Sprintf("value order changed from %s to %s", quotedList(before.Enum), quotedList(after.Enum)))
+		c.Wire = true
+	}
+	if before.Underlying != after.Underlying {
+		c.Bullets = append(c.Bullets, fmt.Sprintf("underlying type changed from %s to %s", before.Underlying, after.Underlying))
+		c.Wire = true
+	}
+	if len(before.EnumValues) != 0 || len(after.EnumValues) != 0 {
+		beforeIndexes := enumIndexes(before.Enum)
+		for afterIndex, name := range after.Enum {
+			beforeIndex, exists := beforeIndexes[name]
+			if !exists {
+				continue
+			}
+			oldValue, newValue := enumValue(before, beforeIndex), enumValue(after, afterIndex)
+			if oldValue != newValue {
+				c.Bullets = append(c.Bullets, fmt.Sprintf("value `%s` changed from %s to %s", name, oldValue, newValue))
+				c.Wire = true
+			}
 		}
 	}
 	return c
+}
+
+func enumValue(s *schema, index int) string {
+	if index < len(s.EnumValues) {
+		return number(s.EnumValues[index])
+	}
+	return strconv.Itoa(index)
+}
+func equalStringSlices(a, b []string) bool { return strings.Join(a, "\x00") == strings.Join(b, "\x00") }
+func enumIndexes(values []string) map[string]int {
+	indexes := make(map[string]int, len(values))
+	for index, value := range values {
+		indexes[value] = index
+	}
+	return indexes
+}
+func quotedList(values []string) string {
+	quoted := make([]string, len(values))
+	for i, value := range values {
+		quoted[i] = "`" + value + "`"
+	}
+	return strings.Join(quoted, ", ")
 }
 
 func packetDependencies(ps, all map[string]*schema) map[string]set {
@@ -527,9 +629,17 @@ func walkRawRefs(v interface{}, fn func(string)) {
 func renderChange(out *bytes.Buffer, c change) {
 	fmt.Fprintf(out, "\n### %s\n", c.Name)
 	if c.Kind == "packet" {
-		fmt.Fprintf(out, "packet id `%d` · struct\n", c.PacketID)
+		fmt.Fprintf(out, "packet id `%d` · struct", c.PacketID)
+		if c.Wire {
+			out.WriteString(" · **wire break**")
+		}
+		out.WriteString("\n")
 	} else if c.Kind == "enum" {
-		out.WriteString("enum\n")
+		out.WriteString("enum")
+		if c.Wire {
+			out.WriteString(" · **wire break**")
+		}
+		out.WriteString("\n")
 	} else if c.Wire {
 		out.WriteString("struct · **wire break**\n")
 	} else {

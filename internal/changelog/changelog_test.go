@@ -3,8 +3,11 @@ package changelog
 import (
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
+
+	"protocolgen/internal/updateguide"
 )
 
 func TestGenerateReportsWireConstraintAndEnumChanges(t *testing.T) {
@@ -72,6 +75,9 @@ func TestGenerateReportsWireConstraintAndEnumChanges(t *testing.T) {
 			t.Errorf("output missing %q\n%s", want, text)
 		}
 	}
+	if _, err := updateguide.Generate(got, to); err != nil {
+		t.Fatalf("generated changelog is not accepted by update-guide: %v", err)
+	}
 }
 
 func TestGenerateRejectsInconsistentMetadata(t *testing.T) {
@@ -108,7 +114,7 @@ func TestGenerateRendersAddedRemovedAndRenamedDefinitions(t *testing.T) {
 	writeSchema(t, from, "OldPacket", packetSchema("1.0", 1, 7, "OldPacketPayload"))
 	writeSchema(t, from, "OldPacketPayload", objectSchema("1.0", 1, `"Value":{"type":"string","x-ordinal-index":0}`, `"Value"`))
 	writeSchema(t, to, "NewPacket", packetSchema("2.0", 2, 7, "NewPacketPayload"))
-	writeSchema(t, to, "NewPacketPayload", objectSchema("2.0", 2, `"Value":{"type":"string","x-ordinal-index":0}`, `"Value"`))
+	writeSchema(t, to, "NewPacketPayload", objectSchema("2.0", 2, `"Value":{"type":"string","x-ordinal-index":0},"Added":{"type":"boolean","x-ordinal-index":1}`, `"Value","Added"`))
 
 	got, err := Generate(Config{FromDir: from, ToDir: to})
 	if err != nil {
@@ -116,10 +122,50 @@ func TestGenerateRendersAddedRemovedAndRenamedDefinitions(t *testing.T) {
 	}
 	text := string(got)
 	for _, want := range []string{
-		"**1** new, **1** removed, **1** renamed, **0** modified",
+		"**1** new, **1** removed, **1** renamed, **1** modified",
+		"## Added Packets\n\n### NewPacket",
 		"## Added Types\n\n### NewType",
+		"## Removed Packets\n\n### OldPacket",
 		"## Removed Types\n\n### OldType",
-		"## Renamed Packets\n\n- `OldPacket` → `NewPacket` (packet id `7`)",
+		"## Renames\n\n- `OldPacket` → `NewPacket` (packet id `7`)",
+		"added `Added` at ordinal 1 (boolean)",
+	} {
+		if !strings.Contains(text, want) {
+			t.Errorf("output missing %q\n%s", want, text)
+		}
+	}
+	guide, err := updateguide.Generate(got, to)
+	if err != nil {
+		t.Fatalf("rename changelog is not accepted by update-guide: %v", err)
+	}
+	if count := strings.Count(string(guide), "type NewPacket struct"); count != 1 {
+		t.Fatalf("renamed target definition rendered %d times, want once:\n%s", count, guide)
+	}
+}
+
+func TestGenerateReportsPacketIDArrayAndEnumWireChanges(t *testing.T) {
+	from := t.TempDir()
+	to := t.TempDir()
+	writeSchema(t, from, "ChangedPacket", packetSchema("1.0", 1, 7, "ChangedPacketPayload"))
+	writeSchema(t, to, "ChangedPacket", packetSchema("2.0", 2, 99, "ChangedPacketPayload"))
+	writeSchema(t, from, "ChangedPacketPayload", objectSchema("1.0", 1, `"Values":{"type":"array","items":{"type":"integer","x-underlying-type":"int8"},"x-ordinal-index":0}`, `"Values"`))
+	writeSchema(t, to, "ChangedPacketPayload", objectSchema("2.0", 2, `"Values":{"type":"array","items":{"type":"integer","x-underlying-type":"int64"},"x-ordinal-index":0}`, `"Values"`))
+	writeSchema(t, from, "Mode", `{"title":"Mode","x-minecraft-version":"1.0","x-protocol-version":1,"type":"string","enum":["A","B"],"x-enum-values":[10,20],"x-underlying-type":"uint8"}`)
+	writeSchema(t, to, "Mode", `{"title":"Mode","x-minecraft-version":"2.0","x-protocol-version":2,"type":"string","enum":["B","A"],"x-enum-values":[20,10],"x-underlying-type":"uint32"}`)
+
+	got, err := Generate(Config{FromDir: from, ToDir: to})
+	if err != nil {
+		t.Fatal(err)
+	}
+	text := string(got)
+	for _, want := range []string{
+		"packet id changed from `7` to `99`",
+		"type changed from array of int8 to array of int64",
+		"packet id `99` · struct · **wire break**",
+		"value order changed from `A`, `B` to `B`, `A`",
+		"underlying type changed from uint8 to uint32",
+		"enum · **wire break**",
+		"**2** type(s) change the bytes on the wire",
 	} {
 		if !strings.Contains(text, want) {
 			t.Errorf("output missing %q\n%s", want, text)
@@ -127,19 +173,57 @@ func TestGenerateRendersAddedRemovedAndRenamedDefinitions(t *testing.T) {
 	}
 }
 
+func TestGenerateRejectsMissingMetadataAndDuplicatePacketIDs(t *testing.T) {
+	from := t.TempDir()
+	to := t.TempDir()
+	writeSchema(t, from, "Missing", `{"title":"Missing","type":"object"}`)
+	writeSchema(t, to, "Valid", objectSchema("2.0", 2, `"A":{"type":"string","x-ordinal-index":0}`, `"A"`))
+	if _, err := Generate(Config{FromDir: from, ToDir: to}); err == nil || !strings.Contains(err.Error(), "missing x-minecraft-version") {
+		t.Fatalf("expected missing metadata error, got %v", err)
+	}
+
+	from = t.TempDir()
+	to = t.TempDir()
+	for _, dir := range []string{from, to} {
+		writeSchema(t, dir, "OnePacket", packetSchema("1.0", 1, 7, "OnePayload"))
+		writeSchema(t, dir, "TwoPacket", packetSchema("1.0", 1, 7, "TwoPayload"))
+		writeSchema(t, dir, "OnePayload", objectSchema("1.0", 1, `"A":{"type":"string","x-ordinal-index":0}`, `"A"`))
+		writeSchema(t, dir, "TwoPayload", objectSchema("1.0", 1, `"A":{"type":"string","x-ordinal-index":0}`, `"A"`))
+	}
+	if _, err := Generate(Config{FromDir: from, ToDir: to}); err == nil || !strings.Contains(err.Error(), "duplicate packet id 7") {
+		t.Fatalf("expected duplicate packet id error, got %v", err)
+	}
+}
+
+func TestGenerateDoesNotTreatPropertyNamesAsSchemaKeywords(t *testing.T) {
+	from := t.TempDir()
+	to := t.TempDir()
+	writeSchema(t, from, "Shared", objectSchema("1.0", 1, `"description":{"type":"string","x-ordinal-index":0}`, `"description"`))
+	writeSchema(t, to, "Shared", objectSchema("2.0", 2, `"description":{"type":"integer","x-underlying-type":"int32","x-ordinal-index":0}`, `"description"`))
+	got, err := Generate(Config{FromDir: from, ToDir: to})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(got), "`description` type changed from string to int32") {
+		t.Fatalf("property change was hidden:\n%s", got)
+	}
+}
+
 func writeSchema(t *testing.T, dir, name, body string) {
 	t.Helper()
+	body = strings.Replace(body, `"title":"Payload"`, `"title":"`+name+`"`, 1)
+	body = strings.Replace(body, `"title":"Packet"`, `"title":"`+name+`"`, 1)
 	if err := os.WriteFile(filepath.Join(dir, name+".json"), []byte(body), 0o644); err != nil {
 		t.Fatal(err)
 	}
 }
 
 func objectSchema(version string, protocol int, properties, required string) string {
-	return `{"title":"Payload","x-minecraft-version":"` + version + `","x-protocol-version":` + itoa(protocol) + `,"type":"object","properties":{` + properties + `},"required":[` + required + `]}`
+	return `{"title":"Payload","x-minecraft-version":"` + version + `","x-protocol-version":` + strconv.Itoa(protocol) + `,"type":"object","properties":{` + properties + `},"required":[` + required + `]}`
 }
 
 func packetSchema(version string, protocol, id int, payload string) string {
-	return `{"title":"Packet","x-minecraft-version":"` + version + `","x-protocol-version":` + itoa(protocol) + `,"$ref":"./` + payload + `.json","$metaProperties":{"[cereal:packet]":` + itoa(id) + `}}`
+	return `{"title":"Packet","x-minecraft-version":"` + version + `","x-protocol-version":` + strconv.Itoa(protocol) + `,"$ref":"./` + payload + `.json","$metaProperties":{"[cereal:packet]":` + strconv.Itoa(id) + `}}`
 }
 
 func objectWithRef(version string, protocol int, field, ref string) string {
@@ -147,19 +231,5 @@ func objectWithRef(version string, protocol int, field, ref string) string {
 }
 
 func enumSchema(version string, protocol int, values string) string {
-	return `{"title":"persona::AnimatedTextureType","x-minecraft-version":"` + version + `","x-protocol-version":` + itoa(protocol) + `,"type":"string","enum":[` + values + `],"x-underlying-type":"uint32"}`
-}
-
-func itoa(v int) string {
-	if v == 0 {
-		return "0"
-	}
-	var b [20]byte
-	i := len(b)
-	for v > 0 {
-		i--
-		b[i] = byte('0' + v%10)
-		v /= 10
-	}
-	return string(b[i:])
+	return `{"title":"persona::AnimatedTextureType","x-minecraft-version":"` + version + `","x-protocol-version":` + strconv.Itoa(protocol) + `,"type":"string","enum":[` + values + `],"x-underlying-type":"uint32"}`
 }
