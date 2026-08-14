@@ -13,19 +13,19 @@ func MarshalResourcePackClientResponseData(io IO, x *ResourcePackClientResponseD
 			var tag int8
 			io.Int8(&tag)
 			switch int64(tag) {
-			case 1:
+			case 0:
 				value := new(Cancel)
 				value.Marshal(io)
 				*x = value
-			case 2:
+			case 1:
 				value := new(Downloading)
 				value.Marshal(io)
 				*x = value
-			case 3:
+			case 2:
 				value := new(DownloadingFinished)
 				value.Marshal(io)
 				*x = value
-			case 4:
+			case 3:
 				value := new(ResourcePackStackFinished)
 				value.Marshal(io)
 				*x = value
@@ -36,19 +36,19 @@ func MarshalResourcePackClientResponseData(io IO, x *ResourcePackClientResponseD
 		func() {
 			switch value := (*x).(type) {
 			case *Cancel:
-				tag := int8(1)
+				tag := int8(0)
 				io.Int8(&tag)
 				value.Marshal(io)
 			case *Downloading:
-				tag := int8(2)
+				tag := int8(1)
 				io.Int8(&tag)
 				value.Marshal(io)
 			case *DownloadingFinished:
-				tag := int8(3)
+				tag := int8(2)
 				io.Int8(&tag)
 				value.Marshal(io)
 			case *ResourcePackStackFinished:
-				tag := int8(4)
+				tag := int8(3)
 				io.Int8(&tag)
 				value.Marshal(io)
 			default:

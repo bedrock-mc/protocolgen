@@ -2214,7 +2214,7 @@
             "kind": "union",
             "variants": [
               {
-                "value": 1,
+                "value": 0,
                 "name": "ResourcePackClientResponsePacketPayload::Cancel",
                 "encode": {
                   "kind": "struct",
@@ -2251,7 +2251,7 @@
                 }
               },
               {
-                "value": 2,
+                "value": 1,
                 "name": "ResourcePackClientResponsePacketPayload::Downloading",
                 "encode": {
                   "kind": "struct",
@@ -2327,7 +2327,7 @@
                 }
               },
               {
-                "value": 3,
+                "value": 2,
                 "name": "ResourcePackClientResponsePacketPayload::DownloadingFinished",
                 "encode": {
                   "kind": "struct",
@@ -2364,7 +2364,7 @@
                 }
               },
               {
-                "value": 4,
+                "value": 3,
                 "name": "ResourcePackClientResponsePacketPayload::ResourcePackStackFinished",
                 "encode": {
                   "kind": "struct",
@@ -112810,6 +112810,21 @@
         }
       ],
       "reason": "PlayerVideoCapture has one fixed-byte action selector; only the start variant carries frame-rate and file-prefix payload fields."
+    },
+    {
+      "id": "resource-pack-response-values-start-at-zero",
+      "target": "enums/ResourcePackResponse.json#/values",
+      "pre_patch_node_sha256": "sha256:e162de4c23651738ed1d2bb320a2ae2cb1de5e1453c2b556d49e0c5da6e8f4b8",
+      "pre_patch_context_sha256": "sha256:06010d0638f6c38e9c8b64047ce73b7d0b09dfc6702c89cb4aa5daeb4c59c896",
+      "post_patch_node_sha256": "sha256:549c8dea09d378d5bb284b3f606381fe7fbbe5f80f008a0eb1d2d98a0e4ec9f6",
+      "evidence": [
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/hashimthearab/gophertunnel/blob/9f42f3679a573fc4b51104569cc4f422036e28ec/minecraft/protocol/packet/resource_pack_client_response.go",
+          "summary": "The protocol-2168 serializer declares Refused through Completed with iota, producing values 0 through 3, and writes the pack list only for value 1. A live Lifeboat handoff confirmed value 1 is accepted for downloading."
+        }
+      ],
+      "reason": "Protocol 2168 numbers ResourcePackClientResponse from zero. The one-based Endstone values make a downloading response decode as downloading-finished and leave the requested pack list unread."
     },
     {
       "id": "sound-fade-slot-is-optional",

@@ -10700,10 +10700,10 @@ pub enum ResourcePackClientResponseData {
 impl ResourcePackClientResponseData {
     pub fn discriminant(&self) -> i8 {
         match self {
-            Self::Cancel { .. } => 1,
-            Self::Downloading { .. } => 2,
-            Self::DownloadingFinished { .. } => 3,
-            Self::ResourcePackStackFinished { .. } => 4,
+            Self::Cancel { .. } => 0,
+            Self::Downloading { .. } => 1,
+            Self::DownloadingFinished { .. } => 2,
+            Self::ResourcePackStackFinished { .. } => 3,
         }
     }
 }
@@ -10741,20 +10741,20 @@ impl wire::Decode for ResourcePackClientResponseData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let discriminant = <wire::I8 as wire::Decode>::decode(reader)?.0;
         Ok(match discriminant {
-            1 => {
+            0 => {
                 let response_type = <String as wire::Decode>::decode(reader)?;
                 Self::Cancel { response_type }
             }
-            2 => {
+            1 => {
                 let response_type = <String as wire::Decode>::decode(reader)?;
                 let downloading_packs = wire::decode_collection::<String>(reader, 1)?;
                 Self::Downloading { response_type, downloading_packs }
             }
-            3 => {
+            2 => {
                 let response_type = <String as wire::Decode>::decode(reader)?;
                 Self::DownloadingFinished { response_type }
             }
-            4 => {
+            3 => {
                 let response_type = <String as wire::Decode>::decode(reader)?;
                 Self::ResourcePackStackFinished { response_type }
             }
