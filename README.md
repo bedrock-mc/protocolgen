@@ -238,6 +238,8 @@ wire. For each packet, shared type, or enum heading in the changelog, it resolve
 the target corrected schema, preserves ordinal field order and optionality, and
 emits a complete target-version struct, `Marshal`, packet `ID`, or enum constant
 block. Removed definitions receive removal guidance instead of a target snippet.
+The command rejects a schema snapshot whose internal protocol metadata does not
+match the changelog target, as well as unsupported codecs or ambiguous layouts.
 The generated Go is a transcription aid: schema names may differ from the
 established gophertunnel API, and maintainers must still reconcile names and
 source evidence before applying it.

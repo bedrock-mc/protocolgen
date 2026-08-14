@@ -28,7 +28,16 @@ func Generate(changelog []byte, schemasDir string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	if documents.protocolVersion == 0 {
+		return nil, fmt.Errorf("target schemas do not declare x-protocol-version")
+	}
+	targetProtocol, err := strconv.Atoi(parsed.toProtocol)
+	if err != nil {
+		return nil, fmt.Errorf("changelog target protocol %q is not numeric", parsed.toProtocol)
+	}
+	if documents.protocolVersion != targetProtocol {
+		return nil, fmt.Errorf("target schema snapshot targets protocol %d, changelog targets protocol %d", documents.protocolVersion, targetProtocol)
+	}
 	var output bytes.Buffer
 	fmt.Fprintf(&output, "# gophertunnel update guide — protocol %s to %s\n\n", parsed.fromProtocol, parsed.toProtocol)
 	if parsed.versions != "" {
@@ -68,7 +77,7 @@ func Generate(changelog []byte, schemasDir string) ([]byte, error) {
 			if !ok {
 				return nil, fmt.Errorf("changed schema %q is not present in %s", item.name, schemasDir)
 			}
-			snippet, err := renderSnippet(document, documents, section.kind)
+			snippet, err := renderSnippet(document, documents, section.kind, strings.HasPrefix(section.title, "New ") || strings.HasPrefix(section.title, "Added "))
 			if err != nil {
 				return nil, fmt.Errorf("render %s: %w", item.name, err)
 			}
@@ -91,8 +100,10 @@ func formatSnippet(snippet string) (string, error) {
 }
 
 type schemaSet struct {
-	byFile  map[string]map[string]any
-	byTitle map[string]map[string]any
+	byFile          map[string]map[string]any
+	byTitle         map[string]map[string]any
+	byTitleFile     map[string]string
+	protocolVersion int
 }
 
 func loadDocuments(directory string) (schemaSet, error) {
@@ -100,7 +111,7 @@ func loadDocuments(directory string) (schemaSet, error) {
 	if err != nil {
 		return schemaSet{}, fmt.Errorf("read target schema directory: %w", err)
 	}
-	set := schemaSet{byFile: map[string]map[string]any{}, byTitle: map[string]map[string]any{}}
+	set := schemaSet{byFile: map[string]map[string]any{}, byTitle: map[string]map[string]any{}, byTitleFile: map[string]string{}}
 	for _, entry := range entries {
 		if entry.IsDir() || strings.HasPrefix(entry.Name(), "__") || !strings.HasSuffix(entry.Name(), ".json") {
 			continue
@@ -114,12 +125,31 @@ func loadDocuments(directory string) (schemaSet, error) {
 			return schemaSet{}, fmt.Errorf("parse target schema %s: %w", entry.Name(), err)
 		}
 		set.byFile[entry.Name()] = document
-		set.byTitle[strings.TrimSuffix(entry.Name(), ".json")] = document
+		if protocol, ok := document["x-protocol-version"].(float64); ok {
+			if set.protocolVersion != 0 && set.protocolVersion != int(protocol) {
+				return schemaSet{}, fmt.Errorf("target schemas mix protocol versions %d and %d", set.protocolVersion, int(protocol))
+			}
+			set.protocolVersion = int(protocol)
+		}
+		if err := set.addTitle(strings.TrimSuffix(entry.Name(), ".json"), entry.Name(), document); err != nil {
+			return schemaSet{}, err
+		}
 		if title, _ := document["title"].(string); title != "" {
-			set.byTitle[title] = document
+			if err := set.addTitle(title, entry.Name(), document); err != nil {
+				return schemaSet{}, err
+			}
 		}
 	}
 	return set, nil
+}
+
+func (set *schemaSet) addTitle(key, file string, document map[string]any) error {
+	if previous := set.byTitleFile[key]; previous != "" && previous != file {
+		return fmt.Errorf("target schema lookup %q collides between %s and %s", key, previous, file)
+	}
+	set.byTitle[key] = document
+	set.byTitleFile[key] = file
+	return nil
 }
 
 type changelogDocument struct {
@@ -179,6 +209,9 @@ func parseChangelog(input string) (changelogDocument, error) {
 		switch {
 		case strings.HasPrefix(line, "## "):
 			title := strings.TrimPrefix(line, "## ")
+			if strings.HasPrefix(title, "Renamed ") {
+				return changelogDocument{}, fmt.Errorf("renamed definitions are not supported by update-guide")
+			}
 			kind := ""
 			switch {
 			case strings.Contains(title, "Packets"):
@@ -189,6 +222,9 @@ func parseChangelog(input string) (changelogDocument, error) {
 				kind = "enum"
 			}
 			if kind == "" {
+				if startsChangeSection(title) {
+					return changelogDocument{}, fmt.Errorf("unsupported changelog change section %q", title)
+				}
 				section, item = nil, nil
 				continue
 			}
@@ -200,13 +236,30 @@ func parseChangelog(input string) (changelogDocument, error) {
 			item = &section.items[len(section.items)-1]
 		case item != nil && strings.HasPrefix(line, "**Also affects:**"):
 			item.affects = splitNames(strings.TrimSpace(strings.TrimPrefix(line, "**Also affects:**")))
-		case item != nil && strings.HasPrefix(line, "-"):
+		case item != nil && strings.HasPrefix(line, "- "):
 			item.changes = append(item.changes, line)
 		case item != nil && line != "" && item.summary == "" && !strings.HasPrefix(line, "|"):
 			item.summary = line
 		}
 	}
+	if len(document.sections) == 0 {
+		return changelogDocument{}, fmt.Errorf("changelog contains no supported packet, type, or enum change sections")
+	}
+	for _, section := range document.sections {
+		if len(section.items) == 0 {
+			return changelogDocument{}, fmt.Errorf("changelog section %q contains no definitions", section.title)
+		}
+	}
 	return document, nil
+}
+
+func startsChangeSection(title string) bool {
+	for _, prefix := range []string{"New ", "Added ", "Modified ", "Removed ", "Renamed "} {
+		if strings.HasPrefix(title, prefix) {
+			return true
+		}
+	}
+	return false
 }
 
 func splitNames(input string) []string {
@@ -235,8 +288,8 @@ func cardinality(count int) string {
 	return "each"
 }
 
-func renderSnippet(document map[string]any, schemas schemaSet, kind string) (string, error) {
-	if kind == "enum" {
+func renderSnippet(document map[string]any, schemas schemaSet, kind string, newDefinition bool) (string, error) {
+	if _, enum := document["enum"]; enum {
 		return renderEnum(document)
 	}
 	name := schemaName(document)
@@ -244,11 +297,26 @@ func renderSnippet(document map[string]any, schemas schemaSet, kind string) (str
 	if err != nil {
 		return "", err
 	}
-	fields, err := schemaFields(body, schemas)
+	qualifier, ioType := "protocol.", "protocol.IO"
+	if kind != "packet" {
+		qualifier, ioType = "", "IO"
+	}
+	fields, err := schemaFields(body, schemas, qualifier)
 	if err != nil {
 		return "", err
 	}
 	var output strings.Builder
+	if kind == "packet" && newDefinition {
+		meta, ok := document["$metaProperties"].(map[string]any)
+		if !ok {
+			return "", fmt.Errorf("new packet has no $metaProperties")
+		}
+		id, err := number(meta["[cereal:packet]"])
+		if err != nil || id < 0 {
+			return "", fmt.Errorf("new packet has no valid cereal packet ID")
+		}
+		fmt.Fprintf(&output, "const ID%s uint32 = %d\n\n", name, id)
+	}
 	fmt.Fprintf(&output, "type %s struct {\n", name)
 	for _, field := range fields {
 		if field.description != "" {
@@ -260,7 +328,7 @@ func renderSnippet(document map[string]any, schemas schemaSet, kind string) (str
 	if kind == "packet" {
 		fmt.Fprintf(&output, "\nfunc (*%s) ID() uint32 {\n\treturn ID%s\n}\n", name, name)
 	}
-	fmt.Fprintf(&output, "\nfunc (pk *%s) Marshal(io protocol.IO) {\n", name)
+	fmt.Fprintf(&output, "\nfunc (pk *%s) Marshal(io %s) {\n", name, ioType)
 	for _, field := range fields {
 		fmt.Fprintf(&output, "\t%s\n", field.marshal)
 	}
@@ -274,9 +342,13 @@ func renderEnum(document map[string]any) (string, error) {
 		return "", fmt.Errorf("enum has no values")
 	}
 	explicit, _ := document["x-enum-values"].([]any)
+	if document["x-enum-values"] != nil && len(explicit) != len(values) {
+		return "", fmt.Errorf("enum x-enum-values must contain one value for every name")
+	}
 	name := schemaName(document)
 	var output strings.Builder
 	fmt.Fprintln(&output, "const (")
+	seen := map[int64]bool{}
 	for index, rawValue := range values {
 		valueName := naming.GoExportName(fmt.Sprint(rawValue))
 		value := int64(index)
@@ -287,6 +359,10 @@ func renderEnum(document map[string]any) (string, error) {
 			}
 			value = parsed
 		}
+		if seen[value] {
+			return "", fmt.Errorf("enum contains duplicate value %d", value)
+		}
+		seen[value] = true
 		fmt.Fprintf(&output, "\t%s%s = %d\n", name, valueName, value)
 	}
 	fmt.Fprint(&output, ")")
@@ -301,7 +377,7 @@ type renderedField struct {
 	marshal     string
 }
 
-func schemaFields(document map[string]any, schemas schemaSet) ([]renderedField, error) {
+func schemaFields(document map[string]any, schemas schemaSet, qualifier string) ([]renderedField, error) {
 	properties, ok := document["properties"].(map[string]any)
 	if !ok {
 		if document["type"] == "object" {
@@ -326,51 +402,59 @@ func schemaFields(document map[string]any, schemas schemaSet) ([]renderedField, 
 			return nil, fmt.Errorf("field %s has no ordinal", rawName)
 		}
 		name := naming.GoExportName(rawName)
-		goType, marshal, marshaler, err := renderFieldSchema(schema, schemas, "&pk."+name)
+		goType, marshal, marshaler, err := renderFieldSchema(schema, schemas, "&pk."+name, qualifier)
 		if err != nil {
 			return nil, fmt.Errorf("field %s: %w", rawName, err)
 		}
 		if !required[rawName] {
 			valueType := goType
-			goType = "protocol.Optional[" + valueType + "]"
+			goType = qualifier + "Optional[" + valueType + "]"
 			if marshaler {
-				marshal = "protocol.OptionalMarshaler(io, &pk." + name + ")"
+				marshal = qualifier + "OptionalMarshaler(io, &pk." + name + ")"
 			} else {
 				address := "&pk." + name
-				funcSlicePrefix := "protocol.FuncSlice(io, " + address + ", "
-				sliceCall := "protocol.Slice(io, " + address + ")"
+				funcSlicePrefix := qualifier + "FuncSlice(io, " + address + ", "
+				sliceCall := qualifier + "Slice(io, " + address + ")"
 				switch {
 				case strings.HasPrefix(marshal, funcSlicePrefix) && strings.HasSuffix(marshal, ")"):
 					codec := strings.TrimSuffix(strings.TrimPrefix(marshal, funcSlicePrefix), ")")
-					marshal = "protocol.OptionalFunc(io, " + address + ", func(value *" + valueType + ") { protocol.FuncSlice(io, value, " + codec + ") })"
+					marshal = qualifier + "OptionalFunc(io, " + address + ", func(value *" + valueType + ") { " + qualifier + "FuncSlice(io, value, " + codec + ") })"
 				case marshal == sliceCall:
-					marshal = "protocol.OptionalFunc(io, " + address + ", func(value *" + valueType + ") { protocol.Slice(io, value) })"
+					marshal = qualifier + "OptionalFunc(io, " + address + ", func(value *" + valueType + ") { " + qualifier + "Slice(io, value) })"
 				default:
 					marshal = strings.TrimSuffix(marshal, "("+address+")")
-					marshal = "protocol.OptionalFunc(io, " + address + ", " + marshal + ")"
+					marshal = qualifier + "OptionalFunc(io, " + address + ", " + marshal + ")"
 				}
 			}
 		}
 		description, _ := schema["description"].(string)
 		fields = append(fields, renderedField{ordinal: int(ordinal), name: name, description: description, goType: goType, marshal: marshal})
 	}
-	sort.Slice(fields, func(i, j int) bool { return fields[i].ordinal < fields[j].ordinal })
+	sort.SliceStable(fields, func(i, j int) bool { return fields[i].ordinal < fields[j].ordinal })
+	for index, field := range fields {
+		if field.ordinal != index {
+			if index > 0 && field.ordinal == fields[index-1].ordinal {
+				return nil, fmt.Errorf("duplicate ordinal %d", field.ordinal)
+			}
+			return nil, fmt.Errorf("field ordinals must be contiguous from zero; got %d at position %d", field.ordinal, index)
+		}
+	}
 	return fields, nil
 }
 
 // renderFieldSchema returns the Go type, either a complete marshal statement
 // or an IO method expression for optionals, and whether the type marshals itself.
-func renderFieldSchema(schema map[string]any, schemas schemaSet, address string) (string, string, bool, error) {
+func renderFieldSchema(schema map[string]any, schemas schemaSet, address, qualifier string) (string, string, bool, error) {
 	if reference, _ := schema["$ref"].(string); reference != "" {
 		target, err := resolveReference(reference, schemas)
 		if err != nil {
 			return "", "", false, err
 		}
 		if _, enum := target["enum"]; enum {
-			_, method, err := primitive(target)
-			return schemaName(target), method, false, err
+			goType, method, err := primitive(target)
+			return goType, chooseStatement(address, method), false, err
 		}
-		return schemaName(target), "protocol.Single(io, " + address + ")", true, nil
+		return schemaName(target), qualifier + "Single(io, " + address + ")", true, nil
 	}
 	switch schema["type"] {
 	case "string":
@@ -381,20 +465,31 @@ func renderFieldSchema(schema map[string]any, schemas schemaSet, address string)
 		goType, method, err := primitive(schema)
 		return goType, chooseStatement(address, method), false, err
 	case "array":
+		if min, minOK := schema["minItems"].(float64); minOK {
+			if max, maxOK := schema["maxItems"].(float64); maxOK && min == max {
+				return "", "", false, fmt.Errorf("fixed-length arrays are not supported by the gophertunnel guide")
+			}
+		}
+		if err := validateOptions(schema, map[string]bool{}); err != nil {
+			return "", "", false, err
+		}
 		items, ok := schema["items"].(map[string]any)
 		if !ok {
 			return "", "", false, fmt.Errorf("array has no item schema")
 		}
-		itemType, itemMarshal, itemMarshaler, err := renderFieldSchema(items, schemas, "")
+		if items["type"] == "array" {
+			return "", "", false, fmt.Errorf("nested arrays are not supported by the gophertunnel guide")
+		}
+		itemType, itemMarshal, itemMarshaler, err := renderFieldSchema(items, schemas, "", qualifier)
 		if err != nil {
 			return "", "", false, err
 		}
 		if itemMarshaler {
-			return "[]" + itemType, "protocol.Slice(io, " + address + ")", false, nil
+			return "[]" + itemType, qualifier + "Slice(io, " + address + ")", false, nil
 		}
-		return "[]" + itemType, "protocol.FuncSlice(io, " + address + ", " + itemMarshal + ")", false, nil
+		return "[]" + itemType, qualifier + "FuncSlice(io, " + address + ", " + itemMarshal + ")", false, nil
 	case "object":
-		return schemaName(schema), "protocol.Single(io, " + address + ")", true, nil
+		return "", "", false, fmt.Errorf("inline object fields are not supported; extract a named schema")
 	default:
 		return "", "", false, fmt.Errorf("unsupported schema type %q", schema["type"])
 	}
@@ -409,9 +504,16 @@ func chooseStatement(address, method string) string {
 
 func primitive(schema map[string]any) (string, string, error) {
 	underlying := strings.ToLower(strings.ReplaceAll(strings.ReplaceAll(fmt.Sprint(schema["x-underlying-type"]), "_", ""), " ", ""))
-	options := strings.ToLower(fmt.Sprint(schema["x-serialization-options"]))
-	compressed := strings.Contains(options, "compression")
-	bigEndian := strings.Contains(options, "big endian")
+	options, err := serializationOptions(schema)
+	if err != nil {
+		return "", "", err
+	}
+	allowed := map[string]bool{"compression": true, "big endian": true}
+	if err := validateOptionSet(options, allowed); err != nil {
+		return "", "", err
+	}
+	compressed := options["compression"]
+	bigEndian := options["big endian"]
 	if underlying == "" || underlying == "<nil>" {
 		underlying = fmt.Sprint(schema["type"])
 	}
@@ -452,6 +554,43 @@ func primitive(schema map[string]any) (string, string, error) {
 	return result[0], result[1], nil
 }
 
+func serializationOptions(schema map[string]any) (map[string]bool, error) {
+	result := map[string]bool{}
+	raw, exists := schema["x-serialization-options"]
+	if !exists {
+		return result, nil
+	}
+	values, ok := raw.([]any)
+	if !ok {
+		return nil, fmt.Errorf("x-serialization-options is not an array")
+	}
+	for _, rawValue := range values {
+		value, ok := rawValue.(string)
+		if !ok || strings.TrimSpace(value) == "" {
+			return nil, fmt.Errorf("x-serialization-options contains a non-string value")
+		}
+		result[strings.ToLower(strings.TrimSpace(value))] = true
+	}
+	return result, nil
+}
+
+func validateOptions(schema map[string]any, allowed map[string]bool) error {
+	options, err := serializationOptions(schema)
+	if err != nil {
+		return err
+	}
+	return validateOptionSet(options, allowed)
+}
+
+func validateOptionSet(options, allowed map[string]bool) error {
+	for option := range options {
+		if !allowed[option] {
+			return fmt.Errorf("unsupported serialization option %q", option)
+		}
+	}
+	return nil
+}
+
 func resolveRoot(document map[string]any, schemas schemaSet, active map[string]bool) (map[string]any, error) {
 	reference, _ := document["$ref"].(string)
 	if reference == "" {
@@ -469,7 +608,11 @@ func resolveRoot(document map[string]any, schemas schemaSet, active map[string]b
 }
 
 func resolveReference(reference string, schemas schemaSet) (map[string]any, error) {
-	file := filepath.Base(strings.SplitN(reference, "#", 2)[0])
+	parts := strings.SplitN(reference, "#", 2)
+	if len(parts) == 2 && parts[1] != "" {
+		return nil, fmt.Errorf("reference fragments are not supported: %s", reference)
+	}
+	file := filepath.Base(parts[0])
 	target, ok := schemas.byFile[file]
 	if !ok {
 		return nil, fmt.Errorf("missing reference %s", reference)
