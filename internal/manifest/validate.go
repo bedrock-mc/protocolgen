@@ -356,8 +356,8 @@ func validateAdjudications(m Manifest, sourceIDs map[string]bool) error {
 		if !sourceIDs[adjudication.SelectedSource] {
 			return fmt.Errorf("adjudication %q selects unknown source %q", adjudication.ID, adjudication.SelectedSource)
 		}
-		if len(adjudication.Claims) < 2 {
-			return fmt.Errorf("adjudication %q must fingerprint both source claims", adjudication.ID)
+		if len(adjudication.Claims) == 0 {
+			return fmt.Errorf("adjudication %q must fingerprint every available source claim", adjudication.ID)
 		}
 		for _, claim := range adjudication.Claims {
 			if claim.Digest == "" || !sourceIDs[claim.SourceID] {

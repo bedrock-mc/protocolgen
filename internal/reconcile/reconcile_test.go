@@ -71,7 +71,10 @@ func TestReconcileWithDirectionsAppliesReviewedOverlay(t *testing.T) {
 			Evidence: direction.Evidence{Locator: "https://github.com/example/gophertunnel/blob/0123456789012345678901234567890123456789/minecraft/protocol/packet/pool.go", Summary: "The packet ID is registered in both direction pools."},
 		}},
 	}
-	m, err := ReconcileWithDirections(target, []claims.Result{{Pin: sourcePin("endstone"), Target: target, Claims: []claims.Claim{testClaim("endstone", manifest.Primitive("u8"))}}}, nil, table)
+	m, err := ReconcileWithDirections(target, []claims.Result{
+		{Pin: sourcePin("endstone"), Target: target, Claims: []claims.Claim{testClaim("endstone", manifest.Primitive("u8"))}},
+		{Pin: sourcePin("mojang"), Target: target, Claims: []claims.Claim{testClaim("mojang", manifest.Primitive("u8"))}},
+	}, nil, table)
 	if err != nil {
 		t.Fatalf("ReconcileWithDirections: %v", err)
 	}
@@ -80,21 +83,17 @@ func TestReconcileWithDirectionsAppliesReviewedOverlay(t *testing.T) {
 	}
 }
 
-func TestReconcileUsesConcreteClaimWhenAnotherSourceIsUnresolved(t *testing.T) {
+func TestReconcileRequiresAdjudicationWhenOnlyOneSourceIsConcrete(t *testing.T) {
 	target := manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}
 	unresolved := testClaim("mojang", manifest.Unresolved("source omits the wire shape", true))
 	concrete := testClaim("endstone", manifest.Primitive("u8"))
 
-	m, err := Reconcile(target, []claims.Result{
+	_, err := Reconcile(target, []claims.Result{
 		{Pin: sourcePin("mojang"), Target: target, Claims: []claims.Claim{unresolved}},
 		{Pin: sourcePin("endstone"), Target: target, Claims: []claims.Claim{concrete}},
 	}, nil)
-	if err != nil {
-		t.Fatalf("Reconcile: %v", err)
-	}
-	field := m.Packets[0].Fields[0]
-	if field.Encode.Kind != manifest.KindPrimitive || len(field.Provenance.Pins) != 1 || field.Provenance.Pins[0] != "endstone" {
-		t.Fatalf("field = %#v, want concrete Endstone-only claim", field)
+	if err == nil || !strings.Contains(err.Error(), "adjudication") {
+		t.Fatalf("Reconcile error = %v, want missing adjudication", err)
 	}
 }
 
@@ -109,25 +108,21 @@ func TestMergeNodeFillsMissingTextSemantics(t *testing.T) {
 	}
 }
 
-func TestReconcileUsesCompleteClaimWhenAnotherSourceHasNestedUnresolvedShape(t *testing.T) {
+func TestReconcileRequiresAdjudicationWhenAnotherSourceHasNestedUnresolvedShape(t *testing.T) {
 	target := manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}
 	incomplete := manifest.Node{Kind: manifest.KindStruct, Fields: []manifest.Field{{Ordinal: 0, Name: "Mode", Encode: manifest.Unresolved("missing enum values", true), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"mojang"}}}}}
 	complete := manifest.Node{Kind: manifest.KindStruct, Fields: []manifest.Field{{Ordinal: 0, Name: "Mode", Encode: manifest.Primitive("u8"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"endstone"}}}}}
 
-	m, err := Reconcile(target, []claims.Result{
+	_, err := Reconcile(target, []claims.Result{
 		{Pin: sourcePin("mojang"), Target: target, Claims: []claims.Claim{testClaim("mojang", incomplete)}},
 		{Pin: sourcePin("endstone"), Target: target, Claims: []claims.Claim{testClaim("endstone", complete)}},
 	}, nil)
-	if err != nil {
-		t.Fatalf("Reconcile: %v", err)
-	}
-	field := m.Packets[0].Fields[0]
-	if field.Encode.Fields[0].Encode.Kind != manifest.KindPrimitive || len(field.Provenance.Pins) != 1 || field.Provenance.Pins[0] != "endstone" {
-		t.Fatalf("field = %#v, want complete Endstone-only claim", field)
+	if err == nil || !strings.Contains(err.Error(), "adjudication") {
+		t.Fatalf("Reconcile error = %v, want missing adjudication", err)
 	}
 }
 
-func TestReconcileCombinesComplementaryNestedClaims(t *testing.T) {
+func TestReconcileRejectsComplementaryClaimsWithoutIndependentFullShapes(t *testing.T) {
 	target := manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}
 	left := manifest.Node{Kind: manifest.KindStruct, Fields: []manifest.Field{
 		{Ordinal: 0, Name: "First", Encode: manifest.Primitive("u8"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"endstone"}}},
@@ -138,16 +133,12 @@ func TestReconcileCombinesComplementaryNestedClaims(t *testing.T) {
 		{Ordinal: 1, Name: "Second", Encode: manifest.Primitive("u16le"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"mojang"}}},
 	}}
 
-	m, err := Reconcile(target, []claims.Result{
+	_, err := Reconcile(target, []claims.Result{
 		{Pin: sourcePin("endstone"), Target: target, Claims: []claims.Claim{testClaim("endstone", left)}},
 		{Pin: sourcePin("mojang"), Target: target, Claims: []claims.Claim{testClaim("mojang", right)}},
 	}, nil)
-	if err != nil {
-		t.Fatalf("Reconcile: %v", err)
-	}
-	fields := m.Packets[0].Fields[0].Encode.Fields
-	if fields[0].Encode.Primitive.Code != "u8" || fields[1].Encode.Primitive.Code != "u16le" {
-		t.Fatalf("merged fields = %#v", fields)
+	if err == nil || !strings.Contains(err.Error(), "adjudication") {
+		t.Fatalf("Reconcile error = %v, want missing adjudication", err)
 	}
 }
 
@@ -157,8 +148,48 @@ func TestReconcilePreservesSourcePinWhenAllClaimsAreUnresolved(t *testing.T) {
 		Pin: sourcePin("endstone"), Target: target,
 		Claims: []claims.Claim{testClaim("endstone", manifest.Unresolved("missing selector", true))},
 	}}, nil)
-	if err == nil || !strings.Contains(err.Error(), "unresolved node") {
-		t.Fatalf("Reconcile error = %v, want unresolved wire-shape failure", err)
+	if err == nil || !strings.Contains(err.Error(), "adjudication") {
+		t.Fatalf("Reconcile error = %v, want missing adjudication", err)
+	}
+}
+
+func TestReconcileAcceptsFingerprintedSingletonWithIndependentEvidence(t *testing.T) {
+	target := manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}
+	claim := testClaim("endstone", manifest.Primitive("u8"))
+	context, err := claims.ContextFingerprint(target, []claims.Claim{claim})
+	if err != nil {
+		t.Fatalf("ContextFingerprint: %v", err)
+	}
+	adjudication := manifest.Adjudication{
+		ID: "confirm-singleton", Target: claim.FieldPath, PrePatchContextSHA256: context,
+		Claims:         []manifest.ClaimFingerprint{{SourceID: claim.SourceID, Digest: mustFingerprint(t, claim)}},
+		SelectedSource: claim.SourceID,
+		Evidence:       []manifest.Evidence{{SourceID: claim.SourceID, Locator: "fixture/independent-wire-capture"}},
+		Reason:         "an independent wire capture confirms the only available source claim",
+	}
+	m, err := Reconcile(target, []claims.Result{{Pin: sourcePin("endstone"), Target: target, Claims: []claims.Claim{claim}}}, []manifest.Adjudication{adjudication})
+	if err != nil {
+		t.Fatalf("Reconcile: %v", err)
+	}
+	field := m.Packets[0].Fields[0]
+	if len(field.Provenance.Pins) != 1 || len(field.Provenance.Evidence) != 1 || len(m.Adjudications) != 1 {
+		t.Fatalf("field provenance = %+v, adjudications = %+v", field.Provenance, m.Adjudications)
+	}
+}
+
+func TestReconcileReportsEveryProvenanceGap(t *testing.T) {
+	target := manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}
+	first := testClaim("endstone", manifest.Primitive("u8"))
+	second := testClaim("endstone", manifest.Primitive("u16le"))
+	second.PacketID = 2
+	second.PacketName = "SecondPacket"
+	second.FieldPath = "SecondPacket.Value"
+
+	_, err := Reconcile(target, []claims.Result{{
+		Pin: sourcePin("endstone"), Target: target, Claims: []claims.Claim{first, second},
+	}}, nil)
+	if err == nil || !strings.Contains(err.Error(), "2 provenance gap(s)") || !strings.Contains(err.Error(), first.FieldPath) || !strings.Contains(err.Error(), second.FieldPath) {
+		t.Fatalf("Reconcile error = %v, want both provenance gaps", err)
 	}
 }
 

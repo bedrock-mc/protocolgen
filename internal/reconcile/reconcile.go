@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"reflect"
 	"sort"
+	"strings"
 
 	"protocolgen/internal/claims"
 	"protocolgen/internal/direction"
@@ -109,12 +110,14 @@ func reconcile(target manifest.Target, results []claims.Result, adjudications []
 		packets[id] = &manifest.Packet{ID: id, Name: metadata.Name, Direction: metadata.Direction}
 	}
 	usedAdjudications := map[string]bool{}
+	var selectionErrors []string
 	for _, key := range keys {
 		group := groups[key]
 		sort.SliceStable(group, func(i, j int) bool { return group[i].SourceID < group[j].SourceID })
 		selected, pinsForField, evidence, used, err := selectClaim(target, group, adjudications)
 		if err != nil {
-			return manifest.Manifest{}, err
+			selectionErrors = append(selectionErrors, err.Error())
+			continue
 		}
 		if used != "" {
 			usedAdjudications[used] = true
@@ -136,6 +139,9 @@ func reconcile(target manifest.Target, results []claims.Result, adjudications []
 			Provenance: manifest.Provenance{Pins: pinsForField, Evidence: evidence},
 		}
 		packet.Fields = append(packet.Fields, field)
+	}
+	if len(selectionErrors) != 0 {
+		return manifest.Manifest{}, fmt.Errorf("reconciliation blocked by %d provenance gap(s):\n- %s", len(selectionErrors), strings.Join(selectionErrors, "\n- "))
 	}
 
 	packetsOut := make([]manifest.Packet, 0, len(packets))
@@ -218,7 +224,19 @@ func selectClaim(target manifest.Target, group []claims.Claim, adjudications []m
 		}
 		return *selected, []string{selected.SourceID}, append([]manifest.Evidence(nil), adjudication.Evidence...), adjudication.ID, nil
 	}
-	return claims.Claim{}, nil, nil, "", fmt.Errorf("source claims for %s disagree; an evidenced fingerprinted adjudication is required", group[0].FieldPath)
+	return claims.Claim{}, nil, nil, "", fmt.Errorf("source claims for %s lack two byte-equivalent complete claims (%s); an evidenced fingerprinted adjudication is required", group[0].FieldPath, claimCoverageSummary(group))
+}
+
+func claimCoverageSummary(group []claims.Claim) string {
+	parts := make([]string, 0, len(group))
+	for _, claim := range group {
+		coverage := "complete"
+		if hasEvidenceGap(claim.Encode) || claim.Decode != nil && hasEvidenceGap(*claim.Decode) {
+			coverage = "incomplete"
+		}
+		parts = append(parts, claim.SourceID+"="+coverage)
+	}
+	return strings.Join(parts, ",")
 }
 
 func mergeClaimGroup(group []claims.Claim) (claims.Claim, []string, bool) {
@@ -256,18 +274,25 @@ func mergeClaimGroup(group []claims.Claim) (claims.Claim, []string, bool) {
 		}
 	}
 	var pinIDs []string
+	mergedWire := normalizedWireComparable(merged)
 	for _, claim := range group {
-		if hasConcreteEvidence(claim.Encode) || claim.Decode != nil && hasConcreteEvidence(*claim.Decode) {
+		if !hasEvidenceGap(claim.Encode) && (claim.Decode == nil || !hasEvidenceGap(*claim.Decode)) && reflect.DeepEqual(normalizedWireComparable(claim), mergedWire) {
 			pinIDs = append(pinIDs, claim.SourceID)
 		}
 	}
-	if len(pinIDs) == 0 {
-		for _, claim := range group {
-			pinIDs = append(pinIDs, claim.SourceID)
-		}
+	pinIDs = mergeStrings(nil, pinIDs)
+	if len(pinIDs) < 2 {
+		return claims.Claim{}, nil, false
 	}
-	sort.Strings(pinIDs)
 	return merged, pinIDs, true
+}
+
+func normalizedWireComparable(claim claims.Claim) claims.Claim {
+	claim = wireComparable(claim)
+	if claim.Decode != nil && reflect.DeepEqual(claim.Encode, *claim.Decode) {
+		claim.Decode = nil
+	}
+	return claim
 }
 
 func hasConcreteEvidence(node manifest.Node) bool {
