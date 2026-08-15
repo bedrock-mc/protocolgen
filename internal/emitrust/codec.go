@@ -123,13 +123,14 @@ func (e *codecEmitter) encode(b *strings.Builder, node manifest.Node, expr, inde
 		return e.encodeNumberConstraints(b, node, expr, indent)
 
 	case manifest.KindString:
+		reference := rustStringReference(expr)
 		if min, max, ok := stringBounds(node); ok {
-			fmt.Fprintf(b, "%swire::encode_string_limits(writer, &%s, %d, %d);\n", indent, expr, min, max)
+			fmt.Fprintf(b, "%swire::encode_string_limits(writer, %s, %d, %d);\n", indent, reference, min, max)
 		} else {
 			fmt.Fprintf(b, "%s%s.encode(writer);\n", indent, expr)
 		}
 		if node.Constraints != nil && node.Constraints.Pattern != "" {
-			fmt.Fprintf(b, "%swire::assert_pattern(&%s, %q);\n", indent, expr, node.Constraints.Pattern)
+			fmt.Fprintf(b, "%swire::assert_pattern(%s, %q);\n", indent, reference, node.Constraints.Pattern)
 		}
 		return nil
 
@@ -221,6 +222,13 @@ func (e *codecEmitter) encode(b *strings.Builder, node manifest.Node, expr, inde
 	default:
 		return fmt.Errorf("unsupported node kind %q in encode", node.Kind)
 	}
+}
+
+func rustStringReference(expr string) string {
+	if strings.HasPrefix(expr, "self.") {
+		return "&" + expr
+	}
+	return expr
 }
 
 func (e *codecEmitter) encodeNumberConstraints(b *strings.Builder, node manifest.Node, expr, indent string) error {

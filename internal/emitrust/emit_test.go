@@ -60,6 +60,7 @@ func TestGenerateRustEmitsSchemaConstraintChecks(t *testing.T) {
 		{Ordinal: 2, Name: "Number", Encode: number, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
 		{Ordinal: 3, Name: "Decimal", Encode: decimal, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
 		{Ordinal: 4, Name: "LargeInteger", Encode: largeInteger, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		{Ordinal: 5, Name: "MaybeText", Encode: manifest.Optional(text), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
 	}}}}
 	files, err := GenerateFiles(m)
 	if err != nil {
@@ -77,6 +78,8 @@ func TestGenerateRustEmitsSchemaConstraintChecks(t *testing.T) {
 		"wire::validate_number_limits(value.0, Some(-1), Some(64))?;",
 		"wire::assert_number_limits(self.decimal.0, Some(0.0), Some(1.0));",
 		"wire::assert_number_limits(self.large_integer.0, None, Some(4294967294));",
+		"wire::encode_string_limits(writer, value, 1, 65536);",
+		`wire::assert_pattern(value, "^[a-z]+$");`,
 	} {
 		if !strings.Contains(packet, want) {
 			t.Fatalf("generated Rust packet omits %q:\n%s", want, packet)

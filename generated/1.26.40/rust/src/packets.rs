@@ -301,7 +301,7 @@ impl wire::Encode for Text {
         match &self.filtered_message {
             Some(value) => {
                 writer.write_u8(1);
-                wire::encode_string_limits(writer, &value, 0, 65536);
+                wire::encode_string_limits(writer, value, 0, 65536);
             }
             None => writer.write_u8(0),
         }
@@ -8462,7 +8462,7 @@ impl wire::Encode for GraphicsOverrideParameter {
         match &self.player_identifier {
             Some(value) => {
                 writer.write_u8(1);
-                wire::encode_string_limits(writer, &value, 0, 255);
+                wire::encode_string_limits(writer, value, 0, 255);
             }
             None => writer.write_u8(0),
         }

@@ -230,17 +230,17 @@ impl wire::Encode for AttributeLayerSyncData {
                 wire::encode_collection_limits(writer, attribute_layers.as_slice(), 0, 512);
             }
             Self::UpdateAttributeLayerSettingsData { attribute_layer_name, attribute_layer_dimension, attributes_layer_settings } => {
-                wire::encode_string_limits(writer, &attribute_layer_name, 0, 128);
+                wire::encode_string_limits(writer, attribute_layer_name, 0, 128);
                 attribute_layer_dimension.encode(writer);
                 attributes_layer_settings.encode(writer);
             }
             Self::UpdateEnvironmentAttributesData { attribute_layer_name, attribute_layer_dimension, attributes } => {
-                wire::encode_string_limits(writer, &attribute_layer_name, 0, 128);
+                wire::encode_string_limits(writer, attribute_layer_name, 0, 128);
                 attribute_layer_dimension.encode(writer);
                 wire::encode_collection_limits(writer, attributes.as_slice(), 0, 1024);
             }
             Self::RemoveEnvironmentAttributesData { attribute_layer_name, attribute_layer_dimension, attributes } => {
-                wire::encode_string_limits(writer, &attribute_layer_name, 0, 128);
+                wire::encode_string_limits(writer, attribute_layer_name, 0, 128);
                 attribute_layer_dimension.encode(writer);
                 wire::encode_collection_limits(writer, attributes.as_slice(), 0, 1024);
             }
@@ -4519,7 +4519,7 @@ impl wire::Encode for EventData {
                 instigator_child_actor_type.encode(writer);
                 damage_source.encode(writer);
                 trade_tier.encode(writer);
-                wire::encode_string_limits(writer, &trader_name, 0, 128);
+                wire::encode_string_limits(writer, trader_name, 0, 128);
             }
             Self::CauldronUsed { contents_color, contents_type, fill_level } => {
                 contents_color.encode(writer);
@@ -4540,8 +4540,8 @@ impl wire::Encode for EventData {
             Self::SlashCommand { success_count, error_count, command_name, error_list } => {
                 success_count.encode(writer);
                 error_count.encode(writer);
-                wire::encode_string_limits(writer, &command_name, 0, 512);
-                wire::encode_string_limits(writer, &error_list, 0, 2048);
+                wire::encode_string_limits(writer, command_name, 0, 512);
+                wire::encode_string_limits(writer, error_list, 0, 2048);
             }
             Self::MobBorn { born_baby_entity_type, born_baby_entity_variant, born_baby_color } => {
                 born_baby_entity_type.encode(writer);
@@ -4560,7 +4560,7 @@ impl wire::Encode for EventData {
                 item_id.encode(writer);
             }
             Self::ActorDefinition { event_name } => {
-                wire::encode_string_limits(writer, &event_name, 0, 256);
+                wire::encode_string_limits(writer, event_name, 0, 256);
             }
             Self::RaidUpdate { current_wave, total_waves, success } => {
                 current_wave.encode(writer);
@@ -4578,10 +4578,10 @@ impl wire::Encode for EventData {
                 player_waxed_or_unwaxed_copper_block_id.encode(writer);
             }
             Self::CodeBuilderRuntimeAction { code_builder_runtime_action } => {
-                wire::encode_string_limits(writer, &code_builder_runtime_action, 0, 16);
+                wire::encode_string_limits(writer, code_builder_runtime_action, 0, 16);
             }
             Self::CodeBuilderScoreboard { objective_name, score } => {
-                wire::encode_string_limits(writer, &objective_name, 0, 256);
+                wire::encode_string_limits(writer, objective_name, 0, 256);
                 score.encode(writer);
             }
             Self::ItemUsed { item_id, item_aux, use_method, count } => {
@@ -4823,7 +4823,7 @@ impl wire::Encode for BedrockDDUIDataStoreUpdateData {
                 value.encode(writer);
             }
             Self::String(value) => {
-                wire::encode_string_limits(writer, &value, 0, 5000);
+                wire::encode_string_limits(writer, value, 0, 5000);
             }
         }
     }
@@ -5636,7 +5636,7 @@ impl wire::Encode for SetScoreInfoItem {
                 match &objective_name {
                     Some(value) => {
                         writer.write_u8(1);
-                        wire::encode_string_limits(writer, &value, 1, 18446744073709551615);
+                        wire::encode_string_limits(writer, value, 1, 18446744073709551615);
                     }
                     None => writer.write_u8(0),
                 }
@@ -5644,23 +5644,23 @@ impl wire::Encode for SetScoreInfoItem {
             Self::ChangePlayerScore { action, scoreboard_id, objective_name, score_value, player_unique_id } => {
                 action.encode(writer);
                 scoreboard_id.encode(writer);
-                wire::encode_string_limits(writer, &objective_name, 1, 18446744073709551615);
+                wire::encode_string_limits(writer, objective_name, 1, 18446744073709551615);
                 score_value.encode(writer);
                 player_unique_id.encode(writer);
             }
             Self::ChangeEntityScore { action, scoreboard_id, objective_name, score_value, actor_id } => {
                 action.encode(writer);
                 scoreboard_id.encode(writer);
-                wire::encode_string_limits(writer, &objective_name, 1, 18446744073709551615);
+                wire::encode_string_limits(writer, objective_name, 1, 18446744073709551615);
                 score_value.encode(writer);
                 actor_id.encode(writer);
             }
             Self::ChangeFakePlayerScore { action, scoreboard_id, objective_name, score_value, fake_player_name } => {
                 action.encode(writer);
                 scoreboard_id.encode(writer);
-                wire::encode_string_limits(writer, &objective_name, 1, 18446744073709551615);
+                wire::encode_string_limits(writer, objective_name, 1, 18446744073709551615);
                 score_value.encode(writer);
-                wire::encode_string_limits(writer, &fake_player_name, 1, 18446744073709551615);
+                wire::encode_string_limits(writer, fake_player_name, 1, 18446744073709551615);
             }
         }
     }
@@ -6129,18 +6129,18 @@ impl wire::Encode for ItemDescriptor {
             }
             Self::ItemNameDescriptorData { descriptor_type, full_name, aux_value } => {
                 descriptor_type.encode(writer);
-                wire::encode_string_limits(writer, &full_name, 1, 18446744073709551615);
+                wire::encode_string_limits(writer, full_name, 1, 18446744073709551615);
                 aux_value.encode(writer);
                 wire::assert_number_limits(aux_value.0, Some(0), Some(32767));
             }
             Self::MolangItemDescriptorData { descriptor_type, tag_expression, molang_version } => {
                 descriptor_type.encode(writer);
-                wire::encode_string_limits(writer, &tag_expression, 1, 18446744073709551615);
+                wire::encode_string_limits(writer, tag_expression, 1, 18446744073709551615);
                 molang_version.encode(writer);
             }
             Self::ItemTagDescriptorData { descriptor_type, item_tag } => {
                 descriptor_type.encode(writer);
-                wire::encode_string_limits(writer, &item_tag, 1, 18446744073709551615);
+                wire::encode_string_limits(writer, item_tag, 1, 18446744073709551615);
             }
         }
     }
@@ -7125,14 +7125,14 @@ impl wire::Encode for BedrockDDUI {
                 value.encode(writer);
             }
             Self::DataStoreChange { data_store_name, property, update_count, the_new_property_value } => {
-                wire::encode_string_limits(writer, &data_store_name, 1, 1000);
-                wire::encode_string_limits(writer, &property, 1, 1000);
+                wire::encode_string_limits(writer, data_store_name, 1, 1000);
+                wire::encode_string_limits(writer, property, 1, 1000);
                 update_count.encode(writer);
                 wire::assert_number_limits(update_count.0, None, Some(4294967294));
                 the_new_property_value.encode(writer);
             }
             Self::DataStoreRemoval { data_store_name } => {
-                wire::encode_string_limits(writer, &data_store_name, 1, 1000);
+                wire::encode_string_limits(writer, data_store_name, 1, 1000);
             }
         }
     }
@@ -7260,13 +7260,13 @@ impl wire::Encode for BookEditAction {
         match self {
             Self::ReplacePage { page_index, page_text, photo_name } => {
                 page_index.encode(writer);
-                wire::encode_string_limits(writer, &page_text, 0, 768);
-                wire::encode_string_limits(writer, &photo_name, 0, 768);
+                wire::encode_string_limits(writer, page_text, 0, 768);
+                wire::encode_string_limits(writer, photo_name, 0, 768);
             }
             Self::AddPage { page_index, page_text, photo_name } => {
                 page_index.encode(writer);
-                wire::encode_string_limits(writer, &page_text, 0, 768);
-                wire::encode_string_limits(writer, &photo_name, 0, 768);
+                wire::encode_string_limits(writer, page_text, 0, 768);
+                wire::encode_string_limits(writer, photo_name, 0, 768);
             }
             Self::DeletePage { page_index } => {
                 page_index.encode(writer);
@@ -7276,9 +7276,9 @@ impl wire::Encode for BookEditAction {
                 swap_with_index.encode(writer);
             }
             Self::Finalize { title, author, xuid } => {
-                wire::encode_string_limits(writer, &title, 0, 768);
-                wire::encode_string_limits(writer, &author, 0, 768);
-                wire::encode_string_limits(writer, &xuid, 0, 768);
+                wire::encode_string_limits(writer, title, 0, 768);
+                wire::encode_string_limits(writer, author, 0, 768);
+                wire::encode_string_limits(writer, xuid, 0, 768);
             }
         }
     }
@@ -7625,7 +7625,7 @@ impl wire::Encode for EASAttributeLayerData {
         match &self.noise_name {
             Some(value) => {
                 writer.write_u8(1);
-                wire::encode_string_limits(writer, &value, 0, 128);
+                wire::encode_string_limits(writer, value, 0, 128);
             }
             None => writer.write_u8(0),
         }
@@ -9225,7 +9225,7 @@ impl wire::Encode for ServerConfigurationGatheringsConfigurationJoinInfo {
         match &self.world_name {
             Some(value) => {
                 writer.write_u8(1);
-                wire::encode_string_limits(writer, &value, 1, 29);
+                wire::encode_string_limits(writer, value, 1, 29);
             }
             None => writer.write_u8(0),
         }
@@ -9240,14 +9240,14 @@ impl wire::Encode for ServerConfigurationGatheringsConfigurationJoinInfo {
         match &self.scenario_id {
             Some(value) => {
                 writer.write_u8(1);
-                wire::encode_string_limits(writer, &value, 1, 100);
+                wire::encode_string_limits(writer, value, 1, 100);
             }
             None => writer.write_u8(0),
         }
         match &self.server_id {
             Some(value) => {
                 writer.write_u8(1);
-                wire::encode_string_limits(writer, &value, 1, 100);
+                wire::encode_string_limits(writer, value, 1, 100);
             }
             None => writer.write_u8(0),
         }
@@ -9318,7 +9318,7 @@ impl wire::Encode for ServerConfigurationPresenceConfiguration {
         match &self.rich_presence_id {
             Some(value) => {
                 writer.write_u8(1);
-                wire::encode_string_limits(writer, &value, 0, 50);
+                wire::encode_string_limits(writer, value, 0, 50);
             }
             None => writer.write_u8(0),
         }
@@ -11596,46 +11596,46 @@ impl wire::Encode for TextData {
         wire::U8(self.discriminant()).encode(writer);
         match self {
             Self::Raw { message } => {
-                wire::encode_string_limits(writer, &message, 1, 65536);
+                wire::encode_string_limits(writer, message, 1, 65536);
             }
             Self::Chat { player_name, message } => {
-                wire::encode_string_limits(writer, &player_name, 0, 256);
-                wire::encode_string_limits(writer, &message, 1, 65536);
+                wire::encode_string_limits(writer, player_name, 0, 256);
+                wire::encode_string_limits(writer, message, 1, 65536);
             }
             Self::Translate { message, parameter_list } => {
-                wire::encode_string_limits(writer, &message, 1, 65536);
+                wire::encode_string_limits(writer, message, 1, 65536);
                 wire::encode_collection_limits(writer, parameter_list.as_slice(), 0, 4);
             }
             Self::Popup { message, parameter_list } => {
-                wire::encode_string_limits(writer, &message, 1, 65536);
+                wire::encode_string_limits(writer, message, 1, 65536);
                 wire::encode_collection_limits(writer, parameter_list.as_slice(), 0, 4);
             }
             Self::JukeboxPopup { message, parameter_list } => {
-                wire::encode_string_limits(writer, &message, 1, 65536);
+                wire::encode_string_limits(writer, message, 1, 65536);
                 wire::encode_collection_limits(writer, parameter_list.as_slice(), 0, 4);
             }
             Self::Tip { message } => {
-                wire::encode_string_limits(writer, &message, 1, 65536);
+                wire::encode_string_limits(writer, message, 1, 65536);
             }
             Self::SystemMessage { message } => {
-                wire::encode_string_limits(writer, &message, 1, 65536);
+                wire::encode_string_limits(writer, message, 1, 65536);
             }
             Self::Whisper { player_name, message } => {
-                wire::encode_string_limits(writer, &player_name, 0, 256);
-                wire::encode_string_limits(writer, &message, 1, 65536);
+                wire::encode_string_limits(writer, player_name, 0, 256);
+                wire::encode_string_limits(writer, message, 1, 65536);
             }
             Self::Announcement { player_name, message } => {
-                wire::encode_string_limits(writer, &player_name, 0, 256);
-                wire::encode_string_limits(writer, &message, 1, 65536);
+                wire::encode_string_limits(writer, player_name, 0, 256);
+                wire::encode_string_limits(writer, message, 1, 65536);
             }
             Self::TextObjectWhisper { message } => {
-                wire::encode_string_limits(writer, &message, 1, 65536);
+                wire::encode_string_limits(writer, message, 1, 65536);
             }
             Self::TextObject { message } => {
-                wire::encode_string_limits(writer, &message, 1, 65536);
+                wire::encode_string_limits(writer, message, 1, 65536);
             }
             Self::TextObjectAnnouncement { message } => {
-                wire::encode_string_limits(writer, &message, 1, 65536);
+                wire::encode_string_limits(writer, message, 1, 65536);
             }
         }
     }
