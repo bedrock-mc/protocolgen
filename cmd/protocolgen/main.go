@@ -9,20 +9,16 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"sort"
-	"strings"
 
 	"protocolgen/internal/changelog"
 	"protocolgen/internal/claims"
 	"protocolgen/internal/direction"
-	"protocolgen/internal/docs"
-	"protocolgen/internal/domains"
 	"protocolgen/internal/emitgo"
 	"protocolgen/internal/emitrust"
+	"protocolgen/internal/emitter"
 	"protocolgen/internal/gophertunneloracle"
 	"protocolgen/internal/ingest"
 	"protocolgen/internal/manifest"
-	"protocolgen/internal/naming"
 	"protocolgen/internal/nbtencoding"
 	"protocolgen/internal/parity"
 	"protocolgen/internal/reconcile"
@@ -315,39 +311,28 @@ func runEmitGo(args []string) error {
 	if *protocolImport == "" {
 		return fmt.Errorf("-protocol-import is required")
 	}
-	m, err := manifest.Load(*manifestPath)
+	result, err := emitter.Run(emitter.Config{
+		ManifestPath: *manifestPath,
+		NamingPath:   *namingPath,
+		DomainsPath:  *domainsPath,
+		DocsPath:     *docsPath,
+		OutputDir:    *out,
+	}, emitter.Func(func(input emitter.Input) (map[string]string, error) {
+		return emitgo.GenerateWithOptions(input.Manifest, emitgo.Options{
+			ProtocolImportPath: *protocolImport,
+			Naming:             input.Naming,
+			Domains:            input.Domains,
+			Docs:               input.Docs,
+			NativeTypes:        *nativeTypes,
+			EmitPacketRuntime:  *packetRuntime,
+			EmitPacketPools:    *packetPools,
+		})
+	}))
 	if err != nil {
 		return err
 	}
-	overlay, err := loadNamingOverlay(*manifestPath, *namingPath, m)
-	if err != nil {
-		return err
-	}
-	domainOverlay, err := loadDomainsOverlay(*manifestPath, *domainsPath, m)
-	if err != nil {
-		return err
-	}
-	docOverlay, err := loadDocsOverlay(*manifestPath, *docsPath, m)
-	if err != nil {
-		return err
-	}
-	files, err := emitgo.GenerateWithOptions(m, emitgo.Options{
-		ProtocolImportPath: *protocolImport,
-		Naming:             overlay,
-		Domains:            domainOverlay,
-		Docs:               docOverlay,
-		NativeTypes:        *nativeTypes,
-		EmitPacketRuntime:  *packetRuntime,
-		EmitPacketPools:    *packetPools,
-	})
-	if err != nil {
-		return err
-	}
-	if err := writeFiles(*out, files); err != nil {
-		return err
-	}
-	fmt.Printf("Go emitter: %d files -> %s\n", len(files), *out)
-	fmt.Printf("Go docs coverage: types %d/%d, fields %d/%d\n", docs.CoverageOf(m, docOverlay).TypesDocumented, docs.CoverageOf(m, docOverlay).TypesTotal, docs.CoverageOf(m, docOverlay).FieldsDocumented, docs.CoverageOf(m, docOverlay).FieldsTotal)
+	fmt.Printf("Go emitter: %d files -> %s\n", result.FileCount, *out)
+	fmt.Printf("Go docs coverage: types %d/%d, fields %d/%d\n", result.Coverage.TypesDocumented, result.Coverage.TypesTotal, result.Coverage.FieldsDocumented, result.Coverage.FieldsTotal)
 	return nil
 }
 
@@ -364,74 +349,21 @@ func runEmitRust(args []string) error {
 	if *manifestPath == "" || *out == "" {
 		return fmt.Errorf("-manifest and -out are required")
 	}
-	m, err := manifest.Load(*manifestPath)
+	result, err := emitter.Run(emitter.Config{
+		ManifestPath: *manifestPath,
+		NamingPath:   *namingPath,
+		DomainsPath:  *domainsPath,
+		DocsPath:     *docsPath,
+		OutputDir:    *out,
+	}, emitter.Func(func(input emitter.Input) (map[string]string, error) {
+		return emitrust.GenerateFilesWithOptions(input.Manifest, emitrust.Options{Naming: input.Naming, Domains: input.Domains, Docs: input.Docs})
+	}))
 	if err != nil {
 		return err
 	}
-	overlay, err := loadNamingOverlay(*manifestPath, *namingPath, m)
-	if err != nil {
-		return err
-	}
-	domainOverlay, err := loadDomainsOverlay(*manifestPath, *domainsPath, m)
-	if err != nil {
-		return err
-	}
-	docOverlay, err := loadDocsOverlay(*manifestPath, *docsPath, m)
-	if err != nil {
-		return err
-	}
-	files, err := emitrust.GenerateFilesWithOptions(m, emitrust.Options{Naming: overlay, Domains: domainOverlay, Docs: docOverlay})
-	if err != nil {
-		return err
-	}
-	if err := writeFiles(*out, files); err != nil {
-		return err
-	}
-	fmt.Printf("Rust emitter: %d files -> %s\n", len(files), *out)
-	fmt.Printf("Rust docs coverage: types %d/%d, fields %d/%d\n", docs.CoverageOf(m, docOverlay).TypesDocumented, docs.CoverageOf(m, docOverlay).TypesTotal, docs.CoverageOf(m, docOverlay).FieldsDocumented, docs.CoverageOf(m, docOverlay).FieldsTotal)
+	fmt.Printf("Rust emitter: %d files -> %s\n", result.FileCount, *out)
+	fmt.Printf("Rust docs coverage: types %d/%d, fields %d/%d\n", result.Coverage.TypesDocumented, result.Coverage.TypesTotal, result.Coverage.FieldsDocumented, result.Coverage.FieldsTotal)
 	return nil
-}
-
-func loadNamingOverlay(manifestPath, explicitPath string, m manifest.Manifest) (naming.Overlay, error) {
-	path := explicitPath
-	if path == "" {
-		path = filepath.Join(filepath.Dir(manifestPath), "naming.json")
-	}
-	if _, err := os.Stat(path); err != nil {
-		if os.IsNotExist(err) && explicitPath == "" {
-			return naming.Overlay{}, nil
-		}
-		return naming.Overlay{}, fmt.Errorf("stat naming overlay: %w", err)
-	}
-	return naming.LoadOverlay(path, m)
-}
-
-func loadDomainsOverlay(manifestPath, explicitPath string, m manifest.Manifest) (domains.Overlay, error) {
-	path := explicitPath
-	if path == "" {
-		path = filepath.Join(filepath.Dir(manifestPath), "domains.json")
-	}
-	if _, err := os.Stat(path); err != nil {
-		if os.IsNotExist(err) && explicitPath == "" {
-			return domains.Overlay{}, nil
-		}
-		return domains.Overlay{}, fmt.Errorf("stat domains overlay: %w", err)
-	}
-	return domains.LoadOverlay(path, m)
-}
-
-func loadDocsOverlay(manifestPath, explicitPath string, m manifest.Manifest) (docs.Overlay, error) {
-	path := explicitPath
-	if path == "" {
-		path = filepath.Join(filepath.Dir(manifestPath), "docs.json")
-	}
-	if _, err := os.Stat(path); err != nil {
-		if os.IsNotExist(err) && explicitPath == "" {
-			return docs.Overlay{}, nil
-		}
-		return docs.Overlay{}, fmt.Errorf("stat docs overlay: %w", err)
-	}
-	return docs.LoadOverlay(path, m)
 }
 
 func runParity(args []string) error {
@@ -500,59 +432,4 @@ func runHashSource(args []string) error {
 	}
 	fmt.Println(digest)
 	return nil
-}
-
-func writeFiles(directory string, files map[string]string) error {
-	if err := os.MkdirAll(directory, 0o755); err != nil {
-		return err
-	}
-	desired := make(map[string]bool, len(files))
-	names := make([]string, 0, len(files))
-	for name := range files {
-		clean := filepath.Clean(name)
-		if clean == "." || filepath.IsAbs(clean) || clean == ".." || strings.HasPrefix(clean, ".."+string(filepath.Separator)) {
-			return fmt.Errorf("emitter returned unsafe filename %q", name)
-		}
-		desired[clean] = true
-		names = append(names, name)
-	}
-	if err := removeStaleGeneratedFiles(directory, desired); err != nil {
-		return err
-	}
-	sort.Strings(names)
-	for _, name := range names {
-		path := filepath.Join(directory, filepath.Clean(name))
-		if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
-			return err
-		}
-		if err := os.WriteFile(path, []byte(files[name]), 0o644); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func removeStaleGeneratedFiles(directory string, desired map[string]bool) error {
-	const generatedHeader = "Code generated from canonical protocol manifest v2. DO NOT EDIT."
-	return filepath.WalkDir(directory, func(path string, entry os.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if entry.IsDir() {
-			return nil
-		}
-		relative, err := filepath.Rel(directory, path)
-		if err != nil || desired[relative] {
-			return err
-		}
-		data, err := os.ReadFile(path)
-		if err != nil {
-			return err
-		}
-		contents := strings.TrimLeft(string(data), "/# ")
-		if strings.HasPrefix(contents, generatedHeader) {
-			return os.Remove(path)
-		}
-		return nil
-	})
 }

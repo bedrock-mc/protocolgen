@@ -249,6 +249,20 @@ wire schema.
 | `verify-gophertunnel` | Compare the manifest with the pinned gophertunnel `Marshal` source oracle. |
 | `update-guide` | Render target-version gophertunnel transcription snippets for definitions named by a protocol changelog. |
 
+### Adding a language backend
+
+Language backends implement `internal/emitter.Backend`. The shared runner loads
+and validates the canonical manifest plus the reviewed naming, domain, and
+documentation overlays, then passes them to the backend as one `emitter.Input`.
+The backend returns relative filenames and contents; the runner writes them in
+deterministic order, rejects paths outside the output directory, removes stale
+generated files, and reports documentation coverage.
+
+Keep target-language type selection, naming rules, runtime support, and codec
+generation inside the backend. The canonical manifest remains the only shared
+wire-schema IR; a backend must not infer wire shape from another language's
+generated output.
+
 `update-guide` deliberately takes the human-readable changelog as its change
 inventory. It does not guess that every textual schema difference changes the
 wire. For each packet, shared type, or enum heading in the changelog, it resolves
