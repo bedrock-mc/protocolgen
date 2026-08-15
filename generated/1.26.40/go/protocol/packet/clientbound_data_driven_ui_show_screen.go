@@ -12,8 +12,9 @@ type ClientboundDataDrivenUIShowScreen struct {
 
 // Marshal reads or writes ClientboundDataDrivenUIShowScreen using its canonical wire layout.
 func (x *ClientboundDataDrivenUIShowScreen) Marshal(io protocol.IO) {
-	io.String(&x.ScreenID)
+	io.StringLimits(&x.ScreenID, 0, 500)
 	io.Uint32(&x.FormID)
+	protocol.Minimum(io, &x.FormID, 0)
 	protocol.OptionalFunc(io, &x.DataInstanceID, io.Uint32)
 }
 

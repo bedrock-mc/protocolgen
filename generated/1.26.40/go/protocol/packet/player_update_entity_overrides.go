@@ -17,6 +17,7 @@ type PlayerUpdateEntityOverrides struct {
 func (x *PlayerUpdateEntityOverrides) Marshal(io protocol.IO) {
 	io.ActorUniqueID(&x.TargetID)
 	io.Varuint32(&x.PropertyIndex)
+	protocol.Minimum(io, &x.PropertyIndex, 0)
 	protocol.MarshalPlayerUpdateEntityOverridesData(io, &x.Update)
 }
 

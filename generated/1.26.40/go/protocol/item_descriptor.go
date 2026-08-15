@@ -15,8 +15,10 @@ func (*DefaultItemDescriptor) isItemDescriptor() {}
 // Marshal reads or writes DefaultItemDescriptor using its canonical wire layout.
 func (x *DefaultItemDescriptor) Marshal(io IO) {
 	IntegerFunc(&x.DescriptorType, io.Uint8)
-	io.String(&x.FullName)
+	io.StringLimits(&x.FullName, 1, 18446744073709551615)
 	io.Varint32(&x.AuxValue)
+	Minimum(io, &x.AuxValue, 0)
+	Maximum(io, &x.AuxValue, 32767)
 }
 
 // InvalidItemDescriptor represents an invalid item descriptor. This is usually sent by the vanilla
@@ -113,7 +115,7 @@ func (*ItemTagItemDescriptor) isItemDescriptor() {}
 // Marshal reads or writes ItemTagItemDescriptor using its canonical wire layout.
 func (x *ItemTagItemDescriptor) Marshal(io IO) {
 	IntegerFunc(&x.DescriptorType, io.Uint8)
-	io.String(&x.ItemTag)
+	io.StringLimits(&x.ItemTag, 1, 18446744073709551615)
 }
 
 // MoLangItemDescriptor represents an item descriptor for items that use MoLang (e.g. behaviour
@@ -129,7 +131,7 @@ func (*MoLangItemDescriptor) isItemDescriptor() {}
 // Marshal reads or writes MoLangItemDescriptor using its canonical wire layout.
 func (x *MoLangItemDescriptor) Marshal(io IO) {
 	IntegerFunc(&x.DescriptorType, io.Uint8)
-	io.String(&x.TagExpression)
+	io.StringLimits(&x.TagExpression, 1, 18446744073709551615)
 	IntegerFunc(&x.MoLangVersion, io.Int16)
 }
 

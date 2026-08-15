@@ -10,7 +10,7 @@ type ClientboundDataStore struct {
 
 // Marshal reads or writes ClientboundDataStore using its canonical wire layout.
 func (x *ClientboundDataStore) Marshal(io protocol.IO) {
-	protocol.FuncSlice(io, &x.Updates, io.Varuint32, func(value *protocol.BedrockDDUI) {
+	protocol.FuncSliceLimits(io, &x.Updates, io.Varuint32, 0, 500, func(value *protocol.BedrockDDUI) {
 		protocol.MarshalBedrockDDUI(io, value)
 	})
 }

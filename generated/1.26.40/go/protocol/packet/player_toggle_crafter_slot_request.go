@@ -23,6 +23,8 @@ func (x *PlayerToggleCrafterSlotRequest) Marshal(io protocol.IO) {
 	io.Int32(&x.PosY)
 	io.Int32(&x.PosZ)
 	io.Uint8(&x.SlotIndex)
+	protocol.Minimum(io, &x.SlotIndex, 0)
+	protocol.Maximum(io, &x.SlotIndex, 255)
 	io.Bool(&x.IsDisabled)
 }
 

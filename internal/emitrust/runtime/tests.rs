@@ -113,6 +113,25 @@ mod runtime_tests {
     }
 
     #[test]
+    fn schema_string_limit_is_checked_before_payload_read() {
+        let mut reader = Reader::new(&[0x05, b'h', b'e', b'l', b'l', b'o']);
+        assert_eq!(
+            decode_string_limits(&mut reader, 0, 4),
+            Err(DecodeError::SchemaConstraint("length above maximum"))
+        );
+        assert_eq!(reader.remaining(), 5);
+    }
+
+    #[test]
+    fn schema_number_limits_reject_out_of_range_values() {
+        assert_eq!(
+            validate_number_limits(65i32, Some(-1), Some(64)),
+            Err(DecodeError::SchemaConstraint("number above maximum"))
+        );
+        assert_eq!(validate_number_limits(64i32, Some(-1), Some(64)), Ok(()));
+    }
+
+    #[test]
     fn trailing_bytes_are_rejected() {
         assert_eq!(
             Reader::new(&[0x00, 0x01]).expect_consumed(),

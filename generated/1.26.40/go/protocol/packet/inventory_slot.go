@@ -29,7 +29,10 @@ type InventorySlot struct {
 // Marshal reads or writes InventorySlot using its canonical wire layout.
 func (x *InventorySlot) Marshal(io protocol.IO) {
 	io.Uint8(&x.ContainerID)
+	protocol.Minimum(io, &x.ContainerID, 0)
+	protocol.Maximum(io, &x.ContainerID, 255)
 	io.Varuint32(&x.Slot)
+	protocol.Minimum(io, &x.Slot, 0)
 	protocol.OptionalFunc(io, &x.FullContainerName, func(value *protocol.FullContainerName) {
 		value.Marshal(io)
 	})

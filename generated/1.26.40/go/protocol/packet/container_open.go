@@ -20,7 +20,11 @@ type ContainerOpen struct {
 // Marshal reads or writes ContainerOpen using its canonical wire layout.
 func (x *ContainerOpen) Marshal(io protocol.IO) {
 	io.Uint8(&x.ContainerID)
+	protocol.Minimum(io, &x.ContainerID, 0)
+	protocol.Maximum(io, &x.ContainerID, 255)
 	io.Uint8(&x.ContainerType)
+	protocol.Minimum(io, &x.ContainerType, 0)
+	protocol.Maximum(io, &x.ContainerType, 255)
 	x.Position.Marshal(io)
 	io.ActorUniqueID(&x.TargetActorID)
 }

@@ -22,11 +22,16 @@ type ResourcePackDataInfo struct {
 func (x *ResourcePackDataInfo) Marshal(io protocol.IO) {
 	io.String(&x.ResourceName)
 	io.Uint32(&x.ChunkSize)
+	protocol.Minimum(io, &x.ChunkSize, 0)
 	io.Uint32(&x.NumberOfChunks)
+	protocol.Minimum(io, &x.NumberOfChunks, 0)
 	io.Uint64(&x.FileSize)
+	protocol.Minimum(io, &x.FileSize, 0)
 	io.String(&x.FileHash)
 	io.Bool(&x.IsPremiumPack)
 	io.Uint8(&x.PackType)
+	protocol.Minimum(io, &x.PackType, 0)
+	protocol.Maximum(io, &x.PackType, 255)
 }
 
 // ID returns the protocol ID for ResourcePackDataInfo.

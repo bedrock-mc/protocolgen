@@ -20,6 +20,8 @@ var (
 	runtimeUUID string
 	//go:embed runtime/glam.rs
 	runtimeGlam string
+	//go:embed runtime/pattern.rs
+	runtimePattern string
 	//go:embed runtime/tests.rs
 	runtimeTests string
 )
@@ -30,9 +32,10 @@ func emitWire(g *generator) string {
 	var b strings.Builder
 	b.WriteString(runtimeWire)
 	b.WriteString(runtimeCollections)
-	if g.usesBytes {
-		b.WriteString(runtimeBytes)
-	}
+	// bytes is an unconditional runtime dependency: Reader::from_shared and
+	// schema-bounded byte buffers use it even when this manifest has no public
+	// byte-buffer field.
+	b.WriteString(runtimeBytes)
 	if g.usesNbt {
 		b.WriteString(runtimeNbt)
 	}
@@ -41,6 +44,9 @@ func emitWire(g *generator) string {
 	}
 	if g.usesGlam {
 		b.WriteString(runtimeGlam)
+	}
+	if g.usesPattern {
+		b.WriteString(runtimePattern)
 	}
 	b.WriteString(runtimeTests)
 	return strings.TrimSpace(b.String()) + "\n"

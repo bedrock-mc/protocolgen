@@ -15,6 +15,8 @@ type RequestNetworkSettings struct {
 // Marshal reads or writes RequestNetworkSettings using its canonical wire layout.
 func (x *RequestNetworkSettings) Marshal(io protocol.IO) {
 	io.BEInt32(&x.ClientNetworkVersion)
+	protocol.Minimum(io, &x.ClientNetworkVersion, 2168)
+	protocol.Maximum(io, &x.ClientNetworkVersion, 2168)
 }
 
 // ID returns the protocol ID for RequestNetworkSettings.

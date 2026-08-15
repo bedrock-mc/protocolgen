@@ -26,6 +26,7 @@ type InventoryContent struct {
 // Marshal reads or writes InventoryContent using its canonical wire layout.
 func (x *InventoryContent) Marshal(io protocol.IO) {
 	io.Varuint32(&x.ContainerID)
+	protocol.Minimum(io, &x.ContainerID, 0)
 	protocol.Slice(io, &x.Slots)
 	x.FullContainerName.Marshal(io)
 	x.StorageItem.Marshal(io)

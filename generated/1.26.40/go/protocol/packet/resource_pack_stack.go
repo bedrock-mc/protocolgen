@@ -25,7 +25,7 @@ type ResourcePackStack struct {
 // Marshal reads or writes ResourcePackStack using its canonical wire layout.
 func (x *ResourcePackStack) Marshal(io protocol.IO) {
 	io.Bool(&x.TexturePackRequired)
-	protocol.Slice(io, &x.TexturePackList)
+	protocol.SliceLimits(io, &x.TexturePackList, 0, 65535)
 	io.String(&x.BaseGameVersion)
 	x.Experiments.Marshal(io)
 	io.Bool(&x.IncludeEditorPacks)

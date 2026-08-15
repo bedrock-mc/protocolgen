@@ -102,6 +102,8 @@ enum
 		"ClientNetworkVersion int32",
 		"return IDRequestNetworkSettingsPacket",
 		"io.BEInt32(&pk.ClientNetworkVersion)",
+		"io.InvalidValue(pk.ClientNetworkVersion, \"clientNetworkVersion\", \"value below minimum\")",
+		"io.InvalidValue(pk.ClientNetworkVersion, \"clientNetworkVersion\", \"value above maximum\")",
 		"type TextData struct {",
 		"LineGapHeight Optional[float32]",
 		"OptionalMarshaler(io, &pk.BackgroundColor)",
@@ -153,6 +155,36 @@ func TestGenerateRendersPrimitiveSlicesWithoutPlaceholders(t *testing.T) {
 	}
 	if strings.Contains(text, "marshal value") {
 		t.Fatalf("output contains a marshal placeholder:\n%s", text)
+	}
+}
+
+func TestGenerateRendersRequiredAndOptionalStringLimits(t *testing.T) {
+	directory := t.TempDir()
+	writeFixture(t, directory, "TextPayload.json", `{
+		"title":"TextPayload","x-protocol-version":2,"type":"object",
+		"properties":{
+			"Message":{"type":"string","x-ordinal-index":0,"minLength":1,"maxLength":65536,"pattern":"^[a-z]+$"},
+			"Filtered Message":{"type":"string","x-ordinal-index":1,"maxLength":65536}
+		},"required":["Message"]
+	}`)
+	changelog := "# Bedrock protocol changes — 1 to 2\n\n## Modified Types\n\n### TextPayload\nstruct\n"
+	output, err := Generate([]byte(changelog), directory)
+	if err != nil {
+		t.Fatal(err)
+	}
+	text := string(output)
+	for _, want := range []string{
+		"io.String(&pk.Message)",
+		`if len(pk.Message) < 1 {`,
+		`if len(pk.Message) > 65536 {`,
+		`regexp.MatchString("^[a-z]+$", pk.Message)`,
+		"OptionalFunc(io, &pk.FilteredMessage, func(value *string)",
+		"io.String(value)",
+		`if len(*value) > 65536 {`,
+	} {
+		if !strings.Contains(text, want) {
+			t.Fatalf("output omits %q:\n%s", want, text)
+		}
 	}
 }
 

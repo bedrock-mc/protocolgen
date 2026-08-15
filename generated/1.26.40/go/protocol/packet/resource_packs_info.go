@@ -28,7 +28,7 @@ func (x *ResourcePacksInfo) Marshal(io protocol.IO) {
 	io.Bool(&x.HasScripts)
 	io.Bool(&x.ForceDisableVibrantVisuals)
 	x.WorldTemplateIDAndVersion.Marshal(io)
-	protocol.Slice(io, &x.ResourcePacks)
+	protocol.SliceLimits(io, &x.ResourcePacks, 0, 65535)
 }
 
 // ID returns the protocol ID for ResourcePacksInfo.

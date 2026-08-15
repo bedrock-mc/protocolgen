@@ -20,6 +20,8 @@ type RequestChunkRadius struct {
 func (x *RequestChunkRadius) Marshal(io protocol.IO) {
 	io.Varint32(&x.ChunkRadius)
 	io.Uint8(&x.MaxChunkRadius)
+	protocol.Minimum(io, &x.MaxChunkRadius, 0)
+	protocol.Maximum(io, &x.MaxChunkRadius, 255)
 }
 
 // ID returns the protocol ID for RequestChunkRadius.

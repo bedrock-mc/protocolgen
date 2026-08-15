@@ -25,9 +25,12 @@ type NetworkSettings struct {
 // Marshal reads or writes NetworkSettings using its canonical wire layout.
 func (x *NetworkSettings) Marshal(io protocol.IO) {
 	io.Uint16(&x.CompressionThreshold)
+	protocol.Minimum(io, &x.CompressionThreshold, 0)
 	protocol.IntegerFunc(&x.CompressionAlgorithm, io.Uint16)
 	io.Bool(&x.ClientThrottleEnabled)
 	io.Uint8(&x.ClientThrottleThreshold)
+	protocol.Minimum(io, &x.ClientThrottleThreshold, 0)
+	protocol.Maximum(io, &x.ClientThrottleThreshold, 255)
 	io.Float32(&x.ClientThrottleScalar)
 }
 

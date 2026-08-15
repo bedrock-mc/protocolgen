@@ -13,4 +13,5 @@ type MemoryCategoryCounter struct {
 func (x *MemoryCategoryCounter) Marshal(io IO) {
 	IntegerFunc(&x.Category, io.Uint8)
 	io.Uint64(&x.CurrentBytes)
+	Minimum(io, &x.CurrentBytes, 0)
 }

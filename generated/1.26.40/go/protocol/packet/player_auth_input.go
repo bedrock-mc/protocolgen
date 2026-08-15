@@ -75,7 +75,7 @@ func (x *PlayerAuthInput) Marshal(io protocol.IO) {
 		value.Marshal(io)
 	})
 	protocol.DoubleOptionalFunc(io, &x.PlayerBlockActions, func(value *[]protocol.PlayerBlockActionData) {
-		protocol.Slice(io, value)
+		protocol.SliceLimits(io, value, 0, 100)
 	})
 	protocol.DoubleOptionalFunc(io, &x.VehicleRotation, io.Vec2)
 	protocol.DoubleOptionalFunc(io, &x.ClientPredictedVehicle, io.ActorUniqueID)

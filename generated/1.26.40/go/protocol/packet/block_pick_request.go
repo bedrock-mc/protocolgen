@@ -19,6 +19,8 @@ func (x *BlockPickRequest) Marshal(io protocol.IO) {
 	x.Position.Marshal(io)
 	io.Bool(&x.WithData)
 	io.Uint8(&x.MaxSlots)
+	protocol.Minimum(io, &x.MaxSlots, 0)
+	protocol.Maximum(io, &x.MaxSlots, 255)
 }
 
 // ID returns the protocol ID for BlockPickRequest.

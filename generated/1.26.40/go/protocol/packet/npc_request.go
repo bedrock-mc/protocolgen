@@ -18,6 +18,8 @@ func (x *NpcRequest) Marshal(io protocol.IO) {
 	protocol.IntegerFunc(&x.RequestType, io.Uint8)
 	io.String(&x.Actions)
 	io.Uint8(&x.ActionIndex)
+	protocol.Minimum(io, &x.ActionIndex, 0)
+	protocol.Maximum(io, &x.ActionIndex, 255)
 	io.String(&x.SceneName)
 }
 

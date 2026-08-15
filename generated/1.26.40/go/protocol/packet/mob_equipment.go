@@ -20,8 +20,14 @@ func (x *MobEquipment) Marshal(io protocol.IO) {
 	io.ActorRuntimeID(&x.TargetRuntimeID)
 	x.Item.Marshal(io)
 	io.Uint8(&x.Slot)
+	protocol.Minimum(io, &x.Slot, 0)
+	protocol.Maximum(io, &x.Slot, 255)
 	io.Uint8(&x.SelectedSlot)
+	protocol.Minimum(io, &x.SelectedSlot, 0)
+	protocol.Maximum(io, &x.SelectedSlot, 255)
 	io.Uint8(&x.ContainerID)
+	protocol.Minimum(io, &x.ContainerID, 0)
+	protocol.Maximum(io, &x.ContainerID, 255)
 }
 
 // ID returns the protocol ID for MobEquipment.

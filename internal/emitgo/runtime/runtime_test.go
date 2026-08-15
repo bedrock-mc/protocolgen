@@ -142,6 +142,49 @@ func TestReaderRejectsTruncatedString(t *testing.T) {
 	}
 }
 
+func TestStringLimitsRejectBeforeReadingOrWritingPayload(t *testing.T) {
+	reader := NewReader([]byte{5, 'h', 'e', 'l', 'l', 'o'})
+	var decoded string
+	reader.StringLimits(&decoded, 0, 4)
+	if reader.Err() == nil || reader.Remaining() != 5 {
+		t.Fatalf("reader error = %v, remaining = %d; want limit error before payload", reader.Err(), reader.Remaining())
+	}
+
+	writer := NewWriter()
+	value := "hello"
+	writer.StringLimits(&value, 0, 4)
+	if writer.Err() == nil || len(writer.Data()) != 0 {
+		t.Fatalf("writer error = %v, data = %x; want limit error before output", writer.Err(), writer.Data())
+	}
+}
+
+func TestFuncSliceLimitsRejectsDeclaredCountBeforeAllocation(t *testing.T) {
+	reader := NewReader([]byte{5, 1, 2, 3, 4, 5})
+	var values []byte
+	FuncSliceLimits(reader, &values, reader.Varuint32, 0, 4, reader.Uint8)
+	if reader.Err() == nil || values != nil || reader.Remaining() != 5 {
+		t.Fatalf("error = %v, values = %v, remaining = %d", reader.Err(), values, reader.Remaining())
+	}
+}
+
+func TestNumericLimitsRejectOutOfRangeValues(t *testing.T) {
+	writer := NewWriter()
+	value := int32(65)
+	Maximum(writer, &value, int32(64))
+	if writer.Err() == nil {
+		t.Fatal("Maximum accepted an out-of-range value")
+	}
+}
+
+func TestPatternRejectsNonMatchingString(t *testing.T) {
+	writer := NewWriter()
+	value := "123"
+	Pattern(writer, &value, "^[a-z]+$")
+	if writer.Err() == nil {
+		t.Fatal("Pattern accepted a non-matching string")
+	}
+}
+
 func TestReaderErrorsIncludeByteOffset(t *testing.T) {
 	reader := NewReader([]byte{2})
 	var value string

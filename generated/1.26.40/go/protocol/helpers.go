@@ -2,6 +2,11 @@
 
 package protocol
 
+import (
+	"regexp"
+	"sync"
+)
+
 // Marshaler is implemented by every generated struct and union payload.
 type Marshaler interface {
 	Marshal(IO)
@@ -16,6 +21,43 @@ type PtrMarshaler[T any] interface {
 type integer interface {
 	~int | ~int8 | ~int16 | ~int32 | ~int64 |
 		~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~uintptr
+}
+
+type number interface {
+	integer | ~float32 | ~float64
+}
+
+var schemaPatterns sync.Map
+
+// Pattern validates a schema-published regular expression. Manifests validate
+// patterns before generation; the cache avoids recompiling them per packet.
+func Pattern(io IO, x *string, pattern string) {
+	compiledValue, ok := schemaPatterns.Load(pattern)
+	if !ok {
+		compiled, err := regexp.Compile(pattern)
+		if err != nil {
+			io.InvalidValue(pattern, "invalid schema pattern")
+			return
+		}
+		compiledValue, _ = schemaPatterns.LoadOrStore(pattern, compiled)
+	}
+	if !compiledValue.(*regexp.Regexp).MatchString(*x) {
+		io.InvalidValue(*x, "string does not match schema pattern")
+	}
+}
+
+// Minimum and Maximum validate schema-published numeric bounds after the wire
+// operation, so the same generated call checks both encoded and decoded data.
+func Minimum[T number](io IO, x *T, minimum T) {
+	if *x < minimum {
+		io.InvalidValue(*x, "value is below schema minimum")
+	}
+}
+
+func Maximum[T number](io IO, x *T, maximum T) {
+	if *x > maximum {
+		io.InvalidValue(*x, "value exceeds schema maximum")
+	}
 }
 
 // IntegerFunc marshals a value through a wire integer type while preserving
@@ -76,6 +118,11 @@ const maxSliceLength = 4096
 // FuncSlice marshals a length-prefixed slice using a count encoder and element
 // callback. The count encoder determines the exact wire prefix type.
 func FuncSlice[T any, C integer](io IO, x *[]T, count func(*C), f func(*T)) {
+	FuncSliceLimits(io, x, count, 0, ^uint64(0), f)
+}
+
+// FuncSliceLimits is FuncSlice with schema-published element-count bounds.
+func FuncSliceLimits[T any, C integer](io IO, x *[]T, count func(*C), min, max uint64, f func(*T)) {
 	if io.Reading() {
 		reader, ok := io.(sliceReader)
 		if !ok {
@@ -88,11 +135,17 @@ func FuncSlice[T any, C integer](io IO, x *[]T, count func(*C), f func(*T)) {
 		if !valid {
 			return
 		}
+		if !schemaLength(io, uint64(length), min, max) {
+			return
+		}
 		if !reader.SliceLength(uint64(length), maxSliceLength) {
 			return
 		}
 		*x = make([]T, length)
 	} else {
+		if !schemaLength(io, uint64(len(*x)), min, max) {
+			return
+		}
 		n, valid := sliceCount[C](io, len(*x))
 		if !valid {
 			return
@@ -106,6 +159,11 @@ func FuncSlice[T any, C integer](io IO, x *[]T, count func(*C), f func(*T)) {
 
 // Slice marshals a varuint32-prefixed slice whose element pointer marshals itself.
 func Slice[T any, A PtrMarshaler[T]](io IO, x *[]T) {
+	SliceLimits[T, A](io, x, 0, ^uint64(0))
+}
+
+// SliceLimits is Slice with schema-published element-count bounds.
+func SliceLimits[T any, A PtrMarshaler[T]](io IO, x *[]T, min, max uint64) {
 	if io.Reading() {
 		reader, ok := io.(sliceReader)
 		if !ok {
@@ -115,11 +173,14 @@ func Slice[T any, A PtrMarshaler[T]](io IO, x *[]T) {
 		var n uint32
 		io.Varuint32(&n)
 		length, valid := sliceLength(io, n)
-		if !valid || !reader.SliceLength(uint64(length), maxSliceLength) {
+		if !valid || !schemaLength(io, uint64(length), min, max) || !reader.SliceLength(uint64(length), maxSliceLength) {
 			return
 		}
 		*x = make([]T, length)
 	} else {
+		if !schemaLength(io, uint64(len(*x)), min, max) {
+			return
+		}
 		n, valid := sliceCount[uint32](io, len(*x))
 		if !valid {
 			return
@@ -134,6 +195,11 @@ func Slice[T any, A PtrMarshaler[T]](io IO, x *[]T) {
 // OrderedMap marshals an ordered map representation while preserving duplicate
 // keys and source order.
 func OrderedMap[K, V any, C integer](io IO, x *[]OrderedEntry[K, V], count func(*C), key func(*K), value func(*V)) {
+	OrderedMapLimits(io, x, count, 0, ^uint64(0), key, value)
+}
+
+// OrderedMapLimits is OrderedMap with schema-published entry-count bounds.
+func OrderedMapLimits[K, V any, C integer](io IO, x *[]OrderedEntry[K, V], count func(*C), min, max uint64, key func(*K), value func(*V)) {
 	if io.Reading() {
 		reader, ok := io.(sliceReader)
 		if !ok {
@@ -146,11 +212,17 @@ func OrderedMap[K, V any, C integer](io IO, x *[]OrderedEntry[K, V], count func(
 		if !valid {
 			return
 		}
+		if !schemaLength(io, uint64(length), min, max) {
+			return
+		}
 		if !reader.SliceLength(uint64(length), maxSliceLength) {
 			return
 		}
 		*x = make([]OrderedEntry[K, V], length)
 	} else {
+		if !schemaLength(io, uint64(len(*x)), min, max) {
+			return
+		}
 		n, valid := sliceCount[C](io, len(*x))
 		if !valid {
 			return
@@ -161,6 +233,14 @@ func OrderedMap[K, V any, C integer](io IO, x *[]OrderedEntry[K, V], count func(
 		key(&(*x)[i].Key)
 		value(&(*x)[i].Value)
 	}
+}
+
+func schemaLength(io IO, value, min, max uint64) bool {
+	if value < min || value > max {
+		io.InvalidValue(value, "collection length outside schema limits")
+		return false
+	}
+	return true
 }
 
 func sliceCount[C integer](io IO, length int) (C, bool) {

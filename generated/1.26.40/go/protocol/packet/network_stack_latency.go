@@ -16,6 +16,7 @@ type NetworkStackLatency struct {
 // Marshal reads or writes NetworkStackLatency using its canonical wire layout.
 func (x *NetworkStackLatency) Marshal(io protocol.IO) {
 	io.Uint64(&x.CreationTime)
+	protocol.Minimum(io, &x.CreationTime, 0)
 	io.Bool(&x.IsFromServer)
 }
 

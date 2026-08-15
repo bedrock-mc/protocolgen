@@ -16,6 +16,7 @@ type CreatePhoto struct {
 // Marshal reads or writes CreatePhoto using its canonical wire layout.
 func (x *CreatePhoto) Marshal(io protocol.IO) {
 	io.Uint64(&x.RawID)
+	protocol.Minimum(io, &x.RawID, 0)
 	io.String(&x.PhotoName)
 	io.String(&x.PhotoItemName)
 }

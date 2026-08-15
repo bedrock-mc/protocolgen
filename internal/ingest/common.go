@@ -82,6 +82,24 @@ func asInt(value any) (int64, bool) {
 	}
 }
 
+func asFloat(value any) (float64, bool) {
+	switch number := value.(type) {
+	case int:
+		return float64(number), true
+	case int64:
+		return float64(number), true
+	case uint64:
+		return float64(number), true
+	case float64:
+		return number, true
+	case json.Number:
+		parsed, err := number.Float64()
+		return parsed, err == nil
+	default:
+		return 0, false
+	}
+}
+
 func asString(value any) string {
 	valueString, _ := value.(string)
 	return valueString

@@ -32,6 +32,12 @@ func (*RequestNetworkSettingsPacket) ID() uint32 {
 
 func (pk *RequestNetworkSettingsPacket) Marshal(io protocol.IO) {
 	io.BEInt32(&pk.ClientNetworkVersion)
+	if pk.ClientNetworkVersion < 2169 {
+		io.InvalidValue(pk.ClientNetworkVersion, "clientNetworkVersion", "value below minimum")
+	}
+	if pk.ClientNetworkVersion > 2169 {
+		io.InvalidValue(pk.ClientNetworkVersion, "clientNetworkVersion", "value above maximum")
+	}
 }
 ```
 

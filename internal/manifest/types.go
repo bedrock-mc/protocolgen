@@ -132,6 +132,22 @@ type Node struct {
 	Target         string          `json:"target,omitempty"`
 	Reason         string          `json:"reason,omitempty"`
 	Reachable      bool            `json:"reachable,omitempty"`
+	Constraints    *Constraints    `json:"constraints,omitempty"`
+}
+
+// Constraints retains validation bounds published by a protocol source. They
+// do not change the bytes on the wire, but generated readers and writers must
+// reject values outside them.
+type Constraints struct {
+	MinLength     *uint64  `json:"min_length,omitempty"`
+	MaxLength     *uint64  `json:"max_length,omitempty"`
+	MinItems      *uint64  `json:"min_items,omitempty"`
+	MaxItems      *uint64  `json:"max_items,omitempty"`
+	MinProperties *uint64  `json:"min_properties,omitempty"`
+	MaxProperties *uint64  `json:"max_properties,omitempty"`
+	Minimum       *float64 `json:"minimum,omitempty"`
+	Maximum       *float64 `json:"maximum,omitempty"`
+	Pattern       string   `json:"pattern,omitempty"`
 }
 
 type PrimitiveShape struct {

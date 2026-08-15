@@ -12,6 +12,7 @@ type ServerboundDataDrivenScreenClosed struct {
 // Marshal reads or writes ServerboundDataDrivenScreenClosed using its canonical wire layout.
 func (x *ServerboundDataDrivenScreenClosed) Marshal(io protocol.IO) {
 	io.Uint32(&x.FormID)
+	protocol.Minimum(io, &x.FormID, 0)
 	io.String(&x.CloseReason)
 }
 

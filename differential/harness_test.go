@@ -3,6 +3,8 @@ package differential
 import (
 	"bytes"
 	"encoding/hex"
+	"errors"
+	"fmt"
 	"sort"
 	"testing"
 
@@ -228,6 +230,22 @@ func TestDecodePairAgreesOnTrailingPayload(t *testing.T) {
 	}
 	if got.generated.full != got.oracle.full {
 		t.Fatalf("full-consumption disagreement: generated=%v oracle=%v", got.generated.full, got.oracle.full)
+	}
+}
+
+func TestOracleLeniencyIncludesPublishedSchemaConstraints(t *testing.T) {
+	for _, message := range []string{
+		"string length outside schema limits",
+		"value is below schema minimum",
+		"value exceeds schema maximum",
+		"string does not match schema pattern",
+	} {
+		if !oracleLeniency(fmt.Errorf("invalid value: %s", message)) {
+			t.Errorf("oracleLeniency(%q) = false, want true", message)
+		}
+	}
+	if oracleLeniency(errors.New("invalid UTF-8")) {
+		t.Fatal("oracleLeniency accepted a non-schema decode failure")
 	}
 }
 

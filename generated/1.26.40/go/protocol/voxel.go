@@ -21,9 +21,12 @@ type VoxelShapesSerializableCells struct {
 // Marshal reads or writes VoxelShapesSerializableCells using its canonical wire layout.
 func (x *VoxelShapesSerializableCells) Marshal(io IO) {
 	io.Uint8(&x.XSize)
+	Maximum(io, &x.XSize, 127)
 	io.Uint8(&x.YSize)
+	Maximum(io, &x.YSize, 127)
 	io.Uint8(&x.ZSize)
-	FuncSlice(io, &x.Storage, io.Varuint32, io.Uint8)
+	Maximum(io, &x.ZSize, 127)
+	FuncSliceLimits(io, &x.Storage, io.Varuint32, 0, 256048, io.Uint8)
 }
 
 type VoxelShapesSerializableVoxelShape struct {
@@ -36,7 +39,7 @@ type VoxelShapesSerializableVoxelShape struct {
 // Marshal reads or writes VoxelShapesSerializableVoxelShape using its canonical wire layout.
 func (x *VoxelShapesSerializableVoxelShape) Marshal(io IO) {
 	x.Cells.Marshal(io)
-	FuncSlice(io, &x.XCoordinates, io.Varuint32, io.Float32)
-	FuncSlice(io, &x.YCoordinates, io.Varuint32, io.Float32)
-	FuncSlice(io, &x.ZCoordinates, io.Varuint32, io.Float32)
+	FuncSliceLimits(io, &x.XCoordinates, io.Varuint32, 1, 128, io.Float32)
+	FuncSliceLimits(io, &x.YCoordinates, io.Varuint32, 1, 128, io.Float32)
+	FuncSliceLimits(io, &x.ZCoordinates, io.Varuint32, 1, 128, io.Float32)
 }

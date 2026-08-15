@@ -15,7 +15,7 @@ type PurchaseReceipt struct {
 
 // Marshal reads or writes PurchaseReceipt using its canonical wire layout.
 func (x *PurchaseReceipt) Marshal(io protocol.IO) {
-	protocol.FuncSlice(io, &x.PurchaseReceipts, io.Varuint32, io.String)
+	protocol.FuncSliceLimits(io, &x.PurchaseReceipts, io.Varuint32, 0, 10000, io.String)
 }
 
 // ID returns the protocol ID for PurchaseReceipt.

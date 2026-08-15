@@ -27,9 +27,15 @@ func (x *LevelChunk) Marshal(io protocol.IO) {
 	x.ChunkPosition.Marshal(io)
 	x.DimensionID.Marshal(io)
 	io.Varuint32(&x.SubChunksCount)
-	protocol.OptionalFunc(io, &x.ClientRequestSubChunkLimit, io.Varint32)
+	protocol.Minimum(io, &x.SubChunksCount, 0)
+	protocol.Maximum(io, &x.SubChunksCount, 64)
+	protocol.OptionalFunc(io, &x.ClientRequestSubChunkLimit, func(value *int32) {
+		io.Varint32(value)
+		protocol.Minimum(io, value, -1)
+		protocol.Maximum(io, value, 64)
+	})
 	io.Bool(&x.CacheEnabled)
-	protocol.Slice(io, &x.CacheMetadata)
+	protocol.SliceLimits(io, &x.CacheMetadata, 0, 65)
 	io.Bytes(&x.SerializedChunkData)
 }
 

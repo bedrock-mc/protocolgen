@@ -21,7 +21,7 @@ type StructureTemplateDataRequest struct {
 
 // Marshal reads or writes StructureTemplateDataRequest using its canonical wire layout.
 func (x *StructureTemplateDataRequest) Marshal(io protocol.IO) {
-	io.String(&x.StructureName)
+	io.StringLimits(&x.StructureName, 0, 256)
 	x.StructurePosition.Marshal(io)
 	x.StructureSettings.Marshal(io)
 	protocol.IntegerFunc(&x.RequestedOperation, io.Uint8)

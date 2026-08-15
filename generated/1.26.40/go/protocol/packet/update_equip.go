@@ -22,7 +22,11 @@ type UpdateEquip struct {
 // Marshal reads or writes UpdateEquip using its canonical wire layout.
 func (x *UpdateEquip) Marshal(io protocol.IO) {
 	io.Uint8(&x.ContainerID)
+	protocol.Minimum(io, &x.ContainerID, 0)
+	protocol.Maximum(io, &x.ContainerID, 255)
 	io.Uint8(&x.Type)
+	protocol.Minimum(io, &x.Type, 0)
+	protocol.Maximum(io, &x.Type, 255)
 	io.Varint32(&x.Size)
 	io.ActorUniqueID(&x.EntityUniqueID)
 	io.NBT(&x.Data, protocol.NBTNetwork)

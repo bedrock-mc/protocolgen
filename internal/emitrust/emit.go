@@ -68,6 +68,7 @@ type generator struct {
 	usesUUID    bool
 	usesGlam    bool
 	usesBytes   bool
+	usesPattern bool
 	standalone  map[string]bool
 	resolver    *naming.Resolver
 	domains     domains.Overlay
@@ -467,6 +468,9 @@ func emitCargo(m manifest.Manifest, g *generator) string {
 	if g.usesUUID {
 		b.WriteString("uuid = \"1\"\n")
 	}
+	if g.usesPattern {
+		b.WriteString("regex = \"1\"\n")
+	}
 	return b.String()
 }
 
@@ -575,6 +579,9 @@ func (g *generator) rustType(node manifest.Node, hint string) (string, error) {
 		}
 		return primitiveRustType(node.Primitive.Code)
 	case manifest.KindString:
+		if node.Constraints != nil && node.Constraints.Pattern != "" {
+			g.usesPattern = true
+		}
 		return "String", nil
 	case manifest.KindBytes:
 		g.usesBytes = true

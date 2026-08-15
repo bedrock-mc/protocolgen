@@ -17,7 +17,7 @@ type ServerboundPackSettingChange struct {
 // Marshal reads or writes ServerboundPackSettingChange using its canonical wire layout.
 func (x *ServerboundPackSettingChange) Marshal(io protocol.IO) {
 	io.UUID(&x.PackID)
-	io.String(&x.PackSettingName)
+	io.StringLimits(&x.PackSettingName, 0, 128)
 	protocol.MarshalServerboundPackSettingChangePackSettingValue(io, &x.PackSettingValue)
 }
 

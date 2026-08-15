@@ -23,7 +23,9 @@ func (x *ClientboundTextureShift) Marshal(io protocol.IO) {
 	io.String(&x.ToStep)
 	protocol.FuncSlice(io, &x.AllSteps, io.Varuint32, io.String)
 	io.Varuint64(&x.CurrentLengthInTicks)
+	protocol.Minimum(io, &x.CurrentLengthInTicks, 0)
 	io.Varuint64(&x.TotalLengthInTicks)
+	protocol.Minimum(io, &x.TotalLengthInTicks, 0)
 	io.Bool(&x.Enabled)
 }
 

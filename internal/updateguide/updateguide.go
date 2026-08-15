@@ -423,6 +423,10 @@ func schemaFields(document map[string]any, schemas schemaSet, qualifier string) 
 				funcSlicePrefix := qualifier + "FuncSlice(io, " + address + ", "
 				sliceCall := qualifier + "Slice(io, " + address + ")"
 				switch {
+				case strings.Contains(marshal, "\n"):
+					body := strings.ReplaceAll(marshal, address, "value")
+					body = strings.ReplaceAll(body, strings.TrimPrefix(address, "&"), "*value")
+					marshal = qualifier + "OptionalFunc(io, " + address + ", func(value *" + valueType + ") {\n" + indentLines(body, "\t") + "\n})"
 				case strings.HasPrefix(marshal, funcSlicePrefix) && strings.HasSuffix(marshal, ")"):
 					codec := strings.TrimSuffix(strings.TrimPrefix(marshal, funcSlicePrefix), ")")
 					marshal = qualifier + "OptionalFunc(io, " + address + ", func(value *" + valueType + ") { " + qualifier + "FuncSlice(io, value, " + codec + ") })"
@@ -465,12 +469,15 @@ func renderFieldSchema(schema map[string]any, schemas schemaSet, address, qualif
 	}
 	switch schema["type"] {
 	case "string":
-		return "string", chooseStatement(address, "io.String"), false, nil
+		return "string", constrainedStatement(schema, address, "io.String", "string"), false, nil
 	case "boolean":
 		return "bool", chooseStatement(address, "io.Bool"), false, nil
 	case "integer", "number":
 		goType, method, err := primitive(schema)
-		return goType, chooseStatement(address, method), false, err
+		if err != nil {
+			return "", "", false, err
+		}
+		return goType, constrainedStatement(schema, address, method, "number"), false, nil
 	case "array":
 		if min, minOK := schema["minItems"].(float64); minOK {
 			if max, maxOK := schema["maxItems"].(float64); maxOK && min == max {
@@ -492,14 +499,110 @@ func renderFieldSchema(schema map[string]any, schemas schemaSet, address, qualif
 			return "", "", false, err
 		}
 		if itemMarshaler {
-			return "[]" + itemType, qualifier + "Slice(io, " + address + ")", false, nil
+			return "[]" + itemType, constrainedCollectionStatement(schema, address, qualifier+"Slice(io, "+address+")"), false, nil
 		}
-		return "[]" + itemType, qualifier + "FuncSlice(io, " + address + ", " + itemMarshal + ")", false, nil
+		return "[]" + itemType, constrainedCollectionStatement(schema, address, qualifier+"FuncSlice(io, "+address+", "+itemMarshal+")"), false, nil
 	case "object":
 		return "", "", false, fmt.Errorf("inline object fields are not supported; extract a named schema")
 	default:
 		return "", "", false, fmt.Errorf("unsupported schema type %q", schema["type"])
 	}
+}
+
+func constrainedStatement(schema map[string]any, address, method, kind string) string {
+	statement := chooseStatement(address, method)
+	value := strings.TrimPrefix(address, "&")
+	if address == "" {
+		value = "*value"
+		statement = method + "(value)"
+	}
+	field := constraintFieldName(value)
+	var checks []string
+	if kind == "string" {
+		if minimum, ok := nonNegativeConstraint(schema["minLength"]); ok {
+			checks = append(checks, fmt.Sprintf("if len(%s) < %d { io.InvalidValue(%s, %q, \"string too short\") }", value, minimum, value, field))
+		}
+		if maximum, ok := nonNegativeConstraint(schema["maxLength"]); ok {
+			checks = append(checks, fmt.Sprintf("if len(%s) > %d { io.InvalidValue(%s, %q, \"string too long\") }", value, maximum, value, field))
+		}
+		if pattern, ok := schema["pattern"].(string); ok && pattern != "" {
+			checks = append(checks, fmt.Sprintf("if matched, _ := regexp.MatchString(%q, %s); !matched { io.InvalidValue(%s, %q, \"string does not match pattern\") }", pattern, value, value, field))
+		}
+	} else {
+		if minimum, ok := numericConstraint(schema["minimum"]); ok {
+			checks = append(checks, fmt.Sprintf("if %s < %s { io.InvalidValue(%s, %q, \"value below minimum\") }", value, minimum, value, field))
+		}
+		if maximum, ok := numericConstraint(schema["maximum"]); ok {
+			checks = append(checks, fmt.Sprintf("if %s > %s { io.InvalidValue(%s, %q, \"value above maximum\") }", value, maximum, value, field))
+		}
+	}
+	if len(checks) == 0 {
+		return chooseStatement(address, method)
+	}
+	if address == "" {
+		return "func(value *" + constraintCallbackType(schema) + ") { " + strings.Join(append([]string{statement}, checks...), "; ") + " }"
+	}
+	return strings.Join(append([]string{statement}, checks...), "\n")
+}
+
+func constrainedCollectionStatement(schema map[string]any, address, statement string) string {
+	value := strings.TrimPrefix(address, "&")
+	field := constraintFieldName(value)
+	var checks []string
+	if minimum, ok := nonNegativeConstraint(schema["minItems"]); ok {
+		checks = append(checks, fmt.Sprintf("if len(%s) < %d { io.InvalidValue(%s, %q, \"too few items\") }", value, minimum, value, field))
+	}
+	if maximum, ok := nonNegativeConstraint(schema["maxItems"]); ok {
+		checks = append(checks, fmt.Sprintf("if len(%s) > %d { io.InvalidValue(%s, %q, \"too many items\") }", value, maximum, value, field))
+	}
+	return strings.Join(append([]string{statement}, checks...), "\n")
+}
+
+func nonNegativeConstraint(value any) (uint64, bool) {
+	number, err := number(value)
+	return uint64(number), err == nil && number >= 0
+}
+
+func numericConstraint(value any) (string, bool) {
+	if value == nil {
+		return "", false
+	}
+	switch value := value.(type) {
+	case float64:
+		return strconv.FormatFloat(value, 'g', -1, 64), true
+	case json.Number:
+		return value.String(), true
+	case int, int64:
+		return fmt.Sprint(value), true
+	default:
+		return "", false
+	}
+}
+
+func constraintCallbackType(schema map[string]any) string {
+	if schema["type"] == "string" {
+		return "string"
+	}
+	typeName, _, err := primitive(schema)
+	if err != nil {
+		return "any"
+	}
+	return typeName
+}
+
+func constraintFieldName(value string) string {
+	value = strings.TrimPrefix(value, "*")
+	if index := strings.LastIndex(value, "."); index >= 0 {
+		value = value[index+1:]
+	}
+	if value == "value" || value == "" {
+		return "value"
+	}
+	return strings.ToLower(value[:1]) + value[1:]
+}
+
+func indentLines(value, indent string) string {
+	return indent + strings.ReplaceAll(value, "\n", "\n"+indent)
 }
 
 func chooseStatement(address, method string) string {

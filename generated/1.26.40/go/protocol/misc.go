@@ -61,7 +61,7 @@ func (*AddTimeMarkerData) isSyncWorldClocksData() {}
 // Marshal reads or writes AddTimeMarkerData using its canonical wire layout.
 func (x *AddTimeMarkerData) Marshal(io IO) {
 	io.Varuint64(&x.ClockID)
-	Slice(io, &x.TimeMarkers)
+	SliceLimits(io, &x.TimeMarkers, 0, 256)
 }
 
 type AdventureSettings struct {
@@ -181,8 +181,8 @@ func (*AuthorAndMessage) isTextData() {}
 
 // Marshal reads or writes AuthorAndMessage using its canonical wire layout.
 func (x *AuthorAndMessage) Marshal(io IO) {
-	io.String(&x.PlayerName)
-	io.String(&x.Message)
+	io.StringLimits(&x.PlayerName, 0, 256)
+	io.StringLimits(&x.Message, 1, 65536)
 }
 
 type BedrockDDUI interface {
@@ -244,9 +244,10 @@ func (*BedrockDDUIDataStoreChange) isBedrockDDUI() {}
 
 // Marshal reads or writes BedrockDDUIDataStoreChange using its canonical wire layout.
 func (x *BedrockDDUIDataStoreChange) Marshal(io IO) {
-	io.String(&x.DataStoreName)
-	io.String(&x.Property)
+	io.StringLimits(&x.DataStoreName, 1, 1000)
+	io.StringLimits(&x.Property, 1, 1000)
 	io.Uint32(&x.UpdateCount)
+	Maximum(io, &x.UpdateCount, 4.294967294e+09)
 	MarshalDynamicValue(io, &x.TheNewPropertyValue)
 }
 
@@ -258,7 +259,7 @@ func (*BedrockDDUIDataStoreRemoval) isBedrockDDUI() {}
 
 // Marshal reads or writes BedrockDDUIDataStoreRemoval using its canonical wire layout.
 func (x *BedrockDDUIDataStoreRemoval) Marshal(io IO) {
-	io.String(&x.DataStoreName)
+	io.StringLimits(&x.DataStoreName, 1, 1000)
 }
 
 type BedrockDDUIDataStoreUpdate struct {
@@ -274,12 +275,14 @@ func (*BedrockDDUIDataStoreUpdate) isBedrockDDUI() {}
 
 // Marshal reads or writes BedrockDDUIDataStoreUpdate using its canonical wire layout.
 func (x *BedrockDDUIDataStoreUpdate) Marshal(io IO) {
-	io.String(&x.DataStoreName)
-	io.String(&x.Property)
-	io.String(&x.Path)
+	io.StringLimits(&x.DataStoreName, 1, 1000)
+	io.StringLimits(&x.Property, 1, 1000)
+	io.StringLimits(&x.Path, 0, 1000)
 	MarshalBedrockDDUIDataStoreUpdateData(io, &x.Data)
 	io.Uint32(&x.PropertyUpdateCount)
+	Maximum(io, &x.PropertyUpdateCount, 4.294967294e+09)
 	io.Uint32(&x.PathUpdateCount)
+	Maximum(io, &x.PathUpdateCount, 4.294967294e+09)
 }
 
 type BellUsed struct {
@@ -368,8 +371,8 @@ func (*BookEditActionAddPage) isBookEditAction() {}
 // Marshal reads or writes BookEditActionAddPage using its canonical wire layout.
 func (x *BookEditActionAddPage) Marshal(io IO) {
 	io.Varint32(&x.PageIndex)
-	io.String(&x.PageText)
-	io.String(&x.PhotoName)
+	io.StringLimits(&x.PageText, 0, 768)
+	io.StringLimits(&x.PhotoName, 0, 768)
 }
 
 type BookEditActionDeletePage struct {
@@ -393,9 +396,9 @@ func (*BookEditActionFinalize) isBookEditAction() {}
 
 // Marshal reads or writes BookEditActionFinalize using its canonical wire layout.
 func (x *BookEditActionFinalize) Marshal(io IO) {
-	io.String(&x.Title)
-	io.String(&x.Author)
-	io.String(&x.XUID)
+	io.StringLimits(&x.Title, 0, 768)
+	io.StringLimits(&x.Author, 0, 768)
+	io.StringLimits(&x.XUID, 0, 768)
 }
 
 type BookEditActionReplacePage struct {
@@ -409,8 +412,8 @@ func (*BookEditActionReplacePage) isBookEditAction() {}
 // Marshal reads or writes BookEditActionReplacePage using its canonical wire layout.
 func (x *BookEditActionReplacePage) Marshal(io IO) {
 	io.Varint32(&x.PageIndex)
-	io.String(&x.PageText)
-	io.String(&x.PhotoName)
+	io.StringLimits(&x.PageText, 0, 768)
+	io.StringLimits(&x.PhotoName, 0, 768)
 }
 
 type BookEditActionSwapPages struct {
@@ -549,7 +552,7 @@ func (*ChangeEntityScore) isSetScoreInfoItem() {}
 func (x *ChangeEntityScore) Marshal(io IO) {
 	io.String(&x.Action)
 	x.ScoreboardID.Marshal(io)
-	io.String(&x.ObjectiveName)
+	io.StringLimits(&x.ObjectiveName, 1, 18446744073709551615)
 	io.Int32(&x.ScoreValue)
 	io.ActorUniqueID(&x.ActorID)
 }
@@ -568,9 +571,9 @@ func (*ChangeFakePlayerScore) isSetScoreInfoItem() {}
 func (x *ChangeFakePlayerScore) Marshal(io IO) {
 	io.String(&x.Action)
 	x.ScoreboardID.Marshal(io)
-	io.String(&x.ObjectiveName)
+	io.StringLimits(&x.ObjectiveName, 1, 18446744073709551615)
 	io.Int32(&x.ScoreValue)
-	io.String(&x.FakePlayerName)
+	io.StringLimits(&x.FakePlayerName, 1, 18446744073709551615)
 }
 
 type ChangePlayerScore struct {
@@ -587,7 +590,7 @@ func (*ChangePlayerScore) isSetScoreInfoItem() {}
 func (x *ChangePlayerScore) Marshal(io IO) {
 	io.String(&x.Action)
 	x.ScoreboardID.Marshal(io)
-	io.String(&x.ObjectiveName)
+	io.StringLimits(&x.ObjectiveName, 1, 18446744073709551615)
 	io.Int32(&x.ScoreValue)
 	x.PlayerUniqueID.Marshal(io)
 }
@@ -662,7 +665,7 @@ func (*CodeBuilderRuntimeAction) isEventData() {}
 
 // Marshal reads or writes CodeBuilderRuntimeAction using its canonical wire layout.
 func (x *CodeBuilderRuntimeAction) Marshal(io IO) {
-	io.String(&x.CodeBuilderRuntimeAction)
+	io.StringLimits(&x.CodeBuilderRuntimeAction, 0, 16)
 }
 
 type CodeBuilderScoreboard struct {
@@ -674,7 +677,7 @@ func (*CodeBuilderScoreboard) isEventData() {}
 
 // Marshal reads or writes CodeBuilderScoreboard using its canonical wire layout.
 func (x *CodeBuilderScoreboard) Marshal(io IO) {
-	io.String(&x.ObjectiveName)
+	io.StringLimits(&x.ObjectiveName, 0, 256)
 	io.Varint32(&x.Score)
 }
 
@@ -932,6 +935,7 @@ func (x *CraftLoomStackRequestAction) Marshal(io IO) {
 	IntegerFunc(&x.ActionType, io.Uint8)
 	io.String(&x.PatternNameID)
 	io.Uint8(&x.NumCrafts)
+	Minimum(io, &x.NumCrafts, 1)
 }
 
 type CraftRepairAndDisenchantStackRequestAction struct {
@@ -948,7 +952,9 @@ func (x *CraftRepairAndDisenchantStackRequestAction) Marshal(io IO) {
 	IntegerFunc(&x.ActionType, io.Uint8)
 	io.Int32(&x.RecipeNetID)
 	io.Uint8(&x.NumberOfRequestedCrafts)
+	Minimum(io, &x.NumberOfRequestedCrafts, 1)
 	io.Varint32(&x.RepairCost)
+	Minimum(io, &x.RepairCost, 0)
 }
 
 type CylinderData struct {
@@ -1002,6 +1008,7 @@ type DataItemEntry struct {
 // Marshal reads or writes DataItemEntry using its canonical wire layout.
 func (x *DataItemEntry) Marshal(io IO) {
 	io.Varuint32(&x.ID)
+	Minimum(io, &x.ID, 0)
 	MarshalDataItemEntryValue(io, &x.Payload)
 }
 
@@ -1119,7 +1126,7 @@ type DebugMarkerData struct {
 
 // Marshal reads or writes DebugMarkerData using its canonical wire layout.
 func (x *DebugMarkerData) Marshal(io IO) {
-	io.String(&x.Text)
+	io.StringLimits(&x.Text, 0, 4096)
 	io.Vec3(&x.Position)
 	io.RGBA(&x.Color)
 	io.Uint64(&x.Duration)
@@ -1157,7 +1164,7 @@ func (*Downloading) isResourcePackClientResponseData() {}
 // Marshal reads or writes Downloading using its canonical wire layout.
 func (x *Downloading) Marshal(io IO) {
 	io.String(&x.ResponseType)
-	FuncSlice(io, &x.DownloadingPacks, io.Varuint32, io.String)
+	FuncSliceLimits(io, &x.DownloadingPacks, io.Varuint32, 0, 65535, io.String)
 }
 
 type DownloadingFinished struct {
@@ -1309,11 +1316,13 @@ type EASAttributeLayerData struct {
 
 // Marshal reads or writes EASAttributeLayerData using its canonical wire layout.
 func (x *EASAttributeLayerData) Marshal(io IO) {
-	io.String(&x.Name)
-	OptionalFunc(io, &x.NoiseName, io.String)
+	io.StringLimits(&x.Name, 0, 128)
+	OptionalFunc(io, &x.NoiseName, func(value *string) {
+		io.StringLimits(value, 0, 128)
+	})
 	x.Dimension.Marshal(io)
 	x.Settings.Marshal(io)
-	Slice(io, &x.Attributes)
+	SliceLimits(io, &x.Attributes, 0, 1024)
 }
 
 type EASAttributeLayerSettings struct {
@@ -1373,7 +1382,7 @@ type EASEnvironmentAttributeData struct {
 
 // Marshal reads or writes EASEnvironmentAttributeData using its canonical wire layout.
 func (x *EASEnvironmentAttributeData) Marshal(io IO) {
-	io.String(&x.AttributeName)
+	io.StringLimits(&x.AttributeName, 0, 128)
 	OptionalFunc(io, &x.FromAttribute, func(value *EAS) {
 		MarshalEAS(io, value)
 	})
@@ -1714,7 +1723,7 @@ func (*InitializeRegistryData) isSyncWorldClocksData() {}
 
 // Marshal reads or writes InitializeRegistryData using its canonical wire layout.
 func (x *InitializeRegistryData) Marshal(io IO) {
-	Slice(io, &x.ClockData)
+	SliceLimits(io, &x.ClockData, 0, 256)
 }
 
 type InputData int32
@@ -1955,6 +1964,7 @@ type LevelSettings struct {
 // Marshal reads or writes LevelSettings using its canonical wire layout.
 func (x *LevelSettings) Marshal(io IO) {
 	io.Uint64(&x.Seed)
+	Minimum(io, &x.Seed, 0)
 	x.SpawnSettings.Marshal(io)
 	IntegerFunc(&x.GeneratorType, io.Varint32)
 	IntegerFunc(&x.GameType, io.Varint32)
@@ -2048,8 +2058,8 @@ func (*MessageAndParams) isTextData() {}
 
 // Marshal reads or writes MessageAndParams using its canonical wire layout.
 func (x *MessageAndParams) Marshal(io IO) {
-	io.String(&x.Message)
-	FuncSlice(io, &x.ParameterList, io.Varuint32, io.String)
+	io.StringLimits(&x.Message, 1, 65536)
+	FuncSliceLimits(io, &x.ParameterList, io.Varuint32, 0, 4, io.String)
 }
 
 type MessageOnly struct {
@@ -2060,7 +2070,7 @@ func (*MessageOnly) isTextData() {}
 
 // Marshal reads or writes MessageOnly using its canonical wire layout.
 func (x *MessageOnly) Marshal(io IO) {
-	io.String(&x.Message)
+	io.StringLimits(&x.Message, 1, 65536)
 }
 
 type MinecraftEventingAchievementIds uint8
@@ -2286,7 +2296,7 @@ func (x *MobKilled) Marshal(io IO) {
 	IntegerFunc(&x.InstigatorSChildActorType, io.Varint32)
 	io.Varint32(&x.DamageSource)
 	io.Varint32(&x.TradeTier)
-	io.String(&x.TraderName)
+	io.StringLimits(&x.TraderName, 0, 128)
 }
 
 type ModalFormCancelReason uint8
@@ -2382,8 +2392,14 @@ type NetworkItemInstanceDescriptorSerializedData struct {
 // Marshal reads or writes NetworkItemInstanceDescriptorSerializedData using its canonical wire layout.
 func (x *NetworkItemInstanceDescriptorSerializedData) Marshal(io IO) {
 	io.Varint32(&x.ID)
+	Minimum(io, &x.ID, -32768)
+	Maximum(io, &x.ID, 32767)
 	io.Uint16(&x.StackSize)
+	Minimum(io, &x.StackSize, 0)
+	Maximum(io, &x.StackSize, 64)
 	io.Varuint32(&x.AuxValue)
+	Minimum(io, &x.AuxValue, 0)
+	Maximum(io, &x.AuxValue, 32767)
 	io.Varint32(&x.BlockRuntimeID)
 	io.Bytes(&x.UserDataBuffer)
 }
@@ -2401,9 +2417,14 @@ type NetworkItemStackDescriptorSerializedData struct {
 func (x *NetworkItemStackDescriptorSerializedData) Marshal(io IO) {
 	io.Int16(&x.ID)
 	io.Uint16(&x.StackSize)
+	Minimum(io, &x.StackSize, 0)
+	Maximum(io, &x.StackSize, 64)
 	io.Varuint32(&x.AuxValue)
+	Minimum(io, &x.AuxValue, 0)
+	Maximum(io, &x.AuxValue, 32767)
 	OptionalFunc(io, &x.NetIDVariant, io.Varint32)
 	io.Varuint32(&x.BlockRuntimeID)
+	Minimum(io, &x.BlockRuntimeID, 0)
 	io.Bytes(&x.UserDataBuffer)
 }
 
@@ -2686,9 +2707,11 @@ func (*RemoveEnvironmentAttributes) isAttributeLayerSyncData() {}
 
 // Marshal reads or writes RemoveEnvironmentAttributes using its canonical wire layout.
 func (x *RemoveEnvironmentAttributes) Marshal(io IO) {
-	io.String(&x.AttributeLayerName)
+	io.StringLimits(&x.AttributeLayerName, 0, 128)
 	x.AttributeLayerDimension.Marshal(io)
-	FuncSlice(io, &x.Attributes, io.Varuint32, io.String)
+	FuncSliceLimits(io, &x.Attributes, io.Varuint32, 0, 1024, func(value *string) {
+		io.StringLimits(value, 0, 128)
+	})
 }
 
 type RemoveOverride struct {
@@ -2714,7 +2737,9 @@ func (*RemoveScore) isSetScoreInfoItem() {}
 func (x *RemoveScore) Marshal(io IO) {
 	io.String(&x.Action)
 	x.ScoreboardID.Marshal(io)
-	OptionalFunc(io, &x.ObjectiveName, io.String)
+	OptionalFunc(io, &x.ObjectiveName, func(value *string) {
+		io.StringLimits(value, 1, 18446744073709551615)
+	})
 }
 
 type RemoveTimeMarkerData struct {
@@ -2727,7 +2752,7 @@ func (*RemoveTimeMarkerData) isSyncWorldClocksData() {}
 // Marshal reads or writes RemoveTimeMarkerData using its canonical wire layout.
 func (x *RemoveTimeMarkerData) Marshal(io IO) {
 	io.Varuint64(&x.ClockID)
-	FuncSlice(io, &x.TimeMarkerIds, io.Varuint32, io.Varuint64)
+	FuncSliceLimits(io, &x.TimeMarkerIds, io.Varuint32, 0, 256, io.Varuint64)
 }
 
 type RequestAbilityType uint8
@@ -2954,13 +2979,19 @@ type ServerConfigurationGatheringsConfigurationJoinInfo struct {
 // Marshal reads or writes ServerConfigurationGatheringsConfigurationJoinInfo using its canonical wire layout.
 func (x *ServerConfigurationGatheringsConfigurationJoinInfo) Marshal(io IO) {
 	io.UUID(&x.ExperienceID)
-	io.String(&x.ExperienceName)
+	io.StringLimits(&x.ExperienceName, 1, 29)
 	OptionalFunc(io, &x.WorldID, io.UUID)
-	OptionalFunc(io, &x.WorldName, io.String)
-	io.String(&x.CreatorID)
+	OptionalFunc(io, &x.WorldName, func(value *string) {
+		io.StringLimits(value, 1, 29)
+	})
+	io.StringLimits(&x.CreatorID, 1, 60)
 	OptionalFunc(io, &x.TargetID, io.UUID)
-	OptionalFunc(io, &x.ScenarioID, io.String)
-	OptionalFunc(io, &x.ServerID, io.String)
+	OptionalFunc(io, &x.ScenarioID, func(value *string) {
+		io.StringLimits(value, 1, 100)
+	})
+	OptionalFunc(io, &x.ServerID, func(value *string) {
+		io.StringLimits(value, 1, 100)
+	})
 }
 
 type ServerConfigurationPresenceConfiguration struct {
@@ -2969,7 +3000,9 @@ type ServerConfigurationPresenceConfiguration struct {
 
 // Marshal reads or writes ServerConfigurationPresenceConfiguration using its canonical wire layout.
 func (x *ServerConfigurationPresenceConfiguration) Marshal(io IO) {
-	OptionalFunc(io, &x.RichPresenceID, io.String)
+	OptionalFunc(io, &x.RichPresenceID, func(value *string) {
+		io.StringLimits(value, 0, 50)
+	})
 }
 
 type ServerConfigurationServerConfigurationJoinInfo struct {
@@ -3080,8 +3113,8 @@ func (*SlashCommand) isEventData() {}
 func (x *SlashCommand) Marshal(io IO) {
 	io.Varint32(&x.SuccessCount)
 	io.Varint32(&x.ErrorCount)
-	io.String(&x.CommandName)
-	io.String(&x.ErrorList)
+	io.StringLimits(&x.CommandName, 0, 512)
+	io.StringLimits(&x.ErrorList, 0, 2048)
 }
 
 type SocialEventsServerTelemetryData struct {
@@ -3194,7 +3227,7 @@ func (*SyncStateData) isSyncWorldClocksData() {}
 
 // Marshal reads or writes SyncStateData using its canonical wire layout.
 func (x *SyncStateData) Marshal(io IO) {
-	Slice(io, &x.ClockData)
+	SliceLimits(io, &x.ClockData, 0, 256)
 }
 
 type SyncedAttribute struct {

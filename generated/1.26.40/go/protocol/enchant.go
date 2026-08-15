@@ -62,4 +62,6 @@ type EnchantmentInstance struct {
 func (x *EnchantmentInstance) Marshal(io IO) {
 	IntegerFunc(&x.EnchantType, io.Uint8)
 	io.Uint8(&x.EnchantLevel)
+	Minimum(io, &x.EnchantLevel, 0)
+	Maximum(io, &x.EnchantLevel, 255)
 }

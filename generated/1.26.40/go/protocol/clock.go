@@ -34,7 +34,7 @@ type TimeMarkerData struct {
 // Marshal reads or writes TimeMarkerData using its canonical wire layout.
 func (x *TimeMarkerData) Marshal(io IO) {
 	io.Varuint64(&x.ID)
-	io.String(&x.Name)
+	io.StringLimits(&x.Name, 0, 128)
 	io.Varint32(&x.Time)
 	OptionalFunc(io, &x.Period, io.Int32)
 }
@@ -56,8 +56,8 @@ type WorldClockData struct {
 // Marshal reads or writes WorldClockData using its canonical wire layout.
 func (x *WorldClockData) Marshal(io IO) {
 	io.Varuint64(&x.ID)
-	io.String(&x.Name)
+	io.StringLimits(&x.Name, 0, 128)
 	io.Varint32(&x.Time)
 	io.Bool(&x.IsPaused)
-	Slice(io, &x.TimeMarkers)
+	SliceLimits(io, &x.TimeMarkers, 0, 256)
 }

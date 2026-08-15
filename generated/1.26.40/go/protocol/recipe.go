@@ -25,6 +25,8 @@ type RecipeIngredient struct {
 func (x *RecipeIngredient) Marshal(io IO) {
 	MarshalItemDescriptor(io, &x.ItemDescriptor)
 	io.Uint16(&x.StackSize)
+	Minimum(io, &x.StackSize, 1)
+	Maximum(io, &x.StackSize, 65535)
 }
 
 type RecipeIngredientSerializedData struct {
@@ -37,7 +39,11 @@ type RecipeIngredientSerializedData struct {
 func (x *RecipeIngredientSerializedData) Marshal(io IO) {
 	OrderedMap(io, &x.Descriptor, io.Varuint32, io.String, io.String)
 	io.Varint32(&x.AuxValue)
+	Minimum(io, &x.AuxValue, 0)
+	Maximum(io, &x.AuxValue, 32767)
 	io.Varint32(&x.StackSize)
+	Minimum(io, &x.StackSize, 0)
+	Maximum(io, &x.StackSize, 64)
 }
 
 type RecipeNetID struct {
@@ -58,7 +64,7 @@ type RecipeUnlockRequirementSerializedData struct {
 func (x *RecipeUnlockRequirementSerializedData) Marshal(io IO) {
 	IntegerFunc(&x.UnlockingContext, io.Varint32)
 	OptionalFunc(io, &x.UnlockingIngredients, func(value *[]RecipeIngredientSerializedData) {
-		Slice(io, value)
+		SliceLimits(io, value, 0, 128)
 	})
 }
 
@@ -103,7 +109,7 @@ func (x *ShapedRecipe) Marshal(io IO) {
 	io.String(&x.RecipeID)
 	io.Varint32(&x.Width)
 	io.Varint32(&x.Height)
-	Slice(io, &x.Ingredients)
+	SliceLimits(io, &x.Ingredients, 0, 128)
 	Slice(io, &x.Results)
 	io.UUID(&x.UUID)
 	io.String(&x.Tag)
@@ -136,7 +142,7 @@ type ShapelessRecipe struct {
 // Marshal reads or writes ShapelessRecipe using its canonical wire layout.
 func (x *ShapelessRecipe) Marshal(io IO) {
 	io.String(&x.RecipeID)
-	Slice(io, &x.Ingredients)
+	SliceLimits(io, &x.Ingredients, 0, 128)
 	Slice(io, &x.Results)
 	io.UUID(&x.UUID)
 	io.String(&x.Tag)

@@ -24,7 +24,7 @@ type CommandRequest struct {
 
 // Marshal reads or writes CommandRequest using its canonical wire layout.
 func (x *CommandRequest) Marshal(io protocol.IO) {
-	io.String(&x.Command)
+	io.StringLimits(&x.Command, 0, 1000)
 	x.Origin.Marshal(io)
 	io.Bool(&x.IsInternal)
 	io.String(&x.Version)

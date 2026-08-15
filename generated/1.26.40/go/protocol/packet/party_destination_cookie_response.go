@@ -16,7 +16,7 @@ type PartyDestinationCookieResponse struct {
 
 // Marshal reads or writes PartyDestinationCookieResponse using its canonical wire layout.
 func (x *PartyDestinationCookieResponse) Marshal(io protocol.IO) {
-	io.String(&x.Cookie)
+	io.StringLimits(&x.Cookie, 0, 2048)
 	io.Bool(&x.Accepted)
 }
 

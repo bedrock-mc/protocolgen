@@ -34,6 +34,7 @@ pub enum DecodeError {
     LengthLimitExceeded { limit: usize, actual: usize },
     /// A declared element count could not be covered by the remaining bytes.
     LengthNotRepresentable { needed: usize, remaining: usize },
+    SchemaConstraint(&'static str),
     UnknownVariant { type_name: &'static str, value: i64 },
     NbtDepthExceeded,
     NbtMalformed(&'static str),
@@ -60,6 +61,7 @@ impl fmt::Display for DecodeError {
             Self::LengthNotRepresentable { needed, remaining } => {
                 write!(f, "declared length needs {needed} bytes, {remaining} remaining")
             }
+            Self::SchemaConstraint(reason) => write!(f, "schema constraint violated: {reason}"),
             Self::UnknownVariant { type_name, value } => {
                 write!(f, "unknown {type_name} discriminant {value}")
             }
@@ -238,6 +240,19 @@ impl<'a> Reader<'a> {
     /// input is rejected before allocation rather than after a partial read.
     pub fn checked_count(&self, declared: u64, min_element_size: usize) -> DecodeResult<usize> {
         self.checked_count_with(declared, min_element_size, self.collection_limit)
+    }
+
+    /// Applies schema-published count bounds before allocation in addition to
+    /// the reader's configurable global limit.
+    pub fn checked_count_limits(
+        &self,
+        declared: u64,
+        min_element_size: usize,
+        minimum: u64,
+        maximum: u64,
+    ) -> DecodeResult<usize> {
+        validate_length(declared, minimum, maximum)?;
+        self.checked_count(declared, min_element_size)
     }
 
     /// Applies an explicit bound instead of this reader's configured one.
@@ -554,6 +569,11 @@ pub fn encode_collection<T: Encode>(writer: &mut Writer, values: &[T]) {
     }
 }
 
+pub fn encode_collection_limits<T: Encode>(writer: &mut Writer, values: &[T], minimum: u64, maximum: u64) {
+    assert_length(values.len(), minimum, maximum);
+    encode_collection(writer, values);
+}
+
 /// Reads a `VarUInt`-prefixed collection, bounding the declared count against
 /// the reader's collection limit and the remaining input before reserving.
 pub fn decode_collection<T: Decode>(
@@ -567,4 +587,72 @@ pub fn decode_collection<T: Decode>(
         out.push(T::decode(reader)?);
     }
     Ok(out)
+}
+
+pub fn decode_collection_limits<T: Decode>(
+    reader: &mut Reader<'_>,
+    min_element_size: usize,
+    minimum: u64,
+    maximum: u64,
+) -> DecodeResult<Vec<T>> {
+    let declared = u64::from(reader.read_var_u32()?);
+    let count = reader.checked_count_limits(declared, min_element_size, minimum, maximum)?;
+    let mut out = Vec::with_capacity(count);
+    for _ in 0..count {
+        out.push(T::decode(reader)?);
+    }
+    Ok(out)
+}
+
+pub fn assert_length(actual: usize, minimum: u64, maximum: u64) {
+    assert!(validate_length(actual as u64, minimum, maximum).is_ok(), "length outside schema limits");
+}
+
+fn validate_length(actual: u64, minimum: u64, maximum: u64) -> DecodeResult<()> {
+    if actual < minimum {
+        return Err(DecodeError::SchemaConstraint("length below minimum"));
+    }
+    if actual > maximum {
+        return Err(DecodeError::SchemaConstraint("length above maximum"));
+    }
+    Ok(())
+}
+
+pub fn encode_string_limits(writer: &mut Writer, value: &str, minimum: u64, maximum: u64) {
+    assert_length(value.len(), minimum, maximum);
+    writer.write_str(value);
+}
+
+pub fn decode_string_limits(reader: &mut Reader<'_>, minimum: u64, maximum: u64) -> DecodeResult<String> {
+    let declared = u64::from(reader.read_var_u32()?);
+    validate_length(declared, minimum, maximum)?;
+    let count = reader.checked_count_with(declared, 1, reader.byte_buffer_limit())?;
+    let bytes = reader.take(count)?;
+    std::str::from_utf8(bytes).map(str::to_owned).map_err(|_| DecodeError::InvalidUtf8)
+}
+
+pub fn encode_bytes_limits(writer: &mut Writer, value: &[u8], minimum: u64, maximum: u64) {
+    assert_length(value.len(), minimum, maximum);
+    writer.write_byte_slice(value);
+}
+
+pub fn decode_bytes_limits(reader: &mut Reader<'_>, minimum: u64, maximum: u64) -> DecodeResult<bytes::Bytes> {
+    let declared = u64::from(reader.read_var_u32()?);
+    validate_length(declared, minimum, maximum)?;
+    let count = reader.checked_count_with(declared, 1, reader.byte_buffer_limit())?;
+    reader.take_shared(count)
+}
+
+pub fn assert_number_limits<T: PartialOrd + Copy>(value: T, minimum: Option<T>, maximum: Option<T>) {
+    assert!(validate_number_limits(value, minimum, maximum).is_ok(), "number outside schema limits");
+}
+
+pub fn validate_number_limits<T: PartialOrd + Copy>(value: T, minimum: Option<T>, maximum: Option<T>) -> DecodeResult<()> {
+    if minimum.is_some_and(|minimum| value < minimum) {
+        return Err(DecodeError::SchemaConstraint("number below minimum"));
+    }
+    if maximum.is_some_and(|maximum| value > maximum) {
+        return Err(DecodeError::SchemaConstraint("number above maximum"));
+    }
+    Ok(())
 }

@@ -43,7 +43,7 @@ func (x *AvailableCommands) Marshal(io protocol.IO) {
 	protocol.FuncSlice(io, &x.ChainedSubcommandValues, io.Varuint32, io.String)
 	protocol.FuncSlice(io, &x.PostFixes, io.Varuint32, io.String)
 	protocol.Slice(io, &x.EnumData)
-	protocol.Slice(io, &x.ChainedSubcommandData)
+	protocol.SliceLimits(io, &x.ChainedSubcommandData, 0, 16)
 	protocol.Slice(io, &x.Commands)
 	protocol.Slice(io, &x.SoftEnums)
 	protocol.Slice(io, &x.Constraints)

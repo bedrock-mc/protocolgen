@@ -206,7 +206,15 @@ func (w *Writer) ActorUniqueIDVaruint64(x *uint64)  { w.Varuint64(x) }
 func (w *Writer) PlayerInputTick(x *uint64)         { w.Varuint64(x) }
 
 func (w *Writer) String(x *string) {
+	w.StringLimits(x, 0, ^uint64(0))
+}
+
+func (w *Writer) StringLimits(x *string, min, max uint64) {
 	data := []byte(*x)
+	if uint64(len(data)) < min || uint64(len(data)) > max {
+		w.InvalidValue(len(data), "string length outside schema limits")
+		return
+	}
 	if uint64(len(data)) > uint64(^uint32(0)) {
 		w.InvalidValue(len(data), "string exceeds uint32 length")
 		return
@@ -217,6 +225,14 @@ func (w *Writer) String(x *string) {
 }
 
 func (w *Writer) Bytes(x *[]byte) {
+	w.BytesLimits(x, 0, ^uint64(0))
+}
+
+func (w *Writer) BytesLimits(x *[]byte, min, max uint64) {
+	if uint64(len(*x)) < min || uint64(len(*x)) > max {
+		w.InvalidValue(len(*x), "byte slice length outside schema limits")
+		return
+	}
 	if uint64(len(*x)) > uint64(^uint32(0)) {
 		w.InvalidValue(len(*x), "byte slice exceeds uint32 length")
 		return

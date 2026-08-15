@@ -2,6 +2,7 @@ package emitrust
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"protocolgen/internal/manifest"
@@ -117,8 +118,30 @@ func (e *codecEmitter) encode(b *strings.Builder, node manifest.Node, expr, inde
 	}
 
 	switch node.Kind {
-	case manifest.KindPrimitive, manifest.KindString, manifest.KindBytes,
-		manifest.KindStruct, manifest.KindEnum, manifest.KindUnion, manifest.KindRecursive:
+	case manifest.KindPrimitive, manifest.KindEnum:
+		fmt.Fprintf(b, "%s%s.encode(writer);\n", indent, expr)
+		return e.encodeNumberConstraints(b, node, expr, indent)
+
+	case manifest.KindString:
+		if min, max, ok := stringBounds(node); ok {
+			fmt.Fprintf(b, "%swire::encode_string_limits(writer, &%s, %d, %d);\n", indent, expr, min, max)
+		} else {
+			fmt.Fprintf(b, "%s%s.encode(writer);\n", indent, expr)
+		}
+		if node.Constraints != nil && node.Constraints.Pattern != "" {
+			fmt.Fprintf(b, "%swire::assert_pattern(&%s, %q);\n", indent, expr, node.Constraints.Pattern)
+		}
+		return nil
+
+	case manifest.KindBytes:
+		if min, max, ok := stringBounds(node); ok {
+			fmt.Fprintf(b, "%swire::encode_bytes_limits(writer, %s.as_ref(), %d, %d);\n", indent, expr, min, max)
+		} else {
+			fmt.Fprintf(b, "%s%s.encode(writer);\n", indent, expr)
+		}
+		return nil
+
+	case manifest.KindStruct, manifest.KindUnion, manifest.KindRecursive:
 		fmt.Fprintf(b, "%s%s.encode(writer);\n", indent, expr)
 		return nil
 
@@ -152,9 +175,15 @@ func (e *codecEmitter) encode(b *strings.Builder, node manifest.Node, expr, inde
 			return err
 		}
 		if e.directlyEncodable(*node.Element) {
-			fmt.Fprintf(b, "%swire::%s(writer, %s.as_slice());\n", indent, helper, expr)
+			if min, max, ok := arrayBounds(node); ok && helper == "encode_collection" {
+				fmt.Fprintf(b, "%swire::encode_collection_limits(writer, %s.as_slice(), %d, %d);\n", indent, expr, min, max)
+			} else {
+				e.encodeLengthAssertion(b, node, expr, indent)
+				fmt.Fprintf(b, "%swire::%s(writer, %s.as_slice());\n", indent, helper, expr)
+			}
 			return nil
 		}
+		e.encodeLengthAssertion(b, node, expr, indent)
 		if err := e.writeCollectionPrefix(b, node, expr, indent); err != nil {
 			return err
 		}
@@ -170,9 +199,14 @@ func (e *codecEmitter) encode(b *strings.Builder, node manifest.Node, expr, inde
 			return fmt.Errorf("map has no key/value")
 		}
 		if e.directlyEncodable(*node.Key) && e.directlyEncodable(*node.Value) {
-			fmt.Fprintf(b, "%swire::encode_map(writer, %s.as_slice());\n", indent, expr)
+			if min, max, ok := mapBounds(node); ok {
+				fmt.Fprintf(b, "%swire::encode_map_limits(writer, %s.as_slice(), %d, %d);\n", indent, expr, min, max)
+			} else {
+				fmt.Fprintf(b, "%swire::encode_map(writer, %s.as_slice());\n", indent, expr)
+			}
 			return nil
 		}
+		e.encodeLengthAssertion(b, node, expr, indent)
 		fmt.Fprintf(b, "%swriter.write_var_u32(%s.len() as u32);\n", indent, expr)
 		fmt.Fprintf(b, "%sfor (key, value) in %s.iter() {\n", indent, expr)
 		if err := e.encode(b, *node.Key, "key", indent+"    "); err != nil {
@@ -186,6 +220,31 @@ func (e *codecEmitter) encode(b *strings.Builder, node manifest.Node, expr, inde
 
 	default:
 		return fmt.Errorf("unsupported node kind %q in encode", node.Kind)
+	}
+}
+
+func (e *codecEmitter) encodeNumberConstraints(b *strings.Builder, node manifest.Node, expr, indent string) error {
+	if node.Constraints == nil || node.Constraints.Minimum == nil && node.Constraints.Maximum == nil {
+		return nil
+	}
+	raw, err := rustNumberExpression(node, expr)
+	if err != nil {
+		return err
+	}
+	fmt.Fprintf(b, "%swire::assert_number_limits(%s, %s, %s);\n", indent, raw, rustOptionNumber(node, node.Constraints.Minimum), rustOptionNumber(node, node.Constraints.Maximum))
+	return nil
+}
+
+func (e *codecEmitter) encodeLengthAssertion(b *strings.Builder, node manifest.Node, expr, indent string) {
+	var min, max uint64
+	var ok bool
+	if node.Kind == manifest.KindMap {
+		min, max, ok = mapBounds(node)
+	} else {
+		min, max, ok = arrayBounds(node)
+	}
+	if ok {
+		fmt.Fprintf(b, "%swire::assert_length(%s.len(), %d, %d);\n", indent, expr, min, max)
 	}
 }
 
@@ -281,8 +340,42 @@ func (e *codecEmitter) decode(node manifest.Node, hint, indent string) (string, 
 	}
 
 	switch node.Kind {
-	case manifest.KindPrimitive, manifest.KindString, manifest.KindBytes,
-		manifest.KindStruct, manifest.KindEnum, manifest.KindUnion, manifest.KindRecursive:
+	case manifest.KindPrimitive, manifest.KindEnum:
+		typ, err := e.g.rustType(node, hint)
+		if err != nil {
+			return "", err
+		}
+		decoded := decodeCall(typ)
+		if node.Constraints == nil || node.Constraints.Minimum == nil && node.Constraints.Maximum == nil {
+			return decoded, nil
+		}
+		raw, err := rustNumberExpression(node, "value")
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("{ let value = %s; wire::validate_number_limits(%s, %s, %s)?; value }", decoded, raw, rustOptionNumber(node, node.Constraints.Minimum), rustOptionNumber(node, node.Constraints.Maximum)), nil
+
+	case manifest.KindString:
+		decoded := decodeCall("String")
+		if min, max, ok := stringBounds(node); ok {
+			decoded = fmt.Sprintf("wire::decode_string_limits(reader, %d, %d)?", min, max)
+		}
+		if node.Constraints != nil && node.Constraints.Pattern != "" {
+			return fmt.Sprintf("{ let value = %s; wire::validate_pattern(&value, %q)?; value }", decoded, node.Constraints.Pattern), nil
+		}
+		return decoded, nil
+
+	case manifest.KindBytes:
+		if min, max, ok := stringBounds(node); ok {
+			return fmt.Sprintf("wire::decode_bytes_limits(reader, %d, %d)?", min, max), nil
+		}
+		typ, err := e.g.rustType(node, hint)
+		if err != nil {
+			return "", err
+		}
+		return decodeCall(typ), nil
+
+	case manifest.KindStruct, manifest.KindUnion, manifest.KindRecursive:
 		typ, err := e.g.rustType(node, hint)
 		if err != nil {
 			return "", err
@@ -332,6 +425,9 @@ func (e *codecEmitter) decode(node manifest.Node, hint, indent string) (string, 
 			return "", err
 		}
 		if e.directlyEncodable(*node.Element) {
+			if lower, upper, ok := arrayBounds(node); ok && helper == "decode_collection" {
+				return fmt.Sprintf("wire::decode_collection_limits::<%s>(reader, %d, %d, %d)?", element, min, lower, upper), nil
+			}
 			return fmt.Sprintf("wire::%s::<%s>(reader, %d)?", helper, element, min), nil
 		}
 		return e.decodeCollectionLoop(node, helper, element, min, hint, indent)
@@ -350,6 +446,9 @@ func (e *codecEmitter) decode(node manifest.Node, hint, indent string) (string, 
 			return "", err
 		}
 		if e.directlyEncodable(*node.Key) && e.directlyEncodable(*node.Value) {
+			if lower, upper, ok := mapBounds(node); ok {
+				return fmt.Sprintf("wire::decode_map_limits::<%s, %s>(reader, %d, %d, %d)?", keyType, valueType, min, lower, upper), nil
+			}
 			return fmt.Sprintf("wire::decode_map::<%s, %s>(reader, %d)?", keyType, valueType, min), nil
 		}
 		key, err := e.decode(*node.Key, hint+"Key", indent+"        ")
@@ -363,7 +462,11 @@ func (e *codecEmitter) decode(node manifest.Node, hint, indent string) (string, 
 		var b strings.Builder
 		fmt.Fprintf(&b, "{\n")
 		fmt.Fprintf(&b, "%s    let declared = u64::from(reader.read_var_u32()?);\n", indent)
-		fmt.Fprintf(&b, "%s    let count = reader.checked_count(declared, %d)?;\n", indent, min)
+		if lower, upper, ok := mapBounds(node); ok {
+			fmt.Fprintf(&b, "%s    let count = reader.checked_count_limits(declared, %d, %d, %d)?;\n", indent, min, lower, upper)
+		} else {
+			fmt.Fprintf(&b, "%s    let count = reader.checked_count(declared, %d)?;\n", indent, min)
+		}
 		fmt.Fprintf(&b, "%s    let mut out: Vec<(%s, %s)> = Vec::with_capacity(count);\n", indent, keyType, valueType)
 		fmt.Fprintf(&b, "%s    for _ in 0..count {\n", indent)
 		fmt.Fprintf(&b, "%s        let key = %s;\n", indent, key)
@@ -398,7 +501,11 @@ func (e *codecEmitter) decodeCollectionLoop(node manifest.Node, helper, element 
 	default:
 		return "", fmt.Errorf("unsupported collection prefix %q", code)
 	}
-	fmt.Fprintf(&b, "%s    let count = reader.checked_count(declared, %d)?;\n", indent, min)
+	if lower, upper, ok := arrayBounds(node); ok {
+		fmt.Fprintf(&b, "%s    let count = reader.checked_count_limits(declared, %d, %d, %d)?;\n", indent, min, lower, upper)
+	} else {
+		fmt.Fprintf(&b, "%s    let count = reader.checked_count(declared, %d)?;\n", indent, min)
+	}
 	fmt.Fprintf(&b, "%s    let mut out: Vec<%s> = Vec::with_capacity(count);\n", indent, element)
 	fmt.Fprintf(&b, "%s    for _ in 0..count {\n", indent)
 	fmt.Fprintf(&b, "%s        out.push(%s);\n", indent, item)
@@ -406,6 +513,77 @@ func (e *codecEmitter) decodeCollectionLoop(node manifest.Node, helper, element 
 	fmt.Fprintf(&b, "%s    out\n", indent)
 	fmt.Fprintf(&b, "%s}", indent)
 	return b.String(), nil
+}
+
+func rustNumberExpression(node manifest.Node, expr string) (string, error) {
+	if node.Kind == manifest.KindEnum {
+		return expr + ".to_raw()", nil
+	}
+	if node.Kind != manifest.KindPrimitive || node.Primitive == nil {
+		return "", fmt.Errorf("numeric constraints require primitive or enum")
+	}
+	if node.Primitive.Code == "bool" || node.Primitive.Code == "uuid" || node.Primitive.Code == "nbt_le" {
+		return "", fmt.Errorf("primitive %s cannot carry numeric constraints", node.Primitive.Code)
+	}
+	return expr + ".0", nil
+}
+
+func rustOptionNumber(node manifest.Node, value *float64) string {
+	if value == nil {
+		return "None"
+	}
+	literal := strconv.FormatFloat(*value, 'f', -1, 64)
+	if node.Primitive != nil {
+		switch node.Primitive.Code {
+		case "f32le", "f32be", "f64le", "f64be":
+			if !strings.Contains(literal, ".") {
+				literal += ".0"
+			}
+		}
+	}
+	return "Some(" + literal + ")"
+}
+
+func stringBounds(node manifest.Node) (uint64, uint64, bool) {
+	if node.Constraints == nil || node.Constraints.MinLength == nil && node.Constraints.MaxLength == nil {
+		return 0, 0, false
+	}
+	min, max := uint64(0), ^uint64(0)
+	if node.Constraints.MinLength != nil {
+		min = *node.Constraints.MinLength
+	}
+	if node.Constraints.MaxLength != nil {
+		max = *node.Constraints.MaxLength
+	}
+	return min, max, true
+}
+
+func arrayBounds(node manifest.Node) (uint64, uint64, bool) {
+	if node.Constraints == nil || node.Constraints.MinItems == nil && node.Constraints.MaxItems == nil {
+		return 0, 0, false
+	}
+	min, max := uint64(0), ^uint64(0)
+	if node.Constraints.MinItems != nil {
+		min = *node.Constraints.MinItems
+	}
+	if node.Constraints.MaxItems != nil {
+		max = *node.Constraints.MaxItems
+	}
+	return min, max, true
+}
+
+func mapBounds(node manifest.Node) (uint64, uint64, bool) {
+	if node.Constraints == nil || node.Constraints.MinProperties == nil && node.Constraints.MaxProperties == nil {
+		return 0, 0, false
+	}
+	min, max := uint64(0), ^uint64(0)
+	if node.Constraints.MinProperties != nil {
+		min = *node.Constraints.MinProperties
+	}
+	if node.Constraints.MaxProperties != nil {
+		max = *node.Constraints.MaxProperties
+	}
+	return min, max, true
 }
 
 func (e *codecEmitter) decodeOptional(node manifest.Node, hint, indent string) (string, error) {

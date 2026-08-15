@@ -16,6 +16,7 @@ type NpcDialogue struct {
 // Marshal reads or writes NpcDialogue using its canonical wire layout.
 func (x *NpcDialogue) Marshal(io protocol.IO) {
 	io.Uint64(&x.NpcIDRawID)
+	protocol.Minimum(io, &x.NpcIDRawID, 0)
 	protocol.IntegerFunc(&x.NpcDialogueActionType, io.Varint32)
 	io.String(&x.Dialogue)
 	io.String(&x.SceneName)

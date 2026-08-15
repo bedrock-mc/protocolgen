@@ -69,7 +69,7 @@ type StructureSettings struct {
 
 // Marshal reads or writes StructureSettings using its canonical wire layout.
 func (x *StructureSettings) Marshal(io IO) {
-	io.String(&x.StructurePaletteName)
+	io.StringLimits(&x.StructurePaletteName, 0, 256)
 	io.Bool(&x.ShouldIgnoreEntities)
 	io.Bool(&x.ShouldIgnoreBlocks)
 	io.Bool(&x.ShouldAllowNonTickingPlayerAndTickingAreaChunks)

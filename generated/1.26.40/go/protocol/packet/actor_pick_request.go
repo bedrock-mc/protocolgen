@@ -17,6 +17,8 @@ type ActorPickRequest struct {
 func (x *ActorPickRequest) Marshal(io protocol.IO) {
 	io.Int64(&x.ActorID)
 	io.Uint8(&x.MaxSlots)
+	protocol.Minimum(io, &x.MaxSlots, 0)
+	protocol.Maximum(io, &x.MaxSlots, 255)
 	io.Bool(&x.WithData)
 }
 

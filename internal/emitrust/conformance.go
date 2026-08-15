@@ -21,15 +21,34 @@ where
     T: Encode + Decode + Default + PartialEq + std::fmt::Debug,
 {
     let value = T::default();
-    let bytes = value.encode_to_vec();
+    let bytes = match std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| value.encode_to_vec())) {
+        Ok(bytes) => bytes,
+        Err(payload) if schema_constraint_panic(payload.as_ref()) => return,
+        Err(payload) => std::panic::resume_unwind(payload),
+    };
     match T::decode_exact(&bytes) {
         Ok(decoded) => assert_eq!(decoded, value, "{name} did not survive a round trip"),
         Err(error) => panic!("{name} could not decode its own encoding: {error}"),
     }
 }
 
+fn schema_constraint_panic(payload: &(dyn std::any::Any + Send)) -> bool {
+    let message = payload
+        .downcast_ref::<&str>()
+        .copied()
+        .or_else(|| payload.downcast_ref::<String>().map(String::as_str));
+    matches!(
+        message,
+        Some(
+            "length outside schema limits"
+                | "number outside schema limits"
+                | "string does not match schema pattern"
+        )
+    )
+}
+
 #[test]
-fn every_packet_round_trips_its_default() {
+fn every_schema_valid_packet_default_round_trips() {
 `)
 	for _, info := range infos {
 		fmt.Fprintf(&b, "    roundtrip::<%s>(%q);\n", info.name, info.name)

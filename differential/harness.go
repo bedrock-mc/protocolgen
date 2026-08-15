@@ -202,7 +202,8 @@ func decodeOracle(factory func() gophertunnelpacket.Packet, data []byte, limits 
 // generated runtime deliberately rejects: fixed-width reads that ignore the
 // returned byte count and zero-pad truncated fields (reader.go Read calls
 // without length checks), an unbounded Varint64 with no ten-byte cap, and
-// NBT blobs the oracle passes through without structural validation, and
+// NBT blobs the oracle passes through without structural validation, schema
+// constraints the oracle does not implement, and
 // unknown union discriminants the oracle tolerates by silently skipping the
 // variant body (a lossy decode; generated fails closed). None of these occur
 // on well-formed traffic.
@@ -217,6 +218,10 @@ func oracleLeniency(err error) bool {
 		"NBT ",
 		"collection length exceeds",
 		"unknown union tag",
+		"schema limits",
+		"schema minimum",
+		"schema maximum",
+		"schema pattern",
 	} {
 		if strings.Contains(text, marker) {
 			return true

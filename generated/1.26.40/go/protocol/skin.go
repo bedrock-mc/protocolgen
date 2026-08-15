@@ -44,6 +44,8 @@ type SkinImage struct {
 // Marshal reads or writes SkinImage using its canonical wire layout.
 func (x *SkinImage) Marshal(io IO) {
 	io.Uint32(&x.Width)
+	Maximum(io, &x.Width, 4096)
 	io.Uint32(&x.Height)
-	FuncSlice(io, &x.ImageBytes, io.Varuint32, io.Uint8)
+	Maximum(io, &x.Height, 4096)
+	FuncSliceLimits(io, &x.ImageBytes, io.Varuint32, 0, 67108864, io.Uint8)
 }

@@ -43,6 +43,52 @@ func TestGenerateRustConsumesCanonicalManifest(t *testing.T) {
 	}
 }
 
+func TestGenerateRustEmitsSchemaConstraintChecks(t *testing.T) {
+	text := manifest.String(manifest.Primitive("var_u32"))
+	text.Constraints = &manifest.Constraints{MinLength: pointerTo(uint64(1)), MaxLength: pointerTo(uint64(65536)), Pattern: "^[a-z]+$"}
+	count := manifest.Array(manifest.Primitive("var_u32"), manifest.Primitive("u8"))
+	count.Constraints = &manifest.Constraints{MaxItems: pointerTo(uint64(4))}
+	number := manifest.Primitive("zigzag_i32")
+	number.Constraints = &manifest.Constraints{Minimum: pointerTo(-1.0), Maximum: pointerTo(64.0)}
+	decimal := manifest.Primitive("f32le")
+	decimal.Constraints = &manifest.Constraints{Minimum: pointerTo(0.0), Maximum: pointerTo(1.0)}
+	largeInteger := manifest.Primitive("u32le")
+	largeInteger.Constraints = &manifest.Constraints{Maximum: pointerTo(4294967294.0)}
+	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 1}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "1", Digest: "fixture", MinecraftVersion: "fixture", ProtocolVersion: 1}}, Packets: []manifest.Packet{{ID: 1, Name: "LimitsPacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{
+		{Ordinal: 0, Name: "Text", Encode: text, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		{Ordinal: 1, Name: "Values", Encode: count, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		{Ordinal: 2, Name: "Number", Encode: number, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		{Ordinal: 3, Name: "Decimal", Encode: decimal, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		{Ordinal: 4, Name: "LargeInteger", Encode: largeInteger, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+	}}}}
+	files, err := GenerateFiles(m)
+	if err != nil {
+		t.Fatal(err)
+	}
+	packet := files["src/packets.rs"]
+	for _, want := range []string{
+		"wire::encode_string_limits(writer, &self.text, 1, 65536);",
+		"wire::decode_string_limits(reader, 1, 65536)?",
+		`wire::assert_pattern(&self.text, "^[a-z]+$");`,
+		`wire::validate_pattern(&value, "^[a-z]+$")?;`,
+		"wire::encode_collection_limits(writer, self.values.as_slice(), 0, 4);",
+		"wire::decode_collection_limits::<wire::U8>(reader, 1, 0, 4)?",
+		"wire::assert_number_limits(self.number.0, Some(-1), Some(64));",
+		"wire::validate_number_limits(value.0, Some(-1), Some(64))?;",
+		"wire::assert_number_limits(self.decimal.0, Some(0.0), Some(1.0));",
+		"wire::assert_number_limits(self.large_integer.0, None, Some(4294967294));",
+	} {
+		if !strings.Contains(packet, want) {
+			t.Fatalf("generated Rust packet omits %q:\n%s", want, packet)
+		}
+	}
+	if roundtrip := files["tests/roundtrip.rs"]; !strings.Contains(roundtrip, "schema_constraint_panic") || !strings.Contains(roundtrip, "every_schema_valid_packet_default_round_trips") {
+		t.Fatalf("generated Rust round-trip test does not distinguish invalid schema defaults:\n%s", roundtrip)
+	}
+}
+
+func pointerTo[T any](value T) *T { return &value }
+
 func TestGenerateRustOrdersDefinitionsByReviewedDomain(t *testing.T) {
 	alpha := manifest.Node{Kind: manifest.KindStruct, TypeID: "Alpha", Fields: []manifest.Field{{Ordinal: 0, Name: "Value", Encode: manifest.Primitive("u8"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}
 	beta := manifest.Node{Kind: manifest.KindStruct, TypeID: "Beta", Fields: []manifest.Field{{Ordinal: 0, Name: "Value", Encode: manifest.Primitive("u8"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}

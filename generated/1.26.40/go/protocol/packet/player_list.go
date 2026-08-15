@@ -17,7 +17,7 @@ type PlayerList struct {
 
 // Marshal reads or writes PlayerList using its canonical wire layout.
 func (x *PlayerList) Marshal(io protocol.IO) {
-	protocol.FuncSlice(io, &x.Entries, io.Varuint32, func(value *protocol.PlayerListData) {
+	protocol.FuncSliceLimits(io, &x.Entries, io.Varuint32, 0, 1000, func(value *protocol.PlayerListData) {
 		protocol.MarshalPlayerListData(io, value)
 	})
 }

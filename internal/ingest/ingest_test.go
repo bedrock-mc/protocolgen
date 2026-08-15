@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -54,6 +55,30 @@ func TestMojangIngestionRetainsWireVocabulary(t *testing.T) {
 		t.Errorf("enum = %+v", result.Claims[5].Encode)
 	}
 }
+
+func TestMojangIngestionRetainsValidationConstraints(t *testing.T) {
+	lowerer := &mojangLowerer{documents: map[string]any{}, active: map[string]bool{}}
+	tests := []struct {
+		name   string
+		schema map[string]any
+		want   manifest.Constraints
+	}{
+		{"string", map[string]any{"type": "string", "minLength": 1, "maxLength": 65536, "pattern": "^[a-z]+$"}, manifest.Constraints{MinLength: pointerTo(uint64(1)), MaxLength: pointerTo(uint64(65536)), Pattern: "^[a-z]+$"}},
+		{"array", map[string]any{"type": "array", "items": map[string]any{"type": "integer", "x-underlying-type": "uint8"}, "minItems": 1, "maxItems": 4}, manifest.Constraints{MinItems: pointerTo(uint64(1)), MaxItems: pointerTo(uint64(4))}},
+		{"number", map[string]any{"type": "integer", "x-underlying-type": "int32", "minimum": -1.0, "maximum": 64.0}, manifest.Constraints{Minimum: pointerTo(-1.0), Maximum: pointerTo(64.0)}},
+		{"map", map[string]any{"type": "object", "additionalProperties": map[string]any{"type": "integer", "x-underlying-type": "uint8"}, "minProperties": 2, "maxProperties": 8}, manifest.Constraints{MinProperties: pointerTo(uint64(2)), MaxProperties: pointerTo(uint64(8))}},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			node := lowerer.lowerSchema(test.schema, "Packet.json", "Value")
+			if node.Constraints == nil || !reflect.DeepEqual(*node.Constraints, test.want) {
+				t.Fatalf("constraints = %#v, want %#v", node.Constraints, test.want)
+			}
+		})
+	}
+}
+
+func pointerTo[T any](value T) *T { return &value }
 
 func TestMojangPacketRootReferenceUsesPayloadFields(t *testing.T) {
 	root := t.TempDir()
@@ -242,6 +267,37 @@ func TestEndstoneFieldEnumUsesItsCerealValueConstraints(t *testing.T) {
 	}
 	if node.Variants[0].Name != "Survival" || node.Variants[1].Name != "Creative" {
 		t.Fatalf("variants = %#v, want first canonical names for values 0 and 1", node.Variants)
+	}
+}
+
+func TestEndstoneFieldRetainsValidationConstraints(t *testing.T) {
+	lowerer := &endstoneLowerer{types: map[string]any{}, enums: map[string]any{}, active: map[string]bool{}}
+	node := lowerer.applyFieldWrappers(endstoneScalar("string"), map[string]any{
+		"name": "Message", "type": "string",
+		"constraints": map[string]any{"min_length": 1, "max_length": 65536, "pattern": "^[a-z]+$"},
+	}, "TextPacket.Message")
+	if node.Constraints == nil || node.Constraints.MinLength == nil || *node.Constraints.MinLength != 1 || node.Constraints.MaxLength == nil || *node.Constraints.MaxLength != 65536 || node.Constraints.Pattern != "^[a-z]+$" {
+		t.Fatalf("constraints = %#v, want string bounds", node.Constraints)
+	}
+}
+
+func TestEndstoneFieldRetainsNestedValidationConstraints(t *testing.T) {
+	array := withEndstoneConstraints(manifest.Array(manifest.Primitive("var_u32"), manifest.String(manifest.Primitive("var_u32"))), map[string]any{
+		"constraints": map[string]any{"max_properties": 65535, "items": map[string]any{"max_length": 128}},
+	})
+	if array.Constraints == nil || array.Constraints.MaxItems == nil || *array.Constraints.MaxItems != 65535 || array.Element == nil || array.Element.Constraints == nil || array.Element.Constraints.MaxLength == nil || *array.Element.Constraints.MaxLength != 128 {
+		t.Fatalf("array constraints = %#v, element = %#v", array.Constraints, array.Element)
+	}
+
+	mapNode := withEndstoneConstraints(manifest.Map(manifest.Primitive("var_u32"), manifest.String(manifest.Primitive("var_u32")), manifest.Primitive("i32le")), map[string]any{
+		"constraints": map[string]any{
+			"max_properties":        255,
+			"property_names":        map[string]any{"max_length": 64},
+			"additional_properties": map[string]any{"minimum": 0, "maximum": 100},
+		},
+	})
+	if mapNode.Constraints == nil || mapNode.Constraints.MaxProperties == nil || *mapNode.Constraints.MaxProperties != 255 || mapNode.Key == nil || mapNode.Key.Constraints == nil || mapNode.Key.Constraints.MaxLength == nil || *mapNode.Key.Constraints.MaxLength != 64 || mapNode.Value == nil || mapNode.Value.Constraints == nil || mapNode.Value.Constraints.Minimum == nil || *mapNode.Value.Constraints.Minimum != 0 || mapNode.Value.Constraints.Maximum == nil || *mapNode.Value.Constraints.Maximum != 100 {
+		t.Fatalf("map constraints = %#v, key = %#v, value = %#v", mapNode.Constraints, mapNode.Key, mapNode.Value)
 	}
 }
 

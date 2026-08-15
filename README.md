@@ -92,6 +92,9 @@ go run ./cmd/protocolgen update-guide \
 This produces:
 
 - a deterministic JSON manifest containing the canonical wire protocol;
+- schema-published validation constraints (`min`/`max` lengths, collection and
+  map counts, numeric bounds, and string patterns) retained independently of
+  wire shape and enforced by generated encoders and decoders;
 - typed Go packet structures, one packet per file, with shared semantic types,
   idiomatic enums, closed union interfaces, ordered map entries, and real
   symmetric `Marshal(IO)` methods that operate on packet values. The generated
@@ -217,6 +220,8 @@ Before a manifest is written, protocolgen checks:
 - Minecraft and network protocol versions match every source pin;
 - field order, widths, signedness, compression, and length prefixes agree;
 - strings and arbitrary bytes remain distinct;
+- source validation bounds remain attached to the exact scalar or collection
+  they constrain;
 - optional nesting and union selectors are explicit;
 - enum values are complete and numeric;
 - encode and decode layouts are represented independently when necessary;

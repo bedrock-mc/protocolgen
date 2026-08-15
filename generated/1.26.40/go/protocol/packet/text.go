@@ -23,9 +23,11 @@ func (x *Text) Marshal(io protocol.IO) {
 	io.Bool(&x.Localize)
 	io.Uint8(&x.MessageCategory)
 	protocol.MarshalTextData(io, &x.Body)
-	io.String(&x.SenderSXUID)
-	io.String(&x.PlatformID)
-	protocol.OptionalFunc(io, &x.FilteredMessage, io.String)
+	io.StringLimits(&x.SenderSXUID, 0, 64)
+	io.StringLimits(&x.PlatformID, 0, 256)
+	protocol.OptionalFunc(io, &x.FilteredMessage, func(value *string) {
+		io.StringLimits(value, 0, 65536)
+	})
 }
 
 // ID returns the protocol ID for Text.

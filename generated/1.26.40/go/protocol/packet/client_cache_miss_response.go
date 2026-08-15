@@ -15,7 +15,7 @@ type ClientCacheMissResponse struct {
 
 // Marshal reads or writes ClientCacheMissResponse using its canonical wire layout.
 func (x *ClientCacheMissResponse) Marshal(io protocol.IO) {
-	protocol.Slice(io, &x.MissingBlobs)
+	protocol.SliceLimits(io, &x.MissingBlobs, 0, 4095)
 }
 
 // ID returns the protocol ID for ClientCacheMissResponse.

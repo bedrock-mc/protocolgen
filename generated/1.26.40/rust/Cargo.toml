@@ -10,3 +10,4 @@ publish = false
 bytes = "1"
 glam = "0.30"
 uuid = "1"
+regex = "1"

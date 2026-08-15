@@ -109,6 +109,29 @@ func TestMergeNodeFillsMissingTextSemantics(t *testing.T) {
 	}
 }
 
+func TestMergeNodeRetainsComplementaryConstraints(t *testing.T) {
+	unconstrained := manifest.String(manifest.Primitive("var_u32"))
+	constrained := manifest.String(manifest.Primitive("var_u32"))
+	constrained.Constraints = &manifest.Constraints{MinLength: pointerTo(uint64(1)), MaxLength: pointerTo(uint64(65536))}
+	merged, ok := mergeNode(unconstrained, constrained)
+	if !ok || merged.Constraints == nil || merged.Constraints.MinLength == nil || *merged.Constraints.MinLength != 1 || merged.Constraints.MaxLength == nil || *merged.Constraints.MaxLength != 65536 {
+		t.Fatalf("mergeNode = %#v, %v; want both string constraints", merged, ok)
+	}
+}
+
+func TestMergeNodeUsesLooserSourceLimits(t *testing.T) {
+	left := manifest.String(manifest.Primitive("var_u32"))
+	left.Constraints = &manifest.Constraints{MinLength: pointerTo(uint64(2)), MaxLength: pointerTo(uint64(512))}
+	right := manifest.String(manifest.Primitive("var_u32"))
+	right.Constraints = &manifest.Constraints{MinLength: pointerTo(uint64(1)), MaxLength: pointerTo(uint64(1000))}
+	merged, ok := mergeNode(left, right)
+	if !ok || merged.Constraints == nil || merged.Constraints.MinLength == nil || *merged.Constraints.MinLength != 1 || merged.Constraints.MaxLength == nil || *merged.Constraints.MaxLength != 1000 {
+		t.Fatalf("mergeNode = %#v, %v; want looser limits 1..1000", merged, ok)
+	}
+}
+
+func pointerTo[T any](value T) *T { return &value }
+
 func TestReconcileUsesCompleteClaimWhenAnotherSourceHasNestedUnresolvedShape(t *testing.T) {
 	target := manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}
 	incomplete := manifest.Node{Kind: manifest.KindStruct, Fields: []manifest.Field{{Ordinal: 0, Name: "Mode", Encode: manifest.Unresolved("missing enum values", true), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"mojang"}}}}}

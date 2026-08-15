@@ -303,16 +303,24 @@ func hasConcreteEvidence(node manifest.Node) bool {
 }
 
 func mergeNode(left, right manifest.Node) (manifest.Node, bool) {
+	constraints, constraintsOK := mergeConstraints(left.Constraints, right.Constraints)
+	if !constraintsOK {
+		return manifest.Node{}, false
+	}
 	if hasEvidenceGap(left) && (left.Kind == manifest.KindUnresolved || left.Kind == manifest.KindOpaque) {
+		right.Constraints = constraints
 		return right, true
 	}
 	if hasEvidenceGap(right) && (right.Kind == manifest.KindUnresolved || right.Kind == manifest.KindOpaque) {
+		left.Constraints = constraints
 		return left, true
 	}
 	if left.Kind == manifest.KindEnum && right.Kind == manifest.KindPrimitive && reflect.DeepEqual(left.Primitive, right.Primitive) {
+		left.Constraints = constraints
 		return left, true
 	}
 	if right.Kind == manifest.KindEnum && left.Kind == manifest.KindPrimitive && reflect.DeepEqual(left.Primitive, right.Primitive) {
+		right.Constraints = constraints
 		return right, true
 	}
 	if left.Kind == manifest.KindOptional && left.Value != nil && hasEvidenceGap(*left.Value) && right.Kind != manifest.KindOptional {
@@ -328,15 +336,18 @@ func mergeNode(left, right manifest.Node) (manifest.Node, bool) {
 		return result, true
 	}
 	if reflect.DeepEqual(wireNode(left), wireNode(right)) {
+		result := left
 		if nodeSemanticScore(right) > nodeSemanticScore(left) {
-			return right, true
+			result = right
 		}
-		return left, true
+		result.Constraints = constraints
+		return result, true
 	}
 	if left.Kind != right.Kind {
 		return manifest.Node{}, false
 	}
 	result := left
+	result.Constraints = constraints
 	if nodeSemanticScore(right) > nodeSemanticScore(left) {
 		result.Semantic, result.TypeID = right.Semantic, right.TypeID
 	}
@@ -447,6 +458,77 @@ func mergeNode(left, right manifest.Node) (manifest.Node, bool) {
 		return manifest.Node{}, false
 	}
 	return result, true
+}
+
+func mergeConstraints(left, right *manifest.Constraints) (*manifest.Constraints, bool) {
+	if left == nil {
+		return right, true
+	}
+	if right == nil {
+		return left, true
+	}
+	result := *left
+	mergeUint := func(dst **uint64, value *uint64, choose func(uint64, uint64) uint64) {
+		if value == nil {
+			return
+		}
+		if *dst == nil {
+			*dst = value
+			return
+		}
+		selected := choose(**dst, *value)
+		*dst = &selected
+	}
+	minimum := func(left, right uint64) uint64 {
+		if left < right {
+			return left
+		}
+		return right
+	}
+	maximum := func(left, right uint64) uint64 {
+		if left > right {
+			return left
+		}
+		return right
+	}
+	mergeUint(&result.MinLength, right.MinLength, minimum)
+	mergeUint(&result.MaxLength, right.MaxLength, maximum)
+	mergeUint(&result.MinItems, right.MinItems, minimum)
+	mergeUint(&result.MaxItems, right.MaxItems, maximum)
+	mergeUint(&result.MinProperties, right.MinProperties, minimum)
+	mergeUint(&result.MaxProperties, right.MaxProperties, maximum)
+	mergeFloat := func(dst **float64, value *float64, choose func(float64, float64) float64) {
+		if value == nil {
+			return
+		}
+		if *dst == nil {
+			*dst = value
+			return
+		}
+		selected := choose(**dst, *value)
+		*dst = &selected
+	}
+	minimumFloat := func(left, right float64) float64 {
+		if left < right {
+			return left
+		}
+		return right
+	}
+	maximumFloat := func(left, right float64) float64 {
+		if left > right {
+			return left
+		}
+		return right
+	}
+	mergeFloat(&result.Minimum, right.Minimum, minimumFloat)
+	mergeFloat(&result.Maximum, right.Maximum, maximumFloat)
+	if result.Pattern != "" && right.Pattern != "" && result.Pattern != right.Pattern {
+		return nil, false
+	}
+	if result.Pattern == "" {
+		result.Pattern = right.Pattern
+	}
+	return &result, true
 }
 
 func mergeField(left, right manifest.Field) (manifest.Field, bool) {
@@ -571,6 +653,7 @@ func wireNode(node manifest.Node) manifest.Node {
 	}
 	node.Semantic = ""
 	node.TypeID = ""
+	node.Constraints = nil
 	if node.Kind == manifest.KindEnum {
 		return manifest.Node{Kind: manifest.KindPrimitive, Primitive: node.Primitive}
 	}

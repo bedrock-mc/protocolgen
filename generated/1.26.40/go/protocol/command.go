@@ -15,8 +15,8 @@ type ChainedSubcommand struct {
 
 // Marshal reads or writes ChainedSubcommand using its canonical wire layout.
 func (x *ChainedSubcommand) Marshal(io IO) {
-	io.String(&x.Name)
-	Slice(io, &x.SubCommandValues)
+	io.StringLimits(&x.Name, 0, 512)
+	SliceLimits(io, &x.SubCommandValues, 0, 32)
 }
 
 // ChainedSubcommandValue represents the value for a chained subcommand argument.
@@ -62,13 +62,14 @@ type Command struct {
 
 // Marshal reads or writes Command using its canonical wire layout.
 func (x *Command) Marshal(io IO) {
-	io.String(&x.Name)
-	io.String(&x.Description)
+	io.StringLimits(&x.Name, 0, 1000)
+	io.StringLimits(&x.Description, 0, 1000)
 	io.Uint16(&x.Flags)
+	Minimum(io, &x.Flags, 0)
 	io.String(&x.PermissionLevel)
 	io.Int32(&x.AliasEnum)
-	FuncSlice(io, &x.CommandDataChainedSubcommandIndexes, io.Varuint32, io.Uint32)
-	Slice(io, &x.Overloads)
+	FuncSliceLimits(io, &x.CommandDataChainedSubcommandIndexes, io.Varuint32, 0, 250, io.Uint32)
+	SliceLimits(io, &x.Overloads, 0, 250)
 }
 
 type CommandBlockUpdateData interface {
@@ -147,7 +148,7 @@ type CommandEnumConstraint struct {
 func (x *CommandEnumConstraint) Marshal(io IO) {
 	io.Uint32(&x.EnumValueSymbol)
 	io.Uint32(&x.EnumSymbol)
-	FuncSlice(io, &x.ConstraintIndices, io.Varuint32, io.Uint8)
+	FuncSliceLimits(io, &x.ConstraintIndices, io.Varuint32, 0, 250, io.Uint8)
 }
 
 // CommandOrigin holds data that identifies the origin of the requesting of a command. It holds
@@ -169,7 +170,7 @@ type CommandOriginData struct {
 func (x *CommandOriginData) Marshal(io IO) {
 	io.String(&x.Type)
 	io.UUID(&x.UUID)
-	io.String(&x.RequestID)
+	io.StringLimits(&x.RequestID, 0, 39)
 	io.Int64(&x.PlayerID)
 }
 
@@ -270,6 +271,6 @@ type DynamicEnum struct {
 
 // Marshal reads or writes DynamicEnum using its canonical wire layout.
 func (x *DynamicEnum) Marshal(io IO) {
-	io.String(&x.EnumName)
+	io.StringLimits(&x.EnumName, 0, 512)
 	FuncSlice(io, &x.EnumOptions, io.Varuint32, io.String)
 }

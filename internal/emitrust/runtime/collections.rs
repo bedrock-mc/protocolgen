@@ -35,6 +35,11 @@ pub fn encode_map<K: Encode, V: Encode>(writer: &mut Writer, entries: &[(K, V)])
     }
 }
 
+pub fn encode_map_limits<K: Encode, V: Encode>(writer: &mut Writer, entries: &[(K, V)], minimum: u64, maximum: u64) {
+    assert_length(entries.len(), minimum, maximum);
+    encode_map(writer, entries);
+}
+
 /// Reads a `VarUInt`-prefixed map, preserving wire order.
 pub fn decode_map<K: Decode, V: Decode>(
     reader: &mut Reader<'_>,
@@ -42,6 +47,23 @@ pub fn decode_map<K: Decode, V: Decode>(
 ) -> DecodeResult<Vec<(K, V)>> {
     let declared = u64::from(reader.read_var_u32()?);
     let count = reader.checked_count(declared, min_entry_size)?;
+    let mut out = Vec::with_capacity(count);
+    for _ in 0..count {
+        let key = K::decode(reader)?;
+        let value = V::decode(reader)?;
+        out.push((key, value));
+    }
+    Ok(out)
+}
+
+pub fn decode_map_limits<K: Decode, V: Decode>(
+    reader: &mut Reader<'_>,
+    min_entry_size: usize,
+    minimum: u64,
+    maximum: u64,
+) -> DecodeResult<Vec<(K, V)>> {
+    let declared = u64::from(reader.read_var_u32()?);
+    let count = reader.checked_count_limits(declared, min_entry_size, minimum, maximum)?;
     let mut out = Vec::with_capacity(count);
     for _ in 0..count {
         let key = K::decode(reader)?;
