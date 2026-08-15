@@ -10695,7 +10695,7 @@ pub enum ResourcePackClientResponseData {
 }
 
 impl ResourcePackClientResponseData {
-    pub fn discriminant(&self) -> i8 {
+    pub fn discriminant(&self) -> u32 {
         match self {
             Self::Cancel { .. } => 0,
             Self::Downloading { .. } => 1,
@@ -10715,7 +10715,7 @@ impl Default for ResourcePackClientResponseData {
 
 impl wire::Encode for ResourcePackClientResponseData {
     fn encode(&self, writer: &mut wire::Writer) {
-        wire::I8(self.discriminant()).encode(writer);
+        wire::VarUInt(self.discriminant()).encode(writer);
         match self {
             Self::Cancel { response_type } => {
                 response_type.encode(writer);
@@ -10736,7 +10736,7 @@ impl wire::Encode for ResourcePackClientResponseData {
 
 impl wire::Decode for ResourcePackClientResponseData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let discriminant = <wire::I8 as wire::Decode>::decode(reader)?.0;
+        let discriminant = <wire::VarUInt as wire::Decode>::decode(reader)?.0;
         Ok(match discriminant {
             0 => {
                 let response_type = <String as wire::Decode>::decode(reader)?;

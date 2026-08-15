@@ -10,8 +10,8 @@ type ResourcePackClientResponseData interface {
 func MarshalResourcePackClientResponseData(io IO, x *ResourcePackClientResponseData) {
 	UnionFunc(io,
 		func() {
-			var tag int8
-			io.Int8(&tag)
+			var tag uint32
+			io.Varuint32(&tag)
 			switch int64(tag) {
 			case 0:
 				value := new(Cancel)
@@ -36,20 +36,20 @@ func MarshalResourcePackClientResponseData(io IO, x *ResourcePackClientResponseD
 		func() {
 			switch value := (*x).(type) {
 			case *Cancel:
-				tag := int8(0)
-				io.Int8(&tag)
+				tag := uint32(0)
+				io.Varuint32(&tag)
 				value.Marshal(io)
 			case *Downloading:
-				tag := int8(1)
-				io.Int8(&tag)
+				tag := uint32(1)
+				io.Varuint32(&tag)
 				value.Marshal(io)
 			case *DownloadingFinished:
-				tag := int8(2)
-				io.Int8(&tag)
+				tag := uint32(2)
+				io.Varuint32(&tag)
 				value.Marshal(io)
 			case *ResourcePackStackFinished:
-				tag := int8(3)
-				io.Int8(&tag)
+				tag := uint32(3)
+				io.Varuint32(&tag)
 				value.Marshal(io)
 			default:
 				io.InvalidValue(*x, "unknown union value")

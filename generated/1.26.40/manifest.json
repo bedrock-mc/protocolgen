@@ -2430,9 +2430,9 @@
             "control": {
               "kind": "primitive",
               "primitive": {
-                "code": "i8",
-                "width": 8,
-                "signed": true,
+                "code": "var_u32",
+                "width": 32,
+                "signed": false,
                 "zigzag": false,
                 "endianness": "none"
               }
@@ -115990,11 +115990,11 @@
     {
       "id": "protocol-2168-gophertunnel-packet-8-field-0",
       "target": "ResourcePackClientResponsePacket.Response",
-      "pre_patch_context_sha256": "sha256:e7c83a73a4eac8b0edf4c8455e690ce7792e87f25e1ccd812e05a53d9e9d2b5c",
+      "pre_patch_context_sha256": "sha256:ba7203d90a9606fdc8248e2abf2edcffaa0e2841edc507ac2037afe474382420",
       "claims": [
         {
           "source_id": "endstone",
-          "digest": "sha256:eb116e20ec7e9377fdec98903948c22fe2b89f2723615bd90e128b6bba7b65c4"
+          "digest": "sha256:af18ae703e495bbf3e2f40522f4817f84abdd90134540563b3346d008c90e9ba"
         },
         {
           "source_id": "mojang",
@@ -117894,6 +117894,21 @@
         }
       ],
       "reason": "PlayerVideoCapture has one fixed-byte action selector; only the start variant carries frame-rate and file-prefix payload fields."
+    },
+    {
+      "id": "resource-pack-response-selector-is-varuint32",
+      "target": "packets/ResourcePackClientResponsePacket.json#/fields/0/type/switch/type",
+      "pre_patch_node_sha256": "sha256:0a2ac225fd44a466fa5ff090b45894b5d2c74583853f973ea922965940224af1",
+      "pre_patch_context_sha256": "sha256:d803c424c6e6d3f7f118037d403aacd59099e2a0fff4a7ffa7fd399ed5a6d186",
+      "post_patch_node_sha256": "sha256:5582e89fd2a6de3fa42a276330594bcd524d152a73a2160deea29ff4213ad9fe",
+      "evidence": [
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/hashimthearab/gophertunnel/blob/9f42f3679a573fc4b51104569cc4f422036e28ec/minecraft/protocol/packet/resource_pack_client_response.go#L30-L40",
+          "summary": "The pinned protocol-2168 serializer stores Response as uint32 and marshals it with Varuint32 before the response name and optional pack list."
+        }
+      ],
+      "reason": "Protocol 2168 writes the ResourcePackClientResponse discriminator as an unsigned varuint32 before the lowercase response name. Endstone incorrectly declares the selector as int8; values 0 through 3 hide the width error because their canonical one-byte encodings coincide."
     },
     {
       "id": "resource-pack-response-values-start-at-zero",

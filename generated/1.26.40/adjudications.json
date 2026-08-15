@@ -3559,11 +3559,11 @@
   {
     "id": "protocol-2168-gophertunnel-packet-8-field-0",
     "target": "ResourcePackClientResponsePacket.Response",
-    "pre_patch_context_sha256": "sha256:e7c83a73a4eac8b0edf4c8455e690ce7792e87f25e1ccd812e05a53d9e9d2b5c",
+    "pre_patch_context_sha256": "sha256:ba7203d90a9606fdc8248e2abf2edcffaa0e2841edc507ac2037afe474382420",
     "claims": [
       {
         "source_id": "endstone",
-        "digest": "sha256:eb116e20ec7e9377fdec98903948c22fe2b89f2723615bd90e128b6bba7b65c4"
+        "digest": "sha256:af18ae703e495bbf3e2f40522f4817f84abdd90134540563b3346d008c90e9ba"
       },
       {
         "source_id": "mojang",
