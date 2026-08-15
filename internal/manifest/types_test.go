@@ -148,6 +148,12 @@ func TestValidateRequiresIndependentAdjudicationEvidence(t *testing.T) {
 	}
 
 	value = adjudicatedFixture()
+	value.Adjudications[0].Evidence[0].Locator = "https://www.github.com/example/endstone-docs/blob/rev/status.json"
+	if err := Validate(value); err == nil || !strings.Contains(err.Error(), "no evidence independent") {
+		t.Fatalf("Validate error = %v, want www GitHub alias rejection", err)
+	}
+
+	value = adjudicatedFixture()
 	value.Adjudications[0].Evidence[0].SourceID = ""
 	if err := Validate(value); err == nil || !strings.Contains(err.Error(), "unpinned evidence source") {
 		t.Fatalf("Validate error = %v, want empty evidence source rejection", err)

@@ -407,7 +407,7 @@ func repositoryIdentity(locator string) string {
 	if err != nil || parsed.Host == "" {
 		return ""
 	}
-	host := strings.ToLower(parsed.Hostname())
+	host := strings.TrimPrefix(strings.TrimSuffix(strings.ToLower(parsed.Hostname()), "."), "www.")
 	segments := strings.Split(strings.Trim(parsed.Path, "/"), "/")
 	if host == "github.com" && len(segments) >= 2 {
 		return host + "/" + strings.ToLower(segments[0]) + "/" + strings.TrimSuffix(strings.ToLower(segments[1]), ".git")
