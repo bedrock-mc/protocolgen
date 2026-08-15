@@ -140,6 +140,38 @@ func TestValidateRequiresIndependentAdjudicationEvidence(t *testing.T) {
 	if err := Validate(value); err != nil {
 		t.Fatalf("Validate independent evidence: %v", err)
 	}
+
+	value = adjudicatedFixture()
+	value.Adjudications[0].Evidence[0].Locator = "https://raw.githubusercontent.com/example/endstone-docs/rev/status.json"
+	if err := Validate(value); err == nil || !strings.Contains(err.Error(), "no evidence independent") {
+		t.Fatalf("Validate error = %v, want raw GitHub alias rejection", err)
+	}
+
+	value = adjudicatedFixture()
+	value.Adjudications[0].Evidence[0].SourceID = ""
+	if err := Validate(value); err == nil || !strings.Contains(err.Error(), "unpinned evidence source") {
+		t.Fatalf("Validate error = %v, want empty evidence source rejection", err)
+	}
+}
+
+func TestValidateRejectsEnumOrdinalsOutsidePrimitiveRange(t *testing.T) {
+	value := adjudicatedFixture()
+	value.Packets[0].Fields[0].Encode = Enum("u8", EnumValue{Value: -1, Name: "Negative"})
+	if err := Validate(value); err == nil || !strings.Contains(err.Error(), "does not fit u8") {
+		t.Fatalf("Validate error = %v, want negative u8 enum rejection", err)
+	}
+	value.Packets[0].Fields[0].Encode = Enum("u8", EnumValue{Value: 255, Name: "Maximum"})
+	if err := Validate(value); err != nil {
+		t.Fatalf("Validate u8 maximum: %v", err)
+	}
+}
+
+func TestValidateRejectsUnionValuesOutsideControlRange(t *testing.T) {
+	value := adjudicatedFixture()
+	value.Packets[0].Fields[0].Encode = Union(Primitive("u8"), Variant{Value: -1, Name: "Negative", Encode: Void()})
+	if err := Validate(value); err == nil || !strings.Contains(err.Error(), "does not fit u8") {
+		t.Fatalf("Validate error = %v, want negative u8 union rejection", err)
+	}
 }
 
 func TestValidateRejectsDuplicateAdjudicationFingerprints(t *testing.T) {

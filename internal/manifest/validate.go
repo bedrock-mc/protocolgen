@@ -225,6 +225,9 @@ func validateNode(node Node, path string, sourceIDs map[string]bool) error {
 				return fmt.Errorf("%s variant[%d] has duplicate or empty explicit identity", path, i)
 			}
 			seenNames[variant.Name], seenValues[variant.Value] = true, true
+			if !enumValueFitsPrimitive(variant.Value, *node.Control.Primitive) {
+				return fmt.Errorf("%s variant[%d] value %d does not fit %s", path, i, variant.Value, node.Control.Primitive.Code)
+			}
 			if err := validateNode(variant.Encode, fmt.Sprintf("%s.variants[%d].encode", path, i), sourceIDs); err != nil {
 				return err
 			}
@@ -267,6 +270,9 @@ func validateNode(node Node, path string, sourceIDs map[string]bool) error {
 				return fmt.Errorf("%s enum value[%d] lacks unique explicit ordinal", path, i)
 			}
 			seenNames[variant.Name], seenValues[variant.Value] = true, true
+			if !enumValueFitsPrimitive(variant.Value, *node.Primitive) {
+				return fmt.Errorf("%s enum value[%d] ordinal %d does not fit %s", path, i, variant.Value, node.Primitive.Code)
+			}
 		}
 	case KindReserved, KindIgnored:
 		if node.Element == nil {
@@ -381,6 +387,9 @@ func validateAdjudications(m Manifest, sourceIDs map[string]bool) error {
 		selectedRepository := sourceRepositories[adjudication.SelectedSource]
 		independent := false
 		for _, evidence := range adjudication.Evidence {
+			if evidence.SourceID == "" || !sourceIDs[evidence.SourceID] || evidence.Locator == "" {
+				return fmt.Errorf("adjudication %q cites an unpinned evidence source", adjudication.ID)
+			}
 			evidenceRepository := repositoryIdentity(evidence.Locator)
 			if evidenceRepository != "" && evidenceRepository != selectedRepository {
 				independent = true
@@ -403,10 +412,42 @@ func repositoryIdentity(locator string) string {
 	if host == "github.com" && len(segments) >= 2 {
 		return host + "/" + strings.ToLower(segments[0]) + "/" + strings.TrimSuffix(strings.ToLower(segments[1]), ".git")
 	}
+	if host == "raw.githubusercontent.com" && len(segments) >= 2 {
+		return "github.com/" + strings.ToLower(segments[0]) + "/" + strings.TrimSuffix(strings.ToLower(segments[1]), ".git")
+	}
+	if host == "api.github.com" && len(segments) >= 3 && segments[0] == "repos" {
+		return "github.com/" + strings.ToLower(segments[1]) + "/" + strings.TrimSuffix(strings.ToLower(segments[2]), ".git")
+	}
+	if host == "codeload.github.com" && len(segments) >= 2 {
+		return "github.com/" + strings.ToLower(segments[0]) + "/" + strings.TrimSuffix(strings.ToLower(segments[1]), ".git")
+	}
 	if len(segments) != 0 && segments[0] != "" {
 		return host + "/" + strings.ToLower(segments[0])
 	}
 	return host
+}
+
+func enumValueFitsPrimitive(value int64, primitive PrimitiveShape) bool {
+	if primitive.Code == "bool" {
+		return value == 0 || value == 1
+	}
+	if strings.HasPrefix(primitive.Code, "f") || primitive.Width == 0 || primitive.Width > 64 {
+		return false
+	}
+	if primitive.Signed {
+		if primitive.Width == 64 {
+			return true
+		}
+		limit := int64(1) << (primitive.Width - 1)
+		return value >= -limit && value < limit
+	}
+	if value < 0 {
+		return false
+	}
+	if primitive.Width == 64 {
+		return true
+	}
+	return uint64(value) < uint64(1)<<primitive.Width
 }
 
 func validateOverrides(m Manifest, sourceIDs map[string]bool) error {
