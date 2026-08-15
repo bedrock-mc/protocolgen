@@ -2261,6 +2261,11 @@
       "rationale": "Grouped by the generated type-family prefix; no direct gophertunnel counterpart."
     },
     {
+      "type_id": "enums/PlayerListPacketType",
+      "domain": "player",
+      "rationale": "Matches the gophertunnel player protocol domain and the PlayerList packet family."
+    },
+    {
       "type_id": "enums/PlayerLocationPacketPayload::Type",
       "domain": "player",
       "rationale": "Grouped by the generated type-family prefix; no direct gophertunnel counterpart."

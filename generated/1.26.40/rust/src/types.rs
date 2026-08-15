@@ -9933,7 +9933,12 @@ impl wire::Decode for PlayerInputTick {
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum PlayerListData {
-    Add {
+    RemoveEntry {
+        action: PlayerListPacketType,
+        uuid: uuid::Uuid,
+    },
+    AddEntry {
+        action: PlayerListPacketType,
         uuid: uuid::Uuid,
         actor_unique_id: ActorUniqueID,
         player_name: String,
@@ -9946,43 +9951,36 @@ pub enum PlayerListData {
         is_sub_client: bool,
         player_color: MceColor,
     },
-    Remove {
-        uuid: uuid::Uuid,
-    },
 }
 
 impl PlayerListData {
-    pub fn discriminant(&self) -> u8 {
+    pub fn discriminant(&self) -> u32 {
         match self {
-            Self::Add { .. } => 0,
-            Self::Remove { .. } => 1,
+            Self::RemoveEntry { .. } => 0,
+            Self::AddEntry { .. } => 1,
         }
     }
 }
 
 impl Default for PlayerListData {
     fn default() -> Self {
-        Self::Add {
+        Self::RemoveEntry {
+            action: Default::default(),
             uuid: Default::default(),
-            actor_unique_id: Default::default(),
-            player_name: Default::default(),
-            xbl_xuid: Default::default(),
-            platform_online_id: Default::default(),
-            build_platform: Default::default(),
-            serialized_skin: Default::default(),
-            is_teacher: Default::default(),
-            is_host: Default::default(),
-            is_sub_client: Default::default(),
-            player_color: Default::default(),
         }
     }
 }
 
 impl wire::Encode for PlayerListData {
     fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.discriminant()).encode(writer);
+        wire::VarUInt(self.discriminant()).encode(writer);
         match self {
-            Self::Add { uuid, actor_unique_id, player_name, xbl_xuid, platform_online_id, build_platform, serialized_skin, is_teacher, is_host, is_sub_client, player_color } => {
+            Self::RemoveEntry { action, uuid } => {
+                action.encode(writer);
+                uuid.encode(writer);
+            }
+            Self::AddEntry { action, uuid, actor_unique_id, player_name, xbl_xuid, platform_online_id, build_platform, serialized_skin, is_teacher, is_host, is_sub_client, player_color } => {
+                action.encode(writer);
                 uuid.encode(writer);
                 actor_unique_id.encode(writer);
                 player_name.encode(writer);
@@ -9995,18 +9993,21 @@ impl wire::Encode for PlayerListData {
                 is_sub_client.encode(writer);
                 player_color.encode(writer);
             }
-            Self::Remove { uuid } => {
-                uuid.encode(writer);
-            }
         }
     }
 }
 
 impl wire::Decode for PlayerListData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let discriminant = <wire::U8 as wire::Decode>::decode(reader)?.0;
+        let discriminant = <wire::VarUInt as wire::Decode>::decode(reader)?.0;
         Ok(match discriminant {
             0 => {
+                let action = <PlayerListPacketType as wire::Decode>::decode(reader)?;
+                let uuid = <uuid::Uuid as wire::Decode>::decode(reader)?;
+                Self::RemoveEntry { action, uuid }
+            }
+            1 => {
+                let action = <PlayerListPacketType as wire::Decode>::decode(reader)?;
                 let uuid = <uuid::Uuid as wire::Decode>::decode(reader)?;
                 let actor_unique_id = <ActorUniqueID as wire::Decode>::decode(reader)?;
                 let player_name = <String as wire::Decode>::decode(reader)?;
@@ -10018,11 +10019,7 @@ impl wire::Decode for PlayerListData {
                 let is_host = <bool as wire::Decode>::decode(reader)?;
                 let is_sub_client = <bool as wire::Decode>::decode(reader)?;
                 let player_color = <MceColor as wire::Decode>::decode(reader)?;
-                Self::Add { uuid, actor_unique_id, player_name, xbl_xuid, platform_online_id, build_platform, serialized_skin, is_teacher, is_host, is_sub_client, player_color }
-            }
-            1 => {
-                let uuid = <uuid::Uuid as wire::Decode>::decode(reader)?;
-                Self::Remove { uuid }
+                Self::AddEntry { action, uuid, actor_unique_id, player_name, xbl_xuid, platform_online_id, build_platform, serialized_skin, is_teacher, is_host, is_sub_client, player_color }
             }
             value => {
                 return Err(wire::DecodeError::UnknownVariant {

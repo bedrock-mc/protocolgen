@@ -87,15 +87,15 @@ type PlayerListData interface {
 func MarshalPlayerListData(io IO, x *PlayerListData) {
 	UnionFunc(io,
 		func() {
-			var tag uint8
-			io.Uint8(&tag)
+			var tag uint32
+			io.Varuint32(&tag)
 			switch int64(tag) {
 			case 0:
-				value := new(AddEntry)
+				value := new(RemoveEntry)
 				value.Marshal(io)
 				*x = value
 			case 1:
-				value := new(RemoveEntry)
+				value := new(AddEntry)
 				value.Marshal(io)
 				*x = value
 			default:
@@ -104,13 +104,13 @@ func MarshalPlayerListData(io IO, x *PlayerListData) {
 		},
 		func() {
 			switch value := (*x).(type) {
-			case *AddEntry:
-				tag := uint8(0)
-				io.Uint8(&tag)
-				value.Marshal(io)
 			case *RemoveEntry:
-				tag := uint8(1)
-				io.Uint8(&tag)
+				tag := uint32(0)
+				io.Varuint32(&tag)
+				value.Marshal(io)
+			case *AddEntry:
+				tag := uint32(1)
+				io.Varuint32(&tag)
 				value.Marshal(io)
 			default:
 				io.InvalidValue(*x, "unknown union value")
@@ -118,6 +118,12 @@ func MarshalPlayerListData(io IO, x *PlayerListData) {
 		},
 	)
 }
+
+type PlayerListPacketType uint8
+
+const (
+	PlayerListPacketTypeRemove PlayerListPacketType = 1
+)
 
 type PlayerLocationData interface {
 	isPlayerLocationData()

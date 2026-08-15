@@ -3223,11 +3223,11 @@
   {
     "id": "protocol-2168-gophertunnel-packet-63-field-0",
     "target": "PlayerListPacket.Entries",
-    "pre_patch_context_sha256": "sha256:e1da5aa5b843ff068945f13ad4ee7a199fac1d87587edd8e98c44f8bc2ca30df",
+    "pre_patch_context_sha256": "sha256:d8c0a7afd31e42016142903e8248bfbdc6711b06171c25dbe33f4034004c1252",
     "claims": [
       {
         "source_id": "endstone",
-        "digest": "sha256:1a56cca6c98f76b058ed9d9c7dc72b71a5cb794872556c1502883cfe3a87e60f"
+        "digest": "sha256:b276c88cec93e2d5735619fe27feea17f975843608a541ec76a80d6740c21668"
       },
       {
         "source_id": "mojang",
@@ -3238,11 +3238,11 @@
     "evidence": [
       {
         "source_id": "endstone",
-        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/player_list.go#L23",
-        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/player.go#L95-L129",
+        "summary": "The pinned serializer writes positional varuint32 variant 0 for Remove and 1 for Add, followed by the legacy uint8 action and UUID. The corrected Endstone claim matches that complete wire shape."
       }
     ],
-    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+    "reason": "Direct inspection and exact protocol-2168 fixtures show that the corrected Endstone claim matches the pinned Gophertunnel two-selector PlayerList entry wire shape."
   },
   {
     "id": "protocol-2168-gophertunnel-packet-64-field-0",

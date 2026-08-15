@@ -21,6 +21,7 @@ func (x *Achievement) Marshal(io IO) {
 }
 
 type AddEntry struct {
+	Action           PlayerListPacketType
 	UUID             uuid.UUID
 	ActorUniqueID    int64
 	PlayerName       string
@@ -38,6 +39,7 @@ func (*AddEntry) isPlayerListData() {}
 
 // Marshal reads or writes AddEntry using its canonical wire layout.
 func (x *AddEntry) Marshal(io IO) {
+	IntegerFunc(&x.Action, io.Uint8)
 	io.UUID(&x.UUID)
 	io.ActorUniqueID(&x.ActorUniqueID)
 	io.String(&x.PlayerName)
@@ -2666,13 +2668,15 @@ const (
 )
 
 type RemoveEntry struct {
-	UUID uuid.UUID
+	Action PlayerListPacketType
+	UUID   uuid.UUID
 }
 
 func (*RemoveEntry) isPlayerListData() {}
 
 // Marshal reads or writes RemoveEntry using its canonical wire layout.
 func (x *RemoveEntry) Marshal(io IO) {
+	IntegerFunc(&x.Action, io.Uint8)
 	io.UUID(&x.UUID)
 }
 

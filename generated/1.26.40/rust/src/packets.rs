@@ -2472,7 +2472,7 @@ impl wire::Encode for PlayerList {
 
 impl wire::Decode for PlayerList {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let entries = wire::decode_collection::<PlayerListData>(reader, 17)?;
+        let entries = wire::decode_collection::<PlayerListData>(reader, 18)?;
         Ok(Self {
             entries,
         })

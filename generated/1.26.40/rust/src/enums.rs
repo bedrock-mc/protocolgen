@@ -8457,6 +8457,49 @@ impl wire::Decode for PlayerActionType {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
+pub enum PlayerListPacketType {
+    #[default]
+    Remove,
+    Unknown(u8),
+}
+
+impl From<u8> for PlayerListPacketType {
+    fn from(value: u8) -> Self {
+        match value {
+            1 => Self::Remove,
+            value => Self::Unknown(value),
+        }
+    }
+}
+
+impl PlayerListPacketType {
+    pub fn to_raw(self) -> u8 {
+        match self {
+            Self::Remove => 1,
+            Self::Unknown(value) => value,
+        }
+    }
+}
+
+impl From<PlayerListPacketType> for u8 {
+    fn from(value: PlayerListPacketType) -> Self {
+        value.to_raw()
+    }
+}
+
+impl wire::Encode for PlayerListPacketType {
+    fn encode(&self, writer: &mut wire::Writer) {
+        wire::U8(self.to_raw()).encode(writer);
+    }
+}
+
+impl wire::Decode for PlayerListPacketType {
+    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
+        Ok(Self::from(<wire::U8 as wire::Decode>::decode(reader)?.0))
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum PlayerLocationType {
     #[default]
     PlayerLocationCoordinates,

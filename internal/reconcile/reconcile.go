@@ -217,7 +217,13 @@ func selectClaim(target manifest.Target, group []claims.Claim, adjudications []m
 			continue
 		}
 		if adjudication.PrePatchContextSHA256 != context {
-			return claims.Claim{}, nil, nil, "", fmt.Errorf("stale adjudication %q for %s: pre-patch context fingerprint changed", adjudication.ID, adjudication.Target)
+			return claims.Claim{}, nil, nil, "", fmt.Errorf(
+				"stale adjudication %q for %s: pre-patch context fingerprint is %s, current context is %s",
+				adjudication.ID,
+				adjudication.Target,
+				adjudication.PrePatchContextSHA256,
+				context,
+			)
 		}
 		if err := matchClaimFingerprints(adjudication, group); err != nil {
 			return claims.Claim{}, nil, nil, "", fmt.Errorf("stale adjudication %q for %s: %w", adjudication.ID, adjudication.Target, err)
@@ -831,7 +837,7 @@ func matchClaimFingerprints(adjudication manifest.Adjudication, group []claims.C
 		got[claim.SourceID] = claim.Digest
 	}
 	if !reflect.DeepEqual(want, got) {
-		return fmt.Errorf("claim fingerprints no longer match")
+		return fmt.Errorf("claim fingerprints no longer match: adjudication has %v, current claims are %v", want, got)
 	}
 	return nil
 }
