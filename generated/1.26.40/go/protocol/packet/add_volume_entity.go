@@ -21,8 +21,8 @@ type AddVolumeEntity struct {
 func (x *AddVolumeEntity) Marshal(io protocol.IO) {
 	x.EntityNetworkID.Marshal(io)
 	io.NBT(&x.Components, protocol.NBTNetwork)
-	io.String(&x.JSONIdentifier)
-	io.String(&x.InstanceName)
+	io.StringLimits(&x.JSONIdentifier, 1, 18446744073709551615)
+	io.StringLimits(&x.InstanceName, 1, 18446744073709551615)
 	x.MinBounds.Marshal(io)
 	x.MaxBounds.Marshal(io)
 	x.DimensionType.Marshal(io)

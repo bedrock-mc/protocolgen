@@ -15,7 +15,7 @@ type PrimitiveShapes struct {
 
 // Marshal reads or writes PrimitiveShapes using its canonical wire layout.
 func (x *PrimitiveShapes) Marshal(io protocol.IO) {
-	protocol.Slice(io, &x.ArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemoved)
+	protocol.SliceLimits(io, &x.ArrayOfPrimitiveShapesCanBeAMixOfNewUpdatedOrRemoved, 0, 1048576)
 }
 
 // ID returns the protocol ID for PrimitiveShapes.

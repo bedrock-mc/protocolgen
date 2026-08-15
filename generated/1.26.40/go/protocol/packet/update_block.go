@@ -27,8 +27,11 @@ type UpdateBlock struct {
 func (x *UpdateBlock) Marshal(io protocol.IO) {
 	x.BlockPosition.Marshal(io)
 	io.Varuint32(&x.BlockRuntimeID)
+	protocol.Minimum(io, &x.BlockRuntimeID, 0)
 	io.Varuint32(&x.Flags)
+	protocol.Minimum(io, &x.Flags, 0)
 	io.Varuint32(&x.Layer)
+	protocol.Minimum(io, &x.Layer, 0)
 }
 
 // ID returns the protocol ID for UpdateBlock.

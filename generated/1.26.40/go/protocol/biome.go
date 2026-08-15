@@ -556,5 +556,5 @@ type NoiseDescriptor struct {
 func (x *NoiseDescriptor) Marshal(io IO) {
 	io.String(&x.Name)
 	io.Int32(&x.FirstOctave)
-	FuncSlice(io, &x.Amplitudes, io.Varuint32, io.Float32)
+	FuncSliceLimits(io, &x.Amplitudes, io.Varuint32, 1, 100, io.Float32)
 }

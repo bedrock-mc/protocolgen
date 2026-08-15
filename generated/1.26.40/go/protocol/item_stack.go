@@ -22,6 +22,7 @@ func (x *AutoCraftRecipeStackRequestAction) Marshal(io IO) {
 	IntegerFunc(&x.ActionType, io.Uint8)
 	x.RecipeNetID.Marshal(io)
 	io.Uint8(&x.NumberOfRequestedCrafts)
+	Minimum(io, &x.NumberOfRequestedCrafts, 1)
 	Slice(io, &x.Ingredients)
 }
 
@@ -39,7 +40,11 @@ func (*BeaconPaymentStackRequestAction) isStackRequestAction() {}
 func (x *BeaconPaymentStackRequestAction) Marshal(io IO) {
 	IntegerFunc(&x.ActionType, io.Uint8)
 	io.Varint32(&x.PrimaryEffectID)
+	Minimum(io, &x.PrimaryEffectID, 0)
+	Maximum(io, &x.PrimaryEffectID, 37)
 	io.Varint32(&x.SecondaryEffectID)
+	Minimum(io, &x.SecondaryEffectID, 0)
+	Maximum(io, &x.SecondaryEffectID, 37)
 }
 
 // ConsumeStackRequestAction is sent by the client when it uses an item to craft another item. The
@@ -56,6 +61,8 @@ func (*ConsumeStackRequestAction) isStackRequestAction() {}
 func (x *ConsumeStackRequestAction) Marshal(io IO) {
 	IntegerFunc(&x.ActionType, io.Uint8)
 	io.Uint8(&x.Amount)
+	Minimum(io, &x.Amount, 1)
+	Maximum(io, &x.Amount, 64)
 	x.Source.Marshal(io)
 }
 
@@ -73,7 +80,9 @@ func (*CraftCreativeStackRequestAction) isStackRequestAction() {}
 func (x *CraftCreativeStackRequestAction) Marshal(io IO) {
 	IntegerFunc(&x.ActionType, io.Uint8)
 	io.Varuint32(&x.CreativeItemNetID)
+	Minimum(io, &x.CreativeItemNetID, 1)
 	io.Uint8(&x.NumberOfRequestedCrafts)
+	Minimum(io, &x.NumberOfRequestedCrafts, 1)
 }
 
 // CraftNonImplementedStackRequestAction is an action sent for inventory actions that aren't yet
@@ -124,6 +133,7 @@ func (x *CraftRecipeStackRequestAction) Marshal(io IO) {
 	IntegerFunc(&x.ActionType, io.Uint8)
 	x.RecipeNetID.Marshal(io)
 	io.Uint8(&x.NumberOfRequestedCrafts)
+	Minimum(io, &x.NumberOfRequestedCrafts, 1)
 }
 
 // CraftResultsDeprecatedStackRequestAction is an additional, deprecated packet sent by the client
@@ -141,8 +151,9 @@ func (*CraftResultsDeprecatedStackRequestAction) isStackRequestAction() {}
 // Marshal reads or writes CraftResultsDeprecatedStackRequestAction using its canonical wire layout.
 func (x *CraftResultsDeprecatedStackRequestAction) Marshal(io IO) {
 	IntegerFunc(&x.ActionType, io.Uint8)
-	Slice(io, &x.CraftResults)
+	SliceLimits(io, &x.CraftResults, 1, 18446744073709551615)
 	io.Uint8(&x.NumCrafts)
+	Minimum(io, &x.NumCrafts, 1)
 }
 
 // CreateStackRequestAction is sent by the client when an item is created through being used as part
@@ -180,6 +191,8 @@ func (*DestroyStackRequestAction) isStackRequestAction() {}
 func (x *DestroyStackRequestAction) Marshal(io IO) {
 	IntegerFunc(&x.ActionType, io.Uint8)
 	io.Uint8(&x.Amount)
+	Minimum(io, &x.Amount, 1)
+	Maximum(io, &x.Amount, 64)
 	x.Source.Marshal(io)
 }
 
@@ -203,6 +216,8 @@ func (*DropStackRequestAction) isStackRequestAction() {}
 func (x *DropStackRequestAction) Marshal(io IO) {
 	IntegerFunc(&x.ActionType, io.Uint8)
 	io.Uint8(&x.Amount)
+	Minimum(io, &x.Amount, 1)
+	Maximum(io, &x.Amount, 64)
 	x.Source.Marshal(io)
 	io.Bool(&x.Randomly)
 }
@@ -338,10 +353,12 @@ type ItemStackRequestData struct {
 // Marshal reads or writes ItemStackRequestData using its canonical wire layout.
 func (x *ItemStackRequestData) Marshal(io IO) {
 	x.ClientRequestID.Marshal(io)
-	FuncSlice(io, &x.Actions, io.Varuint32, func(value *StackRequestAction) {
+	FuncSliceLimits(io, &x.Actions, io.Varuint32, 1, 100, func(value *StackRequestAction) {
 		MarshalStackRequestAction(io, value)
 	})
-	FuncSlice(io, &x.StringsToFilter, io.Varuint32, io.String)
+	FuncSlice(io, &x.StringsToFilter, io.Varuint32, func(value *string) {
+		io.StringLimits(value, 0, 1000)
+	})
 	IntegerFunc(&x.StringsToFilterOrigin, io.Int32)
 }
 
@@ -364,10 +381,12 @@ type ItemStackRequestPacketData struct {
 // Marshal reads or writes ItemStackRequestPacketData using its canonical wire layout.
 func (x *ItemStackRequestPacketData) Marshal(io IO) {
 	x.ClientRequestID.Marshal(io)
-	FuncSlice(io, &x.Actions, io.Varuint32, func(value *StackRequestAction) {
+	FuncSliceLimits(io, &x.Actions, io.Varuint32, 1, 100, func(value *StackRequestAction) {
 		MarshalStackRequestAction(io, value)
 	})
-	FuncSlice(io, &x.StringsToFilter, io.Varuint32, io.String)
+	FuncSlice(io, &x.StringsToFilter, io.Varuint32, func(value *string) {
+		io.StringLimits(value, 0, 1000)
+	})
 	IntegerFunc(&x.StringsToFilterOrigin, io.Int32)
 }
 
@@ -417,6 +436,8 @@ func (x *ItemStackResponseSlotInfo) Marshal(io IO) {
 	})
 	x.CustomName.Marshal(io)
 	io.Varint32(&x.DurabilityCorrection)
+	Minimum(io, &x.DurabilityCorrection, -32768)
+	Maximum(io, &x.DurabilityCorrection, 32767)
 }
 
 // LabTableCombineStackRequestAction is sent by the client when it uses a lab table to combine item
@@ -468,6 +489,8 @@ func (*PlaceStackRequestAction) isStackRequestAction() {}
 func (x *PlaceStackRequestAction) Marshal(io IO) {
 	IntegerFunc(&x.ActionType, io.Uint8)
 	io.Uint8(&x.Amount)
+	Minimum(io, &x.Amount, 1)
+	Maximum(io, &x.Amount, 64)
 	x.Source.Marshal(io)
 	x.Destination.Marshal(io)
 }
@@ -523,6 +546,8 @@ func (*TakeStackRequestAction) isStackRequestAction() {}
 func (x *TakeStackRequestAction) Marshal(io IO) {
 	IntegerFunc(&x.ActionType, io.Uint8)
 	io.Uint8(&x.Amount)
+	Minimum(io, &x.Amount, 1)
+	Maximum(io, &x.Amount, 64)
 	x.Source.Marshal(io)
 	x.Destination.Marshal(io)
 }

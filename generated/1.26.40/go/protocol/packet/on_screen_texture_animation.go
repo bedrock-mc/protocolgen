@@ -16,6 +16,7 @@ type OnScreenTextureAnimation struct {
 // Marshal reads or writes OnScreenTextureAnimation using its canonical wire layout.
 func (x *OnScreenTextureAnimation) Marshal(io protocol.IO) {
 	io.Uint32(&x.EffectID)
+	protocol.Minimum(io, &x.EffectID, 0)
 }
 
 // ID returns the protocol ID for OnScreenTextureAnimation.

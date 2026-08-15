@@ -15,7 +15,11 @@ type LecternUpdate struct {
 // Marshal reads or writes LecternUpdate using its canonical wire layout.
 func (x *LecternUpdate) Marshal(io protocol.IO) {
 	io.Uint8(&x.NewPageToShow)
+	protocol.Minimum(io, &x.NewPageToShow, 0)
+	protocol.Maximum(io, &x.NewPageToShow, 255)
 	io.Uint8(&x.TotalPages)
+	protocol.Minimum(io, &x.TotalPages, 0)
+	protocol.Maximum(io, &x.TotalPages, 255)
 	x.PositionOfLecternToUpdate.Marshal(io)
 }
 

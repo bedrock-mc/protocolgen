@@ -67,6 +67,38 @@ func TestGenerateConsumesOnlyCanonicalManifest(t *testing.T) {
 	}
 }
 
+func TestGenerateEmitsSchemaConstraintChecks(t *testing.T) {
+	text := manifest.String(manifest.Primitive("var_u32"))
+	text.Constraints = &manifest.Constraints{MinLength: pointerTo(uint64(1)), MaxLength: pointerTo(uint64(65536)), Pattern: "^[a-z]+$"}
+	count := manifest.Array(manifest.Primitive("var_u32"), manifest.Primitive("u8"))
+	count.Constraints = &manifest.Constraints{MaxItems: pointerTo(uint64(4))}
+	number := manifest.Primitive("zigzag_i32")
+	number.Constraints = &manifest.Constraints{Minimum: pointerTo(-1.0), Maximum: pointerTo(64.0)}
+	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 1}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "1", Digest: "fixture", MinecraftVersion: "fixture", ProtocolVersion: 1}}, Packets: []manifest.Packet{{ID: 1, Name: "LimitsPacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{
+		{Ordinal: 0, Name: "Text", Encode: text, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		{Ordinal: 1, Name: "Values", Encode: count, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		{Ordinal: 2, Name: "Number", Encode: number, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+	}}}}
+	files, err := Generate(m, "wiregen")
+	if err != nil {
+		t.Fatal(err)
+	}
+	packet := files["protocol/packet/limits.go"]
+	for _, want := range []string{
+		"io.StringLimits(&x.Text, 1, 65536)",
+		`protocol.Pattern(io, &x.Text, "^[a-z]+$")`,
+		"protocol.FuncSliceLimits(io, &x.Values, io.Varuint32, 0, 4, io.Uint8)",
+		"protocol.Minimum(io, &x.Number, -1)",
+		"protocol.Maximum(io, &x.Number, 64)",
+	} {
+		if !strings.Contains(packet, want) {
+			t.Fatalf("generated packet omits %q:\n%s", want, packet)
+		}
+	}
+}
+
+func pointerTo[T any](value T) *T { return &value }
+
 func TestGenerateGroupsSharedDefinitionsByReviewedDomain(t *testing.T) {
 	alpha := manifest.Node{Kind: manifest.KindStruct, TypeID: "Alpha", Fields: []manifest.Field{{Name: "Value", Encode: manifest.Primitive("u8"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}
 	beta := manifest.Node{Kind: manifest.KindStruct, TypeID: "Beta", Fields: []manifest.Field{{Name: "Value", Encode: manifest.Primitive("u8"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}

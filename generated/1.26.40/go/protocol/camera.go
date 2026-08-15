@@ -53,12 +53,36 @@ type CameraAimAssistCategoryPriorities struct {
 
 // Marshal reads or writes CameraAimAssistCategoryPriorities using its canonical wire layout.
 func (x *CameraAimAssistCategoryPriorities) Marshal(io IO) {
-	OrderedMap(io, &x.Entities, io.Varuint32, io.String, io.Int32)
-	OrderedMap(io, &x.Blocks, io.Varuint32, io.String, io.Int32)
-	OrderedMap(io, &x.BlockTags, io.Varuint32, io.String, io.Int32)
-	OrderedMap(io, &x.EntityTypeFamilies, io.Varuint32, io.String, io.Int32)
-	OptionalFunc(io, &x.EntityDefault, io.Int32)
-	OptionalFunc(io, &x.BlockDefault, io.Int32)
+	OrderedMap(io, &x.Entities, io.Varuint32, io.String, func(value *int32) {
+		io.Int32(value)
+		Minimum(io, value, 0)
+		Maximum(io, value, 100)
+	})
+	OrderedMap(io, &x.Blocks, io.Varuint32, io.String, func(value *int32) {
+		io.Int32(value)
+		Minimum(io, value, 0)
+		Maximum(io, value, 100)
+	})
+	OrderedMap(io, &x.BlockTags, io.Varuint32, io.String, func(value *int32) {
+		io.Int32(value)
+		Minimum(io, value, 0)
+		Maximum(io, value, 100)
+	})
+	OrderedMap(io, &x.EntityTypeFamilies, io.Varuint32, io.String, func(value *int32) {
+		io.Int32(value)
+		Minimum(io, value, 0)
+		Maximum(io, value, 100)
+	})
+	OptionalFunc(io, &x.EntityDefault, func(value *int32) {
+		io.Int32(value)
+		Minimum(io, value, 0)
+		Maximum(io, value, 100)
+	})
+	OptionalFunc(io, &x.BlockDefault, func(value *int32) {
+		io.Int32(value)
+		Minimum(io, value, 0)
+		Maximum(io, value, 100)
+	})
 }
 
 type CameraAimAssistCommandPresetDefinition struct {
@@ -537,8 +561,11 @@ type CameraSplineDefinition struct {
 // Marshal reads or writes CameraSplineDefinition using its canonical wire layout.
 func (x *CameraSplineDefinition) Marshal(io IO) {
 	io.String(&x.Name)
+	Pattern(io, &x.Name, "^\\w+:\\w+$")
 	io.Float32(&x.TotalTime)
+	Minimum(io, &x.TotalTime, 0)
 	io.String(&x.SplineType)
+	Pattern(io, &x.SplineType, "^(?:catmullrom|linear)$")
 	Slice(io, &x.ControlPoints)
 	Slice(io, &x.ProgressKeyFrames)
 	Slice(io, &x.RotationKeyFrames)
@@ -568,7 +595,7 @@ func (x *CameraSplineInstruction) Marshal(io IO) {
 	FuncSlice(io, &x.Curve, io.Varuint32, io.Vec3)
 	Slice(io, &x.ProgressKeyFrames)
 	Slice(io, &x.RotationOption)
-	io.String(&x.SplineIdentifier)
+	io.StringLimits(&x.SplineIdentifier, 0, 1024)
 	io.Bool(&x.LoadFromJSON)
 }
 
@@ -581,7 +608,10 @@ type CameraSplineProgressKeyFrame struct {
 // Marshal reads or writes CameraSplineProgressKeyFrame using its canonical wire layout.
 func (x *CameraSplineProgressKeyFrame) Marshal(io IO) {
 	io.Float32(&x.Progress)
+	Minimum(io, &x.Progress, 0)
+	Maximum(io, &x.Progress, 1)
 	io.Float32(&x.Time)
+	Minimum(io, &x.Time, 0)
 	OptionalFunc(io, &x.Easing, io.String)
 }
 
@@ -595,6 +625,7 @@ type CameraSplineRotationKeyFrame struct {
 func (x *CameraSplineRotationKeyFrame) Marshal(io IO) {
 	io.Vec3(&x.Rotation)
 	io.Float32(&x.Time)
+	Minimum(io, &x.Time, 0)
 	OptionalFunc(io, &x.Easing, io.String)
 }
 

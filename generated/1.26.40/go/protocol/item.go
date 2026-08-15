@@ -31,8 +31,10 @@ type ItemEnchantOption struct {
 // Marshal reads or writes ItemEnchantOption using its canonical wire layout.
 func (x *ItemEnchantOption) Marshal(io IO) {
 	io.Uint8(&x.Cost)
+	Minimum(io, &x.Cost, 0)
+	Maximum(io, &x.Cost, 255)
 	x.Enchants.Marshal(io)
-	io.String(&x.EnchantName)
+	io.StringLimits(&x.EnchantName, 1, 256)
 	x.EnchantNetID.Marshal(io)
 }
 
@@ -62,6 +64,8 @@ type ItemInstance struct {
 func (x *ItemInstance) Marshal(io IO) {
 	MarshalItemDescriptor(io, &x.ItemDescriptor)
 	io.Uint16(&x.StackSize)
+	Minimum(io, &x.StackSize, 1)
+	Maximum(io, &x.StackSize, 64)
 	io.Varuint32(&x.BlockRuntimeID)
 	io.Bytes(&x.UserDataBuffer)
 }

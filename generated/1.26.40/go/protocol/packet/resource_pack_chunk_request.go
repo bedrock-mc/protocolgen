@@ -17,7 +17,9 @@ type ResourcePackChunkRequest struct {
 // Marshal reads or writes ResourcePackChunkRequest using its canonical wire layout.
 func (x *ResourcePackChunkRequest) Marshal(io protocol.IO) {
 	io.String(&x.ResourceName)
+	protocol.Pattern(io, &x.ResourceName, "A string in the format of <uuid>_<semver>, where <uuid> is a valid UUID and <semver> is a valid semantic version")
 	io.Int32(&x.Chunk)
+	protocol.Minimum(io, &x.Chunk, 0)
 }
 
 // ID returns the protocol ID for ResourcePackChunkRequest.

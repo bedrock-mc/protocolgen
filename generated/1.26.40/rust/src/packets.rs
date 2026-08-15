@@ -171,7 +171,7 @@ impl wire::Encode for ResourcePacksInfo {
         self.has_scripts.encode(writer);
         self.force_disable_vibrant_visuals.encode(writer);
         self.world_template_id_and_version.encode(writer);
-        wire::encode_collection(writer, self.resource_packs.as_slice());
+        wire::encode_collection_limits(writer, self.resource_packs.as_slice(), 0, 65535);
     }
 }
 
@@ -182,7 +182,7 @@ impl wire::Decode for ResourcePacksInfo {
         let has_scripts = <bool as wire::Decode>::decode(reader)?;
         let force_disable_vibrant_visuals = <bool as wire::Decode>::decode(reader)?;
         let world_template_id_and_version = <PackIdVersion as wire::Decode>::decode(reader)?;
-        let resource_packs = wire::decode_collection::<PackInfoData>(reader, 32)?;
+        let resource_packs = wire::decode_collection_limits::<PackInfoData>(reader, 32, 0, 65535)?;
         Ok(Self {
             resource_pack_required,
             has_addon_packs,
@@ -221,7 +221,7 @@ impl ResourcePackStack {
 impl wire::Encode for ResourcePackStack {
     fn encode(&self, writer: &mut wire::Writer) {
         self.texture_pack_required.encode(writer);
-        wire::encode_collection(writer, self.texture_pack_list.as_slice());
+        wire::encode_collection_limits(writer, self.texture_pack_list.as_slice(), 0, 65535);
         self.base_game_version.encode(writer);
         self.experiments.encode(writer);
         self.include_editor_packs.encode(writer);
@@ -231,7 +231,7 @@ impl wire::Encode for ResourcePackStack {
 impl wire::Decode for ResourcePackStack {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let texture_pack_required = <bool as wire::Decode>::decode(reader)?;
-        let texture_pack_list = wire::decode_collection::<PackInstanceId>(reader, 3)?;
+        let texture_pack_list = wire::decode_collection_limits::<PackInstanceId>(reader, 3, 0, 65535)?;
         let base_game_version = <String as wire::Decode>::decode(reader)?;
         let experiments = <Experiments as wire::Decode>::decode(reader)?;
         let include_editor_packs = <bool as wire::Decode>::decode(reader)?;
@@ -296,12 +296,12 @@ impl wire::Encode for Text {
         self.localize.encode(writer);
         self.message_category.encode(writer);
         self.body.encode(writer);
-        self.sender_xuid.encode(writer);
-        self.platform_id.encode(writer);
+        wire::encode_string_limits(writer, &self.sender_xuid, 0, 64);
+        wire::encode_string_limits(writer, &self.platform_id, 0, 256);
         match &self.filtered_message {
             Some(value) => {
                 writer.write_u8(1);
-                value.encode(writer);
+                wire::encode_string_limits(writer, value, 0, 65536);
             }
             None => writer.write_u8(0),
         }
@@ -313,13 +313,13 @@ impl wire::Decode for Text {
         let localize = <bool as wire::Decode>::decode(reader)?;
         let message_category = <wire::U8 as wire::Decode>::decode(reader)?;
         let body = <TextData as wire::Decode>::decode(reader)?;
-        let sender_xuid = <String as wire::Decode>::decode(reader)?;
-        let platform_id = <String as wire::Decode>::decode(reader)?;
+        let sender_xuid = wire::decode_string_limits(reader, 0, 64)?;
+        let platform_id = wire::decode_string_limits(reader, 0, 256)?;
         let filtered_message = {
             if reader.read_u8()? == 0 {
                 None
             } else {
-                Some(<String as wire::Decode>::decode(reader)?)
+                Some(wire::decode_string_limits(reader, 0, 65536)?)
             }
         };
         Ok(Self {
@@ -421,6 +421,7 @@ impl wire::Encode for StartGame {
         self.is_trial.encode(writer);
         self.movement_settings.encode(writer);
         self.level_current_time.encode(writer);
+        wire::assert_number_limits(self.level_current_time.0, Some(0), None);
         self.enchantment_seed.encode(writer);
         wire::encode_collection(writer, self.block_properties.as_slice());
         self.multiplayer_correlation_id.encode(writer);
@@ -428,6 +429,7 @@ impl wire::Encode for StartGame {
         self.server_version.encode(writer);
         self.player_property_data.encode(writer);
         self.server_block_type_registry_checksum.encode(writer);
+        wire::assert_number_limits(self.server_block_type_registry_checksum.0, Some(0), None);
         self.world_template_id.encode(writer);
         self.server_enabled_client_side_generation.encode(writer);
         self.block_network_ids_are_hashes.encode(writer);
@@ -456,14 +458,14 @@ impl wire::Decode for StartGame {
         let template_content_identity = <String as wire::Decode>::decode(reader)?;
         let is_trial = <bool as wire::Decode>::decode(reader)?;
         let movement_settings = <SyncedPlayerMovementSettings as wire::Decode>::decode(reader)?;
-        let level_current_time = <wire::U64LE as wire::Decode>::decode(reader)?;
+        let level_current_time = { let value = <wire::U64LE as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
         let enchantment_seed = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
         let block_properties = wire::decode_collection::<ServerBlockProperty>(reader, 2)?;
         let multiplayer_correlation_id = <String as wire::Decode>::decode(reader)?;
         let enable_item_stack_net_manager = <bool as wire::Decode>::decode(reader)?;
         let server_version = <String as wire::Decode>::decode(reader)?;
         let player_property_data = <wire::NetworkNbt as wire::Decode>::decode(reader)?;
-        let server_block_type_registry_checksum = <wire::U64LE as wire::Decode>::decode(reader)?;
+        let server_block_type_registry_checksum = { let value = <wire::U64LE as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
         let world_template_id = <uuid::Uuid as wire::Decode>::decode(reader)?;
         let server_enabled_client_side_generation = <bool as wire::Decode>::decode(reader)?;
         let block_network_ids_are_hashes = <bool as wire::Decode>::decode(reader)?;
@@ -940,17 +942,20 @@ impl wire::Encode for UpdateBlock {
     fn encode(&self, writer: &mut wire::Writer) {
         self.block_position.encode(writer);
         self.block_runtime_id.encode(writer);
+        wire::assert_number_limits(self.block_runtime_id.0, Some(0), None);
         self.flags.encode(writer);
+        wire::assert_number_limits(self.flags.0, Some(0), None);
         self.layer.encode(writer);
+        wire::assert_number_limits(self.layer.0, Some(0), None);
     }
 }
 
 impl wire::Decode for UpdateBlock {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let block_position = <BlockPos as wire::Decode>::decode(reader)?;
-        let block_runtime_id = <wire::VarUInt as wire::Decode>::decode(reader)?;
-        let flags = <wire::VarUInt as wire::Decode>::decode(reader)?;
-        let layer = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let block_runtime_id = { let value = <wire::VarUInt as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
+        let flags = { let value = <wire::VarUInt as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
+        let layer = { let value = <wire::VarUInt as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
         Ok(Self {
             block_position,
             block_runtime_id,
@@ -1317,8 +1322,11 @@ impl wire::Encode for MobEquipment {
         self.target_runtime_id.encode(writer);
         self.item.encode(writer);
         self.slot.encode(writer);
+        wire::assert_number_limits(self.slot.0, Some(0), Some(255));
         self.selected_slot.encode(writer);
+        wire::assert_number_limits(self.selected_slot.0, Some(0), Some(255));
         self.container_id.encode(writer);
+        wire::assert_number_limits(self.container_id.0, Some(0), Some(255));
     }
 }
 
@@ -1326,9 +1334,9 @@ impl wire::Decode for MobEquipment {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let target_runtime_id = <ActorRuntimeID as wire::Decode>::decode(reader)?;
         let item = <NetworkItemStackDescriptorSerializedData as wire::Decode>::decode(reader)?;
-        let slot = <wire::U8 as wire::Decode>::decode(reader)?;
-        let selected_slot = <wire::U8 as wire::Decode>::decode(reader)?;
-        let container_id = <wire::U8 as wire::Decode>::decode(reader)?;
+        let slot = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), Some(255))?; value };
+        let selected_slot = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), Some(255))?; value };
+        let container_id = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), Some(255))?; value };
         Ok(Self {
             target_runtime_id,
             item,
@@ -1451,6 +1459,7 @@ impl wire::Encode for BlockPickRequest {
         self.position.encode(writer);
         self.with_data.encode(writer);
         self.max_slots.encode(writer);
+        wire::assert_number_limits(self.max_slots.0, Some(0), Some(255));
     }
 }
 
@@ -1458,7 +1467,7 @@ impl wire::Decode for BlockPickRequest {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let position = <BlockPos as wire::Decode>::decode(reader)?;
         let with_data = <bool as wire::Decode>::decode(reader)?;
-        let max_slots = <wire::U8 as wire::Decode>::decode(reader)?;
+        let max_slots = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), Some(255))?; value };
         Ok(Self {
             position,
             with_data,
@@ -1484,6 +1493,7 @@ impl wire::Encode for ActorPickRequest {
     fn encode(&self, writer: &mut wire::Writer) {
         self.actor_id.encode(writer);
         self.max_slots.encode(writer);
+        wire::assert_number_limits(self.max_slots.0, Some(0), Some(255));
         self.with_data.encode(writer);
     }
 }
@@ -1491,7 +1501,7 @@ impl wire::Encode for ActorPickRequest {
 impl wire::Decode for ActorPickRequest {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let actor_id = <wire::I64LE as wire::Decode>::decode(reader)?;
-        let max_slots = <wire::U8 as wire::Decode>::decode(reader)?;
+        let max_slots = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), Some(255))?; value };
         let with_data = <bool as wire::Decode>::decode(reader)?;
         Ok(Self {
             actor_id,
@@ -1559,6 +1569,7 @@ impl wire::Encode for HurtArmor {
         self.cause.encode(writer);
         self.damage.encode(writer);
         self.armor_slots.encode(writer);
+        wire::assert_number_limits(self.armor_slots.0, Some(0), None);
     }
 }
 
@@ -1566,7 +1577,7 @@ impl wire::Decode for HurtArmor {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let cause = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
         let damage = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
-        let armor_slots = <wire::VarULong as wire::Decode>::decode(reader)?;
+        let armor_slots = { let value = <wire::VarULong as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
         Ok(Self {
             cause,
             damage,
@@ -1854,7 +1865,9 @@ impl ContainerOpen {
 impl wire::Encode for ContainerOpen {
     fn encode(&self, writer: &mut wire::Writer) {
         self.container_id.encode(writer);
+        wire::assert_number_limits(self.container_id.0, Some(0), Some(255));
         self.container_type.encode(writer);
+        wire::assert_number_limits(self.container_type.0, Some(0), Some(255));
         self.position.encode(writer);
         self.target_actor_id.encode(writer);
     }
@@ -1862,8 +1875,8 @@ impl wire::Encode for ContainerOpen {
 
 impl wire::Decode for ContainerOpen {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let container_id = <wire::U8 as wire::Decode>::decode(reader)?;
-        let container_type = <wire::U8 as wire::Decode>::decode(reader)?;
+        let container_id = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), Some(255))?; value };
+        let container_type = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), Some(255))?; value };
         let position = <BlockPos as wire::Decode>::decode(reader)?;
         let target_actor_id = <ActorUniqueID as wire::Decode>::decode(reader)?;
         Ok(Self {
@@ -1893,15 +1906,17 @@ impl ContainerClose {
 impl wire::Encode for ContainerClose {
     fn encode(&self, writer: &mut wire::Writer) {
         self.container_id.encode(writer);
+        wire::assert_number_limits(self.container_id.0, Some(0), Some(255));
         self.container_type.encode(writer);
+        wire::assert_number_limits(self.container_type.0, Some(0), Some(255));
         self.server_initiated_close.encode(writer);
     }
 }
 
 impl wire::Decode for ContainerClose {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let container_id = <wire::U8 as wire::Decode>::decode(reader)?;
-        let container_type = <wire::U8 as wire::Decode>::decode(reader)?;
+        let container_id = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), Some(255))?; value };
+        let container_type = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), Some(255))?; value };
         let server_initiated_close = <bool as wire::Decode>::decode(reader)?;
         Ok(Self {
             container_id,
@@ -1924,15 +1939,17 @@ impl PlayerHotbar {
 impl wire::Encode for PlayerHotbar {
     fn encode(&self, writer: &mut wire::Writer) {
         self.selected_slot.encode(writer);
+        wire::assert_number_limits(self.selected_slot.0, Some(0), None);
         self.container_id.encode(writer);
+        wire::assert_number_limits(self.container_id.0, Some(0), Some(255));
         self.should_select_slot.encode(writer);
     }
 }
 
 impl wire::Decode for PlayerHotbar {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let selected_slot = <wire::VarUInt as wire::Decode>::decode(reader)?;
-        let container_id = <wire::U8 as wire::Decode>::decode(reader)?;
+        let selected_slot = { let value = <wire::VarUInt as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
+        let container_id = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), Some(255))?; value };
         let should_select_slot = <bool as wire::Decode>::decode(reader)?;
         Ok(Self {
             selected_slot,
@@ -1968,6 +1985,7 @@ impl InventoryContent {
 impl wire::Encode for InventoryContent {
     fn encode(&self, writer: &mut wire::Writer) {
         self.container_id.encode(writer);
+        wire::assert_number_limits(self.container_id.0, Some(0), None);
         wire::encode_collection(writer, self.slots.as_slice());
         self.full_container_name.encode(writer);
         self.storage_item.encode(writer);
@@ -1976,7 +1994,7 @@ impl wire::Encode for InventoryContent {
 
 impl wire::Decode for InventoryContent {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let container_id = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let container_id = { let value = <wire::VarUInt as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
         let slots = wire::decode_collection::<NetworkItemStackDescriptorSerializedData>(reader, 8)?;
         let full_container_name = <FullContainerName as wire::Decode>::decode(reader)?;
         let storage_item = <NetworkItemStackDescriptorSerializedData as wire::Decode>::decode(reader)?;
@@ -2020,7 +2038,9 @@ impl InventorySlot {
 impl wire::Encode for InventorySlot {
     fn encode(&self, writer: &mut wire::Writer) {
         self.container_id.encode(writer);
+        wire::assert_number_limits(self.container_id.0, Some(0), Some(255));
         self.slot.encode(writer);
+        wire::assert_number_limits(self.slot.0, Some(0), None);
         match &self.full_container_name {
             Some(value) => {
                 writer.write_u8(1);
@@ -2041,8 +2061,8 @@ impl wire::Encode for InventorySlot {
 
 impl wire::Decode for InventorySlot {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let container_id = <wire::U8 as wire::Decode>::decode(reader)?;
-        let slot = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let container_id = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), Some(255))?; value };
+        let slot = { let value = <wire::VarUInt as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
         let full_container_name = {
             if reader.read_u8()? == 0 {
                 None
@@ -2085,6 +2105,7 @@ impl ContainerSetData {
 impl wire::Encode for ContainerSetData {
     fn encode(&self, writer: &mut wire::Writer) {
         self.container_id.encode(writer);
+        wire::assert_number_limits(self.container_id.0, Some(0), Some(255));
         self.id.encode(writer);
         self.value.encode(writer);
     }
@@ -2092,7 +2113,7 @@ impl wire::Encode for ContainerSetData {
 
 impl wire::Decode for ContainerSetData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let container_id = <wire::U8 as wire::Decode>::decode(reader)?;
+        let container_id = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), Some(255))?; value };
         let id = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
         let value = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
         Ok(Self {
@@ -2271,15 +2292,17 @@ impl wire::Encode for LevelChunk {
         self.chunk_position.encode(writer);
         self.dimension_id.encode(writer);
         self.sub_chunks_count.encode(writer);
+        wire::assert_number_limits(self.sub_chunks_count.0, Some(0), Some(64));
         match &self.client_request_sub_chunk_limit {
             Some(value) => {
                 writer.write_u8(1);
                 value.encode(writer);
+                wire::assert_number_limits(value.0, Some(-1), Some(64));
             }
             None => writer.write_u8(0),
         }
         self.cache_enabled.encode(writer);
-        wire::encode_collection(writer, self.cache_metadata.as_slice());
+        wire::encode_collection_limits(writer, self.cache_metadata.as_slice(), 0, 65);
         self.serialized_chunk_data.encode(writer);
     }
 }
@@ -2288,16 +2311,16 @@ impl wire::Decode for LevelChunk {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let chunk_position = <ChunkPos as wire::Decode>::decode(reader)?;
         let dimension_id = <DimensionType as wire::Decode>::decode(reader)?;
-        let sub_chunks_count = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let sub_chunks_count = { let value = <wire::VarUInt as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), Some(64))?; value };
         let client_request_sub_chunk_limit = {
             if reader.read_u8()? == 0 {
                 None
             } else {
-                Some(<wire::ZigZag32 as wire::Decode>::decode(reader)?)
+                Some({ let value = <wire::ZigZag32 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(-1), Some(64))?; value })
             }
         };
         let cache_enabled = <bool as wire::Decode>::decode(reader)?;
-        let cache_metadata = wire::decode_collection::<SubChunkMetadata>(reader, 8)?;
+        let cache_metadata = wire::decode_collection_limits::<SubChunkMetadata>(reader, 8, 0, 65)?;
         let serialized_chunk_data = <bytes::Bytes as wire::Decode>::decode(reader)?;
         Ok(Self {
             chunk_position,
@@ -2352,12 +2375,13 @@ impl SetDifficulty {
 impl wire::Encode for SetDifficulty {
     fn encode(&self, writer: &mut wire::Writer) {
         self.difficulty.encode(writer);
+        wire::assert_number_limits(self.difficulty.0, Some(0), None);
     }
 }
 
 impl wire::Decode for SetDifficulty {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let difficulty = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let difficulty = { let value = <wire::VarUInt as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
         Ok(Self {
             difficulty,
         })
@@ -2466,13 +2490,13 @@ impl PlayerList {
 }
 impl wire::Encode for PlayerList {
     fn encode(&self, writer: &mut wire::Writer) {
-        wire::encode_collection(writer, self.entries.as_slice());
+        wire::encode_collection_limits(writer, self.entries.as_slice(), 0, 1000);
     }
 }
 
 impl wire::Decode for PlayerList {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let entries = wire::decode_collection::<PlayerListData>(reader, 18)?;
+        let entries = wire::decode_collection_limits::<PlayerListData>(reader, 18, 0, 1000)?;
         Ok(Self {
             entries,
         })
@@ -2609,12 +2633,13 @@ impl wire::Encode for ClientboundMapItemData {
     fn encode(&self, writer: &mut wire::Writer) {
         self.map_id.encode(writer);
         self.dimension.encode(writer);
+        wire::assert_number_limits(self.dimension.0, Some(0), Some(255));
         self.is_locked.encode(writer);
         self.map_origin.encode(writer);
         match &self.creation_map_ids {
             Some(value) => {
                 writer.write_u8(1);
-                wire::encode_collection(writer, value.as_slice());
+                wire::encode_collection_limits(writer, value.as_slice(), 0, 65535);
             }
             None => writer.write_u8(0),
         }
@@ -2628,14 +2653,14 @@ impl wire::Encode for ClientboundMapItemData {
         match &self.tracked_actor_ids {
             Some(value) => {
                 writer.write_u8(1);
-                wire::encode_collection(writer, value.as_slice());
+                wire::encode_collection_limits(writer, value.as_slice(), 0, 65535);
             }
             None => writer.write_u8(0),
         }
         match &self.decorations {
             Some(value) => {
                 writer.write_u8(1);
-                wire::encode_collection(writer, value.as_slice());
+                wire::encode_collection_limits(writer, value.as_slice(), 0, 65535);
             }
             None => writer.write_u8(0),
         }
@@ -2670,7 +2695,7 @@ impl wire::Encode for ClientboundMapItemData {
         match &self.pixels {
             Some(value) => {
                 writer.write_u8(1);
-                wire::encode_collection(writer, value.as_slice());
+                wire::encode_collection_limits(writer, value.as_slice(), 0, 16384);
             }
             None => writer.write_u8(0),
         }
@@ -2680,14 +2705,14 @@ impl wire::Encode for ClientboundMapItemData {
 impl wire::Decode for ClientboundMapItemData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let map_id = <ActorUniqueID as wire::Decode>::decode(reader)?;
-        let dimension = <wire::U8 as wire::Decode>::decode(reader)?;
+        let dimension = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), Some(255))?; value };
         let is_locked = <bool as wire::Decode>::decode(reader)?;
         let map_origin = <BlockPos as wire::Decode>::decode(reader)?;
         let creation_map_ids = {
             if reader.read_u8()? == 0 {
                 None
             } else {
-                Some(wire::decode_collection::<ActorUniqueID>(reader, 1)?)
+                Some(wire::decode_collection_limits::<ActorUniqueID>(reader, 1, 0, 65535)?)
             }
         };
         let scale = {
@@ -2701,14 +2726,14 @@ impl wire::Decode for ClientboundMapItemData {
             if reader.read_u8()? == 0 {
                 None
             } else {
-                Some(wire::decode_collection::<MapItemTrackedActorUniqueId>(reader, 6)?)
+                Some(wire::decode_collection_limits::<MapItemTrackedActorUniqueId>(reader, 6, 0, 65535)?)
             }
         };
         let decorations = {
             if reader.read_u8()? == 0 {
                 None
             } else {
-                Some(wire::decode_collection::<MapDecoration>(reader, 9)?)
+                Some(wire::decode_collection_limits::<MapDecoration>(reader, 9, 0, 65535)?)
             }
         };
         let width = {
@@ -2743,7 +2768,7 @@ impl wire::Decode for ClientboundMapItemData {
             if reader.read_u8()? == 0 {
                 None
             } else {
-                Some(wire::decode_collection::<wire::U32LE>(reader, 4)?)
+                Some(wire::decode_collection_limits::<wire::U32LE>(reader, 4, 0, 16384)?)
             }
         };
         Ok(Self {
@@ -2779,6 +2804,7 @@ impl MapInfoRequest {
 impl wire::Encode for MapInfoRequest {
     fn encode(&self, writer: &mut wire::Writer) {
         self.map_unique_id.encode(writer);
+        wire::assert_length(self.client_pixels_list.len(), 0, 16384);
         wire::encode_collection_u32le(writer, self.client_pixels_list.as_slice());
     }
 }
@@ -2814,13 +2840,14 @@ impl wire::Encode for RequestChunkRadius {
     fn encode(&self, writer: &mut wire::Writer) {
         self.chunk_radius.encode(writer);
         self.max_chunk_radius.encode(writer);
+        wire::assert_number_limits(self.max_chunk_radius.0, Some(0), Some(255));
     }
 }
 
 impl wire::Decode for RequestChunkRadius {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let chunk_radius = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
-        let max_chunk_radius = <wire::U8 as wire::Decode>::decode(reader)?;
+        let max_chunk_radius = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), Some(255))?; value };
         Ok(Self {
             chunk_radius,
             max_chunk_radius,
@@ -2935,8 +2962,8 @@ impl wire::Encode for BossEvent {
         self.target_actor_id.encode(writer);
         self.player_id.encode(writer);
         self.event_type.encode(writer);
-        self.name.encode(writer);
-        self.filtered_name.encode(writer);
+        wire::encode_string_limits(writer, &self.name, 0, 256);
+        wire::encode_string_limits(writer, &self.filtered_name, 0, 256);
         self.health_percent.encode(writer);
         self.color.encode(writer);
         self.overlay.encode(writer);
@@ -2948,8 +2975,8 @@ impl wire::Decode for BossEvent {
         let target_actor_id = <ActorUniqueID as wire::Decode>::decode(reader)?;
         let player_id = <ActorUniqueID as wire::Decode>::decode(reader)?;
         let event_type = <BossEventUpdateType as wire::Decode>::decode(reader)?;
-        let name = <String as wire::Decode>::decode(reader)?;
-        let filtered_name = <String as wire::Decode>::decode(reader)?;
+        let name = wire::decode_string_limits(reader, 0, 256)?;
+        let filtered_name = wire::decode_string_limits(reader, 0, 256)?;
         let health_percent = <wire::F32LE as wire::Decode>::decode(reader)?;
         let color = <BossBarColor as wire::Decode>::decode(reader)?;
         let overlay = <BossBarOverlay as wire::Decode>::decode(reader)?;
@@ -3041,7 +3068,7 @@ impl wire::Encode for AvailableCommands {
         wire::encode_collection(writer, self.chained_subcommand_values.as_slice());
         wire::encode_collection(writer, self.post_fixes.as_slice());
         wire::encode_collection(writer, self.enum_data.as_slice());
-        wire::encode_collection(writer, self.chained_subcommand_data.as_slice());
+        wire::encode_collection_limits(writer, self.chained_subcommand_data.as_slice(), 0, 16);
         wire::encode_collection(writer, self.commands.as_slice());
         wire::encode_collection(writer, self.soft_enums.as_slice());
         wire::encode_collection(writer, self.constraints.as_slice());
@@ -3054,7 +3081,7 @@ impl wire::Decode for AvailableCommands {
         let chained_subcommand_values = wire::decode_collection::<String>(reader, 1)?;
         let post_fixes = wire::decode_collection::<String>(reader, 1)?;
         let enum_data = wire::decode_collection::<CommandEnum>(reader, 2)?;
-        let chained_subcommand_data = wire::decode_collection::<ChainedSubcommand>(reader, 2)?;
+        let chained_subcommand_data = wire::decode_collection_limits::<ChainedSubcommand>(reader, 2, 0, 16)?;
         let commands = wire::decode_collection::<Command>(reader, 11)?;
         let soft_enums = wire::decode_collection::<DynamicEnum>(reader, 2)?;
         let constraints = wire::decode_collection::<CommandEnumConstraint>(reader, 9)?;
@@ -3095,7 +3122,7 @@ impl CommandRequest {
 }
 impl wire::Encode for CommandRequest {
     fn encode(&self, writer: &mut wire::Writer) {
-        self.command.encode(writer);
+        wire::encode_string_limits(writer, &self.command, 0, 1000);
         self.origin.encode(writer);
         self.is_internal.encode(writer);
         self.version.encode(writer);
@@ -3104,7 +3131,7 @@ impl wire::Encode for CommandRequest {
 
 impl wire::Decode for CommandRequest {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let command = <String as wire::Decode>::decode(reader)?;
+        let command = wire::decode_string_limits(reader, 0, 1000)?;
         let origin = <CommandOriginData as wire::Decode>::decode(reader)?;
         let is_internal = <bool as wire::Decode>::decode(reader)?;
         let version = <String as wire::Decode>::decode(reader)?;
@@ -3243,7 +3270,9 @@ impl UpdateTrade {
 impl wire::Encode for UpdateTrade {
     fn encode(&self, writer: &mut wire::Writer) {
         self.container_id.encode(writer);
+        wire::assert_number_limits(self.container_id.0, Some(0), Some(255));
         self.type_.encode(writer);
+        wire::assert_number_limits(self.type_.0, Some(0), Some(255));
         self.size.encode(writer);
         self.trader_tier.encode(writer);
         self.entity_unique_id.encode(writer);
@@ -3257,8 +3286,8 @@ impl wire::Encode for UpdateTrade {
 
 impl wire::Decode for UpdateTrade {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let container_id = <wire::U8 as wire::Decode>::decode(reader)?;
-        let type_ = <wire::U8 as wire::Decode>::decode(reader)?;
+        let container_id = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), Some(255))?; value };
+        let type_ = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), Some(255))?; value };
         let size = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
         let trader_tier = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
         let entity_unique_id = <ActorUniqueID as wire::Decode>::decode(reader)?;
@@ -3304,7 +3333,9 @@ impl UpdateEquip {
 impl wire::Encode for UpdateEquip {
     fn encode(&self, writer: &mut wire::Writer) {
         self.container_id.encode(writer);
+        wire::assert_number_limits(self.container_id.0, Some(0), Some(255));
         self.type_.encode(writer);
+        wire::assert_number_limits(self.type_.0, Some(0), Some(255));
         self.size.encode(writer);
         self.entity_unique_id.encode(writer);
         self.data.encode(writer);
@@ -3313,8 +3344,8 @@ impl wire::Encode for UpdateEquip {
 
 impl wire::Decode for UpdateEquip {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let container_id = <wire::U8 as wire::Decode>::decode(reader)?;
-        let type_ = <wire::U8 as wire::Decode>::decode(reader)?;
+        let container_id = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), Some(255))?; value };
+        let type_ = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), Some(255))?; value };
         let size = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
         let entity_unique_id = <ActorUniqueID as wire::Decode>::decode(reader)?;
         let data = <wire::NetworkNbt as wire::Decode>::decode(reader)?;
@@ -3350,23 +3381,27 @@ impl wire::Encode for ResourcePackDataInfo {
     fn encode(&self, writer: &mut wire::Writer) {
         self.resource_name.encode(writer);
         self.chunk_size.encode(writer);
+        wire::assert_number_limits(self.chunk_size.0, Some(0), None);
         self.number_of_chunks.encode(writer);
+        wire::assert_number_limits(self.number_of_chunks.0, Some(0), None);
         self.file_size.encode(writer);
+        wire::assert_number_limits(self.file_size.0, Some(0), None);
         self.file_hash.encode(writer);
         self.is_premium_pack.encode(writer);
         self.pack_type.encode(writer);
+        wire::assert_number_limits(self.pack_type.0, Some(0), Some(255));
     }
 }
 
 impl wire::Decode for ResourcePackDataInfo {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let resource_name = <String as wire::Decode>::decode(reader)?;
-        let chunk_size = <wire::U32LE as wire::Decode>::decode(reader)?;
-        let number_of_chunks = <wire::U32LE as wire::Decode>::decode(reader)?;
-        let file_size = <wire::U64LE as wire::Decode>::decode(reader)?;
+        let chunk_size = { let value = <wire::U32LE as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
+        let number_of_chunks = { let value = <wire::U32LE as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
+        let file_size = { let value = <wire::U64LE as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
         let file_hash = <bytes::Bytes as wire::Decode>::decode(reader)?;
         let is_premium_pack = <bool as wire::Decode>::decode(reader)?;
-        let pack_type = <wire::U8 as wire::Decode>::decode(reader)?;
+        let pack_type = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), Some(255))?; value };
         Ok(Self {
             resource_name,
             chunk_size,
@@ -3404,7 +3439,9 @@ impl wire::Encode for ResourcePackChunkData {
     fn encode(&self, writer: &mut wire::Writer) {
         self.resource_name.encode(writer);
         self.chunk_id.encode(writer);
+        wire::assert_number_limits(self.chunk_id.0, Some(0), None);
         self.byte_offset.encode(writer);
+        wire::assert_number_limits(self.byte_offset.0, Some(0), None);
         self.chunk_data.encode(writer);
     }
 }
@@ -3412,8 +3449,8 @@ impl wire::Encode for ResourcePackChunkData {
 impl wire::Decode for ResourcePackChunkData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let resource_name = <String as wire::Decode>::decode(reader)?;
-        let chunk_id = <wire::U32LE as wire::Decode>::decode(reader)?;
-        let byte_offset = <wire::U64LE as wire::Decode>::decode(reader)?;
+        let chunk_id = { let value = <wire::U32LE as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
+        let byte_offset = { let value = <wire::U64LE as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
         let chunk_data = <bytes::Bytes as wire::Decode>::decode(reader)?;
         Ok(Self {
             resource_name,
@@ -3441,14 +3478,16 @@ impl ResourcePackChunkRequest {
 impl wire::Encode for ResourcePackChunkRequest {
     fn encode(&self, writer: &mut wire::Writer) {
         self.resource_name.encode(writer);
+        wire::assert_pattern(&self.resource_name, "A string in the format of <uuid>_<semver>, where <uuid> is a valid UUID and <semver> is a valid semantic version");
         self.chunk.encode(writer);
+        wire::assert_number_limits(self.chunk.0, Some(0), None);
     }
 }
 
 impl wire::Decode for ResourcePackChunkRequest {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let resource_name = <String as wire::Decode>::decode(reader)?;
-        let chunk = <wire::I32LE as wire::Decode>::decode(reader)?;
+        let resource_name = { let value = <String as wire::Decode>::decode(reader)?; wire::validate_pattern(&value, "A string in the format of <uuid>_<semver>, where <uuid> is a valid UUID and <semver> is a valid semantic version")?; value };
+        let chunk = { let value = <wire::I32LE as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
         Ok(Self {
             resource_name,
             chunk,
@@ -3481,6 +3520,7 @@ impl wire::Encode for Transfer {
     fn encode(&self, writer: &mut wire::Writer) {
         self.server_address.encode(writer);
         self.server_port.encode(writer);
+        wire::assert_number_limits(self.server_port.0, Some(0), None);
         self.reload_world.encode(writer);
         match &self.gatherings_configuration {
             Some(value) => {
@@ -3495,7 +3535,7 @@ impl wire::Encode for Transfer {
 impl wire::Decode for Transfer {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let server_address = <String as wire::Decode>::decode(reader)?;
-        let server_port = <wire::U16LE as wire::Decode>::decode(reader)?;
+        let server_port = { let value = <wire::U16LE as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
         let reload_world = <bool as wire::Decode>::decode(reader)?;
         let gatherings_configuration = {
             if reader.read_u8()? == 0 {
@@ -3789,13 +3829,13 @@ impl PurchaseReceipt {
 }
 impl wire::Encode for PurchaseReceipt {
     fn encode(&self, writer: &mut wire::Writer) {
-        wire::encode_collection(writer, self.purchase_receipts.as_slice());
+        wire::encode_collection_limits(writer, self.purchase_receipts.as_slice(), 0, 10000);
     }
 }
 
 impl wire::Decode for PurchaseReceipt {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let purchase_receipts = wire::decode_collection::<String>(reader, 1)?;
+        let purchase_receipts = wire::decode_collection_limits::<String>(reader, 1, 0, 10000)?;
         Ok(Self {
             purchase_receipts,
         })
@@ -3969,6 +4009,7 @@ impl wire::Encode for NpcRequest {
         self.request_type.encode(writer);
         self.actions.encode(writer);
         self.action_index.encode(writer);
+        wire::assert_number_limits(self.action_index.0, Some(0), Some(255));
         self.scene_name.encode(writer);
     }
 }
@@ -3978,7 +4019,7 @@ impl wire::Decode for NpcRequest {
         let npc_runtime_id = <ActorRuntimeID as wire::Decode>::decode(reader)?;
         let request_type = <RequestType as wire::Decode>::decode(reader)?;
         let actions = <String as wire::Decode>::decode(reader)?;
-        let action_index = <wire::U8 as wire::Decode>::decode(reader)?;
+        let action_index = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), Some(255))?; value };
         let scene_name = <String as wire::Decode>::decode(reader)?;
         Ok(Self {
             npc_runtime_id,
@@ -4022,7 +4063,8 @@ impl PhotoTransfer {
 impl wire::Encode for PhotoTransfer {
     fn encode(&self, writer: &mut wire::Writer) {
         self.photo_name.encode(writer);
-        self.photo_data.encode(writer);
+        wire::assert_pattern(&self.photo_name, "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.jpeg$");
+        wire::encode_bytes_limits(writer, self.photo_data.as_ref(), 0, 20971520);
         self.book_id.encode(writer);
         self.type_.encode(writer);
         self.source_type.encode(writer);
@@ -4033,8 +4075,8 @@ impl wire::Encode for PhotoTransfer {
 
 impl wire::Decode for PhotoTransfer {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let photo_name = <String as wire::Decode>::decode(reader)?;
-        let photo_data = <bytes::Bytes as wire::Decode>::decode(reader)?;
+        let photo_name = { let value = <String as wire::Decode>::decode(reader)?; wire::validate_pattern(&value, "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.jpeg$")?; value };
+        let photo_data = wire::decode_bytes_limits(reader, 0, 20971520)?;
         let book_id = <String as wire::Decode>::decode(reader)?;
         let type_ = <PhotoType as wire::Decode>::decode(reader)?;
         let source_type = <PhotoType as wire::Decode>::decode(reader)?;
@@ -4069,13 +4111,14 @@ impl ModalFormRequest {
 impl wire::Encode for ModalFormRequest {
     fn encode(&self, writer: &mut wire::Writer) {
         self.form_id.encode(writer);
+        wire::assert_number_limits(self.form_id.0, Some(0), None);
         self.form_ui_json.encode(writer);
     }
 }
 
 impl wire::Decode for ModalFormRequest {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let form_id = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let form_id = { let value = <wire::VarUInt as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
         let form_ui_json = <String as wire::Decode>::decode(reader)?;
         Ok(Self {
             form_id,
@@ -4110,6 +4153,7 @@ impl ModalFormResponse {
 impl wire::Encode for ModalFormResponse {
     fn encode(&self, writer: &mut wire::Writer) {
         self.form_id.encode(writer);
+        wire::assert_number_limits(self.form_id.0, Some(0), None);
         match &self.json_response {
             Some(value) => {
                 writer.write_u8(1);
@@ -4129,7 +4173,7 @@ impl wire::Encode for ModalFormResponse {
 
 impl wire::Decode for ModalFormResponse {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let form_id = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let form_id = { let value = <wire::VarUInt as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
         let json_response = {
             if reader.read_u8()? == 0 {
                 None
@@ -4195,13 +4239,14 @@ impl ServerSettingsResponse {
 impl wire::Encode for ServerSettingsResponse {
     fn encode(&self, writer: &mut wire::Writer) {
         self.form_id.encode(writer);
+        wire::assert_number_limits(self.form_id.0, Some(0), None);
         self.form_ui_json.encode(writer);
     }
 }
 
 impl wire::Decode for ServerSettingsResponse {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let form_id = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let form_id = { let value = <wire::VarUInt as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
         let form_ui_json = <String as wire::Decode>::decode(reader)?;
         Ok(Self {
             form_id,
@@ -4442,21 +4487,26 @@ impl wire::Encode for UpdateBlockSynced {
     fn encode(&self, writer: &mut wire::Writer) {
         self.block_position.encode(writer);
         self.block_runtime_id.encode(writer);
+        wire::assert_number_limits(self.block_runtime_id.0, Some(0), None);
         self.flags.encode(writer);
+        wire::assert_number_limits(self.flags.0, Some(0), None);
         self.layer.encode(writer);
+        wire::assert_number_limits(self.layer.0, Some(0), None);
         self.unique_actor_id.encode(writer);
+        wire::assert_number_limits(self.unique_actor_id.0, Some(0), None);
         self.actor_sync_message.encode(writer);
+        wire::assert_number_limits(self.actor_sync_message.0, Some(0), None);
     }
 }
 
 impl wire::Decode for UpdateBlockSynced {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let block_position = <BlockPos as wire::Decode>::decode(reader)?;
-        let block_runtime_id = <wire::VarUInt as wire::Decode>::decode(reader)?;
-        let flags = <wire::VarUInt as wire::Decode>::decode(reader)?;
-        let layer = <wire::VarUInt as wire::Decode>::decode(reader)?;
-        let unique_actor_id = <wire::VarULong as wire::Decode>::decode(reader)?;
-        let actor_sync_message = <wire::VarULong as wire::Decode>::decode(reader)?;
+        let block_runtime_id = { let value = <wire::VarUInt as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
+        let flags = { let value = <wire::VarUInt as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
+        let layer = { let value = <wire::VarUInt as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
+        let unique_actor_id = { let value = <wire::VarULong as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
+        let actor_sync_message = { let value = <wire::VarULong as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
         Ok(Self {
             block_position,
             block_runtime_id,
@@ -4613,13 +4663,14 @@ impl NetworkStackLatency {
 impl wire::Encode for NetworkStackLatency {
     fn encode(&self, writer: &mut wire::Writer) {
         self.creation_time.encode(writer);
+        wire::assert_number_limits(self.creation_time.0, Some(0), None);
         self.is_from_server.encode(writer);
     }
 }
 
 impl wire::Decode for NetworkStackLatency {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let creation_time = <wire::U64LE as wire::Decode>::decode(reader)?;
+        let creation_time = { let value = <wire::U64LE as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
         let is_from_server = <bool as wire::Decode>::decode(reader)?;
         Ok(Self {
             creation_time,
@@ -4653,6 +4704,7 @@ impl SpawnParticleEffect {
 impl wire::Encode for SpawnParticleEffect {
     fn encode(&self, writer: &mut wire::Writer) {
         self.dimension_id.encode(writer);
+        wire::assert_number_limits(self.dimension_id.0, Some(0), Some(255));
         self.actor_id.encode(writer);
         self.position.encode(writer);
         self.effect_name.encode(writer);
@@ -4668,7 +4720,7 @@ impl wire::Encode for SpawnParticleEffect {
 
 impl wire::Decode for SpawnParticleEffect {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let dimension_id = <wire::U8 as wire::Decode>::decode(reader)?;
+        let dimension_id = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), Some(255))?; value };
         let actor_id = <ActorUniqueID as wire::Decode>::decode(reader)?;
         let position = <glam::Vec3 as wire::Decode>::decode(reader)?;
         let effect_name = <String as wire::Decode>::decode(reader)?;
@@ -4742,6 +4794,8 @@ impl wire::Encode for NetworkChunkPublisherUpdate {
     fn encode(&self, writer: &mut wire::Writer) {
         self.new_position_for_view.encode(writer);
         self.new_radius_for_view.encode(writer);
+        wire::assert_number_limits(self.new_radius_for_view.0, Some(0), None);
+        wire::assert_length(self.server_built_chunks_list.len(), 0, 9216);
         wire::encode_collection_u32le(writer, self.server_built_chunks_list.as_slice());
     }
 }
@@ -4749,7 +4803,7 @@ impl wire::Encode for NetworkChunkPublisherUpdate {
 impl wire::Decode for NetworkChunkPublisherUpdate {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let new_position_for_view = <BlockPos as wire::Decode>::decode(reader)?;
-        let new_radius_for_view = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let new_radius_for_view = { let value = <wire::VarUInt as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
         let server_built_chunks_list = wire::decode_collection_u32le::<ChunkPos>(reader, 2)?;
         Ok(Self {
             new_position_for_view,
@@ -4927,15 +4981,17 @@ impl LecternUpdate {
 impl wire::Encode for LecternUpdate {
     fn encode(&self, writer: &mut wire::Writer) {
         self.new_page_to_show.encode(writer);
+        wire::assert_number_limits(self.new_page_to_show.0, Some(0), Some(255));
         self.total_pages.encode(writer);
+        wire::assert_number_limits(self.total_pages.0, Some(0), Some(255));
         self.position_of_lectern_to_update.encode(writer);
     }
 }
 
 impl wire::Decode for LecternUpdate {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let new_page_to_show = <wire::U8 as wire::Decode>::decode(reader)?;
-        let total_pages = <wire::U8 as wire::Decode>::decode(reader)?;
+        let new_page_to_show = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), Some(255))?; value };
+        let total_pages = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), Some(255))?; value };
         let position_of_lectern_to_update = <BlockPos as wire::Decode>::decode(reader)?;
         Ok(Self {
             new_page_to_show,
@@ -4989,12 +5045,13 @@ impl OnScreenTextureAnimation {
 impl wire::Encode for OnScreenTextureAnimation {
     fn encode(&self, writer: &mut wire::Writer) {
         self.effect_id.encode(writer);
+        wire::assert_number_limits(self.effect_id.0, Some(0), None);
     }
 }
 
 impl wire::Decode for OnScreenTextureAnimation {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let effect_id = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let effect_id = { let value = <wire::U32LE as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
         Ok(Self {
             effect_id,
         })
@@ -5057,7 +5114,7 @@ impl StructureTemplateDataRequest {
 }
 impl wire::Encode for StructureTemplateDataRequest {
     fn encode(&self, writer: &mut wire::Writer) {
-        self.structure_name.encode(writer);
+        wire::encode_string_limits(writer, &self.structure_name, 0, 256);
         self.structure_position.encode(writer);
         self.structure_settings.encode(writer);
         self.requested_operation.encode(writer);
@@ -5066,7 +5123,7 @@ impl wire::Encode for StructureTemplateDataRequest {
 
 impl wire::Decode for StructureTemplateDataRequest {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let structure_name = <String as wire::Decode>::decode(reader)?;
+        let structure_name = wire::decode_string_limits(reader, 0, 256)?;
         let structure_position = <BlockPos as wire::Decode>::decode(reader)?;
         let structure_settings = <StructureSettings as wire::Decode>::decode(reader)?;
         let requested_operation = <StructureTemplateRequestOperation as wire::Decode>::decode(reader)?;
@@ -5133,15 +5190,15 @@ impl ClientCacheBlobStatus {
 }
 impl wire::Encode for ClientCacheBlobStatus {
     fn encode(&self, writer: &mut wire::Writer) {
-        wire::encode_collection(writer, self.missing_ids.as_slice());
-        wire::encode_collection(writer, self.found_ids.as_slice());
+        wire::encode_collection_limits(writer, self.missing_ids.as_slice(), 0, 4095);
+        wire::encode_collection_limits(writer, self.found_ids.as_slice(), 0, 4095);
     }
 }
 
 impl wire::Decode for ClientCacheBlobStatus {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let missing_ids = wire::decode_collection::<wire::U64LE>(reader, 8)?;
-        let found_ids = wire::decode_collection::<wire::U64LE>(reader, 8)?;
+        let missing_ids = wire::decode_collection_limits::<wire::U64LE>(reader, 8, 0, 4095)?;
+        let found_ids = wire::decode_collection_limits::<wire::U64LE>(reader, 8, 0, 4095)?;
         Ok(Self {
             missing_ids,
             found_ids,
@@ -5165,13 +5222,13 @@ impl ClientCacheMissResponse {
 }
 impl wire::Encode for ClientCacheMissResponse {
     fn encode(&self, writer: &mut wire::Writer) {
-        wire::encode_collection(writer, self.missing_blobs.as_slice());
+        wire::encode_collection_limits(writer, self.missing_blobs.as_slice(), 0, 4095);
     }
 }
 
 impl wire::Decode for ClientCacheMissResponse {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let missing_blobs = wire::decode_collection::<MissingBlobData>(reader, 9)?;
+        let missing_blobs = wire::decode_collection_limits::<MissingBlobData>(reader, 9, 0, 4095)?;
         Ok(Self {
             missing_blobs,
         })
@@ -5231,9 +5288,11 @@ impl wire::Encode for Emote {
         self.actor_runtime_id.encode(writer);
         self.emote_id.encode(writer);
         self.emote_length_ticks.encode(writer);
+        wire::assert_number_limits(self.emote_length_ticks.0, Some(0), None);
         self.xuid.encode(writer);
         self.platform_id.encode(writer);
         self.flags.encode(writer);
+        wire::assert_number_limits(self.flags.0, Some(0), Some(255));
     }
 }
 
@@ -5241,10 +5300,10 @@ impl wire::Decode for Emote {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let actor_runtime_id = <ActorRuntimeID as wire::Decode>::decode(reader)?;
         let emote_id = <String as wire::Decode>::decode(reader)?;
-        let emote_length_ticks = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let emote_length_ticks = { let value = <wire::VarUInt as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
         let xuid = <String as wire::Decode>::decode(reader)?;
         let platform_id = <String as wire::Decode>::decode(reader)?;
-        let flags = <wire::U8 as wire::Decode>::decode(reader)?;
+        let flags = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), Some(255))?; value };
         Ok(Self {
             actor_runtime_id,
             emote_id,
@@ -5397,19 +5456,21 @@ impl NetworkSettings {
 impl wire::Encode for NetworkSettings {
     fn encode(&self, writer: &mut wire::Writer) {
         self.compression_threshold.encode(writer);
+        wire::assert_number_limits(self.compression_threshold.0, Some(0), None);
         self.compression_algorithm.encode(writer);
         self.client_throttle_enabled.encode(writer);
         self.client_throttle_threshold.encode(writer);
+        wire::assert_number_limits(self.client_throttle_threshold.0, Some(0), Some(255));
         self.client_throttle_scalar.encode(writer);
     }
 }
 
 impl wire::Decode for NetworkSettings {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let compression_threshold = <wire::U16LE as wire::Decode>::decode(reader)?;
+        let compression_threshold = { let value = <wire::U16LE as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
         let compression_algorithm = <PacketCompressionAlgorithm as wire::Decode>::decode(reader)?;
         let client_throttle_enabled = <bool as wire::Decode>::decode(reader)?;
-        let client_throttle_threshold = <wire::U8 as wire::Decode>::decode(reader)?;
+        let client_throttle_threshold = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), Some(255))?; value };
         let client_throttle_scalar = <wire::F32LE as wire::Decode>::decode(reader)?;
         Ok(Self {
             compression_threshold,
@@ -5513,7 +5574,7 @@ impl wire::Encode for PlayerAuthInput {
         match &self.player_block_actions {
             Some(value) => {
                 writer.write_u8(1);
-                wire::encode_collection(writer, value.as_slice());
+                wire::encode_collection_limits(writer, value.as_slice(), 0, 100);
             }
             None => writer.write_u8(0),
         }
@@ -5574,7 +5635,7 @@ impl wire::Decode for PlayerAuthInput {
         };
         let player_block_actions = {
             if reader.read_u8()? != 0 && reader.read_u8()? != 0 {
-                Some(wire::decode_collection::<PlayerBlockActionData>(reader, 5)?)
+                Some(wire::decode_collection_limits::<PlayerBlockActionData>(reader, 5, 0, 100)?)
             } else {
                 None
             }
@@ -5689,13 +5750,13 @@ impl PlayerEnchantOptions {
 }
 impl wire::Encode for PlayerEnchantOptions {
     fn encode(&self, writer: &mut wire::Writer) {
-        wire::encode_collection(writer, self.options.as_slice());
+        wire::encode_collection_limits(writer, self.options.as_slice(), 0, 3);
     }
 }
 
 impl wire::Decode for PlayerEnchantOptions {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let options = wire::decode_collection::<ItemEnchantOption>(reader, 10)?;
+        let options = wire::decode_collection_limits::<ItemEnchantOption>(reader, 10, 0, 3)?;
         Ok(Self {
             options,
         })
@@ -5718,13 +5779,13 @@ impl ItemStackRequest {
 }
 impl wire::Encode for ItemStackRequest {
     fn encode(&self, writer: &mut wire::Writer) {
-        wire::encode_collection(writer, self.requests.as_slice());
+        wire::encode_collection_limits(writer, self.requests.as_slice(), 0, 100);
     }
 }
 
 impl wire::Decode for ItemStackRequest {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let requests = wire::decode_collection::<ItemStackRequestPacketData>(reader, 7)?;
+        let requests = wire::decode_collection_limits::<ItemStackRequestPacketData>(reader, 7, 0, 100)?;
         Ok(Self {
             requests,
         })
@@ -5771,13 +5832,13 @@ impl PlayerArmorDamage {
 }
 impl wire::Encode for PlayerArmorDamage {
     fn encode(&self, writer: &mut wire::Writer) {
-        wire::encode_collection(writer, self.armor_slot_and_damage_pairs.as_slice());
+        wire::encode_collection_limits(writer, self.armor_slot_and_damage_pairs.as_slice(), 0, 5);
     }
 }
 
 impl wire::Decode for PlayerArmorDamage {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let armor_slot_and_damage_pairs = wire::decode_collection::<ArmorSlotAndDamagePair>(reader, 3)?;
+        let armor_slot_and_damage_pairs = wire::decode_collection_limits::<ArmorSlotAndDamagePair>(reader, 3, 0, 5)?;
         Ok(Self {
             armor_slot_and_damage_pairs,
         })
@@ -6371,8 +6432,8 @@ impl wire::Encode for AddVolumeEntity {
     fn encode(&self, writer: &mut wire::Writer) {
         self.entity_network_id.encode(writer);
         self.components.encode(writer);
-        self.json_identifier.encode(writer);
-        self.instance_name.encode(writer);
+        wire::encode_string_limits(writer, &self.json_identifier, 1, 18446744073709551615);
+        wire::encode_string_limits(writer, &self.instance_name, 1, 18446744073709551615);
         self.min_bounds.encode(writer);
         self.max_bounds.encode(writer);
         self.dimension_type.encode(writer);
@@ -6384,8 +6445,8 @@ impl wire::Decode for AddVolumeEntity {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let entity_network_id = <EntityNetId as wire::Decode>::decode(reader)?;
         let components = <wire::NetworkNbt as wire::Decode>::decode(reader)?;
-        let json_identifier = <String as wire::Decode>::decode(reader)?;
-        let instance_name = <String as wire::Decode>::decode(reader)?;
+        let json_identifier = wire::decode_string_limits(reader, 1, 18446744073709551615)?;
+        let instance_name = wire::decode_string_limits(reader, 1, 18446744073709551615)?;
         let min_bounds = <BlockPos as wire::Decode>::decode(reader)?;
         let max_bounds = <BlockPos as wire::Decode>::decode(reader)?;
         let dimension_type = <DimensionType as wire::Decode>::decode(reader)?;
@@ -6472,6 +6533,7 @@ impl NpcDialogue {
 impl wire::Encode for NpcDialogue {
     fn encode(&self, writer: &mut wire::Writer) {
         self.npc_id_raw_id.encode(writer);
+        wire::assert_number_limits(self.npc_id_raw_id.0, Some(0), None);
         self.npc_dialogue_action_type.encode(writer);
         self.dialogue.encode(writer);
         self.scene_name.encode(writer);
@@ -6482,7 +6544,7 @@ impl wire::Encode for NpcDialogue {
 
 impl wire::Decode for NpcDialogue {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let npc_id_raw_id = <wire::U64LE as wire::Decode>::decode(reader)?;
+        let npc_id_raw_id = { let value = <wire::U64LE as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
         let npc_dialogue_action_type = <NpcDialogueActionType as wire::Decode>::decode(reader)?;
         let dialogue = <String as wire::Decode>::decode(reader)?;
         let scene_name = <String as wire::Decode>::decode(reader)?;
@@ -6538,6 +6600,7 @@ impl CreatePhoto {
 impl wire::Encode for CreatePhoto {
     fn encode(&self, writer: &mut wire::Writer) {
         self.raw_id.encode(writer);
+        wire::assert_number_limits(self.raw_id.0, Some(0), None);
         self.photo_name.encode(writer);
         self.photo_item_name.encode(writer);
     }
@@ -6545,7 +6608,7 @@ impl wire::Encode for CreatePhoto {
 
 impl wire::Decode for CreatePhoto {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let raw_id = <wire::U64LE as wire::Decode>::decode(reader)?;
+        let raw_id = { let value = <wire::U64LE as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
         let photo_name = <String as wire::Decode>::decode(reader)?;
         let photo_item_name = <String as wire::Decode>::decode(reader)?;
         Ok(Self {
@@ -6603,7 +6666,7 @@ impl wire::Encode for SubChunk {
         self.cache_enabled.encode(writer);
         self.dimension_type.encode(writer);
         self.center_pos.encode(writer);
-        wire::encode_collection(writer, self.sub_chunk_data.as_slice());
+        wire::encode_collection_limits(writer, self.sub_chunk_data.as_slice(), 0, 8192);
     }
 }
 
@@ -6612,7 +6675,7 @@ impl wire::Decode for SubChunk {
         let cache_enabled = <bool as wire::Decode>::decode(reader)?;
         let dimension_type = <DimensionType as wire::Decode>::decode(reader)?;
         let center_pos = <SubChunkPos as wire::Decode>::decode(reader)?;
-        let sub_chunk_data = wire::decode_collection::<SubChunkData>(reader, 10)?;
+        let sub_chunk_data = wire::decode_collection_limits::<SubChunkData>(reader, 10, 0, 8192)?;
         Ok(Self {
             cache_enabled,
             dimension_type,
@@ -6636,7 +6699,7 @@ impl SubChunkRequest {
 impl wire::Encode for SubChunkRequest {
     fn encode(&self, writer: &mut wire::Writer) {
         self.dimension_type.encode(writer);
-        wire::encode_collection(writer, self.sub_chunk_position_offset_list.as_slice());
+        wire::encode_collection_limits(writer, self.sub_chunk_position_offset_list.as_slice(), 0, 8192);
         self.center_pos.encode(writer);
     }
 }
@@ -6644,7 +6707,7 @@ impl wire::Encode for SubChunkRequest {
 impl wire::Decode for SubChunkRequest {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let dimension_type = <DimensionType as wire::Decode>::decode(reader)?;
-        let sub_chunk_position_offset_list = wire::decode_collection::<SubChunkPosOffset>(reader, 3)?;
+        let sub_chunk_position_offset_list = wire::decode_collection_limits::<SubChunkPosOffset>(reader, 3, 0, 8192)?;
         let center_pos = <SubChunkPos as wire::Decode>::decode(reader)?;
         Ok(Self {
             dimension_type,
@@ -6931,6 +6994,7 @@ impl RequestAbility {
 impl wire::Encode for RequestAbility {
     fn encode(&self, writer: &mut wire::Writer) {
         self.ability.encode(writer);
+        wire::assert_number_limits(self.ability.0, Some(0), Some(19));
         self.value_type.encode(writer);
         self.bool.encode(writer);
         self.float.encode(writer);
@@ -6939,7 +7003,7 @@ impl wire::Encode for RequestAbility {
 
 impl wire::Decode for RequestAbility {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let ability = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
+        let ability = { let value = <wire::ZigZag32 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), Some(19))?; value };
         let value_type = <RequestAbilityType as wire::Decode>::decode(reader)?;
         let bool = <bool as wire::Decode>::decode(reader)?;
         let float = <wire::F32LE as wire::Decode>::decode(reader)?;
@@ -6976,6 +7040,7 @@ impl wire::Encode for RequestPermissions {
         self.target_player_id_raw_id.encode(writer);
         self.player_permission_level.encode(writer);
         self.custom_permission_flags.encode(writer);
+        wire::assert_number_limits(self.custom_permission_flags.0, Some(0), None);
     }
 }
 
@@ -6983,7 +7048,7 @@ impl wire::Decode for RequestPermissions {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let target_player_id_raw_id = <wire::I64LE as wire::Decode>::decode(reader)?;
         let player_permission_level = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
-        let custom_permission_flags = <wire::U16LE as wire::Decode>::decode(reader)?;
+        let custom_permission_flags = { let value = <wire::U16LE as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
         Ok(Self {
             target_player_id_raw_id,
             player_permission_level,
@@ -7217,12 +7282,13 @@ impl RequestNetworkSettings {
 impl wire::Encode for RequestNetworkSettings {
     fn encode(&self, writer: &mut wire::Writer) {
         self.client_network_version.encode(writer);
+        wire::assert_number_limits(self.client_network_version.0, Some(2168), Some(2168));
     }
 }
 
 impl wire::Decode for RequestNetworkSettings {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let client_network_version = <wire::I32BE as wire::Decode>::decode(reader)?;
+        let client_network_version = { let value = <wire::I32BE as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(2168), Some(2168))?; value };
         Ok(Self {
             client_network_version,
         })
@@ -7331,12 +7397,13 @@ impl UpdateClientInputLocks {
 impl wire::Encode for UpdateClientInputLocks {
     fn encode(&self, writer: &mut wire::Writer) {
         self.input_lock_component_data.encode(writer);
+        wire::assert_number_limits(self.input_lock_component_data.0, Some(0), None);
     }
 }
 
 impl wire::Decode for UpdateClientInputLocks {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let input_lock_component_data = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let input_lock_component_data = { let value = <wire::VarUInt as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
         Ok(Self {
             input_lock_component_data,
         })
@@ -7561,6 +7628,7 @@ impl wire::Encode for PlayerToggleCrafterSlotRequest {
         self.pos_y.encode(writer);
         self.pos_z.encode(writer);
         self.slot_index.encode(writer);
+        wire::assert_number_limits(self.slot_index.0, Some(0), Some(255));
         self.is_disabled.encode(writer);
     }
 }
@@ -7570,7 +7638,7 @@ impl wire::Decode for PlayerToggleCrafterSlotRequest {
         let pos_x = <wire::I32LE as wire::Decode>::decode(reader)?;
         let pos_y = <wire::I32LE as wire::Decode>::decode(reader)?;
         let pos_z = <wire::I32LE as wire::Decode>::decode(reader)?;
-        let slot_index = <wire::U8 as wire::Decode>::decode(reader)?;
+        let slot_index = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), Some(255))?; value };
         let is_disabled = <bool as wire::Decode>::decode(reader)?;
         Ok(Self {
             pos_x,
@@ -7880,6 +7948,7 @@ impl wire::Encode for CameraAimAssist {
         self.preset_id.encode(writer);
         self.view_angle.encode(writer);
         self.distance.encode(writer);
+        wire::assert_number_limits(self.distance.0, Some(1.0), Some(16.0));
         self.target_mode.encode(writer);
         self.action.encode(writer);
         self.show_debug_render.encode(writer);
@@ -7890,7 +7959,7 @@ impl wire::Decode for CameraAimAssist {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let preset_id = <String as wire::Decode>::decode(reader)?;
         let view_angle = <glam::Vec2 as wire::Decode>::decode(reader)?;
-        let distance = <wire::F32LE as wire::Decode>::decode(reader)?;
+        let distance = { let value = <wire::F32LE as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(1.0), Some(16.0))?; value };
         let target_mode = <TargetMode as wire::Decode>::decode(reader)?;
         let action = <CameraAimAssistAction as wire::Decode>::decode(reader)?;
         let show_debug_render = <bool as wire::Decode>::decode(reader)?;
@@ -8196,6 +8265,7 @@ impl wire::Encode for PlayerUpdateEntityOverrides {
     fn encode(&self, writer: &mut wire::Writer) {
         self.target_id.encode(writer);
         self.property_index.encode(writer);
+        wire::assert_number_limits(self.property_index.0, Some(0), None);
         self.update.encode(writer);
     }
 }
@@ -8203,7 +8273,7 @@ impl wire::Encode for PlayerUpdateEntityOverrides {
 impl wire::Decode for PlayerUpdateEntityOverrides {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let target_id = <ActorUniqueID as wire::Decode>::decode(reader)?;
-        let property_index = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let property_index = { let value = <wire::VarUInt as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
         let update = <PlayerUpdateEntityOverridesData as wire::Decode>::decode(reader)?;
         Ok(Self {
             target_id,
@@ -8281,13 +8351,13 @@ impl PrimitiveShapes {
 }
 impl wire::Encode for PrimitiveShapes {
     fn encode(&self, writer: &mut wire::Writer) {
-        wire::encode_collection(writer, self.array_of_primitive_shapes_can_be_a_mix_of_new_updated_or_removed.as_slice());
+        wire::encode_collection_limits(writer, self.array_of_primitive_shapes_can_be_a_mix_of_new_updated_or_removed.as_slice(), 0, 1048576);
     }
 }
 
 impl wire::Decode for PrimitiveShapes {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let array_of_primitive_shapes_can_be_a_mix_of_new_updated_or_removed = wire::decode_collection::<PrimitiveShape>(reader, 11)?;
+        let array_of_primitive_shapes_can_be_a_mix_of_new_updated_or_removed = wire::decode_collection_limits::<PrimitiveShape>(reader, 11, 0, 1048576)?;
         Ok(Self {
             array_of_primitive_shapes_can_be_a_mix_of_new_updated_or_removed,
         })
@@ -8307,7 +8377,7 @@ impl ServerboundPackSettingChange {
 impl wire::Encode for ServerboundPackSettingChange {
     fn encode(&self, writer: &mut wire::Writer) {
         self.pack_id.encode(writer);
-        self.pack_setting_name.encode(writer);
+        wire::encode_string_limits(writer, &self.pack_setting_name, 0, 128);
         self.pack_setting_value.encode(writer);
     }
 }
@@ -8315,7 +8385,7 @@ impl wire::Encode for ServerboundPackSettingChange {
 impl wire::Decode for ServerboundPackSettingChange {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let pack_id = <uuid::Uuid as wire::Decode>::decode(reader)?;
-        let pack_setting_name = <String as wire::Decode>::decode(reader)?;
+        let pack_setting_name = wire::decode_string_limits(reader, 0, 128)?;
         let pack_setting_value = <ServerboundPackSettingChangePackSettingValue as wire::Decode>::decode(reader)?;
         Ok(Self {
             pack_id,
@@ -8335,13 +8405,13 @@ impl ClientboundDataStore {
 }
 impl wire::Encode for ClientboundDataStore {
     fn encode(&self, writer: &mut wire::Writer) {
-        wire::encode_collection(writer, self.updates.as_slice());
+        wire::encode_collection_limits(writer, self.updates.as_slice(), 0, 500);
     }
 }
 
 impl wire::Decode for ClientboundDataStore {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let updates = wire::decode_collection::<BedrockDDUI>(reader, 2)?;
+        let updates = wire::decode_collection_limits::<BedrockDDUI>(reader, 2, 0, 500)?;
         Ok(Self {
             updates,
         })
@@ -8373,7 +8443,7 @@ impl GraphicsOverrideParameter {
 }
 impl wire::Encode for GraphicsOverrideParameter {
     fn encode(&self, writer: &mut wire::Writer) {
-        wire::encode_map(writer, self.parameter_keyframe_values.as_slice());
+        wire::encode_map_limits(writer, self.parameter_keyframe_values.as_slice(), 0, 255);
         match &self.float_value {
             Some(value) => {
                 writer.write_u8(1);
@@ -8388,11 +8458,11 @@ impl wire::Encode for GraphicsOverrideParameter {
             }
             None => writer.write_u8(0),
         }
-        self.biome_identifier.encode(writer);
+        wire::encode_string_limits(writer, &self.biome_identifier, 0, 255);
         match &self.player_identifier {
             Some(value) => {
                 writer.write_u8(1);
-                value.encode(writer);
+                wire::encode_string_limits(writer, value, 0, 255);
             }
             None => writer.write_u8(0),
         }
@@ -8403,7 +8473,7 @@ impl wire::Encode for GraphicsOverrideParameter {
 
 impl wire::Decode for GraphicsOverrideParameter {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let parameter_keyframe_values = wire::decode_map::<wire::F32LE, glam::Vec3>(reader, 16)?;
+        let parameter_keyframe_values = wire::decode_map_limits::<wire::F32LE, glam::Vec3>(reader, 16, 0, 255)?;
         let float_value = {
             if reader.read_u8()? == 0 {
                 None
@@ -8418,12 +8488,12 @@ impl wire::Decode for GraphicsOverrideParameter {
                 Some(<glam::Vec3 as wire::Decode>::decode(reader)?)
             }
         };
-        let biome_identifier = <String as wire::Decode>::decode(reader)?;
+        let biome_identifier = wire::decode_string_limits(reader, 0, 255)?;
         let player_identifier = {
             if reader.read_u8()? == 0 {
                 None
             } else {
-                Some(<String as wire::Decode>::decode(reader)?)
+                Some(wire::decode_string_limits(reader, 0, 255)?)
             }
         };
         let identifier_for_parameter = <GraphicsOverrideParameterType as wire::Decode>::decode(reader)?;
@@ -8476,8 +8546,9 @@ impl ClientboundDataDrivenUIShowScreen {
 }
 impl wire::Encode for ClientboundDataDrivenUIShowScreen {
     fn encode(&self, writer: &mut wire::Writer) {
-        self.screen_id.encode(writer);
+        wire::encode_string_limits(writer, &self.screen_id, 0, 500);
         self.form_id.encode(writer);
+        wire::assert_number_limits(self.form_id.0, Some(0), None);
         match &self.data_instance_id {
             Some(value) => {
                 writer.write_u8(1);
@@ -8490,8 +8561,8 @@ impl wire::Encode for ClientboundDataDrivenUIShowScreen {
 
 impl wire::Decode for ClientboundDataDrivenUIShowScreen {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let screen_id = <String as wire::Decode>::decode(reader)?;
-        let form_id = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let screen_id = wire::decode_string_limits(reader, 0, 500)?;
+        let form_id = { let value = <wire::U32LE as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
         let data_instance_id = {
             if reader.read_u8()? == 0 {
                 None
@@ -8587,7 +8658,9 @@ impl wire::Encode for ClientboundTextureShift {
         self.to_step.encode(writer);
         wire::encode_collection(writer, self.all_steps.as_slice());
         self.current_length_in_ticks.encode(writer);
+        wire::assert_number_limits(self.current_length_in_ticks.0, Some(0), None);
         self.total_length_in_ticks.encode(writer);
+        wire::assert_number_limits(self.total_length_in_ticks.0, Some(0), None);
         self.enabled.encode(writer);
     }
 }
@@ -8599,8 +8672,8 @@ impl wire::Decode for ClientboundTextureShift {
         let from_step = <String as wire::Decode>::decode(reader)?;
         let to_step = <String as wire::Decode>::decode(reader)?;
         let all_steps = wire::decode_collection::<String>(reader, 1)?;
-        let current_length_in_ticks = <wire::VarULong as wire::Decode>::decode(reader)?;
-        let total_length_in_ticks = <wire::VarULong as wire::Decode>::decode(reader)?;
+        let current_length_in_ticks = { let value = <wire::VarULong as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
+        let total_length_in_ticks = { let value = <wire::VarULong as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
         let enabled = <bool as wire::Decode>::decode(reader)?;
         Ok(Self {
             action_id,
@@ -8634,6 +8707,7 @@ impl wire::Encode for VoxelShapes {
         wire::encode_collection(writer, self.shapes.as_slice());
         wire::encode_map(writer, self.name_map.as_slice());
         self.custom_shape_count.encode(writer);
+        wire::assert_number_limits(self.custom_shape_count.0, Some(0), None);
     }
 }
 
@@ -8641,7 +8715,7 @@ impl wire::Decode for VoxelShapes {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let shapes = wire::decode_collection::<VoxelShapesSerializableVoxelShape>(reader, 7)?;
         let name_map = wire::decode_map::<String, VoxelShapesRegistryHandle>(reader, 3)?;
-        let custom_shape_count = <wire::U16LE as wire::Decode>::decode(reader)?;
+        let custom_shape_count = { let value = <wire::U16LE as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
         Ok(Self {
             shapes,
             name_map,
@@ -8736,13 +8810,13 @@ impl LocatorBar {
 }
 impl wire::Encode for LocatorBar {
     fn encode(&self, writer: &mut wire::Writer) {
-        wire::encode_collection(writer, self.waypoints.as_slice());
+        wire::encode_collection_limits(writer, self.waypoints.as_slice(), 0, 40000);
     }
 }
 
 impl wire::Decode for LocatorBar {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let waypoints = wire::decode_collection::<LocatorBarWaypoint>(reader, 28)?;
+        let waypoints = wire::decode_collection_limits::<LocatorBarWaypoint>(reader, 28, 0, 40000)?;
         Ok(Self {
             waypoints,
         })
@@ -8799,13 +8873,14 @@ impl ServerboundDataDrivenScreenClosed {
 impl wire::Encode for ServerboundDataDrivenScreenClosed {
     fn encode(&self, writer: &mut wire::Writer) {
         self.form_id.encode(writer);
+        wire::assert_number_limits(self.form_id.0, Some(0), None);
         self.close_reason.encode(writer);
     }
 }
 
 impl wire::Decode for ServerboundDataDrivenScreenClosed {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let form_id = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let form_id = { let value = <wire::U32LE as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
         let close_reason = <String as wire::Decode>::decode(reader)?;
         Ok(Self {
             form_id,
@@ -9103,17 +9178,17 @@ impl SendPartyDestinationCookie {
 }
 impl wire::Encode for SendPartyDestinationCookie {
     fn encode(&self, writer: &mut wire::Writer) {
-        self.cookie.encode(writer);
+        wire::encode_string_limits(writer, &self.cookie, 0, 2048);
         self.intent.encode(writer);
-        self.destination_name.encode(writer);
+        wire::encode_string_limits(writer, &self.destination_name, 0, 64);
     }
 }
 
 impl wire::Decode for SendPartyDestinationCookie {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let cookie = <String as wire::Decode>::decode(reader)?;
+        let cookie = wire::decode_string_limits(reader, 0, 2048)?;
         let intent = <String as wire::Decode>::decode(reader)?;
-        let destination_name = <String as wire::Decode>::decode(reader)?;
+        let destination_name = wire::decode_string_limits(reader, 0, 64)?;
         Ok(Self {
             cookie,
             intent,
@@ -9138,14 +9213,14 @@ impl PartyDestinationCookieResponse {
 }
 impl wire::Encode for PartyDestinationCookieResponse {
     fn encode(&self, writer: &mut wire::Writer) {
-        self.cookie.encode(writer);
+        wire::encode_string_limits(writer, &self.cookie, 0, 2048);
         self.accepted.encode(writer);
     }
 }
 
 impl wire::Decode for PartyDestinationCookieResponse {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let cookie = <String as wire::Decode>::decode(reader)?;
+        let cookie = wire::decode_string_limits(reader, 0, 2048)?;
         let accepted = <bool as wire::Decode>::decode(reader)?;
         Ok(Self {
             cookie,

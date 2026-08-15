@@ -80,7 +80,7 @@ func (*BedrockDDUIDataStoreUpdateDataString) isBedrockDDUIDataStoreUpdateData() 
 
 // Marshal reads or writes BedrockDDUIDataStoreUpdateDataString using its canonical wire layout.
 func (x *BedrockDDUIDataStoreUpdateDataString) Marshal(io IO) {
-	io.String(&x.Value)
+	io.StringLimits(&x.Value, 0, 5000)
 }
 
 // Bitset131 stores the 131-bit value used by the wire bitset encoding.

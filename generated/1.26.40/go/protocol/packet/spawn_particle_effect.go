@@ -28,6 +28,8 @@ type SpawnParticleEffect struct {
 // Marshal reads or writes SpawnParticleEffect using its canonical wire layout.
 func (x *SpawnParticleEffect) Marshal(io protocol.IO) {
 	io.Uint8(&x.DimensionID)
+	protocol.Minimum(io, &x.DimensionID, 0)
+	protocol.Maximum(io, &x.DimensionID, 255)
 	io.ActorUniqueID(&x.ActorID)
 	io.Vec3(&x.Position)
 	io.String(&x.EffectName)

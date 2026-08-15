@@ -14,7 +14,9 @@ type DimensionData struct {
 
 // Marshal reads or writes DimensionData using its canonical wire layout.
 func (x *DimensionData) Marshal(io protocol.IO) {
-	protocol.OrderedMap(io, &x.Definitions, io.Varuint32, io.String, func(value *protocol.DimensionDefinition) {
+	protocol.OrderedMap(io, &x.Definitions, io.Varuint32, func(value *string) {
+		io.StringLimits(value, 0, 256)
+	}, func(value *protocol.DimensionDefinition) {
 		value.Marshal(io)
 	})
 }

@@ -18,6 +18,8 @@ type RequestAbility struct {
 // Marshal reads or writes RequestAbility using its canonical wire layout.
 func (x *RequestAbility) Marshal(io protocol.IO) {
 	io.Varint32(&x.Ability)
+	protocol.Minimum(io, &x.Ability, 0)
+	protocol.Maximum(io, &x.Ability, 19)
 	protocol.IntegerFunc(&x.ValueType, io.Uint8)
 	io.Bool(&x.Bool)
 	io.Float32(&x.Float)

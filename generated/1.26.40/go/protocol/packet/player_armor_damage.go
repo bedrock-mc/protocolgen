@@ -10,7 +10,7 @@ type PlayerArmorDamage struct {
 
 // Marshal reads or writes PlayerArmorDamage using its canonical wire layout.
 func (x *PlayerArmorDamage) Marshal(io protocol.IO) {
-	protocol.Slice(io, &x.ArmorSlotAndDamagePairs)
+	protocol.SliceLimits(io, &x.ArmorSlotAndDamagePairs, 0, 5)
 }
 
 // ID returns the protocol ID for PlayerArmorDamage.

@@ -19,7 +19,7 @@ type PlayerEnchantOptions struct {
 
 // Marshal reads or writes PlayerEnchantOptions using its canonical wire layout.
 func (x *PlayerEnchantOptions) Marshal(io protocol.IO) {
-	protocol.Slice(io, &x.Options)
+	protocol.SliceLimits(io, &x.Options, 0, 3)
 }
 
 // ID returns the protocol ID for PlayerEnchantOptions.

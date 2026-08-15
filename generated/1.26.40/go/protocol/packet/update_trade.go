@@ -27,7 +27,11 @@ type UpdateTrade struct {
 // Marshal reads or writes UpdateTrade using its canonical wire layout.
 func (x *UpdateTrade) Marshal(io protocol.IO) {
 	io.Uint8(&x.ContainerID)
+	protocol.Minimum(io, &x.ContainerID, 0)
+	protocol.Maximum(io, &x.ContainerID, 255)
 	io.Uint8(&x.Type)
+	protocol.Minimum(io, &x.Type, 0)
+	protocol.Maximum(io, &x.Type, 255)
 	io.Varint32(&x.Size)
 	io.Varint32(&x.TraderTier)
 	io.ActorUniqueID(&x.EntityUniqueID)

@@ -51,11 +51,14 @@ type Result struct {
 }
 
 func Fingerprint(claim Claim) (string, error) {
-	return digest(claim)
+	return digest(withoutValidationConstraints(claim))
 }
 
 func ContextFingerprint(target manifest.Target, input []Claim) (string, error) {
 	claims := append([]Claim(nil), input...)
+	for index := range claims {
+		claims[index] = withoutValidationConstraints(claims[index])
+	}
 	sort.SliceStable(claims, func(i, j int) bool {
 		if claims[i].SourceID != claims[j].SourceID {
 			return claims[i].SourceID < claims[j].SourceID
@@ -69,6 +72,69 @@ func ContextFingerprint(target manifest.Target, input []Claim) (string, error) {
 		Target manifest.Target `json:"target"`
 		Claims []Claim         `json:"claims"`
 	}{Target: target, Claims: claims})
+}
+
+// Validation constraints do not alter the wire layout selected by an
+// adjudication. Keep existing wire-evidence fingerprints stable when a source
+// begins publishing bounds; constraint disagreements are resolved by fixing a
+// source claim rather than silently changing a wire adjudication's scope.
+func withoutValidationConstraints(claim Claim) Claim {
+	claim.Encode = nodeWithoutValidationConstraints(claim.Encode)
+	if claim.Decode != nil {
+		decoded := nodeWithoutValidationConstraints(*claim.Decode)
+		claim.Decode = &decoded
+	}
+	return claim
+}
+
+func nodeWithoutValidationConstraints(node manifest.Node) manifest.Node {
+	node.Constraints = nil
+	node.Prefix = nodePointerWithoutValidationConstraints(node.Prefix)
+	node.Element = nodePointerWithoutValidationConstraints(node.Element)
+	node.Value = nodePointerWithoutValidationConstraints(node.Value)
+	node.Key = nodePointerWithoutValidationConstraints(node.Key)
+	node.Control = nodePointerWithoutValidationConstraints(node.Control)
+	node.Default = nodePointerWithoutValidationConstraints(node.Default)
+	node.Elements = append([]manifest.Node(nil), node.Elements...)
+	for index := range node.Elements {
+		node.Elements[index] = nodeWithoutValidationConstraints(node.Elements[index])
+	}
+	node.Fields = append([]manifest.Field(nil), node.Fields...)
+	for index := range node.Fields {
+		node.Fields[index].Encode = nodeWithoutValidationConstraints(node.Fields[index].Encode)
+		if node.Fields[index].Decode != nil {
+			updated := nodeWithoutValidationConstraints(*node.Fields[index].Decode)
+			node.Fields[index].Decode = &updated
+		}
+	}
+	node.Variants = append([]manifest.Variant(nil), node.Variants...)
+	for index := range node.Variants {
+		node.Variants[index].Encode = nodeWithoutValidationConstraints(node.Variants[index].Encode)
+		if node.Variants[index].Decode != nil {
+			updated := nodeWithoutValidationConstraints(*node.Variants[index].Decode)
+			node.Variants[index].Decode = &updated
+		}
+	}
+	node.Cases = append([]manifest.Case(nil), node.Cases...)
+	for caseIndex := range node.Cases {
+		node.Cases[caseIndex].Encode = append([]manifest.Node(nil), node.Cases[caseIndex].Encode...)
+		node.Cases[caseIndex].Decode = append([]manifest.Node(nil), node.Cases[caseIndex].Decode...)
+		for index := range node.Cases[caseIndex].Encode {
+			node.Cases[caseIndex].Encode[index] = nodeWithoutValidationConstraints(node.Cases[caseIndex].Encode[index])
+		}
+		for index := range node.Cases[caseIndex].Decode {
+			node.Cases[caseIndex].Decode[index] = nodeWithoutValidationConstraints(node.Cases[caseIndex].Decode[index])
+		}
+	}
+	return node
+}
+
+func nodePointerWithoutValidationConstraints(node *manifest.Node) *manifest.Node {
+	if node == nil {
+		return nil
+	}
+	updated := nodeWithoutValidationConstraints(*node)
+	return &updated
 }
 
 func digest(value any) (string, error) {

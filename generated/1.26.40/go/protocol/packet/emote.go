@@ -28,9 +28,12 @@ func (x *Emote) Marshal(io protocol.IO) {
 	io.ActorRuntimeID(&x.ActorRuntimeID)
 	io.String(&x.EmoteID)
 	io.Varuint32(&x.EmoteLengthTicks)
+	protocol.Minimum(io, &x.EmoteLengthTicks, 0)
 	io.String(&x.Xuid)
 	io.String(&x.PlatformID)
 	io.Uint8(&x.Flags)
+	protocol.Minimum(io, &x.Flags, 0)
+	protocol.Maximum(io, &x.Flags, 255)
 }
 
 // ID returns the protocol ID for Emote.

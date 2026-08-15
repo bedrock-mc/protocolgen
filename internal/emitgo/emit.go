@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"go/format"
 	"sort"
+	"strconv"
 	"strings"
 	"unicode"
 
@@ -990,14 +991,14 @@ func (a addressStrategy) bits(expression string) string {
 func (e *marshalEmitter) node(b *strings.Builder, node manifest.Node, expression, hint, indent string, address addressStrategy) error {
 	if method, ok := e.semanticIOCall(node); ok {
 		fmt.Fprintf(b, "%sio.%s(%s)\n", indent, method, address.address(expression))
-		return nil
+		return e.numberConstraints(b, node, expression, indent, address)
 	}
 	if native, matched, err := e.g.nativeGoType(node); matched || err != nil {
 		if err != nil {
 			return err
 		}
 		fmt.Fprintf(b, "%sio.%s(%s)\n", indent, nativeMethod(native), address.address(expression))
-		return nil
+		return e.numberConstraints(b, node, expression, indent, address)
 	}
 	switch node.Kind {
 	case manifest.KindVoid:
@@ -1023,18 +1024,31 @@ func (e *marshalEmitter) node(b *strings.Builder, node manifest.Node, expression
 			return err
 		}
 		fmt.Fprintf(b, "%sio.%s(%s)\n", indent, method, address.address(expression))
-		return nil
+		return e.numberConstraints(b, node, expression, indent, address)
 	case manifest.KindString:
 		if !varuint32Prefix(node) {
 			return fmt.Errorf("string has unsupported length prefix")
 		}
-		fmt.Fprintf(b, "%sio.String(%s)\n", indent, address.address(expression))
+		if node.Constraints != nil && (node.Constraints.MinLength != nil || node.Constraints.MaxLength != nil) {
+			min, max := lengthBounds(node.Constraints.MinLength, node.Constraints.MaxLength)
+			fmt.Fprintf(b, "%sio.StringLimits(%s, %d, %d)\n", indent, address.address(expression), min, max)
+		} else {
+			fmt.Fprintf(b, "%sio.String(%s)\n", indent, address.address(expression))
+		}
+		if node.Constraints != nil && node.Constraints.Pattern != "" {
+			fmt.Fprintf(b, "%s%s(io, %s, %q)\n", indent, e.runtime("Pattern"), address.address(expression), node.Constraints.Pattern)
+		}
 		return nil
 	case manifest.KindBytes:
 		if !varuint32Prefix(node) {
 			return fmt.Errorf("bytes have unsupported length prefix")
 		}
-		fmt.Fprintf(b, "%sio.Bytes(%s)\n", indent, address.address(expression))
+		if node.Constraints != nil && (node.Constraints.MinLength != nil || node.Constraints.MaxLength != nil) {
+			min, max := lengthBounds(node.Constraints.MinLength, node.Constraints.MaxLength)
+			fmt.Fprintf(b, "%sio.BytesLimits(%s, %d, %d)\n", indent, address.address(expression), min, max)
+		} else {
+			fmt.Fprintf(b, "%sio.Bytes(%s)\n", indent, address.address(expression))
+		}
 		return nil
 	case manifest.KindBitset:
 		fmt.Fprintf(b, "%sio.Bitset(%s, %d)\n", indent, address.bits(expression), node.Length)
@@ -1063,7 +1077,7 @@ func (e *marshalEmitter) node(b *strings.Builder, node manifest.Node, expression
 		if node.Element == nil || node.Prefix == nil {
 			return fmt.Errorf("array has no element or prefix")
 		}
-		return e.collection(b, *node.Prefix, *node.Element, expression, hint+"Item", indent, address)
+		return e.collection(b, node, expression, hint+"Item", indent, address)
 	case manifest.KindFixedArray:
 		if node.Element == nil {
 			return fmt.Errorf("fixed array has no element")
@@ -1125,7 +1139,8 @@ func (e *marshalEmitter) optionalCall(b *strings.Builder, helper string, value m
 	return nil
 }
 
-func (e *marshalEmitter) collection(b *strings.Builder, prefix, element manifest.Node, expression, hint, indent string, address addressStrategy) error {
+func (e *marshalEmitter) collection(b *strings.Builder, node manifest.Node, expression, hint, indent string, address addressStrategy) error {
+	prefix, element := *node.Prefix, *node.Element
 	if prefix.Kind != manifest.KindPrimitive || prefix.Primitive == nil {
 		return fmt.Errorf("collection prefix must be a primitive")
 	}
@@ -1133,11 +1148,27 @@ func (e *marshalEmitter) collection(b *strings.Builder, prefix, element manifest
 	if err != nil {
 		return err
 	}
+	min, max, constrained := itemBounds(node.Constraints)
 	if prefix.Primitive.Code == "var_u32" && e.marshalableElement(element, hint) {
-		fmt.Fprintf(b, "%s%s(io, %s)\n", indent, e.runtime("Slice"), address.address(expression))
+		helper := "Slice"
+		if constrained {
+			helper = "SliceLimits"
+		}
+		fmt.Fprintf(b, "%s%s(io, %s", indent, e.runtime(helper), address.address(expression))
+		if constrained {
+			fmt.Fprintf(b, ", %d, %d", min, max)
+		}
+		b.WriteString(")\n")
 		return nil
 	}
-	fmt.Fprintf(b, "%s%s(io, %s, io.%s, ", indent, e.runtime("FuncSlice"), address.address(expression), countMethod)
+	helper := "FuncSlice"
+	if constrained {
+		helper = "FuncSliceLimits"
+	}
+	fmt.Fprintf(b, "%s%s(io, %s, io.%s, ", indent, e.runtime(helper), address.address(expression), countMethod)
+	if constrained {
+		fmt.Fprintf(b, "%d, %d, ", min, max)
+	}
 	if method, ok := e.directIOCall(element); ok {
 		fmt.Fprintf(b, "io.%s)\n", method)
 		return nil
@@ -1168,7 +1199,15 @@ func (e *marshalEmitter) mapEntries(b *strings.Builder, node manifest.Node, expr
 	if err != nil {
 		return err
 	}
-	fmt.Fprintf(b, "%s%s(io, %s, io.%s, ", indent, e.runtime("OrderedMap"), address.address(expression), countMethod)
+	min, max, constrained := propertyBounds(node.Constraints)
+	helper := "OrderedMap"
+	if constrained {
+		helper = "OrderedMapLimits"
+	}
+	fmt.Fprintf(b, "%s%s(io, %s, io.%s, ", indent, e.runtime(helper), address.address(expression), countMethod)
+	if constrained {
+		fmt.Fprintf(b, "%d, %d, ", min, max)
+	}
 	if method, ok := e.directIOCall(*node.Key); ok {
 		fmt.Fprintf(b, "io.%s, ", method)
 	} else {
@@ -1207,10 +1246,53 @@ func (e *marshalEmitter) enum(b *strings.Builder, node manifest.Node, expression
 		return err
 	}
 	fmt.Fprintf(b, "%s%s(%s, io.%s)\n", indent, e.runtime("IntegerFunc"), address.address(expression), method)
+	return e.numberConstraints(b, node, expression, indent, address)
+}
+
+func (e *marshalEmitter) numberConstraints(b *strings.Builder, node manifest.Node, expression, indent string, address addressStrategy) error {
+	if node.Constraints == nil {
+		return nil
+	}
+	if node.Constraints.Minimum != nil {
+		fmt.Fprintf(b, "%s%s(io, %s, %s)\n", indent, e.runtime("Minimum"), address.address(expression), strconv.FormatFloat(*node.Constraints.Minimum, 'g', -1, 64))
+	}
+	if node.Constraints.Maximum != nil {
+		fmt.Fprintf(b, "%s%s(io, %s, %s)\n", indent, e.runtime("Maximum"), address.address(expression), strconv.FormatFloat(*node.Constraints.Maximum, 'g', -1, 64))
+	}
 	return nil
 }
 
+func lengthBounds(minimum, maximum *uint64) (uint64, uint64) {
+	min, max := uint64(0), ^uint64(0)
+	if minimum != nil {
+		min = *minimum
+	}
+	if maximum != nil {
+		max = *maximum
+	}
+	return min, max
+}
+
+func itemBounds(constraints *manifest.Constraints) (uint64, uint64, bool) {
+	if constraints == nil || constraints.MinItems == nil && constraints.MaxItems == nil {
+		return 0, 0, false
+	}
+	min, max := lengthBounds(constraints.MinItems, constraints.MaxItems)
+	return min, max, true
+}
+
+func propertyBounds(constraints *manifest.Constraints) (uint64, uint64, bool) {
+	if constraints == nil || constraints.MinProperties == nil && constraints.MaxProperties == nil {
+		return 0, 0, false
+	}
+	min, max := lengthBounds(constraints.MinProperties, constraints.MaxProperties)
+	return min, max, true
+}
+
 func (e *marshalEmitter) directIOCall(node manifest.Node) (string, bool) {
+	if node.Constraints != nil {
+		return "", false
+	}
 	if method, ok := e.semanticIOCall(node); ok {
 		return method, true
 	}

@@ -280,6 +280,7 @@ func (l *endstoneLowerer) applyFieldWrappers(node manifest.Node, field map[strin
 	if repeat, ok := asMap(field["repeat"]); ok {
 		node = lowerEndstoneRepeat(repeat, node, context)
 	}
+	node = withEndstoneConstraints(node, field)
 	if field["optional"] == true {
 		node = manifest.Optional(node)
 	}
@@ -287,6 +288,72 @@ func (l *endstoneLowerer) applyFieldWrappers(node manifest.Node, field map[strin
 		node = manifest.Optional(manifest.Optional(node))
 	}
 	return node
+}
+
+func withEndstoneConstraints(node manifest.Node, field map[string]any) manifest.Node {
+	constraints, ok := asMap(field["constraints"])
+	if !ok {
+		return node
+	}
+	return withEndstoneConstraintMap(node, constraints)
+}
+
+func withEndstoneConstraintMap(node manifest.Node, constraints map[string]any) manifest.Node {
+	translated := map[string]any{}
+	switch node.Kind {
+	case manifest.KindString:
+		translated["minLength"], translated["maxLength"] = constraints["min_length"], constraints["max_length"]
+		translated["pattern"] = constraints["pattern"]
+	case manifest.KindBytes:
+		translated["minLength"], translated["maxLength"] = constraints["min_length"], constraints["max_length"]
+	case manifest.KindArray, manifest.KindFixedArray:
+		translated["minItems"] = looserEndstoneCount(constraints["min_items"], constraints["min_properties"], true)
+		translated["maxItems"] = looserEndstoneCount(constraints["max_items"], constraints["max_properties"], false)
+		if items, ok := asMap(constraints["items"]); ok && node.Element != nil {
+			element := withEndstoneConstraintMap(*node.Element, items)
+			node.Element = &element
+		}
+	case manifest.KindMap:
+		translated["minProperties"], translated["maxProperties"] = constraints["min_properties"], constraints["max_properties"]
+		if propertyNames, ok := asMap(constraints["property_names"]); ok && node.Key != nil {
+			key := withEndstoneConstraintMap(*node.Key, propertyNames)
+			node.Key = &key
+		}
+		if additionalProperties, ok := asMap(constraints["additional_properties"]); ok && node.Value != nil {
+			value := withEndstoneConstraintMap(*node.Value, additionalProperties)
+			node.Value = &value
+		}
+	case manifest.KindPrimitive, manifest.KindEnum:
+		translated["minimum"], translated["maximum"] = constraints["minimum"], constraints["maximum"]
+	case manifest.KindUnion:
+		if variantConstraints, ok := asArray(constraints["variant_types"]); ok {
+			node.Variants = append([]manifest.Variant(nil), node.Variants...)
+			for index := range node.Variants {
+				if index >= len(variantConstraints) {
+					break
+				}
+				if constraint, ok := asMap(variantConstraints[index]); ok {
+					node.Variants[index].Encode = withEndstoneConstraintMap(node.Variants[index].Encode, constraint)
+				}
+			}
+		}
+	}
+	return mergeMojangConstraints(node, translated)
+}
+
+func looserEndstoneCount(primary, alias any, minimum bool) any {
+	left, leftOK := asInt(primary)
+	right, rightOK := asInt(alias)
+	if !leftOK {
+		return alias
+	}
+	if !rightOK {
+		return primary
+	}
+	if minimum && right < left || !minimum && right > left {
+		return alias
+	}
+	return primary
 }
 
 func (l *endstoneLowerer) lowerTypeValue(value any, hint, context string) manifest.Node {

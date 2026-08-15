@@ -178,7 +178,7 @@ type PlayerPartyInfo struct {
 
 // Marshal reads or writes PlayerPartyInfo using its canonical wire layout.
 func (x *PlayerPartyInfo) Marshal(io IO) {
-	io.String(&x.PartyID)
+	io.StringLimits(&x.PartyID, 0, 49)
 	io.Bool(&x.IsPartyLeader)
 }
 

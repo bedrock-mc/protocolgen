@@ -256,7 +256,7 @@ func (l *mojangLowerer) lowerSchema(schema map[string]any, file, hint string) ma
 		}
 	}
 	if _, ok := schema["enum"]; ok {
-		return l.lowerEnum(schema, file, hint)
+		return withMojangConstraints(l.lowerEnum(schema, file, hint), schema)
 	}
 	schemaType := asString(schema["type"])
 	switch schemaType {
@@ -274,14 +274,14 @@ func (l *mojangLowerer) lowerSchema(schema map[string]any, file, hint string) ma
 					keySchema, keyOK := asMap(entryProperties["key"])
 					entryValueSchema, valueOK := asMap(entryProperties["value"])
 					if keyOK && valueOK {
-						return manifest.Map(
+						return withMojangConstraints(manifest.Map(
 							manifest.Primitive("var_u32"),
 							l.lowerSchema(keySchema, file, hint+"Key"),
 							l.lowerSchema(entryValueSchema, file, hint+"Value"),
-						)
+						), schema)
 					}
 				}
-				return manifest.Map(manifest.Primitive("var_u32"), manifest.String(manifest.Primitive("var_u32")), l.lowerSchema(valueSchema, file, hint+"Value"))
+				return withMojangConstraints(manifest.Map(manifest.Primitive("var_u32"), manifest.String(manifest.Primitive("var_u32")), l.lowerSchema(valueSchema, file, hint+"Value")), schema)
 			}
 		}
 		if schemaType == "" {
@@ -296,7 +296,7 @@ func (l *mojangLowerer) lowerSchema(schema map[string]any, file, hint string) ma
 		inner := l.lowerSchema(items, file, hint+"Item")
 		if min, okMin := asInt(schema["minItems"]); okMin {
 			if max, okMax := asInt(schema["maxItems"]); okMax && min == max && min >= 0 {
-				return manifest.FixedArray(uint64(min), inner)
+				return withMojangConstraints(manifest.FixedArray(uint64(min), inner), schema)
 			}
 		}
 		prefixCode := "var_u32"
@@ -305,21 +305,49 @@ func (l *mojangLowerer) lowerSchema(schema map[string]any, file, hint string) ma
 		} else if hasOption(schema, "No size compression") {
 			prefixCode = "u32le"
 		}
-		return manifest.Array(manifest.Primitive(prefixCode), inner)
+		return withMojangConstraints(manifest.Array(manifest.Primitive(prefixCode), inner), schema)
 	case "string":
 		if strings.EqualFold(asString(schema["x-wire-kind"]), "bytes") || strings.EqualFold(asString(schema["x-underlying-type"]), "bytearray") {
-			return manifest.Bytes(manifest.Primitive("var_u32"))
+			return withMojangConstraints(manifest.Bytes(manifest.Primitive("var_u32")), schema)
 		}
-		return manifest.String(manifest.Primitive("var_u32"))
+		return withMojangConstraints(manifest.String(manifest.Primitive("var_u32")), schema)
 	case "boolean":
 		return manifest.Primitive("bool")
 	case "integer", "number":
-		return primitive(asString(schema["x-underlying-type"]), options(schema), schemaType)
+		return withMojangConstraints(primitive(asString(schema["x-underlying-type"]), options(schema), schemaType), schema)
 	case "null":
 		return manifest.Void()
 	default:
 		return manifest.Unresolved("unsupported Mojang schema type "+schemaType, true)
 	}
+}
+
+func withMojangConstraints(node manifest.Node, schema map[string]any) manifest.Node {
+	constraints := manifest.Constraints{}
+	setUint := func(key string, target **uint64) {
+		if value, ok := asInt(schema[key]); ok && value >= 0 {
+			converted := uint64(value)
+			*target = &converted
+		}
+	}
+	setFloat := func(key string, target **float64) {
+		if value, ok := asFloat(schema[key]); ok {
+			*target = &value
+		}
+	}
+	setUint("minLength", &constraints.MinLength)
+	setUint("maxLength", &constraints.MaxLength)
+	setUint("minItems", &constraints.MinItems)
+	setUint("maxItems", &constraints.MaxItems)
+	setUint("minProperties", &constraints.MinProperties)
+	setUint("maxProperties", &constraints.MaxProperties)
+	setFloat("minimum", &constraints.Minimum)
+	setFloat("maximum", &constraints.Maximum)
+	constraints.Pattern = asString(schema["pattern"])
+	if constraints != (manifest.Constraints{}) {
+		node.Constraints = &constraints
+	}
+	return node
 }
 
 func (l *mojangLowerer) lowerReference(reference, file, hint string, context map[string]any) manifest.Node {
@@ -347,7 +375,7 @@ func (l *mojangLowerer) lowerReference(reference, file, hint string, context map
 		result := manifest.Primitive("uuid")
 		result.Semantic = "mce::UUID"
 		result.TypeID = typeID
-		return result
+		return withMojangConstraints(result, context)
 	}
 	if nested := asString(targetObject["$ref"]); nested != "" {
 		nestedFile, nestedPointer := splitReference(nested, fileName)
@@ -372,7 +400,39 @@ func (l *mojangLowerer) lowerReference(reference, file, hint string, context map
 		result.Semantic = asString(targetObject["title"])
 	}
 	result.TypeID = typeID
-	return result
+	return mergeMojangConstraints(result, context)
+}
+
+func mergeMojangConstraints(node manifest.Node, schema map[string]any) manifest.Node {
+	overlay := withMojangConstraints(manifest.Node{}, schema).Constraints
+	if overlay == nil {
+		return node
+	}
+	if node.Constraints == nil {
+		node.Constraints = overlay
+		return node
+	}
+	merged := *node.Constraints
+	for _, pair := range []struct{ dst, src **uint64 }{
+		{&merged.MinLength, &overlay.MinLength}, {&merged.MaxLength, &overlay.MaxLength},
+		{&merged.MinItems, &overlay.MinItems}, {&merged.MaxItems, &overlay.MaxItems},
+		{&merged.MinProperties, &overlay.MinProperties}, {&merged.MaxProperties, &overlay.MaxProperties},
+	} {
+		if *pair.src != nil {
+			*pair.dst = *pair.src
+		}
+	}
+	if overlay.Minimum != nil {
+		merged.Minimum = overlay.Minimum
+	}
+	if overlay.Maximum != nil {
+		merged.Maximum = overlay.Maximum
+	}
+	if overlay.Pattern != "" {
+		merged.Pattern = overlay.Pattern
+	}
+	node.Constraints = &merged
+	return node
 }
 
 func (l *mojangLowerer) lowerUnion(schema map[string]any, branches []any, file, hint string) manifest.Node {

@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"math"
 	"net/url"
 	"reflect"
+	"regexp"
 	"sort"
 	"strings"
 )
@@ -125,6 +127,9 @@ func validateField(field Field, path string, sourceIDs map[string]bool) error {
 }
 
 func validateNode(node Node, path string, sourceIDs map[string]bool) error {
+	if err := validateConstraints(node, path); err != nil {
+		return err
+	}
 	switch node.Kind {
 	case KindPrimitive:
 		if node.Primitive == nil {
@@ -296,6 +301,78 @@ func validateNode(node Node, path string, sourceIDs map[string]bool) error {
 		// Explicitly consumes no bytes.
 	default:
 		return fmt.Errorf("%s has unknown node kind %q", path, node.Kind)
+	}
+	return nil
+}
+
+func validateConstraints(node Node, path string) error {
+	constraints := node.Constraints
+	if constraints == nil {
+		return nil
+	}
+	checkBounds := func(name string, min, max *uint64) error {
+		if min != nil && max != nil && *min > *max {
+			return fmt.Errorf("%s %s minimum %d exceeds maximum %d", path, name, *min, *max)
+		}
+		return nil
+	}
+	if err := checkBounds("length", constraints.MinLength, constraints.MaxLength); err != nil {
+		return err
+	}
+	if err := checkBounds("items", constraints.MinItems, constraints.MaxItems); err != nil {
+		return err
+	}
+	if err := checkBounds("properties", constraints.MinProperties, constraints.MaxProperties); err != nil {
+		return err
+	}
+	if constraints.Minimum != nil && (math.IsNaN(*constraints.Minimum) || math.IsInf(*constraints.Minimum, 0)) || constraints.Maximum != nil && (math.IsNaN(*constraints.Maximum) || math.IsInf(*constraints.Maximum, 0)) {
+		return fmt.Errorf("%s numeric constraints must be finite", path)
+	}
+	if constraints.Minimum != nil && constraints.Maximum != nil && *constraints.Minimum > *constraints.Maximum {
+		return fmt.Errorf("%s numeric minimum %g exceeds maximum %g", path, *constraints.Minimum, *constraints.Maximum)
+	}
+	allowed := func(values ...*uint64) bool {
+		for _, value := range values {
+			if value != nil {
+				return true
+			}
+		}
+		return false
+	}
+	if allowed(constraints.MinLength, constraints.MaxLength) && node.Kind != KindString && node.Kind != KindBytes {
+		return fmt.Errorf("%s length constraints require a string or bytes node", path)
+	}
+	if constraints.Pattern != "" {
+		if node.Kind != KindString {
+			return fmt.Errorf("%s pattern constraint requires a string node", path)
+		}
+		if _, err := regexp.Compile(constraints.Pattern); err != nil {
+			return fmt.Errorf("%s has invalid pattern constraint: %w", path, err)
+		}
+	}
+	if allowed(constraints.MinItems, constraints.MaxItems) && node.Kind != KindArray && node.Kind != KindFixedArray {
+		return fmt.Errorf("%s item constraints require an array node", path)
+	}
+	if allowed(constraints.MinProperties, constraints.MaxProperties) && node.Kind != KindMap {
+		return fmt.Errorf("%s property constraints require a map node", path)
+	}
+	if (constraints.Minimum != nil || constraints.Maximum != nil) && node.Kind != KindPrimitive && node.Kind != KindEnum {
+		return fmt.Errorf("%s numeric constraints require a primitive or enum node", path)
+	}
+	if constraints.Minimum != nil || constraints.Maximum != nil {
+		if node.Primitive == nil || node.Primitive.Code == "bool" || node.Primitive.Code == "uuid" || node.Primitive.Code == "nbt_le" {
+			return fmt.Errorf("%s numeric constraints require a numeric primitive", path)
+		}
+		if node.Primitive.Code != "f32le" && node.Primitive.Code != "f32be" && node.Primitive.Code != "f64le" && node.Primitive.Code != "f64be" {
+			if constraints.Minimum != nil && math.Trunc(*constraints.Minimum) != *constraints.Minimum || constraints.Maximum != nil && math.Trunc(*constraints.Maximum) != *constraints.Maximum {
+				return fmt.Errorf("%s integer constraints must use integral bounds", path)
+			}
+		}
+	}
+	if node.Kind == KindFixedArray {
+		if constraints.MinItems != nil && node.Length < *constraints.MinItems || constraints.MaxItems != nil && node.Length > *constraints.MaxItems {
+			return fmt.Errorf("%s fixed array length %d is outside item constraints", path, node.Length)
+		}
 	}
 	return nil
 }

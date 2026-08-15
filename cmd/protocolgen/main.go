@@ -9,23 +9,21 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"sort"
-	"strings"
 
+	"protocolgen/internal/changelog"
 	"protocolgen/internal/claims"
 	"protocolgen/internal/direction"
-	"protocolgen/internal/docs"
-	"protocolgen/internal/domains"
 	"protocolgen/internal/emitgo"
 	"protocolgen/internal/emitrust"
+	"protocolgen/internal/emitter"
 	"protocolgen/internal/gophertunneloracle"
 	"protocolgen/internal/ingest"
 	"protocolgen/internal/manifest"
-	"protocolgen/internal/naming"
 	"protocolgen/internal/nbtencoding"
 	"protocolgen/internal/parity"
 	"protocolgen/internal/reconcile"
 	"protocolgen/internal/sourcelock"
+	"protocolgen/internal/updateguide"
 )
 
 func main() {
@@ -49,6 +47,10 @@ func main() {
 		err = runParity(os.Args[2:])
 	case "verify-gophertunnel":
 		err = runVerifyGophertunnel(os.Args[2:])
+	case "update-guide":
+		err = runUpdateGuide(os.Args[2:])
+	case "changelog":
+		err = runChangelog(os.Args[2:])
 	case "hash-source":
 		err = runHashSource(os.Args[2:])
 	default:
@@ -62,7 +64,7 @@ func main() {
 }
 
 func usage() {
-	fmt.Fprintln(os.Stderr, `usage: protocolgen <reconcile|ingest|validate|emit-go|emit-rust|parity|verify-gophertunnel|hash-source> [flags]
+	fmt.Fprintln(os.Stderr, `usage: protocolgen <reconcile|ingest|validate|emit-go|emit-rust|parity|verify-gophertunnel|changelog|update-guide|hash-source> [flags]
 
 reconcile lowers one or both explicit source checkouts and writes manifest v2.
 ingest lowers one source to auditable machine-derived claims JSON.
@@ -70,7 +72,79 @@ validate checks a canonical manifest and all fingerprint metadata.
 emit-go and emit-rust consume only a canonical manifest.
 parity compares a canonical manifest with Axolotl's public v1 wire manifest.
 verify-gophertunnel compares a canonical manifest with a pinned gophertunnel checkout and writes a JSON report.
+changelog diffs two corrected Mojang schema directories into human-readable Markdown.
+update-guide turns a protocol changelog and its target corrected schemas into gophertunnel transcription snippets.
 hash-source prints the deterministic source-tree digest for a lock file.`)
+}
+
+func runChangelog(args []string) error {
+	fs := flag.NewFlagSet("changelog", flag.ContinueOnError)
+	fromPath := fs.String("from", "", "previous corrected Mojang JSON schema directory")
+	toPath := fs.String("to", "", "target corrected Mojang JSON schema directory")
+	fromBranch := fs.String("from-branch", "", "previous upstream branch")
+	toBranch := fs.String("to-branch", "", "target upstream branch")
+	fromUpstream := fs.String("from-upstream", "", "previous upstream commit")
+	toUpstream := fs.String("to-upstream", "", "target upstream commit")
+	fromFixer := fs.String("from-fixer", "", "previous fixer commit")
+	toFixer := fs.String("to-fixer", "", "target fixer commit")
+	outPath := fs.String("out", "", "human-readable protocol changelog Markdown output")
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+	if *fromPath == "" || *toPath == "" || *outPath == "" {
+		return fmt.Errorf("-from, -to, and -out are required")
+	}
+	if *fromBranch == "" || *toBranch == "" || *fromUpstream == "" || *toUpstream == "" || *fromFixer == "" || *toFixer == "" {
+		return fmt.Errorf("provenance flags -from-branch, -to-branch, -from-upstream, -to-upstream, -from-fixer, and -to-fixer are required")
+	}
+	data, err := changelog.Generate(changelog.Config{
+		FromDir:      *fromPath,
+		ToDir:        *toPath,
+		FromBranch:   *fromBranch,
+		ToBranch:     *toBranch,
+		FromUpstream: *fromUpstream,
+		ToUpstream:   *toUpstream,
+		FromFixer:    *fromFixer,
+		ToFixer:      *toFixer,
+	})
+	if err != nil {
+		return err
+	}
+	if err := os.MkdirAll(filepath.Dir(*outPath), 0o755); err != nil {
+		return fmt.Errorf("create changelog directory: %w", err)
+	}
+	if err := os.WriteFile(*outPath, data, 0o644); err != nil {
+		return fmt.Errorf("write changelog: %w", err)
+	}
+	return nil
+}
+
+func runUpdateGuide(args []string) error {
+	fs := flag.NewFlagSet("update-guide", flag.ContinueOnError)
+	changelogPath := fs.String("changelog", "", "human-readable protocol changelog Markdown")
+	schemasPath := fs.String("schemas", "", "target corrected Mojang JSON schema directory")
+	outPath := fs.String("out", "", "gophertunnel update guide Markdown output")
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+	if *changelogPath == "" || *schemasPath == "" || *outPath == "" {
+		return fmt.Errorf("-changelog, -schemas, and -out are required")
+	}
+	changelog, err := os.ReadFile(*changelogPath)
+	if err != nil {
+		return fmt.Errorf("read changelog: %w", err)
+	}
+	guide, err := updateguide.Generate(changelog, *schemasPath)
+	if err != nil {
+		return err
+	}
+	if err := os.MkdirAll(filepath.Dir(*outPath), 0o755); err != nil {
+		return fmt.Errorf("create update guide directory: %w", err)
+	}
+	if err := os.WriteFile(*outPath, guide, 0o644); err != nil {
+		return fmt.Errorf("write update guide: %w", err)
+	}
+	return nil
 }
 
 func runReconcile(args []string) error {
@@ -237,39 +311,28 @@ func runEmitGo(args []string) error {
 	if *protocolImport == "" {
 		return fmt.Errorf("-protocol-import is required")
 	}
-	m, err := manifest.Load(*manifestPath)
+	result, err := emitter.Run(emitter.Config{
+		ManifestPath: *manifestPath,
+		NamingPath:   *namingPath,
+		DomainsPath:  *domainsPath,
+		DocsPath:     *docsPath,
+		OutputDir:    *out,
+	}, emitter.Func(func(input emitter.Input) (map[string]string, error) {
+		return emitgo.GenerateWithOptions(input.Manifest, emitgo.Options{
+			ProtocolImportPath: *protocolImport,
+			Naming:             input.Naming,
+			Domains:            input.Domains,
+			Docs:               input.Docs,
+			NativeTypes:        *nativeTypes,
+			EmitPacketRuntime:  *packetRuntime,
+			EmitPacketPools:    *packetPools,
+		})
+	}))
 	if err != nil {
 		return err
 	}
-	overlay, err := loadNamingOverlay(*manifestPath, *namingPath, m)
-	if err != nil {
-		return err
-	}
-	domainOverlay, err := loadDomainsOverlay(*manifestPath, *domainsPath, m)
-	if err != nil {
-		return err
-	}
-	docOverlay, err := loadDocsOverlay(*manifestPath, *docsPath, m)
-	if err != nil {
-		return err
-	}
-	files, err := emitgo.GenerateWithOptions(m, emitgo.Options{
-		ProtocolImportPath: *protocolImport,
-		Naming:             overlay,
-		Domains:            domainOverlay,
-		Docs:               docOverlay,
-		NativeTypes:        *nativeTypes,
-		EmitPacketRuntime:  *packetRuntime,
-		EmitPacketPools:    *packetPools,
-	})
-	if err != nil {
-		return err
-	}
-	if err := writeFiles(*out, files); err != nil {
-		return err
-	}
-	fmt.Printf("Go emitter: %d files -> %s\n", len(files), *out)
-	fmt.Printf("Go docs coverage: types %d/%d, fields %d/%d\n", docs.CoverageOf(m, docOverlay).TypesDocumented, docs.CoverageOf(m, docOverlay).TypesTotal, docs.CoverageOf(m, docOverlay).FieldsDocumented, docs.CoverageOf(m, docOverlay).FieldsTotal)
+	fmt.Printf("Go emitter: %d files -> %s\n", result.FileCount, *out)
+	fmt.Printf("Go docs coverage: types %d/%d, fields %d/%d\n", result.Coverage.TypesDocumented, result.Coverage.TypesTotal, result.Coverage.FieldsDocumented, result.Coverage.FieldsTotal)
 	return nil
 }
 
@@ -286,74 +349,21 @@ func runEmitRust(args []string) error {
 	if *manifestPath == "" || *out == "" {
 		return fmt.Errorf("-manifest and -out are required")
 	}
-	m, err := manifest.Load(*manifestPath)
+	result, err := emitter.Run(emitter.Config{
+		ManifestPath: *manifestPath,
+		NamingPath:   *namingPath,
+		DomainsPath:  *domainsPath,
+		DocsPath:     *docsPath,
+		OutputDir:    *out,
+	}, emitter.Func(func(input emitter.Input) (map[string]string, error) {
+		return emitrust.GenerateFilesWithOptions(input.Manifest, emitrust.Options{Naming: input.Naming, Domains: input.Domains, Docs: input.Docs})
+	}))
 	if err != nil {
 		return err
 	}
-	overlay, err := loadNamingOverlay(*manifestPath, *namingPath, m)
-	if err != nil {
-		return err
-	}
-	domainOverlay, err := loadDomainsOverlay(*manifestPath, *domainsPath, m)
-	if err != nil {
-		return err
-	}
-	docOverlay, err := loadDocsOverlay(*manifestPath, *docsPath, m)
-	if err != nil {
-		return err
-	}
-	files, err := emitrust.GenerateFilesWithOptions(m, emitrust.Options{Naming: overlay, Domains: domainOverlay, Docs: docOverlay})
-	if err != nil {
-		return err
-	}
-	if err := writeFiles(*out, files); err != nil {
-		return err
-	}
-	fmt.Printf("Rust emitter: %d files -> %s\n", len(files), *out)
-	fmt.Printf("Rust docs coverage: types %d/%d, fields %d/%d\n", docs.CoverageOf(m, docOverlay).TypesDocumented, docs.CoverageOf(m, docOverlay).TypesTotal, docs.CoverageOf(m, docOverlay).FieldsDocumented, docs.CoverageOf(m, docOverlay).FieldsTotal)
+	fmt.Printf("Rust emitter: %d files -> %s\n", result.FileCount, *out)
+	fmt.Printf("Rust docs coverage: types %d/%d, fields %d/%d\n", result.Coverage.TypesDocumented, result.Coverage.TypesTotal, result.Coverage.FieldsDocumented, result.Coverage.FieldsTotal)
 	return nil
-}
-
-func loadNamingOverlay(manifestPath, explicitPath string, m manifest.Manifest) (naming.Overlay, error) {
-	path := explicitPath
-	if path == "" {
-		path = filepath.Join(filepath.Dir(manifestPath), "naming.json")
-	}
-	if _, err := os.Stat(path); err != nil {
-		if os.IsNotExist(err) && explicitPath == "" {
-			return naming.Overlay{}, nil
-		}
-		return naming.Overlay{}, fmt.Errorf("stat naming overlay: %w", err)
-	}
-	return naming.LoadOverlay(path, m)
-}
-
-func loadDomainsOverlay(manifestPath, explicitPath string, m manifest.Manifest) (domains.Overlay, error) {
-	path := explicitPath
-	if path == "" {
-		path = filepath.Join(filepath.Dir(manifestPath), "domains.json")
-	}
-	if _, err := os.Stat(path); err != nil {
-		if os.IsNotExist(err) && explicitPath == "" {
-			return domains.Overlay{}, nil
-		}
-		return domains.Overlay{}, fmt.Errorf("stat domains overlay: %w", err)
-	}
-	return domains.LoadOverlay(path, m)
-}
-
-func loadDocsOverlay(manifestPath, explicitPath string, m manifest.Manifest) (docs.Overlay, error) {
-	path := explicitPath
-	if path == "" {
-		path = filepath.Join(filepath.Dir(manifestPath), "docs.json")
-	}
-	if _, err := os.Stat(path); err != nil {
-		if os.IsNotExist(err) && explicitPath == "" {
-			return docs.Overlay{}, nil
-		}
-		return docs.Overlay{}, fmt.Errorf("stat docs overlay: %w", err)
-	}
-	return docs.LoadOverlay(path, m)
 }
 
 func runParity(args []string) error {
@@ -422,59 +432,4 @@ func runHashSource(args []string) error {
 	}
 	fmt.Println(digest)
 	return nil
-}
-
-func writeFiles(directory string, files map[string]string) error {
-	if err := os.MkdirAll(directory, 0o755); err != nil {
-		return err
-	}
-	desired := make(map[string]bool, len(files))
-	names := make([]string, 0, len(files))
-	for name := range files {
-		clean := filepath.Clean(name)
-		if clean == "." || filepath.IsAbs(clean) || clean == ".." || strings.HasPrefix(clean, ".."+string(filepath.Separator)) {
-			return fmt.Errorf("emitter returned unsafe filename %q", name)
-		}
-		desired[clean] = true
-		names = append(names, name)
-	}
-	if err := removeStaleGeneratedFiles(directory, desired); err != nil {
-		return err
-	}
-	sort.Strings(names)
-	for _, name := range names {
-		path := filepath.Join(directory, filepath.Clean(name))
-		if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
-			return err
-		}
-		if err := os.WriteFile(path, []byte(files[name]), 0o644); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func removeStaleGeneratedFiles(directory string, desired map[string]bool) error {
-	const generatedHeader = "Code generated from canonical protocol manifest v2. DO NOT EDIT."
-	return filepath.WalkDir(directory, func(path string, entry os.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if entry.IsDir() {
-			return nil
-		}
-		relative, err := filepath.Rel(directory, path)
-		if err != nil || desired[relative] {
-			return err
-		}
-		data, err := os.ReadFile(path)
-		if err != nil {
-			return err
-		}
-		contents := strings.TrimLeft(string(data), "/# ")
-		if strings.HasPrefix(contents, generatedHeader) {
-			return os.Remove(path)
-		}
-		return nil
-	})
 }

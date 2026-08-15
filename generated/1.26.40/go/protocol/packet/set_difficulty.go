@@ -15,6 +15,7 @@ type SetDifficulty struct {
 // Marshal reads or writes SetDifficulty using its canonical wire layout.
 func (x *SetDifficulty) Marshal(io protocol.IO) {
 	io.Varuint32(&x.Difficulty)
+	protocol.Minimum(io, &x.Difficulty, 0)
 }
 
 // ID returns the protocol ID for SetDifficulty.

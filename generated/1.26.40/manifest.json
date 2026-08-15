@@ -1908,6 +1908,9 @@
                   }
                 }
               ]
+            },
+            "constraints": {
+              "max_items": 65535
             }
           },
           "symmetry": "symmetric",
@@ -2047,6 +2050,9 @@
                   }
                 }
               ]
+            },
+            "constraints": {
+              "max_items": 65535
             }
           },
           "symmetry": "symmetric",
@@ -2340,6 +2346,9 @@
                           },
                           "encoding": "utf8",
                           "representation": "text"
+                        },
+                        "constraints": {
+                          "max_items": 65535
                         }
                       },
                       "symmetry": "symmetric",
@@ -2540,7 +2549,11 @@
                           }
                         },
                         "encoding": "utf8",
-                        "representation": "text"
+                        "representation": "text",
+                        "constraints": {
+                          "min_length": 1,
+                          "max_length": 65536
+                        }
                       },
                       "symmetry": "symmetric",
                       "provenance": {
@@ -2577,7 +2590,10 @@
                           }
                         },
                         "encoding": "utf8",
-                        "representation": "text"
+                        "representation": "text",
+                        "constraints": {
+                          "max_length": 256
+                        }
                       },
                       "symmetry": "symmetric",
                       "provenance": {
@@ -2603,7 +2619,11 @@
                           }
                         },
                         "encoding": "utf8",
-                        "representation": "text"
+                        "representation": "text",
+                        "constraints": {
+                          "min_length": 1,
+                          "max_length": 65536
+                        }
                       },
                       "symmetry": "symmetric",
                       "provenance": {
@@ -2640,7 +2660,11 @@
                           }
                         },
                         "encoding": "utf8",
-                        "representation": "text"
+                        "representation": "text",
+                        "constraints": {
+                          "min_length": 1,
+                          "max_length": 65536
+                        }
                       },
                       "symmetry": "symmetric",
                       "provenance": {
@@ -2679,6 +2703,9 @@
                           },
                           "encoding": "utf8",
                           "representation": "text"
+                        },
+                        "constraints": {
+                          "max_items": 4
                         }
                       },
                       "symmetry": "symmetric",
@@ -2716,7 +2743,11 @@
                           }
                         },
                         "encoding": "utf8",
-                        "representation": "text"
+                        "representation": "text",
+                        "constraints": {
+                          "min_length": 1,
+                          "max_length": 65536
+                        }
                       },
                       "symmetry": "symmetric",
                       "provenance": {
@@ -2755,6 +2786,9 @@
                           },
                           "encoding": "utf8",
                           "representation": "text"
+                        },
+                        "constraints": {
+                          "max_items": 4
                         }
                       },
                       "symmetry": "symmetric",
@@ -2792,7 +2826,11 @@
                           }
                         },
                         "encoding": "utf8",
-                        "representation": "text"
+                        "representation": "text",
+                        "constraints": {
+                          "min_length": 1,
+                          "max_length": 65536
+                        }
                       },
                       "symmetry": "symmetric",
                       "provenance": {
@@ -2831,6 +2869,9 @@
                           },
                           "encoding": "utf8",
                           "representation": "text"
+                        },
+                        "constraints": {
+                          "max_items": 4
                         }
                       },
                       "symmetry": "symmetric",
@@ -2868,7 +2909,11 @@
                           }
                         },
                         "encoding": "utf8",
-                        "representation": "text"
+                        "representation": "text",
+                        "constraints": {
+                          "min_length": 1,
+                          "max_length": 65536
+                        }
                       },
                       "symmetry": "symmetric",
                       "provenance": {
@@ -2905,7 +2950,11 @@
                           }
                         },
                         "encoding": "utf8",
-                        "representation": "text"
+                        "representation": "text",
+                        "constraints": {
+                          "min_length": 1,
+                          "max_length": 65536
+                        }
                       },
                       "symmetry": "symmetric",
                       "provenance": {
@@ -2942,7 +2991,10 @@
                           }
                         },
                         "encoding": "utf8",
-                        "representation": "text"
+                        "representation": "text",
+                        "constraints": {
+                          "max_length": 256
+                        }
                       },
                       "symmetry": "symmetric",
                       "provenance": {
@@ -2968,7 +3020,11 @@
                           }
                         },
                         "encoding": "utf8",
-                        "representation": "text"
+                        "representation": "text",
+                        "constraints": {
+                          "min_length": 1,
+                          "max_length": 65536
+                        }
                       },
                       "symmetry": "symmetric",
                       "provenance": {
@@ -3005,7 +3061,10 @@
                           }
                         },
                         "encoding": "utf8",
-                        "representation": "text"
+                        "representation": "text",
+                        "constraints": {
+                          "max_length": 256
+                        }
                       },
                       "symmetry": "symmetric",
                       "provenance": {
@@ -3031,7 +3090,11 @@
                           }
                         },
                         "encoding": "utf8",
-                        "representation": "text"
+                        "representation": "text",
+                        "constraints": {
+                          "min_length": 1,
+                          "max_length": 65536
+                        }
                       },
                       "symmetry": "symmetric",
                       "provenance": {
@@ -3068,7 +3131,11 @@
                           }
                         },
                         "encoding": "utf8",
-                        "representation": "text"
+                        "representation": "text",
+                        "constraints": {
+                          "min_length": 1,
+                          "max_length": 65536
+                        }
                       },
                       "symmetry": "symmetric",
                       "provenance": {
@@ -3105,7 +3172,11 @@
                           }
                         },
                         "encoding": "utf8",
-                        "representation": "text"
+                        "representation": "text",
+                        "constraints": {
+                          "min_length": 1,
+                          "max_length": 65536
+                        }
                       },
                       "symmetry": "symmetric",
                       "provenance": {
@@ -3142,7 +3213,11 @@
                           }
                         },
                         "encoding": "utf8",
-                        "representation": "text"
+                        "representation": "text",
+                        "constraints": {
+                          "min_length": 1,
+                          "max_length": 65536
+                        }
                       },
                       "symmetry": "symmetric",
                       "provenance": {
@@ -3197,7 +3272,10 @@
               }
             },
             "encoding": "utf8",
-            "representation": "text"
+            "representation": "text",
+            "constraints": {
+              "max_length": 64
+            }
           },
           "symmetry": "symmetric",
           "provenance": {
@@ -3224,7 +3302,10 @@
               }
             },
             "encoding": "utf8",
-            "representation": "text"
+            "representation": "text",
+            "constraints": {
+              "max_length": 256
+            }
           },
           "symmetry": "symmetric",
           "provenance": {
@@ -3253,7 +3334,10 @@
                 }
               },
               "encoding": "utf8",
-              "representation": "text"
+              "representation": "text",
+              "constraints": {
+                "max_length": 65536
+              }
             }
           },
           "symmetry": "symmetric",
@@ -3624,6 +3708,9 @@
                     "signed": false,
                     "zigzag": false,
                     "endianness": "little"
+                  },
+                  "constraints": {
+                    "minimum": 0
                   }
                 },
                 "symmetry": "symmetric",
@@ -5720,6 +5807,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "little"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -5956,6 +6046,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "little"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -6137,7 +6230,11 @@
                               }
                             },
                             "encoding": "utf8",
-                            "representation": "text"
+                            "representation": "text",
+                            "constraints": {
+                              "min_length": 1,
+                              "max_length": 29
+                            }
                           },
                           "symmetry": "symmetric",
                           "provenance": {
@@ -6189,7 +6286,11 @@
                                 }
                               },
                               "encoding": "utf8",
-                              "representation": "text"
+                              "representation": "text",
+                              "constraints": {
+                                "min_length": 1,
+                                "max_length": 29
+                              }
                             }
                           },
                           "symmetry": "symmetric",
@@ -6216,7 +6317,11 @@
                               }
                             },
                             "encoding": "utf8",
-                            "representation": "text"
+                            "representation": "text",
+                            "constraints": {
+                              "min_length": 1,
+                              "max_length": 60
+                            }
                           },
                           "symmetry": "symmetric",
                           "provenance": {
@@ -6268,7 +6373,11 @@
                                 }
                               },
                               "encoding": "utf8",
-                              "representation": "text"
+                              "representation": "text",
+                              "constraints": {
+                                "min_length": 1,
+                                "max_length": 100
+                              }
                             }
                           },
                           "symmetry": "symmetric",
@@ -6297,7 +6406,11 @@
                                 }
                               },
                               "encoding": "utf8",
-                              "representation": "text"
+                              "representation": "text",
+                              "constraints": {
+                                "min_length": 1,
+                                "max_length": 100
+                              }
                             }
                           },
                           "symmetry": "symmetric",
@@ -6420,7 +6533,10 @@
                                 }
                               },
                               "encoding": "utf8",
-                              "representation": "text"
+                              "representation": "text",
+                              "constraints": {
+                                "max_length": 50
+                              }
                             }
                           },
                           "symmetry": "symmetric",
@@ -6996,6 +7112,10 @@
                     "signed": false,
                     "zigzag": false,
                     "endianness": "little"
+                  },
+                  "constraints": {
+                    "minimum": 0,
+                    "maximum": 64
                   }
                 },
                 "symmetry": "symmetric",
@@ -7018,6 +7138,10 @@
                     "signed": false,
                     "zigzag": false,
                     "endianness": "none"
+                  },
+                  "constraints": {
+                    "minimum": 0,
+                    "maximum": 32767
                   }
                 },
                 "symmetry": "symmetric",
@@ -7065,6 +7189,9 @@
                     "signed": false,
                     "zigzag": false,
                     "endianness": "none"
+                  },
+                  "constraints": {
+                    "minimum": 0
                   }
                 },
                 "symmetry": "symmetric",
@@ -7235,6 +7362,9 @@
                             "signed": false,
                             "zigzag": false,
                             "endianness": "none"
+                          },
+                          "constraints": {
+                            "minimum": 0
                           }
                         },
                         "symmetry": "symmetric",
@@ -9944,6 +10074,9 @@
                             "signed": false,
                             "zigzag": false,
                             "endianness": "none"
+                          },
+                          "constraints": {
+                            "minimum": 0
                           }
                         },
                         "symmetry": "symmetric",
@@ -11791,6 +11924,10 @@
                     "signed": false,
                     "zigzag": false,
                     "endianness": "little"
+                  },
+                  "constraints": {
+                    "minimum": 0,
+                    "maximum": 64
                   }
                 },
                 "symmetry": "symmetric",
@@ -11813,6 +11950,10 @@
                     "signed": false,
                     "zigzag": false,
                     "endianness": "none"
+                  },
+                  "constraints": {
+                    "minimum": 0,
+                    "maximum": 32767
                   }
                 },
                 "symmetry": "symmetric",
@@ -11860,6 +12001,9 @@
                     "signed": false,
                     "zigzag": false,
                     "endianness": "none"
+                  },
+                  "constraints": {
+                    "minimum": 0
                   }
                 },
                 "symmetry": "symmetric",
@@ -12121,6 +12265,9 @@
                             "signed": false,
                             "zigzag": false,
                             "endianness": "none"
+                          },
+                          "constraints": {
+                            "minimum": 0
                           }
                         },
                         "symmetry": "symmetric",
@@ -14368,6 +14515,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -14390,6 +14540,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -14412,6 +14565,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -17107,6 +17263,10 @@
                                                   "signed": false,
                                                   "zigzag": false,
                                                   "endianness": "little"
+                                                },
+                                                "constraints": {
+                                                  "minimum": 0,
+                                                  "maximum": 64
                                                 }
                                               },
                                               "symmetry": "symmetric",
@@ -17128,6 +17288,10 @@
                                                   "signed": false,
                                                   "zigzag": false,
                                                   "endianness": "none"
+                                                },
+                                                "constraints": {
+                                                  "minimum": 0,
+                                                  "maximum": 32767
                                                 }
                                               },
                                               "symmetry": "symmetric",
@@ -17258,6 +17422,10 @@
                                                   "signed": false,
                                                   "zigzag": false,
                                                   "endianness": "little"
+                                                },
+                                                "constraints": {
+                                                  "minimum": 0,
+                                                  "maximum": 64
                                                 }
                                               },
                                               "symmetry": "symmetric",
@@ -17279,6 +17447,10 @@
                                                   "signed": false,
                                                   "zigzag": false,
                                                   "endianness": "none"
+                                                },
+                                                "constraints": {
+                                                  "minimum": 0,
+                                                  "maximum": 32767
                                                 }
                                               },
                                               "symmetry": "symmetric",
@@ -17643,6 +17815,10 @@
                                                   "signed": false,
                                                   "zigzag": false,
                                                   "endianness": "little"
+                                                },
+                                                "constraints": {
+                                                  "minimum": 0,
+                                                  "maximum": 64
                                                 }
                                               },
                                               "symmetry": "symmetric",
@@ -17664,6 +17840,10 @@
                                                   "signed": false,
                                                   "zigzag": false,
                                                   "endianness": "none"
+                                                },
+                                                "constraints": {
+                                                  "minimum": 0,
+                                                  "maximum": 32767
                                                 }
                                               },
                                               "symmetry": "symmetric",
@@ -17794,6 +17974,10 @@
                                                   "signed": false,
                                                   "zigzag": false,
                                                   "endianness": "little"
+                                                },
+                                                "constraints": {
+                                                  "minimum": 0,
+                                                  "maximum": 64
                                                 }
                                               },
                                               "symmetry": "symmetric",
@@ -17815,6 +17999,10 @@
                                                   "signed": false,
                                                   "zigzag": false,
                                                   "endianness": "none"
+                                                },
+                                                "constraints": {
+                                                  "minimum": 0,
+                                                  "maximum": 32767
                                                 }
                                               },
                                               "symmetry": "symmetric",
@@ -18179,6 +18367,10 @@
                                                   "signed": false,
                                                   "zigzag": false,
                                                   "endianness": "little"
+                                                },
+                                                "constraints": {
+                                                  "minimum": 0,
+                                                  "maximum": 64
                                                 }
                                               },
                                               "symmetry": "symmetric",
@@ -18200,6 +18392,10 @@
                                                   "signed": false,
                                                   "zigzag": false,
                                                   "endianness": "none"
+                                                },
+                                                "constraints": {
+                                                  "minimum": 0,
+                                                  "maximum": 32767
                                                 }
                                               },
                                               "symmetry": "symmetric",
@@ -18330,6 +18526,10 @@
                                                   "signed": false,
                                                   "zigzag": false,
                                                   "endianness": "little"
+                                                },
+                                                "constraints": {
+                                                  "minimum": 0,
+                                                  "maximum": 64
                                                 }
                                               },
                                               "symmetry": "symmetric",
@@ -18351,6 +18551,10 @@
                                                   "signed": false,
                                                   "zigzag": false,
                                                   "endianness": "none"
+                                                },
+                                                "constraints": {
+                                                  "minimum": 0,
+                                                  "maximum": 32767
                                                 }
                                               },
                                               "symmetry": "symmetric",
@@ -18723,6 +18927,10 @@
                                   "signed": false,
                                   "zigzag": false,
                                   "endianness": "little"
+                                },
+                                "constraints": {
+                                  "minimum": 0,
+                                  "maximum": 64
                                 }
                               },
                               "symmetry": "symmetric",
@@ -18744,6 +18952,10 @@
                                   "signed": false,
                                   "zigzag": false,
                                   "endianness": "none"
+                                },
+                                "constraints": {
+                                  "minimum": 0,
+                                  "maximum": 32767
                                 }
                               },
                               "symmetry": "symmetric",
@@ -19349,6 +19561,10 @@
                                                   "signed": false,
                                                   "zigzag": false,
                                                   "endianness": "little"
+                                                },
+                                                "constraints": {
+                                                  "minimum": 0,
+                                                  "maximum": 64
                                                 }
                                               },
                                               "symmetry": "symmetric",
@@ -19370,6 +19586,10 @@
                                                   "signed": false,
                                                   "zigzag": false,
                                                   "endianness": "none"
+                                                },
+                                                "constraints": {
+                                                  "minimum": 0,
+                                                  "maximum": 32767
                                                 }
                                               },
                                               "symmetry": "symmetric",
@@ -19500,6 +19720,10 @@
                                                   "signed": false,
                                                   "zigzag": false,
                                                   "endianness": "little"
+                                                },
+                                                "constraints": {
+                                                  "minimum": 0,
+                                                  "maximum": 64
                                                 }
                                               },
                                               "symmetry": "symmetric",
@@ -19521,6 +19745,10 @@
                                                   "signed": false,
                                                   "zigzag": false,
                                                   "endianness": "none"
+                                                },
+                                                "constraints": {
+                                                  "minimum": 0,
+                                                  "maximum": 32767
                                                 }
                                               },
                                               "symmetry": "symmetric",
@@ -19777,6 +20005,10 @@
                                   "signed": false,
                                   "zigzag": false,
                                   "endianness": "little"
+                                },
+                                "constraints": {
+                                  "minimum": 0,
+                                  "maximum": 64
                                 }
                               },
                               "symmetry": "symmetric",
@@ -19798,6 +20030,10 @@
                                   "signed": false,
                                   "zigzag": false,
                                   "endianness": "none"
+                                },
+                                "constraints": {
+                                  "minimum": 0,
+                                  "maximum": 32767
                                 }
                               },
                               "symmetry": "symmetric",
@@ -20304,6 +20540,10 @@
                                                   "signed": false,
                                                   "zigzag": false,
                                                   "endianness": "little"
+                                                },
+                                                "constraints": {
+                                                  "minimum": 0,
+                                                  "maximum": 64
                                                 }
                                               },
                                               "symmetry": "symmetric",
@@ -20325,6 +20565,10 @@
                                                   "signed": false,
                                                   "zigzag": false,
                                                   "endianness": "none"
+                                                },
+                                                "constraints": {
+                                                  "minimum": 0,
+                                                  "maximum": 32767
                                                 }
                                               },
                                               "symmetry": "symmetric",
@@ -20455,6 +20699,10 @@
                                                   "signed": false,
                                                   "zigzag": false,
                                                   "endianness": "little"
+                                                },
+                                                "constraints": {
+                                                  "minimum": 0,
+                                                  "maximum": 64
                                                 }
                                               },
                                               "symmetry": "symmetric",
@@ -20476,6 +20724,10 @@
                                                   "signed": false,
                                                   "zigzag": false,
                                                   "endianness": "none"
+                                                },
+                                                "constraints": {
+                                                  "minimum": 0,
+                                                  "maximum": 32767
                                                 }
                                               },
                                               "symmetry": "symmetric",
@@ -20686,6 +20938,10 @@
                                   "signed": false,
                                   "zigzag": false,
                                   "endianness": "little"
+                                },
+                                "constraints": {
+                                  "minimum": 0,
+                                  "maximum": 64
                                 }
                               },
                               "symmetry": "symmetric",
@@ -20707,6 +20963,10 @@
                                   "signed": false,
                                   "zigzag": false,
                                   "endianness": "none"
+                                },
+                                "constraints": {
+                                  "minimum": 0,
+                                  "maximum": 32767
                                 }
                               },
                               "symmetry": "symmetric",
@@ -20998,6 +21258,10 @@
                     "signed": false,
                     "zigzag": false,
                     "endianness": "little"
+                  },
+                  "constraints": {
+                    "minimum": 0,
+                    "maximum": 64
                   }
                 },
                 "symmetry": "symmetric",
@@ -21020,6 +21284,10 @@
                     "signed": false,
                     "zigzag": false,
                     "endianness": "none"
+                  },
+                  "constraints": {
+                    "minimum": 0,
+                    "maximum": 32767
                   }
                 },
                 "symmetry": "symmetric",
@@ -21067,6 +21335,9 @@
                     "signed": false,
                     "zigzag": false,
                     "endianness": "none"
+                  },
+                  "constraints": {
+                    "minimum": 0
                   }
                 },
                 "symmetry": "symmetric",
@@ -21131,6 +21402,10 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0,
+              "maximum": 255
             }
           },
           "symmetry": "symmetric",
@@ -21153,6 +21428,10 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0,
+              "maximum": 255
             }
           },
           "symmetry": "symmetric",
@@ -21175,6 +21454,10 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0,
+              "maximum": 255
             }
           },
           "symmetry": "symmetric",
@@ -21277,6 +21560,10 @@
                     "signed": false,
                     "zigzag": false,
                     "endianness": "little"
+                  },
+                  "constraints": {
+                    "minimum": 0,
+                    "maximum": 64
                   }
                 },
                 "symmetry": "symmetric",
@@ -21299,6 +21586,10 @@
                     "signed": false,
                     "zigzag": false,
                     "endianness": "none"
+                  },
+                  "constraints": {
+                    "minimum": 0,
+                    "maximum": 32767
                   }
                 },
                 "symmetry": "symmetric",
@@ -21346,6 +21637,9 @@
                     "signed": false,
                     "zigzag": false,
                     "endianness": "none"
+                  },
+                  "constraints": {
+                    "minimum": 0
                   }
                 },
                 "symmetry": "symmetric",
@@ -21442,6 +21736,10 @@
                     "signed": false,
                     "zigzag": false,
                     "endianness": "little"
+                  },
+                  "constraints": {
+                    "minimum": 0,
+                    "maximum": 64
                   }
                 },
                 "symmetry": "symmetric",
@@ -21464,6 +21762,10 @@
                     "signed": false,
                     "zigzag": false,
                     "endianness": "none"
+                  },
+                  "constraints": {
+                    "minimum": 0,
+                    "maximum": 32767
                   }
                 },
                 "symmetry": "symmetric",
@@ -21511,6 +21813,9 @@
                     "signed": false,
                     "zigzag": false,
                     "endianness": "none"
+                  },
+                  "constraints": {
+                    "minimum": 0
                   }
                 },
                 "symmetry": "symmetric",
@@ -21607,6 +21912,10 @@
                     "signed": false,
                     "zigzag": false,
                     "endianness": "little"
+                  },
+                  "constraints": {
+                    "minimum": 0,
+                    "maximum": 64
                   }
                 },
                 "symmetry": "symmetric",
@@ -21629,6 +21938,10 @@
                     "signed": false,
                     "zigzag": false,
                     "endianness": "none"
+                  },
+                  "constraints": {
+                    "minimum": 0,
+                    "maximum": 32767
                   }
                 },
                 "symmetry": "symmetric",
@@ -21676,6 +21989,9 @@
                     "signed": false,
                     "zigzag": false,
                     "endianness": "none"
+                  },
+                  "constraints": {
+                    "minimum": 0
                   }
                 },
                 "symmetry": "symmetric",
@@ -21772,6 +22088,10 @@
                     "signed": false,
                     "zigzag": false,
                     "endianness": "little"
+                  },
+                  "constraints": {
+                    "minimum": 0,
+                    "maximum": 64
                   }
                 },
                 "symmetry": "symmetric",
@@ -21794,6 +22114,10 @@
                     "signed": false,
                     "zigzag": false,
                     "endianness": "none"
+                  },
+                  "constraints": {
+                    "minimum": 0,
+                    "maximum": 32767
                   }
                 },
                 "symmetry": "symmetric",
@@ -21841,6 +22165,9 @@
                     "signed": false,
                     "zigzag": false,
                     "endianness": "none"
+                  },
+                  "constraints": {
+                    "minimum": 0
                   }
                 },
                 "symmetry": "symmetric",
@@ -21937,6 +22264,10 @@
                     "signed": false,
                     "zigzag": false,
                     "endianness": "little"
+                  },
+                  "constraints": {
+                    "minimum": 0,
+                    "maximum": 64
                   }
                 },
                 "symmetry": "symmetric",
@@ -21959,6 +22290,10 @@
                     "signed": false,
                     "zigzag": false,
                     "endianness": "none"
+                  },
+                  "constraints": {
+                    "minimum": 0,
+                    "maximum": 32767
                   }
                 },
                 "symmetry": "symmetric",
@@ -22006,6 +22341,9 @@
                     "signed": false,
                     "zigzag": false,
                     "endianness": "none"
+                  },
+                  "constraints": {
+                    "minimum": 0
                   }
                 },
                 "symmetry": "symmetric",
@@ -22384,6 +22722,10 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0,
+              "maximum": 255
             }
           },
           "symmetry": "symmetric",
@@ -22435,6 +22777,10 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0,
+              "maximum": 255
             }
           },
           "symmetry": "symmetric",
@@ -23086,6 +23432,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -23187,6 +23536,9 @@
                             "signed": false,
                             "zigzag": false,
                             "endianness": "none"
+                          },
+                          "constraints": {
+                            "minimum": 0
                           }
                         },
                         "symmetry": "symmetric",
@@ -25730,6 +26082,10 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0,
+              "maximum": 255
             }
           },
           "symmetry": "symmetric",
@@ -25752,6 +26108,10 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0,
+              "maximum": 255
             }
           },
           "symmetry": "symmetric",
@@ -25905,6 +26265,10 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0,
+              "maximum": 255
             }
           },
           "symmetry": "symmetric",
@@ -25927,6 +26291,10 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0,
+              "maximum": 255
             }
           },
           "symmetry": "symmetric",
@@ -25978,6 +26346,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -26000,6 +26371,10 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0,
+              "maximum": 255
             }
           },
           "symmetry": "symmetric",
@@ -26051,6 +26426,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -26116,6 +26494,10 @@
                       "signed": false,
                       "zigzag": false,
                       "endianness": "little"
+                    },
+                    "constraints": {
+                      "minimum": 0,
+                      "maximum": 64
                     }
                   },
                   "symmetry": "symmetric",
@@ -26138,6 +26520,10 @@
                       "signed": false,
                       "zigzag": false,
                       "endianness": "none"
+                    },
+                    "constraints": {
+                      "minimum": 0,
+                      "maximum": 32767
                     }
                   },
                   "symmetry": "symmetric",
@@ -26185,6 +26571,9 @@
                       "signed": false,
                       "zigzag": false,
                       "endianness": "none"
+                    },
+                    "constraints": {
+                      "minimum": 0
                     }
                   },
                   "symmetry": "symmetric",
@@ -26827,6 +27216,10 @@
                     "signed": false,
                     "zigzag": false,
                     "endianness": "little"
+                  },
+                  "constraints": {
+                    "minimum": 0,
+                    "maximum": 64
                   }
                 },
                 "symmetry": "symmetric",
@@ -26849,6 +27242,10 @@
                     "signed": false,
                     "zigzag": false,
                     "endianness": "none"
+                  },
+                  "constraints": {
+                    "minimum": 0,
+                    "maximum": 32767
                   }
                 },
                 "symmetry": "symmetric",
@@ -26896,6 +27293,9 @@
                     "signed": false,
                     "zigzag": false,
                     "endianness": "none"
+                  },
+                  "constraints": {
+                    "minimum": 0
                   }
                 },
                 "symmetry": "symmetric",
@@ -26967,6 +27367,10 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0,
+              "maximum": 255
             }
           },
           "symmetry": "symmetric",
@@ -26989,6 +27393,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -27593,6 +28000,10 @@
                       "signed": false,
                       "zigzag": false,
                       "endianness": "little"
+                    },
+                    "constraints": {
+                      "minimum": 0,
+                      "maximum": 64
                     }
                   },
                   "symmetry": "symmetric",
@@ -27615,6 +28026,10 @@
                       "signed": false,
                       "zigzag": false,
                       "endianness": "none"
+                    },
+                    "constraints": {
+                      "minimum": 0,
+                      "maximum": 32767
                     }
                   },
                   "symmetry": "symmetric",
@@ -27662,6 +28077,9 @@
                       "signed": false,
                       "zigzag": false,
                       "endianness": "none"
+                    },
+                    "constraints": {
+                      "minimum": 0
                     }
                   },
                   "symmetry": "symmetric",
@@ -27759,6 +28177,10 @@
                     "signed": false,
                     "zigzag": false,
                     "endianness": "little"
+                  },
+                  "constraints": {
+                    "minimum": 0,
+                    "maximum": 64
                   }
                 },
                 "symmetry": "symmetric",
@@ -27781,6 +28203,10 @@
                     "signed": false,
                     "zigzag": false,
                     "endianness": "none"
+                  },
+                  "constraints": {
+                    "minimum": 0,
+                    "maximum": 32767
                   }
                 },
                 "symmetry": "symmetric",
@@ -27828,6 +28254,9 @@
                     "signed": false,
                     "zigzag": false,
                     "endianness": "none"
+                  },
+                  "constraints": {
+                    "minimum": 0
                   }
                 },
                 "symmetry": "symmetric",
@@ -27899,6 +28328,10 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0,
+              "maximum": 255
             }
           },
           "symmetry": "symmetric",
@@ -28137,6 +28570,10 @@
                               "signed": true,
                               "zigzag": true,
                               "endianness": "none"
+                            },
+                            "constraints": {
+                              "minimum": 0,
+                              "maximum": 32767
                             }
                           },
                           "symmetry": "symmetric",
@@ -28158,6 +28595,10 @@
                               "signed": true,
                               "zigzag": true,
                               "endianness": "none"
+                            },
+                            "constraints": {
+                              "minimum": 0,
+                              "maximum": 64
                             }
                           },
                           "symmetry": "symmetric",
@@ -28168,6 +28609,9 @@
                           }
                         }
                       ]
+                    },
+                    "constraints": {
+                      "max_items": 128
                     }
                   },
                   "symmetry": "symmetric",
@@ -28210,6 +28654,10 @@
                               "signed": true,
                               "zigzag": true,
                               "endianness": "none"
+                            },
+                            "constraints": {
+                              "minimum": -32768,
+                              "maximum": 32767
                             }
                           },
                           "symmetry": "symmetric",
@@ -28231,6 +28679,10 @@
                               "signed": false,
                               "zigzag": false,
                               "endianness": "little"
+                            },
+                            "constraints": {
+                              "minimum": 0,
+                              "maximum": 64
                             }
                           },
                           "symmetry": "symmetric",
@@ -28252,6 +28704,10 @@
                               "signed": false,
                               "zigzag": false,
                               "endianness": "none"
+                            },
+                            "constraints": {
+                              "minimum": 0,
+                              "maximum": 32767
                             }
                           },
                           "symmetry": "symmetric",
@@ -28560,6 +29016,10 @@
                                         "signed": true,
                                         "zigzag": true,
                                         "endianness": "none"
+                                      },
+                                      "constraints": {
+                                        "minimum": 0,
+                                        "maximum": 32767
                                       }
                                     },
                                     "symmetry": "symmetric",
@@ -28581,6 +29041,10 @@
                                         "signed": true,
                                         "zigzag": true,
                                         "endianness": "none"
+                                      },
+                                      "constraints": {
+                                        "minimum": 0,
+                                        "maximum": 64
                                       }
                                     },
                                     "symmetry": "symmetric",
@@ -28591,6 +29055,9 @@
                                     }
                                   }
                                 ]
+                              },
+                              "constraints": {
+                                "max_items": 128
                               }
                             }
                           },
@@ -28802,6 +29269,10 @@
                               "signed": true,
                               "zigzag": true,
                               "endianness": "none"
+                            },
+                            "constraints": {
+                              "minimum": 0,
+                              "maximum": 32767
                             }
                           },
                           "symmetry": "symmetric",
@@ -28823,6 +29294,10 @@
                               "signed": true,
                               "zigzag": true,
                               "endianness": "none"
+                            },
+                            "constraints": {
+                              "minimum": 0,
+                              "maximum": 64
                             }
                           },
                           "symmetry": "symmetric",
@@ -28833,6 +29308,9 @@
                           }
                         }
                       ]
+                    },
+                    "constraints": {
+                      "max_items": 128
                     }
                   },
                   "symmetry": "symmetric",
@@ -28875,6 +29353,10 @@
                               "signed": true,
                               "zigzag": true,
                               "endianness": "none"
+                            },
+                            "constraints": {
+                              "minimum": -32768,
+                              "maximum": 32767
                             }
                           },
                           "symmetry": "symmetric",
@@ -28896,6 +29378,10 @@
                               "signed": false,
                               "zigzag": false,
                               "endianness": "little"
+                            },
+                            "constraints": {
+                              "minimum": 0,
+                              "maximum": 64
                             }
                           },
                           "symmetry": "symmetric",
@@ -28917,6 +29403,10 @@
                               "signed": false,
                               "zigzag": false,
                               "endianness": "none"
+                            },
+                            "constraints": {
+                              "minimum": 0,
+                              "maximum": 32767
                             }
                           },
                           "symmetry": "symmetric",
@@ -29204,6 +29694,10 @@
                                         "signed": true,
                                         "zigzag": true,
                                         "endianness": "none"
+                                      },
+                                      "constraints": {
+                                        "minimum": 0,
+                                        "maximum": 32767
                                       }
                                     },
                                     "symmetry": "symmetric",
@@ -29225,6 +29719,10 @@
                                         "signed": true,
                                         "zigzag": true,
                                         "endianness": "none"
+                                      },
+                                      "constraints": {
+                                        "minimum": 0,
+                                        "maximum": 64
                                       }
                                     },
                                     "symmetry": "symmetric",
@@ -29235,6 +29733,9 @@
                                     }
                                   }
                                 ]
+                              },
+                              "constraints": {
+                                "max_items": 128
                               }
                             }
                           },
@@ -29538,6 +30039,10 @@
                               "signed": true,
                               "zigzag": true,
                               "endianness": "none"
+                            },
+                            "constraints": {
+                              "minimum": 0,
+                              "maximum": 32767
                             }
                           },
                           "symmetry": "symmetric",
@@ -29559,6 +30064,10 @@
                               "signed": true,
                               "zigzag": true,
                               "endianness": "none"
+                            },
+                            "constraints": {
+                              "minimum": 0,
+                              "maximum": 64
                             }
                           },
                           "symmetry": "symmetric",
@@ -29569,6 +30078,9 @@
                           }
                         }
                       ]
+                    },
+                    "constraints": {
+                      "max_items": 128
                     }
                   },
                   "symmetry": "symmetric",
@@ -29611,6 +30123,10 @@
                               "signed": true,
                               "zigzag": true,
                               "endianness": "none"
+                            },
+                            "constraints": {
+                              "minimum": -32768,
+                              "maximum": 32767
                             }
                           },
                           "symmetry": "symmetric",
@@ -29632,6 +30148,10 @@
                               "signed": false,
                               "zigzag": false,
                               "endianness": "little"
+                            },
+                            "constraints": {
+                              "minimum": 0,
+                              "maximum": 64
                             }
                           },
                           "symmetry": "symmetric",
@@ -29653,6 +30173,10 @@
                               "signed": false,
                               "zigzag": false,
                               "endianness": "none"
+                            },
+                            "constraints": {
+                              "minimum": 0,
+                              "maximum": 32767
                             }
                           },
                           "symmetry": "symmetric",
@@ -29940,6 +30464,10 @@
                                         "signed": true,
                                         "zigzag": true,
                                         "endianness": "none"
+                                      },
+                                      "constraints": {
+                                        "minimum": 0,
+                                        "maximum": 32767
                                       }
                                     },
                                     "symmetry": "symmetric",
@@ -29961,6 +30489,10 @@
                                         "signed": true,
                                         "zigzag": true,
                                         "endianness": "none"
+                                      },
+                                      "constraints": {
+                                        "minimum": 0,
+                                        "maximum": 64
                                       }
                                     },
                                     "symmetry": "symmetric",
@@ -29971,6 +30503,9 @@
                                     }
                                   }
                                 ]
+                              },
+                              "constraints": {
+                                "max_items": 128
                               }
                             }
                           },
@@ -30182,6 +30717,10 @@
                               "signed": true,
                               "zigzag": true,
                               "endianness": "none"
+                            },
+                            "constraints": {
+                              "minimum": 0,
+                              "maximum": 32767
                             }
                           },
                           "symmetry": "symmetric",
@@ -30203,6 +30742,10 @@
                               "signed": true,
                               "zigzag": true,
                               "endianness": "none"
+                            },
+                            "constraints": {
+                              "minimum": 0,
+                              "maximum": 64
                             }
                           },
                           "symmetry": "symmetric",
@@ -30213,6 +30756,9 @@
                           }
                         }
                       ]
+                    },
+                    "constraints": {
+                      "max_items": 128
                     }
                   },
                   "symmetry": "symmetric",
@@ -30255,6 +30801,10 @@
                               "signed": true,
                               "zigzag": true,
                               "endianness": "none"
+                            },
+                            "constraints": {
+                              "minimum": -32768,
+                              "maximum": 32767
                             }
                           },
                           "symmetry": "symmetric",
@@ -30276,6 +30826,10 @@
                               "signed": false,
                               "zigzag": false,
                               "endianness": "little"
+                            },
+                            "constraints": {
+                              "minimum": 0,
+                              "maximum": 64
                             }
                           },
                           "symmetry": "symmetric",
@@ -30297,6 +30851,10 @@
                               "signed": false,
                               "zigzag": false,
                               "endianness": "none"
+                            },
+                            "constraints": {
+                              "minimum": 0,
+                              "maximum": 32767
                             }
                           },
                           "symmetry": "symmetric",
@@ -30584,6 +31142,10 @@
                                         "signed": true,
                                         "zigzag": true,
                                         "endianness": "none"
+                                      },
+                                      "constraints": {
+                                        "minimum": 0,
+                                        "maximum": 32767
                                       }
                                     },
                                     "symmetry": "symmetric",
@@ -30605,6 +31167,10 @@
                                         "signed": true,
                                         "zigzag": true,
                                         "endianness": "none"
+                                      },
+                                      "constraints": {
+                                        "minimum": 0,
+                                        "maximum": 64
                                       }
                                     },
                                     "symmetry": "symmetric",
@@ -30615,6 +31181,9 @@
                                     }
                                   }
                                 ]
+                              },
+                              "constraints": {
+                                "max_items": 128
                               }
                             }
                           },
@@ -30868,6 +31437,10 @@
                               "signed": true,
                               "zigzag": true,
                               "endianness": "none"
+                            },
+                            "constraints": {
+                              "minimum": 0,
+                              "maximum": 32767
                             }
                           },
                           "symmetry": "symmetric",
@@ -30889,6 +31462,10 @@
                               "signed": true,
                               "zigzag": true,
                               "endianness": "none"
+                            },
+                            "constraints": {
+                              "minimum": 0,
+                              "maximum": 64
                             }
                           },
                           "symmetry": "symmetric",
@@ -30899,6 +31476,9 @@
                           }
                         }
                       ]
+                    },
+                    "constraints": {
+                      "max_items": 128
                     }
                   },
                   "symmetry": "symmetric",
@@ -30941,6 +31521,10 @@
                               "signed": true,
                               "zigzag": true,
                               "endianness": "none"
+                            },
+                            "constraints": {
+                              "minimum": -32768,
+                              "maximum": 32767
                             }
                           },
                           "symmetry": "symmetric",
@@ -30962,6 +31546,10 @@
                               "signed": false,
                               "zigzag": false,
                               "endianness": "little"
+                            },
+                            "constraints": {
+                              "minimum": 0,
+                              "maximum": 64
                             }
                           },
                           "symmetry": "symmetric",
@@ -30983,6 +31571,10 @@
                               "signed": false,
                               "zigzag": false,
                               "endianness": "none"
+                            },
+                            "constraints": {
+                              "minimum": 0,
+                              "maximum": 32767
                             }
                           },
                           "symmetry": "symmetric",
@@ -31291,6 +31883,10 @@
                                         "signed": true,
                                         "zigzag": true,
                                         "endianness": "none"
+                                      },
+                                      "constraints": {
+                                        "minimum": 0,
+                                        "maximum": 32767
                                       }
                                     },
                                     "symmetry": "symmetric",
@@ -31312,6 +31908,10 @@
                                         "signed": true,
                                         "zigzag": true,
                                         "endianness": "none"
+                                      },
+                                      "constraints": {
+                                        "minimum": 0,
+                                        "maximum": 64
                                       }
                                     },
                                     "symmetry": "symmetric",
@@ -31322,6 +31922,9 @@
                                     }
                                   }
                                 ]
+                              },
+                              "constraints": {
+                                "max_items": 128
                               }
                             }
                           },
@@ -31521,6 +32124,10 @@
                             "signed": true,
                             "zigzag": true,
                             "endianness": "none"
+                          },
+                          "constraints": {
+                            "minimum": 0,
+                            "maximum": 32767
                           }
                         },
                         "symmetry": "symmetric",
@@ -31542,6 +32149,10 @@
                             "signed": true,
                             "zigzag": true,
                             "endianness": "none"
+                          },
+                          "constraints": {
+                            "minimum": 0,
+                            "maximum": 64
                           }
                         },
                         "symmetry": "symmetric",
@@ -31636,6 +32247,10 @@
                             "signed": true,
                             "zigzag": true,
                             "endianness": "none"
+                          },
+                          "constraints": {
+                            "minimum": 0,
+                            "maximum": 32767
                           }
                         },
                         "symmetry": "symmetric",
@@ -31657,6 +32272,10 @@
                             "signed": true,
                             "zigzag": true,
                             "endianness": "none"
+                          },
+                          "constraints": {
+                            "minimum": 0,
+                            "maximum": 64
                           }
                         },
                         "symmetry": "symmetric",
@@ -31751,6 +32370,10 @@
                             "signed": true,
                             "zigzag": true,
                             "endianness": "none"
+                          },
+                          "constraints": {
+                            "minimum": 0,
+                            "maximum": 32767
                           }
                         },
                         "symmetry": "symmetric",
@@ -31772,6 +32395,10 @@
                             "signed": true,
                             "zigzag": true,
                             "endianness": "none"
+                          },
+                          "constraints": {
+                            "minimum": 0,
+                            "maximum": 64
                           }
                         },
                         "symmetry": "symmetric",
@@ -31811,6 +32438,10 @@
                             "signed": true,
                             "zigzag": true,
                             "endianness": "none"
+                          },
+                          "constraints": {
+                            "minimum": -32768,
+                            "maximum": 32767
                           }
                         },
                         "symmetry": "symmetric",
@@ -31832,6 +32463,10 @@
                             "signed": false,
                             "zigzag": false,
                             "endianness": "little"
+                          },
+                          "constraints": {
+                            "minimum": 0,
+                            "maximum": 64
                           }
                         },
                         "symmetry": "symmetric",
@@ -31853,6 +32488,10 @@
                             "signed": false,
                             "zigzag": false,
                             "endianness": "none"
+                          },
+                          "constraints": {
+                            "minimum": 0,
+                            "maximum": 32767
                           }
                         },
                         "symmetry": "symmetric",
@@ -32122,6 +32761,10 @@
                             "signed": true,
                             "zigzag": true,
                             "endianness": "none"
+                          },
+                          "constraints": {
+                            "minimum": 0,
+                            "maximum": 32767
                           }
                         },
                         "symmetry": "symmetric",
@@ -32143,6 +32786,10 @@
                             "signed": true,
                             "zigzag": true,
                             "endianness": "none"
+                          },
+                          "constraints": {
+                            "minimum": 0,
+                            "maximum": 64
                           }
                         },
                         "symmetry": "symmetric",
@@ -32237,6 +32884,10 @@
                             "signed": true,
                             "zigzag": true,
                             "endianness": "none"
+                          },
+                          "constraints": {
+                            "minimum": 0,
+                            "maximum": 32767
                           }
                         },
                         "symmetry": "symmetric",
@@ -32258,6 +32909,10 @@
                             "signed": true,
                             "zigzag": true,
                             "endianness": "none"
+                          },
+                          "constraints": {
+                            "minimum": 0,
+                            "maximum": 64
                           }
                         },
                         "symmetry": "symmetric",
@@ -32352,6 +33007,10 @@
                             "signed": true,
                             "zigzag": true,
                             "endianness": "none"
+                          },
+                          "constraints": {
+                            "minimum": 0,
+                            "maximum": 32767
                           }
                         },
                         "symmetry": "symmetric",
@@ -32373,6 +33032,10 @@
                             "signed": true,
                             "zigzag": true,
                             "endianness": "none"
+                          },
+                          "constraints": {
+                            "minimum": 0,
+                            "maximum": 64
                           }
                         },
                         "symmetry": "symmetric",
@@ -33198,6 +33861,10 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0,
+              "maximum": 64
             }
           },
           "symmetry": "symmetric",
@@ -33222,6 +33889,10 @@
                 "signed": true,
                 "zigzag": true,
                 "endianness": "none"
+              },
+              "constraints": {
+                "minimum": -1,
+                "maximum": 64
               }
             }
           },
@@ -33298,6 +33969,9 @@
                   }
                 }
               ]
+            },
+            "constraints": {
+              "max_items": 65
             }
           },
           "symmetry": "symmetric",
@@ -33382,6 +34056,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -34158,6 +34835,9 @@
                                         "signed": false,
                                         "zigzag": false,
                                         "endianness": "little"
+                                      },
+                                      "constraints": {
+                                        "maximum": 4096
                                       }
                                     },
                                     "symmetry": "symmetric",
@@ -34179,6 +34859,9 @@
                                         "signed": false,
                                         "zigzag": false,
                                         "endianness": "little"
+                                      },
+                                      "constraints": {
+                                        "maximum": 4096
                                       }
                                     },
                                     "symmetry": "symmetric",
@@ -34213,6 +34896,9 @@
                                           "zigzag": false,
                                           "endianness": "none"
                                         }
+                                      },
+                                      "constraints": {
+                                        "max_items": 67108864
                                       }
                                     },
                                     "symmetry": "symmetric",
@@ -34273,6 +34959,9 @@
                                                 "signed": false,
                                                 "zigzag": false,
                                                 "endianness": "little"
+                                              },
+                                              "constraints": {
+                                                "maximum": 4096
                                               }
                                             },
                                             "symmetry": "symmetric",
@@ -34294,6 +34983,9 @@
                                                 "signed": false,
                                                 "zigzag": false,
                                                 "endianness": "little"
+                                              },
+                                              "constraints": {
+                                                "maximum": 4096
                                               }
                                             },
                                             "symmetry": "symmetric",
@@ -34328,6 +35020,9 @@
                                                   "zigzag": false,
                                                   "endianness": "none"
                                                 }
+                                              },
+                                              "constraints": {
+                                                "max_items": 67108864
                                               }
                                             },
                                             "symmetry": "symmetric",
@@ -34483,6 +35178,9 @@
                                         "signed": false,
                                         "zigzag": false,
                                         "endianness": "little"
+                                      },
+                                      "constraints": {
+                                        "maximum": 4096
                                       }
                                     },
                                     "symmetry": "symmetric",
@@ -34504,6 +35202,9 @@
                                         "signed": false,
                                         "zigzag": false,
                                         "endianness": "little"
+                                      },
+                                      "constraints": {
+                                        "maximum": 4096
                                       }
                                     },
                                     "symmetry": "symmetric",
@@ -34538,6 +35239,9 @@
                                           "zigzag": false,
                                           "endianness": "none"
                                         }
+                                      },
+                                      "constraints": {
+                                        "max_items": 67108864
                                       }
                                     },
                                     "symmetry": "symmetric",
@@ -35475,6 +36179,9 @@
                   "endianness": "none"
                 }
               }
+            },
+            "constraints": {
+              "max_items": 1000
             }
           },
           "symmetry": "symmetric",
@@ -38074,7 +38781,10 @@
                           }
                         },
                         "encoding": "utf8",
-                        "representation": "text"
+                        "representation": "text",
+                        "constraints": {
+                          "max_length": 128
+                        }
                       },
                       "symmetry": "symmetric",
                       "provenance": {
@@ -38396,7 +39106,10 @@
                           }
                         },
                         "encoding": "utf8",
-                        "representation": "text"
+                        "representation": "text",
+                        "constraints": {
+                          "max_length": 512
+                        }
                       },
                       "symmetry": "symmetric",
                       "provenance": {
@@ -38422,7 +39135,10 @@
                           }
                         },
                         "encoding": "utf8",
-                        "representation": "text"
+                        "representation": "text",
+                        "constraints": {
+                          "max_length": 2048
+                        }
                       },
                       "symmetry": "symmetric",
                       "provenance": {
@@ -39043,7 +39759,10 @@
                           }
                         },
                         "encoding": "utf8",
-                        "representation": "text"
+                        "representation": "text",
+                        "constraints": {
+                          "max_length": 256
+                        }
                       },
                       "symmetry": "symmetric",
                       "provenance": {
@@ -39271,7 +39990,10 @@
                           }
                         },
                         "encoding": "utf8",
-                        "representation": "text"
+                        "representation": "text",
+                        "constraints": {
+                          "max_length": 16
+                        }
                       },
                       "symmetry": "symmetric",
                       "provenance": {
@@ -39308,7 +40030,10 @@
                           }
                         },
                         "encoding": "utf8",
-                        "representation": "text"
+                        "representation": "text",
+                        "constraints": {
+                          "max_length": 256
+                        }
                       },
                       "symmetry": "symmetric",
                       "provenance": {
@@ -39643,6 +40368,10 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0,
+              "maximum": 255
             }
           },
           "symmetry": "symmetric",
@@ -39803,6 +40532,9 @@
                     }
                   }
                 ]
+              },
+              "constraints": {
+                "max_items": 65535
               }
             }
           },
@@ -40039,6 +40771,9 @@
                     }
                   }
                 ]
+              },
+              "constraints": {
+                "max_items": 65535
               }
             }
           },
@@ -40298,6 +41033,10 @@
                         "signed": false,
                         "zigzag": false,
                         "endianness": "none"
+                      },
+                      "constraints": {
+                        "minimum": 0,
+                        "maximum": 255
                       }
                     },
                     "symmetry": "symmetric",
@@ -40320,6 +41059,10 @@
                         "signed": false,
                         "zigzag": false,
                         "endianness": "none"
+                      },
+                      "constraints": {
+                        "minimum": 0,
+                        "maximum": 255
                       }
                     },
                     "symmetry": "symmetric",
@@ -40342,6 +41085,10 @@
                         "signed": false,
                         "zigzag": false,
                         "endianness": "none"
+                      },
+                      "constraints": {
+                        "minimum": 0,
+                        "maximum": 255
                       }
                     },
                     "symmetry": "symmetric",
@@ -40421,6 +41168,9 @@
                     }
                   }
                 ]
+              },
+              "constraints": {
+                "max_items": 65535
               }
             }
           },
@@ -40565,6 +41315,9 @@
                   "zigzag": false,
                   "endianness": "little"
                 }
+              },
+              "constraints": {
+                "max_items": 16384
               }
             }
           },
@@ -40688,6 +41441,9 @@
                   }
                 }
               ]
+            },
+            "constraints": {
+              "max_items": 16384
             }
           },
           "symmetry": "symmetric",
@@ -40739,6 +41495,10 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0,
+              "maximum": 255
             }
           },
           "symmetry": "symmetric",
@@ -41249,7 +42009,10 @@
               }
             },
             "encoding": "utf8",
-            "representation": "text"
+            "representation": "text",
+            "constraints": {
+              "max_length": 256
+            }
           },
           "symmetry": "symmetric",
           "provenance": {
@@ -41276,7 +42039,10 @@
               }
             },
             "encoding": "utf8",
-            "representation": "text"
+            "representation": "text",
+            "constraints": {
+              "max_length": 256
+            }
           },
           "symmetry": "symmetric",
           "provenance": {
@@ -41792,7 +42558,10 @@
                       }
                     },
                     "encoding": "utf8",
-                    "representation": "text"
+                    "representation": "text",
+                    "constraints": {
+                      "max_length": 512
+                    }
                   },
                   "symmetry": "symmetric",
                   "provenance": {
@@ -41865,6 +42634,9 @@
                           }
                         }
                       ]
+                    },
+                    "constraints": {
+                      "max_items": 32
                     }
                   },
                   "symmetry": "symmetric",
@@ -41875,6 +42647,9 @@
                   }
                 }
               ]
+            },
+            "constraints": {
+              "max_items": 16
             }
           },
           "symmetry": "symmetric",
@@ -41923,7 +42698,10 @@
                       }
                     },
                     "encoding": "utf8",
-                    "representation": "text"
+                    "representation": "text",
+                    "constraints": {
+                      "max_length": 1000
+                    }
                   },
                   "symmetry": "symmetric",
                   "provenance": {
@@ -41950,7 +42728,10 @@
                       }
                     },
                     "encoding": "utf8",
-                    "representation": "text"
+                    "representation": "text",
+                    "constraints": {
+                      "max_length": 1000
+                    }
                   },
                   "symmetry": "symmetric",
                   "provenance": {
@@ -41972,6 +42753,9 @@
                       "signed": false,
                       "zigzag": false,
                       "endianness": "little"
+                    },
+                    "constraints": {
+                      "minimum": 0
                     }
                   },
                   "symmetry": "symmetric",
@@ -42056,6 +42840,9 @@
                         "zigzag": false,
                         "endianness": "little"
                       }
+                    },
+                    "constraints": {
+                      "max_items": 250
                     }
                   },
                   "symmetry": "symmetric",
@@ -42229,6 +43016,9 @@
                           }
                         }
                       ]
+                    },
+                    "constraints": {
+                      "max_items": 250
                     }
                   },
                   "symmetry": "symmetric",
@@ -42294,7 +43084,10 @@
                       }
                     },
                     "encoding": "utf8",
-                    "representation": "text"
+                    "representation": "text",
+                    "constraints": {
+                      "max_length": 512
+                    }
                   },
                   "symmetry": "symmetric",
                   "provenance": {
@@ -42441,6 +43234,9 @@
                         "zigzag": false,
                         "endianness": "none"
                       }
+                    },
+                    "constraints": {
+                      "max_items": 250
                     }
                   },
                   "symmetry": "symmetric",
@@ -42485,7 +43281,10 @@
               }
             },
             "encoding": "utf8",
-            "representation": "text"
+            "representation": "text",
+            "constraints": {
+              "max_length": 1000
+            }
           },
           "symmetry": "symmetric",
           "provenance": {
@@ -42573,7 +43372,10 @@
                     }
                   },
                   "encoding": "utf8",
-                  "representation": "text"
+                  "representation": "text",
+                  "constraints": {
+                    "max_length": 39
+                  }
                 },
                 "symmetry": "symmetric",
                 "provenance": {
@@ -43181,7 +43983,10 @@
                     }
                   },
                   "encoding": "utf8",
-                  "representation": "text"
+                  "representation": "text",
+                  "constraints": {
+                    "max_length": 39
+                  }
                 },
                 "symmetry": "symmetric",
                 "provenance": {
@@ -43467,6 +44272,10 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0,
+              "maximum": 255
             }
           },
           "symmetry": "symmetric",
@@ -43489,6 +44298,10 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0,
+              "maximum": 255
             }
           },
           "symmetry": "symmetric",
@@ -43744,6 +44557,10 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0,
+              "maximum": 255
             }
           },
           "symmetry": "symmetric",
@@ -43766,6 +44583,10 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0,
+              "maximum": 255
             }
           },
           "symmetry": "symmetric",
@@ -43914,6 +44735,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "little"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -43936,6 +44760,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "little"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -43958,6 +44785,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "little"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -44034,6 +44864,10 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0,
+              "maximum": 255
             }
           },
           "symmetry": "symmetric",
@@ -44090,6 +44924,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "little"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -44112,6 +44949,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "little"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -44172,7 +45012,10 @@
               }
             },
             "encoding": "utf8",
-            "representation": "text"
+            "representation": "text",
+            "constraints": {
+              "pattern": "A string in the format of \u003cuuid\u003e_\u003csemver\u003e, where \u003cuuid\u003e is a valid UUID and \u003csemver\u003e is a valid semantic version"
+            }
           },
           "symmetry": "symmetric",
           "provenance": {
@@ -44194,6 +45037,9 @@
               "signed": true,
               "zigzag": false,
               "endianness": "little"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -44250,6 +45096,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "little"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -44332,7 +45181,11 @@
                       }
                     },
                     "encoding": "utf8",
-                    "representation": "text"
+                    "representation": "text",
+                    "constraints": {
+                      "min_length": 1,
+                      "max_length": 29
+                    }
                   },
                   "symmetry": "symmetric",
                   "provenance": {
@@ -44384,7 +45237,11 @@
                         }
                       },
                       "encoding": "utf8",
-                      "representation": "text"
+                      "representation": "text",
+                      "constraints": {
+                        "min_length": 1,
+                        "max_length": 29
+                      }
                     }
                   },
                   "symmetry": "symmetric",
@@ -44411,7 +45268,11 @@
                       }
                     },
                     "encoding": "utf8",
-                    "representation": "text"
+                    "representation": "text",
+                    "constraints": {
+                      "min_length": 1,
+                      "max_length": 60
+                    }
                   },
                   "symmetry": "symmetric",
                   "provenance": {
@@ -44463,7 +45324,11 @@
                         }
                       },
                       "encoding": "utf8",
-                      "representation": "text"
+                      "representation": "text",
+                      "constraints": {
+                        "min_length": 1,
+                        "max_length": 100
+                      }
                     }
                   },
                   "symmetry": "symmetric",
@@ -44492,7 +45357,11 @@
                         }
                       },
                       "encoding": "utf8",
-                      "representation": "text"
+                      "representation": "text",
+                      "constraints": {
+                        "min_length": 1,
+                        "max_length": 100
+                      }
                     }
                   },
                   "symmetry": "symmetric",
@@ -45460,7 +46329,10 @@
                           }
                         },
                         "encoding": "utf8",
-                        "representation": "text"
+                        "representation": "text",
+                        "constraints": {
+                          "max_length": 256
+                        }
                       },
                       "symmetry": "symmetric",
                       "provenance": {
@@ -46260,6 +47132,9 @@
               },
               "encoding": "utf8",
               "representation": "text"
+            },
+            "constraints": {
+              "max_items": 10000
             }
           },
           "symmetry": "symmetric",
@@ -46415,6 +47290,9 @@
                           "signed": false,
                           "zigzag": false,
                           "endianness": "little"
+                        },
+                        "constraints": {
+                          "maximum": 4096
                         }
                       },
                       "symmetry": "symmetric",
@@ -46436,6 +47314,9 @@
                           "signed": false,
                           "zigzag": false,
                           "endianness": "little"
+                        },
+                        "constraints": {
+                          "maximum": 4096
                         }
                       },
                       "symmetry": "symmetric",
@@ -46470,6 +47351,9 @@
                             "zigzag": false,
                             "endianness": "none"
                           }
+                        },
+                        "constraints": {
+                          "max_items": 67108864
                         }
                       },
                       "symmetry": "symmetric",
@@ -46532,6 +47416,9 @@
                                   "signed": false,
                                   "zigzag": false,
                                   "endianness": "little"
+                                },
+                                "constraints": {
+                                  "maximum": 4096
                                 }
                               },
                               "symmetry": "symmetric",
@@ -46553,6 +47440,9 @@
                                   "signed": false,
                                   "zigzag": false,
                                   "endianness": "little"
+                                },
+                                "constraints": {
+                                  "maximum": 4096
                                 }
                               },
                               "symmetry": "symmetric",
@@ -46587,6 +47477,9 @@
                                     "zigzag": false,
                                     "endianness": "none"
                                   }
+                                },
+                                "constraints": {
+                                  "max_items": 67108864
                                 }
                               },
                               "symmetry": "symmetric",
@@ -46745,6 +47638,9 @@
                           "signed": false,
                           "zigzag": false,
                           "endianness": "little"
+                        },
+                        "constraints": {
+                          "maximum": 4096
                         }
                       },
                       "symmetry": "symmetric",
@@ -46766,6 +47662,9 @@
                           "signed": false,
                           "zigzag": false,
                           "endianness": "little"
+                        },
+                        "constraints": {
+                          "maximum": 4096
                         }
                       },
                       "symmetry": "symmetric",
@@ -46800,6 +47699,9 @@
                             "zigzag": false,
                             "endianness": "none"
                           }
+                        },
+                        "constraints": {
+                          "max_items": 67108864
                         }
                       },
                       "symmetry": "symmetric",
@@ -49037,7 +49939,10 @@
                           }
                         },
                         "encoding": "utf8",
-                        "representation": "text"
+                        "representation": "text",
+                        "constraints": {
+                          "max_length": 768
+                        }
                       },
                       "symmetry": "symmetric",
                       "provenance": {
@@ -49063,7 +49968,10 @@
                           }
                         },
                         "encoding": "utf8",
-                        "representation": "text"
+                        "representation": "text",
+                        "constraints": {
+                          "max_length": 768
+                        }
                       },
                       "symmetry": "symmetric",
                       "provenance": {
@@ -49121,7 +50029,10 @@
                           }
                         },
                         "encoding": "utf8",
-                        "representation": "text"
+                        "representation": "text",
+                        "constraints": {
+                          "max_length": 768
+                        }
                       },
                       "symmetry": "symmetric",
                       "provenance": {
@@ -49147,7 +50058,10 @@
                           }
                         },
                         "encoding": "utf8",
-                        "representation": "text"
+                        "representation": "text",
+                        "constraints": {
+                          "max_length": 768
+                        }
                       },
                       "symmetry": "symmetric",
                       "provenance": {
@@ -49269,7 +50183,10 @@
                           }
                         },
                         "encoding": "utf8",
-                        "representation": "text"
+                        "representation": "text",
+                        "constraints": {
+                          "max_length": 768
+                        }
                       },
                       "symmetry": "symmetric",
                       "provenance": {
@@ -49295,7 +50212,10 @@
                           }
                         },
                         "encoding": "utf8",
-                        "representation": "text"
+                        "representation": "text",
+                        "constraints": {
+                          "max_length": 768
+                        }
                       },
                       "symmetry": "symmetric",
                       "provenance": {
@@ -49321,7 +50241,10 @@
                           }
                         },
                         "encoding": "utf8",
-                        "representation": "text"
+                        "representation": "text",
+                        "constraints": {
+                          "max_length": 768
+                        }
                       },
                       "symmetry": "symmetric",
                       "provenance": {
@@ -49528,6 +50451,10 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0,
+              "maximum": 255
             }
           },
           "symmetry": "symmetric",
@@ -49589,7 +50516,10 @@
               }
             },
             "encoding": "utf8",
-            "representation": "text"
+            "representation": "text",
+            "constraints": {
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.jpeg$"
+            }
           },
           "symmetry": "symmetric",
           "provenance": {
@@ -49615,7 +50545,10 @@
                 "endianness": "none"
               }
             },
-            "representation": "bytes"
+            "representation": "bytes",
+            "constraints": {
+              "max_length": 20971520
+            }
           },
           "symmetry": "symmetric",
           "provenance": {
@@ -49828,6 +50761,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -49884,6 +50820,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -50002,6 +50941,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -50437,7 +51379,10 @@
                               }
                             },
                             "encoding": "utf8",
-                            "representation": "text"
+                            "representation": "text",
+                            "constraints": {
+                              "min_length": 1
+                            }
                           }
                         },
                         "symmetry": "symmetric",
@@ -50540,7 +51485,10 @@
                             }
                           },
                           "encoding": "utf8",
-                          "representation": "text"
+                          "representation": "text",
+                          "constraints": {
+                            "min_length": 1
+                          }
                         },
                         "symmetry": "symmetric",
                         "provenance": {
@@ -50702,7 +51650,10 @@
                             }
                           },
                           "encoding": "utf8",
-                          "representation": "text"
+                          "representation": "text",
+                          "constraints": {
+                            "min_length": 1
+                          }
                         },
                         "symmetry": "symmetric",
                         "provenance": {
@@ -50864,7 +51815,10 @@
                             }
                           },
                           "encoding": "utf8",
-                          "representation": "text"
+                          "representation": "text",
+                          "constraints": {
+                            "min_length": 1
+                          }
                         },
                         "symmetry": "symmetric",
                         "provenance": {
@@ -50911,7 +51865,10 @@
                             }
                           },
                           "encoding": "utf8",
-                          "representation": "text"
+                          "representation": "text",
+                          "constraints": {
+                            "min_length": 1
+                          }
                         },
                         "symmetry": "symmetric",
                         "provenance": {
@@ -51320,6 +52277,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -51342,6 +52302,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -51364,6 +52327,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -51386,6 +52352,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -51408,6 +52377,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -52056,6 +53028,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "little"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -52107,6 +53082,10 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0,
+              "maximum": 255
             }
           },
           "symmetry": "symmetric",
@@ -52439,6 +53418,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -52513,6 +53495,9 @@
                   }
                 }
               ]
+            },
+            "constraints": {
+              "max_items": 9216
             }
           },
           "symmetry": "symmetric",
@@ -55977,6 +56962,10 @@
                                                       "zigzag": false,
                                                       "endianness": "little"
                                                     }
+                                                  },
+                                                  "constraints": {
+                                                    "min_items": 1,
+                                                    "max_items": 100
                                                   }
                                                 },
                                                 "symmetry": "symmetric",
@@ -56808,6 +57797,10 @@
                                                       "zigzag": false,
                                                       "endianness": "little"
                                                     }
+                                                  },
+                                                  "constraints": {
+                                                    "min_items": 1,
+                                                    "max_items": 100
                                                   }
                                                 },
                                                 "symmetry": "symmetric",
@@ -57340,6 +58333,10 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0,
+              "maximum": 255
             }
           },
           "symmetry": "symmetric",
@@ -57362,6 +58359,10 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0,
+              "maximum": 255
             }
           },
           "symmetry": "symmetric",
@@ -57503,6 +58504,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "little"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -57626,7 +58630,10 @@
               }
             },
             "encoding": "utf8",
-            "representation": "text"
+            "representation": "text",
+            "constraints": {
+              "max_length": 256
+            }
           },
           "symmetry": "symmetric",
           "provenance": {
@@ -57746,7 +58753,10 @@
                     }
                   },
                   "encoding": "utf8",
-                  "representation": "text"
+                  "representation": "text",
+                  "constraints": {
+                    "max_length": 256
+                  }
                 },
                 "symmetry": "symmetric",
                 "provenance": {
@@ -58237,6 +59247,9 @@
                     "signed": false,
                     "zigzag": false,
                     "endianness": "little"
+                  },
+                  "constraints": {
+                    "minimum": 0
                   }
                 },
                 "symmetry": "symmetric",
@@ -58556,6 +59569,9 @@
                 "zigzag": false,
                 "endianness": "little"
               }
+            },
+            "constraints": {
+              "max_items": 4095
             }
           },
           "symmetry": "symmetric",
@@ -58591,6 +59607,9 @@
                 "zigzag": false,
                 "endianness": "little"
               }
+            },
+            "constraints": {
+              "max_items": 4095
             }
           },
           "symmetry": "symmetric",
@@ -58676,6 +59695,9 @@
                   }
                 }
               ]
+            },
+            "constraints": {
+              "max_items": 4095
             }
           },
           "symmetry": "symmetric",
@@ -59117,6 +60139,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -59193,6 +60218,10 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0,
+              "maximum": 255
             }
           },
           "symmetry": "symmetric",
@@ -59480,6 +60509,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "little"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -59578,6 +60610,10 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0,
+              "maximum": 255
             }
           },
           "symmetry": "symmetric",
@@ -61652,6 +62688,10 @@
                                                       "signed": false,
                                                       "zigzag": false,
                                                       "endianness": "little"
+                                                    },
+                                                    "constraints": {
+                                                      "minimum": 0,
+                                                      "maximum": 64
                                                     }
                                                   },
                                                   "symmetry": "symmetric",
@@ -61673,6 +62713,10 @@
                                                       "signed": false,
                                                       "zigzag": false,
                                                       "endianness": "none"
+                                                    },
+                                                    "constraints": {
+                                                      "minimum": 0,
+                                                      "maximum": 32767
                                                     }
                                                   },
                                                   "symmetry": "symmetric",
@@ -61803,6 +62847,10 @@
                                                       "signed": false,
                                                       "zigzag": false,
                                                       "endianness": "little"
+                                                    },
+                                                    "constraints": {
+                                                      "minimum": 0,
+                                                      "maximum": 64
                                                     }
                                                   },
                                                   "symmetry": "symmetric",
@@ -61824,6 +62872,10 @@
                                                       "signed": false,
                                                       "zigzag": false,
                                                       "endianness": "none"
+                                                    },
+                                                    "constraints": {
+                                                      "minimum": 0,
+                                                      "maximum": 32767
                                                     }
                                                   },
                                                   "symmetry": "symmetric",
@@ -62196,6 +63248,10 @@
                                       "signed": false,
                                       "zigzag": false,
                                       "endianness": "little"
+                                    },
+                                    "constraints": {
+                                      "minimum": 0,
+                                      "maximum": 64
                                     }
                                   },
                                   "symmetry": "symmetric",
@@ -62217,6 +63273,10 @@
                                       "signed": false,
                                       "zigzag": false,
                                       "endianness": "none"
+                                    },
+                                    "constraints": {
+                                      "minimum": 0,
+                                      "maximum": 32767
                                     }
                                   },
                                   "symmetry": "symmetric",
@@ -62853,6 +63913,10 @@
                                       "signed": false,
                                       "zigzag": false,
                                       "endianness": "none"
+                                    },
+                                    "constraints": {
+                                      "minimum": 1,
+                                      "maximum": 64
                                     }
                                   },
                                   "symmetry": "symmetric",
@@ -64242,6 +65306,10 @@
                                       "signed": false,
                                       "zigzag": false,
                                       "endianness": "none"
+                                    },
+                                    "constraints": {
+                                      "minimum": 1,
+                                      "maximum": 64
                                     }
                                   },
                                   "symmetry": "symmetric",
@@ -66999,6 +68067,10 @@
                                       "signed": false,
                                       "zigzag": false,
                                       "endianness": "none"
+                                    },
+                                    "constraints": {
+                                      "minimum": 1,
+                                      "maximum": 64
                                     }
                                   },
                                   "symmetry": "symmetric",
@@ -67813,6 +68885,10 @@
                                       "signed": false,
                                       "zigzag": false,
                                       "endianness": "none"
+                                    },
+                                    "constraints": {
+                                      "minimum": 1,
+                                      "maximum": 64
                                     }
                                   },
                                   "symmetry": "symmetric",
@@ -68606,6 +69682,10 @@
                                       "signed": false,
                                       "zigzag": false,
                                       "endianness": "none"
+                                    },
+                                    "constraints": {
+                                      "minimum": 1,
+                                      "maximum": 64
                                     }
                                   },
                                   "symmetry": "symmetric",
@@ -69772,6 +70852,10 @@
                                       "signed": true,
                                       "zigzag": true,
                                       "endianness": "none"
+                                    },
+                                    "constraints": {
+                                      "minimum": 0,
+                                      "maximum": 37
                                     }
                                   },
                                   "symmetry": "symmetric",
@@ -69793,6 +70877,10 @@
                                       "signed": true,
                                       "zigzag": true,
                                       "endianness": "none"
+                                    },
+                                    "constraints": {
+                                      "minimum": 0,
+                                      "maximum": 37
                                     }
                                   },
                                   "symmetry": "symmetric",
@@ -70268,6 +71356,9 @@
                                       "signed": false,
                                       "zigzag": false,
                                       "endianness": "none"
+                                    },
+                                    "constraints": {
+                                      "minimum": 1
                                     }
                                   },
                                   "symmetry": "symmetric",
@@ -70504,6 +71595,9 @@
                                       "signed": false,
                                       "zigzag": false,
                                       "endianness": "none"
+                                    },
+                                    "constraints": {
+                                      "minimum": 1
                                     }
                                   },
                                   "symmetry": "symmetric",
@@ -70683,7 +71777,10 @@
                                                           }
                                                         },
                                                         "encoding": "utf8",
-                                                        "representation": "text"
+                                                        "representation": "text",
+                                                        "constraints": {
+                                                          "min_length": 1
+                                                        }
                                                       },
                                                       "symmetry": "symmetric",
                                                       "provenance": {
@@ -70704,6 +71801,10 @@
                                                           "signed": true,
                                                           "zigzag": true,
                                                           "endianness": "none"
+                                                        },
+                                                        "constraints": {
+                                                          "minimum": 0,
+                                                          "maximum": 32767
                                                         }
                                                       },
                                                       "symmetry": "symmetric",
@@ -70794,7 +71895,10 @@
                                                           }
                                                         },
                                                         "encoding": "utf8",
-                                                        "representation": "text"
+                                                        "representation": "text",
+                                                        "constraints": {
+                                                          "min_length": 1
+                                                        }
                                                       },
                                                       "symmetry": "symmetric",
                                                       "provenance": {
@@ -71021,7 +72125,10 @@
                                                           }
                                                         },
                                                         "encoding": "utf8",
-                                                        "representation": "text"
+                                                        "representation": "text",
+                                                        "constraints": {
+                                                          "min_length": 1
+                                                        }
                                                       },
                                                       "symmetry": "symmetric",
                                                       "provenance": {
@@ -71064,6 +72171,10 @@
                                               "signed": false,
                                               "zigzag": false,
                                               "endianness": "little"
+                                            },
+                                            "constraints": {
+                                              "minimum": 1,
+                                              "maximum": 65535
                                             }
                                           },
                                           "symmetry": "symmetric",
@@ -71271,6 +72382,9 @@
                                       "signed": false,
                                       "zigzag": false,
                                       "endianness": "none"
+                                    },
+                                    "constraints": {
+                                      "minimum": 1
                                     }
                                   },
                                   "symmetry": "symmetric",
@@ -71292,6 +72406,9 @@
                                       "signed": false,
                                       "zigzag": false,
                                       "endianness": "none"
+                                    },
+                                    "constraints": {
+                                      "minimum": 1
                                     }
                                   },
                                   "symmetry": "symmetric",
@@ -71746,6 +72863,9 @@
                                       "signed": false,
                                       "zigzag": false,
                                       "endianness": "none"
+                                    },
+                                    "constraints": {
+                                      "minimum": 1
                                     }
                                   },
                                   "symmetry": "symmetric",
@@ -71767,6 +72887,9 @@
                                       "signed": true,
                                       "zigzag": true,
                                       "endianness": "none"
+                                    },
+                                    "constraints": {
+                                      "minimum": 0
                                     }
                                   },
                                   "symmetry": "symmetric",
@@ -71990,6 +73113,9 @@
                                       "signed": false,
                                       "zigzag": false,
                                       "endianness": "none"
+                                    },
+                                    "constraints": {
+                                      "minimum": 1
                                     }
                                   },
                                   "symmetry": "symmetric",
@@ -72521,7 +73647,10 @@
                                                           }
                                                         },
                                                         "encoding": "utf8",
-                                                        "representation": "text"
+                                                        "representation": "text",
+                                                        "constraints": {
+                                                          "min_length": 1
+                                                        }
                                                       },
                                                       "symmetry": "symmetric",
                                                       "provenance": {
@@ -72542,6 +73671,10 @@
                                                           "signed": true,
                                                           "zigzag": true,
                                                           "endianness": "none"
+                                                        },
+                                                        "constraints": {
+                                                          "minimum": 0,
+                                                          "maximum": 32767
                                                         }
                                                       },
                                                       "symmetry": "symmetric",
@@ -72632,7 +73765,10 @@
                                                           }
                                                         },
                                                         "encoding": "utf8",
-                                                        "representation": "text"
+                                                        "representation": "text",
+                                                        "constraints": {
+                                                          "min_length": 1
+                                                        }
                                                       },
                                                       "symmetry": "symmetric",
                                                       "provenance": {
@@ -72859,7 +73995,10 @@
                                                           }
                                                         },
                                                         "encoding": "utf8",
-                                                        "representation": "text"
+                                                        "representation": "text",
+                                                        "constraints": {
+                                                          "min_length": 1
+                                                        }
                                                       },
                                                       "symmetry": "symmetric",
                                                       "provenance": {
@@ -72902,6 +74041,10 @@
                                               "signed": false,
                                               "zigzag": false,
                                               "endianness": "little"
+                                            },
+                                            "constraints": {
+                                              "minimum": 1,
+                                              "maximum": 64
                                             }
                                           },
                                           "symmetry": "symmetric",
@@ -72958,6 +74101,9 @@
                                           }
                                         }
                                       ]
+                                    },
+                                    "constraints": {
+                                      "min_items": 1
                                     }
                                   },
                                   "symmetry": "symmetric",
@@ -72979,6 +74125,9 @@
                                       "signed": false,
                                       "zigzag": false,
                                       "endianness": "none"
+                                    },
+                                    "constraints": {
+                                      "minimum": 1
                                     }
                                   },
                                   "symmetry": "symmetric",
@@ -73002,6 +74151,10 @@
                             "endianness": "none"
                           }
                         }
+                      },
+                      "constraints": {
+                        "min_items": 1,
+                        "max_items": 100
                       }
                     },
                     "symmetry": "symmetric",
@@ -73040,7 +74193,10 @@
                           }
                         },
                         "encoding": "utf8",
-                        "representation": "text"
+                        "representation": "text",
+                        "constraints": {
+                          "max_length": 1000
+                        }
                       }
                     },
                     "symmetry": "symmetric",
@@ -73656,6 +74812,9 @@
                       }
                     }
                   ]
+                },
+                "constraints": {
+                  "max_items": 100
                 }
               }
             }
@@ -74133,6 +75292,10 @@
                             "signed": true,
                             "zigzag": true,
                             "endianness": "none"
+                          },
+                          "constraints": {
+                            "minimum": -32768,
+                            "maximum": 32767
                           }
                         },
                         "symmetry": "symmetric",
@@ -74154,6 +75317,10 @@
                             "signed": false,
                             "zigzag": false,
                             "endianness": "little"
+                          },
+                          "constraints": {
+                            "minimum": 0,
+                            "maximum": 64
                           }
                         },
                         "symmetry": "symmetric",
@@ -74175,6 +75342,10 @@
                             "signed": false,
                             "zigzag": false,
                             "endianness": "none"
+                          },
+                          "constraints": {
+                            "minimum": 0,
+                            "maximum": 32767
                           }
                         },
                         "symmetry": "symmetric",
@@ -74338,6 +75509,10 @@
                             "signed": true,
                             "zigzag": true,
                             "endianness": "none"
+                          },
+                          "constraints": {
+                            "minimum": -32768,
+                            "maximum": 32767
                           }
                         },
                         "symmetry": "symmetric",
@@ -74359,6 +75534,10 @@
                             "signed": false,
                             "zigzag": false,
                             "endianness": "little"
+                          },
+                          "constraints": {
+                            "minimum": 0,
+                            "maximum": 64
                           }
                         },
                         "symmetry": "symmetric",
@@ -74380,6 +75559,10 @@
                             "signed": false,
                             "zigzag": false,
                             "endianness": "none"
+                          },
+                          "constraints": {
+                            "minimum": 0,
+                            "maximum": 32767
                           }
                         },
                         "symmetry": "symmetric",
@@ -74516,6 +75699,10 @@
                       "signed": false,
                       "zigzag": false,
                       "endianness": "none"
+                    },
+                    "constraints": {
+                      "minimum": 0,
+                      "maximum": 255
                     }
                   },
                   "symmetry": "symmetric",
@@ -74926,6 +76113,10 @@
                                       "signed": false,
                                       "zigzag": false,
                                       "endianness": "none"
+                                    },
+                                    "constraints": {
+                                      "minimum": 0,
+                                      "maximum": 255
                                     }
                                   },
                                   "symmetry": "symmetric",
@@ -74939,7 +76130,11 @@
                               ]
                             }
                           },
-                          "length": 3
+                          "length": 3,
+                          "constraints": {
+                            "min_items": 3,
+                            "max_items": 3
+                          }
                         },
                         "symmetry": "symmetric",
                         "provenance": {
@@ -74974,7 +76169,11 @@
                       }
                     },
                     "encoding": "utf8",
-                    "representation": "text"
+                    "representation": "text",
+                    "constraints": {
+                      "min_length": 1,
+                      "max_length": 256
+                    }
                   },
                   "symmetry": "symmetric",
                   "provenance": {
@@ -75026,6 +76225,9 @@
                   }
                 }
               ]
+            },
+            "constraints": {
+              "max_items": 3
             }
           },
           "symmetry": "symmetric",
@@ -75315,6 +76517,10 @@
                                     "signed": false,
                                     "zigzag": false,
                                     "endianness": "none"
+                                  },
+                                  "constraints": {
+                                    "minimum": 1,
+                                    "maximum": 64
                                   }
                                 },
                                 "symmetry": "symmetric",
@@ -76704,6 +77910,10 @@
                                     "signed": false,
                                     "zigzag": false,
                                     "endianness": "none"
+                                  },
+                                  "constraints": {
+                                    "minimum": 1,
+                                    "maximum": 64
                                   }
                                 },
                                 "symmetry": "symmetric",
@@ -79461,6 +80671,10 @@
                                     "signed": false,
                                     "zigzag": false,
                                     "endianness": "none"
+                                  },
+                                  "constraints": {
+                                    "minimum": 1,
+                                    "maximum": 64
                                   }
                                 },
                                 "symmetry": "symmetric",
@@ -80275,6 +81489,10 @@
                                     "signed": false,
                                     "zigzag": false,
                                     "endianness": "none"
+                                  },
+                                  "constraints": {
+                                    "minimum": 1,
+                                    "maximum": 64
                                   }
                                 },
                                 "symmetry": "symmetric",
@@ -81068,6 +82286,10 @@
                                     "signed": false,
                                     "zigzag": false,
                                     "endianness": "none"
+                                  },
+                                  "constraints": {
+                                    "minimum": 1,
+                                    "maximum": 64
                                   }
                                 },
                                 "symmetry": "symmetric",
@@ -82234,6 +83456,10 @@
                                     "signed": true,
                                     "zigzag": true,
                                     "endianness": "none"
+                                  },
+                                  "constraints": {
+                                    "minimum": 0,
+                                    "maximum": 37
                                   }
                                 },
                                 "symmetry": "symmetric",
@@ -82255,6 +83481,10 @@
                                     "signed": true,
                                     "zigzag": true,
                                     "endianness": "none"
+                                  },
+                                  "constraints": {
+                                    "minimum": 0,
+                                    "maximum": 37
                                   }
                                 },
                                 "symmetry": "symmetric",
@@ -82730,6 +83960,9 @@
                                     "signed": false,
                                     "zigzag": false,
                                     "endianness": "none"
+                                  },
+                                  "constraints": {
+                                    "minimum": 1
                                   }
                                 },
                                 "symmetry": "symmetric",
@@ -82966,6 +84199,9 @@
                                     "signed": false,
                                     "zigzag": false,
                                     "endianness": "none"
+                                  },
+                                  "constraints": {
+                                    "minimum": 1
                                   }
                                 },
                                 "symmetry": "symmetric",
@@ -83145,7 +84381,10 @@
                                                         }
                                                       },
                                                       "encoding": "utf8",
-                                                      "representation": "text"
+                                                      "representation": "text",
+                                                      "constraints": {
+                                                        "min_length": 1
+                                                      }
                                                     },
                                                     "symmetry": "symmetric",
                                                     "provenance": {
@@ -83166,6 +84405,10 @@
                                                         "signed": true,
                                                         "zigzag": true,
                                                         "endianness": "none"
+                                                      },
+                                                      "constraints": {
+                                                        "minimum": 0,
+                                                        "maximum": 32767
                                                       }
                                                     },
                                                     "symmetry": "symmetric",
@@ -83256,7 +84499,10 @@
                                                         }
                                                       },
                                                       "encoding": "utf8",
-                                                      "representation": "text"
+                                                      "representation": "text",
+                                                      "constraints": {
+                                                        "min_length": 1
+                                                      }
                                                     },
                                                     "symmetry": "symmetric",
                                                     "provenance": {
@@ -83483,7 +84729,10 @@
                                                         }
                                                       },
                                                       "encoding": "utf8",
-                                                      "representation": "text"
+                                                      "representation": "text",
+                                                      "constraints": {
+                                                        "min_length": 1
+                                                      }
                                                     },
                                                     "symmetry": "symmetric",
                                                     "provenance": {
@@ -83526,6 +84775,10 @@
                                             "signed": false,
                                             "zigzag": false,
                                             "endianness": "little"
+                                          },
+                                          "constraints": {
+                                            "minimum": 1,
+                                            "maximum": 65535
                                           }
                                         },
                                         "symmetry": "symmetric",
@@ -83733,6 +84986,9 @@
                                     "signed": false,
                                     "zigzag": false,
                                     "endianness": "none"
+                                  },
+                                  "constraints": {
+                                    "minimum": 1
                                   }
                                 },
                                 "symmetry": "symmetric",
@@ -83754,6 +85010,9 @@
                                     "signed": false,
                                     "zigzag": false,
                                     "endianness": "none"
+                                  },
+                                  "constraints": {
+                                    "minimum": 1
                                   }
                                 },
                                 "symmetry": "symmetric",
@@ -84208,6 +85467,9 @@
                                     "signed": false,
                                     "zigzag": false,
                                     "endianness": "none"
+                                  },
+                                  "constraints": {
+                                    "minimum": 1
                                   }
                                 },
                                 "symmetry": "symmetric",
@@ -84229,6 +85491,9 @@
                                     "signed": true,
                                     "zigzag": true,
                                     "endianness": "none"
+                                  },
+                                  "constraints": {
+                                    "minimum": 0
                                   }
                                 },
                                 "symmetry": "symmetric",
@@ -84452,6 +85717,9 @@
                                     "signed": false,
                                     "zigzag": false,
                                     "endianness": "none"
+                                  },
+                                  "constraints": {
+                                    "minimum": 1
                                   }
                                 },
                                 "symmetry": "symmetric",
@@ -84983,7 +86251,10 @@
                                                         }
                                                       },
                                                       "encoding": "utf8",
-                                                      "representation": "text"
+                                                      "representation": "text",
+                                                      "constraints": {
+                                                        "min_length": 1
+                                                      }
                                                     },
                                                     "symmetry": "symmetric",
                                                     "provenance": {
@@ -85004,6 +86275,10 @@
                                                         "signed": true,
                                                         "zigzag": true,
                                                         "endianness": "none"
+                                                      },
+                                                      "constraints": {
+                                                        "minimum": 0,
+                                                        "maximum": 32767
                                                       }
                                                     },
                                                     "symmetry": "symmetric",
@@ -85094,7 +86369,10 @@
                                                         }
                                                       },
                                                       "encoding": "utf8",
-                                                      "representation": "text"
+                                                      "representation": "text",
+                                                      "constraints": {
+                                                        "min_length": 1
+                                                      }
                                                     },
                                                     "symmetry": "symmetric",
                                                     "provenance": {
@@ -85321,7 +86599,10 @@
                                                         }
                                                       },
                                                       "encoding": "utf8",
-                                                      "representation": "text"
+                                                      "representation": "text",
+                                                      "constraints": {
+                                                        "min_length": 1
+                                                      }
                                                     },
                                                     "symmetry": "symmetric",
                                                     "provenance": {
@@ -85364,6 +86645,10 @@
                                             "signed": false,
                                             "zigzag": false,
                                             "endianness": "little"
+                                          },
+                                          "constraints": {
+                                            "minimum": 1,
+                                            "maximum": 64
                                           }
                                         },
                                         "symmetry": "symmetric",
@@ -85420,6 +86705,9 @@
                                         }
                                       }
                                     ]
+                                  },
+                                  "constraints": {
+                                    "min_items": 1
                                   }
                                 },
                                 "symmetry": "symmetric",
@@ -85441,6 +86729,9 @@
                                     "signed": false,
                                     "zigzag": false,
                                     "endianness": "none"
+                                  },
+                                  "constraints": {
+                                    "minimum": 1
                                   }
                                 },
                                 "symmetry": "symmetric",
@@ -85464,6 +86755,10 @@
                           "endianness": "none"
                         }
                       }
+                    },
+                    "constraints": {
+                      "min_items": 1,
+                      "max_items": 100
                     }
                   },
                   "symmetry": "symmetric",
@@ -85502,7 +86797,10 @@
                         }
                       },
                       "encoding": "utf8",
-                      "representation": "text"
+                      "representation": "text",
+                      "constraints": {
+                        "max_length": 1000
+                      }
                     }
                   },
                   "symmetry": "symmetric",
@@ -85658,6 +86956,9 @@
                   }
                 }
               ]
+            },
+            "constraints": {
+              "max_items": 100
             }
           },
           "symmetry": "symmetric",
@@ -87014,6 +88315,10 @@
                                           "signed": true,
                                           "zigzag": true,
                                           "endianness": "none"
+                                        },
+                                        "constraints": {
+                                          "minimum": -32768,
+                                          "maximum": 32767
                                         }
                                       },
                                       "symmetry": "symmetric",
@@ -87173,6 +88478,9 @@
                   }
                 }
               ]
+            },
+            "constraints": {
+              "max_items": 5
             }
           },
           "symmetry": "symmetric",
@@ -89138,7 +90446,10 @@
                       }
                     },
                     "encoding": "utf8",
-                    "representation": "text"
+                    "representation": "text",
+                    "constraints": {
+                      "max_length": 4096
+                    }
                   },
                   "symmetry": "symmetric",
                   "provenance": {
@@ -89429,7 +90740,10 @@
               }
             },
             "encoding": "utf8",
-            "representation": "text"
+            "representation": "text",
+            "constraints": {
+              "min_length": 1
+            }
           },
           "symmetry": "symmetric",
           "provenance": {
@@ -89456,7 +90770,10 @@
               }
             },
             "encoding": "utf8",
-            "representation": "text"
+            "representation": "text",
+            "constraints": {
+              "min_length": 1
+            }
           },
           "symmetry": "symmetric",
           "provenance": {
@@ -89876,6 +91193,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "little"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -90139,6 +91459,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "little"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -91276,6 +92599,9 @@
                   }
                 }
               ]
+            },
+            "constraints": {
+              "max_items": 8192
             }
           },
           "symmetry": "symmetric",
@@ -91425,6 +92751,9 @@
                   }
                 }
               ]
+            },
+            "constraints": {
+              "max_items": 8192
             }
           },
           "symmetry": "symmetric",
@@ -92094,7 +93423,10 @@
                 }
               },
               "encoding": "utf8",
-              "representation": "text"
+              "representation": "text",
+              "constraints": {
+                "max_length": 256
+              }
             }
           },
           "symmetry": "symmetric",
@@ -92599,6 +93931,10 @@
               "signed": true,
               "zigzag": true,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0,
+              "maximum": 19
             }
           },
           "symmetry": "symmetric",
@@ -92770,6 +94106,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "little"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -93603,6 +94942,10 @@
               "signed": true,
               "zigzag": false,
               "endianness": "big"
+            },
+            "constraints": {
+              "minimum": 2168,
+              "maximum": 2168
             }
           },
           "symmetry": "symmetric",
@@ -93981,6 +95324,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -96567,7 +97913,10 @@
                             }
                           },
                           "encoding": "utf8",
-                          "representation": "text"
+                          "representation": "text",
+                          "constraints": {
+                            "max_length": 1024
+                          }
                         },
                         "symmetry": "symmetric",
                         "provenance": {
@@ -97188,6 +98537,10 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0,
+              "maximum": 255
             }
           },
           "symmetry": "symmetric",
@@ -98922,6 +100275,9 @@
                       "signed": false,
                       "zigzag": false,
                       "endianness": "little"
+                    },
+                    "constraints": {
+                      "minimum": 0
                     }
                   },
                   "symmetry": "symmetric",
@@ -99530,6 +100886,10 @@
               "signed": false,
               "zigzag": false,
               "endianness": "little"
+            },
+            "constraints": {
+              "minimum": 1,
+              "maximum": 16
             }
           },
           "symmetry": "symmetric",
@@ -100473,6 +101833,10 @@
                               "signed": true,
                               "zigzag": false,
                               "endianness": "little"
+                            },
+                            "constraints": {
+                              "minimum": 0,
+                              "maximum": 100
                             }
                           },
                           "key": {
@@ -100523,6 +101887,10 @@
                               "signed": true,
                               "zigzag": false,
                               "endianness": "little"
+                            },
+                            "constraints": {
+                              "minimum": 0,
+                              "maximum": 100
                             }
                           },
                           "key": {
@@ -100573,6 +101941,10 @@
                               "signed": true,
                               "zigzag": false,
                               "endianness": "little"
+                            },
+                            "constraints": {
+                              "minimum": 0,
+                              "maximum": 100
                             }
                           },
                           "key": {
@@ -100623,6 +101995,10 @@
                               "signed": true,
                               "zigzag": false,
                               "endianness": "little"
+                            },
+                            "constraints": {
+                              "minimum": 0,
+                              "maximum": 100
                             }
                           },
                           "key": {
@@ -100662,6 +102038,10 @@
                               "signed": true,
                               "zigzag": false,
                               "endianness": "little"
+                            },
+                            "constraints": {
+                              "minimum": 0,
+                              "maximum": 100
                             }
                           }
                         },
@@ -100686,6 +102066,10 @@
                               "signed": true,
                               "zigzag": false,
                               "endianness": "little"
+                            },
+                            "constraints": {
+                              "minimum": 0,
+                              "maximum": 100
                             }
                           }
                         },
@@ -101363,7 +102747,11 @@
                 "endianness": "little"
               }
             },
-            "length": 9
+            "length": 9,
+            "constraints": {
+              "min_items": 9,
+              "max_items": 9
+            }
           },
           "symmetry": "symmetric",
           "provenance": {
@@ -101699,6 +103087,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -103824,6 +105215,9 @@
                   }
                 }
               ]
+            },
+            "constraints": {
+              "max_items": 1048576
             }
           },
           "symmetry": "symmetric",
@@ -103889,7 +105283,10 @@
               }
             },
             "encoding": "utf8",
-            "representation": "text"
+            "representation": "text",
+            "constraints": {
+              "max_length": 128
+            }
           },
           "symmetry": "symmetric",
           "provenance": {
@@ -104024,7 +105421,11 @@
                             }
                           },
                           "encoding": "utf8",
-                          "representation": "text"
+                          "representation": "text",
+                          "constraints": {
+                            "min_length": 1,
+                            "max_length": 1000
+                          }
                         },
                         "symmetry": "symmetric",
                         "provenance": {
@@ -104050,7 +105451,11 @@
                             }
                           },
                           "encoding": "utf8",
-                          "representation": "text"
+                          "representation": "text",
+                          "constraints": {
+                            "min_length": 1,
+                            "max_length": 1000
+                          }
                         },
                         "symmetry": "symmetric",
                         "provenance": {
@@ -104076,7 +105481,10 @@
                             }
                           },
                           "encoding": "utf8",
-                          "representation": "text"
+                          "representation": "text",
+                          "constraints": {
+                            "max_length": 1000
+                          }
                         },
                         "symmetry": "symmetric",
                         "provenance": {
@@ -104136,7 +105544,10 @@
                                   }
                                 },
                                 "encoding": "utf8",
-                                "representation": "text"
+                                "representation": "text",
+                                "constraints": {
+                                  "max_length": 5000
+                                }
                               }
                             }
                           ],
@@ -104170,6 +105581,9 @@
                             "signed": false,
                             "zigzag": false,
                             "endianness": "little"
+                          },
+                          "constraints": {
+                            "maximum": 4294967294
                           }
                         },
                         "symmetry": "symmetric",
@@ -104191,6 +105605,9 @@
                             "signed": false,
                             "zigzag": false,
                             "endianness": "little"
+                          },
+                          "constraints": {
+                            "maximum": 4294967294
                           }
                         },
                         "symmetry": "symmetric",
@@ -104228,7 +105645,11 @@
                             }
                           },
                           "encoding": "utf8",
-                          "representation": "text"
+                          "representation": "text",
+                          "constraints": {
+                            "min_length": 1,
+                            "max_length": 1000
+                          }
                         },
                         "symmetry": "symmetric",
                         "provenance": {
@@ -104254,7 +105675,11 @@
                             }
                           },
                           "encoding": "utf8",
-                          "representation": "text"
+                          "representation": "text",
+                          "constraints": {
+                            "min_length": 1,
+                            "max_length": 1000
+                          }
                         },
                         "symmetry": "symmetric",
                         "provenance": {
@@ -104275,6 +105700,9 @@
                             "signed": false,
                             "zigzag": false,
                             "endianness": "little"
+                          },
+                          "constraints": {
+                            "maximum": 4294967294
                           }
                         },
                         "symmetry": "symmetric",
@@ -104468,7 +105896,11 @@
                             }
                           },
                           "encoding": "utf8",
-                          "representation": "text"
+                          "representation": "text",
+                          "constraints": {
+                            "min_length": 1,
+                            "max_length": 1000
+                          }
                         },
                         "symmetry": "symmetric",
                         "provenance": {
@@ -104491,6 +105923,9 @@
                   "endianness": "none"
                 }
               }
+            },
+            "constraints": {
+              "max_items": 500
             }
           },
           "symmetry": "symmetric",
@@ -104610,6 +106045,9 @@
                 "zigzag": false,
                 "endianness": "little"
               }
+            },
+            "constraints": {
+              "max_properties": 255
             }
           },
           "symmetry": "symmetric",
@@ -104748,7 +106186,10 @@
               }
             },
             "encoding": "utf8",
-            "representation": "text"
+            "representation": "text",
+            "constraints": {
+              "max_length": 255
+            }
           },
           "symmetry": "symmetric",
           "provenance": {
@@ -104777,7 +106218,10 @@
                 }
               },
               "encoding": "utf8",
-              "representation": "text"
+              "representation": "text",
+              "constraints": {
+                "max_length": 255
+              }
             }
           },
           "symmetry": "symmetric",
@@ -105241,7 +106685,11 @@
                     }
                   },
                   "encoding": "utf8",
-                  "representation": "text"
+                  "representation": "text",
+                  "constraints": {
+                    "min_length": 1,
+                    "max_length": 1000
+                  }
                 },
                 "symmetry": "symmetric",
                 "provenance": {
@@ -105267,7 +106715,11 @@
                     }
                   },
                   "encoding": "utf8",
-                  "representation": "text"
+                  "representation": "text",
+                  "constraints": {
+                    "min_length": 1,
+                    "max_length": 1000
+                  }
                 },
                 "symmetry": "symmetric",
                 "provenance": {
@@ -105293,7 +106745,10 @@
                     }
                   },
                   "encoding": "utf8",
-                  "representation": "text"
+                  "representation": "text",
+                  "constraints": {
+                    "max_length": 1000
+                  }
                 },
                 "symmetry": "symmetric",
                 "provenance": {
@@ -105353,7 +106808,10 @@
                           }
                         },
                         "encoding": "utf8",
-                        "representation": "text"
+                        "representation": "text",
+                        "constraints": {
+                          "max_length": 5000
+                        }
                       }
                     }
                   ],
@@ -105387,6 +106845,9 @@
                     "signed": false,
                     "zigzag": false,
                     "endianness": "little"
+                  },
+                  "constraints": {
+                    "maximum": 4294967294
                   }
                 },
                 "symmetry": "symmetric",
@@ -105408,6 +106869,9 @@
                     "signed": false,
                     "zigzag": false,
                     "endianness": "little"
+                  },
+                  "constraints": {
+                    "maximum": 4294967294
                   }
                 },
                 "symmetry": "symmetric",
@@ -105451,7 +106915,10 @@
               }
             },
             "encoding": "utf8",
-            "representation": "text"
+            "representation": "text",
+            "constraints": {
+              "max_length": 500
+            }
           },
           "symmetry": "symmetric",
           "provenance": {
@@ -105473,6 +106940,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "little"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -105754,6 +107224,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -105776,6 +107249,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "none"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -105857,6 +107333,9 @@
                             "signed": false,
                             "zigzag": false,
                             "endianness": "none"
+                          },
+                          "constraints": {
+                            "maximum": 127
                           }
                         },
                         "symmetry": "symmetric",
@@ -105878,6 +107357,9 @@
                             "signed": false,
                             "zigzag": false,
                             "endianness": "none"
+                          },
+                          "constraints": {
+                            "maximum": 127
                           }
                         },
                         "symmetry": "symmetric",
@@ -105899,6 +107381,9 @@
                             "signed": false,
                             "zigzag": false,
                             "endianness": "none"
+                          },
+                          "constraints": {
+                            "maximum": 127
                           }
                         },
                         "symmetry": "symmetric",
@@ -105933,6 +107418,9 @@
                               "zigzag": false,
                               "endianness": "none"
                             }
+                          },
+                          "constraints": {
+                            "max_items": 256048
                           }
                         },
                         "symmetry": "symmetric",
@@ -105976,6 +107464,10 @@
                         "zigzag": false,
                         "endianness": "little"
                       }
+                    },
+                    "constraints": {
+                      "min_items": 1,
+                      "max_items": 128
                     }
                   },
                   "symmetry": "symmetric",
@@ -106010,6 +107502,10 @@
                         "zigzag": false,
                         "endianness": "little"
                       }
+                    },
+                    "constraints": {
+                      "min_items": 1,
+                      "max_items": 128
                     }
                   },
                   "symmetry": "symmetric",
@@ -106044,6 +107540,10 @@
                         "zigzag": false,
                         "endianness": "little"
                       }
+                    },
+                    "constraints": {
+                      "min_items": 1,
+                      "max_items": 128
                     }
                   },
                   "symmetry": "symmetric",
@@ -106145,6 +107645,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "little"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -106200,7 +107703,10 @@
                       }
                     },
                     "encoding": "utf8",
-                    "representation": "text"
+                    "representation": "text",
+                    "constraints": {
+                      "pattern": "^\\w+:\\w+$"
+                    }
                   },
                   "symmetry": "symmetric",
                   "provenance": {
@@ -106222,6 +107728,9 @@
                       "signed": false,
                       "zigzag": false,
                       "endianness": "little"
+                    },
+                    "constraints": {
+                      "minimum": 0
                     }
                   },
                   "symmetry": "symmetric",
@@ -106249,7 +107758,10 @@
                       }
                     },
                     "encoding": "utf8",
-                    "representation": "text"
+                    "representation": "text",
+                    "constraints": {
+                      "pattern": "^(?:catmullrom|linear)$"
+                    }
                   },
                   "symmetry": "symmetric",
                   "provenance": {
@@ -106405,6 +107917,10 @@
                               "signed": false,
                               "zigzag": false,
                               "endianness": "little"
+                            },
+                            "constraints": {
+                              "minimum": 0,
+                              "maximum": 1
                             }
                           },
                           "symmetry": "symmetric",
@@ -106427,6 +107943,9 @@
                               "signed": false,
                               "zigzag": false,
                               "endianness": "little"
+                            },
+                            "constraints": {
+                              "minimum": 0
                             }
                           },
                           "symmetry": "symmetric",
@@ -106593,6 +108112,9 @@
                               "signed": false,
                               "zigzag": false,
                               "endianness": "little"
+                            },
+                            "constraints": {
+                              "minimum": 0
                             }
                           },
                           "symmetry": "symmetric",
@@ -107321,6 +108843,9 @@
                   }
                 }
               ]
+            },
+            "constraints": {
+              "max_items": 40000
             }
           },
           "symmetry": "symmetric",
@@ -107373,7 +108898,10 @@
                       }
                     },
                     "encoding": "utf8",
-                    "representation": "text"
+                    "representation": "text",
+                    "constraints": {
+                      "max_length": 49
+                    }
                   },
                   "symmetry": "symmetric",
                   "provenance": {
@@ -107433,6 +108961,9 @@
               "signed": false,
               "zigzag": false,
               "endianness": "little"
+            },
+            "constraints": {
+              "minimum": 0
             }
           },
           "symmetry": "symmetric",
@@ -107584,6 +109115,9 @@
                               }
                             }
                           ]
+                        },
+                        "constraints": {
+                          "max_items": 256
                         }
                       },
                       "symmetry": "symmetric",
@@ -107663,7 +109197,10 @@
                                   }
                                 },
                                 "encoding": "utf8",
-                                "representation": "text"
+                                "representation": "text",
+                                "constraints": {
+                                  "max_length": 128
+                                }
                               },
                               "symmetry": "symmetric",
                               "provenance": {
@@ -107773,7 +109310,10 @@
                                           }
                                         },
                                         "encoding": "utf8",
-                                        "representation": "text"
+                                        "representation": "text",
+                                        "constraints": {
+                                          "max_length": 128
+                                        }
                                       },
                                       "symmetry": "symmetric",
                                       "provenance": {
@@ -107828,6 +109368,9 @@
                                       }
                                     }
                                   ]
+                                },
+                                "constraints": {
+                                  "max_items": 256
                                 }
                               },
                               "symmetry": "symmetric",
@@ -107838,6 +109381,9 @@
                               }
                             }
                           ]
+                        },
+                        "constraints": {
+                          "max_items": 256
                         }
                       },
                       "symmetry": "symmetric",
@@ -107938,7 +109484,10 @@
                                   }
                                 },
                                 "encoding": "utf8",
-                                "representation": "text"
+                                "representation": "text",
+                                "constraints": {
+                                  "max_length": 128
+                                }
                               },
                               "symmetry": "symmetric",
                               "provenance": {
@@ -107993,6 +109542,9 @@
                               }
                             }
                           ]
+                        },
+                        "constraints": {
+                          "max_items": 256
                         }
                       },
                       "symmetry": "symmetric",
@@ -108059,6 +109611,9 @@
                             "zigzag": false,
                             "endianness": "none"
                           }
+                        },
+                        "constraints": {
+                          "max_items": 256
                         }
                       },
                       "symmetry": "symmetric",
@@ -108157,7 +109712,10 @@
                                   }
                                 },
                                 "encoding": "utf8",
-                                "representation": "text"
+                                "representation": "text",
+                                "constraints": {
+                                  "max_length": 128
+                                }
                               },
                               "symmetry": "symmetric",
                               "provenance": {
@@ -108185,7 +109743,10 @@
                                     }
                                   },
                                   "encoding": "utf8",
-                                  "representation": "text"
+                                  "representation": "text",
+                                  "constraints": {
+                                    "max_length": 128
+                                  }
                                 }
                               },
                               "symmetry": "symmetric",
@@ -108374,7 +109935,10 @@
                                           }
                                         },
                                         "encoding": "utf8",
-                                        "representation": "text"
+                                        "representation": "text",
+                                        "constraints": {
+                                          "max_length": 128
+                                        }
                                       },
                                       "symmetry": "symmetric",
                                       "provenance": {
@@ -109256,6 +110820,9 @@
                                       }
                                     }
                                   ]
+                                },
+                                "constraints": {
+                                  "max_items": 1024
                                 }
                               },
                               "symmetry": "symmetric",
@@ -109266,6 +110833,9 @@
                               }
                             }
                           ]
+                        },
+                        "constraints": {
+                          "max_items": 512
                         }
                       },
                       "symmetry": "symmetric",
@@ -109303,7 +110873,10 @@
                           }
                         },
                         "encoding": "utf8",
-                        "representation": "text"
+                        "representation": "text",
+                        "constraints": {
+                          "max_length": 128
+                        }
                       },
                       "symmetry": "symmetric",
                       "provenance": {
@@ -109481,7 +111054,10 @@
                           }
                         },
                         "encoding": "utf8",
-                        "representation": "text"
+                        "representation": "text",
+                        "constraints": {
+                          "max_length": 128
+                        }
                       },
                       "symmetry": "symmetric",
                       "provenance": {
@@ -109567,7 +111143,10 @@
                                   }
                                 },
                                 "encoding": "utf8",
-                                "representation": "text"
+                                "representation": "text",
+                                "constraints": {
+                                  "max_length": 128
+                                }
                               },
                               "symmetry": "symmetric",
                               "provenance": {
@@ -110449,6 +112028,9 @@
                               }
                             }
                           ]
+                        },
+                        "constraints": {
+                          "max_items": 1024
                         }
                       },
                       "symmetry": "symmetric",
@@ -110486,7 +112068,10 @@
                           }
                         },
                         "encoding": "utf8",
-                        "representation": "text"
+                        "representation": "text",
+                        "constraints": {
+                          "max_length": 128
+                        }
                       },
                       "symmetry": "symmetric",
                       "provenance": {
@@ -110563,7 +112148,13 @@
                             }
                           },
                           "encoding": "utf8",
-                          "representation": "text"
+                          "representation": "text",
+                          "constraints": {
+                            "max_length": 128
+                          }
+                        },
+                        "constraints": {
+                          "max_items": 1024
                         }
                       },
                       "symmetry": "symmetric",
@@ -110722,7 +112313,10 @@
                         }
                       },
                       "encoding": "utf8",
-                      "representation": "text"
+                      "representation": "text",
+                      "constraints": {
+                        "max_length": 50
+                      }
                     }
                   },
                   "symmetry": "symmetric",
@@ -112299,7 +113893,10 @@
               }
             },
             "encoding": "utf8",
-            "representation": "text"
+            "representation": "text",
+            "constraints": {
+              "max_length": 2048
+            }
           },
           "symmetry": "symmetric",
           "provenance": {
@@ -112360,7 +113957,10 @@
               }
             },
             "encoding": "utf8",
-            "representation": "text"
+            "representation": "text",
+            "constraints": {
+              "max_length": 64
+            }
           },
           "symmetry": "symmetric",
           "provenance": {
@@ -112394,7 +113994,10 @@
               }
             },
             "encoding": "utf8",
-            "representation": "text"
+            "representation": "text",
+            "constraints": {
+              "max_length": 2048
+            }
           },
           "symmetry": "symmetric",
           "provenance": {

@@ -17,8 +17,8 @@ type ClientCacheBlobStatus struct {
 
 // Marshal reads or writes ClientCacheBlobStatus using its canonical wire layout.
 func (x *ClientCacheBlobStatus) Marshal(io protocol.IO) {
-	protocol.FuncSlice(io, &x.MissingIds, io.Varuint32, io.Uint64)
-	protocol.FuncSlice(io, &x.FoundIds, io.Varuint32, io.Uint64)
+	protocol.FuncSliceLimits(io, &x.MissingIds, io.Varuint32, 0, 4095, io.Uint64)
+	protocol.FuncSliceLimits(io, &x.FoundIds, io.Varuint32, 0, 4095, io.Uint64)
 }
 
 // ID returns the protocol ID for ClientCacheBlobStatus.

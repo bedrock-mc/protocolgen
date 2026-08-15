@@ -57,7 +57,9 @@ type IO interface {
 	PlayerInputTick(*uint64)
 
 	String(*string)
+	StringLimits(*string, uint64, uint64)
 	Bytes(*[]byte)
+	BytesLimits(*[]byte, uint64, uint64)
 	NBT(*[]byte, NBTEncoding)
 	UUID(*uuid.UUID)
 	UUIDBytes(*[16]byte)

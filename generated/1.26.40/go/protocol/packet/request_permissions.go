@@ -22,6 +22,7 @@ func (x *RequestPermissions) Marshal(io protocol.IO) {
 	io.Int64(&x.TargetPlayerIDSRawID)
 	io.Varint32(&x.PlayerPermissionLevel)
 	io.Uint16(&x.CustomPermissionFlags)
+	protocol.Minimum(io, &x.CustomPermissionFlags, 0)
 }
 
 // ID returns the protocol ID for RequestPermissions.

@@ -284,7 +284,11 @@ func (r *Reader) ActorUniqueIDVaruint64(x *uint64)  { r.Varuint64(x) }
 func (r *Reader) PlayerInputTick(x *uint64)         { r.Varuint64(x) }
 
 func (r *Reader) String(x *string) {
-	length, ok := r.readLength("string")
+	r.StringLimits(x, 0, ^uint64(0))
+}
+
+func (r *Reader) StringLimits(x *string, min, max uint64) {
+	length, ok := r.readLengthLimits("string", min, max)
 	if !ok {
 		return
 	}
@@ -292,7 +296,11 @@ func (r *Reader) String(x *string) {
 }
 
 func (r *Reader) Bytes(x *[]byte) {
-	length, ok := r.readLength("byte slice")
+	r.BytesLimits(x, 0, ^uint64(0))
+}
+
+func (r *Reader) BytesLimits(x *[]byte, min, max uint64) {
+	length, ok := r.readLengthLimits("byte slice", min, max)
 	if !ok {
 		return
 	}
@@ -304,6 +312,10 @@ func (r *Reader) Bytes(x *[]byte) {
 }
 
 func (r *Reader) readLength(context string) (int, bool) {
+	return r.readLengthLimits(context, 0, ^uint64(0))
+}
+
+func (r *Reader) readLengthLimits(context string, min, max uint64) (int, bool) {
 	var length uint32
 	r.Varuint32(&length)
 	if r.err != nil {
@@ -311,6 +323,10 @@ func (r *Reader) readLength(context string) (int, bool) {
 	}
 	if uint64(length) > uint64(^uint(0)>>1) {
 		r.InvalidValue(length, context+" length overflows int")
+		return 0, false
+	}
+	if uint64(length) < min || uint64(length) > max {
+		r.InvalidValue(length, context+" length outside schema limits")
 		return 0, false
 	}
 	return int(length), true

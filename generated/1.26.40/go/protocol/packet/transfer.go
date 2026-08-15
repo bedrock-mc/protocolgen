@@ -23,6 +23,7 @@ type Transfer struct {
 func (x *Transfer) Marshal(io protocol.IO) {
 	io.String(&x.ServerAddress)
 	io.Uint16(&x.ServerPort)
+	protocol.Minimum(io, &x.ServerPort, 0)
 	io.Bool(&x.ReloadWorld)
 	protocol.OptionalFunc(io, &x.GatheringsConfiguration, func(value *protocol.ServerConfigurationGatheringsConfigurationJoinInfo) {
 		value.Marshal(io)

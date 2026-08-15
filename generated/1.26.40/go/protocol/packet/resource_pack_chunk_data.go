@@ -25,7 +25,9 @@ type ResourcePackChunkData struct {
 func (x *ResourcePackChunkData) Marshal(io protocol.IO) {
 	io.String(&x.ResourceName)
 	io.Uint32(&x.ChunkID)
+	protocol.Minimum(io, &x.ChunkID, 0)
 	io.Uint64(&x.ByteOffset)
+	protocol.Minimum(io, &x.ByteOffset, 0)
 	io.Bytes(&x.ChunkData)
 }
 

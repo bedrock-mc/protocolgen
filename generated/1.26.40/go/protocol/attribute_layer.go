@@ -35,7 +35,7 @@ func (*AttributeLayerData) isAttributeLayerSyncData() {}
 
 // Marshal reads or writes AttributeLayerData using its canonical wire layout.
 func (x *AttributeLayerData) Marshal(io IO) {
-	Slice(io, &x.AttributeLayers)
+	SliceLimits(io, &x.AttributeLayers, 0, 512)
 }
 
 // AttributeLayerSettings represents settings for an attribute layer.
@@ -49,7 +49,7 @@ func (*AttributeLayerSettings) isAttributeLayerSyncData() {}
 
 // Marshal reads or writes AttributeLayerSettings using its canonical wire layout.
 func (x *AttributeLayerSettings) Marshal(io IO) {
-	io.String(&x.AttributeLayerName)
+	io.StringLimits(&x.AttributeLayerName, 0, 128)
 	x.AttributeLayerDimension.Marshal(io)
 	x.AttributesLayerSettings.Marshal(io)
 }
@@ -121,7 +121,7 @@ func (*EnvironmentAttributeData) isAttributeLayerSyncData() {}
 
 // Marshal reads or writes EnvironmentAttributeData using its canonical wire layout.
 func (x *EnvironmentAttributeData) Marshal(io IO) {
-	io.String(&x.AttributeLayerName)
+	io.StringLimits(&x.AttributeLayerName, 0, 128)
 	x.AttributeLayerDimension.Marshal(io)
-	Slice(io, &x.Attributes)
+	SliceLimits(io, &x.Attributes, 0, 1024)
 }

@@ -14,7 +14,7 @@ type SubChunkRequest struct {
 // Marshal reads or writes SubChunkRequest using its canonical wire layout.
 func (x *SubChunkRequest) Marshal(io protocol.IO) {
 	x.DimensionType.Marshal(io)
-	protocol.Slice(io, &x.SubChunkPositionOffsetList)
+	protocol.SliceLimits(io, &x.SubChunkPositionOffsetList, 0, 8192)
 	x.CenterPos.Marshal(io)
 }
 

@@ -26,11 +26,13 @@ type GraphicsOverrideParameter struct {
 
 // Marshal reads or writes GraphicsOverrideParameter using its canonical wire layout.
 func (x *GraphicsOverrideParameter) Marshal(io protocol.IO) {
-	protocol.OrderedMap(io, &x.ParameterKeyframeValues, io.Varuint32, io.Float32, io.Vec3)
+	protocol.OrderedMapLimits(io, &x.ParameterKeyframeValues, io.Varuint32, 0, 255, io.Float32, io.Vec3)
 	protocol.OptionalFunc(io, &x.FloatValue, io.Float32)
 	protocol.OptionalFunc(io, &x.Vec3Value, io.Vec3)
-	io.String(&x.BiomeIdentifier)
-	protocol.OptionalFunc(io, &x.PlayerIdentifier, io.String)
+	io.StringLimits(&x.BiomeIdentifier, 0, 255)
+	protocol.OptionalFunc(io, &x.PlayerIdentifier, func(value *string) {
+		io.StringLimits(value, 0, 255)
+	})
 	protocol.IntegerFunc(&x.IdentifierForParameter, io.Uint8)
 	io.Bool(&x.ResetParameter)
 }

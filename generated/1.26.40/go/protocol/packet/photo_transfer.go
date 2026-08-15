@@ -32,7 +32,8 @@ type PhotoTransfer struct {
 // Marshal reads or writes PhotoTransfer using its canonical wire layout.
 func (x *PhotoTransfer) Marshal(io protocol.IO) {
 	io.String(&x.PhotoName)
-	io.Bytes(&x.PhotoData)
+	protocol.Pattern(io, &x.PhotoName, "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.jpeg$")
+	io.BytesLimits(&x.PhotoData, 0, 20971520)
 	io.String(&x.BookID)
 	protocol.IntegerFunc(&x.Type, io.Uint8)
 	protocol.IntegerFunc(&x.SourceType, io.Uint8)

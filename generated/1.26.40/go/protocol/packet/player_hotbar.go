@@ -13,7 +13,10 @@ type PlayerHotbar struct {
 // Marshal reads or writes PlayerHotbar using its canonical wire layout.
 func (x *PlayerHotbar) Marshal(io protocol.IO) {
 	io.Varuint32(&x.SelectedSlot)
+	protocol.Minimum(io, &x.SelectedSlot, 0)
 	io.Uint8(&x.ContainerID)
+	protocol.Minimum(io, &x.ContainerID, 0)
+	protocol.Maximum(io, &x.ContainerID, 255)
 	io.Bool(&x.ShouldSelectSlot)
 }
 

@@ -18,7 +18,7 @@ func (x *SubChunk) Marshal(io protocol.IO) {
 	io.Bool(&x.CacheEnabled)
 	x.DimensionType.Marshal(io)
 	x.CenterPos.Marshal(io)
-	protocol.Slice(io, &x.SubChunkData)
+	protocol.SliceLimits(io, &x.SubChunkData, 0, 8192)
 }
 
 // ID returns the protocol ID for SubChunk.

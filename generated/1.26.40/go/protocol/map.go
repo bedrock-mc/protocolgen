@@ -24,8 +24,14 @@ type MapDecoration struct {
 func (x *MapDecoration) Marshal(io IO) {
 	IntegerFunc(&x.ImageType, io.Int8)
 	io.Uint8(&x.Rotation)
+	Minimum(io, &x.Rotation, 0)
+	Maximum(io, &x.Rotation, 255)
 	io.Uint8(&x.X)
+	Minimum(io, &x.X, 0)
+	Maximum(io, &x.X, 255)
 	io.Uint8(&x.Y)
+	Minimum(io, &x.Y, 0)
+	Maximum(io, &x.Y, 255)
 	io.String(&x.Label)
 	io.RGBA(&x.Color)
 }
