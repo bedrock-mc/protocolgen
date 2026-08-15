@@ -45,6 +45,7 @@ func reconcile(target manifest.Target, results []claims.Result, adjudications []
 	pins := map[string]manifest.SourcePin{}
 	allOverrides := map[string]manifest.OverrideProof{}
 	groups := map[fieldKey][]claims.Claim{}
+	claimSources := map[fieldKey]map[string]bool{}
 	packetMetadataByID := map[uint32]packetMetadata{}
 	for resultIndex, result := range results {
 		if result.Pin.ID == "" {
@@ -81,7 +82,15 @@ func reconcile(target manifest.Target, results []claims.Result, adjudications []
 			if claim.SourceID != result.Pin.ID {
 				return manifest.Manifest{}, fmt.Errorf("claim %s has source %q but result is %q", claim.FieldPath, claim.SourceID, result.Pin.ID)
 			}
-			groups[fieldKey{PacketID: claim.PacketID, Ordinal: claim.Ordinal}] = append(groups[fieldKey{PacketID: claim.PacketID, Ordinal: claim.Ordinal}], claim)
+			key := fieldKey{PacketID: claim.PacketID, Ordinal: claim.Ordinal}
+			if claimSources[key] == nil {
+				claimSources[key] = map[string]bool{}
+			}
+			if claimSources[key][claim.SourceID] {
+				return manifest.Manifest{}, fmt.Errorf("source %q supplied duplicate claims for %s", claim.SourceID, claim.FieldPath)
+			}
+			claimSources[key][claim.SourceID] = true
+			groups[key] = append(groups[key], claim)
 		}
 		for _, proof := range result.Overrides {
 			if old, ok := allOverrides[proof.ID]; ok && !reflect.DeepEqual(old, proof) {
@@ -686,6 +695,9 @@ func matchClaimFingerprints(adjudication manifest.Adjudication, group []claims.C
 	}
 	got := map[string]string{}
 	for _, claim := range adjudication.Claims {
+		if _, exists := got[claim.SourceID]; exists {
+			return fmt.Errorf("duplicate fingerprint for source %q", claim.SourceID)
+		}
 		got[claim.SourceID] = claim.Digest
 	}
 	if !reflect.DeepEqual(want, got) {

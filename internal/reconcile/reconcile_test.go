@@ -33,7 +33,7 @@ func TestReconcileRejectsStaleAdjudicationFingerprint(t *testing.T) {
 	adj := manifest.Adjudication{
 		ID: "choose-endstone", Target: left.FieldPath, PrePatchContextSHA256: context,
 		Claims:         []manifest.ClaimFingerprint{{SourceID: "endstone", Digest: mustFingerprint(t, testClaim("endstone", manifest.Primitive("u8")))}, {SourceID: "mojang", Digest: mustFingerprint(t, right)}},
-		SelectedSource: "endstone", Evidence: []manifest.Evidence{{SourceID: "endstone", Locator: "fixture/evidence"}}, Reason: "fixture evidence",
+		SelectedSource: "endstone", Evidence: []manifest.Evidence{{SourceID: "endstone", Locator: "https://github.com/example/wire-oracle/blob/rev/capture.bin"}}, Reason: "fixture evidence",
 	}
 	_, err = Reconcile(target, []claims.Result{{Pin: sourcePin("endstone"), Target: target, Claims: []claims.Claim{left}}, {Pin: sourcePin("mojang"), Target: target, Claims: []claims.Claim{right}}}, []manifest.Adjudication{adj})
 	if err == nil || !strings.Contains(err.Error(), "stale") {
@@ -164,7 +164,7 @@ func TestReconcileAcceptsFingerprintedSingletonWithIndependentEvidence(t *testin
 		ID: "confirm-singleton", Target: claim.FieldPath, PrePatchContextSHA256: context,
 		Claims:         []manifest.ClaimFingerprint{{SourceID: claim.SourceID, Digest: mustFingerprint(t, claim)}},
 		SelectedSource: claim.SourceID,
-		Evidence:       []manifest.Evidence{{SourceID: claim.SourceID, Locator: "fixture/independent-wire-capture"}},
+		Evidence:       []manifest.Evidence{{SourceID: claim.SourceID, Locator: "https://github.com/example/wire-oracle/blob/rev/capture.bin"}},
 		Reason:         "an independent wire capture confirms the only available source claim",
 	}
 	m, err := Reconcile(target, []claims.Result{{Pin: sourcePin("endstone"), Target: target, Claims: []claims.Claim{claim}}}, []manifest.Adjudication{adjudication})
@@ -190,6 +190,17 @@ func TestReconcileReportsEveryProvenanceGap(t *testing.T) {
 	}}, nil)
 	if err == nil || !strings.Contains(err.Error(), "2 provenance gap(s)") || !strings.Contains(err.Error(), first.FieldPath) || !strings.Contains(err.Error(), second.FieldPath) {
 		t.Fatalf("Reconcile error = %v, want both provenance gaps", err)
+	}
+}
+
+func TestReconcileRejectsDuplicateClaimsFromOneSource(t *testing.T) {
+	target := manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}
+	claim := testClaim("endstone", manifest.Primitive("u8"))
+	_, err := Reconcile(target, []claims.Result{{
+		Pin: sourcePin("endstone"), Target: target, Claims: []claims.Claim{claim, claim},
+	}}, nil)
+	if err == nil || !strings.Contains(err.Error(), "duplicate claims") {
+		t.Fatalf("Reconcile error = %v, want duplicate same-source rejection", err)
 	}
 }
 
@@ -236,7 +247,7 @@ func testClaim(sourceID string, node manifest.Node) claims.Claim {
 }
 
 func sourcePin(id string) manifest.SourcePin {
-	return manifest.SourcePin{ID: id, Kind: id, Revision: "fixture-2168", Digest: "sha256:" + id, MinecraftVersion: "fixture", ProtocolVersion: 2168}
+	return manifest.SourcePin{ID: id, Kind: id, Revision: "fixture-2168", Digest: "sha256:" + id, Locator: "https://github.com/example/" + id + "-docs/tree/rev", MinecraftVersion: "fixture", ProtocolVersion: 2168}
 }
 
 func mustFingerprint(t *testing.T, claim claims.Claim) string {

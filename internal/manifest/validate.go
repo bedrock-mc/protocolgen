@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"reflect"
 	"sort"
+	"strings"
 )
 
 func Validate(m Manifest) error {
@@ -345,6 +347,10 @@ func validateProvenance(provenance Provenance, sourceIDs map[string]bool, path s
 
 func validateAdjudications(m Manifest, sourceIDs map[string]bool) error {
 	seen := map[string]bool{}
+	sourceRepositories := map[string]string{}
+	for _, source := range m.Sources {
+		sourceRepositories[source.ID] = repositoryIdentity(source.Locator)
+	}
 	for i, adjudication := range m.Adjudications {
 		if adjudication.ID == "" || adjudication.Target == "" || adjudication.PrePatchContextSHA256 == "" || adjudication.SelectedSource == "" || adjudication.Reason == "" {
 			return fmt.Errorf("adjudications[%d] is incomplete", i)
@@ -359,16 +365,48 @@ func validateAdjudications(m Manifest, sourceIDs map[string]bool) error {
 		if len(adjudication.Claims) == 0 {
 			return fmt.Errorf("adjudication %q must fingerprint every available source claim", adjudication.ID)
 		}
+		claimSources := map[string]bool{}
 		for _, claim := range adjudication.Claims {
 			if claim.Digest == "" || !sourceIDs[claim.SourceID] {
 				return fmt.Errorf("adjudication %q contains an incomplete claim fingerprint", adjudication.ID)
 			}
+			if claimSources[claim.SourceID] {
+				return fmt.Errorf("adjudication %q fingerprints source %q more than once", adjudication.ID, claim.SourceID)
+			}
+			claimSources[claim.SourceID] = true
 		}
 		if len(adjudication.Evidence) == 0 {
 			return fmt.Errorf("adjudication %q has no cited evidence", adjudication.ID)
 		}
+		selectedRepository := sourceRepositories[adjudication.SelectedSource]
+		independent := false
+		for _, evidence := range adjudication.Evidence {
+			evidenceRepository := repositoryIdentity(evidence.Locator)
+			if evidenceRepository != "" && evidenceRepository != selectedRepository {
+				independent = true
+			}
+		}
+		if selectedRepository == "" || !independent {
+			return fmt.Errorf("adjudication %q has no evidence independent of selected source %q", adjudication.ID, adjudication.SelectedSource)
+		}
 	}
 	return nil
+}
+
+func repositoryIdentity(locator string) string {
+	parsed, err := url.Parse(locator)
+	if err != nil || parsed.Host == "" {
+		return ""
+	}
+	host := strings.ToLower(parsed.Hostname())
+	segments := strings.Split(strings.Trim(parsed.Path, "/"), "/")
+	if host == "github.com" && len(segments) >= 2 {
+		return host + "/" + strings.ToLower(segments[0]) + "/" + strings.TrimSuffix(strings.ToLower(segments[1]), ".git")
+	}
+	if len(segments) != 0 && segments[0] != "" {
+		return host + "/" + strings.ToLower(segments[0])
+	}
+	return host
 }
 
 func validateOverrides(m Manifest, sourceIDs map[string]bool) error {

@@ -128,3 +128,46 @@ func TestValidateRejectsMixedProtocolTargetSources(t *testing.T) {
 		t.Fatalf("Validate error = %v, want mixed-source failure", err)
 	}
 }
+
+func TestValidateRequiresIndependentAdjudicationEvidence(t *testing.T) {
+	value := adjudicatedFixture()
+	value.Adjudications[0].Evidence[0].Locator = "https://github.com/example/endstone-docs/blob/rev/status.json"
+	if err := Validate(value); err == nil || !strings.Contains(err.Error(), "no evidence independent") {
+		t.Fatalf("Validate error = %v, want same-repository evidence rejection", err)
+	}
+
+	value.Adjudications[0].Evidence[0].Locator = "https://github.com/example/wire-oracle/blob/rev/capture.bin"
+	if err := Validate(value); err != nil {
+		t.Fatalf("Validate independent evidence: %v", err)
+	}
+}
+
+func TestValidateRejectsDuplicateAdjudicationFingerprints(t *testing.T) {
+	value := adjudicatedFixture()
+	value.Adjudications[0].Claims = append(value.Adjudications[0].Claims, value.Adjudications[0].Claims[0])
+	if err := Validate(value); err == nil || !strings.Contains(err.Error(), "more than once") {
+		t.Fatalf("Validate error = %v, want duplicate fingerprint rejection", err)
+	}
+}
+
+func adjudicatedFixture() Manifest {
+	return Manifest{
+		SchemaVersion: SchemaVersion,
+		Target:        Target{MinecraftVersion: "fixture", ProtocolVersion: 2168},
+		Sources: []SourcePin{
+			{ID: "endstone", Kind: "endstone", Revision: "rev", Digest: "sha256:endstone", Locator: "https://github.com/example/endstone-docs/tree/rev"},
+			{ID: "mojang", Kind: "mojang", Revision: "rev", Digest: "sha256:mojang", Locator: "https://github.com/example/mojang-docs/tree/rev"},
+		},
+		Packets: []Packet{{ID: 1, Name: "Packet", Direction: DirectionClientbound, Fields: []Field{{
+			Ordinal: 0, Name: "Value", Encode: Primitive("u8"), Symmetry: Symmetric,
+			Provenance: Provenance{Pins: []string{"endstone"}, Evidence: []Evidence{{SourceID: "endstone", Locator: "https://github.com/example/wire-oracle/blob/rev/capture.bin"}}},
+		}}}},
+		Adjudications: []Adjudication{{
+			ID: "choose-endstone", Target: "Packet.Value", PrePatchContextSHA256: "sha256:context",
+			Claims:         []ClaimFingerprint{{SourceID: "endstone", Digest: "sha256:endstone-claim"}, {SourceID: "mojang", Digest: "sha256:mojang-claim"}},
+			SelectedSource: "endstone",
+			Evidence:       []Evidence{{SourceID: "endstone", Locator: "https://github.com/example/wire-oracle/blob/rev/capture.bin"}},
+			Reason:         "independent wire evidence selects the Endstone shape",
+		}},
+	}
+}
