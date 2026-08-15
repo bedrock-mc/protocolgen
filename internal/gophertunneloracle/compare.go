@@ -38,7 +38,7 @@ func CompareFile(options Options) (Report, error) {
 	if err != nil {
 		return Report{}, err
 	}
-	extracted, err := Extract(checkout)
+	extracted, err := ExtractAtRevision(checkout, lock.Gophertunnel.Commit)
 	if err != nil {
 		return Report{}, err
 	}
@@ -87,10 +87,17 @@ func Compare(canonical manifest.Manifest, source extraction, lock Lock, accepted
 			continue
 		}
 		result.GophertunnelName = oracle.Name
-		want, wantReasons := canonicalAtoms(packet)
-		got, gotReasons := sourceAtoms(oracle)
-		reasons := append([]string{}, wantReasons...)
-		reasons = append(reasons, gotReasons...)
+		wantPaths := canonicalPacketPaths(packet)
+		gotPaths := sourcePacketPaths(oracle)
+		pathResults, reasons, divergent := comparePaths(wantPaths, gotPaths)
+		result.Paths = pathResults
+		if onlyPathExpansionReasons(reasons) && symbolicAgreement(packet, oracle) {
+			result.Classification = "AGREEMENT"
+			result.Paths = []PathResult{{Classification: "AGREEMENT", Reasons: []string{"wire-language comparison proved agreement without enumerating the cartesian path product"}}}
+			report.Counts.Agreement++
+			report.Packets = append(report.Packets, result)
+			continue
+		}
 		if len(reasons) > 0 {
 			result.Classification = "UNRESOLVED"
 			result.Reasons = uniqueStrings(reasons)
@@ -98,19 +105,30 @@ func Compare(canonical manifest.Manifest, source extraction, lock Lock, accepted
 			report.Packets = append(report.Packets, result)
 			continue
 		}
-		wantWire := normalizeFixedArrayGrouping(want)
-		gotWire := normalizeFixedArrayGrouping(got)
-		if atomsEqual(wantWire, gotWire) {
+		if !divergent {
 			result.Classification = "AGREEMENT"
-			result.OperationCount = len(wantWire)
+			if len(wantPaths) == 1 {
+				result.OperationCount = len(normalizeFixedArrayGrouping(wantPaths[0].Atoms))
+			}
 			report.Counts.Agreement++
 			report.Packets = append(report.Packets, result)
 			continue
 		}
 		result.Classification = "DIVERGENCE"
-		result.ManifestSequence = atomDisplays(want)
-		result.GophertunnelSequence = atomDisplays(got)
-		result.Differences = differences(want, got)
+		if len(wantPaths) > 0 {
+			result.ManifestSequence = atomDisplays(wantPaths[0].Atoms)
+		}
+		if len(gotPaths) > 0 {
+			result.GophertunnelSequence = atomDisplays(gotPaths[0].Atoms)
+		}
+		if len(result.Paths) > 0 {
+			for _, path := range result.Paths {
+				if path.Classification == "DIVERGENCE" {
+					result.Differences = path.Differences
+					break
+				}
+			}
+		}
 		report.Counts.Divergence++
 		if _, accepted := acceptedByID[packet.ID]; accepted {
 			report.Accepted = append(report.Accepted, packet.ID)
@@ -135,6 +153,121 @@ func Compare(canonical manifest.Manifest, source extraction, lock Lock, accepted
 	sortIDs(report.Unaccepted)
 	sortIDs(report.ResolvedAccepted)
 	return report
+}
+
+func onlyPathExpansionReasons(reasons []string) bool {
+	if len(reasons) == 0 {
+		return false
+	}
+	for _, reason := range reasons {
+		if !strings.Contains(reason, "control-flow path expansion exceeds limit") {
+			return false
+		}
+	}
+	return true
+}
+
+func comparePaths(want, got []wirePath) ([]PathResult, []string, bool) {
+	want = uniqueWirePaths(want)
+	got = uniqueWirePaths(got)
+	var results []PathResult
+	var reasons []string
+	divergent := false
+	matchedGot := make(map[string]bool, len(got))
+	for _, expected := range want {
+		if len(expected.Reasons) > 0 {
+			results = append(results, PathResult{Classification: "UNRESOLVED", ManifestConstraint: expected.Constraint, Reasons: expected.Reasons, ManifestSequence: atomDisplays(expected.Atoms)})
+			reasons = append(reasons, expected.Reasons...)
+			continue
+		}
+		key := pathShapeKey(expected.Atoms)
+		match := -1
+		for index, actual := range got {
+			if len(actual.Reasons) == 0 && pathShapeKey(actual.Atoms) == key {
+				match = index
+				break
+			}
+		}
+		if match >= 0 {
+			matchedGot[key] = true
+			results = append(results, PathResult{Classification: "AGREEMENT", ManifestConstraint: expected.Constraint, GophertunnelConstraint: got[match].Constraint})
+			continue
+		}
+		actual := closestWirePath(expected, got)
+		path := PathResult{Classification: "DIVERGENCE", ManifestConstraint: expected.Constraint, ManifestSequence: atomDisplays(expected.Atoms)}
+		if actual != nil {
+			path.GophertunnelConstraint = actual.Constraint
+			path.GophertunnelSite = firstAtomSite(actual.Atoms)
+			path.GophertunnelSequence = atomDisplays(actual.Atoms)
+			path.Differences = differences(expected.Atoms, actual.Atoms)
+		}
+		results = append(results, path)
+		divergent = true
+	}
+	for _, actual := range got {
+		if len(actual.Reasons) > 0 {
+			reasons = append(reasons, actual.Reasons...)
+			results = append(results, PathResult{Classification: "UNRESOLVED", GophertunnelConstraint: actual.Constraint, GophertunnelSite: firstAtomSite(actual.Atoms), Reasons: actual.Reasons, GophertunnelSequence: atomDisplays(actual.Atoms)})
+			continue
+		}
+		key := pathShapeKey(actual.Atoms)
+		if matchedGot[key] {
+			continue
+		}
+		found := false
+		for _, expected := range want {
+			if len(expected.Reasons) == 0 && pathShapeKey(expected.Atoms) == key {
+				found = true
+				break
+			}
+		}
+		if !found {
+			results = append(results, PathResult{Classification: "DIVERGENCE", GophertunnelConstraint: actual.Constraint, GophertunnelSite: firstAtomSite(actual.Atoms), GophertunnelSequence: atomDisplays(actual.Atoms)})
+			divergent = true
+		}
+	}
+	return results, uniqueStrings(reasons), divergent
+}
+
+func uniqueWirePaths(paths []wirePath) []wirePath {
+	seen := make(map[string]bool, len(paths))
+	result := make([]wirePath, 0, len(paths))
+	for _, path := range paths {
+		key := pathShapeKey(path.Atoms) + "\x00" + strings.Join(path.Reasons, "\x00")
+		if seen[key] {
+			continue
+		}
+		seen[key] = true
+		result = append(result, path)
+	}
+	return result
+}
+
+func pathShapeKey(atoms []atom) string {
+	atoms = normalizeFixedArrayGrouping(atoms)
+	parts := make([]string, len(atoms))
+	for index, current := range atoms {
+		parts[index] = current.Token
+	}
+	return strings.Join(parts, "\x00")
+}
+
+func closestWirePath(want wirePath, candidates []wirePath) *wirePath {
+	if len(candidates) == 0 {
+		return nil
+	}
+	best := 0
+	bestDistance := len(want.Atoms) + len(candidates[0].Atoms)
+	for index := range candidates {
+		if len(candidates[index].Reasons) > 0 {
+			continue
+		}
+		distance := len(differences(want.Atoms, candidates[index].Atoms))
+		if distance < bestDistance {
+			best, bestDistance = index, distance
+		}
+	}
+	return &candidates[best]
 }
 
 func defaultNormalization() Normalization {
@@ -336,6 +469,8 @@ func sourceOperationAtoms(operation sourceOperation) ([]atom, []string) {
 		return []atom{{Token: "LEN:" + canonicalPrimitive(operation.Prefix), Field: path, Display: operation.Kind + "(prefix=" + operation.Prefix + ")"}}, nil
 	case "uuid":
 		return []atom{{Token: "UUID16", Field: path, Display: "uuid(16 bytes)"}}, nil
+	case "variant_marker":
+		return []atom{{Token: fmt.Sprintf("VARIANT:%d", operation.VariantValue), Field: path, Display: fmt.Sprintf("variant(%d)", operation.VariantValue)}}, nil
 	case "bitset":
 		if operation.Length == 0 {
 			return nil, []string{"gophertunnel: bitset at " + path + " has no static length"}
@@ -384,7 +519,10 @@ func sourceOperationAtoms(operation sourceOperation) ([]atom, []string) {
 		result = append(result, atom{Token: "/OPTION", Field: path, Display: "/option"})
 		return result, reasons
 	case "union":
-		result := []atom{{Token: "UNION:" + canonicalPrimitive(operation.Control), Field: path, Display: "union(control=" + operation.Control + ")"}}
+		var result []atom
+		if operation.Control != "" {
+			result = append(result, atom{Token: "UNION:" + canonicalPrimitive(operation.Control), Field: path, Display: "union(control=" + operation.Control + ")"})
+		}
 		variants := append([]sourceVariant(nil), operation.Variants...)
 		sort.SliceStable(variants, func(i, j int) bool { return variants[i].Value < variants[j].Value })
 		var reasons []string
@@ -535,6 +673,15 @@ func atomDisplays(atoms []atom) []string {
 		result[index] = current.Display
 	}
 	return result
+}
+
+func firstAtomSite(atoms []atom) string {
+	for _, current := range atoms {
+		if current.Site != "" {
+			return current.Site
+		}
+	}
+	return ""
 }
 
 func differences(left, right []atom) []Difference {

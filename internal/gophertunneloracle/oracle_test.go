@@ -151,6 +151,229 @@ func (pk *Fixture) Marshal(io protocol.IO) {
 	}
 }
 
+func TestExtractBuildsFinitePathsForSwitchAndConditional(t *testing.T) {
+	root := t.TempDir()
+	packetDir := filepath.Join(root, "minecraft", "protocol", "packet")
+	if err := os.MkdirAll(packetDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	idSource := `package packet
+const (
+	IDFixture = iota + 1
+	ModeA = 1
+	ModeB = 2
+)
+`
+	packetSource := `package packet
+import "github.com/sandertv/gophertunnel/minecraft/protocol"
+type Fixture struct { Mode uint8; Flag bool; Value uint16 }
+func (*Fixture) ID() uint32 { return IDFixture }
+func (pk *Fixture) Marshal(io protocol.IO) {
+	io.Uint8(&pk.Mode)
+	switch pk.Mode {
+	case ModeA:
+		io.Uint16(&pk.Value)
+	case ModeB:
+		io.Bool(&pk.Flag)
+	}
+	if pk.Flag {
+		io.Uint16(&pk.Value)
+	}
+}
+`
+	if err := os.WriteFile(filepath.Join(packetDir, "id.go"), []byte(idSource), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(packetDir, "fixture.go"), []byte(packetSource), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	result, err := Extract(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(result.Packets) != 1 {
+		t.Fatalf("packets = %#v", result.Packets)
+	}
+	packet := result.Packets[0]
+	if len(packet.Paths) != 4 {
+		t.Fatalf("paths = %#v, want switch x if path expansion", packet.Paths)
+	}
+	for _, path := range packet.Paths {
+		if len(path.Constraints) == 0 || len(path.Operations) == 0 {
+			t.Fatalf("path lost control-flow metadata: %#v", path)
+		}
+	}
+}
+
+func TestExtractFollowsStaticallyResolvableLocalWireCall(t *testing.T) {
+	root := t.TempDir()
+	packetDir := filepath.Join(root, "minecraft", "protocol", "packet")
+	if err := os.MkdirAll(packetDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	idSource := `package packet
+const IDFixture = 1
+`
+	packetSource := `package packet
+import "github.com/sandertv/gophertunnel/minecraft/protocol"
+type Fixture struct { Value uint16 }
+func (*Fixture) ID() uint32 { return IDFixture }
+func encodeValue(io protocol.IO, value *uint16) { io.Uint16(value) }
+func (pk *Fixture) Marshal(io protocol.IO) { encodeValue(io, &pk.Value) }
+`
+	if err := os.WriteFile(filepath.Join(packetDir, "id.go"), []byte(idSource), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(packetDir, "fixture.go"), []byte(packetSource), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	result, err := Extract(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(result.Packets) != 1 || len(result.Packets[0].Operations) != 1 {
+		t.Fatalf("packets = %#v", result.Packets)
+	}
+	operation := result.Packets[0].Operations[0]
+	if operation.Kind != "primitive" || operation.Code != "u16le" {
+		t.Fatalf("operation = %#v, want resolved local call", operation)
+	}
+}
+
+func TestExtractTraversesNestedFunctionLiteral(t *testing.T) {
+	root := t.TempDir()
+	packetDir := filepath.Join(root, "minecraft", "protocol", "packet")
+	if err := os.MkdirAll(packetDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(packetDir, "fixture.go"), []byte(`package packet
+import "github.com/sandertv/gophertunnel/minecraft/protocol"
+const IDFixture = 1
+type Fixture struct { Value uint16 }
+func (*Fixture) ID() uint32 { return IDFixture }
+func (pk *Fixture) Marshal(io protocol.IO) {
+	encode := func() { io.Uint16(&pk.Value) }
+	encode()
+}
+`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	result, err := Extract(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(result.Packets) != 1 || len(result.Packets[0].Operations) != 1 || result.Packets[0].Operations[0].Code != "u16le" {
+		t.Fatalf("operations = %#v, want nested function wire operation", result.Packets)
+	}
+}
+
+func TestComparePreservesExactUnionVariantValues(t *testing.T) {
+	union := manifest.Union(
+		manifest.Primitive("var_u32"),
+		manifest.Variant{Value: 0, Name: "Zero", Encode: manifest.Void()},
+		manifest.Variant{Value: 1, Name: "One", Encode: manifest.Void()},
+	)
+	m := fixtureManifest(union)
+	operations := []sourceOperation{
+		{Kind: "primitive", Code: "var_u32"},
+		{Kind: "switch", CompareTo: "Field", Variants: []sourceVariant{
+			{Values: []int64{0}},
+			{Values: []int64{2}},
+		}},
+	}
+	source := extraction{Packets: []sourcePacket{{ID: 1, Name: "Fixture", Operations: operations, Paths: expandSourcePaths(operations)}}}
+	report := Compare(m, source, fixtureLock(), emptyAccepted(), "manifest.json")
+	if report.Counts.Divergence != 1 || report.Counts.Agreement != 0 {
+		t.Fatalf("counts = %#v, packets = %#v", report.Counts, report.Packets)
+	}
+	if len(report.Packets[0].Paths) == 0 || report.Packets[0].Paths[0].ManifestConstraint == "" {
+		t.Fatalf("variant path evidence missing: %#v", report.Packets[0])
+	}
+}
+
+func TestSymbolicComparisonAvoidsOptionalCartesianProduct(t *testing.T) {
+	fields := make([]manifest.Node, 6)
+	operations := make([]sourceOperation, 0, len(fields))
+	for index := range fields {
+		fields[index] = manifest.Optional(manifest.Union(
+			manifest.Primitive("var_u32"),
+			manifest.Variant{Value: 0, Name: "Zero", Encode: manifest.Primitive("u8")},
+			manifest.Variant{Value: 1, Name: "One", Encode: manifest.Primitive("u8")},
+		))
+		operations = append(operations, sourceOperation{Kind: "optional", Field: "Field", Presence: "bool", Value: []sourceOperation{
+			{Kind: "primitive", Code: "var_u32"},
+			{Kind: "union", Control: "", Variants: []sourceVariant{
+				{Value: 0, Ops: []sourceOperation{{Kind: "primitive", Code: "u8"}}},
+				{Value: 1, Ops: []sourceOperation{{Kind: "primitive", Code: "u8"}}},
+			}},
+		}})
+	}
+	m := fixtureManifest(fields...)
+	source := extraction{Packets: []sourcePacket{{ID: 1, Name: "Fixture", Operations: operations, Paths: expandSourcePaths(operations)}}}
+	if len(source.Packets[0].Paths) != 1 {
+		t.Fatalf("fixture should hit the bounded path product: %d paths", len(source.Packets[0].Paths))
+	}
+	report := Compare(m, source, fixtureLock(), emptyAccepted(), "manifest.json")
+	if report.Counts.Agreement != 1 || report.Counts.Unresolved != 0 {
+		t.Fatalf("counts = %#v, packets = %#v", report.Counts, report.Packets)
+	}
+}
+
+func TestExternalLengthIsCoalescedWithTheFollowingArray(t *testing.T) {
+	atoms, reasons := sourcePathAtoms(sourcePath{Operations: []sourceOperation{
+		{Kind: "primitive", Code: "u32le"},
+		{Kind: "array", Prefix: "u32le", ConsumesPrefix: true, Element: []sourceOperation{{Kind: "primitive", Code: "u8"}}},
+	}})
+	if len(reasons) != 0 || len(atoms) != 1 || atoms[0].Token != "LEN:FIXED32LE" {
+		t.Fatalf("external length was not coalesced: atoms=%#v reasons=%#v", atoms, reasons)
+	}
+}
+
+func TestReviewedHelperRequiresPinnedRevision(t *testing.T) {
+	root := t.TempDir()
+	protocolDir := filepath.Join(root, "minecraft", "protocol")
+	packetDir := filepath.Join(protocolDir, "packet")
+	if err := os.MkdirAll(packetDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(protocolDir, "writer.go"), []byte(`package protocol
+type IO interface{}
+type Color struct{}
+type Writer struct{}
+func (w *Writer) Float32(*float32) {}
+func (w *Writer) RGB(x *Color) { var value float32; w.Float32(&value); w.Float32(&value); w.Float32(&value) }
+`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(packetDir, "fixture.go"), []byte(`package packet
+import "example/protocol"
+const IDFixture = 1
+type Fixture struct { Value uint32 }
+func (*Fixture) ID() uint32 { return IDFixture }
+func (pk *Fixture) Marshal(io protocol.IO) { io.RGB(nil) }
+`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	unpinned, err := ExtractAtRevision(root, "1111111111111111111111111111111111111111")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(unpinned.Packets) != 1 || len(unpinned.Packets[0].Operations) != 1 || unpinned.Packets[0].Operations[0].Kind != "unresolved" {
+		t.Fatalf("unpinned helper was admitted: %#v", unpinned.Packets)
+	}
+	pinned, err := ExtractAtRevision(root, reviewedHelperRevision)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(pinned.Packets) != 1 || len(pinned.Packets[0].Operations) != 3 || pinned.Packets[0].Operations[0].Code != "f32le" {
+		t.Fatalf("pinned helper was not expanded: %#v", pinned.Packets)
+	}
+}
+
+func emptyAccepted() AcceptedFile {
+	return AcceptedFile{SchemaVersion: AcceptedSchemaVersion, MinecraftVersion: "1.26.40", ProtocolVersion: 2168}
+}
+
 func TestLoadAcceptedRequiresEvidence(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "accepted.json")
 	data := `{"schema_version":1,"minecraft_version":"1.26.40","protocol_version":2168,"divergences":[{"id":1,"name":"P","reason":"reviewed","what_would_settle_it":"capture","evidence":[]}]}`

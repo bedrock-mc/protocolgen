@@ -119,6 +119,18 @@ type PacketResult struct {
 	ManifestSequence     []string     `json:"manifest_sequence,omitempty"`
 	GophertunnelSequence []string     `json:"gophertunnel_sequence,omitempty"`
 	Differences          []Difference `json:"differences,omitempty"`
+	Paths                []PathResult `json:"paths,omitempty"`
+}
+
+type PathResult struct {
+	Classification         string       `json:"classification"`
+	ManifestConstraint     string       `json:"manifest_constraint,omitempty"`
+	GophertunnelConstraint string       `json:"gophertunnel_constraint,omitempty"`
+	GophertunnelSite       string       `json:"gophertunnel_site,omitempty"`
+	Reasons                []string     `json:"reasons,omitempty"`
+	ManifestSequence       []string     `json:"manifest_sequence,omitempty"`
+	GophertunnelSequence   []string     `json:"gophertunnel_sequence,omitempty"`
+	Differences            []Difference `json:"differences,omitempty"`
 }
 
 type Difference struct {
@@ -133,38 +145,55 @@ type atom struct {
 	Token   string
 	Field   string
 	Display string
+	Site    string
 }
 
 // sourceOperation is the extractor's tree-shaped intermediate form. Keeping
 // structure until comparison is what lets fixed arrays, option presence, and
 // union discriminants remain visible.
 type sourceOperation struct {
-	Kind     string
-	Field    string
-	Code     string
-	Prefix   string
-	Encoding string
-	Presence string
-	Length   uint64
-	Control  string
-	Element  []sourceOperation
-	Value    []sourceOperation
-	Variants []sourceVariant
-	Reason   string
-	Site     string
-	TypeName string
+	Kind           string
+	Field          string
+	Code           string
+	Prefix         string
+	Encoding       string
+	Presence       string
+	Length         uint64
+	Control        string
+	CompareTo      string
+	Predicate      string
+	ConsumesPrefix bool
+	Element        []sourceOperation
+	Value          []sourceOperation
+	Variants       []sourceVariant
+	Default        []sourceOperation
+	HasDefault     bool
+	VariantValue   int64
+	Reason         string
+	Site           string
+	TypeName       string
 }
 
 type sourceVariant struct {
-	Value uint64
-	Name  string
-	Ops   []sourceOperation
+	Value      int64
+	Values     []int64
+	Name       string
+	Constraint string
+	Site       string
+	Ops        []sourceOperation
+}
+
+type sourcePath struct {
+	Constraints []string
+	Operations  []sourceOperation
+	Reasons     []string
 }
 
 type sourcePacket struct {
 	ID         uint32
 	Name       string
 	Operations []sourceOperation
+	Paths      []sourcePath
 }
 
 type diagnostic struct {
