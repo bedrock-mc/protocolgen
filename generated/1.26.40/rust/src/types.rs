@@ -7894,7 +7894,7 @@ impl wire::Decode for ExternalLinkSettings {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct FeatureRegistryFeatureBinaryJsonFormat {
     pub feature_name: String,
-    pub binary_json_output: String,
+    pub binary_json_output: bytes::Bytes,
 }
 
 impl wire::Encode for FeatureRegistryFeatureBinaryJsonFormat {
@@ -7907,7 +7907,7 @@ impl wire::Encode for FeatureRegistryFeatureBinaryJsonFormat {
 impl wire::Decode for FeatureRegistryFeatureBinaryJsonFormat {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let feature_name = <String as wire::Decode>::decode(reader)?;
-        let binary_json_output = <String as wire::Decode>::decode(reader)?;
+        let binary_json_output = <bytes::Bytes as wire::Decode>::decode(reader)?;
         Ok(Self {
             feature_name,
             binary_json_output,
@@ -11274,7 +11274,7 @@ pub struct SubChunkData {
     pub sub_chunk_pos_offset: SubChunkPosOffset,
     pub sub_chunk_request_result: SubChunkRequestResult,
     /// Wire presence: optional value is preceded by a presence marker.
-    pub serialized_sub_chunk: Option<String>,
+    pub serialized_sub_chunk: Option<bytes::Bytes>,
     pub height_map_data: HeightmapData,
     /// Wire presence: optional value is preceded by a presence marker.
     pub blob_id: Option<wire::U64LE>,
@@ -11310,7 +11310,7 @@ impl wire::Decode for SubChunkData {
             if reader.read_u8()? == 0 {
                 None
             } else {
-                Some(<String as wire::Decode>::decode(reader)?)
+                Some(<bytes::Bytes as wire::Decode>::decode(reader)?)
             }
         };
         let height_map_data = <HeightmapData as wire::Decode>::decode(reader)?;

@@ -9,13 +9,13 @@ import "protocolgen/generated/1.26.40/go/protocol"
 // scripting API, it is likely instead for the GameTest framework.
 type ScriptMessage struct {
 	MessageID    string
-	MessageValue string
+	MessageValue []byte
 }
 
 // Marshal reads or writes ScriptMessage using its canonical wire layout.
 func (x *ScriptMessage) Marshal(io protocol.IO) {
 	io.String(&x.MessageID)
-	io.String(&x.MessageValue)
+	io.Bytes(&x.MessageValue)
 }
 
 // ID returns the protocol ID for ScriptMessage.

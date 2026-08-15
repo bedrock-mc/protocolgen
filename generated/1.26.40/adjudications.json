@@ -1,5 +1,3855 @@
 [
   {
+    "id": "protocol-2168-binary-packet-1-field-1",
+    "target": "LoginPacket.Connection Request",
+    "pre_patch_context_sha256": "sha256:59a2d852b4afd201560144e49ecd93210cc45313f18033d54f27f07f562f8b38",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:a71d50118aa32a7d63ad0380dd280edd1890b574c42c2675f569dedbae9b7237"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:f2362df862a9bc017d3cb6e01aadcfab199413776bd2bab81aab864f5f849051"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/login.go",
+        "summary": "The pinned hand-written serializer writes this value as a length-prefixed arbitrary byte buffer rather than UTF-8 text."
+      }
+    ],
+    "reason": "The protocol framing is byte-equivalent, but the binary payload must retain arbitrary bytes losslessly; select the corrected Endstone byte-buffer claim."
+  },
+  {
+    "id": "protocol-2168-binary-packet-155-field-1",
+    "target": "DebugInfoPacket.Data",
+    "pre_patch_context_sha256": "sha256:53c192ee0850c1c1bda8c27ebf4df8127442c382e2b92c43893d0fa3ee3a87a6",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:74e79d4443237662711271e703e1bd99790961ace4e7330ca0daefa069132b48"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:787a14ffab7293cdb785085d225cb3db159e604091b4d18a9b280fa31e8a3643"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/debug_info.go",
+        "summary": "The pinned hand-written serializer writes this value as a length-prefixed arbitrary byte buffer rather than UTF-8 text."
+      }
+    ],
+    "reason": "The protocol framing is byte-equivalent, but the binary payload must retain arbitrary bytes losslessly; select the corrected Endstone byte-buffer claim."
+  },
+  {
+    "id": "protocol-2168-binary-packet-177-field-1",
+    "target": "ScriptMessagePacket.Message Value",
+    "pre_patch_context_sha256": "sha256:8c2a43ec308c40502004583e6dde6ad3690b40d3aa3a273dbec6c88d9ebfa5b7",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:65d91135688e56a5c8d9aac3cfa1d6e6bdf3651c97cfbdd268071e4429d5c6ec"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:3c342226d7e98650141b86617eb5896d92f487e3c33e900db0724e1bbe26183b"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/script_message.go",
+        "summary": "The pinned hand-written serializer writes this value as a length-prefixed arbitrary byte buffer rather than UTF-8 text."
+      }
+    ],
+    "reason": "The protocol framing is byte-equivalent, but the binary payload must retain arbitrary bytes losslessly; select the corrected Endstone byte-buffer claim."
+  },
+  {
+    "id": "protocol-2168-binary-packet-191-field-0",
+    "target": "FeatureRegistryPacket.FeaturesDataList",
+    "pre_patch_context_sha256": "sha256:42fbbbed30aee18db4c4a78c3e57de1404bcb07364fbc678990ff04751fb74f9",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:7c8f1a134d0e9ced7786a63a5ba3b13f0e2b8a07be7189409e62ade8c93bc0c2"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:75b71cff11dc1449c1652608f3c9a0acdf79516e4813d0ad622cbd72157c8322"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/world.go",
+        "summary": "The pinned hand-written serializer writes this value as a length-prefixed arbitrary byte buffer rather than UTF-8 text."
+      }
+    ],
+    "reason": "The protocol framing is byte-equivalent, but the binary payload must retain arbitrary bytes losslessly; select the corrected Endstone byte-buffer claim."
+  },
+  {
+    "id": "protocol-2168-binary-packet-82-field-4",
+    "target": "ResourcePackDataInfoPacket.File Hash",
+    "pre_patch_context_sha256": "sha256:09227787cfc9b4ff2ed1cb1117d22e0856829ff08a57e8d05119791db327ebda",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:6c0c956c74e7758b07739f66326553084679313851af49b2939b2ed181e07de4"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:6769f82be39ae961bee0ea237d280a7a8f1fea6d2c0ec417911f61352fcd526c"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/resource_pack_data_info.go",
+        "summary": "The pinned hand-written serializer writes this value as a length-prefixed arbitrary byte buffer rather than UTF-8 text."
+      }
+    ],
+    "reason": "The protocol framing is byte-equivalent, but the binary payload must retain arbitrary bytes losslessly; select the corrected Endstone byte-buffer claim."
+  },
+  {
+    "id": "protocol-2168-binary-packet-94-field-0",
+    "target": "SubClientLoginPacket.Sub Client Connection Request",
+    "pre_patch_context_sha256": "sha256:44dd11d5b86fddb4144598be2115e5c4841696bf3357b3133065b1e4893ad2bc",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:c1b54cc28732e1909dce1ad185e880952bea6e3ca43c491ba6a21ee9cb863524"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:4997ae43b9dd2a03f79d1cec11c3bbb03fd71dcb87a2184caa68f30e22aa5d44"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/sub_client_login.go",
+        "summary": "The pinned hand-written serializer writes this value as a length-prefixed arbitrary byte buffer rather than UTF-8 text."
+      }
+    ],
+    "reason": "The protocol framing is byte-equivalent, but the binary payload must retain arbitrary bytes losslessly; select the corrected Endstone byte-buffer claim."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-101-field-2",
+    "target": "ModalFormResponsePacket.Form Cancel Reason",
+    "pre_patch_context_sha256": "sha256:57ee3ac11dbbef49de50e1ca989f793b105187bc40a4cd1ab3bf23fcec6be936",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:eb5f71c8b7c8580a1ad4ff9ae2e71501a257968f0d9275c8b3d96bcab5ed894b"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:230942e7df9e677908acdf7d8d4eccd682e7ac949b74bd02be03c0ac92403460"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/modal_form_response.go#L32",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-105-field-0",
+    "target": "SetDefaultGameTypePacket.Default Game Type",
+    "pre_patch_context_sha256": "sha256:bab024e5a4045356213f2775780247f551059cb7d5d11391c7c321f1a967c08f",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:696929fd9f421a5549875863036587e87cbea3f87b20b741bdc2b05cdb9e98f5"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:f8cf6d87c7d164c0a7ced9f47e1d754c94a99b64351a03a46077053a54f2e73c"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/set_default_game_type.go#L21",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-108-field-0",
+    "target": "SetScorePacket.Score Info",
+    "pre_patch_context_sha256": "sha256:a026e877c5d13677adb54eb4d8ea0bdcaed427a4a2fb6f9790d8b63259d4dc25",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:51db484bc7904dada6f9568d22707d76058aede33bcabcf9bcb53fa31a227fd2"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:872743129b5ce491015fa75b0eebe652f50a62c85eb7babc523a46dd086672f1"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/set_score.go#L20",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-109-field-0",
+    "target": "LabTablePacket.Type",
+    "pre_patch_context_sha256": "sha256:037ad24572126a69831c24cedf7f2d6a9b17c80cc1a2d446367167d7e89a546a",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:1fac3389dc5153cf14997704bc976d78623b0bdfc68106ef1d61aae51b7db98f"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:789dc1c968263873546b593e9d699aad8b05289503cf2101bdd955e724d9ca5b"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/lab_table.go#L33",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-109-field-2",
+    "target": "LabTablePacket.Reaction",
+    "pre_patch_context_sha256": "sha256:0bcab1b10e06892500bd092c4185bfc9b4848e2cc0f12398a3cf39f0f08efa1f",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:c2d85c6abaf45e8c0f2f6f683f69453409fa1c84186cc5ef129fc7cae4f41a1c"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:ac14016f5620127a6ae5a63cae5a663dc0c7a89fd36954550f14f56d91c9f59b"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/lab_table.go#L33",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-11-field-13",
+    "target": "StartGamePacket.Block Properties",
+    "pre_patch_context_sha256": "sha256:90bd85fa5ed610f40b0f39f2698adecce5cb53b4608d23a0c7e2e5b93105767f",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:bdcb28ff39548706fb55ed74cef6adb01a6391c0a11e25d06570497d494fbae7"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:86d978467cd4f622981b0d515d761fdcc5b71692b00ac6f31051e0d526b5cc03"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/start_game.go#L281",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-11-field-17",
+    "target": "StartGamePacket.Player Property Data",
+    "pre_patch_context_sha256": "sha256:bdce2bc736f72439087befea1aab46133b8b147f669cbe1582d8d6773e50f6a7",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:062935f07938d98f66d149336520ff39ae25dd17c7f66ebdb8d18623f48abb73"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:96a0ad32f95f8d37b3bbbb0b74f23a5cb9066e1904e57759b30a3c706b5b1fc2"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/start_game.go#L281",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-11-field-2",
+    "target": "StartGamePacket.Game Type",
+    "pre_patch_context_sha256": "sha256:cec38e191fac0f093e33d9b20dc6dadbf64bab8232170da4e0f06ca7eaa982c3",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:bdb2e4af66f9343f94d34f18071da89ff8dd97d7273677fc806a5073e28cac13"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:4b2778b6674d586e86250f211f169794716e1a1dc702fc6edfa715d43b4aa56a"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/start_game.go#L281",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-11-field-5",
+    "target": "StartGamePacket.Settings",
+    "pre_patch_context_sha256": "sha256:fed0c452272de29f192995ecb328e1d9a95971c0ca00d888c36e0980afcb5880",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:69f81449c35c4a8e1c9969d0fc92381f753f7ee8f0939f1a8aa7cb94e6206f2d"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:4032ec5e42c70332dbddffd7dad8d5fc4cb26827d549feae598be9db470833ac"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/start_game.go#L281",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-112-field-0",
+    "target": "SetScoreboardIdentityPacket.Scoreboard Identity Packet Type",
+    "pre_patch_context_sha256": "sha256:f1f3ecd408da5a52691ffb030f13ae3427f46417c43155290bf3788a64f28d57",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:f301e1c4deba3a0371745b8ee914a2966ecb31d3d5bba3423e693be77bc8aaf6"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:91cf8bbf65a5bcdf5374a7fc11c73982d8998bee4e88f6ff89fa2aea26638b6f"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/set_scoreboard_identity.go#L31",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-114-field-2",
+    "target": "UpdateSoftEnumPacket.Update Type",
+    "pre_patch_context_sha256": "sha256:68d2a3b2ed2deddacaaa2d1e543c70656704fe5ac44fc7c703b517771bee6bc7",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:69d58e3da23d0e42ea2677c570bd0924c0af9dbbcb70d474a17b63a6d784c6d5"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:a1b5be99364f386cbb2d2c4cd7c0175bd016f312d43ccbf3b1994d5f78743a03"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/update_soft_enum.go#L36",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-119-field-0",
+    "target": "AvailableActorIdentifiersPacket.Identifier List",
+    "pre_patch_context_sha256": "sha256:0d436d412ba37d7a2c5da3dc7049905f2caae5b0546c6592d2f789edc37e597d",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:1b2c2ac36bf2140236fde39c32dadb7da79ed9806c3fe5358e765d6292a9a836"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:2accb4d6049b754f4594adda5664b6394ad1763d8adb1e732a18007d4d1df954"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/available_actor_identifiers.go#L20",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-12-field-10",
+    "target": "AddPlayerPacket.Entity Data",
+    "pre_patch_context_sha256": "sha256:37f9131e42af619aad5197102e805df1579fd75b9ba8581887d60165daffd76c",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:8091e18743e48874bc76e0ab7e882eb4a558b051debadfc92cc078cfa60d1636"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:d9f2ee54fb95d0fdccbf2029afa693c39708811f327a4bd04258bec15c94ba42"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/add_player.go#L72",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-12-field-12",
+    "target": "AddPlayerPacket.Abilities Data",
+    "pre_patch_context_sha256": "sha256:ff3ace231b1ad4458c5b49e99311a88b548911d6f53f87182536992b417e83c0",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:b782bdc0ffece3673b3e87b06677d9792808e2ed7c6df801fb648a646b103cf5"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:98a3983331a9f2e206c678b501cbbbfac05ecdcb5c07e60b4be7b94bcc99f889"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/add_player.go#L72",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-12-field-13",
+    "target": "AddPlayerPacket.Actor Links",
+    "pre_patch_context_sha256": "sha256:50f6ccbf4b9c323c5a8c84b8b3f0002b2a328c5a5a4c0f1049f55afa59f868d2",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:7efeaccbb3c93f961098d26f9e325d19d9ab4991c46f203d94494c2f3daee81c"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:3fa074e215313068e670650590b6dd844640e19e6bd463c2236dcfca632bd8e1"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/add_player.go#L72",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-12-field-15",
+    "target": "AddPlayerPacket.Build Platform",
+    "pre_patch_context_sha256": "sha256:766b450a9c667566c0973dbe6fa822a8b35b47612c7482cdacfdb4409c18ad84",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:400751fd0acb6b0a3b2c874a9e5877ccbe71754268872e7f6352e6d7d505c5fa"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:1af3f500c2db89b0f6fe5a726b38e54a3f9f7ea76b10a6fbe5af8e0a2577de0c"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/add_player.go#L72",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-12-field-8",
+    "target": "AddPlayerPacket.Carried Item",
+    "pre_patch_context_sha256": "sha256:59b051adcc818e2266656bfa2ef9d7bfd5c645b976797b670adf87916d7b6a5c",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:a9e6ec6c07ba5027f3988bc96e79bbddbe13af55c3f2b1c88e2999d1d3ab49a8"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:d9aa187aca26cb68c6a10151a8c26ab2e1258c439f06db5cf627ba8bfa5d5c03"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/add_player.go#L72",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-12-field-9",
+    "target": "AddPlayerPacket.Player Game Type",
+    "pre_patch_context_sha256": "sha256:5dd760856d2ae5dc8f563b53fbcc47f194cc87dbd69e23695bc9e1959df10b88",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:4801a279338eca5e06f8ae1f741b53a963fd12905ca385893f92ef3ac29caa66"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:e63f6c7debf8d9f3706db075957f12cba5805a658aad83a3682fd9c434a04f82"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/add_player.go#L72",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-124-field-1",
+    "target": "LevelEventGenericPacket.__[[CTD]]__",
+    "pre_patch_context_sha256": "sha256:c4ea1223560138f30bf378019465daba50610ddc723d9d98dcf21cc72e5e20c8",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:a51103bad76aa01a64387a36b34906854f5a5a689241c89a9997462e2b0967b1"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:67d17770347648e011cff604b8a88bccdf4d16e15a7c454cd5223b645d4588c1"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/level_event_generic.go#L91",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-13-field-11",
+    "target": "AddActorPacket.Actor Links",
+    "pre_patch_context_sha256": "sha256:8a64e1cb159f5c01b37e24a441d879a6b22e23099f36cbb499cc444cbbe88390",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:b5668cc802244ef146cd75f7744a7996800fc5fae2c26456aef45bc0de447228"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:198c9e6b5d82f5b1406cc7ea2a1f4d0fffb692ade64fbdc4d8e871bed38b4ed3"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/add_actor.go#L60",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-13-field-9",
+    "target": "AddActorPacket.Actor Data",
+    "pre_patch_context_sha256": "sha256:f215cbe2a9a311f2cf413ecef6dc828fe15565c43264ddf7f49e80b3a1fb088d",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:51adee816e8eb10f0dc332570da920fe9987fe2960847caace1d58142ee81266"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:5207f83965f9cd52b299909d2b24a1182c20cab794594e1c3fbc75d2b493583f"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/add_actor.go#L60",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-132-field-2",
+    "target": "StructureTemplateDataRequestPacket.Structure Settings",
+    "pre_patch_context_sha256": "sha256:5bb3972b2e377490e4197c778bce0332f02676699b15401720015de9ffec11bb",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:19f3cdfc992187c0a207681d3b90d0c2d19c7093ab2bc25d6f4abdf2423605b6"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:1bfd88fe8246d3003790a708267435cb4e2535505825d51df0627bce19143d4f"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/structure_template_data_request.go#L33",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-132-field-3",
+    "target": "StructureTemplateDataRequestPacket.Requested Operation",
+    "pre_patch_context_sha256": "sha256:73660caf35e465ea01c3b1eff22c5f503cbb794dd994f8ef32e2a20b77178851",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:2568f770ca9aea83e58b800d289d412d9a96717d39dd4a128de3af226d6799b4"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:9cd4e4a724693e8d33728bf3eb04598458c96c63fc0d3a8067410c29b0de9434"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/structure_template_data_request.go#L33",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-133-field-1",
+    "target": "StructureTemplateDataResponsePacket.Structure's NBT",
+    "pre_patch_context_sha256": "sha256:3bd4f789442a09cc4617920c65aef07d9df8f9d8eec5b880353fda2b1a2663b2",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:11fd704bf6195be5c135703bc59fe998b9e403f81d6b3b6f5c5645d07044464c"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:0f8bb655070f8790b700627d5aad9b63a339b9dd1d24eaec12a41d05327aae58"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/structure_template_data_response.go#L34",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-133-field-2",
+    "target": "StructureTemplateDataResponsePacket.Response Type",
+    "pre_patch_context_sha256": "sha256:a336dde78d1f73da8850d6c9ddac9e2ade93db165731a5ab479bdbbd8e9e5a1c",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:fb8ca4964f11c85038034403c2f77b1afad3e0beb060de69d7f7c3bc6e06cb83"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:931ddd41bdc24b8f8bea8cf2bc1d47fd1ba1636d7daf3175d768d64fc2071376"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/structure_template_data_response.go#L34",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-139-field-0",
+    "target": "MultiplayerSettingsPacket.PacketType",
+    "pre_patch_context_sha256": "sha256:962b30007e187f84a02db235fe29946bcbc0309a98e221e3b95eaf46edc17bf2",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:7fcc373aaba87336dda9f473db2417dfa835b496e4a38b6621aea032fd769524"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:8b20f7144fe12b8fdd580827587b1345525abf97faa182fd519340f3ee1ae6be"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/multi_player_settings.go#L28",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-143-field-1",
+    "target": "NetworkSettingsPacket.CompressionAlgorithm",
+    "pre_patch_context_sha256": "sha256:a008024bebc7b536f9d30057d69ba1c51cd95247c8df7e6f2aa2ffcb6407c845",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:33b0499266b7f919cf109f638c49d40b58df77f7fc1861ffa1884ad31d06d5e5"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:344d66940a261985572af8f4dc4e8e5c88084607188443ecce444f35eff44d96"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/network_settings.go#L39",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-144-field-12",
+    "target": "PlayerAuthInputPacket.Item Stack Request",
+    "pre_patch_context_sha256": "sha256:f705993d30e25733a5dad127a0dded2e530cd52b19c101f2723f7fca43064f71",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:1054b73602e6d8c882a438c8f0f959b907a96e12e0add15801c245eb0ade34d4"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:5ef1bd1c8a73f045a32c4be476d550f99077a1c740efcd0d01f29ee92271e12b"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/player_auth_input.go#L172",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-144-field-13",
+    "target": "PlayerAuthInputPacket.Player Block Actions",
+    "pre_patch_context_sha256": "sha256:5c8400969562ad0f01e8d7573d3d7c0e3ab4e7f53f088e309e32842bfd9aef35",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:aad1bbb4cbb8b8e9bbafea0cc3745c3685e4455650a70cf91b03eff1b760bdde"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:3805612d09806602f585d4fb1515617160e158b0c2d96b006ebc370d889df76e"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/player_auth_input.go#L172",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-144-field-4",
+    "target": "PlayerAuthInputPacket.Input Data",
+    "pre_patch_context_sha256": "sha256:f15b50a4a603be06ea5fc617b2e69b7e79561d67e15d09cc23f5cf3493168653",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:53c95649500314f1e379ddc6a84c33ba7fc83e1f05aa729069fd5cb520250824"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:ac46e90639784ce11ab594d405b63926a1eb85c4566b8ae0cb0834d6caa04fe8"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/player_auth_input.go#L172",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-144-field-5",
+    "target": "PlayerAuthInputPacket.Input Mode",
+    "pre_patch_context_sha256": "sha256:73e63d1d32a91bdbb0c57852fac7abd6a233efe11a358c78ef2a94cdf5cd7d9d",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:4564a031c49b56877387453b39ff49ff94156c25ee230912444d07dea25cb3e4"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:e5e52861c5f02162f59a4bca570efb8a88d09563c19d7630c424112a62488b14"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/player_auth_input.go#L172",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-144-field-6",
+    "target": "PlayerAuthInputPacket.Play Mode",
+    "pre_patch_context_sha256": "sha256:301bdbfa71aaf902c6c04656fda30700db624b8d7b0ab82c52cddffee3027119",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:c03f4f36c98fe5023d099772a36a862e41663f81a4fb65df9ee0f53fbc2eab26"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:626ef6af8b449683dcaae72fe7fdd4b61ad1ec302f31ec491a8fb3622ceedb59"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/player_auth_input.go#L172",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-144-field-7",
+    "target": "PlayerAuthInputPacket.New Interaction Model",
+    "pre_patch_context_sha256": "sha256:3a37f647b864dab63e138476ea8cad68ea91f38bfe7c05c98320915ef4243645",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:144c6f47e852eaac07a4c7939cf1be3ce968d0df65dd3a1b5502b5912c4795a1"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:6a4541b6c0fb8fef93823e139f4eb42c03771fbfd26cc8a28135b29ff2d45919"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/player_auth_input.go#L172",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-145-field-0",
+    "target": "CreativeContentPacket.Groups",
+    "pre_patch_context_sha256": "sha256:a4a8c045cdbe9ac38da4cb01d495fa2a03c9656a023e2cc182c55d0cf4995c09",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:b4eb6a8499dfc7a45f971364b30b4db507f0554159412a20ee23a42905ddae26"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:d272fdf902e92d69e50cf0b9a1e8e5fb7dfeb35b6bb4ed986cb0570fdb5d450d"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/creative_content.go#L46",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-146-field-0",
+    "target": "PlayerEnchantOptionsPacket.Options",
+    "pre_patch_context_sha256": "sha256:1165ec049effb5bb01e8f9c1071518c46090c05535ddd049f9ab6a7efc80d953",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:656e560913613c53da2fd45ba8482a6f27a7657c04927a57ab2fd54c6b2d006f"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:966e5f9ef9571c3812a66622890034e507fb1f8fd945f316c9caab302f8e3623"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/player_enchant_options.go#L24",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-147-field-0",
+    "target": "ItemStackRequestPacket.Requests",
+    "pre_patch_context_sha256": "sha256:74a606049b4bdf8ac3d5bba1061369456d8ea4629926490e2d319be68e5a98cf",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:4b735d07354222674fa62afb654496a470315f97bac24305c092b5c34f25cc19"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:3e41d70e97e7f32944ff170a34db765f512ee8a0a4c2e2fa83a578fd211fe1ca"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/item_stack_request.go#L22",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-149-field-0",
+    "target": "PlayerArmorDamagePacket.Armor Slot and Damage Pairs",
+    "pre_patch_context_sha256": "sha256:6c81985e055b1d10f7e6d0d156f68fa048b3c0940dcf296c690ee00aaa8fc29c",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:e2386eea438cb25fd6fcf98652fc92126ed52db51ff010a66bcfcc35c1814a91"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:17d74987d6e95d3ac05239fb6eec4b57598bf7a4c5454cc186d49e291ee1c907"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/player_armour_damage.go#L27",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-15-field-2",
+    "target": "AddItemActorPacket.Item",
+    "pre_patch_context_sha256": "sha256:fa8b81e8cb85c2ce1632fc993ece6b3a482aae055d3330f6f67e851a31fe1a09",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:94cacfb3a3f6683fc93964cd0aae1c6ed096bd2b7a52d1fe8831db652b8e62c1"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:67786f85196ad382d7fa063e2289cb3f1533b0c614254cf4dfe1c15caff625ef"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/add_item_actor.go#L41",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-15-field-5",
+    "target": "AddItemActorPacket.Entity Data",
+    "pre_patch_context_sha256": "sha256:9c3ee110bf02825b719cda1e381a28204a67e4c15f38421fe82a555c63254a2a",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:ceadf39e5eb0d1f9f47bc7a5c7345ebb851e85f0f19f094efde5398b0f149162"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:7364819adf40e10c3231b977a0566feebdd21f968244aab285970d6e7bfc8c33"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/add_item_actor.go#L41",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-151-field-0",
+    "target": "UpdatePlayerGameTypePacket.Player Game Type",
+    "pre_patch_context_sha256": "sha256:94a5b51dda5bc1ab1ce3d2e2e41f5088f60d3e371ff85aa0ed322ce60fdc95ea",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:f548d0bdedbec639340a816ed7583c8eb6df39981cb7b7fe0905eafe1f54321d"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:2ffca15ce9a49acd4aff058f6280a52a4cc8199062bc439a5a5077a69f6f1058"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/update_player_game_type.go#L26",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-153-field-0",
+    "target": "PositionTrackingDBServerBroadcastPacket.Action",
+    "pre_patch_context_sha256": "sha256:0cfe5dda4e1ea9644a83faaf6df6348c69e8f3ad185bbd4db153bd58e44d0f2a",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:7798464e7390c2aff616e113c69e43812bab0ab0e48a0b45a84ab97e96083fb7"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:7689678c14837b2be91ff23c59f411eec50e438a657945ecb11a95f1d1844daa"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/position_tracking_db_server_broadcast.go#L52",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-153-field-2",
+    "target": "PositionTrackingDBServerBroadcastPacket.Position tracking data",
+    "pre_patch_context_sha256": "sha256:40c84929d5f919634f63b513f8366c943e10a47133d3fcc9a6249fd1d5885b2c",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:d7eb87bc7a0d13b11f45511ece8a9a7d7285f6c7eabb5b6f48057053d014da41"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:704bf87e05da0fed6644e93340c4c22157504e65b8c9a8997e1d75caccb446d4"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/position_tracking_db_server_broadcast.go#L52",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-154-field-0",
+    "target": "PositionTrackingDBClientRequestPacket.Action",
+    "pre_patch_context_sha256": "sha256:40cac153400579cd50b8f153fac7a2feb84db393cb33111e32c9c48be06f3cca",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:a1f1fe10ab92d259c307818c629f3390881242ccec25ca2c6c9b81a9fe7b91d6"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:f487ea92dd18ab29299e4f556d7e831987dfae0e283267faf899236bb3562bab"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/position_tracking_db_client_request.go#L31",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-156-field-0",
+    "target": "PacketViolationWarningPacket.Violation Type",
+    "pre_patch_context_sha256": "sha256:e7cf187b22ba2fedc9ba329f62f835b448ba4b19901e0c8c8b86ab45101e270f",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:d2e77e3e8ba9cd99b0f5bb63ccccbca36dc4131e08e3ac6b68f9bf9e59a37968"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:d288fc7d2f6d0950e0faeea25ade26d966f42c477db696310f1126d0a5db35ad"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/packet_violation_warning.go#L37",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-156-field-1",
+    "target": "PacketViolationWarningPacket.Violation Severity",
+    "pre_patch_context_sha256": "sha256:a9479abce42244cddd987edcdb9f5ab6871791e15bd3acf18e0d38c6e4142651",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:1d973eaa9707cc669a2e04a91c94a0d5e6cc343f4fb1046a92b1328119e743c1"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:0450e015e48d0211d0ae42a87ca4edede79c76ecd754621c3d57b29c135a732a"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/packet_violation_warning.go#L37",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-159-field-2",
+    "target": "CameraShakePacket.Shake Type",
+    "pre_patch_context_sha256": "sha256:42c62551bb21d1217f88cddcca7807d75a4bff003b7e2fe73f6f6c575852a4db",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:c0e786598ca833b7a0e7bb6c0b763c753bbc2c398f69ffc7c6dd19486f378cc7"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:ed931bba994bf68f533a4ea02910c812c2a49d3fef6e8dc4a290ee416acae699"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/camera_shake.go#L36",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-159-field-3",
+    "target": "CameraShakePacket.Shake Action",
+    "pre_patch_context_sha256": "sha256:0b56850b1e447fa00096615184a8ccda302d303e18a33ad104136d54e02423ab",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:cf4b2a715f53bf0ddf618a0462673afc5dffa40ad1a9e94ad895e211c776be5a"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:ff359c8ebc2e3e648469f656abd76fd117b11ab13c20fb20fcd7a13b1734359e"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/camera_shake.go#L36",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-161-field-0",
+    "target": "CorrectPlayerMovePredictionPacket.PredictionType",
+    "pre_patch_context_sha256": "sha256:49b309e6b4bf0bfeaaabe7f89b7c80ec606fc0eb5705972408fbfa15cf78f931",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:48e3ecbc7ee69c7d5ac06e1ae49a6533c6cf40ba443a853069fba364ecb3b802"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:8073acabfea45933c26c61eaac868b5878df4af9511513c11cb8bb80e3c848a7"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/correct_player_move_prediction.go#L40",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-162-field-0",
+    "target": "ItemRegistryPacket.Item Data",
+    "pre_patch_context_sha256": "sha256:7cf281a3d894f156c7a24db9ef0bd09bc7c5ae8dd909b4b349df775998bd65c7",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:901f49e656249647f0fc24f11bdfac216363f5b62a7a0698e05277fbe161f925"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:4e384620d7c6f6be990fddafb893a8c12a81f2cf9665f3d4675bbf24dcc7ba2f"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/item_registry.go#L22",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-164-field-0",
+    "target": "ClientboundDebugRendererPacket.Type",
+    "pre_patch_context_sha256": "sha256:4ff581cb65e677c44de53c6da5566c85a4238c561e42bb6f6a6a771253a3f778",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:13ed92a6e21529f855fb327df47580f8f7bf829b45b9abb67d756fdab367e4f4"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:115ab865f01920f6b6a579845c6aa6d618a2da50f37edd39dd57b1de787ecb94"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/client_bound_debug_renderer.go#L39",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-165-field-0",
+    "target": "SyncActorPropertyPacket.Property Data",
+    "pre_patch_context_sha256": "sha256:644de816fadf7cdb2be52ec9884ee42667c74c51a86d39867e632d72ddcf8238",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:bc35e3ce4acc6acf1f294e7f498bdb4e75fbbc9b40879eb5c7118bd28caf92df"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:50b0ca5d27125e93af7b09bb42143bfca3620c878dab82ea7e163b48f1c91306"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/sync_actor_property.go#L19",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-166-field-1",
+    "target": "AddVolumeEntityPacket.Components",
+    "pre_patch_context_sha256": "sha256:7fd9f4a70da4bc8209e8f93d016e51e123cd21e3c0ac847b995307c67ac4a31b",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:b84afe89d3fc6ab0fd846e8de0c61c3bc05b26642901b94efecf9b0050e0c45e"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:81cf33b73fec310f92b2219c585b7e26abe736df21b3aa5be85d557a0f4135de"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/add_volume_entity.go#L35",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-168-field-0",
+    "target": "SimulationTypePacket.Sim Type",
+    "pre_patch_context_sha256": "sha256:fad6de5bb24b88b766f431f27ee2103657914c9c11d96952835861a7365b0080",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:f0d692bc59b0e1b8eced9eae7c56b27a6906c53b6e77bdfef4c5bd6a42fab05d"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:9b3f5835ba875fb607fbed9b67ed202ecea33e0f10182911043a1a50b67f42b0"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/simulation_type.go#L23",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-169-field-1",
+    "target": "NpcDialoguePacket.Npc Dialogue Action Type",
+    "pre_patch_context_sha256": "sha256:698a562f335a53a30e44fc8d4d2b1ceed99f8b1b0f8d0c551eaeda8b6ad682d1",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:0bb3185fa2591d47672b74b9eb0d45a7ba7bfb5f2290e30b88bb419abe981a88"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:b92d5fe11729636b4445d34ed119514822ec4285e273497c616513fba003e3a3"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/npc_dialogue.go#L32",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-174-field-3",
+    "target": "SubChunkPacket.SubChunk Data",
+    "pre_patch_context_sha256": "sha256:87433784d98db1a78c2628f03bc4ae8dfa92ee5ad623c229e59f578aa6584810",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:4b46793117b727cefdbe9abd719bcc885c05898073c8589d46c20eb67a164a91"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:3a01da09a0213fd12e2b3af1bf4de0020d075f9cebfdef0d6d1aecb46a674ec1"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/sub_chunk.go#L24",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-178-field-0",
+    "target": "CodeBuilderSourcePacket.Operation",
+    "pre_patch_context_sha256": "sha256:2dcf2dd3a612deb8c99e549371220e35f2237be48d5a7495bb72b6c4433f3686",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:39b1d9adec2ad309e8761888670eddcb94bec30228bf5d91ffa445ab73e9985e"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:e7ecc1ce886f9b5abaf11be8a5fdd8c28d595888c7167dda329f3c90331c2010"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/code_builder_source.go#L46",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-178-field-1",
+    "target": "CodeBuilderSourcePacket.Category",
+    "pre_patch_context_sha256": "sha256:8e0d6c89094bad14ab597d08d7584b618c5c520c6ccae01a6a72261ddab0e4fb",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:4772aa77e9c2065c57b59e37da703d2e3df318b7dea47297925ef2897497c6dd"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:10e5221b12bc9d7d14deee51da3d946c1cbed2558cec11a2f9291784b77c03ec"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/code_builder_source.go#L46",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-178-field-2",
+    "target": "CodeBuilderSourcePacket.CodeStatus",
+    "pre_patch_context_sha256": "sha256:955bb777ebf9614c2ef54fb0cd8226f7ed473fbfc34b84a4abfbc972f85fe916",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:c4a1bc553fdc739c6da395c02c32bb5047e28be32c7956167fc5acab50232ba1"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:af5d24dd7bd0ef9ec42655b20cb2033792193165e9c6c7e3f2f9674d28b3455e"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/code_builder_source.go#L46",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-180-field-0",
+    "target": "DimensionDataPacket.Definitions",
+    "pre_patch_context_sha256": "sha256:eac8ec73ded7ff056aa9d409957a473c9fe3004b817bb27445fe50fd758f9136",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:d7e10bc7a05b7c8e35704434fa291d2995a87b06cf4c0fac8592f8d25be3d22f"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:0185d85f7bb62abf02b034e6b8f46730d0b6e00c7db688e2bf334c1d1af59b48"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/dimension_data.go#L20",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-181-field-1",
+    "target": "AgentActionEventPacket.Action",
+    "pre_patch_context_sha256": "sha256:84b1abb92594deede3f1d00a7598930762ecb187dd12ca4807ed0e5a38997c58",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:bd9f86a0997d8bd159109eac9d13471384e7d9b5c6871b32bba93b783b8f2c35"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:552642147de476d5740d17430288d63b5d0a1bf622e6ce465ec6eba6ded6d8f0"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/agent_action.go#L44",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-184-field-1",
+    "target": "RequestAbilityPacket.Value Type",
+    "pre_patch_context_sha256": "sha256:46f16226047f42cf3c63e66dc54e6a64847f345d4979daa61b6596faa5afe35e",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:97c77745ba006b5d34235c55acb9121b0939385f1e9e09717ba6d72119f6a189"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:b85bd13edd73e9e7450c8bfd1277ae43b8e01504f25f897732e57efe683ccbb9"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/request_ability.go#L45",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-187-field-0",
+    "target": "UpdateAbilitiesPacket.Data",
+    "pre_patch_context_sha256": "sha256:3ba4ac26229a2d441024a9e51127c6d61d3be2e507ec6ba44b8b0fc16a833ec1",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:e615f8997a976ba6c797abbc71fc5f6fce0ee47e2ac054e6050e19b0c5102c13"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:12b68c30eb37f32e002b03b7d6909283f3f518b7fd66d112fe7f49b26f6c1704"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/ability.go",
+        "summary": "The pinned Gophertunnel helper writes an unsigned u8 layer count, documenting the exact one-field conflict."
+      },
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/tools/protocoldrift/accepted-drift.json",
+        "summary": "The pinned drift record explains that the Mojang schema default implies a var_u32 prefix while Gophertunnel uses u8; the project owner selected the independently documented protocolgen shape pending a contrary capture."
+      }
+    ],
+    "reason": "Explicit adjudication selects the Endstone and Mojang-default var_u32 shape over the known Gophertunnel u8 conflict; a contrary protocol-2168 capture must replace this decision."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-19-field-4",
+    "target": "MovePlayerPacket.Position Mode",
+    "pre_patch_context_sha256": "sha256:d07d7a9b4847d2952a916df5eece83d25c4c877b6ef88f359251ea58cfbb66ac",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:74b3b510d472acd095c9464373798109ff619d08343649fbbe99c12cc3f28071"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:97b8e1a80645c5bfed4e9ecce47d5ae89baf6649c1a213a0382bdc2d18a94be5"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/move_player.go#L59",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-194-field-2",
+    "target": "GameTestRequestPacket.Rotation",
+    "pre_patch_context_sha256": "sha256:471732f99dd1947232d6ab8792ae8b016c5d47e75293a6ff59c17afdf893b001",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:fd4f599ecd99e6553461eb0d7b59ee3f0f949f6b534810f090db4fdc67082086"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:8709f91f8ce9940b12271e72f57521d5b847c904204736f055f7fa39b55baf40"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/game_test_request.go#L36",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-199-field-0",
+    "target": "UnlockedRecipesPacket.Packet Type",
+    "pre_patch_context_sha256": "sha256:cc3856b2a72e514718c68e625147dd3f9dc41328ffbc80d24431aff1ce62d08f",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:c6954afb9bb7562bee5c690f272270d9a3c0a664c495141154ebc96ccf033792"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:6db815dec67d1049aa47f8ea3e30ec57c7eebc1c088c49c6b44f97728540866d"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/unlocked_recipes.go#L30",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-2-field-0",
+    "target": "PlayStatusPacket.Status",
+    "pre_patch_context_sha256": "sha256:2b434e45215453b9e95890db17379b5edd7f7a27395dc98cb0341487e4aa15c1",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:5b36db7974e654f24f4ef03afa6b5c0cfafed71ea1d1fcc2191822a879542441"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:cc11419a05cfefc5072b979850725b17f74552faa13288d09d5c5647c04c1bb1"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/play_status.go#L32",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-27-field-1",
+    "target": "ActorEventPacket.Event ID",
+    "pre_patch_context_sha256": "sha256:d898426815ffb9b9ee08a7e5d22e96d2822b3bb85b00675c508bef63ba0447a9",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:1bd621e6baee3d569e46d96fe72cef5e018bf5e645489a6c0096d5ddaba9b5b8"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:e8e0e350aa73b79bac3263490841cd2bef7403e38818929a23fb9f9dd5cf863e"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/actor_event.go#L100",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-28-field-1",
+    "target": "MobEffectPacket.Event ID",
+    "pre_patch_context_sha256": "sha256:ba04fe9de102bb7d10713ee7dc74df931b0522b9b0cbcc433ae85fd3506ecf20",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:86d38cbce55d0e012ce9ae1f8bb4c79a44b5907a85cb24c31afee13ae5493dde"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:69458335db40b8d7e235a52980ce0a17624bca37ee79ee6f62f47ac581105b52"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/mob_effect.go#L76",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-3-field-0",
+    "target": "ServerToClientHandshakePacket.Handshake WebToken",
+    "pre_patch_context_sha256": "sha256:cd5c5ef9a6f9b56d5be546bba8555e9fb457cc7c2172889ada206c8309efa70c",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:80430be535e7e69f6f33cc9f60c0b6a003b3894f62c821e0ec3360b6835c8aa3"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:6e07fb64bd0e10d75be0650e00274bdb37199a851be3243f5d889cb02e99661a"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/server_to_client_handshake.go#L21",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-30-field-1",
+    "target": "InventoryTransactionPacket.Legacy Set Item Slots",
+    "pre_patch_context_sha256": "sha256:c83b5b387a03a93bb720f8a2167421ea476e75ea544f62f1aa25f5aca5fc8b7b",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:1c71a7dd1188278716790aaa8f8a423cb58cf0e8a1b2e52675a9a86f95b544fd"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:8633a32fd1ba9e30b3f967b9e1b0783c11cf8e106b89aa277397286ec337b79d"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/inventory_transaction.go#L48",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-30-field-2",
+    "target": "InventoryTransactionPacket.Transaction",
+    "pre_patch_context_sha256": "sha256:468bfda7465f395bbefb33a7373677fb0b672b3b4159e61da4363473aa22f679",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:e569d4418f2031af10a984af717140c28c00ce742449584b878267ad8b419bb2"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:49296569d0345c069177f094b1003a540f5b647727e685c2ac6fad981f27b630"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/inventory_transaction.go#L48",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-304-field-0",
+    "target": "AgentAnimationPacket.Agent Animation",
+    "pre_patch_context_sha256": "sha256:9f75bab56b51ee62b63a9dc74b6e3442def5561bbc5893245c402c45a7abd85c",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:bdacfe7f24969516a98e1daf8a6322191536450afd6d79a6c4fd411305f9dc76"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:00ee3f939725f957c55857ac4ebf6f4bddb8b2e24178d1409b32c4b59aab1db3"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/agent_animation.go#L22",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-307-field-0",
+    "target": "SetPlayerInventoryOptionsPacket.Inventory Options",
+    "pre_patch_context_sha256": "sha256:524b8990422956f511f2f18940f7a5ab501e354eb18b48c0ad40dc6b36e923f9",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:532ba9c72aabbcd7e78252066f6674c93d56235f08748b5bcf0f3a517dce5d4b"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:474dfbf4353920716cca9bb562d8b0471b76654aa38a12600faa394c6d82af84"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/set_player_inventory_options.go#L52",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-308-field-0",
+    "target": "SetHudPacket.Hud Element",
+    "pre_patch_context_sha256": "sha256:626c394c9a1e24652af1518a2e6fbbdf2bea128b17b50e57ac568d90a1b9ba08",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:e03e35dd8d5135ac676eec3ac98baa1c9005837ddd37d96716614ffe9338a696"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:f84f986acee9cb0412f632d885bbb82c77ae571ae5a28aae0de846f3522d0e5d"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/set_hud.go#L43",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-308-field-1",
+    "target": "SetHudPacket.Hud Visible",
+    "pre_patch_context_sha256": "sha256:9c9b2a4efb45191899bccf0e1290dbffbf5e651f6a76f9d738ea134a53ff3958",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:a68ab3f42d310fe0e02f1af9de3bf10714eeb92d525a3079f3ee18b1b15417f9"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:77ed658da5e0fc182bb77c5a395c78f18af8a0685979ea7416fa69bbab5fc5c2"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/set_hud.go#L43",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-31-field-1",
+    "target": "MobEquipmentPacket.Item",
+    "pre_patch_context_sha256": "sha256:6728530c4c85d5fd46a7e5e9e090212ffb6f7d564e6701195c81863f2268ebd6",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:2883d2dd7e12768b948fa0303692baa6336e19319b799baa17e0cc95c1f0cc39"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:3859ae4565306e2dd3475fe11e9af02e102eb0cb776c3b5999d4456e17e3bc8d"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/mob_equipment.go#L33",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-312-field-0",
+    "target": "ServerboundLoadingScreenPacket.Loading Screen Packet Type",
+    "pre_patch_context_sha256": "sha256:782ff8e52b62642708190782d3531fd9bcf9019bfb9be7fd6a8fab57201b91c9",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:5e103719bb9f8a97a4066310ca8c06169e0b806f51a6b77a1985c1e8a7995ed4"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:80a98fdc76333bff127a6337cbb2a07b0ace0da37d864767ac68ae7699f96d8f"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/server_bound_loading_screen.go#L28",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-313-field-0",
+    "target": "JigsawStructureDataPacket.Jigsaw Structure Data Tag",
+    "pre_patch_context_sha256": "sha256:177ac29c9b343870b17e85685280fbb43ea3b5049105a0df10696e5c4970315d",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:40acfa0583440623cc6f51a763e387ac9f2c7dce1f50e900ab2505940907323f"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:542456fe244eb7a6814939244c0501aa6cc48eb8c276dc842a3571de70ca2b8a"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/jigsaw_structure_data.go#L20",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-315-field-9",
+    "target": "ServerboundDiagnosticsPacket.Memory Category Values",
+    "pre_patch_context_sha256": "sha256:254e5e8150c22d795365fe614c340a19ca7c1c4c053c00acb3171bd42d9a9e65",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:11fb01b10718eccb589b688b810e6a8cf6387b905cb2667e4f85766e07267784"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:c0bad6037d45ab20f3a0ecbe4c7638471c66ec0843bca0ad542b50d6c4f7522f"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/server_bound_diagnostics.go#L52",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-316-field-3",
+    "target": "CameraAimAssistPacket.Target Mode",
+    "pre_patch_context_sha256": "sha256:0947f7aa01b237452bc50697515cf8736a7d2b75622aa819111fe7948b1df215",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:20a68f5b5cff3eea6b7f9c6fbe4dbcd5ae8fdb2a91cfeb8b8773630895019055"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:a02f0500d52a24da3aa93ff9463c975646d2261264ad76430de4e52b8e7f11e5"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/camera_aim_assist.go#L37",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-316-field-4",
+    "target": "CameraAimAssistPacket.Action",
+    "pre_patch_context_sha256": "sha256:9318f7701bfd778b1adbc523d95963ea17efa8ddf36336490bcee8384c2a19a8",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:ac975462e212a3b4f043deb2065aa2b6d9e11f0de6c0a2f4f789cf3550ae6ce4"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:348fd6cdc322a06f2faddfa2da839196666afa06bc381992bafba98c44f72246"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/camera_aim_assist.go#L37",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-317-field-0",
+    "target": "ContainerRegistryCleanupPacket.Removed Containers",
+    "pre_patch_context_sha256": "sha256:9bdd30a2d9fe3157f09c20053b0d50223e0b684338072484c874d48bb7c119e5",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:2b1d33d3d6001ee8776415a408ede6e7f1291ffc563992cb6b1d00d151155e2f"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:549815e38c3b6a098353e1847a691aeef67c2b6958dc6ac5e41a28f8d86560ca"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/container_registry_cleanup.go#L20",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-318-field-1",
+    "target": "MovementEffectPacket.Effect ID",
+    "pre_patch_context_sha256": "sha256:2b259c860f926e4c763b546b7d8fa71b866eb841103d3e6e8647afc974a2e786",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:773b184b5068bc58308cb0092884ab627f1a0a27e3be6e689034c3e49bdae07b"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:c7a84ebcfefcd1bd8f80290d357b300c74345797a00843f70deb94aa0b5ab59e"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/movement_effect.go#L33",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-32-field-1",
+    "target": "MobArmorEquipmentPacket.Head",
+    "pre_patch_context_sha256": "sha256:0323e24bd07d728c3c95c6fe699e918235893cfae1dc9aa3ad12aa09d8afa9bd",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:2c981f54af6562504a2c3cc499bac9ac10a869a9ed665a2df3d2cb26465d586f"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:b1204e6de727722b97fe1ad021708d2fafb23658c3893de31179cbd380ee6b2f"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/mob_armour_equipment.go#L33",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-32-field-2",
+    "target": "MobArmorEquipmentPacket.Torso",
+    "pre_patch_context_sha256": "sha256:507623f4b999d4a87a2da5975574f599ba2269096b24ff5ce36a2a1be85f8bd3",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:0557b04312dd7528793d7d2743b9c0dd9ee37116916a7fd20fe1c0a57ac02a46"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:ee0d19458dcaa0263587af6f14f54ab916933fd79273464dbc812762c18e3be5"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/mob_armour_equipment.go#L33",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-32-field-3",
+    "target": "MobArmorEquipmentPacket.Legs",
+    "pre_patch_context_sha256": "sha256:349a735db66b72689834953d3dff6395a0babda6fc34c3badcd74e51cf0198f9",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:0d2b2014c856305ab4c0a44eb2217987c3ba635342a23d473675082fee9a4769"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:fb4fbc0848d9075b861c1617152fa823324ea8f43bead376ca7ad2dff64f5425"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/mob_armour_equipment.go#L33",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-32-field-4",
+    "target": "MobArmorEquipmentPacket.Feet",
+    "pre_patch_context_sha256": "sha256:0540451b6d5289e711fa90256e53e3b1f93564ee876eea89b51b15f2c8bd3fab",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:4e9bd88da53a01edb7b4ab3425339c604f6f2a8898cb96cd05e1212ae5968dd6"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:8eee62184cd26f4908e8f354bb3c42b5d534de8a20268ab7050ef08a619161c2"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/mob_armour_equipment.go#L33",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-32-field-5",
+    "target": "MobArmorEquipmentPacket.Body",
+    "pre_patch_context_sha256": "sha256:e384eaaa5bb23ad0090ebcd4f5659c809b5258a86c4132eddc2ad9e87894cb1f",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:72bd4eb4fd9ec74a1918bed373575c9e8288df5d6b7c13970af2f2e60f2a3331"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:a56823a7e5deec4d7c0a0f9fb9ddc04c47f7ae2c25e33aab4f39faf115125dc8"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/mob_armour_equipment.go#L33",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-320-field-2",
+    "target": "CameraAimAssistPresetsPacket.Operation",
+    "pre_patch_context_sha256": "sha256:9d13eef5f18bfacbadf72d228cdda88f7e319218d7933103ec3220b503231155",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:7cc9a26a8afa9ec71e31ea21140ef7668f2f6e6e79e01dd5b6268b33e6c724b8"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:c20008e30e2dce3217887e4cbcfd35d7996722c1a39efe7551fcc00730d3dcae"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/camera_aim_assist_presets.go#L28",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-321-field-1",
+    "target": "ClientCameraAimAssistPacket.Action",
+    "pre_patch_context_sha256": "sha256:b79fdd92c7e02642784ef125c72ea577c47a2b55249d53da860dcda7f55c18ed",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:fb8d00ed3e932625cb4dd4520d74bbe2040336924df57b8c93a60baab8e10b1b"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:b75ecc5667aa0446c280e303367045a96d124364f23010efb23d6587e0ebca93"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/client_camera_aim_assist.go#L29",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-323-field-0",
+    "target": "UpdateClientOptionsPacket.Graphics Mode Change",
+    "pre_patch_context_sha256": "sha256:fc726dc9a8ffec1158e9032ceac52ed3ffdf96b79f4ea871fadae2d405bc1df2",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:6d6e054d7b9a10f640f5dc223652681b59d0ec584a98d9ee796bbb3694fee79a"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:958db9cd0eaed5d090ffc9840307eb36271123edda2968d128231f800ec419c6"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/update_client_options.go#L28",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-324-field-0",
+    "target": "PlayerVideoCapturePacket.Action",
+    "pre_patch_context_sha256": "sha256:13a6af23bece4afda2a94e871fa380f2fa2870d05a609ca3fec0ec421bb0d194",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:d12234f1cf32a5d57cdc31a465b8f8856430e121954f52ac2d100c29a2416b95"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:fd10f5c81f8cea8649ef3976f980d4f2971a8bfd1cecede1a1c3d0c33530c8c9"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/player_video_capture.go#L32",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-325-field-2",
+    "target": "PlayerUpdateEntityOverridesPacket.Update",
+    "pre_patch_context_sha256": "sha256:d3e2d2883b046508041edd7a05d34b811095c883ea8500fec221d6c8b7fca717",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:f1ebb49c4231532d47d280ac64da422259d860af4fb3208b9b3fbcc7312abf17"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:f3e51af9d3c44070523c12548b626f8c9fe55a42a204f7b4f01fb6f6dbce94f1"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/player_update_entity_overrides.go#L37",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-326-field-1",
+    "target": "PlayerLocationPacket.Location",
+    "pre_patch_context_sha256": "sha256:f78fd3d92302b8cd105c59a54cf422a2a7a9d3c3e0b20bb589f513920931472a",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:6d97a5dd796dc4b4c996b3c16242d5859d68e6f20a6af86bba50f7bbfcd4e3b3"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:7b4fcfcbcf88f3775f2f579fe10e1e39c8b7a30a90ec7dd3ac11d98369505add"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/player_location.go#L32",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-327-field-0",
+    "target": "ClientboundControlSchemeSetPacket.Control Scheme",
+    "pre_patch_context_sha256": "sha256:f7f7255531efaee59e21c79e04c2a4af8fcd5c8a7fb60996f7122bff74166ebb",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:1b252db566c3838bacf8ccd5437ec2b0375372c56f2936fac4f8c7c4825c5dd6"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:0d71edc5c7b20421c54b8011ba0ff0081782919eb11232f4c7b801630cc54ff4"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/client_bound_control_scheme_set.go#L38",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-33-field-0",
+    "target": "InteractPacket.Action",
+    "pre_patch_context_sha256": "sha256:d485ed68fd4a3ea06184ef1910616fa47f772aa12e0e3015fe27f15633989078",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:5464e8638267a1745046ebd50605703c94af096062cd16a3d45151beb4ac612d"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:83b0b7e409309482e5bd20f2f394b3971b3b709151450edc5aca86d918dadf19"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/interact.go#L37",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-330-field-0",
+    "target": "ClientboundDataStorePacket.Updates",
+    "pre_patch_context_sha256": "sha256:742db26c0189c143e6acc1131175beeaffd45d84ca6fc0a96d7521f42e790454",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:256cf2c1906cd741c3f13a4a01127509c4c9f4ad9a04961d5b9e9736155f78fd"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:3e04acd761e610c69dc1b8d218fb97ee747ee139f1ea9b4d911ce390792861e7"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/clientbound_data_store.go#L18",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-331-field-5",
+    "target": "GraphicsOverrideParameterPacket.Identifier for Parameter",
+    "pre_patch_context_sha256": "sha256:f0940ba1f6eec14a2799cb13003d6e6a1d4382c5aafe1b4c10a8b9405d75c8a3",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:a48e35bfaa65c3f23f954b2523f45370d966ae6acd5fc1040cff3bdb6117e5db"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:6d29810fa446ab44692fef07d3b4480b8f93921c1e0ee494be5179089f4f9155"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/graphics_override_parameter.go#L31",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-336-field-0",
+    "target": "ClientboundTextureShiftPacket.Action ID",
+    "pre_patch_context_sha256": "sha256:18279e7cf3f2ae808434325bf3940a65cccd576e73fd7d5ba53ca81ca7d67c8c",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:b19ff28856991364754e3fcf9e08edd774e940698c282931e80a27f029256eb8"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:e6f2d6e92295d68ca69a4dfb46773ae9d547dd1bee2a79e4c544c05205be98c6"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/clientbound_texture_shift.go#L40",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-338-field-0",
+    "target": "CameraSplinePacket.Camera Data Splines",
+    "pre_patch_context_sha256": "sha256:d65dec22e5a2e31a68fab40d90fd4b9c93ab20841a6af13573fe3efb7f229a5d",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:ed0100e61d46ad9176cf01be1872f081dfb446bfedb4f275a8d1090a7aecf19c"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:b5b12d472455e9e30bd3dcf733c5a5c8ddc8f8a7198ebb9006a295bf625a508a"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/camera_spline.go#L18",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-341-field-0",
+    "target": "LocatorBarPacket.Waypoints",
+    "pre_patch_context_sha256": "sha256:961b3d8aa3ead50c4845d6c6cc61abfe5989a36781d234466770d03425f72cb0",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:2c5f9ef6678840eef977a367d083bfdf1c2c3f5f0aee970ab0e746d59dd40535"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:f72cea5b9f7d418e269c166b17ab64b7382c18ad7bad6e50cb24f6375f344900"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/locator_bar.go#L18",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-343-field-1",
+    "target": "ServerboundDataDrivenScreenClosedPacket.CloseReason",
+    "pre_patch_context_sha256": "sha256:1f4215ec21c722b7317eda5d34634040d5f19b68b0cb8130ed94ab113bf8fd48",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:c22db8bd9efbfa319bd454af2b838824186e517fa1bbe735453dbe0470440303"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:8d13c6508ac0d0e5554b79b07e03d0cc19cf6e7bb35ff41dc8d0c551b26c925a"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/serverbound_data_driven_screen_closed.go#L28",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-344-field-0",
+    "target": "SyncWorldClocksPacket.Data",
+    "pre_patch_context_sha256": "sha256:3d71d526e258e42a23d3f319036d4b0ec2f7a21b4d5f9b6d9e900c63cf619d35",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:0495f90d919ac8c9f0ba7dd675d34fd1f25462506e805b862d223a98c296bb54"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:6ea132009d6dc24bc7657cbada331c91dada6deb4248213fdf98af967c16af57"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/sync_world_clocks.go#L30",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-345-field-0",
+    "target": "ClientboundAttributeLayerSyncPacket.Data",
+    "pre_patch_context_sha256": "sha256:e95ee4f49ca3bdf6a965930eb03d2f2aaed2f3629b3f67c820e3bfbc2a235c76",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:25ec76a0fd225b26e89044addd192c52310e58666925f87089154a14b8ad4b43"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:dbc533484f8dbde717fd9b3d7013dd27089c8b774c577dac7d4b09cd71cd75ef"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/clientbound_attribute_layer_sync.go#L30",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-348-field-1",
+    "target": "ClientboundUpdateSoundDataPacket.Stop",
+    "pre_patch_context_sha256": "sha256:2a747396523bf3f858c39a83de25df1cfcb25e7db642aff329965b6dc4defb2a",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:8888b01602d021247aa12e75676a48b5c6828104e0bccde9e314a174f587b69c"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:5e37eaeb6cc3ef619823de6c4bc7018371e00262122fd4673568f5bcd13c9414"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/clientbound_update_sound_data.go#L25",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-348-field-2",
+    "target": "ClientboundUpdateSoundDataPacket.SetVolume",
+    "pre_patch_context_sha256": "sha256:c2adee921d13307ca88c3f3c5b613bc230a16bdad1546accd960f440cfe41341",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:2864663ff3e6e2987e2a3002817b7d852088becda149741d97051f74dc72d666"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:03e19f88e6caa883c2cd281c4b240f086ce2c382ff9a6f1378b556cc4907ce56"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/clientbound_update_sound_data.go#L25",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-348-field-3",
+    "target": "ClientboundUpdateSoundDataPacket.SetPitch",
+    "pre_patch_context_sha256": "sha256:35a9aa456ab2948e14a2f334348f271ccf6ee51b9de1f4424db74f4952697dd1",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:9c9d56e8e892456521ace1b8eb549b3b360b5f930f96fdf7ac85f50b95ac6e89"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:e36a50cc2836e5dad8fb7e0cdfcd2c54b2a6fe7f052ea98372da4702640b67b4"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/clientbound_update_sound_data.go#L25",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-348-field-4",
+    "target": "ClientboundUpdateSoundDataPacket.Fade",
+    "pre_patch_context_sha256": "sha256:c31b0a47a7f369e1989ea03ed3573c385cc14e4bf7d7481e67c7b1685a454c4c",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:4ab3d138a98ec20970ee5ce7c17dd8e63e6adad0db60726e47ad5cf3d9f1aa2b"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:6534d0de76ffb057b2c7262544173e13537c65eda1806c53528047293917554a"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/clientbound_update_sound_data.go#L25",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-348-field-5",
+    "target": "ClientboundUpdateSoundDataPacket.SeekTo",
+    "pre_patch_context_sha256": "sha256:e81993bd3eafd9e2964a9257a93268f94ca9668f0632635fe0de85fc59056d6c",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:435ca8fa16b260a9715a18c7e5c22c9c9065403d448d91e32971add215113732"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:1e31bbb329da618443e4bd766c274891af1f418198c4aa5b83cfebba4833d54e"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/clientbound_update_sound_data.go#L25",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-348-field-6",
+    "target": "ClientboundUpdateSoundDataPacket.Pause",
+    "pre_patch_context_sha256": "sha256:e8b44491d7c2daeffde5e4076f5cefd77cf8bbb35130eba4b8c4c83ea5b7d61f",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:536970744420fb700297123beaab13bfa61cc97764e24dac135759916dd9c2f7"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:28ddc6ee8f0e876ce2de3768d9400ad941ccc5ec30a16859dbb13b3b199bccc6"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/clientbound_update_sound_data.go#L25",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-348-field-7",
+    "target": "ClientboundUpdateSoundDataPacket.Resume",
+    "pre_patch_context_sha256": "sha256:77e384ad10b9a4534f17c5003c03f2e02649932c8381ca4fd59cd55f5e7072c0",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:3fd0fecee37697b953dba66db3694effb42be5880d72ddfbf4a1c5ebdabf4842"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:0f29bd6358cadb04bb01937a854ace1dfeeabbbcfad5c4a0348f5151a8252ca2"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/clientbound_update_sound_data.go#L25",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-349-field-1",
+    "target": "SendPartyDestinationCookiePacket.intent",
+    "pre_patch_context_sha256": "sha256:daec9afa2583fd366f4b13b72f7711a70519ef29aed47513858f7bf90143b56f",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:9d20e5984822ec58e4a3f565861c1041486254a68eecb0e7da7c65a823477a79"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:58c846d5800b367984764e7d07c606bdbe69b6b9cec18cdb85db531aaa8c4d4a"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/send_party_destination_cookie.go#L26",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-36-field-1",
+    "target": "PlayerActionPacket.Action",
+    "pre_patch_context_sha256": "sha256:9fb1efd2fcd2697836210d6b53e58e169eb8f44c13b545bd8eeeedc563e5ba17",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:bfc0b661881474371e7b4f56c81f57ee50f313b4d000776bc3395946a5a76aa0"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:d8fd236fb396607c32f8240ef4e844df43ebddfedab5709a26dadef7f9d118ee"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/player_action.go#L32",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-39-field-1",
+    "target": "SetActorDataPacket.Actor Data",
+    "pre_patch_context_sha256": "sha256:9f266de9bbed3866a35a75b1044ddc13eae53621be3fb0e0239b8d181b4b7977",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:59f52c45624fa8247895434e0b7cf22e839902a9f857fbd3490890633755d9e0"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:03aa54d0e11e4151d01dba975a0d584e0b3a4ee8daeeb33cc0124887c1e8d06c"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/set_actor_data.go#L29",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-41-field-0",
+    "target": "SetActorLinkPacket.Link",
+    "pre_patch_context_sha256": "sha256:506eede9299075fb139e5b4c2e44e4e1243a7e2084650f4660dc40bf8b525e85",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:bdc5132cf843495d6e6fb21e0dd7935f181bc5da828d1b54a2a5f1a7fc0886c5"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:b9dbb0380e6cb32b3c2512c07bed4bcd23d840b9b204dae52920e38d47f1af85"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/set_actor_link.go#L21",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-43-field-0",
+    "target": "SetSpawnPositionPacket.Spawn Position Type",
+    "pre_patch_context_sha256": "sha256:ff40fc9f1d3d04b5d559380a181f33470be7be3726425415cbd9d1f6e460156a",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:4cda22111cf6f943ff4862ec97ff6bd2f122163f2e8be2d91186ee823f58e952"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:2fe61b25ee199ced704e000203826bd7f05ce62c51c44d4c3aa3658ce9e8463f"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/set_spawn_position.go#L36",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-44-field-0",
+    "target": "AnimatePacket.Action",
+    "pre_patch_context_sha256": "sha256:297c19214cd576ca1b1ffa60017e4f9233780c7e9e48fc2de9e7e20dc1b21c90",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:c1299c71fb019e9964767225cf5b8d11b6793daea936349c8ddd208ff3ed9883"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:94459463d071bde9e97a5c251ff381a74b8ea55fe68a233e9bc9c572facd2969"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/animate.go#L50",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-44-field-3",
+    "target": "AnimatePacket.Swing Source",
+    "pre_patch_context_sha256": "sha256:341560f7538a8865a946de73dea2363240a8e6889d4a42a18b9ed1960dbc4071",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:75a7b8e37acb6d8bf3c51e4f9f50dc4f66958f1e56a0ed1d60471bfab3f3e3ee"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:5d84e859d8b1ffad7e7b65cd1f00c9cdd1a4fe8c83947449fbecadd4b3c1a6be"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/animate.go#L50",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-45-field-1",
+    "target": "RespawnPacket.State",
+    "pre_patch_context_sha256": "sha256:a42d912756938edc4e1ca10d9cac2485d93ddeeddaa691ae04318eda242e3216",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:98168fd32a575a1f4bd78fe0eb45f0c786e6d1888f38d94a8b0808ebfb215c85"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:abe9b6019bd1a8b584fd861ce6760109b673384d1b882e61162e7908e43fc4d4"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/respawn.go#L35",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-49-field-1",
+    "target": "InventoryContentPacket.Slots",
+    "pre_patch_context_sha256": "sha256:4fb5bf2d2c3123f9980cfec3c6e6cdacf46926ed1e2ca743c8b4c0f58512058e",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:95b4d62e954b3f8d22f10ff35d182fc435425def753e6966648ed1452014a4c6"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:41d41bded7ee1183326df3d5f020b405cb52ac98f00257af1fd16c10236675c8"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/inventory_content.go#L30",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-49-field-2",
+    "target": "InventoryContentPacket.Full Container Name",
+    "pre_patch_context_sha256": "sha256:1bf229f0a109b0226e54eca39c52fe5715432ff3e3c18d0f3bcdc017d44bb306",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:c724e27e504ff79fe6ef781fc47816a385ce684e8b5a61a724eeccf818fa137d"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:18402c1632cd93220f273281e21c4e28f34aa973758691384a1db4b65f84cfa5"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/inventory_content.go#L30",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-49-field-3",
+    "target": "InventoryContentPacket.Storage Item",
+    "pre_patch_context_sha256": "sha256:26f3da19ea933b66d416494416b623c5e780322a201dbd6d665dc0b8eaa744fc",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:e27919f5d17b0a2fcb3d3a31c8b4d652fa54750893e9b86a51ae34dcb7b41425"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:79c52d69447765a3d314b3f4d108fd46ff393162137d8432bb4f4e8345a7c522"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/inventory_content.go#L30",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-5-field-0",
+    "target": "DisconnectPacket.Reason",
+    "pre_patch_context_sha256": "sha256:7b4b40b1f9ffc7dfbd1bf2db47260e9e9bc4721ac153756b9a196bd9990188e2",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:9edbce836f46fd2b94fe4d9718a0e471ef465b990b58a457727793e1129ced32"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:138f7d876bf5b6d3b6e7cea9e985c00bae29ad750bacd46103db9873c7bbaeb0"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/disconnect.go#L172",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-50-field-2",
+    "target": "InventorySlotPacket.Full Container Name",
+    "pre_patch_context_sha256": "sha256:af850626b1993f56cc7e1deb319d81b20f5ea23afb75316688ac28fa419f6228",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:4cfb4270e9f0108f6eef5252cb36653c0a43ea093563e1d87c0a34f857d8f868"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:d606198a736d10db5f8836d735f60a88be6bbb7a5cd7d1ae3f0f5f03da8b6fae"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/inventory_slot.go#L33",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-50-field-3",
+    "target": "InventorySlotPacket.Storage Item",
+    "pre_patch_context_sha256": "sha256:42ee15ddb51a4c878383dc088659ee82e7533aabd952fa64d4fc57e02980dfaf",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:2100322c3cf0a46dd222d2ca0baa7525023e017610aff2984b269020894613fd"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:dafc03805992de261c20c4565840dc700445cc9894453f90683368258757cbca"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/inventory_slot.go#L33",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-50-field-4",
+    "target": "InventorySlotPacket.Item",
+    "pre_patch_context_sha256": "sha256:1ec2f1d84e5efc4fde3e28c87e967c0beea49b2ff1ab93310a9ab23d95f61bc5",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:c1384f2f3abe4e15d25d9ca9daa151e26bac49ec9644f5ed2e8a4caabf3e7879"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:7fa2e960eecb1057e5a1331a9b39501d872790f8f67884857d1760e64ce7023b"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/inventory_slot.go#L33",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-56-field-1",
+    "target": "BlockActorDataPacket.Actor Data Tags",
+    "pre_patch_context_sha256": "sha256:8aaba6d2f4c02ab8ebaad01207b09197be2bf51d3d8375907db8dad6dd8c9a7e",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:2e45059f72444df2f5ca25256a6f68a5a715aae9b41d434db18e1cfa5901091a"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:380c736aa168296eafaa949ab4c19c2e7b7416e2b8f463c234e209d27567d4a7"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/block_actor_data.go#L25",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-62-field-0",
+    "target": "SetPlayerGameTypePacket.Player Game Type",
+    "pre_patch_context_sha256": "sha256:53c39a65fa25598d9b335b1d3b949dc07075b1252f63ce49260936abeaeedb30",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:9ffd9c70a2e480b04d4b0f1b011812357f96b03ea38d8e165554b4da59ca115b"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:d47efd122c7b79e6458088c2a0147ea70897f498298b518e319f4b6dd4adfb94"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/set_player_game_type.go#L31",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-63-field-0",
+    "target": "PlayerListPacket.Entries",
+    "pre_patch_context_sha256": "sha256:e1da5aa5b843ff068945f13ad4ee7a199fac1d87587edd8e98c44f8bc2ca30df",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:1a56cca6c98f76b058ed9d9c7dc72b71a5cb794872556c1502883cfe3a87e60f"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:5ad6bc4ac2d06cbec9334bb725ff058e242d03691fe2f0951f141a0d8dbff449"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/player_list.go#L23",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-64-field-0",
+    "target": "SimpleEventPacket.Type",
+    "pre_patch_context_sha256": "sha256:ce99ffda052dece6fcc9252fef8fd12ebc9cd84683d71a4bb3d949fc80964d63",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:1c6f0395ed61cf9ed48cd1bd3add61f38d8ea29ac3a12c911a5318bad7d98e96"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:da565e4d8bb4dfc6aa92e966048a7687981fbc98e77c785c93d51e22d415d92e"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/simple_event.go#L26",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-65-field-1",
+    "target": "LegacyTelemetryEventPacket.Event Type",
+    "pre_patch_context_sha256": "sha256:514bedcea39621756cd42d0136e05913a109e402709e209e763cb7d461a78a5c",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:491ca61c9162cf01f2abe006cb55e462c6614472a522757895f974020e6d0e3a"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:4664d1ccf3fccf92c0fa6760abd3c0e6cb9a34792a6c9a71b14ec650125796ba"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/event.go#L25",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-65-field-3",
+    "target": "LegacyTelemetryEventPacket.Event Data",
+    "pre_patch_context_sha256": "sha256:42b2118c968290c0482c86b9475b12175a768b1899a10b576563f86909f8596c",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:4755e6bd86522838f5de1ac192110e4b5060161f8ba9b27f536687b50ad6e269"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:f2004485b6bb079247b9432fc6bbaf41b2ae77a5ffccbee3334b1a12552f5dbd"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/event.go#L25",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-67-field-6",
+    "target": "ClientboundMapItemDataPacket.Tracked Actor IDs",
+    "pre_patch_context_sha256": "sha256:05907fa78521e5d160cd9d18c1edfa33af7d6c2dbd072969badacace9a45e76d",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:81a27189be44ff2fdbab56a4d9c06387e7be9b54ec9e6f4b01f59f9e20b39d96"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:8f5a35603e1c861e9f9bb8e1db7fd0ef807b979404643fd137fe26818e4e4f95"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/client_bound_map_item_data.go#L61",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-67-field-7",
+    "target": "ClientboundMapItemDataPacket.Decorations",
+    "pre_patch_context_sha256": "sha256:5b50107e70ba3aa588a62057a51227d8614ee197178cdbfe2787a54f048362a6",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:fc0ece40747ead6e8a15eb14737a2aafe39cfb9445c50f376746b8b8b00ac291"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:21fabc10de00316deb8256144ae62fdfa54f772cac322693f6c846c7d3628456"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/client_bound_map_item_data.go#L61",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-74-field-2",
+    "target": "BossEventPacket.Event Type",
+    "pre_patch_context_sha256": "sha256:ab68c966ac659787aa21588d41019e6fe40c5ffa659fdd87343be81b62ab333f",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:bc3aaec7b0a33ec6d6dae509a5de5c250c8d13edc559bc2b73e1bc5e691c1e46"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:47738b6b40a6ce9b05c6101d12f82790badaee416713c175f390847f3abb4161"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/boss_event.go#L79",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-74-field-6",
+    "target": "BossEventPacket.Color",
+    "pre_patch_context_sha256": "sha256:9f3944f83fa65520cf8f106ec31f32e093105c760f9d3768722350a8fb3fea44",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:260b3870a054e0b1c6963080823b28561e9c71b75d2fad9e519509910d259df5"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:556a2c844f3a08c7e778dc30f5d36d772cf97f597a2e56ebde862cdaed3b1bf1"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/boss_event.go#L79",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-74-field-7",
+    "target": "BossEventPacket.Overlay",
+    "pre_patch_context_sha256": "sha256:6ee46ad29d2084b2a3efc0cff56d4898445ca886dcb9c261831ba5382c38075b",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:c3167cfc6927495576ca1f4a888df29c5e50289c968bda9ee396a76069bf297f"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:d3b90468d3f4334dc306e1b5b43b8297fcd8fa4c96fd6bfe699dc16af3f4de89"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/boss_event.go#L79",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-76-field-5",
+    "target": "AvailableCommandsPacket.Commands",
+    "pre_patch_context_sha256": "sha256:2659106865b45f32a9c1ad8f9b317384a35e7d9bfa0ae672e24c5525eda66554",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:df4d25d9dcb5b74301878a51c2bd36185debfbb21218313def066a26081a52fb"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:e6dcdda1f648bc74406016cc2e6333e322687576284017121bca76ca8dc08407"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/available_commands.go#L48",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-77-field-1",
+    "target": "CommandRequestPacket.Origin",
+    "pre_patch_context_sha256": "sha256:70b1e949058332b99c384e121eb22b6fde2c121797bfa66f53e1047d47f412a7",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:4188c5492e549e01a90e6f18b3de8f5e39591894aa81f14409ca7d454b116fa3"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:5c8c677a0725ee627291f27ae9e787fe3474404b3dfbb1dce0396085082cbd43"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/command_request.go#L29",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-77-field-3",
+    "target": "CommandRequestPacket.Version",
+    "pre_patch_context_sha256": "sha256:66f2fbd2fe71593a0f771cdec9d098e446332627c08d0dff6a241d23930668e0",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:594630c635b76ceb24202da0a425058b906e0b376c8efc6790aff5dc26b6656c"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:4289c2c0f56070f3804b163182d3283ab3e11417062516e241b1a07f9dcff98e"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/command_request.go#L29",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-78-field-0",
+    "target": "CommandBlockUpdatePacket.Target",
+    "pre_patch_context_sha256": "sha256:b01976b3d4032f30ace3093f58b804b80321d116178370bfb306954c95bb5a04",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:6f49433f32940cf74880b577124de2372649f0531ae0d608059b25d7021eb190"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:e06c9d6f37e70eadc59f72b64719c4ed9422e5bc132582013af5827e4b89194b"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/command_block_update.go#L67",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-79-field-0",
+    "target": "CommandOutputPacket.Origin Data",
+    "pre_patch_context_sha256": "sha256:d19d45c1f91879d2aa98f745fd1ef0ed07e26012941e688bc39f346b3601ce4f",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:f4177d29f960c25a53d8032d50158f7f4834fe1440c971beeda36b129d1758b4"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:f4c0322ccc6ed87997a45239c9e9be37d855342894fbc31d0b541c24dc156f6e"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/command_output.go#L46",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-8-field-0",
+    "target": "ResourcePackClientResponsePacket.Response",
+    "pre_patch_context_sha256": "sha256:e7c83a73a4eac8b0edf4c8455e690ce7792e87f25e1ccd812e05a53d9e9d2b5c",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:eb116e20ec7e9377fdec98903948c22fe2b89f2723615bd90e128b6bba7b65c4"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:228c2f3922cc978ebf006b8224751dfb0b101bdb3bbde36ec702f40e41e78af1"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/resource_pack_client_response.go#L30",
+        "summary": "The pinned Marshal implementation writes the zero-based response discriminator and conditionally writes the pack list for response value 1."
+      },
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/bedrock-mc/protocolgen/blob/7d456ab/differential/testdata/corpus/client/008/2b31502abbb7b650.hex",
+        "summary": "A captured Lifeboat protocol-2168 packet decodes as response value 1 followed by ten pack IDs and round-trips byte-identically with the Endstone shape."
+      }
+    ],
+    "reason": "Pinned Gophertunnel source and an exact live protocol-2168 Lifeboat wire capture independently establish the complete Endstone response union."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-80-field-9",
+    "target": "UpdateTradePacket.Data",
+    "pre_patch_context_sha256": "sha256:11958f187336b4c09bbd38cf9366b1d905c2379dde2ec3a87e8436aac8fa636c",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:aa112011a924749aed3a98fc0112db65c74692816d609e13902043094009cd07"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:84a68f5497dfdc380e102e6afa17ca5f211b2eafd0114bdd620b39784187d2b8"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/update_trade.go#L46",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-81-field-4",
+    "target": "UpdateEquipPacket.Data",
+    "pre_patch_context_sha256": "sha256:c6b570d24f5df41d017785c7d7ce9d800859f66d7f316f85c1f373a553f59e42",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:869d30a75eda8ff67e2d0db30fdb451417433eb7fa8a1a363b463a99eb5a31c1"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:0587212432aab0b2add3c25bf86864f252d0b130e40e1696f8d25e5e438b5856"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/update_equip.go#L34",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-88-field-0",
+    "target": "SetTitlePacket.Title Type",
+    "pre_patch_context_sha256": "sha256:9d0260689fc153b8933f8891a3e0c0c884be80eea3001c0bb54f6d53ed2e02f4",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:d4eacabd31b01dfa471638e152fafb711d1c2579a76aa99a7aed0d9c64c0b153"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:a6e953f8457e4fa80adb9e0b8f290e9736584b030b8dd3b617258bcd13c17e41"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/set_title.go#L52",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-9-field-2",
+    "target": "TextPacket.Body",
+    "pre_patch_context_sha256": "sha256:014fc5b29cff65ed5902f6097336f1bc32d236f6bbead0875cc400207218ce96",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:dbdfa66e163f97e2960195abd769a2f63227698eefbb1fa469001b6daff2fdb2"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:c5d0c155ebff4348a9f4f8fcc8c259925f3dff9a5d7fde01fea6edf7f7094b80"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/text.go#L65",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-91-field-1",
+    "target": "ShowStoreOfferPacket.Redirect Type",
+    "pre_patch_context_sha256": "sha256:d22a5b803ed53aabdd21b507b1fdc85e8c38a9e5ba66304feef0f3a99c3dbe86",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:575d29037216587a9b479e693f3555f1cc239905a94826bfe899508608bba624"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:5a5958ee043e215e3fb4eff969eba6077c8a86bfa3ad06da36556a51a7a8d678"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/show_store_offer.go#L33",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-93-field-1",
+    "target": "PlayerSkinPacket.Serialized Skin",
+    "pre_patch_context_sha256": "sha256:6eeec896139c152459d14112421614450cc0ce281506c96f81cae2c1eca892f4",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:754a6d27efc583f5de7d63b0748cb4da6737372adbb264dd001a80ad9c7427b3"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:1ee002401afc99acc059c0c08e57e82762bf2f3e8eac3d2f1884693ca32d7de3"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/player_skin.go#L29",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-96-field-0",
+    "target": "SetLastHurtByPacket.LastHurtBy",
+    "pre_patch_context_sha256": "sha256:9d971d3301c7891b542e8e7ae0d21b42c7ce8f80c699aa1140846254fecb7679",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:12c0e340a4c147775343def8c6bc552ba44e8d233dc2a9314c652fef1f309cd4"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:8e4f7afa13bd838fc2b0cb37ad74c35fc4592a8dd60cbfd3e107a3f97503dfa4"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/set_last_hurt_by.go#L20",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-97-field-1",
+    "target": "BookEditPacket.Operation",
+    "pre_patch_context_sha256": "sha256:81d3330def624ec5a1409d25feb38867f22ba9b708f351ac9dc073798ae27aa7",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:551d05ad1a5d06da3bb970760de99c1f35e2654c8ed378e740cfbad6ded615e3"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:8c777c761316298139e6562623deccdc64acbf311ed0c0524513befa8915af17"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/book_edit.go#L54",
+        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+      }
+    ],
+    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-98-field-1",
+    "target": "NpcRequestPacket.Request Type",
+    "pre_patch_context_sha256": "sha256:3a573bf3a1b1b325276fe94789973d709360f67aa8ce8a3e2a07f089b360055e",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:c874848fe84c8efb71a584e93e8143cd257934920302532f2ad4e4eb9bcb2f1e"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:00aeea772c62439f5d12bd574c81ad3ff55aeabf6b6e4a924628136f2fc7e841"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/npc_request.go#L40",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-99-field-3",
+    "target": "PhotoTransferPacket.Type",
+    "pre_patch_context_sha256": "sha256:7b522a0a4429c3c0e14ea3d5acc91eeaca2ab272e37e0fe22b7781de72da4170",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:e0aaee1942e873d4e7a4943201541d5231f368071941d93a924b6170928e2adc"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:77c092679095de439985bd16327eeae1fa4b184ccb625ee5431a57b4919c1cd0"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/photo_transfer.go#L43",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
+    "id": "protocol-2168-gophertunnel-packet-99-field-4",
+    "target": "PhotoTransferPacket.Source Type",
+    "pre_patch_context_sha256": "sha256:4e4408225824e48c6fca6dd2bb1dce2acdb94e9ef04dc039d43a497af0f4a52b",
+    "claims": [
+      {
+        "source_id": "endstone",
+        "digest": "sha256:8bc9a258bdcacfc2b2a58d660b38ec0c28d9964fb7a5236f2c1607e65d7c5458"
+      },
+      {
+        "source_id": "mojang",
+        "digest": "sha256:3069c11a46a55dcaf7f912d709bd59a204f2bd6959181ed975a87059a2a0fa02"
+      }
+    ],
+    "selected_source": "endstone",
+    "evidence": [
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/photo_transfer.go#L43",
+        "summary": "The pinned hand-written Marshal implementation agrees byte-for-byte with the complete Endstone packet layout in protocolgen's Gophertunnel oracle."
+      }
+    ],
+    "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
+  },
+  {
     "id": "protocol-2168-packet-122-field-0",
     "target": "BiomeDefinitionListPacket.Map of Biome names to data",
     "pre_patch_context_sha256": "sha256:77b238f6b81bca9563f93c0805e4fb9a3bbd73c724e53df81f8f1d17431e903f",

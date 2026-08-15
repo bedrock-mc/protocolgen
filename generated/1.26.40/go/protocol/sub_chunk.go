@@ -5,7 +5,7 @@ package protocol
 type SubChunkData struct {
 	SubChunkPosOffset     SubChunkPosOffset
 	SubChunkRequestResult SubChunkRequestResult
-	SerializedSubChunk    Optional[string]
+	SerializedSubChunk    Optional[[]byte]
 	HeightMapData         HeightmapData
 	BlobID                Optional[uint64]
 }
@@ -14,7 +14,7 @@ type SubChunkData struct {
 func (x *SubChunkData) Marshal(io IO) {
 	x.SubChunkPosOffset.Marshal(io)
 	IntegerFunc(&x.SubChunkRequestResult, io.Uint8)
-	OptionalFunc(io, &x.SerializedSubChunk, io.String)
+	OptionalFunc(io, &x.SerializedSubChunk, io.Bytes)
 	x.HeightMapData.Marshal(io)
 	OptionalFunc(io, &x.BlobID, io.Uint64)
 }

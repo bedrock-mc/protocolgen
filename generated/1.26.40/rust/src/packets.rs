@@ -12,7 +12,7 @@ pub struct Login {
     /// `connection_request` is a string containing information about the player and JWTs that may be
     /// used to verify if the player is connected to XBOX Live. The connection request also contains the
     /// necessary client public key to initiate encryption.
-    pub connection_request: String,
+    pub connection_request: bytes::Bytes,
 }
 
 impl Login {
@@ -28,7 +28,7 @@ impl wire::Encode for Login {
 impl wire::Decode for Login {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let client_network_version = <wire::I32BE as wire::Decode>::decode(reader)?;
-        let connection_request = <String as wire::Decode>::decode(reader)?;
+        let connection_request = <bytes::Bytes as wire::Decode>::decode(reader)?;
         Ok(Self {
             client_network_version,
             connection_request,
@@ -3336,7 +3336,7 @@ pub struct ResourcePackDataInfo {
     pub chunk_size: wire::U32LE,
     pub number_of_chunks: wire::U32LE,
     pub file_size: wire::U64LE,
-    pub file_hash: String,
+    pub file_hash: bytes::Bytes,
     pub is_premium_pack: bool,
     /// `pack_type` is the type of the resource pack. It is one of the resource pack types that may be
     /// found in the constants above.
@@ -3364,7 +3364,7 @@ impl wire::Decode for ResourcePackDataInfo {
         let chunk_size = <wire::U32LE as wire::Decode>::decode(reader)?;
         let number_of_chunks = <wire::U32LE as wire::Decode>::decode(reader)?;
         let file_size = <wire::U64LE as wire::Decode>::decode(reader)?;
-        let file_hash = <String as wire::Decode>::decode(reader)?;
+        let file_hash = <bytes::Bytes as wire::Decode>::decode(reader)?;
         let is_premium_pack = <bool as wire::Decode>::decode(reader)?;
         let pack_type = <wire::U8 as wire::Decode>::decode(reader)?;
         Ok(Self {
@@ -3849,7 +3849,7 @@ impl wire::Decode for PlayerSkin {
 /// client, each sub-client that connects sends a SubClientLogin to request their own login.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SubClientLogin {
-    pub sub_client_connection_request: String,
+    pub sub_client_connection_request: bytes::Bytes,
 }
 
 impl SubClientLogin {
@@ -3863,7 +3863,7 @@ impl wire::Encode for SubClientLogin {
 
 impl wire::Decode for SubClientLogin {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let sub_client_connection_request = <String as wire::Decode>::decode(reader)?;
+        let sub_client_connection_request = <bytes::Bytes as wire::Decode>::decode(reader)?;
         Ok(Self {
             sub_client_connection_request,
         })
@@ -5961,7 +5961,7 @@ impl wire::Decode for PositionTrackingDBClientRequest {
 pub struct DebugInfo {
     pub actor_id: ActorUniqueID,
     /// `data` is the debug data.
-    pub data: String,
+    pub data: bytes::Bytes,
 }
 
 impl DebugInfo {
@@ -5977,7 +5977,7 @@ impl wire::Encode for DebugInfo {
 impl wire::Decode for DebugInfo {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let actor_id = <ActorUniqueID as wire::Decode>::decode(reader)?;
-        let data = <String as wire::Decode>::decode(reader)?;
+        let data = <bytes::Bytes as wire::Decode>::decode(reader)?;
         Ok(Self {
             actor_id,
             data,
@@ -6687,7 +6687,7 @@ impl wire::Decode for PlayerStartItemCooldown {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ScriptMessage {
     pub message_id: String,
-    pub message_value: String,
+    pub message_value: bytes::Bytes,
 }
 
 impl ScriptMessage {
@@ -6703,7 +6703,7 @@ impl wire::Encode for ScriptMessage {
 impl wire::Decode for ScriptMessage {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let message_id = <String as wire::Decode>::decode(reader)?;
-        let message_value = <String as wire::Decode>::decode(reader)?;
+        let message_value = <bytes::Bytes as wire::Decode>::decode(reader)?;
         Ok(Self {
             message_id,
             message_value,

@@ -11,13 +11,13 @@ type Login struct {
 	// ConnectionRequest is a string containing information about the player and JWTs that may be used
 	// to verify if the player is connected to XBOX Live. The connection request also contains the
 	// necessary client public key to initiate encryption.
-	ConnectionRequest string
+	ConnectionRequest []byte
 }
 
 // Marshal reads or writes Login using its canonical wire layout.
 func (x *Login) Marshal(io protocol.IO) {
 	io.BEInt32(&x.ClientNetworkVersion)
-	io.String(&x.ConnectionRequest)
+	io.Bytes(&x.ConnectionRequest)
 }
 
 // ID returns the protocol ID for Login.

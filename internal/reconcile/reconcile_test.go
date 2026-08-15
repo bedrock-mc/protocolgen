@@ -177,6 +177,81 @@ func TestReconcileAcceptsFingerprintedSingletonWithIndependentEvidence(t *testin
 	}
 }
 
+func TestReconcileAdjudicationPreservesCompatibleIncompleteSemanticMetadata(t *testing.T) {
+	target := manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}
+	complete := testClaim("endstone", manifest.Node{Kind: manifest.KindStruct, Fields: []manifest.Field{
+		{Ordinal: 0, Name: "Mode", Encode: manifest.Primitive("u8"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"endstone"}}},
+	}})
+	incomplete := testClaim("mojang", manifest.Node{Kind: manifest.KindStruct, Semantic: "NamedData", TypeID: "NamedData.json#", Fields: []manifest.Field{
+		{Ordinal: 0, Name: "Mode", Encode: manifest.Unresolved("missing enum", true), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"mojang"}}},
+	}})
+	group := []claims.Claim{complete, incomplete}
+	context, err := claims.ContextFingerprint(target, group)
+	if err != nil {
+		t.Fatalf("ContextFingerprint: %v", err)
+	}
+	adjudication := manifest.Adjudication{
+		ID: "confirm-complete-wire", Target: complete.FieldPath, PrePatchContextSHA256: context,
+		Claims: []manifest.ClaimFingerprint{
+			{SourceID: complete.SourceID, Digest: mustFingerprint(t, complete)},
+			{SourceID: incomplete.SourceID, Digest: mustFingerprint(t, incomplete)},
+		},
+		SelectedSource: complete.SourceID,
+		Evidence:       []manifest.Evidence{{SourceID: complete.SourceID, Locator: "https://github.com/example/wire-oracle/blob/rev/serializer.go"}},
+		Reason:         "the independent serializer confirms the complete wire claim",
+	}
+	m, err := Reconcile(target, []claims.Result{
+		{Pin: sourcePin("endstone"), Target: target, Claims: []claims.Claim{complete}},
+		{Pin: sourcePin("mojang"), Target: target, Claims: []claims.Claim{incomplete}},
+	}, []manifest.Adjudication{adjudication})
+	if err != nil {
+		t.Fatalf("Reconcile: %v", err)
+	}
+	field := m.Packets[0].Fields[0]
+	if field.Encode.Kind != manifest.KindStruct || field.Encode.TypeID != "NamedData.json#" || field.Encode.Fields[0].Encode.Kind != manifest.KindPrimitive {
+		t.Fatalf("field = %#v, want complete wire with compatible semantic metadata", field)
+	}
+	if got := field.Provenance.Pins; len(got) != 1 || got[0] != "endstone" {
+		t.Fatalf("pins = %v, want only adjudicated complete source", got)
+	}
+}
+
+func TestReconcileAdjudicationPreservesMetadataAcrossWireRepresentationChoice(t *testing.T) {
+	target := manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}
+	bytesClaim := testClaim("endstone", manifest.Bytes(manifest.Primitive("var_u32")))
+	prefix := manifest.Primitive("var_u32")
+	stringClaim := testClaim("mojang", manifest.Node{
+		Kind: manifest.KindString, Semantic: "ConnectionRequest", TypeID: "ConnectionRequest.json#",
+		Prefix: &prefix, Encoding: "utf8", Representation: "text",
+	})
+	group := []claims.Claim{bytesClaim, stringClaim}
+	context, err := claims.ContextFingerprint(target, group)
+	if err != nil {
+		t.Fatalf("ContextFingerprint: %v", err)
+	}
+	adjudication := manifest.Adjudication{
+		ID: "binary-representation", Target: bytesClaim.FieldPath, PrePatchContextSHA256: context,
+		Claims: []manifest.ClaimFingerprint{
+			{SourceID: bytesClaim.SourceID, Digest: mustFingerprint(t, bytesClaim)},
+			{SourceID: stringClaim.SourceID, Digest: mustFingerprint(t, stringClaim)},
+		},
+		SelectedSource: bytesClaim.SourceID,
+		Evidence:       []manifest.Evidence{{SourceID: bytesClaim.SourceID, Locator: "https://github.com/example/wire-oracle/blob/rev/serializer.go"}},
+		Reason:         "the serializer identifies an arbitrary byte payload",
+	}
+	m, err := Reconcile(target, []claims.Result{
+		{Pin: sourcePin("endstone"), Target: target, Claims: []claims.Claim{bytesClaim}},
+		{Pin: sourcePin("mojang"), Target: target, Claims: []claims.Claim{stringClaim}},
+	}, []manifest.Adjudication{adjudication})
+	if err != nil {
+		t.Fatalf("Reconcile: %v", err)
+	}
+	field := m.Packets[0].Fields[0]
+	if field.Encode.Kind != manifest.KindBytes || field.Encode.TypeID != "ConnectionRequest.json#" {
+		t.Fatalf("field = %#v, want byte wire representation with semantic TypeID", field)
+	}
+}
+
 func TestReconcileReportsEveryProvenanceGap(t *testing.T) {
 	target := manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168}
 	first := testClaim("endstone", manifest.Primitive("u8"))

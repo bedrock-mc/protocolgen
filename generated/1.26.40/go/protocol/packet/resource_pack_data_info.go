@@ -11,7 +11,7 @@ type ResourcePackDataInfo struct {
 	ChunkSize      uint32
 	NumberOfChunks uint32
 	FileSize       uint64
-	FileHash       string
+	FileHash       []byte
 	IsPremiumPack  bool
 	// PackType is the type of the resource pack. It is one of the resource pack types that may be found
 	// in the constants above.
@@ -24,7 +24,7 @@ func (x *ResourcePackDataInfo) Marshal(io protocol.IO) {
 	io.Uint32(&x.ChunkSize)
 	io.Uint32(&x.NumberOfChunks)
 	io.Uint64(&x.FileSize)
-	io.String(&x.FileHash)
+	io.Bytes(&x.FileHash)
 	io.Bool(&x.IsPremiumPack)
 	io.Uint8(&x.PackType)
 }

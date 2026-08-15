@@ -203,7 +203,8 @@ func selectClaim(target manifest.Target, group []claims.Claim, adjudications []m
 	if len(group) == 0 {
 		return claims.Claim{}, nil, nil, "", fmt.Errorf("empty claim group")
 	}
-	if merged, pinIDs, ok := mergeClaimGroup(group); ok {
+	merged, pinIDs, compatible := mergeClaimGroupCandidate(group)
+	if compatible && len(pinIDs) >= 2 {
 		return merged, pinIDs, nil, "", nil
 	}
 
@@ -231,7 +232,16 @@ func selectClaim(target manifest.Target, group []claims.Claim, adjudications []m
 		if selected == nil {
 			return claims.Claim{}, nil, nil, "", fmt.Errorf("adjudication %q selects a claim not present in disagreement", adjudication.ID)
 		}
-		return *selected, []string{selected.SourceID}, append([]manifest.Evidence(nil), adjudication.Evidence...), adjudication.ID, nil
+		selectedClaim := *selected
+		if compatible && containsString(pinIDs, selected.SourceID) {
+			selectedClaim = merged
+		}
+		for _, claim := range group {
+			if claim.SourceID != selected.SourceID && hasBinaryTextRepresentationDifference(selectedClaim.Encode, claim.Encode) {
+				selectedClaim = enrichClaimMetadata(selectedClaim, claim)
+			}
+		}
+		return selectedClaim, []string{selected.SourceID}, append([]manifest.Evidence(nil), adjudication.Evidence...), adjudication.ID, nil
 	}
 	return claims.Claim{}, nil, nil, "", fmt.Errorf("source claims for %s lack two byte-equivalent complete claims (%s); an evidenced fingerprinted adjudication is required", group[0].FieldPath, claimCoverageSummary(group))
 }
@@ -248,7 +258,7 @@ func claimCoverageSummary(group []claims.Claim) string {
 	return strings.Join(parts, ",")
 }
 
-func mergeClaimGroup(group []claims.Claim) (claims.Claim, []string, bool) {
+func mergeClaimGroupCandidate(group []claims.Claim) (claims.Claim, []string, bool) {
 	selected := group[0]
 	for _, claim := range group[1:] {
 		if semanticScore(claim) > semanticScore(selected) {
@@ -290,10 +300,130 @@ func mergeClaimGroup(group []claims.Claim) (claims.Claim, []string, bool) {
 		}
 	}
 	pinIDs = mergeStrings(nil, pinIDs)
-	if len(pinIDs) < 2 {
-		return claims.Claim{}, nil, false
-	}
 	return merged, pinIDs, true
+}
+
+func containsString(values []string, wanted string) bool {
+	for _, value := range values {
+		if value == wanted {
+			return true
+		}
+	}
+	return false
+}
+
+func enrichClaimMetadata(selected, other claims.Claim) claims.Claim {
+	if semanticScore(other) > semanticScore(selected) {
+		selected.Semantic = other.Semantic
+		selected.TypeID = other.TypeID
+	}
+	selected.Encode = enrichNodeMetadata(selected.Encode, other.Encode)
+	if selected.Decode != nil && other.Decode != nil {
+		decode := enrichNodeMetadata(*selected.Decode, *other.Decode)
+		selected.Decode = &decode
+	}
+	return selected
+}
+
+func enrichNodeMetadata(selected, other manifest.Node) manifest.Node {
+	if nodeSemanticScore(other) > nodeSemanticScore(selected) {
+		selected.Semantic = other.Semantic
+		selected.TypeID = other.TypeID
+	}
+	switch {
+	case selected.Kind == manifest.KindStruct && other.Kind == manifest.KindStruct:
+		for i := range selected.Fields {
+			for j := range other.Fields {
+				if selected.Fields[i].Ordinal != other.Fields[j].Ordinal {
+					continue
+				}
+				if selected.Fields[i].TypeID == "" && other.Fields[j].TypeID != "" && !hasEvidenceGap(other.Fields[j].Encode) {
+					selected.Fields[i].TypeID = other.Fields[j].TypeID
+					selected.Fields[i].Semantic = other.Fields[j].Semantic
+				}
+				selected.Fields[i].Encode = enrichNodeMetadata(selected.Fields[i].Encode, other.Fields[j].Encode)
+				if selected.Fields[i].Decode != nil && other.Fields[j].Decode != nil {
+					decode := enrichNodeMetadata(*selected.Fields[i].Decode, *other.Fields[j].Decode)
+					selected.Fields[i].Decode = &decode
+				}
+				break
+			}
+		}
+	case selected.Kind == manifest.KindArray && other.Kind == manifest.KindArray,
+		selected.Kind == manifest.KindFixedArray && other.Kind == manifest.KindFixedArray:
+		selected.Element = enrichNodeMetadataPointer(selected.Element, other.Element)
+	case selected.Kind == manifest.KindOptional && other.Kind == manifest.KindOptional,
+		selected.Kind == manifest.KindReserved && other.Kind == manifest.KindReserved,
+		selected.Kind == manifest.KindIgnored && other.Kind == manifest.KindIgnored:
+		selected.Value = enrichNodeMetadataPointer(selected.Value, other.Value)
+	case selected.Kind == manifest.KindMap && other.Kind == manifest.KindMap:
+		selected.Key = enrichNodeMetadataPointer(selected.Key, other.Key)
+		selected.Value = enrichNodeMetadataPointer(selected.Value, other.Value)
+	case selected.Kind == manifest.KindSequence && other.Kind == manifest.KindSequence:
+		for i := range selected.Elements {
+			if i < len(other.Elements) {
+				selected.Elements[i] = enrichNodeMetadata(selected.Elements[i], other.Elements[i])
+			}
+		}
+	case selected.Kind == manifest.KindUnion && other.Kind == manifest.KindUnion:
+		for i := range selected.Variants {
+			for j := range other.Variants {
+				if selected.Variants[i].Value == other.Variants[j].Value {
+					selected.Variants[i].Encode = enrichNodeMetadata(selected.Variants[i].Encode, other.Variants[j].Encode)
+					break
+				}
+			}
+		}
+	}
+	return selected
+}
+
+func enrichNodeMetadataPointer(selected, other *manifest.Node) *manifest.Node {
+	if selected == nil || other == nil {
+		return selected
+	}
+	result := enrichNodeMetadata(*selected, *other)
+	return &result
+}
+
+func hasBinaryTextRepresentationDifference(selected, other manifest.Node) bool {
+	if selected.Kind == manifest.KindBytes && other.Kind == manifest.KindString {
+		return true
+	}
+	switch {
+	case selected.Kind == manifest.KindStruct && other.Kind == manifest.KindStruct:
+		for i := range selected.Fields {
+			for j := range other.Fields {
+				if selected.Fields[i].Ordinal == other.Fields[j].Ordinal && hasBinaryTextRepresentationDifference(selected.Fields[i].Encode, other.Fields[j].Encode) {
+					return true
+				}
+			}
+		}
+	case selected.Kind == manifest.KindArray && other.Kind == manifest.KindArray,
+		selected.Kind == manifest.KindFixedArray && other.Kind == manifest.KindFixedArray:
+		return selected.Element != nil && other.Element != nil && hasBinaryTextRepresentationDifference(*selected.Element, *other.Element)
+	case selected.Kind == manifest.KindOptional && other.Kind == manifest.KindOptional,
+		selected.Kind == manifest.KindReserved && other.Kind == manifest.KindReserved,
+		selected.Kind == manifest.KindIgnored && other.Kind == manifest.KindIgnored:
+		return selected.Value != nil && other.Value != nil && hasBinaryTextRepresentationDifference(*selected.Value, *other.Value)
+	case selected.Kind == manifest.KindMap && other.Kind == manifest.KindMap:
+		return selected.Value != nil && other.Value != nil && hasBinaryTextRepresentationDifference(*selected.Value, *other.Value)
+	case selected.Kind == manifest.KindSequence && other.Kind == manifest.KindSequence:
+		for i := range selected.Elements {
+			if i < len(other.Elements) && hasBinaryTextRepresentationDifference(selected.Elements[i], other.Elements[i]) {
+				return true
+			}
+		}
+	case selected.Kind == manifest.KindUnion && other.Kind == manifest.KindUnion:
+		for i := range selected.Variants {
+			for j := range other.Variants {
+				if selected.Variants[i].Value == other.Variants[j].Value && hasBinaryTextRepresentationDifference(selected.Variants[i].Encode, other.Variants[j].Encode) {
+					return true
+				}
+			}
+		}
+	}
+	return false
 }
 
 func normalizedWireComparable(claim claims.Claim) claims.Claim {

@@ -1514,13 +1514,13 @@ func (x *ExternalLinkSettings) Marshal(io IO) {
 
 type FeatureRegistryFeatureBinaryJSONFormat struct {
 	FeatureName      string
-	BinaryJSONOutput string
+	BinaryJSONOutput []byte
 }
 
 // Marshal reads or writes FeatureRegistryFeatureBinaryJSONFormat using its canonical wire layout.
 func (x *FeatureRegistryFeatureBinaryJSONFormat) Marshal(io IO) {
 	io.String(&x.FeatureName)
-	io.String(&x.BinaryJSONOutput)
+	io.Bytes(&x.BinaryJSONOutput)
 }
 
 type FloatOverride struct {
