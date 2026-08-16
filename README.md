@@ -74,14 +74,15 @@ does not relax normal reconciliation or allow arbitrary manifest replacement.
 Vanilla data is evidence alongside a generated protocol, not an input to wire
 reconciliation. The capture includes actor identifiers, biomes, recipes,
 creative content, items, dimensions, features, camera presets, trims, and
-voxel shapes. Raw `.dat` bodies are retained as lossless evidence. The `pmmp/`
-directory also contains the packet-derived files whose formats can be matched
-exactly to PMMP BedrockData: `required_item_list.json`,
+voxel shapes. Raw `.dat` bodies are retained as lossless evidence. Established
+packet-derived files are emitted directly in the version's `vanilla-data/`
+directory: `required_item_list.json`,
 `entity_identifiers.nbt`, `entity_id_map.json`, and
-`biome_definitions.json`. PMMP is used here because it explicitly publishes
-these as vanilla-packet-trace formats; Prismarine's normalized catalog schemas
-require non-packet metadata, while Cloudburst's aggregate creative and recipe
-files are consumer-specific.
+`biome_definitions.json`. Their schemas are validated against PMMP BedrockData,
+which explicitly publishes them as vanilla-packet-trace formats; PMMP is the
+compatibility reference, not a separate output namespace. Prismarine's
+normalized catalog schemas require non-packet metadata, while Cloudburst's
+aggregate creative and recipe files are consumer-specific.
 
 Creative and recipe compatibility files are not emitted yet. Their established
 PMMP representation needs the canonical block-state dictionary and block-item

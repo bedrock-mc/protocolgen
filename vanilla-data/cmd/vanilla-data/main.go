@@ -73,7 +73,7 @@ func run(args []string) error {
 	if err != nil {
 		return err
 	}
-	if err := vanilladata.ValidatePMMPGeneratedTarget(targetManifest.Target); err != nil {
+	if err := vanilladata.ValidateGeneratedTarget(targetManifest.Target); err != nil {
 		return err
 	}
 	source, err := vanilladata.LoadSourceConfig(*sourcePath)
@@ -157,9 +157,9 @@ func run(args []string) error {
 		warning = "optional packet settling ended with: " + settleErr.Error()
 	}
 	payloads := recorder.Payloads()
-	compatibilityFiles, err := vanilladata.BuildPMMPArtifacts(payloads)
+	derivedFiles, err := vanilladata.BuildDerivedArtifacts(payloads)
 	if err != nil {
-		return fmt.Errorf("build PMMP-compatible vanilla data with generated protocol: %w", err)
+		return fmt.Errorf("build derived vanilla data with generated protocol: %w", err)
 	}
 	if err := vanilladata.WriteArtifacts(*outPath, vanilladata.ArtifactInput{
 		Target: targetManifest.Target,
@@ -176,10 +176,10 @@ func run(args []string) error {
 			Revision:      source.Gophertunnel.Revision,
 			ModuleVersion: source.Gophertunnel.ModuleVersion,
 		},
-		Specs:              specs,
-		Payloads:           payloads,
-		CompatibilityFiles: compatibilityFiles,
-		Warning:            warning,
+		Specs:        specs,
+		Payloads:     payloads,
+		DerivedFiles: derivedFiles,
+		Warning:      warning,
 	}); err != nil {
 		return err
 	}

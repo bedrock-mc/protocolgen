@@ -12,7 +12,7 @@ import (
 	genpacket "protocolgen/generated/1.26.44/go/protocol/packet"
 )
 
-func TestBuildPMMPArtifactsUsesGeneratedProtocolPackets(t *testing.T) {
+func TestBuildDerivedArtifactsUsesGeneratedProtocolPackets(t *testing.T) {
 	emptyNBT, err := nbt.MarshalEncoding(map[string]any{}, nbt.NetworkLittleEndian)
 	if err != nil {
 		t.Fatal(err)
@@ -42,12 +42,12 @@ func TestBuildPMMPArtifactsUsesGeneratedProtocolPackets(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	files, err := BuildPMMPArtifacts(map[string][]byte{
+	files, err := BuildDerivedArtifacts(map[string][]byte{
 		"ItemRegistryPacket":        items,
 		"BiomeDefinitionListPacket": biomes,
 	})
 	if err != nil {
-		t.Fatalf("BuildPMMPArtifacts: %v", err)
+		t.Fatalf("BuildDerivedArtifacts: %v", err)
 	}
 	var required map[string]struct {
 		RuntimeID      int16  `json:"runtime_id"`
@@ -55,7 +55,7 @@ func TestBuildPMMPArtifactsUsesGeneratedProtocolPackets(t *testing.T) {
 		Version        int32  `json:"version"`
 		ComponentNBT   string `json:"component_nbt,omitempty"`
 	}
-	if err := json.Unmarshal(files["pmmp/required_item_list.json"], &required); err != nil {
+	if err := json.Unmarshal(files["required_item_list.json"], &required); err != nil {
 		t.Fatal(err)
 	}
 	if got := required["minecraft:test"]; got.RuntimeID != -7 || !got.ComponentBased || got.Version != 1 || got.ComponentNBT == "" {
@@ -67,7 +67,7 @@ func TestBuildPMMPArtifactsUsesGeneratedProtocolPackets(t *testing.T) {
 		FoliageSnow float32  `json:"foliageSnow"`
 		Tags        []string `json:"tags"`
 	}
-	if err := json.Unmarshal(files["pmmp/biome_definitions.json"], &definitions); err != nil {
+	if err := json.Unmarshal(files["biome_definitions.json"], &definitions); err != nil {
 		t.Fatal(err)
 	}
 	if got := definitions["minecraft:test_biome"]; got.ID != 42 || got.FoliageSnow != 0.25 || !reflect.DeepEqual(got.Tags, []string{"overworld"}) {
@@ -75,23 +75,23 @@ func TestBuildPMMPArtifactsUsesGeneratedProtocolPackets(t *testing.T) {
 	}
 }
 
-func TestBuildPMMPArtifactsRejectsPayloadThatGeneratedCodecCannotDecode(t *testing.T) {
-	_, err := BuildPMMPArtifacts(map[string][]byte{"ItemRegistryPacket": {0xff}})
+func TestBuildDerivedArtifactsRejectsPayloadThatGeneratedCodecCannotDecode(t *testing.T) {
+	_, err := BuildDerivedArtifacts(map[string][]byte{"ItemRegistryPacket": {0xff}})
 	if err == nil {
-		t.Fatal("BuildPMMPArtifacts accepted malformed generated-protocol payload")
+		t.Fatal("BuildDerivedArtifacts accepted malformed generated-protocol payload")
 	}
 }
 
-func TestValidatePMMPGeneratedTargetRejectsAnotherGeneratedVersion(t *testing.T) {
-	if err := ValidatePMMPGeneratedTarget(Target{MinecraftVersion: "1.26.44", ProtocolVersion: 2168}); err != nil {
-		t.Fatalf("ValidatePMMPGeneratedTarget exact match: %v", err)
+func TestValidateGeneratedTargetRejectsAnotherGeneratedVersion(t *testing.T) {
+	if err := ValidateGeneratedTarget(Target{MinecraftVersion: "1.26.44", ProtocolVersion: 2168}); err != nil {
+		t.Fatalf("ValidateGeneratedTarget exact match: %v", err)
 	}
-	if err := ValidatePMMPGeneratedTarget(Target{MinecraftVersion: "1.26.50", ProtocolVersion: 2200}); err == nil {
-		t.Fatal("ValidatePMMPGeneratedTarget accepted another generated version")
+	if err := ValidateGeneratedTarget(Target{MinecraftVersion: "1.26.50", ProtocolVersion: 2200}); err == nil {
+		t.Fatal("ValidateGeneratedTarget accepted another generated version")
 	}
 }
 
-func TestCheckedInCaptureReproducesPMMPArtifacts(t *testing.T) {
+func TestCheckedInCaptureReproducesDerivedArtifacts(t *testing.T) {
 	root := filepath.Join("..", "..", "..")
 	capture := filepath.Join(root, "generated", "1.26.44", "vanilla-data")
 	payloads := make(map[string][]byte)
@@ -105,9 +105,9 @@ func TestCheckedInCaptureReproducesPMMPArtifacts(t *testing.T) {
 		}
 		payloads[spec.Name] = data
 	}
-	files, err := BuildPMMPArtifacts(payloads)
+	files, err := BuildDerivedArtifacts(payloads)
 	if err != nil {
-		t.Fatalf("BuildPMMPArtifacts checked-in capture: %v", err)
+		t.Fatalf("BuildDerivedArtifacts checked-in capture: %v", err)
 	}
 	for name, got := range files {
 		want, err := os.ReadFile(filepath.Join(capture, filepath.FromSlash(name)))

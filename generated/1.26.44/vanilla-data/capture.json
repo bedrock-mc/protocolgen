@@ -1,5 +1,5 @@
 {
-  "format_version": 2,
+  "format_version": 3,
   "target": {
     "minecraft_version": "1.26.44",
     "protocol_version": 2168,
@@ -163,26 +163,26 @@
       "sha256": "sha256:7cd45a8c51bc0a99acecabb19c2fdfb8f2bc43a8b0a20624364cb7a612b36c3f"
     },
     {
-      "file": "pmmp/biome_definitions.json",
-      "kind": "pmmp-compatible",
+      "file": "biome_definitions.json",
+      "kind": "derived",
       "bytes": 48614,
       "sha256": "sha256:1e0e9e0ae95992fb90269a48590eb9b16c262512960e985d793bcd63de511aa2"
     },
     {
-      "file": "pmmp/entity_id_map.json",
-      "kind": "pmmp-compatible",
+      "file": "entity_id_map.json",
+      "kind": "derived",
       "bytes": 4303,
       "sha256": "sha256:d48454f4fa9a48bd4ac65a95a0042fe423aeb7df639ac90878f661bbeea0f280"
     },
     {
-      "file": "pmmp/entity_identifiers.nbt",
-      "kind": "pmmp-compatible",
+      "file": "entity_identifiers.nbt",
+      "kind": "derived",
       "bytes": 8844,
       "sha256": "sha256:7a970f508d742210efe7355b609dae4302d3cbca9ad2283ccf46a144de5a0e65"
     },
     {
-      "file": "pmmp/required_item_list.json",
-      "kind": "pmmp-compatible",
+      "file": "required_item_list.json",
+      "kind": "derived",
       "bytes": 311738,
       "sha256": "sha256:bd9ea5e19391392263f226fe7288ef42aee0ea59ee4ffb45477dee456899c001"
     }

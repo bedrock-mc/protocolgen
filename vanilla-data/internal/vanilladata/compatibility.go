@@ -15,19 +15,19 @@ import (
 	genpacket "protocolgen/generated/1.26.44/go/protocol/packet"
 )
 
-// ValidatePMMPGeneratedTarget ensures the compatibility exporter is compiled
+// ValidateGeneratedTarget ensures the derived-data exporter is compiled
 // against the generated packet set selected by the capture manifest.
-func ValidatePMMPGeneratedTarget(target Target) error {
+func ValidateGeneratedTarget(target Target) error {
 	if target.MinecraftVersion != genprotocol.GAME_VERSION || target.ProtocolVersion != genprotocol.PROTOCOL_VERSION {
-		return fmt.Errorf("PMMP exporter uses generated protocol %s/%d, capture target is %s/%d", genprotocol.GAME_VERSION, genprotocol.PROTOCOL_VERSION, target.MinecraftVersion, target.ProtocolVersion)
+		return fmt.Errorf("derived-data exporter uses generated protocol %s/%d, capture target is %s/%d", genprotocol.GAME_VERSION, genprotocol.PROTOCOL_VERSION, target.MinecraftVersion, target.ProtocolVersion)
 	}
 	return nil
 }
 
-// BuildPMMPArtifacts decodes captured wire bodies with protocolgen's generated
-// packet definitions and emits the subset of PMMP BedrockData that can be
-// derived exactly from login packets alone.
-func BuildPMMPArtifacts(payloads map[string][]byte) (map[string][]byte, error) {
+// BuildDerivedArtifacts decodes captured wire bodies with protocolgen's
+// generated packet definitions and emits established vanilla-data formats
+// that can be derived exactly from login packets alone.
+func BuildDerivedArtifacts(payloads map[string][]byte) (map[string][]byte, error) {
 	files := make(map[string][]byte)
 	if data, ok := payloads["ItemRegistryPacket"]; ok {
 		var pk genpacket.ItemRegistry
@@ -38,7 +38,7 @@ func BuildPMMPArtifacts(payloads map[string][]byte) (map[string][]byte, error) {
 		if err != nil {
 			return nil, err
 		}
-		files["pmmp/required_item_list.json"] = required
+		files["required_item_list.json"] = required
 	}
 	if data, ok := payloads["AvailableActorIdentifiersPacket"]; ok {
 		var pk genpacket.AvailableActorIdentifiers
@@ -49,8 +49,8 @@ func BuildPMMPArtifacts(payloads map[string][]byte) (map[string][]byte, error) {
 		if err != nil {
 			return nil, err
 		}
-		files["pmmp/entity_id_map.json"] = entityMap
-		files["pmmp/entity_identifiers.nbt"] = append([]byte(nil), pk.IdentifierList...)
+		files["entity_id_map.json"] = entityMap
+		files["entity_identifiers.nbt"] = append([]byte(nil), pk.IdentifierList...)
 	}
 	if data, ok := payloads["BiomeDefinitionListPacket"]; ok {
 		var pk genpacket.BiomeDefinitionList
@@ -61,7 +61,7 @@ func BuildPMMPArtifacts(payloads map[string][]byte) (map[string][]byte, error) {
 		if err != nil {
 			return nil, err
 		}
-		files["pmmp/biome_definitions.json"] = definitions
+		files["biome_definitions.json"] = definitions
 	}
 	return files, nil
 }
@@ -92,7 +92,7 @@ func requiredItemList(items []genprotocol.ItemData) ([]byte, error) {
 		}
 		result[item.ItemName] = entry
 	}
-	return marshalPMMPJSON(result)
+	return marshalCanonicalJSON(result)
 }
 
 // marshalPersistentNBT uses sorted compound keys. The gophertunnel NBT
@@ -273,28 +273,28 @@ func entityIDMap(encoded []byte) ([]byte, error) {
 	return out.Bytes(), nil
 }
 
-type pmmpColour struct {
+type canonicalColour struct {
 	A uint8 `json:"a"`
 	B uint8 `json:"b"`
 	G uint8 `json:"g"`
 	R uint8 `json:"r"`
 }
 
-type pmmpBiomeDefinition struct {
-	Depth          float64    `json:"depth"`
-	Downfall       float64    `json:"downfall"`
-	FoliageSnow    float64    `json:"foliageSnow"`
-	ID             uint16     `json:"id"`
-	MapWaterColour pmmpColour `json:"mapWaterColour"`
-	Rain           bool       `json:"rain"`
-	Scale          float64    `json:"scale"`
-	Tags           []string   `json:"tags"`
-	Temperature    float64    `json:"temperature"`
+type canonicalBiomeDefinition struct {
+	Depth          float64         `json:"depth"`
+	Downfall       float64         `json:"downfall"`
+	FoliageSnow    float64         `json:"foliageSnow"`
+	ID             uint16          `json:"id"`
+	MapWaterColour canonicalColour `json:"mapWaterColour"`
+	Rain           bool            `json:"rain"`
+	Scale          float64         `json:"scale"`
+	Tags           []string        `json:"tags"`
+	Temperature    float64         `json:"temperature"`
 }
 
 func biomeDefinitions(pk *genpacket.BiomeDefinitionList) ([]byte, error) {
 	strings := pk.StringList.Strings
-	result := make(map[string]pmmpBiomeDefinition, len(pk.MapOfBiomeNamesToData))
+	result := make(map[string]canonicalBiomeDefinition, len(pk.MapOfBiomeNamesToData))
 	for _, entry := range pk.MapOfBiomeNamesToData {
 		if int(entry.Key) >= len(strings) {
 			return nil, fmt.Errorf("biome name index %d exceeds string list", entry.Key)
@@ -310,18 +310,18 @@ func biomeDefinitions(pk *genpacket.BiomeDefinitionList) ([]byte, error) {
 			}
 		}
 		colour := uint32(definition.MapWaterColorARGB)
-		result[strings[entry.Key]] = pmmpBiomeDefinition{
+		result[strings[entry.Key]] = canonicalBiomeDefinition{
 			Depth: round3(definition.Depth), Downfall: round3(definition.Downfall), FoliageSnow: round3(definition.FoliageSnow), ID: definition.ID,
-			MapWaterColour: pmmpColour{A: uint8(colour >> 24), R: uint8(colour >> 16), G: uint8(colour >> 8), B: uint8(colour)},
+			MapWaterColour: canonicalColour{A: uint8(colour >> 24), R: uint8(colour >> 16), G: uint8(colour >> 8), B: uint8(colour)},
 			Rain:           definition.Rain, Scale: round3(definition.Scale), Tags: tags, Temperature: round3(definition.Temperature),
 		}
 	}
-	return marshalPMMPJSON(result)
+	return marshalCanonicalJSON(result)
 }
 
 func round3(value float32) float64 { return math.Round(float64(value)*1000) / 1000 }
 
-func marshalPMMPJSON(value any) ([]byte, error) {
+func marshalCanonicalJSON(value any) ([]byte, error) {
 	data, err := json.MarshalIndent(value, "", "    ")
 	if err != nil {
 		return nil, err
