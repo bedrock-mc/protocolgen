@@ -40,7 +40,7 @@ index 9fd0d6f..ca7b9bb 100644
 +    if (output == nullptr || *output == '\0') {
 +        return;
 +    }
-+    auto timeout = std::chrono::minutes(5);
++    auto timeout = std::chrono::milliseconds(5 * 60 * 1000);
 +    if (const char *timeout_ms = std::getenv("ENDSTONE_VANILLA_DATA_TIMEOUT_MS"); timeout_ms != nullptr) {
 +        try {
 +            timeout = std::chrono::milliseconds(std::stoll(timeout_ms));
