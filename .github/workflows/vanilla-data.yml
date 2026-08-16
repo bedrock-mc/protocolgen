@@ -147,7 +147,11 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update
-          sudo apt-get install -y clang-tools
+          sudo apt-get install -y clang-tools libc++-dev libc++abi-dev
+          cxx_probe="$RUNNER_TEMP/protocolgen-clang-libcxx-probe"
+          printf 'int main() { return 0; }\n' | clang++ -std=c++20 -stdlib=libc++ -x c++ -o "$cxx_probe" -
+          "$cxx_probe"
+          rm -f "$cxx_probe"
 
       - name: Extract BDS internal vanilla data with pinned Endstone
         if: env.ENDSTONE_ENABLED == 'true'
