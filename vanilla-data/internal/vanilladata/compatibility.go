@@ -1,0 +1,330 @@
+package vanilladata
+
+import (
+	"bytes"
+	"encoding/base64"
+	"encoding/binary"
+	"encoding/json"
+	"fmt"
+	"math"
+	"reflect"
+	"sort"
+
+	"github.com/sandertv/gophertunnel/minecraft/nbt"
+	genprotocol "protocolgen/generated/1.26.44/go/protocol"
+	genpacket "protocolgen/generated/1.26.44/go/protocol/packet"
+)
+
+// ValidatePMMPGeneratedTarget ensures the compatibility exporter is compiled
+// against the generated packet set selected by the capture manifest.
+func ValidatePMMPGeneratedTarget(target Target) error {
+	if target.MinecraftVersion != genprotocol.GAME_VERSION || target.ProtocolVersion != genprotocol.PROTOCOL_VERSION {
+		return fmt.Errorf("PMMP exporter uses generated protocol %s/%d, capture target is %s/%d", genprotocol.GAME_VERSION, genprotocol.PROTOCOL_VERSION, target.MinecraftVersion, target.ProtocolVersion)
+	}
+	return nil
+}
+
+// BuildPMMPArtifacts decodes captured wire bodies with protocolgen's generated
+// packet definitions and emits the subset of PMMP BedrockData that can be
+// derived exactly from login packets alone.
+func BuildPMMPArtifacts(payloads map[string][]byte) (map[string][]byte, error) {
+	files := make(map[string][]byte)
+	if data, ok := payloads["ItemRegistryPacket"]; ok {
+		var pk genpacket.ItemRegistry
+		if err := genpacket.Decode(data, &pk); err != nil {
+			return nil, err
+		}
+		required, err := requiredItemList(pk.ItemData)
+		if err != nil {
+			return nil, err
+		}
+		files["pmmp/required_item_list.json"] = required
+	}
+	if data, ok := payloads["AvailableActorIdentifiersPacket"]; ok {
+		var pk genpacket.AvailableActorIdentifiers
+		if err := genpacket.Decode(data, &pk); err != nil {
+			return nil, err
+		}
+		entityMap, err := entityIDMap(pk.IdentifierList)
+		if err != nil {
+			return nil, err
+		}
+		files["pmmp/entity_id_map.json"] = entityMap
+		files["pmmp/entity_identifiers.nbt"] = append([]byte(nil), pk.IdentifierList...)
+	}
+	if data, ok := payloads["BiomeDefinitionListPacket"]; ok {
+		var pk genpacket.BiomeDefinitionList
+		if err := genpacket.Decode(data, &pk); err != nil {
+			return nil, err
+		}
+		definitions, err := biomeDefinitions(&pk)
+		if err != nil {
+			return nil, err
+		}
+		files["pmmp/biome_definitions.json"] = definitions
+	}
+	return files, nil
+}
+
+type requiredItemEntry struct {
+	RuntimeID      int16  `json:"runtime_id"`
+	ComponentBased bool   `json:"component_based"`
+	Version        int32  `json:"version"`
+	ComponentNBT   string `json:"component_nbt,omitempty"`
+}
+
+func requiredItemList(items []genprotocol.ItemData) ([]byte, error) {
+	result := make(map[string]requiredItemEntry, len(items))
+	for _, item := range items {
+		entry := requiredItemEntry{RuntimeID: item.ItemID, ComponentBased: item.IsComponentBased, Version: int32(item.ItemVersion)}
+		if len(item.ItemComponentData) != 0 {
+			var value map[string]any
+			if err := nbt.UnmarshalEncoding(item.ItemComponentData, &value, nbt.NetworkLittleEndian); err != nil {
+				return nil, fmt.Errorf("decode component NBT for %s: %w", item.ItemName, err)
+			}
+			if len(value) != 0 {
+				persistent, err := marshalPersistentNBT(value)
+				if err != nil {
+					return nil, fmt.Errorf("encode component NBT for %s: %w", item.ItemName, err)
+				}
+				entry.ComponentNBT = base64.StdEncoding.EncodeToString(persistent)
+			}
+		}
+		result[item.ItemName] = entry
+	}
+	return marshalPMMPJSON(result)
+}
+
+// marshalPersistentNBT uses sorted compound keys. The gophertunnel NBT
+// encoder accepts maps but deliberately follows Go's random map iteration,
+// which would make checked-in component_nbt strings change between runs.
+func marshalPersistentNBT(value map[string]any) ([]byte, error) {
+	var out bytes.Buffer
+	if err := writeNBTTag(&out, 10, "", value); err != nil {
+		return nil, err
+	}
+	return out.Bytes(), nil
+}
+
+func writeNBTTag(out *bytes.Buffer, tag byte, name string, value any) error {
+	out.WriteByte(tag)
+	if err := writeNBTString(out, name); err != nil {
+		return err
+	}
+	return writeNBTPayload(out, tag, reflect.ValueOf(value))
+}
+
+func writeNBTPayload(out *bytes.Buffer, tag byte, value reflect.Value) error {
+	if value.Kind() == reflect.Interface {
+		value = value.Elem()
+	}
+	switch tag {
+	case 1:
+		out.WriteByte(byte(value.Uint()))
+	case 2:
+		writeLE(out, uint16(value.Int()))
+	case 3:
+		writeLE(out, uint32(value.Int()))
+	case 4:
+		writeLE(out, uint64(value.Int()))
+	case 5:
+		writeLE(out, math.Float32bits(float32(value.Float())))
+	case 6:
+		writeLE(out, math.Float64bits(value.Float()))
+	case 7:
+		writeLE(out, uint32(value.Len()))
+		for i := 0; i < value.Len(); i++ {
+			out.WriteByte(byte(value.Index(i).Uint()))
+		}
+	case 8:
+		return writeNBTString(out, value.String())
+	case 9:
+		elementTag := byte(0)
+		if value.Len() != 0 {
+			var err error
+			elementTag, err = nbtTagOf(value.Index(0))
+			if err != nil {
+				return err
+			}
+		}
+		out.WriteByte(elementTag)
+		writeLE(out, uint32(value.Len()))
+		for i := 0; i < value.Len(); i++ {
+			currentTag, err := nbtTagOf(value.Index(i))
+			if err != nil {
+				return err
+			}
+			if currentTag != elementTag {
+				return fmt.Errorf("NBT list contains tag %d after tag %d", currentTag, elementTag)
+			}
+			if err := writeNBTPayload(out, elementTag, value.Index(i)); err != nil {
+				return err
+			}
+		}
+	case 10:
+		keys := value.MapKeys()
+		sort.Slice(keys, func(i, j int) bool { return keys[i].String() < keys[j].String() })
+		for _, key := range keys {
+			entry := value.MapIndex(key)
+			entryTag, err := nbtTagOf(entry)
+			if err != nil {
+				return fmt.Errorf("NBT key %s: %w", key.String(), err)
+			}
+			if err := writeNBTTag(out, entryTag, key.String(), entry.Interface()); err != nil {
+				return err
+			}
+		}
+		out.WriteByte(0)
+	case 11:
+		writeLE(out, uint32(value.Len()))
+		for i := 0; i < value.Len(); i++ {
+			writeLE(out, uint32(value.Index(i).Int()))
+		}
+	case 12:
+		writeLE(out, uint32(value.Len()))
+		for i := 0; i < value.Len(); i++ {
+			writeLE(out, uint64(value.Index(i).Int()))
+		}
+	default:
+		return fmt.Errorf("unsupported NBT tag %d", tag)
+	}
+	return nil
+}
+
+func nbtTagOf(value reflect.Value) (byte, error) {
+	if value.Kind() == reflect.Interface {
+		if value.IsNil() {
+			return 0, fmt.Errorf("nil NBT value")
+		}
+		value = value.Elem()
+	}
+	switch value.Kind() {
+	case reflect.Uint8:
+		return 1, nil
+	case reflect.Int16:
+		return 2, nil
+	case reflect.Int32:
+		return 3, nil
+	case reflect.Int64:
+		return 4, nil
+	case reflect.Float32:
+		return 5, nil
+	case reflect.Float64:
+		return 6, nil
+	case reflect.String:
+		return 8, nil
+	case reflect.Slice:
+		return 9, nil
+	case reflect.Map:
+		return 10, nil
+	case reflect.Array:
+		switch value.Type().Elem().Kind() {
+		case reflect.Uint8:
+			return 7, nil
+		case reflect.Int32:
+			return 11, nil
+		case reflect.Int64:
+			return 12, nil
+		}
+	}
+	return 0, fmt.Errorf("unsupported NBT Go type %s", value.Type())
+}
+
+func writeNBTString(out *bytes.Buffer, value string) error {
+	if len(value) > math.MaxUint16 {
+		return fmt.Errorf("NBT string is too long: %d", len(value))
+	}
+	writeLE(out, uint16(len(value)))
+	out.WriteString(value)
+	return nil
+}
+
+func writeLE(out *bytes.Buffer, value any) { _ = binary.Write(out, binary.LittleEndian, value) }
+
+type actorIdentifierList struct {
+	IDList []actorIdentifier `nbt:"idlist"`
+}
+
+type actorIdentifier struct {
+	BID         string `nbt:"bid"`
+	HasSpawnEgg bool   `nbt:"hasspawnegg"`
+	ID          string `nbt:"id"`
+	RuntimeID   int32  `nbt:"rid"`
+	Summonable  bool   `nbt:"summonable"`
+}
+
+func entityIDMap(encoded []byte) ([]byte, error) {
+	var identifiers actorIdentifierList
+	if err := nbt.UnmarshalEncoding(encoded, &identifiers, nbt.NetworkLittleEndian); err != nil {
+		return nil, fmt.Errorf("decode actor identifiers NBT: %w", err)
+	}
+	sort.SliceStable(identifiers.IDList, func(i, j int) bool { return identifiers.IDList[i].RuntimeID < identifiers.IDList[j].RuntimeID })
+	var out bytes.Buffer
+	out.WriteString("{\n")
+	for i, entry := range identifiers.IDList {
+		name, _ := json.Marshal(entry.ID)
+		fmt.Fprintf(&out, "    %s: %d", name, entry.RuntimeID)
+		if i+1 != len(identifiers.IDList) {
+			out.WriteByte(',')
+		}
+		out.WriteByte('\n')
+	}
+	out.WriteString("}\n")
+	return out.Bytes(), nil
+}
+
+type pmmpColour struct {
+	A uint8 `json:"a"`
+	B uint8 `json:"b"`
+	G uint8 `json:"g"`
+	R uint8 `json:"r"`
+}
+
+type pmmpBiomeDefinition struct {
+	Depth          float64    `json:"depth"`
+	Downfall       float64    `json:"downfall"`
+	FoliageSnow    float64    `json:"foliageSnow"`
+	ID             uint16     `json:"id"`
+	MapWaterColour pmmpColour `json:"mapWaterColour"`
+	Rain           bool       `json:"rain"`
+	Scale          float64    `json:"scale"`
+	Tags           []string   `json:"tags"`
+	Temperature    float64    `json:"temperature"`
+}
+
+func biomeDefinitions(pk *genpacket.BiomeDefinitionList) ([]byte, error) {
+	strings := pk.StringList.Strings
+	result := make(map[string]pmmpBiomeDefinition, len(pk.MapOfBiomeNamesToData))
+	for _, entry := range pk.MapOfBiomeNamesToData {
+		if int(entry.Key) >= len(strings) {
+			return nil, fmt.Errorf("biome name index %d exceeds string list", entry.Key)
+		}
+		definition := entry.Value
+		tags := []string{}
+		if value, ok := definition.Tags.Value(); ok {
+			for _, index := range value.Tags {
+				if int(index) >= len(strings) {
+					return nil, fmt.Errorf("biome tag index %d exceeds string list", index)
+				}
+				tags = append(tags, strings[index])
+			}
+		}
+		colour := uint32(definition.MapWaterColorARGB)
+		result[strings[entry.Key]] = pmmpBiomeDefinition{
+			Depth: round3(definition.Depth), Downfall: round3(definition.Downfall), FoliageSnow: round3(definition.FoliageSnow), ID: definition.ID,
+			MapWaterColour: pmmpColour{A: uint8(colour >> 24), R: uint8(colour >> 16), G: uint8(colour >> 8), B: uint8(colour)},
+			Rain:           definition.Rain, Scale: round3(definition.Scale), Tags: tags, Temperature: round3(definition.Temperature),
+		}
+	}
+	return marshalPMMPJSON(result)
+}
+
+func round3(value float32) float64 { return math.Round(float64(value)*1000) / 1000 }
+
+func marshalPMMPJSON(value any) ([]byte, error) {
+	data, err := json.MarshalIndent(value, "", "    ")
+	if err != nil {
+		return nil, err
+	}
+	return append(data, '\n'), nil
+}

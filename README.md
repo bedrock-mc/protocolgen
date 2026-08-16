@@ -31,10 +31,11 @@ docs.
 Run any command with `-h` for its flags.
 
 `vanilla-data/cmd/vanilla-data` is the companion BDS capture bot. It follows
-the same offline gophertunnel login flow as `df-mc/datagen`, but stores raw,
-version-locked packet evidence rather than Dragonfly- or PocketMine-specific
-output. It is a separate Go module so its game-client dependencies do not leak
-into the protocol generator.
+the same offline gophertunnel login flow as `df-mc/datagen`. Gophertunnel owns
+the encrypted session and exposes the decrypted packet bodies; protocolgen's
+generated packet definitions then decode the captured registry packets. It is
+a separate Go module so its game-client dependencies do not leak into the
+protocol generator.
 
 ## Regenerating the 1.26.40 snapshot
 
@@ -72,13 +73,28 @@ does not relax normal reconciliation or allow arbitrary manifest replacement.
 
 Vanilla data is evidence alongside a generated protocol, not an input to wire
 reconciliation. The capture includes actor identifiers, biomes, recipes,
-creative content, items, dimensions, features, camera presets, trims, voxel
-shapes. Dimensions and features are optional because vanilla BDS does not send
-them for every world; `capture.json` explicitly records whether they were
-captured or absent. It also records the target, BDS archive and executable
-SHA-256 values, server settings, exact gophertunnel build, and every output
-digest. `StartGame.CustomBlocks` is intentionally not exported: on an
-addon-free server it is empty and is not the vanilla runtime block palette.
+creative content, items, dimensions, features, camera presets, trims, and
+voxel shapes. Raw `.dat` bodies are retained as lossless evidence. The `pmmp/`
+directory also contains the packet-derived files whose formats can be matched
+exactly to PMMP BedrockData: `required_item_list.json`,
+`entity_identifiers.nbt`, `entity_id_map.json`, and
+`biome_definitions.json`. PMMP is used here because it explicitly publishes
+these as vanilla-packet-trace formats; Prismarine's normalized catalog schemas
+require non-packet metadata, while Cloudburst's aggregate creative and recipe
+files are consumer-specific.
+
+Creative and recipe compatibility files are not emitted yet. Their established
+PMMP representation needs the canonical block-state dictionary and block-item
+mapping produced by a BDS binary extractor, which are not sent to an addon-free
+client. Emitting names and metadata without those inputs would create a subtly
+incompatible third format. `StartGame.CustomBlocks` is not a substitute: it is
+empty on an addon-free server and is not the vanilla runtime block palette.
+
+Dimensions and features are optional because vanilla BDS does not send them
+for every world; `capture.json` explicitly records whether they were captured
+or absent. It also records the target, BDS archive and executable SHA-256
+values, server settings, exact gophertunnel build, and every raw or compatible
+output digest.
 
 For the pinned local BDS configured as described by the version's source lock:
 
@@ -100,7 +116,10 @@ capture once its manual gate is resolved.
 
 Each generated version pins its BDS download, archive checksum, build, and
 gophertunnel module version in `generated/<version>/vanilla-source.json`. The
-captured artifact should be reviewed and checked in beside that generated
+compatibility exporter is also deliberately compiled against one generated Go
+packet package and fails validation if its version does not match the selected
+manifest; updating that binding is part of adding the next generated version.
+The captured artifact should be reviewed and checked in beside that generated
 protocol before the update is considered complete. The workflow requires
 explicit EULA acceptance and never commits or pushes automatically.
 

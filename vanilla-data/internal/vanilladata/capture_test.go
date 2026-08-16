@@ -90,7 +90,10 @@ func TestWriteArtifactsRecordsOptionalAbsenceAndReplacesStaleOutput(t *testing.T
 			{ID: 180, Name: "DimensionDataPacket", File: "dimension_data.dat", Optional: true},
 		},
 		Payloads: map[string][]byte{"ItemRegistryPacket": {3, 1, 4}},
-		Warning:  "optional settling stopped early",
+		CompatibilityFiles: map[string][]byte{
+			"pmmp/required_item_list.json": []byte("{}\n"),
+		},
+		Warning: "optional settling stopped early",
 	}
 	if err := WriteArtifacts(out, input); err != nil {
 		t.Fatalf("WriteArtifacts: %v", err)
@@ -117,6 +120,12 @@ func TestWriteArtifactsRecordsOptionalAbsenceAndReplacesStaleOutput(t *testing.T
 	}
 	if got, want := metadata.Files[0].SHA256, "sha256:9ceed0d818acc42d0318974c548e2251f888f8512bc5c4c70378aa969a883cad"; got != want {
 		t.Fatalf("packet SHA-256 = %q, want %q", got, want)
+	}
+	if got, err := os.ReadFile(filepath.Join(out, "pmmp", "required_item_list.json")); err != nil || string(got) != "{}\n" {
+		t.Fatalf("PMMP compatibility file = %q, %v", got, err)
+	}
+	if got := metadata.Files[1]; got.Kind != "pmmp-compatible" || got.File != "pmmp/required_item_list.json" {
+		t.Fatalf("PMMP capture metadata = %#v", got)
 	}
 }
 

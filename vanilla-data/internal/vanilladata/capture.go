@@ -8,13 +8,14 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"sync"
 
 	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
 )
 
-const captureFormatVersion = 1
+const captureFormatVersion = 2
 
 // PacketSpec names one clientbound packet payload captured verbatim from BDS.
 type PacketSpec struct {
@@ -163,20 +164,21 @@ type GophertunnelProvenance struct {
 
 // ArtifactInput contains everything required to write one versioned vanilla-data directory.
 type ArtifactInput struct {
-	Target       Target
-	BDS          BDSProvenance
-	Gophertunnel GophertunnelProvenance
-	Specs        []PacketSpec
-	Payloads     map[string][]byte
-	Warning      string
+	Target             Target
+	BDS                BDSProvenance
+	Gophertunnel       GophertunnelProvenance
+	Specs              []PacketSpec
+	Payloads           map[string][]byte
+	CompatibilityFiles map[string][]byte
+	Warning            string
 }
 
 // CaptureFile records the digest of one generated file.
 type CaptureFile struct {
 	File       string `json:"file"`
 	Kind       string `json:"kind"`
-	PacketID   uint32 `json:"packet_id"`
-	PacketName string `json:"packet_name"`
+	PacketID   uint32 `json:"packet_id,omitempty"`
+	PacketName string `json:"packet_name,omitempty"`
 	Bytes      int    `json:"bytes"`
 	SHA256     string `json:"sha256"`
 }
@@ -251,6 +253,28 @@ func WriteArtifacts(out string, input ArtifactInput) error {
 		metadata.Packets = append(metadata.Packets, status)
 		metadata.Files = append(metadata.Files, fileMetadata(spec.File, payload, spec))
 	}
+	compatibilityNames := make([]string, 0, len(input.CompatibilityFiles))
+	for name := range input.CompatibilityFiles {
+		compatibilityNames = append(compatibilityNames, name)
+	}
+	sort.Strings(compatibilityNames)
+	for _, name := range compatibilityNames {
+		if err := validateCompatibilityName(name); err != nil {
+			return err
+		}
+		data := input.CompatibilityFiles[name]
+		if len(data) == 0 {
+			return fmt.Errorf("compatibility file %s is empty", name)
+		}
+		path := filepath.Join(temporary, filepath.FromSlash(name))
+		if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+			return fmt.Errorf("create compatibility directory for %s: %w", name, err)
+		}
+		if err := os.WriteFile(path, data, 0o644); err != nil {
+			return fmt.Errorf("write %s: %w", name, err)
+		}
+		metadata.Files = append(metadata.Files, compatibilityFileMetadata(name, data))
+	}
 	metadataData, err := json.MarshalIndent(metadata, "", "  ")
 	if err != nil {
 		return fmt.Errorf("encode capture metadata: %w", err)
@@ -305,6 +329,19 @@ func replaceDirectory(out, staged string) error {
 func fileMetadata(name string, data []byte, spec PacketSpec) CaptureFile {
 	digest := sha256.Sum256(data)
 	return CaptureFile{File: name, Kind: "packet_payload", PacketID: spec.ID, PacketName: spec.Name, Bytes: len(data), SHA256: "sha256:" + hex.EncodeToString(digest[:])}
+}
+
+func compatibilityFileMetadata(name string, data []byte) CaptureFile {
+	digest := sha256.Sum256(data)
+	return CaptureFile{File: name, Kind: "pmmp-compatible", Bytes: len(data), SHA256: "sha256:" + hex.EncodeToString(digest[:])}
+}
+
+func validateCompatibilityName(name string) error {
+	clean := filepath.ToSlash(filepath.Clean(name))
+	if name == "" || clean != name || !strings.HasPrefix(clean, "pmmp/") || strings.Contains(name, "\\") || strings.Contains(clean, "../") {
+		return fmt.Errorf("invalid compatibility file name %q", name)
+	}
+	return nil
 }
 
 func validateArtifactName(name string) error {

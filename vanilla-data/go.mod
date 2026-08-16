@@ -5,6 +5,7 @@ go 1.26
 require (
 	github.com/google/uuid v1.6.0
 	github.com/sandertv/gophertunnel v1.58.1
+	protocolgen v0.0.0
 )
 
 require (
@@ -46,3 +47,5 @@ require (
 )
 
 replace github.com/sandertv/gophertunnel => github.com/HashimTheArab/gophertunnel v1.25.3-0.20260815100934-479474324424
+
+replace protocolgen => ..
