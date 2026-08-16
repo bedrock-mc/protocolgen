@@ -95,8 +95,8 @@ func LoadSourceConfig(path string) (SourceConfig, error) {
 	if value.ServerProperties["online-mode"] != "false" {
 		return SourceConfig{}, fmt.Errorf("vanilla source must configure BDS with online-mode=false")
 	}
-	if value.ServerProperties["server-port"] == "" || value.ServerProperties["level-seed"] == "" || value.ServerProperties["level-type"] == "" {
-		return SourceConfig{}, fmt.Errorf("vanilla source must pin server-port, level-seed, and level-type")
+	if value.ServerProperties["server-port"] == "" || value.ServerProperties["level-name"] == "" || value.ServerProperties["level-seed"] == "" {
+		return SourceConfig{}, fmt.Errorf("vanilla source must pin server-port, level-name, and level-seed")
 	}
 	return value, nil
 }

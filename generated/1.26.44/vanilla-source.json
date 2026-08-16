@@ -22,7 +22,7 @@
     "block-network-ids-are-hashes": "true",
     "enable-lan-visibility": "false",
     "server-port": "19132",
-    "level-seed": "1",
-    "level-type": "DEFAULT"
+    "level-name": "protocolgen-vanilla-data",
+    "level-seed": "1"
   }
 }

@@ -20,7 +20,7 @@ func testSource() SourceConfig {
 		Gophertunnel: GophertunnelSource{
 			Repository: "https://github.com/HashimTheArab/gophertunnel", ModulePath: "github.com/HashimTheArab/gophertunnel", Revision: strings.Repeat("b", 40), ModuleVersion: "v0.0.0-20260815100934-bbbbbbbbbbbb",
 		},
-		ServerProperties: map[string]string{"online-mode": "false", "server-port": "19132", "level-seed": "1", "level-type": "DEFAULT"},
+		ServerProperties: map[string]string{"online-mode": "false", "server-port": "19132", "level-name": "protocolgen-vanilla-data", "level-seed": "1"},
 	}
 }
 
