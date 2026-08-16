@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "target": {
+    "minecraft_version": "1.26.44",
+    "protocol_version": 2168,
+    "build": "hotfix4"
+  },
+  "base_manifest_sha256": "sha256:1a6b754e3edfdc80136ad9569c54a4a0515fcfd405f533db5ecf353fbb3cfdc3",
+  "sources": [
+    {
+      "id": "cloudburst-2168-hotfix4",
+      "kind": "cloudburst-exact-codec",
+      "revision": "8c215aade77457529153278e68954dda6403e9c6",
+      "digest": "sha256:114f74d77fde42564b46c98157d54b2d2525f6f6add4b240eb3aaee53cdc6bac",
+      "locator": "https://github.com/CloudburstMC/Protocol/tree/8c215aade77457529153278e68954dda6403e9c6/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v2168",
+      "minecraft_version": "1.26.44",
+      "protocol_version": 2168
+    },
+    {
+      "id": "mojang-1.26.44",
+      "kind": "mojang",
+      "revision": "059f74c5c6d8f1b9bbba5e375644545a27491938",
+      "digest": "sha256:cdf9fceb1f71bb0a78674b713f531dce2461e7790502b7ba4f4579ccec0d5d1c",
+      "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/059f74c5c6d8f1b9bbba5e375644545a27491938/json",
+      "minecraft_version": "1.26.44",
+      "protocol_version": 2168
+    },
+    {
+      "id": "lunar-gophertunnel-1.26.44",
+      "kind": "gophertunnel-exact-codec",
+      "revision": "4794743244247a9395360bced1f294d4882c4df0",
+      "digest": "sha256:5dea2cc9cfdaba6748f4df28ff30bfb5a8343402203448679a6cf4e1779d12d6",
+      "locator": "https://github.com/HashimTheArab/gophertunnel/tree/4794743244247a9395360bced1f294d4882c4df0/minecraft/protocol",
+      "minecraft_version": "1.26.44",
+      "protocol_version": 2168
+    }
+  ],
+  "operations": [
+    {
+      "id": "set-score-remove-objective-double-optional",
+      "packet_id": 108,
+      "field_ordinal": 0,
+      "path": "encode.element.variants[0].encode.fields[2].encode",
+      "operation": "wrap_optional",
+      "pre_patch_node_sha256": "sha256:b11c0bb56c90aef5749ed0d560e28eb336b2bc3e7cf3aea19a4f43a0b6d92403",
+      "reason": "Minecraft 1.26.44 added an outer presence boolean around the existing optional objective name without changing protocol 2168.",
+      "evidence": [
+        {
+          "source_id": "cloudburst-2168-hotfix4",
+          "locator": "https://github.com/CloudburstMC/Protocol/blob/8c215aade77457529153278e68954dda6403e9c6/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v2168/serializer/SetScoreSerializer_v2168_hotfix4.java",
+          "summary": "The exact 1.26.44 serializer reads and writes an outer boolean around the existing optional objective string for removed scores."
+        },
+        {
+          "source_id": "cloudburst-2168-hotfix4",
+          "locator": "https://github.com/CloudburstMC/Protocol/blob/8c215aade77457529153278e68954dda6403e9c6/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v2168/Bedrock_v2168_hotfix4.java",
+          "summary": "The hotfix codec registers only the SetScore serializer change while retaining protocol 2168 and identifying Minecraft 1.26.44."
+        },
+        {
+          "source_id": "lunar-gophertunnel-1.26.44",
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/4794743244247a9395360bced1f294d4882c4df0/minecraft/protocol/scoreboard.go#L58",
+          "summary": "Lunar independently changes the removed-score objective from OptionalFunc to DoubleOptionalFunc for Minecraft 1.26.44."
+        }
+      ]
+    }
+  ]
+}

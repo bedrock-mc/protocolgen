@@ -26,6 +26,7 @@ docs.
 | `verify-gophertunnel` | Compare the manifest with the pinned gophertunnel source oracle. |
 | `changelog` | Diff two corrected schema snapshots into a Markdown changelog. |
 | `update-guide` | Turn a changelog into gophertunnel transcription snippets. |
+| `hotfix` | Derive a fingerprinted same-protocol patch from a reconciled manifest. |
 
 Run any command with `-h` for its flags.
 
@@ -44,6 +45,22 @@ make regen
 
 `make verify` runs the same pipeline and fails if it produces drift from
 what's checked in — this is what CI enforces.
+
+## Regenerating the 1.26.44 same-ID hotfix
+
+Minecraft 1.26.44 retained protocol 2168 but added one outer presence marker
+around `RemoveScore.ObjectiveName`. Because no second complete 1.26.44 source
+snapshot exists, `generated/1.26.44/hotfix.json` derives the release from the
+fully reconciled 1.26.40 manifest. The spec pins the complete base-manifest
+hash, the exact node hash, the target codec evidence, and one constrained
+`wrap_optional` operation. Run:
+
+```sh
+make hotfix
+```
+
+The derivation fails closed if the base manifest or target node changes. It
+does not relax normal reconciliation or allow arbitrary manifest replacement.
 
 ## The manifest
 

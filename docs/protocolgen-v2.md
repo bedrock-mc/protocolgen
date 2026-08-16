@@ -28,6 +28,15 @@ unions, conditionals, explicit enum values, reserved/ignored compatibility
 nodes, recursive markers, and opaque/unresolved nodes. Reachable opaque or
 unresolved nodes make validation and generation fail.
 
+For the exceptional case where Mojang changes a released wire layout without
+changing its protocol number and no second complete source snapshot exists,
+`protocolgen hotfix` may derive a new target from an already reconciled
+manifest. A derivation pins the complete base-manifest SHA-256, exact target
+node SHA-256, exact-version evidence sources, and a constrained operation.
+Currently the only supported operation is `wrap_optional`; arbitrary node
+replacement is deliberately unavailable. Base-version sources remain pinned
+to the base target, while new evidence sources must pin the hotfix target.
+
 `schema_version: 2` is the wire vocabulary version. It is not a target profile:
 Cargo layout, borrowed views, lossy strings, naming, and cross-version
 deduplication belong in a downstream profile. The generated Rust output

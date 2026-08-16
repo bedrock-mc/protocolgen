@@ -1,0 +1,3459 @@
+// Code generated from canonical protocol manifest v2. DO NOT EDIT.
+
+package protocol
+
+import (
+	"image/color"
+
+	"github.com/go-gl/mathgl/mgl32"
+	"github.com/google/uuid"
+)
+
+type Achievement struct {
+	AchievementID MinecraftEventingAchievementIds
+}
+
+func (*Achievement) isEventData() {}
+
+// Marshal reads or writes Achievement using its canonical wire layout.
+func (x *Achievement) Marshal(io IO) {
+	IntegerFunc(&x.AchievementID, io.Uint8)
+}
+
+type AddEntry struct {
+	Action           PlayerListPacketType
+	UUID             uuid.UUID
+	ActorUniqueID    int64
+	PlayerName       string
+	XBLXUID          string
+	PlatformOnlineID string
+	BuildPlatform    BuildPlatform
+	SerializedSkin   SerializedSkinRef
+	IsTeacher        bool
+	IsHost           bool
+	IsSubClient      bool
+	PlayerColor      color.RGBA
+}
+
+func (*AddEntry) isPlayerListData() {}
+
+// Marshal reads or writes AddEntry using its canonical wire layout.
+func (x *AddEntry) Marshal(io IO) {
+	IntegerFunc(&x.Action, io.Uint8)
+	io.UUID(&x.UUID)
+	io.ActorUniqueID(&x.ActorUniqueID)
+	io.String(&x.PlayerName)
+	io.String(&x.XBLXUID)
+	io.String(&x.PlatformOnlineID)
+	IntegerFunc(&x.BuildPlatform, io.Int32)
+	x.SerializedSkin.Marshal(io)
+	io.Bool(&x.IsTeacher)
+	io.Bool(&x.IsHost)
+	io.Bool(&x.IsSubClient)
+	io.RGBA(&x.PlayerColor)
+}
+
+type AddTimeMarkerData struct {
+	ClockID     uint64
+	TimeMarkers []TimeMarkerData
+}
+
+func (*AddTimeMarkerData) isSyncWorldClocksData() {}
+
+// Marshal reads or writes AddTimeMarkerData using its canonical wire layout.
+func (x *AddTimeMarkerData) Marshal(io IO) {
+	io.Varuint64(&x.ClockID)
+	SliceLimits(io, &x.TimeMarkers, 0, 256)
+}
+
+type AdventureSettings struct {
+	NoPvM          bool
+	NoMvP          bool
+	ImmutableWorld bool
+	ShowNameTags   bool
+	AutoJump       bool
+}
+
+// Marshal reads or writes AdventureSettings using its canonical wire layout.
+func (x *AdventureSettings) Marshal(io IO) {
+	io.Bool(&x.NoPvM)
+	io.Bool(&x.NoMvP)
+	io.Bool(&x.ImmutableWorld)
+	io.Bool(&x.ShowNameTags)
+	io.Bool(&x.AutoJump)
+}
+
+type AgentActionType int32
+
+const (
+	AgentActionTypeAttack            AgentActionType = 1
+	AgentActionTypeCollect           AgentActionType = 2
+	AgentActionTypeDestroy           AgentActionType = 3
+	AgentActionTypeDetectRedstone    AgentActionType = 4
+	AgentActionTypeDetectObstacle    AgentActionType = 5
+	AgentActionTypeDrop              AgentActionType = 6
+	AgentActionTypeDropAll           AgentActionType = 7
+	AgentActionTypeInspect           AgentActionType = 8
+	AgentActionTypeInspectData       AgentActionType = 9
+	AgentActionTypeInspectItemCount  AgentActionType = 10
+	AgentActionTypeInspectItemDetail AgentActionType = 11
+	AgentActionTypeInspectItemSpace  AgentActionType = 12
+	AgentActionTypeInteract          AgentActionType = 13
+	AgentActionTypeMove              AgentActionType = 14
+	AgentActionTypePlaceBlock        AgentActionType = 15
+	AgentActionTypeTill              AgentActionType = 16
+	AgentActionTypeTransferItemTo    AgentActionType = 17
+	AgentActionTypeTurn              AgentActionType = 18
+)
+
+type AgentAnimationType uint8
+
+const (
+	AgentAnimationTypeArmSwing AgentAnimationType = 0
+	AgentAnimationTypeShrug    AgentAnimationType = 1
+)
+
+type AnimateAction uint8
+
+const (
+	AnimateActionNoAction         AnimateAction = 0
+	AnimateActionSwing            AnimateAction = 1
+	AnimateActionWakeUp           AnimateAction = 3
+	AnimateActionCriticalHit      AnimateAction = 4
+	AnimateActionMagicCriticalHit AnimateAction = 5
+)
+
+type AnimatedImageData struct {
+	SkinImage           SkinImage
+	AnimatedTextureType PersonaAnimatedTextureType
+	Frames              float32
+	AnimationExpression PersonaAnimationExpression
+}
+
+// Marshal reads or writes AnimatedImageData using its canonical wire layout.
+func (x *AnimatedImageData) Marshal(io IO) {
+	x.SkinImage.Marshal(io)
+	IntegerFunc(&x.AnimatedTextureType, io.Varuint32)
+	io.Float32(&x.Frames)
+	IntegerFunc(&x.AnimationExpression, io.Varuint32)
+}
+
+type AnimationMode uint8
+
+const (
+	AnimationModeNone   AnimationMode = 0
+	AnimationModeLayers AnimationMode = 1
+	AnimationModeBlocks AnimationMode = 2
+)
+
+type ArmorSlotAndDamagePair struct {
+	ArmorSlot LegacyArmorSlot
+	Damage    int16
+}
+
+// Marshal reads or writes ArmorSlotAndDamagePair using its canonical wire layout.
+func (x *ArmorSlotAndDamagePair) Marshal(io IO) {
+	IntegerFunc(&x.ArmorSlot, io.Varint32)
+	io.Int16(&x.Damage)
+}
+
+type ArrowData struct {
+	ArrowEndLocation Optional[mgl32.Vec3]
+	ArrowHeadLength  Optional[float32]
+	ArrowHeadRadius  Optional[float32]
+	NumSegments      Optional[uint8]
+}
+
+func (*ArrowData) isPrimitiveShapeExtraShapeData() {}
+
+// Marshal reads or writes ArrowData using its canonical wire layout.
+func (x *ArrowData) Marshal(io IO) {
+	OptionalFunc(io, &x.ArrowEndLocation, io.Vec3)
+	OptionalFunc(io, &x.ArrowHeadLength, io.Float32)
+	OptionalFunc(io, &x.ArrowHeadRadius, io.Float32)
+	OptionalFunc(io, &x.NumSegments, io.Uint8)
+}
+
+type AuthorAndMessage struct {
+	PlayerName string
+	Message    string
+}
+
+func (*AuthorAndMessage) isTextData() {}
+
+// Marshal reads or writes AuthorAndMessage using its canonical wire layout.
+func (x *AuthorAndMessage) Marshal(io IO) {
+	io.StringLimits(&x.PlayerName, 0, 256)
+	io.StringLimits(&x.Message, 1, 65536)
+}
+
+type BedrockDDUI interface {
+	isBedrockDDUI()
+}
+
+// MarshalBedrockDDUI reads or writes the BedrockDDUI union using its canonical wire layout.
+func MarshalBedrockDDUI(io IO, x *BedrockDDUI) {
+	UnionFunc(io,
+		func() {
+			var tag uint32
+			io.Varuint32(&tag)
+			switch int64(tag) {
+			case 0:
+				value := new(BedrockDDUIDataStoreUpdate)
+				value.Marshal(io)
+				*x = value
+			case 1:
+				value := new(BedrockDDUIDataStoreChange)
+				value.Marshal(io)
+				*x = value
+			case 2:
+				value := new(BedrockDDUIDataStoreRemoval)
+				value.Marshal(io)
+				*x = value
+			default:
+				io.InvalidValue(tag, "unknown union tag")
+			}
+		},
+		func() {
+			switch value := (*x).(type) {
+			case *BedrockDDUIDataStoreUpdate:
+				tag := uint32(0)
+				io.Varuint32(&tag)
+				value.Marshal(io)
+			case *BedrockDDUIDataStoreChange:
+				tag := uint32(1)
+				io.Varuint32(&tag)
+				value.Marshal(io)
+			case *BedrockDDUIDataStoreRemoval:
+				tag := uint32(2)
+				io.Varuint32(&tag)
+				value.Marshal(io)
+			default:
+				io.InvalidValue(*x, "unknown union value")
+			}
+		},
+	)
+}
+
+type BedrockDDUIDataStoreChange struct {
+	DataStoreName       string
+	Property            string
+	UpdateCount         uint32
+	TheNewPropertyValue DynamicValue
+}
+
+func (*BedrockDDUIDataStoreChange) isBedrockDDUI() {}
+
+// Marshal reads or writes BedrockDDUIDataStoreChange using its canonical wire layout.
+func (x *BedrockDDUIDataStoreChange) Marshal(io IO) {
+	io.StringLimits(&x.DataStoreName, 1, 1000)
+	io.StringLimits(&x.Property, 1, 1000)
+	io.Uint32(&x.UpdateCount)
+	Maximum(io, &x.UpdateCount, 4.294967294e+09)
+	MarshalDynamicValue(io, &x.TheNewPropertyValue)
+}
+
+type BedrockDDUIDataStoreRemoval struct {
+	DataStoreName string
+}
+
+func (*BedrockDDUIDataStoreRemoval) isBedrockDDUI() {}
+
+// Marshal reads or writes BedrockDDUIDataStoreRemoval using its canonical wire layout.
+func (x *BedrockDDUIDataStoreRemoval) Marshal(io IO) {
+	io.StringLimits(&x.DataStoreName, 1, 1000)
+}
+
+type BedrockDDUIDataStoreUpdate struct {
+	DataStoreName       string
+	Property            string
+	Path                string
+	Data                BedrockDDUIDataStoreUpdateData
+	PropertyUpdateCount uint32
+	PathUpdateCount     uint32
+}
+
+func (*BedrockDDUIDataStoreUpdate) isBedrockDDUI() {}
+
+// Marshal reads or writes BedrockDDUIDataStoreUpdate using its canonical wire layout.
+func (x *BedrockDDUIDataStoreUpdate) Marshal(io IO) {
+	io.StringLimits(&x.DataStoreName, 1, 1000)
+	io.StringLimits(&x.Property, 1, 1000)
+	io.StringLimits(&x.Path, 0, 1000)
+	MarshalBedrockDDUIDataStoreUpdateData(io, &x.Data)
+	io.Uint32(&x.PropertyUpdateCount)
+	Maximum(io, &x.PropertyUpdateCount, 4.294967294e+09)
+	io.Uint32(&x.PathUpdateCount)
+	Maximum(io, &x.PathUpdateCount, 4.294967294e+09)
+}
+
+type BellUsed struct {
+	ItemID int32
+}
+
+func (*BellUsed) isEventData() {}
+
+// Marshal reads or writes BellUsed using its canonical wire layout.
+func (x *BellUsed) Marshal(io IO) {
+	io.Varint32(&x.ItemID)
+}
+
+type BookEditAction interface {
+	isBookEditAction()
+}
+
+// MarshalBookEditAction reads or writes the BookEditAction union using its canonical wire layout.
+func MarshalBookEditAction(io IO, x *BookEditAction) {
+	UnionFunc(io,
+		func() {
+			var tag uint32
+			io.Varuint32(&tag)
+			switch int64(tag) {
+			case 0:
+				value := new(BookEditActionReplacePage)
+				value.Marshal(io)
+				*x = value
+			case 1:
+				value := new(BookEditActionAddPage)
+				value.Marshal(io)
+				*x = value
+			case 2:
+				value := new(BookEditActionDeletePage)
+				value.Marshal(io)
+				*x = value
+			case 3:
+				value := new(BookEditActionSwapPages)
+				value.Marshal(io)
+				*x = value
+			case 4:
+				value := new(BookEditActionFinalize)
+				value.Marshal(io)
+				*x = value
+			default:
+				io.InvalidValue(tag, "unknown union tag")
+			}
+		},
+		func() {
+			switch value := (*x).(type) {
+			case *BookEditActionReplacePage:
+				tag := uint32(0)
+				io.Varuint32(&tag)
+				value.Marshal(io)
+			case *BookEditActionAddPage:
+				tag := uint32(1)
+				io.Varuint32(&tag)
+				value.Marshal(io)
+			case *BookEditActionDeletePage:
+				tag := uint32(2)
+				io.Varuint32(&tag)
+				value.Marshal(io)
+			case *BookEditActionSwapPages:
+				tag := uint32(3)
+				io.Varuint32(&tag)
+				value.Marshal(io)
+			case *BookEditActionFinalize:
+				tag := uint32(4)
+				io.Varuint32(&tag)
+				value.Marshal(io)
+			default:
+				io.InvalidValue(*x, "unknown union value")
+			}
+		},
+	)
+}
+
+type BookEditActionAddPage struct {
+	PageIndex int32
+	PageText  string
+	PhotoName string
+}
+
+func (*BookEditActionAddPage) isBookEditAction() {}
+
+// Marshal reads or writes BookEditActionAddPage using its canonical wire layout.
+func (x *BookEditActionAddPage) Marshal(io IO) {
+	io.Varint32(&x.PageIndex)
+	io.StringLimits(&x.PageText, 0, 768)
+	io.StringLimits(&x.PhotoName, 0, 768)
+}
+
+type BookEditActionDeletePage struct {
+	PageIndex int32
+}
+
+func (*BookEditActionDeletePage) isBookEditAction() {}
+
+// Marshal reads or writes BookEditActionDeletePage using its canonical wire layout.
+func (x *BookEditActionDeletePage) Marshal(io IO) {
+	io.Varint32(&x.PageIndex)
+}
+
+type BookEditActionFinalize struct {
+	Title  string
+	Author string
+	XUID   string
+}
+
+func (*BookEditActionFinalize) isBookEditAction() {}
+
+// Marshal reads or writes BookEditActionFinalize using its canonical wire layout.
+func (x *BookEditActionFinalize) Marshal(io IO) {
+	io.StringLimits(&x.Title, 0, 768)
+	io.StringLimits(&x.Author, 0, 768)
+	io.StringLimits(&x.XUID, 0, 768)
+}
+
+type BookEditActionReplacePage struct {
+	PageIndex int32
+	PageText  string
+	PhotoName string
+}
+
+func (*BookEditActionReplacePage) isBookEditAction() {}
+
+// Marshal reads or writes BookEditActionReplacePage using its canonical wire layout.
+func (x *BookEditActionReplacePage) Marshal(io IO) {
+	io.Varint32(&x.PageIndex)
+	io.StringLimits(&x.PageText, 0, 768)
+	io.StringLimits(&x.PhotoName, 0, 768)
+}
+
+type BookEditActionSwapPages struct {
+	PageIndex     int32
+	SwapWithIndex int32
+}
+
+func (*BookEditActionSwapPages) isBookEditAction() {}
+
+// Marshal reads or writes BookEditActionSwapPages using its canonical wire layout.
+func (x *BookEditActionSwapPages) Marshal(io IO) {
+	io.Varint32(&x.PageIndex)
+	io.Varint32(&x.SwapWithIndex)
+}
+
+type BossBarColor uint8
+
+const (
+	BossBarColorPink          BossBarColor = 0
+	BossBarColorBlue          BossBarColor = 1
+	BossBarColorRed           BossBarColor = 2
+	BossBarColorGreen         BossBarColor = 3
+	BossBarColorYellow        BossBarColor = 4
+	BossBarColorPurple        BossBarColor = 5
+	BossBarColorRebeccaPurple BossBarColor = 6
+	BossBarColorWhite         BossBarColor = 7
+)
+
+type BossBarOverlay uint8
+
+const (
+	BossBarOverlayProgress           BossBarOverlay = 0
+	BossBarOverlayNotchedGenerated6  BossBarOverlay = 1
+	BossBarOverlayNotchedGenerated10 BossBarOverlay = 2
+	BossBarOverlayNotchedGenerated12 BossBarOverlay = 3
+	BossBarOverlayNotchedGenerated20 BossBarOverlay = 4
+)
+
+type BossEventUpdateType uint8
+
+const (
+	BossEventUpdateTypeAdd              BossEventUpdateType = 0
+	BossEventUpdateTypePlayerAdded      BossEventUpdateType = 1
+	BossEventUpdateTypeRemove           BossEventUpdateType = 2
+	BossEventUpdateTypePlayerRemoved    BossEventUpdateType = 3
+	BossEventUpdateTypeUpdatePercent    BossEventUpdateType = 4
+	BossEventUpdateTypeUpdateName       BossEventUpdateType = 5
+	BossEventUpdateTypeUpdateProperties BossEventUpdateType = 6
+	BossEventUpdateTypeUpdateStyle      BossEventUpdateType = 7
+	BossEventUpdateTypeQuery            BossEventUpdateType = 8
+)
+
+type BossKilled struct {
+	BossActorID int64
+	PartySize   int32
+	BossType    int32
+}
+
+func (*BossKilled) isEventData() {}
+
+// Marshal reads or writes BossKilled using its canonical wire layout.
+func (x *BossKilled) Marshal(io IO) {
+	io.Varint64(&x.BossActorID)
+	io.Varint32(&x.PartySize)
+	io.Varint32(&x.BossType)
+}
+
+type BoxData struct {
+	BoxBound mgl32.Vec3
+}
+
+func (*BoxData) isPrimitiveShapeExtraShapeData() {}
+
+// Marshal reads or writes BoxData using its canonical wire layout.
+func (x *BoxData) Marshal(io IO) {
+	io.Vec3(&x.BoxBound)
+}
+
+type BuildPlatform int32
+
+const (
+	BuildPlatformUnknown      BuildPlatform = -1
+	BuildPlatformGoogle       BuildPlatform = 1
+	BuildPlatformIOS          BuildPlatform = 2
+	BuildPlatformOSX          BuildPlatform = 3
+	BuildPlatformAmazon       BuildPlatform = 4
+	BuildPlatformGearVR       BuildPlatform = 5
+	BuildPlatformUWP          BuildPlatform = 7
+	BuildPlatformWin32        BuildPlatform = 8
+	BuildPlatformDedicated    BuildPlatform = 9
+	BuildPlatformTvOS         BuildPlatform = 10
+	BuildPlatformSony         BuildPlatform = 11
+	BuildPlatformNx           BuildPlatform = 12
+	BuildPlatformXbox         BuildPlatform = 13
+	BuildPlatformWindowsPhone BuildPlatform = 14
+	BuildPlatformLinux        BuildPlatform = 15
+)
+
+type Cancel struct {
+	ResponseType string
+}
+
+func (*Cancel) isResourcePackClientResponseData() {}
+
+// Marshal reads or writes Cancel using its canonical wire layout.
+func (x *Cancel) Marshal(io IO) {
+	io.String(&x.ResponseType)
+}
+
+type CauldronUsed struct {
+	ContentsColor uint32
+	ContentsType  int32
+	FillLevel     int32
+}
+
+func (*CauldronUsed) isEventData() {}
+
+// Marshal reads or writes CauldronUsed using its canonical wire layout.
+func (x *CauldronUsed) Marshal(io IO) {
+	io.Varuint32(&x.ContentsColor)
+	io.Varint32(&x.ContentsType)
+	io.Varint32(&x.FillLevel)
+}
+
+type ChangeEntityScore struct {
+	Action        string
+	ScoreboardID  ScoreboardID
+	ObjectiveName string
+	ScoreValue    int32
+	ActorID       int64
+}
+
+func (*ChangeEntityScore) isSetScoreInfoItem() {}
+
+// Marshal reads or writes ChangeEntityScore using its canonical wire layout.
+func (x *ChangeEntityScore) Marshal(io IO) {
+	io.String(&x.Action)
+	x.ScoreboardID.Marshal(io)
+	io.StringLimits(&x.ObjectiveName, 1, 18446744073709551615)
+	io.Int32(&x.ScoreValue)
+	io.ActorUniqueID(&x.ActorID)
+}
+
+type ChangeFakePlayerScore struct {
+	Action         string
+	ScoreboardID   ScoreboardID
+	ObjectiveName  string
+	ScoreValue     int32
+	FakePlayerName string
+}
+
+func (*ChangeFakePlayerScore) isSetScoreInfoItem() {}
+
+// Marshal reads or writes ChangeFakePlayerScore using its canonical wire layout.
+func (x *ChangeFakePlayerScore) Marshal(io IO) {
+	io.String(&x.Action)
+	x.ScoreboardID.Marshal(io)
+	io.StringLimits(&x.ObjectiveName, 1, 18446744073709551615)
+	io.Int32(&x.ScoreValue)
+	io.StringLimits(&x.FakePlayerName, 1, 18446744073709551615)
+}
+
+type ChangePlayerScore struct {
+	Action         string
+	ScoreboardID   ScoreboardID
+	ObjectiveName  string
+	ScoreValue     int32
+	PlayerUniqueID PlayerScoreboardID
+}
+
+func (*ChangePlayerScore) isSetScoreInfoItem() {}
+
+// Marshal reads or writes ChangePlayerScore using its canonical wire layout.
+func (x *ChangePlayerScore) Marshal(io IO) {
+	io.String(&x.Action)
+	x.ScoreboardID.Marshal(io)
+	io.StringLimits(&x.ObjectiveName, 1, 18446744073709551615)
+	io.Int32(&x.ScoreValue)
+	x.PlayerUniqueID.Marshal(io)
+}
+
+type ChatRestrictionLevel uint8
+
+const (
+	ChatRestrictionLevelNone     ChatRestrictionLevel = 0
+	ChatRestrictionLevelDropped  ChatRestrictionLevel = 1
+	ChatRestrictionLevelDisabled ChatRestrictionLevel = 2
+)
+
+type ClearOverride struct {
+	Type string
+}
+
+func (*ClearOverride) isPlayerUpdateEntityOverridesData() {}
+
+// Marshal reads or writes ClearOverride using its canonical wire layout.
+func (x *ClearOverride) Marshal(io IO) {
+	io.String(&x.Type)
+}
+
+type ClientCameraAimAssistAction uint8
+
+const (
+	ClientCameraAimAssistActionSetFromCameraPreset ClientCameraAimAssistAction = 0
+	ClientCameraAimAssistActionClear               ClientCameraAimAssistAction = 1
+)
+
+type ClientPlayMode uint32
+
+const (
+	ClientPlayModeNormal              ClientPlayMode = 0
+	ClientPlayModeTeaser              ClientPlayMode = 1
+	ClientPlayModeScreen              ClientPlayMode = 2
+	ClientPlayModeViewer              ClientPlayMode = 3
+	ClientPlayModeReality             ClientPlayMode = 4
+	ClientPlayModePlacement           ClientPlayMode = 5
+	ClientPlayModeLivingRoom          ClientPlayMode = 6
+	ClientPlayModeExitLevel           ClientPlayMode = 7
+	ClientPlayModeExitLevelLivingRoom ClientPlayMode = 8
+	ClientPlayModeNumModes            ClientPlayMode = 9
+)
+
+type ClientboundTextureShiftAction uint8
+
+const (
+	ClientboundTextureShiftActionInvalid    ClientboundTextureShiftAction = 0
+	ClientboundTextureShiftActionInitialize ClientboundTextureShiftAction = 1
+	ClientboundTextureShiftActionStart      ClientboundTextureShiftAction = 2
+	ClientboundTextureShiftActionSetEnabled ClientboundTextureShiftAction = 3
+	ClientboundTextureShiftActionSync       ClientboundTextureShiftAction = 4
+)
+
+type CodeBuilderExecutionStateCodeStatus uint8
+
+const (
+	CodeBuilderExecutionStateCodeStatusNone       CodeBuilderExecutionStateCodeStatus = 0
+	CodeBuilderExecutionStateCodeStatusNotStarted CodeBuilderExecutionStateCodeStatus = 1
+	CodeBuilderExecutionStateCodeStatusInProgress CodeBuilderExecutionStateCodeStatus = 2
+	CodeBuilderExecutionStateCodeStatusPaused     CodeBuilderExecutionStateCodeStatus = 3
+	CodeBuilderExecutionStateCodeStatusError      CodeBuilderExecutionStateCodeStatus = 4
+	CodeBuilderExecutionStateCodeStatusSucceeded  CodeBuilderExecutionStateCodeStatus = 5
+)
+
+type CodeBuilderRuntimeAction struct {
+	CodeBuilderRuntimeAction string
+}
+
+func (*CodeBuilderRuntimeAction) isEventData() {}
+
+// Marshal reads or writes CodeBuilderRuntimeAction using its canonical wire layout.
+func (x *CodeBuilderRuntimeAction) Marshal(io IO) {
+	io.StringLimits(&x.CodeBuilderRuntimeAction, 0, 16)
+}
+
+type CodeBuilderScoreboard struct {
+	ObjectiveName string
+	Score         int32
+}
+
+func (*CodeBuilderScoreboard) isEventData() {}
+
+// Marshal reads or writes CodeBuilderScoreboard using its canonical wire layout.
+func (x *CodeBuilderScoreboard) Marshal(io IO) {
+	io.StringLimits(&x.ObjectiveName, 0, 256)
+	io.Varint32(&x.Score)
+}
+
+type CodeBuilderStorageQueryOptionsCategory uint8
+
+const (
+	CodeBuilderStorageQueryOptionsCategoryNone          CodeBuilderStorageQueryOptionsCategory = 0
+	CodeBuilderStorageQueryOptionsCategoryCodeStatus    CodeBuilderStorageQueryOptionsCategory = 1
+	CodeBuilderStorageQueryOptionsCategoryInstantiation CodeBuilderStorageQueryOptionsCategory = 2
+)
+
+type CodeBuilderStorageQueryOptionsOperation uint8
+
+const (
+	CodeBuilderStorageQueryOptionsOperationNone  CodeBuilderStorageQueryOptionsOperation = 0
+	CodeBuilderStorageQueryOptionsOperationGet   CodeBuilderStorageQueryOptionsOperation = 1
+	CodeBuilderStorageQueryOptionsOperationSet   CodeBuilderStorageQueryOptionsOperation = 2
+	CodeBuilderStorageQueryOptionsOperationReset CodeBuilderStorageQueryOptionsOperation = 3
+)
+
+type ComposterUsed struct {
+	BlockInteractionType MinecraftEventingPOIBlockInteractionType
+	ItemID               int32
+}
+
+func (*ComposterUsed) isEventData() {}
+
+// Marshal reads or writes ComposterUsed using its canonical wire layout.
+func (x *ComposterUsed) Marshal(io IO) {
+	IntegerFunc(&x.BlockInteractionType, io.Uint8)
+	io.Varint32(&x.ItemID)
+}
+
+type ConeData struct {
+	Radii       mgl32.Vec2
+	Height      float32
+	NumSegments uint8
+}
+
+func (*ConeData) isPrimitiveShapeExtraShapeData() {}
+
+// Marshal reads or writes ConeData using its canonical wire layout.
+func (x *ConeData) Marshal(io IO) {
+	io.Vec2(&x.Radii)
+	io.Float32(&x.Height)
+	io.Uint8(&x.NumSegments)
+}
+
+type ConnectionDisconnectFailReason int32
+
+const (
+	ConnectionDisconnectFailReasonUnknown                                       ConnectionDisconnectFailReason = 0
+	ConnectionDisconnectFailReasonCantConnectNoInternet                         ConnectionDisconnectFailReason = 1
+	ConnectionDisconnectFailReasonNoPermissions                                 ConnectionDisconnectFailReason = 2
+	ConnectionDisconnectFailReasonUnrecoverableError                            ConnectionDisconnectFailReason = 3
+	ConnectionDisconnectFailReasonThirdPartyBlocked                             ConnectionDisconnectFailReason = 4
+	ConnectionDisconnectFailReasonThirdPartyNoInternet                          ConnectionDisconnectFailReason = 5
+	ConnectionDisconnectFailReasonThirdPartyBadIP                               ConnectionDisconnectFailReason = 6
+	ConnectionDisconnectFailReasonThirdPartyNoServerOrServerLocked              ConnectionDisconnectFailReason = 7
+	ConnectionDisconnectFailReasonVersionMismatch                               ConnectionDisconnectFailReason = 8
+	ConnectionDisconnectFailReasonSkinIssue                                     ConnectionDisconnectFailReason = 9
+	ConnectionDisconnectFailReasonInviteSessionNotFound                         ConnectionDisconnectFailReason = 10
+	ConnectionDisconnectFailReasonEduLevelSettingsMissing                       ConnectionDisconnectFailReason = 11
+	ConnectionDisconnectFailReasonLocalServerNotFound                           ConnectionDisconnectFailReason = 12
+	ConnectionDisconnectFailReasonLegacyDisconnect                              ConnectionDisconnectFailReason = 13
+	ConnectionDisconnectFailReasonINTERNALUserLeaveGameAttempted                ConnectionDisconnectFailReason = 14
+	ConnectionDisconnectFailReasonPlatformLockedSkinsError                      ConnectionDisconnectFailReason = 15
+	ConnectionDisconnectFailReasonRealmsWorldUnassigned                         ConnectionDisconnectFailReason = 16
+	ConnectionDisconnectFailReasonRealmsServerCantConnect                       ConnectionDisconnectFailReason = 17
+	ConnectionDisconnectFailReasonRealmsServerHidden                            ConnectionDisconnectFailReason = 18
+	ConnectionDisconnectFailReasonRealmsServerDisabledBeta                      ConnectionDisconnectFailReason = 19
+	ConnectionDisconnectFailReasonRealmsServerDisabled                          ConnectionDisconnectFailReason = 20
+	ConnectionDisconnectFailReasonCrossPlatformDisabled                         ConnectionDisconnectFailReason = 21
+	ConnectionDisconnectFailReasonTESTONLYCantConnect                           ConnectionDisconnectFailReason = 22
+	ConnectionDisconnectFailReasonSessionNotFound                               ConnectionDisconnectFailReason = 23
+	ConnectionDisconnectFailReasonClientSettingsIncompatibleWithServer          ConnectionDisconnectFailReason = 24
+	ConnectionDisconnectFailReasonServerFull                                    ConnectionDisconnectFailReason = 25
+	ConnectionDisconnectFailReasonInvalidPlatformSkin                           ConnectionDisconnectFailReason = 26
+	ConnectionDisconnectFailReasonEditionVersionMismatch                        ConnectionDisconnectFailReason = 27
+	ConnectionDisconnectFailReasonEditionMismatch                               ConnectionDisconnectFailReason = 28
+	ConnectionDisconnectFailReasonLevelNewerThanExeVersion                      ConnectionDisconnectFailReason = 29
+	ConnectionDisconnectFailReasonINTERNALNoFailOccurred                        ConnectionDisconnectFailReason = 30
+	ConnectionDisconnectFailReasonBannedSkin                                    ConnectionDisconnectFailReason = 31
+	ConnectionDisconnectFailReasonTimeout                                       ConnectionDisconnectFailReason = 32
+	ConnectionDisconnectFailReasonServerNotFound                                ConnectionDisconnectFailReason = 33
+	ConnectionDisconnectFailReasonOutdatedServer                                ConnectionDisconnectFailReason = 34
+	ConnectionDisconnectFailReasonOutdatedClient                                ConnectionDisconnectFailReason = 35
+	ConnectionDisconnectFailReasonNoPremiumPlatform                             ConnectionDisconnectFailReason = 36
+	ConnectionDisconnectFailReasonMultiplayerDisabled                           ConnectionDisconnectFailReason = 37
+	ConnectionDisconnectFailReasonNoWiFi                                        ConnectionDisconnectFailReason = 38
+	ConnectionDisconnectFailReasonWorldCorruption                               ConnectionDisconnectFailReason = 39
+	ConnectionDisconnectFailReasonNoReason                                      ConnectionDisconnectFailReason = 40
+	ConnectionDisconnectFailReasonDisconnected                                  ConnectionDisconnectFailReason = 41
+	ConnectionDisconnectFailReasonInvalidPlayer                                 ConnectionDisconnectFailReason = 42
+	ConnectionDisconnectFailReasonLoggedInOtherLocation                         ConnectionDisconnectFailReason = 43
+	ConnectionDisconnectFailReasonServerIDConflict                              ConnectionDisconnectFailReason = 44
+	ConnectionDisconnectFailReasonNotAllowed                                    ConnectionDisconnectFailReason = 45
+	ConnectionDisconnectFailReasonNotAuthenticated                              ConnectionDisconnectFailReason = 46
+	ConnectionDisconnectFailReasonInvalidTenant                                 ConnectionDisconnectFailReason = 47
+	ConnectionDisconnectFailReasonUnknownPacket                                 ConnectionDisconnectFailReason = 48
+	ConnectionDisconnectFailReasonUnexpectedPacket                              ConnectionDisconnectFailReason = 49
+	ConnectionDisconnectFailReasonInvalidCommandRequestPacket                   ConnectionDisconnectFailReason = 50
+	ConnectionDisconnectFailReasonHostSuspended                                 ConnectionDisconnectFailReason = 51
+	ConnectionDisconnectFailReasonLoginPacketNoRequest                          ConnectionDisconnectFailReason = 52
+	ConnectionDisconnectFailReasonLoginPacketNoCert                             ConnectionDisconnectFailReason = 53
+	ConnectionDisconnectFailReasonMissingClient                                 ConnectionDisconnectFailReason = 54
+	ConnectionDisconnectFailReasonKicked                                        ConnectionDisconnectFailReason = 55
+	ConnectionDisconnectFailReasonKickedForExploit                              ConnectionDisconnectFailReason = 56
+	ConnectionDisconnectFailReasonKickedForIdle                                 ConnectionDisconnectFailReason = 57
+	ConnectionDisconnectFailReasonResourcePackProblem                           ConnectionDisconnectFailReason = 58
+	ConnectionDisconnectFailReasonIncompatiblePack                              ConnectionDisconnectFailReason = 59
+	ConnectionDisconnectFailReasonOutOfStorage                                  ConnectionDisconnectFailReason = 60
+	ConnectionDisconnectFailReasonInvalidLevel                                  ConnectionDisconnectFailReason = 61
+	ConnectionDisconnectFailReasonDisconnectPacket                              ConnectionDisconnectFailReason = 62
+	ConnectionDisconnectFailReasonBlockMismatch                                 ConnectionDisconnectFailReason = 63
+	ConnectionDisconnectFailReasonInvalidHeights                                ConnectionDisconnectFailReason = 64
+	ConnectionDisconnectFailReasonInvalidWidths                                 ConnectionDisconnectFailReason = 65
+	ConnectionDisconnectFailReasonConnectionLost                                ConnectionDisconnectFailReason = 66
+	ConnectionDisconnectFailReasonZombieConnection                              ConnectionDisconnectFailReason = 67
+	ConnectionDisconnectFailReasonShutdown                                      ConnectionDisconnectFailReason = 68
+	ConnectionDisconnectFailReasonReasonNotSet                                  ConnectionDisconnectFailReason = 69
+	ConnectionDisconnectFailReasonLoadingStateTimeout                           ConnectionDisconnectFailReason = 70
+	ConnectionDisconnectFailReasonResourcePackLoadingFailed                     ConnectionDisconnectFailReason = 71
+	ConnectionDisconnectFailReasonSearchingForSessionLoadingScreenFailed        ConnectionDisconnectFailReason = 72
+	ConnectionDisconnectFailReasonNetherNetProtocolVersion                      ConnectionDisconnectFailReason = 73
+	ConnectionDisconnectFailReasonSubsystemStatusError                          ConnectionDisconnectFailReason = 74
+	ConnectionDisconnectFailReasonEmptyAuthFromDiscovery                        ConnectionDisconnectFailReason = 75
+	ConnectionDisconnectFailReasonEmptyURLFromDiscovery                         ConnectionDisconnectFailReason = 76
+	ConnectionDisconnectFailReasonExpiredAuthFromDiscovery                      ConnectionDisconnectFailReason = 77
+	ConnectionDisconnectFailReasonUnknownSignalServiceSignInFailure             ConnectionDisconnectFailReason = 78
+	ConnectionDisconnectFailReasonXBLJoinLobbyFailure                           ConnectionDisconnectFailReason = 79
+	ConnectionDisconnectFailReasonUnspecifiedClientInstanceDisconnection        ConnectionDisconnectFailReason = 80
+	ConnectionDisconnectFailReasonNetherNetSessionNotFound                      ConnectionDisconnectFailReason = 81
+	ConnectionDisconnectFailReasonNetherNetCreatePeerConnection                 ConnectionDisconnectFailReason = 82
+	ConnectionDisconnectFailReasonNetherNetICE                                  ConnectionDisconnectFailReason = 83
+	ConnectionDisconnectFailReasonNetherNetConnectRequest                       ConnectionDisconnectFailReason = 84
+	ConnectionDisconnectFailReasonNetherNetConnectResponse                      ConnectionDisconnectFailReason = 85
+	ConnectionDisconnectFailReasonNetherNetNegotiationTimeout                   ConnectionDisconnectFailReason = 86
+	ConnectionDisconnectFailReasonNetherNetInactivityTimeout                    ConnectionDisconnectFailReason = 87
+	ConnectionDisconnectFailReasonStaleConnectionBeingReplaced                  ConnectionDisconnectFailReason = 88
+	ConnectionDisconnectFailReasonRealmsSessionNotFound                         ConnectionDisconnectFailReason = 89
+	ConnectionDisconnectFailReasonBadPacket                                     ConnectionDisconnectFailReason = 90
+	ConnectionDisconnectFailReasonNetherNetFailedToCreateOffer                  ConnectionDisconnectFailReason = 91
+	ConnectionDisconnectFailReasonNetherNetFailedToCreateAnswer                 ConnectionDisconnectFailReason = 92
+	ConnectionDisconnectFailReasonNetherNetFailedToSetLocalDescription          ConnectionDisconnectFailReason = 93
+	ConnectionDisconnectFailReasonNetherNetFailedToSetRemoteDescription         ConnectionDisconnectFailReason = 94
+	ConnectionDisconnectFailReasonNetherNetNegotiationTimeoutWaitingForResponse ConnectionDisconnectFailReason = 95
+	ConnectionDisconnectFailReasonNetherNetNegotiationTimeoutWaitingForAccept   ConnectionDisconnectFailReason = 96
+	ConnectionDisconnectFailReasonNetherNetIncomingConnectionIgnored            ConnectionDisconnectFailReason = 97
+	ConnectionDisconnectFailReasonNetherNetSignalingParsingFailure              ConnectionDisconnectFailReason = 98
+	ConnectionDisconnectFailReasonNetherNetSignalingUnknownError                ConnectionDisconnectFailReason = 99
+	ConnectionDisconnectFailReasonNetherNetSignalingUnicastDeliveryFailed       ConnectionDisconnectFailReason = 100
+	ConnectionDisconnectFailReasonNetherNetSignalingBroadcastDeliveryFailed     ConnectionDisconnectFailReason = 101
+	ConnectionDisconnectFailReasonNetherNetSignalingGenericDeliveryFailed       ConnectionDisconnectFailReason = 102
+	ConnectionDisconnectFailReasonEditorMismatchEditorWorld                     ConnectionDisconnectFailReason = 103
+	ConnectionDisconnectFailReasonEditorMismatchVanillaWorld                    ConnectionDisconnectFailReason = 104
+	ConnectionDisconnectFailReasonWorldTransferNotPrimaryClient                 ConnectionDisconnectFailReason = 105
+	ConnectionDisconnectFailReasonINTERNALRequestServerShutdown                 ConnectionDisconnectFailReason = 106
+	ConnectionDisconnectFailReasonClientGameSetupCancelled                      ConnectionDisconnectFailReason = 107
+	ConnectionDisconnectFailReasonClientGameSetupFailed                         ConnectionDisconnectFailReason = 108
+	ConnectionDisconnectFailReasonNoVenue                                       ConnectionDisconnectFailReason = 109
+	ConnectionDisconnectFailReasonNetherNetSignalingSigninFailed                ConnectionDisconnectFailReason = 110
+	ConnectionDisconnectFailReasonSessionAccessDenied                           ConnectionDisconnectFailReason = 111
+	ConnectionDisconnectFailReasonServiceSigninIssue                            ConnectionDisconnectFailReason = 112
+	ConnectionDisconnectFailReasonNetherNetNoSignalingChannel                   ConnectionDisconnectFailReason = 113
+	ConnectionDisconnectFailReasonNetherNetNotLoggedIn                          ConnectionDisconnectFailReason = 114
+	ConnectionDisconnectFailReasonNetherNetClientSignalingError                 ConnectionDisconnectFailReason = 115
+	ConnectionDisconnectFailReasonSubClientLoginDisabled                        ConnectionDisconnectFailReason = 116
+	ConnectionDisconnectFailReasonDeepLinkTryingToOpenDemoWorldWhileSignedIn    ConnectionDisconnectFailReason = 117
+	ConnectionDisconnectFailReasonAsyncJoinTaskDenied                           ConnectionDisconnectFailReason = 118
+	ConnectionDisconnectFailReasonRealmsTimelineRequired                        ConnectionDisconnectFailReason = 119
+	ConnectionDisconnectFailReasonGuestWithoutHost                              ConnectionDisconnectFailReason = 120
+	ConnectionDisconnectFailReasonFailedToJoinExperience                        ConnectionDisconnectFailReason = 121
+	ConnectionDisconnectFailReasonNetherNetDataChannelClosed                    ConnectionDisconnectFailReason = 122
+	ConnectionDisconnectFailReasonDiscoveryEnvironmentMismatch                  ConnectionDisconnectFailReason = 123
+	ConnectionDisconnectFailReasonHostWithoutKeys                               ConnectionDisconnectFailReason = 124
+	ConnectionDisconnectFailReasonHostSignedOut                                 ConnectionDisconnectFailReason = 125
+	ConnectionDisconnectFailReasonScriptWatchdogException                       ConnectionDisconnectFailReason = 126
+	ConnectionDisconnectFailReasonScriptMemoryLimitExceeded                     ConnectionDisconnectFailReason = 127
+	ConnectionDisconnectFailReasonStorageLowDuringGameplay                      ConnectionDisconnectFailReason = 128
+	ConnectionDisconnectFailReasonStorageFullDuringGameplay                     ConnectionDisconnectFailReason = 129
+	ConnectionDisconnectFailReasonLevelStorageCorruption                        ConnectionDisconnectFailReason = 130
+	ConnectionDisconnectFailReasonEditionMismatchVanillaToEdu                   ConnectionDisconnectFailReason = 131
+	ConnectionDisconnectFailReasonEditionMismatchEduToVanilla                   ConnectionDisconnectFailReason = 132
+	ConnectionDisconnectFailReasonEditorMismatchEditorToVanilla                 ConnectionDisconnectFailReason = 133
+	ConnectionDisconnectFailReasonEditorMismatchVanillaToEditor                 ConnectionDisconnectFailReason = 134
+	ConnectionDisconnectFailReasonDenyListed                                    ConnectionDisconnectFailReason = 135
+	ConnectionDisconnectFailReasonNonceMissing                                  ConnectionDisconnectFailReason = 136
+	ConnectionDisconnectFailReasonNonceNotFound                                 ConnectionDisconnectFailReason = 137
+	ConnectionDisconnectFailReasonNonceExpired                                  ConnectionDisconnectFailReason = 138
+	ConnectionDisconnectFailReasonNonceNotValid                                 ConnectionDisconnectFailReason = 139
+	ConnectionDisconnectFailReasonHostDisconnected                              ConnectionDisconnectFailReason = 140
+	ConnectionDisconnectFailReasonEditorJoinIntentPolicyFailure                 ConnectionDisconnectFailReason = 141
+	ConnectionDisconnectFailReasonNetherNetIdentityNotAllowed                   ConnectionDisconnectFailReason = 142
+	ConnectionDisconnectFailReasonInvalidName                                   ConnectionDisconnectFailReason = 143
+	ConnectionDisconnectFailReasonExpiredToken                                  ConnectionDisconnectFailReason = 144
+	ConnectionDisconnectFailReasonHostAcceptsNoTypeOfAuth                       ConnectionDisconnectFailReason = 145
+	ConnectionDisconnectFailReasonNotAuthenticatedFastFail                      ConnectionDisconnectFailReason = 146
+	ConnectionDisconnectFailReasonEditorNotAllowed                              ConnectionDisconnectFailReason = 147
+)
+
+type ContentIdentity struct {
+	Identity string
+}
+
+// Marshal reads or writes ContentIdentity using its canonical wire layout.
+func (x *ContentIdentity) Marshal(io IO) {
+	io.String(&x.Identity)
+}
+
+type ControlScheme uint8
+
+const (
+	ControlSchemeLockedPlayerRelativeStrafe ControlScheme = 0
+	ControlSchemeCameraRelative             ControlScheme = 1
+	ControlSchemeCameraRelativeStrafe       ControlScheme = 2
+	ControlSchemePlayerRelative             ControlScheme = 3
+	ControlSchemePlayerRelativeStrafe       ControlScheme = 4
+)
+
+type CoordinateEvaluationOrder int32
+
+const (
+	CoordinateEvaluationOrderXyz CoordinateEvaluationOrder = 0
+	CoordinateEvaluationOrderXzy CoordinateEvaluationOrder = 1
+	CoordinateEvaluationOrderYxz CoordinateEvaluationOrder = 2
+	CoordinateEvaluationOrderYzx CoordinateEvaluationOrder = 3
+	CoordinateEvaluationOrderZxy CoordinateEvaluationOrder = 4
+	CoordinateEvaluationOrderZyx CoordinateEvaluationOrder = 5
+)
+
+type CoordinatesLocation struct {
+	PacketType PlayerLocationType
+	Position   mgl32.Vec3
+}
+
+func (*CoordinatesLocation) isPlayerLocationData() {}
+
+// Marshal reads or writes CoordinatesLocation using its canonical wire layout.
+func (x *CoordinatesLocation) Marshal(io IO) {
+	IntegerFunc(&x.PacketType, io.Varint32)
+	io.Vec3(&x.Position)
+}
+
+type CraftLoomStackRequestAction struct {
+	ActionType    ItemStackRequestActionType
+	PatternNameID string
+	NumCrafts     uint8
+}
+
+func (*CraftLoomStackRequestAction) isStackRequestAction() {}
+
+// Marshal reads or writes CraftLoomStackRequestAction using its canonical wire layout.
+func (x *CraftLoomStackRequestAction) Marshal(io IO) {
+	IntegerFunc(&x.ActionType, io.Uint8)
+	io.String(&x.PatternNameID)
+	io.Uint8(&x.NumCrafts)
+	Minimum(io, &x.NumCrafts, 1)
+}
+
+type CraftRepairAndDisenchantStackRequestAction struct {
+	ActionType              ItemStackRequestActionType
+	RecipeNetID             int32
+	NumberOfRequestedCrafts uint8
+	RepairCost              int32
+}
+
+func (*CraftRepairAndDisenchantStackRequestAction) isStackRequestAction() {}
+
+// Marshal reads or writes CraftRepairAndDisenchantStackRequestAction using its canonical wire layout.
+func (x *CraftRepairAndDisenchantStackRequestAction) Marshal(io IO) {
+	IntegerFunc(&x.ActionType, io.Uint8)
+	io.Int32(&x.RecipeNetID)
+	io.Uint8(&x.NumberOfRequestedCrafts)
+	Minimum(io, &x.NumberOfRequestedCrafts, 1)
+	io.Varint32(&x.RepairCost)
+	Minimum(io, &x.RepairCost, 0)
+}
+
+type CylinderData struct {
+	RadiusX     mgl32.Vec2
+	RadiusZ     mgl32.Vec2
+	Height      float32
+	NumSegments uint8
+}
+
+func (*CylinderData) isPrimitiveShapeExtraShapeData() {}
+
+// Marshal reads or writes CylinderData using its canonical wire layout.
+func (x *CylinderData) Marshal(io IO) {
+	io.Vec2(&x.RadiusX)
+	io.Vec2(&x.RadiusZ)
+	io.Float32(&x.Height)
+	io.Uint8(&x.NumSegments)
+}
+
+type DataItemByte struct {
+	Type  DataItemType
+	Value int8
+}
+
+func (*DataItemByte) isDataItemEntryValue() {}
+
+// Marshal reads or writes DataItemByte using its canonical wire layout.
+func (x *DataItemByte) Marshal(io IO) {
+	IntegerFunc(&x.Type, io.Uint8)
+	io.Int8(&x.Value)
+}
+
+type DataItemCompoundTag struct {
+	Type  DataItemType
+	Value []byte
+}
+
+func (*DataItemCompoundTag) isDataItemEntryValue() {}
+
+// Marshal reads or writes DataItemCompoundTag using its canonical wire layout.
+func (x *DataItemCompoundTag) Marshal(io IO) {
+	IntegerFunc(&x.Type, io.Uint8)
+	io.NBT(&x.Value, NBTNetwork)
+}
+
+type DataItemEntry struct {
+	ID      uint32
+	Payload DataItemEntryValue
+}
+
+// Marshal reads or writes DataItemEntry using its canonical wire layout.
+func (x *DataItemEntry) Marshal(io IO) {
+	io.Varuint32(&x.ID)
+	Minimum(io, &x.ID, 0)
+	MarshalDataItemEntryValue(io, &x.Payload)
+}
+
+type DataItemFloat struct {
+	Type  DataItemType
+	Value float32
+}
+
+func (*DataItemFloat) isDataItemEntryValue() {}
+
+// Marshal reads or writes DataItemFloat using its canonical wire layout.
+func (x *DataItemFloat) Marshal(io IO) {
+	IntegerFunc(&x.Type, io.Uint8)
+	io.Float32(&x.Value)
+}
+
+type DataItemInt struct {
+	Type  DataItemType
+	Value int32
+}
+
+func (*DataItemInt) isDataItemEntryValue() {}
+
+// Marshal reads or writes DataItemInt using its canonical wire layout.
+func (x *DataItemInt) Marshal(io IO) {
+	IntegerFunc(&x.Type, io.Uint8)
+	io.Varint32(&x.Value)
+}
+
+type DataItemInt64 struct {
+	Type  DataItemType
+	Value int64
+}
+
+func (*DataItemInt64) isDataItemEntryValue() {}
+
+// Marshal reads or writes DataItemInt64 using its canonical wire layout.
+func (x *DataItemInt64) Marshal(io IO) {
+	IntegerFunc(&x.Type, io.Uint8)
+	io.Varint64(&x.Value)
+}
+
+type DataItemPos struct {
+	Type  DataItemType
+	Value BlockPos
+}
+
+func (*DataItemPos) isDataItemEntryValue() {}
+
+// Marshal reads or writes DataItemPos using its canonical wire layout.
+func (x *DataItemPos) Marshal(io IO) {
+	IntegerFunc(&x.Type, io.Uint8)
+	x.Value.Marshal(io)
+}
+
+type DataItemShort struct {
+	Type  DataItemType
+	Value int16
+}
+
+func (*DataItemShort) isDataItemEntryValue() {}
+
+// Marshal reads or writes DataItemShort using its canonical wire layout.
+func (x *DataItemShort) Marshal(io IO) {
+	IntegerFunc(&x.Type, io.Uint8)
+	io.Int16(&x.Value)
+}
+
+type DataItemString struct {
+	Type  DataItemType
+	Value string
+}
+
+func (*DataItemString) isDataItemEntryValue() {}
+
+// Marshal reads or writes DataItemString using its canonical wire layout.
+func (x *DataItemString) Marshal(io IO) {
+	IntegerFunc(&x.Type, io.Uint8)
+	io.String(&x.Value)
+}
+
+type DataItemType uint8
+
+const (
+	DataItemTypeByte        DataItemType = 0
+	DataItemTypeShort       DataItemType = 1
+	DataItemTypeInt         DataItemType = 2
+	DataItemTypeFloat       DataItemType = 3
+	DataItemTypeString      DataItemType = 4
+	DataItemTypeCompoundTag DataItemType = 5
+	DataItemTypePos         DataItemType = 6
+	DataItemTypeInt64       DataItemType = 7
+	DataItemTypeVec3        DataItemType = 8
+)
+
+type DataItemVec3 struct {
+	Type  DataItemType
+	Value mgl32.Vec3
+}
+
+func (*DataItemVec3) isDataItemEntryValue() {}
+
+// Marshal reads or writes DataItemVec3 using its canonical wire layout.
+func (x *DataItemVec3) Marshal(io IO) {
+	IntegerFunc(&x.Type, io.Uint8)
+	io.Vec3(&x.Value)
+}
+
+type DebugMarkerData struct {
+	Text     string
+	Position mgl32.Vec3
+	Color    color.RGBA
+	Duration uint64
+}
+
+// Marshal reads or writes DebugMarkerData using its canonical wire layout.
+func (x *DebugMarkerData) Marshal(io IO) {
+	io.StringLimits(&x.Text, 0, 4096)
+	io.Vec3(&x.Position)
+	io.RGBA(&x.Color)
+	io.Uint64(&x.Duration)
+}
+
+type DimensionType struct {
+	Value int32
+}
+
+// Marshal reads or writes DimensionType using its canonical wire layout.
+func (x *DimensionType) Marshal(io IO) {
+	io.Varint32(&x.Value)
+}
+
+type DisconnectMessagesData struct {
+	Message         string
+	FilteredMessage string
+}
+
+func (*DisconnectMessagesData) isDisconnectMessages() {}
+
+// Marshal reads or writes DisconnectMessagesData using its canonical wire layout.
+func (x *DisconnectMessagesData) Marshal(io IO) {
+	io.String(&x.Message)
+	io.String(&x.FilteredMessage)
+}
+
+type Downloading struct {
+	ResponseType     string
+	DownloadingPacks []string
+}
+
+func (*Downloading) isResourcePackClientResponseData() {}
+
+// Marshal reads or writes Downloading using its canonical wire layout.
+func (x *Downloading) Marshal(io IO) {
+	io.String(&x.ResponseType)
+	FuncSliceLimits(io, &x.DownloadingPacks, io.Varuint32, 0, 65535, io.String)
+}
+
+type DownloadingFinished struct {
+	ResponseType string
+}
+
+func (*DownloadingFinished) isResourcePackClientResponseData() {}
+
+// Marshal reads or writes DownloadingFinished using its canonical wire layout.
+func (x *DownloadingFinished) Marshal(io IO) {
+	io.String(&x.ResponseType)
+}
+
+type DynamicValue interface {
+	isDynamicValue()
+}
+
+// MarshalDynamicValue reads or writes the DynamicValue union using its canonical wire layout.
+func MarshalDynamicValue(io IO, x *DynamicValue) {
+	UnionFunc(io,
+		func() {
+			var tag int32
+			io.Int32(&tag)
+			switch int64(tag) {
+			case 0:
+				value := new(DynamicValueNone)
+				value.Marshal(io)
+				*x = value
+			case 1:
+				value := new(DynamicValueBool)
+				value.Marshal(io)
+				*x = value
+			case 2:
+				value := new(DynamicValueInt64)
+				value.Marshal(io)
+				*x = value
+			case 3:
+				value := new(DynamicValueDouble)
+				value.Marshal(io)
+				*x = value
+			case 4:
+				value := new(DynamicValueString)
+				value.Marshal(io)
+				*x = value
+			case 5:
+				value := new(DynamicValueList)
+				value.Marshal(io)
+				*x = value
+			case 6:
+				value := new(DynamicValueMap)
+				value.Marshal(io)
+				*x = value
+			default:
+				io.InvalidValue(tag, "unknown union tag")
+			}
+		},
+		func() {
+			switch value := (*x).(type) {
+			case *DynamicValueNone:
+				tag := int32(0)
+				io.Int32(&tag)
+				value.Marshal(io)
+			case *DynamicValueBool:
+				tag := int32(1)
+				io.Int32(&tag)
+				value.Marshal(io)
+			case *DynamicValueInt64:
+				tag := int32(2)
+				io.Int32(&tag)
+				value.Marshal(io)
+			case *DynamicValueDouble:
+				tag := int32(3)
+				io.Int32(&tag)
+				value.Marshal(io)
+			case *DynamicValueString:
+				tag := int32(4)
+				io.Int32(&tag)
+				value.Marshal(io)
+			case *DynamicValueList:
+				tag := int32(5)
+				io.Int32(&tag)
+				value.Marshal(io)
+			case *DynamicValueMap:
+				tag := int32(6)
+				io.Int32(&tag)
+				value.Marshal(io)
+			default:
+				io.InvalidValue(*x, "unknown union value")
+			}
+		},
+	)
+}
+
+type EAS interface {
+	isEAS()
+}
+
+// MarshalEAS reads or writes the EAS union using its canonical wire layout.
+func MarshalEAS(io IO, x *EAS) {
+	UnionFunc(io,
+		func() {
+			var tag uint32
+			io.Varuint32(&tag)
+			switch int64(tag) {
+			case 0:
+				value := new(EASBoolAttributeData)
+				value.Marshal(io)
+				*x = value
+			case 1:
+				value := new(EASFloatAttributeData)
+				value.Marshal(io)
+				*x = value
+			case 2:
+				value := new(EASColorAttributeData)
+				value.Marshal(io)
+				*x = value
+			default:
+				io.InvalidValue(tag, "unknown union tag")
+			}
+		},
+		func() {
+			switch value := (*x).(type) {
+			case *EASBoolAttributeData:
+				tag := uint32(0)
+				io.Varuint32(&tag)
+				value.Marshal(io)
+			case *EASFloatAttributeData:
+				tag := uint32(1)
+				io.Varuint32(&tag)
+				value.Marshal(io)
+			case *EASColorAttributeData:
+				tag := uint32(2)
+				io.Varuint32(&tag)
+				value.Marshal(io)
+			default:
+				io.InvalidValue(*x, "unknown union value")
+			}
+		},
+	)
+}
+
+type EASAttributeLayerData struct {
+	Name       string
+	NoiseName  Optional[string]
+	Dimension  DimensionType
+	Settings   EASAttributeLayerSettings
+	Attributes []EASEnvironmentAttributeData
+}
+
+// Marshal reads or writes EASAttributeLayerData using its canonical wire layout.
+func (x *EASAttributeLayerData) Marshal(io IO) {
+	io.StringLimits(&x.Name, 0, 128)
+	OptionalFunc(io, &x.NoiseName, func(value *string) {
+		io.StringLimits(value, 0, 128)
+	})
+	x.Dimension.Marshal(io)
+	x.Settings.Marshal(io)
+	SliceLimits(io, &x.Attributes, 0, 1024)
+}
+
+type EASAttributeLayerSettings struct {
+	Priority          int32
+	Weight            float32
+	Enabled           bool
+	TransitionsPaused bool
+}
+
+// Marshal reads or writes EASAttributeLayerSettings using its canonical wire layout.
+func (x *EASAttributeLayerSettings) Marshal(io IO) {
+	io.Int32(&x.Priority)
+	io.Float32(&x.Weight)
+	io.Bool(&x.Enabled)
+	io.Bool(&x.TransitionsPaused)
+}
+
+type EASBoolAttributeData struct {
+	Value     bool
+	Operation string
+}
+
+func (*EASBoolAttributeData) isEAS() {}
+
+// Marshal reads or writes EASBoolAttributeData using its canonical wire layout.
+func (x *EASBoolAttributeData) Marshal(io IO) {
+	io.Bool(&x.Value)
+	io.String(&x.Operation)
+}
+
+type EASColorAttributeData struct {
+	Value     [4]int32
+	Operation string
+}
+
+func (*EASColorAttributeData) isEAS() {}
+
+// Marshal reads or writes EASColorAttributeData using its canonical wire layout.
+func (x *EASColorAttributeData) Marshal(io IO) {
+	for index1 := range x.Value {
+		io.Int32(&x.Value[index1])
+	}
+	io.String(&x.Operation)
+}
+
+type EASEnvironmentAttributeData struct {
+	AttributeName          string
+	FromAttribute          Optional[EAS]
+	Attribute              EAS
+	ToAttribute            Optional[EAS]
+	CurrentTransitionTicks uint32
+	TotalTransitionTicks   uint32
+	Easing                 string
+	LocalTransitionTicks   uint32
+	NoiseTransition        bool
+}
+
+// Marshal reads or writes EASEnvironmentAttributeData using its canonical wire layout.
+func (x *EASEnvironmentAttributeData) Marshal(io IO) {
+	io.StringLimits(&x.AttributeName, 0, 128)
+	OptionalFunc(io, &x.FromAttribute, func(value *EAS) {
+		MarshalEAS(io, value)
+	})
+	MarshalEAS(io, &x.Attribute)
+	OptionalFunc(io, &x.ToAttribute, func(value *EAS) {
+		MarshalEAS(io, value)
+	})
+	io.Uint32(&x.CurrentTransitionTicks)
+	io.Uint32(&x.TotalTransitionTicks)
+	io.String(&x.Easing)
+	io.Uint32(&x.LocalTransitionTicks)
+	io.Bool(&x.NoiseTransition)
+}
+
+type EASFloatAttributeData struct {
+	Value         float32
+	Operation     string
+	ConstraintMin Optional[float32]
+	ConstraintMax Optional[float32]
+}
+
+func (*EASFloatAttributeData) isEAS() {}
+
+// Marshal reads or writes EASFloatAttributeData using its canonical wire layout.
+func (x *EASFloatAttributeData) Marshal(io IO) {
+	io.Float32(&x.Value)
+	io.String(&x.Operation)
+	OptionalFunc(io, &x.ConstraintMin, io.Float32)
+	OptionalFunc(io, &x.ConstraintMax, io.Float32)
+}
+
+type ECSProfilingDiagnosticsEntityDiagnosticTimingInfo struct {
+	DisplayName    string
+	Entity         string
+	TimeInNS       uint64
+	PercentOfTotal uint8
+}
+
+// Marshal reads or writes ECSProfilingDiagnosticsEntityDiagnosticTimingInfo using its canonical wire layout.
+func (x *ECSProfilingDiagnosticsEntityDiagnosticTimingInfo) Marshal(io IO) {
+	io.String(&x.DisplayName)
+	io.String(&x.Entity)
+	io.Uint64(&x.TimeInNS)
+	io.Uint8(&x.PercentOfTotal)
+}
+
+type ECSProfilingDiagnosticsSystemCategory struct {
+	CategoryName string
+	SystemIndex  uint64
+}
+
+// Marshal reads or writes ECSProfilingDiagnosticsSystemCategory using its canonical wire layout.
+func (x *ECSProfilingDiagnosticsSystemCategory) Marshal(io IO) {
+	io.String(&x.CategoryName)
+	io.Uint64(&x.SystemIndex)
+}
+
+type ECSProfilingDiagnosticsSystemDiagnosticTimingInfo struct {
+	DisplayName    string
+	SystemIndex    uint64
+	TimeInNS       uint64
+	PercentOfTotal uint8
+}
+
+// Marshal reads or writes ECSProfilingDiagnosticsSystemDiagnosticTimingInfo using its canonical wire layout.
+func (x *ECSProfilingDiagnosticsSystemDiagnosticTimingInfo) Marshal(io IO) {
+	io.String(&x.DisplayName)
+	io.Uint64(&x.SystemIndex)
+	io.Uint64(&x.TimeInNS)
+	io.Uint8(&x.PercentOfTotal)
+}
+
+type EditorWorldType int32
+
+const (
+	EditorWorldTypeNonEditor          EditorWorldType = 0
+	EditorWorldTypeEditorProject      EditorWorldType = 1
+	EditorWorldTypeEditorTestLevel    EditorWorldType = 2
+	EditorWorldTypeEditorRealmsUpload EditorWorldType = 3
+)
+
+type EduSharedURIResource struct {
+	ButtonName string
+	LinkURI    string
+}
+
+// Marshal reads or writes EduSharedURIResource using its canonical wire layout.
+func (x *EduSharedURIResource) Marshal(io IO) {
+	io.String(&x.ButtonName)
+	io.String(&x.LinkURI)
+}
+
+type EllipsoidData struct {
+	Radii           mgl32.Vec3
+	SegmentsPerAxis uint8
+}
+
+func (*EllipsoidData) isPrimitiveShapeExtraShapeData() {}
+
+// Marshal reads or writes EllipsoidData using its canonical wire layout.
+func (x *EllipsoidData) Marshal(io IO) {
+	io.Vec3(&x.Radii)
+	io.Uint8(&x.SegmentsPerAxis)
+}
+
+type Empty struct {
+}
+
+func (*Empty) isEventData() {}
+
+// Marshal reads or writes Empty using its canonical wire layout.
+func (x *Empty) Marshal(io IO) {
+}
+
+type Experiments struct {
+	Toggles                []ExperimentToggle
+	ExperimentsEverToggled bool
+}
+
+// Marshal reads or writes Experiments using its canonical wire layout.
+func (x *Experiments) Marshal(io IO) {
+	FuncSlice(io, &x.Toggles, io.Uint32, func(value *ExperimentToggle) {
+		value.Marshal(io)
+	})
+	io.Bool(&x.ExperimentsEverToggled)
+}
+
+type ExternalLinkSettings struct {
+	URL         string
+	DisplayName string
+}
+
+// Marshal reads or writes ExternalLinkSettings using its canonical wire layout.
+func (x *ExternalLinkSettings) Marshal(io IO) {
+	io.String(&x.URL)
+	io.String(&x.DisplayName)
+}
+
+type FeatureRegistryFeatureBinaryJSONFormat struct {
+	FeatureName      string
+	BinaryJSONOutput []byte
+}
+
+// Marshal reads or writes FeatureRegistryFeatureBinaryJSONFormat using its canonical wire layout.
+func (x *FeatureRegistryFeatureBinaryJSONFormat) Marshal(io IO) {
+	io.String(&x.FeatureName)
+	io.Bytes(&x.BinaryJSONOutput)
+}
+
+type FloatOverride struct {
+	Type  string
+	Value float32
+}
+
+func (*FloatOverride) isPlayerUpdateEntityOverridesData() {}
+
+// Marshal reads or writes FloatOverride using its canonical wire layout.
+func (x *FloatOverride) Marshal(io IO) {
+	io.String(&x.Type)
+	io.Float32(&x.Value)
+}
+
+type GameRulesChangedData struct {
+	RulesList []GameRule
+}
+
+// Marshal reads or writes GameRulesChangedData using its canonical wire layout.
+func (x *GameRulesChangedData) Marshal(io IO) {
+	Slice(io, &x.RulesList)
+}
+
+type GameType int32
+
+const (
+	GameTypeUndefined GameType = -1
+	GameTypeSurvival  GameType = 0
+	GameTypeCreative  GameType = 1
+	GameTypeAdventure GameType = 2
+	GameTypeDefault   GameType = 5
+	GameTypeSpectator GameType = 6
+)
+
+type GeneratorType int32
+
+const (
+	GeneratorTypeLegacy    GeneratorType = 0
+	GeneratorTypeOverworld GeneratorType = 1
+	GeneratorTypeFlat      GeneratorType = 2
+	GeneratorTypeNether    GeneratorType = 3
+	GeneratorTypeTheEnd    GeneratorType = 4
+	GeneratorTypeVoid      GeneratorType = 5
+	GeneratorTypeUndefined GeneratorType = 6
+)
+
+type GraphicsMode uint8
+
+const (
+	GraphicsModeSimple    GraphicsMode = 0
+	GraphicsModeFancy     GraphicsMode = 1
+	GraphicsModeAdvanced  GraphicsMode = 2
+	GraphicsModeRayTraced GraphicsMode = 3
+)
+
+type GraphicsOverrideParameterType uint8
+
+const (
+	GraphicsOverrideParameterTypeSkyZenithColor          GraphicsOverrideParameterType = 0
+	GraphicsOverrideParameterTypeSkyHorizonColor         GraphicsOverrideParameterType = 1
+	GraphicsOverrideParameterTypeHorizonBlendMin         GraphicsOverrideParameterType = 2
+	GraphicsOverrideParameterTypeHorizonBlendMax         GraphicsOverrideParameterType = 3
+	GraphicsOverrideParameterTypeHorizonBlendStart       GraphicsOverrideParameterType = 4
+	GraphicsOverrideParameterTypeHorizonBlendMieStart    GraphicsOverrideParameterType = 5
+	GraphicsOverrideParameterTypeRayleighStrength        GraphicsOverrideParameterType = 6
+	GraphicsOverrideParameterTypeSunMieStrength          GraphicsOverrideParameterType = 7
+	GraphicsOverrideParameterTypeMoonMieStrength         GraphicsOverrideParameterType = 8
+	GraphicsOverrideParameterTypeSunGlareShape           GraphicsOverrideParameterType = 9
+	GraphicsOverrideParameterTypeChlorophyll             GraphicsOverrideParameterType = 10
+	GraphicsOverrideParameterTypeCdom                    GraphicsOverrideParameterType = 11
+	GraphicsOverrideParameterTypeSuspendedSediment       GraphicsOverrideParameterType = 12
+	GraphicsOverrideParameterTypeWavesDepth              GraphicsOverrideParameterType = 13
+	GraphicsOverrideParameterTypeWavesFrequency          GraphicsOverrideParameterType = 14
+	GraphicsOverrideParameterTypeWavesFrequencyScaling   GraphicsOverrideParameterType = 15
+	GraphicsOverrideParameterTypeWavesSpeed              GraphicsOverrideParameterType = 16
+	GraphicsOverrideParameterTypeWavesSpeedScaling       GraphicsOverrideParameterType = 17
+	GraphicsOverrideParameterTypeWavesShape              GraphicsOverrideParameterType = 18
+	GraphicsOverrideParameterTypeWavesOctaves            GraphicsOverrideParameterType = 19
+	GraphicsOverrideParameterTypeWavesMix                GraphicsOverrideParameterType = 20
+	GraphicsOverrideParameterTypeWavesPull               GraphicsOverrideParameterType = 21
+	GraphicsOverrideParameterTypeWavesDirectionIncrement GraphicsOverrideParameterType = 22
+	GraphicsOverrideParameterTypeMidtonesContrast        GraphicsOverrideParameterType = 23
+	GraphicsOverrideParameterTypeHighlightsContrast      GraphicsOverrideParameterType = 24
+	GraphicsOverrideParameterTypeShadowsContrast         GraphicsOverrideParameterType = 25
+	GraphicsOverrideParameterTypeHighlightsGain          GraphicsOverrideParameterType = 26
+	GraphicsOverrideParameterTypeHighlightsGamma         GraphicsOverrideParameterType = 27
+	GraphicsOverrideParameterTypeHighlightsOffset        GraphicsOverrideParameterType = 28
+	GraphicsOverrideParameterTypeHighlightsSaturation    GraphicsOverrideParameterType = 29
+	GraphicsOverrideParameterTypeMidtonesGain            GraphicsOverrideParameterType = 30
+	GraphicsOverrideParameterTypeMidtonesGamma           GraphicsOverrideParameterType = 31
+	GraphicsOverrideParameterTypeMidtonesOffset          GraphicsOverrideParameterType = 32
+	GraphicsOverrideParameterTypeMidtonesSaturation      GraphicsOverrideParameterType = 33
+	GraphicsOverrideParameterTypeShadowsGain             GraphicsOverrideParameterType = 34
+	GraphicsOverrideParameterTypeShadowsGamma            GraphicsOverrideParameterType = 35
+	GraphicsOverrideParameterTypeShadowsOffset           GraphicsOverrideParameterType = 36
+	GraphicsOverrideParameterTypeShadowsSaturation       GraphicsOverrideParameterType = 37
+	GraphicsOverrideParameterTypeHighlightsMin           GraphicsOverrideParameterType = 38
+	GraphicsOverrideParameterTypeShadowsMax              GraphicsOverrideParameterType = 39
+	GraphicsOverrideParameterTypeTemperature             GraphicsOverrideParameterType = 40
+	GraphicsOverrideParameterTypeSunColor                GraphicsOverrideParameterType = 41
+	GraphicsOverrideParameterTypeSunIlluminance          GraphicsOverrideParameterType = 42
+	GraphicsOverrideParameterTypeMoonColor               GraphicsOverrideParameterType = 43
+	GraphicsOverrideParameterTypeMoonIlluminance         GraphicsOverrideParameterType = 44
+	GraphicsOverrideParameterTypeFlashColor              GraphicsOverrideParameterType = 45
+	GraphicsOverrideParameterTypeFlashIlluminance        GraphicsOverrideParameterType = 46
+	GraphicsOverrideParameterTypeAmbientColor            GraphicsOverrideParameterType = 47
+	GraphicsOverrideParameterTypeAmbientIlluminance      GraphicsOverrideParameterType = 48
+	GraphicsOverrideParameterTypeEmissiveDesaturation    GraphicsOverrideParameterType = 49
+	GraphicsOverrideParameterTypeSkyIntensity            GraphicsOverrideParameterType = 50
+	GraphicsOverrideParameterTypeOrbitalOffsetDegrees    GraphicsOverrideParameterType = 51
+)
+
+type HeightMapDataType uint8
+
+const (
+	HeightMapDataTypeNoData     HeightMapDataType = 0
+	HeightMapDataTypeHasData    HeightMapDataType = 1
+	HeightMapDataTypeAllTooHigh HeightMapDataType = 2
+	HeightMapDataTypeAllTooLow  HeightMapDataType = 3
+)
+
+type HeightmapData struct {
+	HeightMapType           HeightMapDataType
+	SubchunkHeightMap       Optional[[16][16]int8]
+	RenderHeightMapType     HeightMapDataType
+	SubchunkRenderHeightMap Optional[[16][16]int8]
+}
+
+// Marshal reads or writes HeightmapData using its canonical wire layout.
+func (x *HeightmapData) Marshal(io IO) {
+	IntegerFunc(&x.HeightMapType, io.Uint8)
+	OptionalFunc(io, &x.SubchunkHeightMap, func(value *[16][16]int8) {
+		for index1 := range *value {
+			for index2 := range *&(*value)[index1] {
+				io.Int8(&(*&(*value)[index1])[index2])
+			}
+		}
+	})
+	IntegerFunc(&x.RenderHeightMapType, io.Uint8)
+	OptionalFunc(io, &x.SubchunkRenderHeightMap, func(value *[16][16]int8) {
+		for index3 := range *value {
+			for index4 := range *&(*value)[index3] {
+				io.Int8(&(*&(*value)[index3])[index4])
+			}
+		}
+	})
+}
+
+type HiddenLocation struct {
+	PacketType PlayerLocationType
+}
+
+func (*HiddenLocation) isPlayerLocationData() {}
+
+// Marshal reads or writes HiddenLocation using its canonical wire layout.
+func (x *HiddenLocation) Marshal(io IO) {
+	IntegerFunc(&x.PacketType, io.Varint32)
+}
+
+type HudElement int32
+
+const (
+	HudElementPaperDoll     HudElement = 0
+	HudElementArmor         HudElement = 1
+	HudElementToolTips      HudElement = 2
+	HudElementTouchControls HudElement = 3
+	HudElementCrosshair     HudElement = 4
+	HudElementHotBar        HudElement = 5
+	HudElementHealth        HudElement = 6
+	HudElementProgressBar   HudElement = 7
+	HudElementHunger        HudElement = 8
+	HudElementAirBubbles    HudElement = 9
+	HudElementHorseHealth   HudElement = 10
+	HudElementStatusEffects HudElement = 11
+	HudElementItemText      HudElement = 12
+)
+
+type HudVisibility int32
+
+const (
+	HudVisibilityHide  HudVisibility = 0
+	HudVisibilityReset HudVisibility = 1
+)
+
+type InitializeRegistryData struct {
+	ClockData []WorldClockData
+}
+
+func (*InitializeRegistryData) isSyncWorldClocksData() {}
+
+// Marshal reads or writes InitializeRegistryData using its canonical wire layout.
+func (x *InitializeRegistryData) Marshal(io IO) {
+	SliceLimits(io, &x.ClockData, 0, 256)
+}
+
+type InputData int32
+
+const (
+	InputDataAscend                          InputData = 0
+	InputDataDescend                         InputData = 1
+	InputDataNorthJump                       InputData = 2
+	InputDataJumpDown                        InputData = 3
+	InputDataSprintDown                      InputData = 4
+	InputDataChangeHeight                    InputData = 5
+	InputDataJumping                         InputData = 6
+	InputDataAutoJumpingInWater              InputData = 7
+	InputDataSneaking                        InputData = 8
+	InputDataSneakDown                       InputData = 9
+	InputDataUp                              InputData = 10
+	InputDataDown                            InputData = 11
+	InputDataLeft                            InputData = 12
+	InputDataRight                           InputData = 13
+	InputDataUpLeft                          InputData = 14
+	InputDataUpRight                         InputData = 15
+	InputDataWantUp                          InputData = 16
+	InputDataWantDown                        InputData = 17
+	InputDataWantDownSlow                    InputData = 18
+	InputDataWantUpSlow                      InputData = 19
+	InputDataSprinting                       InputData = 20
+	InputDataAscendBlock                     InputData = 21
+	InputDataDescendBlock                    InputData = 22
+	InputDataSneakToggleDown                 InputData = 23
+	InputDataPersistSneak                    InputData = 24
+	InputDataStartSprinting                  InputData = 25
+	InputDataStopSprinting                   InputData = 26
+	InputDataStartSneaking                   InputData = 27
+	InputDataStopSneaking                    InputData = 28
+	InputDataStartSwimming                   InputData = 29
+	InputDataStopSwimming                    InputData = 30
+	InputDataStartJumping                    InputData = 31
+	InputDataStartGliding                    InputData = 32
+	InputDataStopGliding                     InputData = 33
+	InputDataPerformItemInteraction          InputData = 34
+	InputDataPerformBlockActions             InputData = 35
+	InputDataPerformItemStackRequest         InputData = 36
+	InputDataHandledTeleport                 InputData = 37
+	InputDataEmoting                         InputData = 38
+	InputDataMissedSwing                     InputData = 39
+	InputDataStartCrawling                   InputData = 40
+	InputDataStopCrawling                    InputData = 41
+	InputDataStartFlying                     InputData = 42
+	InputDataStopFlying                      InputData = 43
+	InputDataClientAckServerData             InputData = 44
+	InputDataIsInClientPredictedVehicle      InputData = 45
+	InputDataPaddlingLeft                    InputData = 46
+	InputDataPaddlingRight                   InputData = 47
+	InputDataBlockBreakingDelayEnabled       InputData = 48
+	InputDataHorizontalCollision             InputData = 49
+	InputDataVerticalCollision               InputData = 50
+	InputDataDownLeft                        InputData = 51
+	InputDataDownRight                       InputData = 52
+	InputDataStartUsingItem                  InputData = 53
+	InputDataIsCameraRelativeMovementEnabled InputData = 54
+	InputDataIsRotControlledByMoveDirection  InputData = 55
+	InputDataStartSpinAttack                 InputData = 56
+	InputDataStopSpinAttack                  InputData = 57
+	InputDataIsHotbarOnlyTouch               InputData = 58
+	InputDataJumpReleasedRaw                 InputData = 59
+	InputDataJumpPressedRaw                  InputData = 60
+	InputDataJumpCurrentRaw                  InputData = 61
+	InputDataSneakReleasedRaw                InputData = 62
+	InputDataSneakPressedRaw                 InputData = 63
+	InputDataSneakCurrentRaw                 InputData = 64
+	InputDataInternalUpdate                  InputData = 65
+)
+
+type InputMode uint32
+
+const (
+	InputModeUndefined        InputMode = 0
+	InputModeMouse            InputMode = 1
+	InputModeTouch            InputMode = 2
+	InputModeGamePad          InputMode = 3
+	InputModeMotionController InputMode = 4
+	InputModeCount            InputMode = 5
+)
+
+type IntOverride struct {
+	Type  string
+	Value int32
+}
+
+func (*IntOverride) isPlayerUpdateEntityOverridesData() {}
+
+// Marshal reads or writes IntOverride using its canonical wire layout.
+func (x *IntOverride) Marshal(io IO) {
+	io.String(&x.Type)
+	io.Int32(&x.Value)
+}
+
+type InteractAction uint8
+
+const (
+	InteractActionInvalid        InteractAction = 0
+	InteractActionStopRiding     InteractAction = 3
+	InteractActionInteractUpdate InteractAction = 4
+	InteractActionNpcOpen        InteractAction = 5
+	InteractActionOpenInventory  InteractAction = 6
+)
+
+type Interaction struct {
+	InteractedEntityID      int64
+	InteractionType         MinecraftEventingInteractionType
+	InteractionActorType    int32
+	InteractionActorVariant int32
+	InteractionActorColor   uint8
+}
+
+func (*Interaction) isEventData() {}
+
+// Marshal reads or writes Interaction using its canonical wire layout.
+func (x *Interaction) Marshal(io IO) {
+	io.Varint64(&x.InteractedEntityID)
+	IntegerFunc(&x.InteractionType, io.Uint8)
+	io.Varint32(&x.InteractionActorType)
+	io.Varint32(&x.InteractionActorVariant)
+	io.Uint8(&x.InteractionActorColor)
+}
+
+type LabTableReactionType uint8
+
+const (
+	LabTableReactionTypeNone               LabTableReactionType = 0
+	LabTableReactionTypeIceBomb            LabTableReactionType = 1
+	LabTableReactionTypeBleach             LabTableReactionType = 2
+	LabTableReactionTypeElephantToothpaste LabTableReactionType = 3
+	LabTableReactionTypeFertilizer         LabTableReactionType = 4
+	LabTableReactionTypeHeatBlock          LabTableReactionType = 5
+	LabTableReactionTypeMagnesiumSalts     LabTableReactionType = 6
+	LabTableReactionTypeMiscFire           LabTableReactionType = 7
+	LabTableReactionTypeMiscExplosion      LabTableReactionType = 8
+	LabTableReactionTypeMiscLava           LabTableReactionType = 9
+	LabTableReactionTypeMiscMystical       LabTableReactionType = 10
+	LabTableReactionTypeMiscSmoke          LabTableReactionType = 11
+	LabTableReactionTypeMiscLargeSmoke     LabTableReactionType = 12
+)
+
+type LabTableType uint8
+
+const (
+	LabTableTypeStartCombine  LabTableType = 0
+	LabTableTypeStartReaction LabTableType = 1
+	LabTableTypeReset         LabTableType = 2
+)
+
+type LegacyArmorSlot int32
+
+const (
+	LegacyArmorSlotHead  LegacyArmorSlot = 0
+	LegacyArmorSlotTorso LegacyArmorSlot = 1
+	LegacyArmorSlotLegs  LegacyArmorSlot = 2
+	LegacyArmorSlotFeet  LegacyArmorSlot = 3
+	LegacyArmorSlotBody  LegacyArmorSlot = 4
+)
+
+type LegacyDifficulty int32
+
+const (
+	LegacyDifficultyPeaceful LegacyDifficulty = 0
+	LegacyDifficultyEasy     LegacyDifficulty = 1
+	LegacyDifficultyNormal   LegacyDifficulty = 2
+	LegacyDifficultyHard     LegacyDifficulty = 3
+	LegacyDifficultyCount    LegacyDifficulty = 4
+	LegacyDifficultyUnknown  LegacyDifficulty = 5
+)
+
+type LegacySetSlot struct {
+	ContainerEnum ContainerEnumName
+	Slots         []uint8
+}
+
+// Marshal reads or writes LegacySetSlot using its canonical wire layout.
+func (x *LegacySetSlot) Marshal(io IO) {
+	IntegerFunc(&x.ContainerEnum, io.Uint8)
+	FuncSlice(io, &x.Slots, io.Varuint32, io.Uint8)
+}
+
+type LevelSettings struct {
+	Seed                                   uint64
+	SpawnSettings                          SpawnSettings
+	GeneratorType                          GeneratorType
+	GameType                               GameType
+	IsHardcore                             bool
+	GameDifficulty                         LegacyDifficulty
+	DefaultSpawnBlockPosition              BlockPos
+	AchievementsDisabled                   bool
+	EditorWorldType                        EditorWorldType
+	IsCreatedInEditor                      bool
+	IsExportedFromEditor                   bool
+	DayCycleStopTime                       int32
+	EducationEditionOffer                  EducationEditionOffer
+	EducationFeaturesEnabled               bool
+	EducationProductID                     string
+	RainLevel                              float32
+	LightningLevel                         float32
+	HasConfirmedPlatformLockedContent      bool
+	MultiplayerGameIntent                  bool
+	LANBroadcastIntent                     bool
+	XboxLiveBroadcastSetting               SocialGamePublishSetting
+	PlatformBroadcastSetting               SocialGamePublishSetting
+	CommandsEnabled                        bool
+	TexturePacksRequired                   bool
+	RuleData                               GameRulesChangedData
+	Experiments                            Experiments
+	HasBonusChestEnabled                   bool
+	StartWithMapEnabled                    bool
+	PlayerPermissions                      PlayerPermissionLevel
+	ServerChunkTickRange                   int32
+	HasLockedBehaviorPack                  bool
+	HasLockedResourcePack                  bool
+	IsFromLockedTemplate                   bool
+	UseMsaGamertagsOnly                    bool
+	IsFromWorldTemplate                    bool
+	IsWorldTemplateOptionLocked            bool
+	OnlySpawnV1Villagers                   bool
+	PersonaDisabled                        bool
+	CustomSkinsDisabled                    bool
+	EmoteChatMuted                         bool
+	BaseGameVersion                        string
+	LimitedWorldWidth                      int32
+	LimitedWorldDepth                      int32
+	NetherType                             bool
+	EduSharedURIResource                   EduSharedURIResource
+	OverrideForceExperimentalGameplay      Optional[bool]
+	ChatRestrictionLevel                   ChatRestrictionLevel
+	DisablePlayerInteractions              bool
+	ServerEditorConnectionPolicy           ServerEditorConnectionPolicy
+	AllowAnonymousBlockDropsInEditorWorlds bool
+}
+
+// Marshal reads or writes LevelSettings using its canonical wire layout.
+func (x *LevelSettings) Marshal(io IO) {
+	io.Uint64(&x.Seed)
+	Minimum(io, &x.Seed, 0)
+	x.SpawnSettings.Marshal(io)
+	IntegerFunc(&x.GeneratorType, io.Varint32)
+	IntegerFunc(&x.GameType, io.Varint32)
+	io.Bool(&x.IsHardcore)
+	IntegerFunc(&x.GameDifficulty, io.Varint32)
+	x.DefaultSpawnBlockPosition.Marshal(io)
+	io.Bool(&x.AchievementsDisabled)
+	IntegerFunc(&x.EditorWorldType, io.Varint32)
+	io.Bool(&x.IsCreatedInEditor)
+	io.Bool(&x.IsExportedFromEditor)
+	io.Varint32(&x.DayCycleStopTime)
+	IntegerFunc(&x.EducationEditionOffer, io.Varuint32)
+	io.Bool(&x.EducationFeaturesEnabled)
+	io.String(&x.EducationProductID)
+	io.Float32(&x.RainLevel)
+	io.Float32(&x.LightningLevel)
+	io.Bool(&x.HasConfirmedPlatformLockedContent)
+	io.Bool(&x.MultiplayerGameIntent)
+	io.Bool(&x.LANBroadcastIntent)
+	IntegerFunc(&x.XboxLiveBroadcastSetting, io.Varint32)
+	IntegerFunc(&x.PlatformBroadcastSetting, io.Varint32)
+	io.Bool(&x.CommandsEnabled)
+	io.Bool(&x.TexturePacksRequired)
+	x.RuleData.Marshal(io)
+	x.Experiments.Marshal(io)
+	io.Bool(&x.HasBonusChestEnabled)
+	io.Bool(&x.StartWithMapEnabled)
+	IntegerFunc(&x.PlayerPermissions, io.Int8)
+	io.Int32(&x.ServerChunkTickRange)
+	io.Bool(&x.HasLockedBehaviorPack)
+	io.Bool(&x.HasLockedResourcePack)
+	io.Bool(&x.IsFromLockedTemplate)
+	io.Bool(&x.UseMsaGamertagsOnly)
+	io.Bool(&x.IsFromWorldTemplate)
+	io.Bool(&x.IsWorldTemplateOptionLocked)
+	io.Bool(&x.OnlySpawnV1Villagers)
+	io.Bool(&x.PersonaDisabled)
+	io.Bool(&x.CustomSkinsDisabled)
+	io.Bool(&x.EmoteChatMuted)
+	io.String(&x.BaseGameVersion)
+	io.Int32(&x.LimitedWorldWidth)
+	io.Int32(&x.LimitedWorldDepth)
+	io.Bool(&x.NetherType)
+	x.EduSharedURIResource.Marshal(io)
+	OptionalFunc(io, &x.OverrideForceExperimentalGameplay, io.Bool)
+	IntegerFunc(&x.ChatRestrictionLevel, io.Uint8)
+	io.Bool(&x.DisablePlayerInteractions)
+	IntegerFunc(&x.ServerEditorConnectionPolicy, io.Varint32)
+	io.Bool(&x.AllowAnonymousBlockDropsInEditorWorlds)
+}
+
+type LineData struct {
+	LineEndLocation mgl32.Vec3
+}
+
+func (*LineData) isPrimitiveShapeExtraShapeData() {}
+
+// Marshal reads or writes LineData using its canonical wire layout.
+func (x *LineData) Marshal(io IO) {
+	io.Vec3(&x.LineEndLocation)
+}
+
+type MaterialReducerDataEntry struct {
+	FromItemKey      int32
+	ItemIdsAndCounts []MaterialReducerEntryOutput
+}
+
+// Marshal reads or writes MaterialReducerDataEntry using its canonical wire layout.
+func (x *MaterialReducerDataEntry) Marshal(io IO) {
+	io.Varint32(&x.FromItemKey)
+	Slice(io, &x.ItemIdsAndCounts)
+}
+
+type MaterialReducerEntryOutput struct {
+	ItemID    int32
+	ItemCount int32
+}
+
+// Marshal reads or writes MaterialReducerEntryOutput using its canonical wire layout.
+func (x *MaterialReducerEntryOutput) Marshal(io IO) {
+	io.Varint32(&x.ItemID)
+	io.Varint32(&x.ItemCount)
+}
+
+type MessageAndParams struct {
+	Message       string
+	ParameterList []string
+}
+
+func (*MessageAndParams) isTextData() {}
+
+// Marshal reads or writes MessageAndParams using its canonical wire layout.
+func (x *MessageAndParams) Marshal(io IO) {
+	io.StringLimits(&x.Message, 1, 65536)
+	FuncSliceLimits(io, &x.ParameterList, io.Varuint32, 0, 4, io.String)
+}
+
+type MessageOnly struct {
+	Message string
+}
+
+func (*MessageOnly) isTextData() {}
+
+// Marshal reads or writes MessageOnly using its canonical wire layout.
+func (x *MessageOnly) Marshal(io IO) {
+	io.StringLimits(&x.Message, 1, 65536)
+}
+
+type MinecraftEventingAchievementIds uint8
+
+const (
+	MinecraftEventingAchievementIdsChestFullOfCobblestone          MinecraftEventingAchievementIds = 7
+	MinecraftEventingAchievementIdsDiamondForYou                   MinecraftEventingAchievementIds = 10
+	MinecraftEventingAchievementIdsIronBelly                       MinecraftEventingAchievementIds = 20
+	MinecraftEventingAchievementIdsIronMan                         MinecraftEventingAchievementIds = 21
+	MinecraftEventingAchievementIdsOnARail                         MinecraftEventingAchievementIds = 29
+	MinecraftEventingAchievementIdsOverkill                        MinecraftEventingAchievementIds = 30
+	MinecraftEventingAchievementIdsReturnToSender                  MinecraftEventingAchievementIds = 37
+	MinecraftEventingAchievementIdsSniperDuel                      MinecraftEventingAchievementIds = 38
+	MinecraftEventingAchievementIdsStayinFrosty                    MinecraftEventingAchievementIds = 39
+	MinecraftEventingAchievementIdsTakeInventory                   MinecraftEventingAchievementIds = 40
+	MinecraftEventingAchievementIdsMapRoom                         MinecraftEventingAchievementIds = 50
+	MinecraftEventingAchievementIdsFreightStation                  MinecraftEventingAchievementIds = 52
+	MinecraftEventingAchievementIdsSmeltEverything                 MinecraftEventingAchievementIds = 53
+	MinecraftEventingAchievementIdsTasteOfYourOwnMedicine          MinecraftEventingAchievementIds = 54
+	MinecraftEventingAchievementIdsWhenPigsFly                     MinecraftEventingAchievementIds = 56
+	MinecraftEventingAchievementIdsInception                       MinecraftEventingAchievementIds = 58
+	MinecraftEventingAchievementIdsArtificialSelection             MinecraftEventingAchievementIds = 60
+	MinecraftEventingAchievementIdsFreeDiver                       MinecraftEventingAchievementIds = 61
+	MinecraftEventingAchievementIdsSpawnTheWither                  MinecraftEventingAchievementIds = 62
+	MinecraftEventingAchievementIdsBeaconator                      MinecraftEventingAchievementIds = 63
+	MinecraftEventingAchievementIdsGreatView                       MinecraftEventingAchievementIds = 64
+	MinecraftEventingAchievementIdsSuperSonic                      MinecraftEventingAchievementIds = 65
+	MinecraftEventingAchievementIdsTheEndAgain                     MinecraftEventingAchievementIds = 66
+	MinecraftEventingAchievementIdsTreasureHunter                  MinecraftEventingAchievementIds = 67
+	MinecraftEventingAchievementIdsShootingStar                    MinecraftEventingAchievementIds = 68
+	MinecraftEventingAchievementIdsFashionShow                     MinecraftEventingAchievementIds = 69
+	MinecraftEventingAchievementIdsSelfPublishedAuthor             MinecraftEventingAchievementIds = 71
+	MinecraftEventingAchievementIdsAlternativeFuel                 MinecraftEventingAchievementIds = 72
+	MinecraftEventingAchievementIdsSleepWithTheFishes              MinecraftEventingAchievementIds = 73
+	MinecraftEventingAchievementIdsCastaway                        MinecraftEventingAchievementIds = 74
+	MinecraftEventingAchievementIdsImAMarineBiologist              MinecraftEventingAchievementIds = 75
+	MinecraftEventingAchievementIdsSailThe7Seas                    MinecraftEventingAchievementIds = 76
+	MinecraftEventingAchievementIdsMeGold                          MinecraftEventingAchievementIds = 77
+	MinecraftEventingAchievementIdsAhoy                            MinecraftEventingAchievementIds = 78
+	MinecraftEventingAchievementIdsAtlantis                        MinecraftEventingAchievementIds = 79
+	MinecraftEventingAchievementIdsOnePickleTwoPickleSeaPickleFour MinecraftEventingAchievementIds = 80
+	MinecraftEventingAchievementIdsDoaBarrelRoll                   MinecraftEventingAchievementIds = 81
+	MinecraftEventingAchievementIdsMoskstraumen                    MinecraftEventingAchievementIds = 82
+	MinecraftEventingAchievementIdsEcholocation                    MinecraftEventingAchievementIds = 83
+	MinecraftEventingAchievementIdsWhereHaveYouBeen                MinecraftEventingAchievementIds = 84
+	MinecraftEventingAchievementIdsTopOfTheWorld                   MinecraftEventingAchievementIds = 85
+	MinecraftEventingAchievementIdsFruitOnTheLoom                  MinecraftEventingAchievementIds = 86
+	MinecraftEventingAchievementIdsSoundTheAlarm                   MinecraftEventingAchievementIds = 87
+	MinecraftEventingAchievementIdsBuyLowSellHigh                  MinecraftEventingAchievementIds = 88
+	MinecraftEventingAchievementIdsDisenchanted                    MinecraftEventingAchievementIds = 89
+	MinecraftEventingAchievementIdsTimeForStew                     MinecraftEventingAchievementIds = 90
+	MinecraftEventingAchievementIdsBeeOurGuest                     MinecraftEventingAchievementIds = 91
+	MinecraftEventingAchievementIdsTotalBeeLocation                MinecraftEventingAchievementIds = 92
+	MinecraftEventingAchievementIdsStickySituation                 MinecraftEventingAchievementIds = 93
+	MinecraftEventingAchievementIdsCoverMeInDebris                 MinecraftEventingAchievementIds = 94
+	MinecraftEventingAchievementIdsFloatYourGoat                   MinecraftEventingAchievementIds = 95
+	MinecraftEventingAchievementIdsFriend                          MinecraftEventingAchievementIds = 96
+	MinecraftEventingAchievementIdsWaxOnWaxOff                     MinecraftEventingAchievementIds = 97
+	MinecraftEventingAchievementIdsStriderRiddenInLavaInOverworld  MinecraftEventingAchievementIds = 98
+	MinecraftEventingAchievementIdsGoatHornAcquired                MinecraftEventingAchievementIds = 99
+	MinecraftEventingAchievementIdsJukeboxUsedInMeadows            MinecraftEventingAchievementIds = 100
+	MinecraftEventingAchievementIdsTradedAtWorldHeight             MinecraftEventingAchievementIds = 101
+	MinecraftEventingAchievementIdsSurvivedFallFromWorldHeight     MinecraftEventingAchievementIds = 102
+	MinecraftEventingAchievementIdsSneakCloseToSculkSensor         MinecraftEventingAchievementIds = 103
+	MinecraftEventingAchievementIdsItSpreads                       MinecraftEventingAchievementIds = 104
+	MinecraftEventingAchievementIdsBirthdaySong                    MinecraftEventingAchievementIds = 105
+	MinecraftEventingAchievementIdsWithOurPowersCombined           MinecraftEventingAchievementIds = 106
+	MinecraftEventingAchievementIdsPlantingThePast                 MinecraftEventingAchievementIds = 107
+	MinecraftEventingAchievementIdsCarefulRestoration              MinecraftEventingAchievementIds = 108
+	MinecraftEventingAchievementIdsRevaulting                      MinecraftEventingAchievementIds = 109
+	MinecraftEventingAchievementIdsCraftersCraftingCrafters        MinecraftEventingAchievementIds = 110
+	MinecraftEventingAchievementIdsWhoNeedsRockets                 MinecraftEventingAchievementIds = 111
+	MinecraftEventingAchievementIdsOverOverkill                    MinecraftEventingAchievementIds = 112
+	MinecraftEventingAchievementIdsHeartTransplanter               MinecraftEventingAchievementIds = 113
+	MinecraftEventingAchievementIdsStayHydrated                    MinecraftEventingAchievementIds = 114
+	MinecraftEventingAchievementIdsMobKabob                        MinecraftEventingAchievementIds = 115
+	MinecraftEventingAchievementIdsAdventuringTime                 MinecraftEventingAchievementIds = 116
+	MinecraftEventingAchievementIdsUhOh                            MinecraftEventingAchievementIds = 117
+	MinecraftEventingAchievementIdsGettingWood                     MinecraftEventingAchievementIds = 118
+	MinecraftEventingAchievementIdsBenchMaking                     MinecraftEventingAchievementIds = 119
+	MinecraftEventingAchievementIdsTimeToMine                      MinecraftEventingAchievementIds = 120
+	MinecraftEventingAchievementIdsHotTopic                        MinecraftEventingAchievementIds = 121
+	MinecraftEventingAchievementIdsAcquireHardware                 MinecraftEventingAchievementIds = 122
+	MinecraftEventingAchievementIdsGettingAnUpgrade                MinecraftEventingAchievementIds = 123
+	MinecraftEventingAchievementIdsMonsterHunter                   MinecraftEventingAchievementIds = 124
+	MinecraftEventingAchievementIdsDiamonds                        MinecraftEventingAchievementIds = 125
+	MinecraftEventingAchievementIdsPlethoraOfCats                  MinecraftEventingAchievementIds = 126
+)
+
+type MinecraftEventingInteractionType uint8
+
+const (
+	MinecraftEventingInteractionTypeBreeding   MinecraftEventingInteractionType = 1
+	MinecraftEventingInteractionTypeTaming     MinecraftEventingInteractionType = 2
+	MinecraftEventingInteractionTypeCuring     MinecraftEventingInteractionType = 3
+	MinecraftEventingInteractionTypeCrafted    MinecraftEventingInteractionType = 4
+	MinecraftEventingInteractionTypeShearing   MinecraftEventingInteractionType = 5
+	MinecraftEventingInteractionTypeMilking    MinecraftEventingInteractionType = 6
+	MinecraftEventingInteractionTypeTrading    MinecraftEventingInteractionType = 7
+	MinecraftEventingInteractionTypeFeeding    MinecraftEventingInteractionType = 8
+	MinecraftEventingInteractionTypeIgniting   MinecraftEventingInteractionType = 9
+	MinecraftEventingInteractionTypeColoring   MinecraftEventingInteractionType = 10
+	MinecraftEventingInteractionTypeNaming     MinecraftEventingInteractionType = 11
+	MinecraftEventingInteractionTypeLeashing   MinecraftEventingInteractionType = 12
+	MinecraftEventingInteractionTypeUnleashing MinecraftEventingInteractionType = 13
+	MinecraftEventingInteractionTypePetSleep   MinecraftEventingInteractionType = 14
+	MinecraftEventingInteractionTypeTrusting   MinecraftEventingInteractionType = 15
+	MinecraftEventingInteractionTypeCommanding MinecraftEventingInteractionType = 16
+	MinecraftEventingInteractionTypeEquipping  MinecraftEventingInteractionType = 17
+)
+
+type MinecraftEventingPOIBlockInteractionType uint8
+
+const (
+	MinecraftEventingPOIBlockInteractionTypeNone                MinecraftEventingPOIBlockInteractionType = 0
+	MinecraftEventingPOIBlockInteractionTypeExtend              MinecraftEventingPOIBlockInteractionType = 1
+	MinecraftEventingPOIBlockInteractionTypeClone               MinecraftEventingPOIBlockInteractionType = 2
+	MinecraftEventingPOIBlockInteractionTypeLock                MinecraftEventingPOIBlockInteractionType = 3
+	MinecraftEventingPOIBlockInteractionTypeCreate              MinecraftEventingPOIBlockInteractionType = 4
+	MinecraftEventingPOIBlockInteractionTypeCreateLocator       MinecraftEventingPOIBlockInteractionType = 5
+	MinecraftEventingPOIBlockInteractionTypeRename              MinecraftEventingPOIBlockInteractionType = 6
+	MinecraftEventingPOIBlockInteractionTypeItemPlaced          MinecraftEventingPOIBlockInteractionType = 7
+	MinecraftEventingPOIBlockInteractionTypeItemRemoved         MinecraftEventingPOIBlockInteractionType = 8
+	MinecraftEventingPOIBlockInteractionTypeCooking             MinecraftEventingPOIBlockInteractionType = 9
+	MinecraftEventingPOIBlockInteractionTypeDousing             MinecraftEventingPOIBlockInteractionType = 10
+	MinecraftEventingPOIBlockInteractionTypeLighting            MinecraftEventingPOIBlockInteractionType = 11
+	MinecraftEventingPOIBlockInteractionTypeHaystack            MinecraftEventingPOIBlockInteractionType = 12
+	MinecraftEventingPOIBlockInteractionTypeFilled              MinecraftEventingPOIBlockInteractionType = 13
+	MinecraftEventingPOIBlockInteractionTypeEmptied             MinecraftEventingPOIBlockInteractionType = 14
+	MinecraftEventingPOIBlockInteractionTypeAddDye              MinecraftEventingPOIBlockInteractionType = 15
+	MinecraftEventingPOIBlockInteractionTypeDyeItem             MinecraftEventingPOIBlockInteractionType = 16
+	MinecraftEventingPOIBlockInteractionTypeClearItem           MinecraftEventingPOIBlockInteractionType = 17
+	MinecraftEventingPOIBlockInteractionTypeEnchantArrow        MinecraftEventingPOIBlockInteractionType = 18
+	MinecraftEventingPOIBlockInteractionTypeCompostItemPlaced   MinecraftEventingPOIBlockInteractionType = 19
+	MinecraftEventingPOIBlockInteractionTypeRecoveredBonemeal   MinecraftEventingPOIBlockInteractionType = 20
+	MinecraftEventingPOIBlockInteractionTypeBookPlaced          MinecraftEventingPOIBlockInteractionType = 21
+	MinecraftEventingPOIBlockInteractionTypeBookOpened          MinecraftEventingPOIBlockInteractionType = 22
+	MinecraftEventingPOIBlockInteractionTypeDisenchant          MinecraftEventingPOIBlockInteractionType = 23
+	MinecraftEventingPOIBlockInteractionTypeRepair              MinecraftEventingPOIBlockInteractionType = 24
+	MinecraftEventingPOIBlockInteractionTypeDisenchantAndRepair MinecraftEventingPOIBlockInteractionType = 25
+)
+
+type Mirror uint8
+
+const (
+	MirrorNone Mirror = 0
+	MirrorX    Mirror = 1
+	MirrorZ    Mirror = 2
+	MirrorXZ   Mirror = 3
+)
+
+type MissingBlobData struct {
+	BlobID   uint64
+	BlobData []byte
+}
+
+// Marshal reads or writes MissingBlobData using its canonical wire layout.
+func (x *MissingBlobData) Marshal(io IO) {
+	io.Uint64(&x.BlobID)
+	io.Bytes(&x.BlobData)
+}
+
+type MoLangVersion int16
+
+const (
+	MoLangVersionInvalid                                MoLangVersion = -1
+	MoLangVersionBeforeVersioning                       MoLangVersion = 0
+	MoLangVersionInitial                                MoLangVersion = 1
+	MoLangVersionFixedItemRemainingUseDurationQuery     MoLangVersion = 2
+	MoLangVersionExpressionErrorMessages                MoLangVersion = 3
+	MoLangVersionUnexpectedOperatorErrors               MoLangVersion = 4
+	MoLangVersionConditionalOperatorAssociativity       MoLangVersion = 5
+	MoLangVersionComparisonAndLogicalOperatorPrecedence MoLangVersion = 6
+	MoLangVersionDivideByNegativeValue                  MoLangVersion = 7
+	MoLangVersionFixedCapeFlapAmountQuery               MoLangVersion = 8
+	MoLangVersionQueryBlockPropertyRenamedToState       MoLangVersion = 9
+	MoLangVersionDeprecateOldBlockQueryNames            MoLangVersion = 10
+	MoLangVersionDeprecatedSnifferAndCamelQueries       MoLangVersion = 11
+	MoLangVersionLeafSupportingInFirstSolidBlockBelow   MoLangVersion = 12
+	MoLangVersionLatest                                 MoLangVersion = 13
+	MoLangVersionNumValidVersions                       MoLangVersion = 14
+)
+
+type MobBorn struct {
+	BornBabyEntityType    int32
+	BornBabyEntityVariant int32
+	BornBabyColor         uint8
+}
+
+func (*MobBorn) isEventData() {}
+
+// Marshal reads or writes MobBorn using its canonical wire layout.
+func (x *MobBorn) Marshal(io IO) {
+	io.Varint32(&x.BornBabyEntityType)
+	io.Varint32(&x.BornBabyEntityVariant)
+	io.Uint8(&x.BornBabyColor)
+}
+
+type MobEffectEvent uint8
+
+const (
+	MobEffectEventInvalid MobEffectEvent = 0
+	MobEffectEventAdd     MobEffectEvent = 1
+	MobEffectEventUpdate  MobEffectEvent = 2
+	MobEffectEventRemove  MobEffectEvent = 3
+)
+
+type MobKilled struct {
+	InstigatorActorID         int64
+	TargetActorID             int64
+	InstigatorSChildActorType ActorType
+	DamageSource              int32
+	TradeTier                 int32
+	TraderName                string
+}
+
+func (*MobKilled) isEventData() {}
+
+// Marshal reads or writes MobKilled using its canonical wire layout.
+func (x *MobKilled) Marshal(io IO) {
+	io.Varint64(&x.InstigatorActorID)
+	io.Varint64(&x.TargetActorID)
+	IntegerFunc(&x.InstigatorSChildActorType, io.Varint32)
+	io.Varint32(&x.DamageSource)
+	io.Varint32(&x.TradeTier)
+	io.StringLimits(&x.TraderName, 0, 128)
+}
+
+type ModalFormCancelReason uint8
+
+const (
+	ModalFormCancelReasonUserClosed ModalFormCancelReason = 0
+	ModalFormCancelReasonUserBusy   ModalFormCancelReason = 1
+)
+
+type MoveActorAbsoluteData struct {
+	ActorRuntimeID uint64
+	Header         uint8
+	Position       mgl32.Vec3
+	RotationX      uint8
+	RotationY      uint8
+	RotationYHead  uint8
+}
+
+// Marshal reads or writes MoveActorAbsoluteData using its canonical wire layout.
+func (x *MoveActorAbsoluteData) Marshal(io IO) {
+	io.ActorRuntimeID(&x.ActorRuntimeID)
+	io.Uint8(&x.Header)
+	io.Vec3(&x.Position)
+	io.Uint8(&x.RotationX)
+	io.Uint8(&x.RotationY)
+	io.Uint8(&x.RotationYHead)
+}
+
+type MoveActorDeltaData struct {
+	ActorRuntimeID       uint64
+	NewPositionX         Optional[float32]
+	NewPositionY         Optional[float32]
+	NewPositionZ         Optional[float32]
+	RotationX            Optional[int8]
+	RotationY            Optional[int8]
+	RotationYHead        Optional[int8]
+	IsOnGround           bool
+	ForceMove            bool
+	ForceMoveLocalEntity bool
+	ForceCompletion      bool
+}
+
+// Marshal reads or writes MoveActorDeltaData using its canonical wire layout.
+func (x *MoveActorDeltaData) Marshal(io IO) {
+	io.ActorRuntimeID(&x.ActorRuntimeID)
+	OptionalFunc(io, &x.NewPositionX, io.Float32)
+	OptionalFunc(io, &x.NewPositionY, io.Float32)
+	OptionalFunc(io, &x.NewPositionZ, io.Float32)
+	OptionalFunc(io, &x.RotationX, io.Int8)
+	OptionalFunc(io, &x.RotationY, io.Int8)
+	OptionalFunc(io, &x.RotationYHead, io.Int8)
+	io.Bool(&x.IsOnGround)
+	io.Bool(&x.ForceMove)
+	io.Bool(&x.ForceMoveLocalEntity)
+	io.Bool(&x.ForceCompletion)
+}
+
+type MovePlayerTeleportData struct {
+	TeleportationCause int32
+	SourceActorType    int32
+}
+
+// Marshal reads or writes MovePlayerTeleportData using its canonical wire layout.
+func (x *MovePlayerTeleportData) Marshal(io IO) {
+	io.Int32(&x.TeleportationCause)
+	io.Int32(&x.SourceActorType)
+}
+
+type MovementEffectType int32
+
+const (
+	MovementEffectTypeGlideBoost   MovementEffectType = 0
+	MovementEffectTypeDolphinBoost MovementEffectType = 1
+	MovementEffectTypeGeyserBoost  MovementEffectType = 2
+)
+
+type MultiplayerSettingsType int32
+
+const (
+	MultiplayerSettingsTypeEnableMultiplayer  MultiplayerSettingsType = 0
+	MultiplayerSettingsTypeDisableMultiplayer MultiplayerSettingsType = 1
+	MultiplayerSettingsTypeRefreshJoincode    MultiplayerSettingsType = 2
+)
+
+type NetworkItemInstanceDescriptorSerializedData struct {
+	ID             int32
+	StackSize      uint16
+	AuxValue       uint32
+	BlockRuntimeID int32
+	UserDataBuffer []byte
+}
+
+// Marshal reads or writes NetworkItemInstanceDescriptorSerializedData using its canonical wire layout.
+func (x *NetworkItemInstanceDescriptorSerializedData) Marshal(io IO) {
+	io.Varint32(&x.ID)
+	Minimum(io, &x.ID, -32768)
+	Maximum(io, &x.ID, 32767)
+	io.Uint16(&x.StackSize)
+	Minimum(io, &x.StackSize, 0)
+	Maximum(io, &x.StackSize, 64)
+	io.Varuint32(&x.AuxValue)
+	Minimum(io, &x.AuxValue, 0)
+	Maximum(io, &x.AuxValue, 32767)
+	io.Varint32(&x.BlockRuntimeID)
+	io.Bytes(&x.UserDataBuffer)
+}
+
+type NetworkItemStackDescriptorSerializedData struct {
+	ID             int16
+	StackSize      uint16
+	AuxValue       uint32
+	NetIDVariant   Optional[int32]
+	BlockRuntimeID uint32
+	UserDataBuffer []byte
+}
+
+// Marshal reads or writes NetworkItemStackDescriptorSerializedData using its canonical wire layout.
+func (x *NetworkItemStackDescriptorSerializedData) Marshal(io IO) {
+	io.Int16(&x.ID)
+	io.Uint16(&x.StackSize)
+	Minimum(io, &x.StackSize, 0)
+	Maximum(io, &x.StackSize, 64)
+	io.Varuint32(&x.AuxValue)
+	Minimum(io, &x.AuxValue, 0)
+	Maximum(io, &x.AuxValue, 32767)
+	OptionalFunc(io, &x.NetIDVariant, io.Varint32)
+	io.Varuint32(&x.BlockRuntimeID)
+	Minimum(io, &x.BlockRuntimeID, 0)
+	io.Bytes(&x.UserDataBuffer)
+}
+
+type NetworkPermissions struct {
+	ServerAuthSoundEnabled bool
+}
+
+// Marshal reads or writes NetworkPermissions using its canonical wire layout.
+func (x *NetworkPermissions) Marshal(io IO) {
+	io.Bool(&x.ServerAuthSoundEnabled)
+}
+
+type NewInteractionModel int32
+
+const (
+	NewInteractionModelTouch     NewInteractionModel = 0
+	NewInteractionModelCrosshair NewInteractionModel = 1
+	NewInteractionModelClassic   NewInteractionModel = 2
+	NewInteractionModelCount     NewInteractionModel = 3
+)
+
+type POICauldronUsed struct {
+	BlockInteractionType MinecraftEventingPOIBlockInteractionType
+	ItemID               int32
+}
+
+func (*POICauldronUsed) isEventData() {}
+
+// Marshal reads or writes POICauldronUsed using its canonical wire layout.
+func (x *POICauldronUsed) Marshal(io IO) {
+	IntegerFunc(&x.BlockInteractionType, io.Uint8)
+	io.Varint32(&x.ItemID)
+}
+
+type PackedItemUseLegacyInventoryTransaction struct {
+	LegacyRequestID    ItemStackLegacyRequestID
+	LegacySetItemSlots Optional[[]LegacySetSlot]
+	ItemUseTransaction Optional[ItemUseInventoryTransaction]
+}
+
+// Marshal reads or writes PackedItemUseLegacyInventoryTransaction using its canonical wire layout.
+func (x *PackedItemUseLegacyInventoryTransaction) Marshal(io IO) {
+	x.LegacyRequestID.Marshal(io)
+	OptionalFunc(io, &x.LegacySetItemSlots, func(value *[]LegacySetSlot) {
+		Slice(io, value)
+	})
+	OptionalFunc(io, &x.ItemUseTransaction, func(value *ItemUseInventoryTransaction) {
+		value.Marshal(io)
+	})
+}
+
+type PacketCompressionAlgorithm uint16
+
+const (
+	PacketCompressionAlgorithmZLib   PacketCompressionAlgorithm = 0
+	PacketCompressionAlgorithmSnappy PacketCompressionAlgorithm = 1
+	PacketCompressionAlgorithmNone   PacketCompressionAlgorithm = 65535
+)
+
+type PacketType uint32
+
+const (
+	PacketTypeEmpty                    PacketType = 0
+	PacketTypeInitiallyUnlockedRecipes PacketType = 1
+	PacketTypeNewlyUnlockedRecipes     PacketType = 2
+	PacketTypeRemoveUnlockedRecipes    PacketType = 3
+	PacketTypeRemoveAllUnlockedRecipes PacketType = 4
+)
+
+type PacketViolationSeverity int32
+
+const (
+	PacketViolationSeverityUnknown               PacketViolationSeverity = -1
+	PacketViolationSeverityWarning               PacketViolationSeverity = 0
+	PacketViolationSeverityFinalWarning          PacketViolationSeverity = 1
+	PacketViolationSeverityTerminatingConnection PacketViolationSeverity = 2
+)
+
+type PacketViolationType int32
+
+const (
+	PacketViolationTypeUnknown         PacketViolationType = -1
+	PacketViolationTypePacketMalformed PacketViolationType = 0
+)
+
+type PersonaAnimatedTextureType uint32
+
+const (
+	PersonaAnimatedTextureTypeFace        PersonaAnimatedTextureType = 1
+	PersonaAnimatedTextureTypeBody32x32   PersonaAnimatedTextureType = 2
+	PersonaAnimatedTextureTypeBody128x128 PersonaAnimatedTextureType = 3
+)
+
+type PersonaAnimationExpression uint32
+
+const (
+	PersonaAnimationExpressionLinear   PersonaAnimationExpression = 0
+	PersonaAnimationExpressionBlinking PersonaAnimationExpression = 1
+)
+
+type PersonaArmSizeType uint8
+
+const (
+	PersonaArmSizeTypeSlim PersonaArmSizeType = 0
+	PersonaArmSizeTypeWide PersonaArmSizeType = 1
+)
+
+type PhotoType uint8
+
+const (
+	PhotoTypePortfolio PhotoType = 0
+	PhotoTypePhotoItem PhotoType = 1
+	PhotoTypeBook      PhotoType = 2
+)
+
+type PiglinBarter struct {
+	ItemID                      int32
+	WasTargetingBarteringPlayer bool
+}
+
+func (*PiglinBarter) isEventData() {}
+
+// Marshal reads or writes PiglinBarter using its canonical wire layout.
+func (x *PiglinBarter) Marshal(io IO) {
+	io.Varint32(&x.ItemID)
+	io.Bool(&x.WasTargetingBarteringPlayer)
+}
+
+type PlayStatusType int32
+
+const (
+	PlayStatusTypeLoginSuccess                             PlayStatusType = 0
+	PlayStatusTypeLoginFailedClientOld                     PlayStatusType = 1
+	PlayStatusTypeLoginFailedServerOld                     PlayStatusType = 2
+	PlayStatusTypePlayerSpawn                              PlayStatusType = 3
+	PlayStatusTypeLoginFailedInvalidTenant                 PlayStatusType = 4
+	PlayStatusTypeLoginFailedEditionMismatchEduToVanilla   PlayStatusType = 5
+	PlayStatusTypeLoginFailedEditionMismatchVanillaToEdu   PlayStatusType = 6
+	PlayStatusTypeLoginFailedServerFullSubClient           PlayStatusType = 7
+	PlayStatusTypeLoginFailedEditorMismatchEditorToVanilla PlayStatusType = 8
+	PlayStatusTypeLoginFailedEditorMismatchVanillaToEditor PlayStatusType = 9
+)
+
+type PortalCreated struct {
+	DimensionID int32
+}
+
+func (*PortalCreated) isEventData() {}
+
+// Marshal reads or writes PortalCreated using its canonical wire layout.
+func (x *PortalCreated) Marshal(io IO) {
+	io.Varint32(&x.DimensionID)
+}
+
+type PortalUsed struct {
+	SourceDimensionID int32
+	TargetDimensionID int32
+}
+
+func (*PortalUsed) isEventData() {}
+
+// Marshal reads or writes PortalUsed using its canonical wire layout.
+func (x *PortalUsed) Marshal(io IO) {
+	io.Varint32(&x.SourceDimensionID)
+	io.Varint32(&x.TargetDimensionID)
+}
+
+type PotionMixDataEntry struct {
+	FromPotionID   int32
+	FromItemAux    int32
+	ReagentItemID  int32
+	ReagentItemAux int32
+	ToPotionID     int32
+	ToItemAux      int32
+}
+
+// Marshal reads or writes PotionMixDataEntry using its canonical wire layout.
+func (x *PotionMixDataEntry) Marshal(io IO) {
+	io.Varint32(&x.FromPotionID)
+	io.Varint32(&x.FromItemAux)
+	io.Varint32(&x.ReagentItemID)
+	io.Varint32(&x.ReagentItemAux)
+	io.Varint32(&x.ToPotionID)
+	io.Varint32(&x.ToItemAux)
+}
+
+type PropertySyncData struct {
+	IntEntriesList   []PropertySyncDataPropertySyncIntEntry
+	FloatEntriesList []PropertySyncDataPropertySyncFloatEntry
+}
+
+// Marshal reads or writes PropertySyncData using its canonical wire layout.
+func (x *PropertySyncData) Marshal(io IO) {
+	Slice(io, &x.IntEntriesList)
+	Slice(io, &x.FloatEntriesList)
+}
+
+type PropertySyncDataPropertySyncFloatEntry struct {
+	PropertyIndex uint32
+	Data          float32
+}
+
+// Marshal reads or writes PropertySyncDataPropertySyncFloatEntry using its canonical wire layout.
+func (x *PropertySyncDataPropertySyncFloatEntry) Marshal(io IO) {
+	io.Varuint32(&x.PropertyIndex)
+	io.Float32(&x.Data)
+}
+
+type PropertySyncDataPropertySyncIntEntry struct {
+	PropertyIndex uint32
+	Data          int32
+}
+
+// Marshal reads or writes PropertySyncDataPropertySyncIntEntry using its canonical wire layout.
+func (x *PropertySyncDataPropertySyncIntEntry) Marshal(io IO) {
+	io.Varuint32(&x.PropertyIndex)
+	io.Varint32(&x.Data)
+}
+
+type PyramidData struct {
+	Width  float32
+	Depth  Optional[float32]
+	Height float32
+}
+
+func (*PyramidData) isPrimitiveShapeExtraShapeData() {}
+
+// Marshal reads or writes PyramidData using its canonical wire layout.
+func (x *PyramidData) Marshal(io IO) {
+	io.Float32(&x.Width)
+	OptionalFunc(io, &x.Depth, io.Float32)
+	io.Float32(&x.Height)
+}
+
+type RaidUpdate struct {
+	CurrentWave int32
+	TotalWaves  int32
+	Success     bool
+}
+
+func (*RaidUpdate) isEventData() {}
+
+// Marshal reads or writes RaidUpdate using its canonical wire layout.
+func (x *RaidUpdate) Marshal(io IO) {
+	io.Varint32(&x.CurrentWave)
+	io.Varint32(&x.TotalWaves)
+	io.Bool(&x.Success)
+}
+
+type RandomDistributionType int32
+
+const (
+	RandomDistributionTypeSingleValued    RandomDistributionType = 0
+	RandomDistributionTypeUniform         RandomDistributionType = 1
+	RandomDistributionTypeGaussian        RandomDistributionType = 2
+	RandomDistributionTypeInverseGaussian RandomDistributionType = 3
+	RandomDistributionTypeFixedGrid       RandomDistributionType = 4
+	RandomDistributionTypeJitteredGrid    RandomDistributionType = 5
+	RandomDistributionTypeTriangle        RandomDistributionType = 6
+)
+
+type RemoveEntry struct {
+	Action PlayerListPacketType
+	UUID   uuid.UUID
+}
+
+func (*RemoveEntry) isPlayerListData() {}
+
+// Marshal reads or writes RemoveEntry using its canonical wire layout.
+func (x *RemoveEntry) Marshal(io IO) {
+	IntegerFunc(&x.Action, io.Uint8)
+	io.UUID(&x.UUID)
+}
+
+type RemoveEnvironmentAttributes struct {
+	AttributeLayerName      string
+	AttributeLayerDimension DimensionType
+	Attributes              []string
+}
+
+func (*RemoveEnvironmentAttributes) isAttributeLayerSyncData() {}
+
+// Marshal reads or writes RemoveEnvironmentAttributes using its canonical wire layout.
+func (x *RemoveEnvironmentAttributes) Marshal(io IO) {
+	io.StringLimits(&x.AttributeLayerName, 0, 128)
+	x.AttributeLayerDimension.Marshal(io)
+	FuncSliceLimits(io, &x.Attributes, io.Varuint32, 0, 1024, func(value *string) {
+		io.StringLimits(value, 0, 128)
+	})
+}
+
+type RemoveOverride struct {
+	Type string
+}
+
+func (*RemoveOverride) isPlayerUpdateEntityOverridesData() {}
+
+// Marshal reads or writes RemoveOverride using its canonical wire layout.
+func (x *RemoveOverride) Marshal(io IO) {
+	io.String(&x.Type)
+}
+
+type RemoveScore struct {
+	Action        string
+	ScoreboardID  ScoreboardID
+	ObjectiveName Optional[string]
+}
+
+func (*RemoveScore) isSetScoreInfoItem() {}
+
+// Marshal reads or writes RemoveScore using its canonical wire layout.
+func (x *RemoveScore) Marshal(io IO) {
+	io.String(&x.Action)
+	x.ScoreboardID.Marshal(io)
+	DoubleOptionalFunc(io, &x.ObjectiveName, func(value *string) {
+		io.StringLimits(value, 1, 18446744073709551615)
+	})
+}
+
+type RemoveTimeMarkerData struct {
+	ClockID       uint64
+	TimeMarkerIds []uint64
+}
+
+func (*RemoveTimeMarkerData) isSyncWorldClocksData() {}
+
+// Marshal reads or writes RemoveTimeMarkerData using its canonical wire layout.
+func (x *RemoveTimeMarkerData) Marshal(io IO) {
+	io.Varuint64(&x.ClockID)
+	FuncSliceLimits(io, &x.TimeMarkerIds, io.Varuint32, 0, 256, io.Varuint64)
+}
+
+type RequestAbilityType uint8
+
+const (
+	RequestAbilityTypeUnset RequestAbilityType = 0
+	RequestAbilityTypeBool  RequestAbilityType = 1
+	RequestAbilityTypeFloat RequestAbilityType = 2
+)
+
+type RequestType uint8
+
+const (
+	RequestTypeSetActions             RequestType = 0
+	RequestTypeExecuteAction          RequestType = 1
+	RequestTypeExecuteClosingCommands RequestType = 2
+	RequestTypeSetName                RequestType = 3
+	RequestTypeSetSkin                RequestType = 4
+	RequestTypeSetInteractText        RequestType = 5
+	RequestTypeExecuteOpeningCommands RequestType = 6
+)
+
+type RewindType uint8
+
+const (
+	RewindTypePlayer  RewindType = 0
+	RewindTypeVehicle RewindType = 1
+)
+
+type Rotation uint8
+
+const (
+	RotationNone      Rotation = 0
+	RotationRotate90  Rotation = 1
+	RotationRotate180 Rotation = 2
+	RotationRotate270 Rotation = 3
+)
+
+type ScriptModuleMinecraftScriptPrimitiveShapeType uint8
+
+const (
+	ScriptModuleMinecraftScriptPrimitiveShapeTypeLine      ScriptModuleMinecraftScriptPrimitiveShapeType = 0
+	ScriptModuleMinecraftScriptPrimitiveShapeTypeBox       ScriptModuleMinecraftScriptPrimitiveShapeType = 1
+	ScriptModuleMinecraftScriptPrimitiveShapeTypeSphere    ScriptModuleMinecraftScriptPrimitiveShapeType = 2
+	ScriptModuleMinecraftScriptPrimitiveShapeTypeCircle    ScriptModuleMinecraftScriptPrimitiveShapeType = 3
+	ScriptModuleMinecraftScriptPrimitiveShapeTypeText      ScriptModuleMinecraftScriptPrimitiveShapeType = 4
+	ScriptModuleMinecraftScriptPrimitiveShapeTypeArrow     ScriptModuleMinecraftScriptPrimitiveShapeType = 5
+	ScriptModuleMinecraftScriptPrimitiveShapeTypeCylinder  ScriptModuleMinecraftScriptPrimitiveShapeType = 6
+	ScriptModuleMinecraftScriptPrimitiveShapeTypePyramid   ScriptModuleMinecraftScriptPrimitiveShapeType = 7
+	ScriptModuleMinecraftScriptPrimitiveShapeTypeEllipsoid ScriptModuleMinecraftScriptPrimitiveShapeType = 8
+	ScriptModuleMinecraftScriptPrimitiveShapeTypeCone      ScriptModuleMinecraftScriptPrimitiveShapeType = 9
+)
+
+type SemVersion struct {
+	Version string
+}
+
+// Marshal reads or writes SemVersion using its canonical wire layout.
+func (x *SemVersion) Marshal(io IO) {
+	io.String(&x.Version)
+}
+
+type SemVersionData struct {
+	Version string
+}
+
+// Marshal reads or writes SemVersionData using its canonical wire layout.
+func (x *SemVersionData) Marshal(io IO) {
+	io.String(&x.Version)
+}
+
+type SerializedAbilitiesData struct {
+	TargetPlayerRawID  int64
+	PlayerPermissions  PlayerPermissionLevel
+	CommandPermissions CommandPermissionLevel
+	Layers             []SerializedAbilitiesDataSerializedLayer
+}
+
+// Marshal reads or writes SerializedAbilitiesData using its canonical wire layout.
+func (x *SerializedAbilitiesData) Marshal(io IO) {
+	io.Int64(&x.TargetPlayerRawID)
+	IntegerFunc(&x.PlayerPermissions, io.Int8)
+	IntegerFunc(&x.CommandPermissions, io.Uint8)
+	Slice(io, &x.Layers)
+}
+
+type SerializedAbilitiesDataSerializedLayer struct {
+	SerializedLayer  uint16
+	AbilitiesSet     uint32
+	AbilityValues    uint32
+	FlySpeed         float32
+	VerticalFlySpeed float32
+	WalkSpeed        float32
+}
+
+// Marshal reads or writes SerializedAbilitiesDataSerializedLayer using its canonical wire layout.
+func (x *SerializedAbilitiesDataSerializedLayer) Marshal(io IO) {
+	io.Uint16(&x.SerializedLayer)
+	io.Uint32(&x.AbilitiesSet)
+	io.Uint32(&x.AbilityValues)
+	io.Float32(&x.FlySpeed)
+	io.Float32(&x.VerticalFlySpeed)
+	io.Float32(&x.WalkSpeed)
+}
+
+type SerializedNoiseBlockSpecifier struct {
+	Noise     string
+	Threshold float32
+	Range     FloatRange
+	Block     uint32
+}
+
+// Marshal reads or writes SerializedNoiseBlockSpecifier using its canonical wire layout.
+func (x *SerializedNoiseBlockSpecifier) Marshal(io IO) {
+	io.String(&x.Noise)
+	io.Float32(&x.Threshold)
+	x.Range.Marshal(io)
+	io.Uint32(&x.Block)
+}
+
+type SerializedPersonaPieceHandle struct {
+	PieceID        string
+	PieceType      PersonaPieceType
+	PackID         uuid.UUID
+	IsDefaultPiece bool
+	ProductID      string
+}
+
+// Marshal reads or writes SerializedPersonaPieceHandle using its canonical wire layout.
+func (x *SerializedPersonaPieceHandle) Marshal(io IO) {
+	io.String(&x.PieceID)
+	IntegerFunc(&x.PieceType, io.Uint32)
+	io.UUID(&x.PackID)
+	io.Bool(&x.IsDefaultPiece)
+	io.String(&x.ProductID)
+}
+
+type SerializedSkinRef struct {
+	ID                           string
+	PlayFabID                    string
+	ResourcePatch                string
+	ImageData                    SkinImage
+	AnimatedImageData            []AnimatedImageData
+	CapeImageData                SkinImage
+	GeometryData                 string
+	GeometryDataMinEngineVersion string
+	AnimationData                string
+	CapeID                       string
+	FullID                       string
+	ArmSize                      PersonaArmSizeType
+	SkinColor                    color.RGBA
+	PersonaPieces                []SerializedPersonaPieceHandle
+	PieceTintColors              []OrderedEntry[string, TintMapColor]
+	IsPremium                    bool
+	IsPersona                    bool
+	IsPersonaCapeOnClassicSkin   bool
+	IsPrimaryUser                bool
+	OverridesPlayerAppearance    bool
+	TrustedSkinFlag              string
+	ProfileHash                  string
+}
+
+// Marshal reads or writes SerializedSkinRef using its canonical wire layout.
+func (x *SerializedSkinRef) Marshal(io IO) {
+	io.String(&x.ID)
+	io.String(&x.PlayFabID)
+	io.String(&x.ResourcePatch)
+	x.ImageData.Marshal(io)
+	Slice(io, &x.AnimatedImageData)
+	x.CapeImageData.Marshal(io)
+	io.String(&x.GeometryData)
+	io.String(&x.GeometryDataMinEngineVersion)
+	io.String(&x.AnimationData)
+	io.String(&x.CapeID)
+	io.String(&x.FullID)
+	IntegerFunc(&x.ArmSize, io.Uint8)
+	io.RGBA(&x.SkinColor)
+	Slice(io, &x.PersonaPieces)
+	OrderedMap(io, &x.PieceTintColors, io.Varuint32, io.String, func(value *TintMapColor) {
+		value.Marshal(io)
+	})
+	io.Bool(&x.IsPremium)
+	io.Bool(&x.IsPersona)
+	io.Bool(&x.IsPersonaCapeOnClassicSkin)
+	io.Bool(&x.IsPrimaryUser)
+	io.Bool(&x.OverridesPlayerAppearance)
+	io.String(&x.TrustedSkinFlag)
+	io.String(&x.ProfileHash)
+}
+
+type ServerBlockProperty struct {
+	BlockName       string
+	BlockDefinition []byte
+}
+
+// Marshal reads or writes ServerBlockProperty using its canonical wire layout.
+func (x *ServerBlockProperty) Marshal(io IO) {
+	io.String(&x.BlockName)
+	io.NBT(&x.BlockDefinition, NBTNetwork)
+}
+
+type ServerConfigurationClientStoreEntryPointConfiguration struct {
+	StoreID   string
+	StoreName string
+}
+
+// Marshal reads or writes ServerConfigurationClientStoreEntryPointConfiguration using its canonical wire layout.
+func (x *ServerConfigurationClientStoreEntryPointConfiguration) Marshal(io IO) {
+	io.String(&x.StoreID)
+	io.String(&x.StoreName)
+}
+
+type ServerConfigurationGatheringsConfigurationJoinInfo struct {
+	ExperienceID   uuid.UUID
+	ExperienceName string
+	WorldID        Optional[uuid.UUID]
+	WorldName      Optional[string]
+	CreatorID      string
+	TargetID       Optional[uuid.UUID]
+	ScenarioID     Optional[string]
+	ServerID       Optional[string]
+}
+
+// Marshal reads or writes ServerConfigurationGatheringsConfigurationJoinInfo using its canonical wire layout.
+func (x *ServerConfigurationGatheringsConfigurationJoinInfo) Marshal(io IO) {
+	io.UUID(&x.ExperienceID)
+	io.StringLimits(&x.ExperienceName, 1, 29)
+	OptionalFunc(io, &x.WorldID, io.UUID)
+	OptionalFunc(io, &x.WorldName, func(value *string) {
+		io.StringLimits(value, 1, 29)
+	})
+	io.StringLimits(&x.CreatorID, 1, 60)
+	OptionalFunc(io, &x.TargetID, io.UUID)
+	OptionalFunc(io, &x.ScenarioID, func(value *string) {
+		io.StringLimits(value, 1, 100)
+	})
+	OptionalFunc(io, &x.ServerID, func(value *string) {
+		io.StringLimits(value, 1, 100)
+	})
+}
+
+type ServerConfigurationPresenceConfiguration struct {
+	RichPresenceID Optional[string]
+}
+
+// Marshal reads or writes ServerConfigurationPresenceConfiguration using its canonical wire layout.
+func (x *ServerConfigurationPresenceConfiguration) Marshal(io IO) {
+	OptionalFunc(io, &x.RichPresenceID, func(value *string) {
+		io.StringLimits(value, 0, 50)
+	})
+}
+
+type ServerConfigurationServerConfigurationJoinInfo struct {
+	Gathering             Optional[ServerConfigurationGatheringsConfigurationJoinInfo]
+	ClientStoreEntryPoint Optional[ServerConfigurationClientStoreEntryPointConfiguration]
+	Presence              Optional[ServerConfigurationPresenceConfiguration]
+}
+
+// Marshal reads or writes ServerConfigurationServerConfigurationJoinInfo using its canonical wire layout.
+func (x *ServerConfigurationServerConfigurationJoinInfo) Marshal(io IO) {
+	OptionalFunc(io, &x.Gathering, func(value *ServerConfigurationGatheringsConfigurationJoinInfo) {
+		value.Marshal(io)
+	})
+	OptionalFunc(io, &x.ClientStoreEntryPoint, func(value *ServerConfigurationClientStoreEntryPointConfiguration) {
+		value.Marshal(io)
+	})
+	OptionalFunc(io, &x.Presence, func(value *ServerConfigurationPresenceConfiguration) {
+		value.Marshal(io)
+	})
+}
+
+type ServerEditorConnectionPolicy int32
+
+const (
+	ServerEditorConnectionPolicyMatchWorldType ServerEditorConnectionPolicy = 0
+	ServerEditorConnectionPolicyEditorOnly     ServerEditorConnectionPolicy = 1
+	ServerEditorConnectionPolicyVanillaOnly    ServerEditorConnectionPolicy = 2
+	ServerEditorConnectionPolicyMixed          ServerEditorConnectionPolicy = 3
+)
+
+type ServerSoundHandle struct {
+	ServerSoundHandle uint64
+}
+
+// Marshal reads or writes ServerSoundHandle using its canonical wire layout.
+func (x *ServerSoundHandle) Marshal(io IO) {
+	io.Uint64(&x.ServerSoundHandle)
+}
+
+type ServerWaypoint struct {
+	UpdateFlag              uint32
+	IsVisible               Optional[bool]
+	WorldPosition           Optional[WorldPosition]
+	TexturePath             Optional[string]
+	IconSize                Optional[mgl32.Vec2]
+	Color                   Optional[color.RGBA]
+	ClientPositionAuthority Optional[bool]
+	ActorUniqueID           Optional[int64]
+}
+
+// Marshal reads or writes ServerWaypoint using its canonical wire layout.
+func (x *ServerWaypoint) Marshal(io IO) {
+	io.Uint32(&x.UpdateFlag)
+	OptionalFunc(io, &x.IsVisible, io.Bool)
+	OptionalFunc(io, &x.WorldPosition, func(value *WorldPosition) {
+		value.Marshal(io)
+	})
+	OptionalFunc(io, &x.TexturePath, io.String)
+	OptionalFunc(io, &x.IconSize, io.Vec2)
+	OptionalFunc(io, &x.Color, io.RGBA)
+	OptionalFunc(io, &x.ClientPositionAuthority, io.Bool)
+	OptionalFunc(io, &x.ActorUniqueID, io.ActorUniqueID)
+}
+
+type ServerWaypointGroupAction uint8
+
+const (
+	ServerWaypointGroupActionNone   ServerWaypointGroupAction = 0
+	ServerWaypointGroupActionAdd    ServerWaypointGroupAction = 1
+	ServerWaypointGroupActionRemove ServerWaypointGroupAction = 2
+	ServerWaypointGroupActionUpdate ServerWaypointGroupAction = 3
+)
+
+type ServerboundLoadingScreenType int32
+
+const (
+	ServerboundLoadingScreenTypeStartLoadingScreen ServerboundLoadingScreenType = 1
+	ServerboundLoadingScreenTypeEndLoadingScreen   ServerboundLoadingScreenType = 2
+)
+
+type ShowStoreOfferRedirectType uint8
+
+const (
+	ShowStoreOfferRedirectTypeMarketplaceOffer     ShowStoreOfferRedirectType = 0
+	ShowStoreOfferRedirectTypeDressingRoomOffer    ShowStoreOfferRedirectType = 1
+	ShowStoreOfferRedirectTypeThirdPartyServerPage ShowStoreOfferRedirectType = 2
+)
+
+type SimulationTypeEnum uint8
+
+const (
+	SimulationTypeEnumGame    SimulationTypeEnum = 0
+	SimulationTypeEnumEditor  SimulationTypeEnum = 1
+	SimulationTypeEnumTest    SimulationTypeEnum = 2
+	SimulationTypeEnumInvalid SimulationTypeEnum = 3
+)
+
+type SlashCommand struct {
+	SuccessCount int32
+	ErrorCount   int32
+	CommandName  string
+	ErrorList    string
+}
+
+func (*SlashCommand) isEventData() {}
+
+// Marshal reads or writes SlashCommand using its canonical wire layout.
+func (x *SlashCommand) Marshal(io IO) {
+	io.Varint32(&x.SuccessCount)
+	io.Varint32(&x.ErrorCount)
+	io.StringLimits(&x.CommandName, 0, 512)
+	io.StringLimits(&x.ErrorList, 0, 2048)
+}
+
+type SocialEventsServerTelemetryData struct {
+	ServerID   string
+	ScenarioID string
+	WorldID    string
+	OwnerID    string
+}
+
+// Marshal reads or writes SocialEventsServerTelemetryData using its canonical wire layout.
+func (x *SocialEventsServerTelemetryData) Marshal(io IO) {
+	io.String(&x.ServerID)
+	io.String(&x.ScenarioID)
+	io.String(&x.WorldID)
+	io.String(&x.OwnerID)
+}
+
+type SocialGamePublishSetting int32
+
+const (
+	SocialGamePublishSettingNoMultiPlay      SocialGamePublishSetting = 0
+	SocialGamePublishSettingInviteOnly       SocialGamePublishSetting = 1
+	SocialGamePublishSettingFriendsOnly      SocialGamePublishSetting = 2
+	SocialGamePublishSettingFriendsOfFriends SocialGamePublishSetting = 3
+	SocialGamePublishSettingPublic           SocialGamePublishSetting = 4
+)
+
+type SoftEnumUpdateType uint8
+
+const (
+	SoftEnumUpdateTypeAdd     SoftEnumUpdateType = 0
+	SoftEnumUpdateTypeRemove  SoftEnumUpdateType = 1
+	SoftEnumUpdateTypeReplace SoftEnumUpdateType = 2
+)
+
+type SpawnBiomeType int16
+
+const (
+	SpawnBiomeTypeDefault     SpawnBiomeType = 0
+	SpawnBiomeTypeUserDefined SpawnBiomeType = 1
+)
+
+type SpawnPositionType int32
+
+const (
+	SpawnPositionTypePlayerRespawn SpawnPositionType = 0
+	SpawnPositionTypeWorldSpawn    SpawnPositionType = 1
+)
+
+type SpawnSettings struct {
+	SpawnBiomeType       SpawnBiomeType
+	UserDefinedBiomeName string
+	Dimension            int32
+}
+
+// Marshal reads or writes SpawnSettings using its canonical wire layout.
+func (x *SpawnSettings) Marshal(io IO) {
+	IntegerFunc(&x.SpawnBiomeType, io.Int16)
+	io.String(&x.UserDefinedBiomeName)
+	io.Varint32(&x.Dimension)
+}
+
+type SphereData struct {
+	NumSegments uint8
+}
+
+func (*SphereData) isPrimitiveShapeExtraShapeData() {}
+
+// Marshal reads or writes SphereData using its canonical wire layout.
+func (x *SphereData) Marshal(io IO) {
+	io.Uint8(&x.NumSegments)
+}
+
+type StartVideoCapture struct {
+	FrameRate  uint32
+	FilePrefix string
+}
+
+func (*StartVideoCapture) isPlayerVideoCaptureData() {}
+
+// Marshal reads or writes StartVideoCapture using its canonical wire layout.
+func (x *StartVideoCapture) Marshal(io IO) {
+	io.Uint32(&x.FrameRate)
+	io.String(&x.FilePrefix)
+}
+
+type StopVideoCapture struct {
+}
+
+func (*StopVideoCapture) isPlayerVideoCaptureData() {}
+
+// Marshal reads or writes StopVideoCapture using its canonical wire layout.
+func (x *StopVideoCapture) Marshal(io IO) {
+}
+
+type Subtype uint16
+
+const (
+	SubtypeUninitializedSubtype        Subtype = 0
+	SubtypeEnableCommands              Subtype = 1
+	SubtypeDisableCommands             Subtype = 2
+	SubtypeUnlockWorldTemplateSettings Subtype = 3
+)
+
+type SyncStateData struct {
+	ClockData []SyncWorldClockStateData
+}
+
+func (*SyncStateData) isSyncWorldClocksData() {}
+
+// Marshal reads or writes SyncStateData using its canonical wire layout.
+func (x *SyncStateData) Marshal(io IO) {
+	SliceLimits(io, &x.ClockData, 0, 256)
+}
+
+type SyncedAttribute struct {
+	AttributeName string
+	MinValue      float32
+	CurrentValue  float32
+	MaxValue      float32
+}
+
+// Marshal reads or writes SyncedAttribute using its canonical wire layout.
+func (x *SyncedAttribute) Marshal(io IO) {
+	io.String(&x.AttributeName)
+	io.Float32(&x.MinValue)
+	io.Float32(&x.CurrentValue)
+	io.Float32(&x.MaxValue)
+}
+
+type SyncedPlayerMovementSettings struct {
+	RewindHistorySize                int32
+	ServerAuthoritativeBlockBreaking bool
+}
+
+// Marshal reads or writes SyncedPlayerMovementSettings using its canonical wire layout.
+func (x *SyncedPlayerMovementSettings) Marshal(io IO) {
+	io.Varint32(&x.RewindHistorySize)
+	io.Bool(&x.ServerAuthoritativeBlockBreaking)
+}
+
+type SynchedActorDataCopyableDataList struct {
+	Data []DataItemEntry
+}
+
+// Marshal reads or writes SynchedActorDataCopyableDataList using its canonical wire layout.
+func (x *SynchedActorDataCopyableDataList) Marshal(io IO) {
+	Slice(io, &x.Data)
+}
+
+type TargetBlockHit struct {
+	RedstoneLevel int32
+}
+
+func (*TargetBlockHit) isEventData() {}
+
+// Marshal reads or writes TargetBlockHit using its canonical wire layout.
+func (x *TargetBlockHit) Marshal(io IO) {
+	io.Varint32(&x.RedstoneLevel)
+}
+
+type TargetMode uint8
+
+const (
+	TargetModeAngle    TargetMode = 0
+	TargetModeDistance TargetMode = 1
+)
+
+type TextDataAnnouncement struct {
+	Value AuthorAndMessage
+}
+
+func (*TextDataAnnouncement) isTextData() {}
+
+// Marshal reads or writes TextDataAnnouncement using its canonical wire layout.
+func (x *TextDataAnnouncement) Marshal(io IO) {
+	x.Value.Marshal(io)
+}
+
+type TextDataJukeboxPopup struct {
+	Value MessageAndParams
+}
+
+func (*TextDataJukeboxPopup) isTextData() {}
+
+// Marshal reads or writes TextDataJukeboxPopup using its canonical wire layout.
+func (x *TextDataJukeboxPopup) Marshal(io IO) {
+	x.Value.Marshal(io)
+}
+
+type TextDataPopup struct {
+	Value MessageAndParams
+}
+
+func (*TextDataPopup) isTextData() {}
+
+// Marshal reads or writes TextDataPopup using its canonical wire layout.
+func (x *TextDataPopup) Marshal(io IO) {
+	x.Value.Marshal(io)
+}
+
+type TextDataSystemMessage struct {
+	Value MessageOnly
+}
+
+func (*TextDataSystemMessage) isTextData() {}
+
+// Marshal reads or writes TextDataSystemMessage using its canonical wire layout.
+func (x *TextDataSystemMessage) Marshal(io IO) {
+	x.Value.Marshal(io)
+}
+
+type TextDataTextObject struct {
+	Value MessageOnly
+}
+
+func (*TextDataTextObject) isTextData() {}
+
+// Marshal reads or writes TextDataTextObject using its canonical wire layout.
+func (x *TextDataTextObject) Marshal(io IO) {
+	x.Value.Marshal(io)
+}
+
+type TextDataTextObjectAnnouncement struct {
+	Value MessageOnly
+}
+
+func (*TextDataTextObjectAnnouncement) isTextData() {}
+
+// Marshal reads or writes TextDataTextObjectAnnouncement using its canonical wire layout.
+func (x *TextDataTextObjectAnnouncement) Marshal(io IO) {
+	x.Value.Marshal(io)
+}
+
+type TextDataTextObjectWhisper struct {
+	Value MessageOnly
+}
+
+func (*TextDataTextObjectWhisper) isTextData() {}
+
+// Marshal reads or writes TextDataTextObjectWhisper using its canonical wire layout.
+func (x *TextDataTextObjectWhisper) Marshal(io IO) {
+	x.Value.Marshal(io)
+}
+
+type TextDataTip struct {
+	Value MessageOnly
+}
+
+func (*TextDataTip) isTextData() {}
+
+// Marshal reads or writes TextDataTip using its canonical wire layout.
+func (x *TextDataTip) Marshal(io IO) {
+	x.Value.Marshal(io)
+}
+
+type TextDataWhisper struct {
+	Value AuthorAndMessage
+}
+
+func (*TextDataWhisper) isTextData() {}
+
+// Marshal reads or writes TextDataWhisper using its canonical wire layout.
+func (x *TextDataWhisper) Marshal(io IO) {
+	x.Value.Marshal(io)
+}
+
+type TintMapColor struct {
+	Colors [4]color.RGBA
+}
+
+// Marshal reads or writes TintMapColor using its canonical wire layout.
+func (x *TintMapColor) Marshal(io IO) {
+	for index1 := range x.Colors {
+		io.RGBA(&x.Colors[index1])
+	}
+}
+
+type TitleType int32
+
+const (
+	TitleTypeClear               TitleType = 0
+	TitleTypeReset               TitleType = 1
+	TitleTypeTitle               TitleType = 2
+	TitleTypeSubtitle            TitleType = 3
+	TitleTypeActionbar           TitleType = 4
+	TitleTypeTimes               TitleType = 5
+	TitleTypeTitleTextObject     TitleType = 6
+	TitleTypeSubtitleTextObject  TitleType = 7
+	TitleTypeActionbarTextObject TitleType = 8
+)
+
+type UpdateSubChunkBlocksChangedInfo struct {
+	BlocksChangedStandards []UpdateSubChunkNetworkBlockInfo
+	BlocksChangedExtras    []UpdateSubChunkNetworkBlockInfo
+}
+
+// Marshal reads or writes UpdateSubChunkBlocksChangedInfo using its canonical wire layout.
+func (x *UpdateSubChunkBlocksChangedInfo) Marshal(io IO) {
+	Slice(io, &x.BlocksChangedStandards)
+	Slice(io, &x.BlocksChangedExtras)
+}
+
+type UpdateSubChunkNetworkBlockInfo struct {
+	Pos                       BlockPos
+	RuntimeID                 uint32
+	UpdateFlags               uint32
+	SyncMessageEntityUniqueID uint64
+	SyncMessageMessage        uint32
+}
+
+// Marshal reads or writes UpdateSubChunkNetworkBlockInfo using its canonical wire layout.
+func (x *UpdateSubChunkNetworkBlockInfo) Marshal(io IO) {
+	x.Pos.Marshal(io)
+	io.Varuint32(&x.RuntimeID)
+	io.Varuint32(&x.UpdateFlags)
+	io.Varuint64(&x.SyncMessageEntityUniqueID)
+	io.Varuint32(&x.SyncMessageMessage)
+}
+
+type VillageType uint8
+
+const (
+	VillageTypeDesert  VillageType = 0
+	VillageTypeIce     VillageType = 1
+	VillageTypeSavanna VillageType = 2
+	VillageTypeTaiga   VillageType = 3
+	VillageTypeDefault VillageType = 4
+)
+
+type WebSocketData struct {
+	WebsocketServerURI string
+}
+
+// Marshal reads or writes WebSocketData using its canonical wire layout.
+func (x *WebSocketData) Marshal(io IO) {
+	io.String(&x.WebsocketServerURI)
+}

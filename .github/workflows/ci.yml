@@ -58,9 +58,12 @@ jobs:
 
   rust:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: ['1.26.40', '1.26.44']
     defaults:
       run:
-        working-directory: generated/1.26.40/rust
+        working-directory: generated/${{ matrix.version }}/rust
     steps:
       - uses: actions/checkout@v4
 
@@ -72,7 +75,7 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-          key: cargo-${{ runner.os }}-${{ hashFiles('generated/1.26.40/rust/Cargo.lock', 'generated/1.26.40/rust/Cargo.toml') }}
+          key: cargo-${{ runner.os }}-${{ matrix.version }}-${{ hashFiles(format('generated/{0}/rust/Cargo.lock', matrix.version), format('generated/{0}/rust/Cargo.toml', matrix.version)) }}
           restore-keys: cargo-${{ runner.os }}-
 
       - name: Select crate toolchain

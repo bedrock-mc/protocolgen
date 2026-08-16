@@ -15,7 +15,13 @@ GOPHERTUNNEL_DIR ?=
 ORACLE_REPORT ?= /tmp/protocolgen-gophertunnel-report.json
 GOPHER_ARGS = $(if $(GOPHERTUNNEL_DIR),-gophertunnel $(GOPHERTUNNEL_DIR))
 
-.PHONY: regen differential verify
+HOTFIX_MANIFEST := generated/1.26.44/manifest.json
+HOTFIX_SPEC := generated/1.26.44/hotfix.json
+HOTFIX_NAMING := generated/1.26.44/naming.json
+HOTFIX_DOMAINS := generated/1.26.44/domains.json
+HOTFIX_DOCS := generated/1.26.44/docs.json
+
+.PHONY: regen hotfix differential verify
 
 differential:
 	$(GO) -C differential test ./...
@@ -57,5 +63,25 @@ regen:
 	$(GO) test ./...
 	$(GO) vet ./...
 
-verify: regen differential
+hotfix:
+	$(PROTOCOLGEN) hotfix \
+		-base $(MANIFEST) \
+		-spec $(HOTFIX_SPEC) \
+		-out $(HOTFIX_MANIFEST)
+	$(PROTOCOLGEN) validate -manifest $(HOTFIX_MANIFEST)
+	$(PROTOCOLGEN) emit-go \
+		-manifest $(HOTFIX_MANIFEST) \
+		-naming $(HOTFIX_NAMING) \
+		-domains $(HOTFIX_DOMAINS) \
+		-docs $(HOTFIX_DOCS) \
+		-out generated/1.26.44/go \
+		-protocol-import protocolgen/generated/1.26.44/go/protocol
+	$(PROTOCOLGEN) emit-rust \
+		-manifest $(HOTFIX_MANIFEST) \
+		-naming $(HOTFIX_NAMING) \
+		-domains $(HOTFIX_DOMAINS) \
+		-docs $(HOTFIX_DOCS) \
+		-out generated/1.26.44/rust
+
+verify: regen hotfix differential
 	@test -z "$$(git status --porcelain)" || (echo "regeneration produced drift:" >&2; git status --short >&2; exit 1)

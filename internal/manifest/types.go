@@ -59,12 +59,13 @@ const (
 
 // Manifest is the only wire-shape input accepted by v2 emitters.
 type Manifest struct {
-	SchemaVersion uint32          `json:"schema_version"`
-	Target        Target          `json:"target"`
-	Sources       []SourcePin     `json:"sources"`
-	Packets       []Packet        `json:"packets"`
-	Adjudications []Adjudication  `json:"adjudications,omitempty"`
-	Overrides     []OverrideProof `json:"overrides,omitempty"`
+	SchemaVersion uint32           `json:"schema_version"`
+	Target        Target           `json:"target"`
+	Sources       []SourcePin      `json:"sources"`
+	Packets       []Packet         `json:"packets"`
+	Adjudications []Adjudication   `json:"adjudications,omitempty"`
+	Overrides     []OverrideProof  `json:"overrides,omitempty"`
+	Derivation    *DerivationProof `json:"derivation,omitempty"`
 }
 
 type Target struct {
@@ -213,6 +214,26 @@ type OverrideProof struct {
 	PostPatchNodeSHA256   string     `json:"post_patch_node_sha256"`
 	Evidence              []Evidence `json:"evidence"`
 	Reason                string     `json:"reason"`
+}
+
+// DerivationProof records a same-protocol hotfix derived from an already
+// reconciled manifest when no second complete source snapshot exists.
+type DerivationProof struct {
+	BaseTarget         Target                     `json:"base_target"`
+	BaseManifestSHA256 string                     `json:"base_manifest_sha256"`
+	Operations         []DerivationOperationProof `json:"operations"`
+}
+
+type DerivationOperationProof struct {
+	ID                  string     `json:"id"`
+	PacketID            uint32     `json:"packet_id"`
+	FieldOrdinal        int        `json:"field_ordinal"`
+	Path                string     `json:"path"`
+	Operation           string     `json:"operation"`
+	PrePatchNodeSHA256  string     `json:"pre_patch_node_sha256"`
+	PostPatchNodeSHA256 string     `json:"post_patch_node_sha256"`
+	Evidence            []Evidence `json:"evidence"`
+	Reason              string     `json:"reason"`
 }
 
 func Primitive(code string) Node {

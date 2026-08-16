@@ -17,6 +17,7 @@ import (
 	"protocolgen/internal/emitrust"
 	"protocolgen/internal/emitter"
 	"protocolgen/internal/gophertunneloracle"
+	"protocolgen/internal/hotfix"
 	"protocolgen/internal/ingest"
 	"protocolgen/internal/manifest"
 	"protocolgen/internal/nbtencoding"
@@ -53,6 +54,8 @@ func main() {
 		err = runChangelog(os.Args[2:])
 	case "hash-source":
 		err = runHashSource(os.Args[2:])
+	case "hotfix":
+		err = runHotfix(os.Args[2:])
 	default:
 		usage()
 		os.Exit(2)
@@ -64,7 +67,7 @@ func main() {
 }
 
 func usage() {
-	fmt.Fprintln(os.Stderr, `usage: protocolgen <reconcile|ingest|validate|emit-go|emit-rust|parity|verify-gophertunnel|changelog|update-guide|hash-source> [flags]
+	fmt.Fprintln(os.Stderr, `usage: protocolgen <reconcile|ingest|validate|emit-go|emit-rust|parity|verify-gophertunnel|changelog|update-guide|hash-source|hotfix> [flags]
 
 reconcile lowers one or both explicit source checkouts and writes manifest v2.
 ingest lowers one source to auditable machine-derived claims JSON.
@@ -74,7 +77,42 @@ parity compares a canonical manifest with Axolotl's public v1 wire manifest.
 verify-gophertunnel compares a canonical manifest with a pinned gophertunnel checkout and writes a JSON report.
 changelog diffs two corrected Mojang schema directories into human-readable Markdown.
 update-guide turns a protocol changelog and its target corrected schemas into gophertunnel transcription snippets.
-hash-source prints the deterministic source-tree digest for a lock file.`)
+hash-source prints the deterministic source-tree digest for a lock file.
+hotfix derives a fingerprinted same-protocol target from a reconciled base manifest.`)
+}
+
+func runHotfix(args []string) error {
+	fs := flag.NewFlagSet("hotfix", flag.ContinueOnError)
+	basePath := fs.String("base", "", "fully reconciled base manifest")
+	specPath := fs.String("spec", "", "same-protocol hotfix specification")
+	outPath := fs.String("out", "", "derived canonical manifest")
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+	if *basePath == "" || *specPath == "" || *outPath == "" {
+		return fmt.Errorf("-base, -spec, and -out are required")
+	}
+	baseBytes, err := os.ReadFile(*basePath)
+	if err != nil {
+		return fmt.Errorf("read base manifest: %w", err)
+	}
+	base, err := manifest.Load(*basePath)
+	if err != nil {
+		return err
+	}
+	spec, err := hotfix.LoadSpec(*specPath)
+	if err != nil {
+		return err
+	}
+	result, err := hotfix.Apply(base, baseBytes, spec)
+	if err != nil {
+		return err
+	}
+	if err := manifest.Write(*outPath, result); err != nil {
+		return err
+	}
+	fmt.Printf("hotfix manifest: Minecraft %s / protocol %d -> %s\n", result.Target.MinecraftVersion, result.Target.ProtocolVersion, *outPath)
+	return nil
 }
 
 func runChangelog(args []string) error {

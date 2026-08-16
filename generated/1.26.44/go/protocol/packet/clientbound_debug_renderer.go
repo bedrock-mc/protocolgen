@@ -1,0 +1,21 @@
+// Code generated from canonical protocol manifest v2. DO NOT EDIT.
+
+package packet
+
+import "protocolgen/generated/1.26.44/go/protocol"
+
+type ClientboundDebugRenderer struct {
+	Type            string
+	DebugMarkerData protocol.Optional[protocol.DebugMarkerData]
+}
+
+// Marshal reads or writes ClientboundDebugRenderer using its canonical wire layout.
+func (x *ClientboundDebugRenderer) Marshal(io protocol.IO) {
+	io.String(&x.Type)
+	protocol.OptionalFunc(io, &x.DebugMarkerData, func(value *protocol.DebugMarkerData) {
+		value.Marshal(io)
+	})
+}
+
+// ID returns the protocol ID for ClientboundDebugRenderer.
+func (*ClientboundDebugRenderer) ID() uint32 { return IDClientboundDebugRenderer }

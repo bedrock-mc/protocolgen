@@ -2,6 +2,7 @@ package manifest
 
 import (
 	"bytes"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"math"
@@ -37,7 +38,11 @@ func Validate(m Manifest) error {
 		if source.ProtocolVersion != 0 && source.ProtocolVersion != m.Target.ProtocolVersion {
 			return fmt.Errorf("mixes protocol %d source %q into target protocol %d", source.ProtocolVersion, source.ID, m.Target.ProtocolVersion)
 		}
-		if source.MinecraftVersion != "" && source.MinecraftVersion != m.Target.MinecraftVersion {
+		baseVersion := ""
+		if m.Derivation != nil {
+			baseVersion = m.Derivation.BaseTarget.MinecraftVersion
+		}
+		if source.MinecraftVersion != "" && source.MinecraftVersion != m.Target.MinecraftVersion && source.MinecraftVersion != baseVersion {
 			return fmt.Errorf("mixes Minecraft %s source %q into target Minecraft %s", source.MinecraftVersion, source.ID, m.Target.MinecraftVersion)
 		}
 	}
@@ -72,7 +77,10 @@ func Validate(m Manifest) error {
 	if err := validateAdjudications(m, sourceIDs); err != nil {
 		return err
 	}
-	return validateOverrides(m, sourceIDs)
+	if err := validateOverrides(m, sourceIDs); err != nil {
+		return err
+	}
+	return validateDerivation(m, sourceIDs)
 }
 
 func validDirection(direction Direction) bool {
@@ -546,6 +554,47 @@ func validateOverrides(m Manifest, sourceIDs map[string]bool) error {
 	return nil
 }
 
+func validateDerivation(m Manifest, sourceIDs map[string]bool) error {
+	if m.Derivation == nil {
+		return nil
+	}
+	proof := m.Derivation
+	if proof.BaseTarget.MinecraftVersion == "" || proof.BaseTarget.ProtocolVersion != m.Target.ProtocolVersion || proof.BaseTarget.MinecraftVersion == m.Target.MinecraftVersion {
+		return fmt.Errorf("derivation must change Minecraft version while retaining protocol %d", m.Target.ProtocolVersion)
+	}
+	if !validSHA256(proof.BaseManifestSHA256) || len(proof.Operations) == 0 {
+		return fmt.Errorf("derivation has no valid base manifest fingerprint or operations")
+	}
+	seen := map[string]bool{}
+	sourceVersions := make(map[string]string, len(m.Sources))
+	for _, source := range m.Sources {
+		sourceVersions[source.ID] = source.MinecraftVersion
+	}
+	for index, operation := range proof.Operations {
+		if operation.ID == "" || seen[operation.ID] || operation.PacketID == 0 || operation.FieldOrdinal < 0 || operation.Path == "" || operation.Operation == "" || operation.Reason == "" || !validSHA256(operation.PrePatchNodeSHA256) || !validSHA256(operation.PostPatchNodeSHA256) || len(operation.Evidence) == 0 {
+			return fmt.Errorf("derivation operation %d is incomplete or duplicated", index)
+		}
+		seen[operation.ID] = true
+		for _, evidence := range operation.Evidence {
+			if evidence.SourceID == "" || evidence.Locator == "" || !sourceIDs[evidence.SourceID] {
+				return fmt.Errorf("derivation operation %q cites an unpinned evidence source", operation.ID)
+			}
+			if sourceVersions[evidence.SourceID] != m.Target.MinecraftVersion {
+				return fmt.Errorf("derivation operation %q cites evidence outside target Minecraft %s", operation.ID, m.Target.MinecraftVersion)
+			}
+		}
+	}
+	return nil
+}
+
+func validSHA256(value string) bool {
+	if len(value) != len("sha256:")+64 || !strings.HasPrefix(value, "sha256:") {
+		return false
+	}
+	_, err := hex.DecodeString(strings.TrimPrefix(value, "sha256:"))
+	return err == nil
+}
+
 // MarshalStable returns canonical pretty JSON. JSON object keys are encoded in
 // deterministic order by encoding/json; slices are sorted on their semantic
 // identities in a copy so generation does not depend on filesystem iteration.
@@ -582,6 +631,14 @@ func normalize(m Manifest) Manifest {
 		})
 		for fieldIndex := range packet.Fields {
 			normalizeField(&packet.Fields[fieldIndex])
+		}
+	}
+	if out.Derivation != nil {
+		sort.Slice(out.Derivation.Operations, func(i, j int) bool {
+			return out.Derivation.Operations[i].ID < out.Derivation.Operations[j].ID
+		})
+		for index := range out.Derivation.Operations {
+			sortEvidence(out.Derivation.Operations[index].Evidence)
 		}
 	}
 	sort.Slice(out.Adjudications, func(i, j int) bool { return out.Adjudications[i].ID < out.Adjudications[j].ID })
