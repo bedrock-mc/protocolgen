@@ -28,7 +28,9 @@ jobs:
         with:
           go-version: '1.26.x'
           cache: true
-          cache-dependency-path: go.sum
+          cache-dependency-path: |
+            go.sum
+            vanilla-data/go.sum
 
       - name: Fetch pinned protocol sources
         run: |
@@ -45,13 +47,19 @@ jobs:
             ENDSTONE_DIR="$RUNNER_TEMP/protocolgen-endstone"
 
       - name: Build
-        run: go build ./...
+        run: |
+          go build ./...
+          go -C vanilla-data build ./...
 
       - name: Test
-        run: go test ./...
+        run: |
+          go test ./...
+          go -C vanilla-data test ./...
 
       - name: Vet
-        run: go vet ./...
+        run: |
+          go vet ./...
+          go -C vanilla-data vet ./...
 
       - name: Check formatting
         run: test -z "$(gofmt -l $(git ls-files '*.go' ':!generated/**'))"

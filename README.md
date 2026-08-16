@@ -30,6 +30,12 @@ docs.
 
 Run any command with `-h` for its flags.
 
+`vanilla-data/cmd/vanilla-data` is the companion BDS capture bot. It follows
+the same offline gophertunnel login flow as `df-mc/datagen`, but stores raw,
+version-locked packet evidence rather than Dragonfly- or PocketMine-specific
+output. It is a separate Go module so its game-client dependencies do not leak
+into the protocol generator.
+
 ## Regenerating the 1.26.40 snapshot
 
 `generated/1.26.40/` is the checked-in manifest and matching Go/Rust output
@@ -61,6 +67,42 @@ make hotfix
 
 The derivation fails closed if the base manifest or target node changes. It
 does not relax normal reconciliation or allow arbitrary manifest replacement.
+
+## Capturing vanilla BDS data
+
+Vanilla data is evidence alongside a generated protocol, not an input to wire
+reconciliation. The capture includes actor identifiers, biomes, recipes,
+creative content, items, dimensions, features, camera presets, trims, voxel
+shapes. Dimensions and features are optional because vanilla BDS does not send
+them for every world; `capture.json` explicitly records whether they were
+captured or absent. It also records the target, BDS archive and executable
+SHA-256 values, server settings, exact gophertunnel build, and every output
+digest. `StartGame.CustomBlocks` is intentionally not exported: on an
+addon-free server it is empty and is not the vanilla runtime block palette.
+
+For the pinned local BDS configured as described by the version's source lock:
+
+```sh
+make vanilla-data \
+  BDS_BINARY=/absolute/path/to/bedrock_server
+```
+
+The bot verifies `server.properties` beside that executable before connecting.
+
+The `Protocol update BDS data` workflow is deliberately a post-correction
+stage, not an unconditional continuation of ingestion. After source
+reconciliation and any manual corrections or adjudications are complete, its
+first job validates and builds the corrected generated manifest and exact
+updated gophertunnel codec. Only then may the capture job start the matching
+BDS. Once this workflow exists on the default branch, manual dispatch can
+select an update branch; `workflow_call` also lets a protocol updater invoke
+capture once its manual gate is resolved.
+
+Each generated version pins its BDS download, archive checksum, build, and
+gophertunnel module version in `generated/<version>/vanilla-source.json`. The
+captured artifact should be reviewed and checked in beside that generated
+protocol before the update is considered complete. The workflow requires
+explicit EULA acceptance and never commits or pushes automatically.
 
 ## The manifest
 

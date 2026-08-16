@@ -15,13 +15,20 @@ GOPHERTUNNEL_DIR ?=
 ORACLE_REPORT ?= /tmp/protocolgen-gophertunnel-report.json
 GOPHER_ARGS = $(if $(GOPHERTUNNEL_DIR),-gophertunnel $(GOPHERTUNNEL_DIR))
 
+VANILLA_VERSION ?= 1.26.44
+VANILLA_MANIFEST := ../generated/$(VANILLA_VERSION)/manifest.json
+VANILLA_SOURCE := ../generated/$(VANILLA_VERSION)/vanilla-source.json
+VANILLA_OUT := ../generated/$(VANILLA_VERSION)/vanilla-data
+BDS_ADDRESS ?= 127.0.0.1:19132
+BDS_BINARY ?=
+
 HOTFIX_MANIFEST := generated/1.26.44/manifest.json
 HOTFIX_SPEC := generated/1.26.44/hotfix.json
 HOTFIX_NAMING := generated/1.26.44/naming.json
 HOTFIX_DOMAINS := generated/1.26.44/domains.json
 HOTFIX_DOCS := generated/1.26.44/docs.json
 
-.PHONY: regen hotfix differential verify
+.PHONY: regen hotfix vanilla-data differential verify
 
 differential:
 	$(GO) -C differential test ./...
@@ -82,6 +89,15 @@ hotfix:
 		-domains $(HOTFIX_DOMAINS) \
 		-docs $(HOTFIX_DOCS) \
 		-out generated/1.26.44/rust
+
+vanilla-data:
+	@test -n "$(BDS_BINARY)" || (echo "BDS_BINARY is required" >&2; exit 2)
+	$(GO) -C vanilla-data run ./cmd/vanilla-data \
+		-manifest $(VANILLA_MANIFEST) \
+		-source $(VANILLA_SOURCE) \
+		-out $(VANILLA_OUT) \
+		-bds-binary $(BDS_BINARY) \
+		-address $(BDS_ADDRESS)
 
 verify: regen hotfix differential
 	@test -z "$$(git status --porcelain)" || (echo "regeneration produced drift:" >&2; git status --short >&2; exit 1)

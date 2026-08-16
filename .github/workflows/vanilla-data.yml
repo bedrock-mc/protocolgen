@@ -1,0 +1,196 @@
+name: Protocol update BDS data
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: Generated Minecraft version to capture
+        required: true
+        type: string
+      accept_eula:
+        description: Accept the Minecraft End User License Agreement
+        required: true
+        type: boolean
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Generated Minecraft version to capture
+        required: true
+        type: string
+        default: '1.26.44'
+      accept_eula:
+        description: I accept the Minecraft End User License Agreement
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  eula:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require EULA acceptance
+        env:
+          ACCEPT_EULA: ${{ inputs.accept_eula }}
+        run: test "$ACCEPT_EULA" = "true"
+
+  corrected-protocol:
+    needs: eula
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.26.x'
+          cache: true
+          cache-dependency-path: |
+            go.sum
+            vanilla-data/go.sum
+
+      - name: Validate the corrected protocol and capture codec
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          manifest="generated/$VERSION/manifest.json"
+          source_file="generated/$VERSION/vanilla-source.json"
+          test -f "$manifest"
+          test -f "$source_file"
+          test "$(jq -er .target.minecraft_version "$manifest")" = "$VERSION"
+          test "$(jq -er .minecraft_version "$source_file")" = "$VERSION"
+          test "$(jq -er .protocol_version "$source_file")" = "$(jq -er .target.protocol_version "$manifest")"
+          test "$(jq -er .gophertunnel.revision "$source_file")" = "$(jq -er '.sources[] | select(.kind == "gophertunnel-exact-codec") | .revision' "$manifest")"
+          module_json="$(go -C vanilla-data list -m -json github.com/sandertv/gophertunnel)"
+          test "$(jq -er .Replace.Path <<< "$module_json")" = "$(jq -er .gophertunnel.module_path "$source_file")"
+          test "$(jq -er .Replace.Version <<< "$module_json")" = "$(jq -er .gophertunnel.module_version "$source_file")"
+          go run ./cmd/protocolgen validate -manifest "$manifest"
+          go -C vanilla-data run ./cmd/vanilla-data \
+            -manifest "../$manifest" \
+            -source "../$source_file" \
+            -validate-only
+          go test ./...
+          go vet ./...
+          go -C vanilla-data test ./...
+          go -C vanilla-data vet ./...
+
+  capture:
+    needs: corrected-protocol
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.26.x'
+          cache: true
+          cache-dependency-path: vanilla-data/go.sum
+
+      - name: Read version-locked capture source
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          source_file="generated/$VERSION/vanilla-source.json"
+          test -f "$source_file"
+          test "$(jq -er .minecraft_version "$source_file")" = "$VERSION"
+          test "$(jq -er .protocol_version "$source_file")" = "$(jq -er .target.protocol_version "generated/$VERSION/manifest.json")"
+          test "$(jq -er .gophertunnel.revision "$source_file")" = "$(jq -er '.sources[] | select(.kind == "gophertunnel-exact-codec") | .revision' "generated/$VERSION/manifest.json")"
+          bds_url="$(jq -er .bds.linux.url "$source_file")"
+          bds_archive_sha256="$(jq -er .bds.linux.archive_sha256 "$source_file")"
+          gophertunnel_module_path="$(jq -er .gophertunnel.module_path "$source_file")"
+          gophertunnel_version="$(jq -er .gophertunnel.module_version "$source_file")"
+          {
+            echo "VANILLA_VERSION=$VERSION"
+            echo "BDS_URL=$bds_url"
+            echo "BDS_ARCHIVE_SHA256=$bds_archive_sha256"
+            echo "GOPHERTUNNEL_MODULE_PATH=$gophertunnel_module_path"
+            echo "GOPHERTUNNEL_VERSION=$gophertunnel_version"
+          } >> "$GITHUB_ENV"
+
+      - name: Verify the committed gophertunnel codec lock
+        run: |
+          set -euo pipefail
+          module_json="$(go -C vanilla-data list -m -json github.com/sandertv/gophertunnel)"
+          test "$(jq -er .Replace.Path <<< "$module_json")" = "$GOPHERTUNNEL_MODULE_PATH"
+          test "$(jq -er .Replace.Version <<< "$module_json")" = "$GOPHERTUNNEL_VERSION"
+
+      - name: Download and verify BDS
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/protocolgen-bds"
+          curl --http1.1 --connect-timeout 30 --max-time 300 \
+            --retry 5 --retry-all-errors --fail --location \
+            --user-agent 'Mozilla/5.0 protocolgen-vanilla-data/1.0' \
+            --output "$RUNNER_TEMP/protocolgen-bds.zip" "$BDS_URL"
+          echo "$BDS_ARCHIVE_SHA256  $RUNNER_TEMP/protocolgen-bds.zip" | sha256sum --check
+          unzip -q "$RUNNER_TEMP/protocolgen-bds.zip" -d "$RUNNER_TEMP/protocolgen-bds"
+          chmod +x "$RUNNER_TEMP/protocolgen-bds/bedrock_server"
+
+      - name: Configure and start offline BDS
+        run: |
+          set -euo pipefail
+          properties="$RUNNER_TEMP/protocolgen-bds/server.properties"
+          source_file="$GITHUB_WORKSPACE/generated/$VANILLA_VERSION/vanilla-source.json"
+          properties_tsv="$RUNNER_TEMP/protocolgen-server-properties.tsv"
+          jq -er '.server_properties | to_entries[] | [.key, .value] | @tsv' "$source_file" > "$properties_tsv"
+          test -s "$properties_tsv"
+          while IFS=$'\t' read -r key value; do
+            grep -q "^${key}=" "$properties"
+            sed -i "s/^${key}=.*/${key}=${value}/" "$properties"
+            grep -Fqx "${key}=${value}" "$properties"
+          done < "$properties_tsv"
+          cd "$RUNNER_TEMP/protocolgen-bds"
+          LD_LIBRARY_PATH=. ./bedrock_server > "$RUNNER_TEMP/protocolgen-bds.log" 2>&1 &
+          echo "$!" > "$RUNNER_TEMP/protocolgen-bds.pid"
+          for attempt in $(seq 1 60); do
+            if grep -q 'Server started' "$RUNNER_TEMP/protocolgen-bds.log"; then
+              exit 0
+            fi
+            if ! kill -0 "$(cat "$RUNNER_TEMP/protocolgen-bds.pid")" 2>/dev/null; then
+              cat "$RUNNER_TEMP/protocolgen-bds.log"
+              exit 1
+            fi
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/protocolgen-bds.log"
+          exit 1
+
+      - name: Capture vanilla registry packets
+        run: |
+          go -C vanilla-data run ./cmd/vanilla-data \
+            -manifest "../generated/$VANILLA_VERSION/manifest.json" \
+            -source "../generated/$VANILLA_VERSION/vanilla-source.json" \
+            -out "../generated/$VANILLA_VERSION/vanilla-data" \
+            -bds-binary "$RUNNER_TEMP/protocolgen-bds/bedrock_server"
+
+      - name: Stop BDS
+        if: always()
+        run: |
+          if test -f "$RUNNER_TEMP/protocolgen-bds.pid"; then
+            pid="$(cat "$RUNNER_TEMP/protocolgen-bds.pid")"
+            kill "$pid" 2>/dev/null || true
+            for _ in $(seq 1 10); do
+              kill -0 "$pid" 2>/dev/null || exit 0
+              sleep 1
+            done
+            kill -9 "$pid" 2>/dev/null || true
+          fi
+
+      - name: Upload BDS log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: protocolgen-${{ inputs.version }}-bds-log
+          path: ${{ runner.temp }}/protocolgen-bds.log
+          if-no-files-found: ignore
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: protocolgen-${{ inputs.version }}-vanilla-data
+          path: generated/${{ inputs.version }}/vanilla-data
+          if-no-files-found: ignore
