@@ -84,6 +84,14 @@ compatibility reference, not a separate output namespace. Prismarine's
 normalized catalog schemas require non-packet metadata, while Cloudburst's
 aggregate creative and recipe files are consumer-specific.
 
+The login packet capture also retains `ResourcePacksInfoPacket` and
+`ResourcePackStackPacket` as raw `.dat` evidence and emits
+`resource_packs.json`. Its `info` and `stack` sections keep session negotiation
+flags, world-template identity, stack ordering, and experiments separate from
+the pack metadata. `ResourcePackDataInfoPacket` is recorded when BDS sends it,
+so its file hash is included as packet metadata when present; the bot declines
+pack downloads and never captures chunk bodies.
+
 The workflow can also run the pinned Endstone exporter in a separate,
 headless BDS phase before the packet bot connects. Endstone's live registry
 walk supplies the canonical `block_palette.nbt` plus its documented block,

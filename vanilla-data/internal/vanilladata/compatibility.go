@@ -91,6 +91,22 @@ func BuildDerivedArtifacts(payloads map[string][]byte) (map[string][]byte, error
 		}
 		files["biome_definitions.json"] = definitions
 	}
+	infoData, infoOK := payloads["ResourcePacksInfoPacket"]
+	stackData, stackOK := payloads["ResourcePackStackPacket"]
+	dataInfoData, dataInfoOK := payloads["ResourcePackDataInfoPacket"]
+	if infoOK || stackOK || dataInfoOK {
+		if !infoOK || !stackOK {
+			return nil, fmt.Errorf("resource-pack login packets must include both ResourcePacksInfoPacket and ResourcePackStackPacket")
+		}
+		if len(dataInfoData) == 0 && dataInfoOK {
+			return nil, fmt.Errorf("captured ResourcePackDataInfoPacket has an empty payload")
+		}
+		resourcePacks, err := resourcePackMetadata(infoData, stackData, dataInfoData)
+		if err != nil {
+			return nil, err
+		}
+		files["resource_packs.json"] = resourcePacks
+	}
 	return files, nil
 }
 
