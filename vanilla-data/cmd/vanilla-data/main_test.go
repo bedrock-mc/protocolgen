@@ -31,6 +31,19 @@ func TestRunValidateOnlyChecksGeneratedProtocolContract(t *testing.T) {
 	}
 }
 
+func TestRunRejectsInternalDataWithoutVersionLockedEndstoneSource(t *testing.T) {
+	root := filepath.Join("..", "..", "..")
+	err := run([]string{
+		"-manifest", filepath.Join(root, "generated", "1.26.44", "manifest.json"),
+		"-source", filepath.Join(root, "generated", "1.26.44", "vanilla-source.json"),
+		"-internal-data", t.TempDir(),
+		"-validate-only",
+	})
+	if err == nil || !strings.Contains(err.Error(), "Endstone source lock") {
+		t.Fatalf("run internal data without source lock = %v", err)
+	}
+}
+
 func TestVerifyServerProperties(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "server.properties")
 	if err := os.WriteFile(path, []byte("# BDS\nonline-mode=false\nallow-list=false\n"), 0o644); err != nil {

@@ -79,7 +79,7 @@ jobs:
   capture:
     needs: corrected-protocol
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
 
@@ -109,6 +109,7 @@ jobs:
             echo "BDS_ARCHIVE_SHA256=$bds_archive_sha256"
             echo "GOPHERTUNNEL_MODULE_PATH=$gophertunnel_module_path"
             echo "GOPHERTUNNEL_VERSION=$gophertunnel_version"
+            echo "ENDSTONE_ENABLED=$(jq -r 'if .endstone == null then "false" else "true" end' "$source_file")"
           } >> "$GITHUB_ENV"
 
       - name: Verify the committed gophertunnel codec lock
@@ -129,6 +130,22 @@ jobs:
           echo "$BDS_ARCHIVE_SHA256  $RUNNER_TEMP/protocolgen-bds.zip" | sha256sum --check
           unzip -q "$RUNNER_TEMP/protocolgen-bds.zip" -d "$RUNNER_TEMP/protocolgen-bds"
           chmod +x "$RUNNER_TEMP/protocolgen-bds/bedrock_server"
+
+      - name: Extract BDS internal vanilla data with pinned Endstone
+        if: env.ENDSTONE_ENABLED == 'true'
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/protocolgen-endstone-build"
+          bash vanilla-data/endstone/export-headless.sh \
+            -source "generated/$VANILLA_VERSION/vanilla-source.json" \
+            -bds-dir "$RUNNER_TEMP/protocolgen-bds" \
+            -out "$RUNNER_TEMP/protocolgen-endstone-data" \
+            -build-dir "$RUNNER_TEMP/protocolgen-endstone-build"
+
+      - name: Explain why internal extraction is unavailable
+        if: env.ENDSTONE_ENABLED != 'true'
+        run: |
+          echo '::warning::No Endstone source pin is present for this protocol snapshot; packet-derived data will be captured, but BDS-internal block data is intentionally not guessed.'
 
       - name: Configure and start offline BDS
         run: |
@@ -161,11 +178,16 @@ jobs:
 
       - name: Capture vanilla registry packets
         run: |
-          go -C vanilla-data run ./cmd/vanilla-data \
-            -manifest "../generated/$VANILLA_VERSION/manifest.json" \
-            -source "../generated/$VANILLA_VERSION/vanilla-source.json" \
-            -out "../generated/$VANILLA_VERSION/vanilla-data" \
+          args=(
+            -manifest "../generated/$VANILLA_VERSION/manifest.json"
+            -source "../generated/$VANILLA_VERSION/vanilla-source.json"
+            -out "../generated/$VANILLA_VERSION/vanilla-data"
             -bds-binary "$RUNNER_TEMP/protocolgen-bds/bedrock_server"
+          )
+          if test "$ENDSTONE_ENABLED" = true; then
+            args+=( -internal-data "$RUNNER_TEMP/protocolgen-endstone-data" )
+          fi
+          go -C vanilla-data run ./cmd/vanilla-data "${args[@]}"
 
       - name: Stop BDS
         if: always()

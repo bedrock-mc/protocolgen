@@ -15,7 +15,7 @@ import (
 	"github.com/sandertv/gophertunnel/minecraft/protocol/packet"
 )
 
-const captureFormatVersion = 3
+const captureFormatVersion = 4
 
 // PacketSpec names one clientbound packet payload captured verbatim from BDS.
 type PacketSpec struct {
@@ -164,13 +164,15 @@ type GophertunnelProvenance struct {
 
 // ArtifactInput contains everything required to write one versioned vanilla-data directory.
 type ArtifactInput struct {
-	Target       Target
-	BDS          BDSProvenance
-	Gophertunnel GophertunnelProvenance
-	Specs        []PacketSpec
-	Payloads     map[string][]byte
-	DerivedFiles map[string][]byte
-	Warning      string
+	Target        Target
+	BDS           BDSProvenance
+	Gophertunnel  GophertunnelProvenance
+	Specs         []PacketSpec
+	Payloads      map[string][]byte
+	InternalData  *InternalDataManifest
+	InternalFiles map[string][]byte
+	DerivedFiles  map[string][]byte
+	Warning       string
 }
 
 // CaptureFile records the digest of one generated file.
@@ -198,6 +200,7 @@ type CaptureMetadata struct {
 	Target        Target                 `json:"target"`
 	BDS           BDSProvenance          `json:"bds"`
 	Gophertunnel  GophertunnelProvenance `json:"gophertunnel"`
+	InternalData  *InternalDataManifest  `json:"internal_data,omitempty"`
 	Packets       []CapturePacket        `json:"packets"`
 	Files         []CaptureFile          `json:"files"`
 	Warning       string                 `json:"warning,omitempty"`
@@ -228,7 +231,19 @@ func WriteArtifacts(out string, input ArtifactInput) error {
 		return fmt.Errorf("chmod vanilla-data staging directory: %w", err)
 	}
 
-	metadata := CaptureMetadata{FormatVersion: captureFormatVersion, Target: input.Target, BDS: input.BDS, Gophertunnel: input.Gophertunnel, Warning: input.Warning}
+	if (input.InternalData == nil) != (len(input.InternalFiles) == 0) {
+		return fmt.Errorf("internal data provenance and files must be supplied together")
+	}
+	if input.InternalData != nil {
+		if err := validateInternalManifest(*input.InternalData, input.Target, input.BDS.Version, input.InternalData.Endstone); err != nil {
+			return err
+		}
+		if err := validateInternalFiles(*input.InternalData, input.InternalFiles); err != nil {
+			return err
+		}
+	}
+	metadata := CaptureMetadata{FormatVersion: captureFormatVersion, Target: input.Target, BDS: input.BDS, Gophertunnel: input.Gophertunnel, InternalData: input.InternalData, Warning: input.Warning}
+	writtenFiles := make(map[string]struct{}, len(input.Specs)+len(input.InternalFiles)+len(input.DerivedFiles)+1)
 	for _, spec := range input.Specs {
 		if err := validateArtifactName(spec.File); err != nil {
 			return err
@@ -245,6 +260,9 @@ func WriteArtifacts(out string, input ArtifactInput) error {
 		if len(payload) == 0 {
 			return fmt.Errorf("captured packet %s has an empty payload", spec.Name)
 		}
+		if _, exists := writtenFiles[spec.File]; exists {
+			return fmt.Errorf("duplicate capture file %s", spec.File)
+		}
 		if err := os.WriteFile(filepath.Join(temporary, spec.File), payload, 0o644); err != nil {
 			return fmt.Errorf("write %s: %w", spec.File, err)
 		}
@@ -252,6 +270,30 @@ func WriteArtifacts(out string, input ArtifactInput) error {
 		status.File = spec.File
 		metadata.Packets = append(metadata.Packets, status)
 		metadata.Files = append(metadata.Files, fileMetadata(spec.File, payload, spec))
+		writtenFiles[spec.File] = struct{}{}
+	}
+	internalNames := make([]string, 0, len(input.InternalFiles))
+	for name := range input.InternalFiles {
+		internalNames = append(internalNames, name)
+	}
+	sort.Strings(internalNames)
+	for _, name := range internalNames {
+		if err := validateDerivedName(name); err != nil {
+			return err
+		}
+		if _, exists := writtenFiles[name]; exists {
+			return fmt.Errorf("duplicate capture file %s", name)
+		}
+		data := input.InternalFiles[name]
+		if len(data) == 0 {
+			return fmt.Errorf("internal data file %s is empty", name)
+		}
+		path := filepath.Join(temporary, filepath.FromSlash(name))
+		if err := os.WriteFile(path, data, 0o644); err != nil {
+			return fmt.Errorf("write %s: %w", name, err)
+		}
+		metadata.Files = append(metadata.Files, internalFileMetadata(name, data))
+		writtenFiles[name] = struct{}{}
 	}
 	derivedNames := make([]string, 0, len(input.DerivedFiles))
 	for name := range input.DerivedFiles {
@@ -263,6 +305,9 @@ func WriteArtifacts(out string, input ArtifactInput) error {
 			return err
 		}
 		data := input.DerivedFiles[name]
+		if _, exists := writtenFiles[name]; exists {
+			return fmt.Errorf("duplicate capture file %s", name)
+		}
 		if len(data) == 0 {
 			return fmt.Errorf("compatibility file %s is empty", name)
 		}
@@ -274,6 +319,7 @@ func WriteArtifacts(out string, input ArtifactInput) error {
 			return fmt.Errorf("write %s: %w", name, err)
 		}
 		metadata.Files = append(metadata.Files, derivedFileMetadata(name, data))
+		writtenFiles[name] = struct{}{}
 	}
 	metadataData, err := json.MarshalIndent(metadata, "", "  ")
 	if err != nil {
@@ -334,6 +380,11 @@ func fileMetadata(name string, data []byte, spec PacketSpec) CaptureFile {
 func derivedFileMetadata(name string, data []byte) CaptureFile {
 	digest := sha256.Sum256(data)
 	return CaptureFile{File: name, Kind: "derived", Bytes: len(data), SHA256: "sha256:" + hex.EncodeToString(digest[:])}
+}
+
+func internalFileMetadata(name string, data []byte) CaptureFile {
+	digest := sha256.Sum256(data)
+	return CaptureFile{File: name, Kind: "internal_data", Bytes: len(data), SHA256: "sha256:" + hex.EncodeToString(digest[:])}
 }
 
 func validateDerivedName(name string) error {

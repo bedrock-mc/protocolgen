@@ -84,12 +84,32 @@ compatibility reference, not a separate output namespace. Prismarine's
 normalized catalog schemas require non-packet metadata, while Cloudburst's
 aggregate creative and recipe files are consumer-specific.
 
-Creative and recipe compatibility files are not emitted yet. Their established
-PMMP representation needs the canonical block-state dictionary and block-item
-mapping produced by a BDS binary extractor, which are not sent to an addon-free
-client. Emitting names and metadata without those inputs would create a subtly
-incompatible third format. `StartGame.CustomBlocks` is not a substitute: it is
-empty on an addon-free server and is not the vanilla runtime block palette.
+The workflow can also run the pinned Endstone exporter in a separate,
+headless BDS phase before the packet bot connects. Endstone's live registry
+walk supplies the canonical `block_palette.nbt` plus its documented block,
+item, shape, tag, creative, and recipe files. The exporter is built from the
+exact revision and a SHA-256-pinned, Apache-attributed headless adapter under
+`vanilla-data/endstone/`; it never drives the ImGui/OpenGL DevTools window.
+Its `endstone-export.json` manifest authenticates every output and is checked
+against the target BDS version before the Go bot accepts anything. The bot
+preserves the Endstone/Cloudburst `block_palette.nbt` and additionally emits
+PMMP's established concatenated `canonical_block_states.nbt`. It deliberately
+does not invent `block_state_meta_map.json` or `block_id_to_item_id_map.json`:
+Endstone's runtime registry does not expose those legacy semantics exactly.
+
+An individual generated source lock enables this phase only when an Endstone
+revision explicitly supports the exact BDS build (`endstone.bds_version` must
+equal `bds.version`). Until such a pin exists, the workflow warns and captures
+packet-derived data only; it does not substitute a mismatched Endstone binary.
+This is currently the case for the checked-in 1.26.44 source lock because the
+available upstream Endstone revision is for a different BDS release.
+
+Creative and recipe files therefore become available as authenticated
+Endstone-native outputs once a matching pin is added. Their established PMMP
+packet representations still require the canonical block-item/legacy mapping
+that Endstone does not expose, so the exporter does not claim to synthesize
+those files. `StartGame.CustomBlocks` is not a substitute: it is empty on an
+addon-free server and is not the vanilla runtime block palette.
 
 Dimensions and features are optional because vanilla BDS does not send them
 for every world; `capture.json` explicitly records whether they were captured

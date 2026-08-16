@@ -39,6 +39,7 @@ func run(args []string) error {
 	manifestPath := fs.String("manifest", "", "target protocol manifest")
 	sourcePath := fs.String("source", "", "version-locked vanilla capture source")
 	outPath := fs.String("out", "", "versioned vanilla-data output directory")
+	internalDataPath := fs.String("internal-data", "", "verified headless Endstone export directory")
 	bdsBinary := fs.String("bds-binary", "", "exact bedrock_server executable used for the capture")
 	address := fs.String("address", "127.0.0.1:19132", "local offline BDS RakNet address")
 	timeout := fs.Duration("timeout", 90*time.Second, "maximum dial, spawn, and required-packet capture time")
@@ -89,6 +90,19 @@ func run(args []string) error {
 	}
 	if err := verifyGophertunnelBuild(source.Gophertunnel); err != nil {
 		return err
+	}
+	var internalFiles map[string][]byte
+	var internalManifest *vanilladata.InternalDataManifest
+	if *internalDataPath != "" {
+		if source.Endstone == nil {
+			return fmt.Errorf("internal data requires a version-locked Endstone source lock")
+		}
+		files, manifest, err := vanilladata.LoadInternalArtifacts(*internalDataPath, targetManifest.Target, source.BDS.Version, *source.Endstone)
+		if err != nil {
+			return err
+		}
+		internalFiles = files
+		internalManifest = &manifest
 	}
 	if *validateOnly {
 		fmt.Printf("valid capture contract: Minecraft %s / protocol %d / gophertunnel %s\n", targetManifest.Target.MinecraftVersion, targetManifest.Target.ProtocolVersion, source.Gophertunnel.Revision)
@@ -176,10 +190,12 @@ func run(args []string) error {
 			Revision:      source.Gophertunnel.Revision,
 			ModuleVersion: source.Gophertunnel.ModuleVersion,
 		},
-		Specs:        specs,
-		Payloads:     payloads,
-		DerivedFiles: derivedFiles,
-		Warning:      warning,
+		Specs:         specs,
+		Payloads:      payloads,
+		InternalData:  internalManifest,
+		InternalFiles: internalFiles,
+		DerivedFiles:  derivedFiles,
+		Warning:       warning,
 	}); err != nil {
 		return err
 	}

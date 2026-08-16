@@ -1,5 +1,5 @@
 {
-  "format_version": 3,
+  "format_version": 4,
   "target": {
     "minecraft_version": "1.26.44",
     "protocol_version": 2168,

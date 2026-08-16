@@ -1,6 +1,8 @@
 package vanilladata
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"os"
 	"path/filepath"
@@ -19,6 +21,12 @@ func testSource() SourceConfig {
 		}},
 		Gophertunnel: GophertunnelSource{
 			Repository: "https://github.com/HashimTheArab/gophertunnel", ModulePath: "github.com/HashimTheArab/gophertunnel", Revision: strings.Repeat("b", 40), ModuleVersion: "v0.0.0-20260815100934-bbbbbbbbbbbb",
+		},
+		Endstone: &EndstoneSource{
+			Repository:       "https://github.com/EndstoneMC/endstone",
+			Revision:         strings.Repeat("d", 40),
+			BDSVersion:       "1.26.44.3",
+			HeadlessPatchSHA: "sha256:" + strings.Repeat("e", 64),
 		},
 		ServerProperties: map[string]string{"online-mode": "false", "server-port": "19132", "level-name": "protocolgen-vanilla-data", "level-seed": "1"},
 	}
@@ -148,6 +156,58 @@ func TestWriteArtifactsRejectsMissingRequiredPacketAndUnsafeName(t *testing.T) {
 	}
 }
 
+func TestWriteArtifactsRecordsInternalDataProvenanceAndKind(t *testing.T) {
+	source := testSource()
+	palette := endstonePalette(t)
+	canonical, err := canonicalBlockStates(palette)
+	if err != nil {
+		t.Fatal(err)
+	}
+	paletteDigest := sha256.Sum256(palette)
+	internal := InternalDataManifest{
+		SchemaVersion: 1,
+		Target:        Target{MinecraftVersion: "1.26.44", ProtocolVersion: 2168},
+		BDSVersion:    source.BDS.Version,
+		Endstone:      *source.Endstone,
+		Files:         []InternalDataFile{{File: "block_palette.nbt", Bytes: len(palette), SHA256: "sha256:" + hex.EncodeToString(paletteDigest[:])}},
+	}
+	out := filepath.Join(t.TempDir(), "out")
+	if err := WriteArtifacts(out, ArtifactInput{
+		Target: Target{MinecraftVersion: "1.26.44", ProtocolVersion: 2168},
+		BDS: BDSProvenance{
+			Version: source.BDS.Version, ArchiveURL: source.BDS.Linux.URL, ArchiveSHA256: source.BDS.Linux.ArchiveSHA256, BinarySHA256: strings.Repeat("c", 64),
+		},
+		Gophertunnel: GophertunnelProvenance(source.Gophertunnel),
+		Specs:        []PacketSpec{{ID: 1, Name: "Required", File: "required.dat"}},
+		Payloads:     map[string][]byte{"Required": {1}},
+		InternalData: &internal,
+		InternalFiles: map[string][]byte{
+			"block_palette.nbt":          palette,
+			"canonical_block_states.nbt": canonical,
+		},
+	}); err != nil {
+		t.Fatalf("WriteArtifacts: %v", err)
+	}
+	data, err := os.ReadFile(filepath.Join(out, "capture.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var metadata CaptureMetadata
+	if err := json.Unmarshal(data, &metadata); err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(metadata.InternalData, &internal) {
+		t.Fatalf("internal provenance = %#v, want %#v", metadata.InternalData, &internal)
+	}
+	seen := map[string]string{}
+	for _, file := range metadata.Files {
+		seen[file.File] = file.Kind
+	}
+	if seen["block_palette.nbt"] != "internal_data" || seen["canonical_block_states.nbt"] != "internal_data" {
+		t.Fatalf("internal file kinds = %#v", seen)
+	}
+}
+
 func TestLoadSourceConfigValidatesPins(t *testing.T) {
 	source := testSource()
 	data, err := json.Marshal(source)
@@ -171,5 +231,17 @@ func TestLoadSourceConfigValidatesPins(t *testing.T) {
 	}
 	if _, err := LoadSourceConfig(path); err == nil || !strings.Contains(err.Error(), "online-mode=false") {
 		t.Fatalf("LoadSourceConfig online mode error = %v", err)
+	}
+	source = testSource()
+	source.Endstone.BDSVersion = "1.26.40.0"
+	data, err = json.Marshal(source)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(path, data, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := LoadSourceConfig(path); err == nil || !strings.Contains(err.Error(), "Endstone provenance") {
+		t.Fatalf("LoadSourceConfig Endstone version error = %v", err)
 	}
 }

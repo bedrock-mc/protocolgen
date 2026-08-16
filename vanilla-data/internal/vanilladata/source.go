@@ -42,6 +42,7 @@ type SourceConfig struct {
 	ProtocolVersion  int                `json:"protocol_version"`
 	BDS              BDSSource          `json:"bds"`
 	Gophertunnel     GophertunnelSource `json:"gophertunnel"`
+	Endstone         *EndstoneSource    `json:"endstone,omitempty"`
 	ServerProperties map[string]string  `json:"server_properties"`
 }
 
@@ -91,6 +92,11 @@ func LoadSourceConfig(path string) (SourceConfig, error) {
 	}
 	if value.Gophertunnel.Repository == "" || value.Gophertunnel.ModulePath == "" || value.Gophertunnel.ModuleVersion == "" || !validHex(value.Gophertunnel.Revision, 40) {
 		return SourceConfig{}, fmt.Errorf("vanilla source has incomplete gophertunnel provenance")
+	}
+	if value.Endstone != nil {
+		if value.Endstone.Repository == "" || !validHex(value.Endstone.Revision, 40) || value.Endstone.BDSVersion != value.BDS.Version || !validSHA256(value.Endstone.HeadlessPatchSHA) {
+			return SourceConfig{}, fmt.Errorf("vanilla source has incomplete Endstone provenance")
+		}
 	}
 	if value.ServerProperties["online-mode"] != "false" {
 		return SourceConfig{}, fmt.Errorf("vanilla source must configure BDS with online-mode=false")
