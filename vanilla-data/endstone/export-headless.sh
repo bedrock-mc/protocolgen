@@ -36,7 +36,7 @@ target_version=$(jq -er '.minecraft_version' "$source_file")
 protocol_version=$(jq -er '.protocol_version' "$source_file")
 test "$endstone_bds" = "$bds_version"
 test "$endstone_revision" != "" && test "${#endstone_revision}" -eq 40
-test "$endstone_patch_sha" = "sha256:cba32423594101ee2cf19aec4be52c253998ccac3f1afa15a6c42fb88051b28f"
+test "$endstone_patch_sha" = "sha256:b057f7bdb89073aada87f4976a3e870e19b401921ee831a8a31153acb076c47e"
 
 repo_dir="$build_dir/endstone"
 conan_home="$build_dir/conan-home"
