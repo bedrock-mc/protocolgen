@@ -48,8 +48,9 @@ type SourceConfig struct {
 
 // BDSSource pins the downloadable Linux BDS build.
 type BDSSource struct {
-	Version string      `json:"version"`
-	Linux   LinuxSource `json:"linux"`
+	Version        string      `json:"version"`
+	ArchiveVersion string      `json:"archive_version,omitempty"`
+	Linux          LinuxSource `json:"linux"`
 }
 
 // LinuxSource identifies and authenticates a BDS archive.
@@ -84,11 +85,15 @@ func LoadSourceConfig(path string) (SourceConfig, error) {
 	if value.SchemaVersion != 1 {
 		return SourceConfig{}, fmt.Errorf("unsupported vanilla source schema %d", value.SchemaVersion)
 	}
-	if value.BDS.Version == "" || value.BDS.Linux.URL == "" || !validHex(value.BDS.Linux.ArchiveSHA256, 64) {
+	if !validVersion(value.BDS.Version) || value.BDS.Linux.URL == "" || !validHex(value.BDS.Linux.ArchiveSHA256, 64) {
 		return SourceConfig{}, fmt.Errorf("vanilla source has incomplete BDS provenance")
 	}
-	if !strings.Contains(value.BDS.Linux.URL, "bedrock-server-"+value.BDS.Version+".zip") {
-		return SourceConfig{}, fmt.Errorf("BDS version %s does not match archive URL", value.BDS.Version)
+	archiveVersion := value.BDS.ArchiveVersion
+	if archiveVersion == "" {
+		archiveVersion = value.BDS.Version
+	}
+	if !validVersion(archiveVersion) || !strings.HasSuffix(value.BDS.Linux.URL, "bedrock-server-"+archiveVersion+".zip") {
+		return SourceConfig{}, fmt.Errorf("BDS archive version %s does not match archive URL", archiveVersion)
 	}
 	if value.Gophertunnel.Repository == "" || value.Gophertunnel.ModulePath == "" || value.Gophertunnel.ModuleVersion == "" || !validHex(value.Gophertunnel.Revision, 40) {
 		return SourceConfig{}, fmt.Errorf("vanilla source has incomplete gophertunnel provenance")
@@ -124,4 +129,8 @@ func validHex(value string, length int) bool {
 	}
 	_, err := hex.DecodeString(value)
 	return err == nil
+}
+
+func validVersion(value string) bool {
+	return value != "" && !strings.ContainsAny(value, "/\\")
 }

@@ -245,3 +245,28 @@ func TestLoadSourceConfigValidatesPins(t *testing.T) {
 		t.Fatalf("LoadSourceConfig Endstone version error = %v", err)
 	}
 }
+
+func TestLoadSourceConfigAcceptsReleaseVersionWithPinnedArchiveBuild(t *testing.T) {
+	source := testSource()
+	source.MinecraftVersion = "1.26.40"
+	source.BDS = BDSSource{
+		Version:        "1.26.40",
+		ArchiveVersion: "1.26.40.8",
+		Linux: LinuxSource{
+			URL:           "https://www.minecraft.net/bedrockdedicatedserver/bin-linux/bedrock-server-1.26.40.8.zip",
+			ArchiveSHA256: strings.Repeat("a", 64),
+		},
+	}
+	source.Endstone.BDSVersion = "1.26.40"
+	data, err := json.Marshal(source)
+	if err != nil {
+		t.Fatal(err)
+	}
+	path := filepath.Join(t.TempDir(), "source.json")
+	if err := os.WriteFile(path, data, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := LoadSourceConfig(path); err != nil {
+		t.Fatalf("LoadSourceConfig release/archive build: %v", err)
+	}
+}

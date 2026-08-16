@@ -98,11 +98,15 @@ does not invent `block_state_meta_map.json` or `block_id_to_item_id_map.json`:
 Endstone's runtime registry does not expose those legacy semantics exactly.
 
 An individual generated source lock enables this phase only when an Endstone
-revision explicitly supports the exact BDS build (`endstone.bds_version` must
-equal `bds.version`). Until such a pin exists, the workflow warns and captures
-packet-derived data only; it does not substitute a mismatched Endstone binary.
-This is currently the case for the checked-in 1.26.44 source lock because the
-available upstream Endstone revision is for a different BDS release.
+revision explicitly supports the exact BDS release and the archive build is
+pinned separately (`endstone.bds_version` must equal `bds.version`, while
+`bds.archive_version` must match the official archive filename and checksum).
+For example, the 1.26.40 lock uses Endstone's declared 1.26.40 release with
+the official 1.26.40.8 Linux archive. Until such a pin exists, the workflow
+warns and captures packet-derived data only; it does not substitute a
+mismatched Endstone binary. This remains the case for the checked-in 1.26.44
+source lock because the available upstream Endstone revision is for a
+different BDS release.
 
 Creative and recipe files therefore become available as authenticated
 Endstone-native outputs once a matching pin is added. Their established PMMP
@@ -135,11 +139,14 @@ BDS. Once this workflow exists on the default branch, manual dispatch can
 select an update branch; `workflow_call` also lets a protocol updater invoke
 capture once its manual gate is resolved.
 
-Each generated version pins its BDS download, archive checksum, build, and
+Each generated version pins its BDS download, archive checksum/build, and
 gophertunnel module version in `generated/<version>/vanilla-source.json`. The
-compatibility exporter is also deliberately compiled against one generated Go
-packet package and fails validation if its version does not match the selected
-manifest; updating that binding is part of adding the next generated version.
+1.26.40 capture uses `vanilla-data/go-1.26.40.mod` and the
+`protocolgen_12640` build tag, so both the bot's gophertunnel runtime and the
+derived-data decoder are selected for 1.26.40. Other versions use the default
+module and generated packet binding. The compatibility exporter fails
+validation if its selected generated package does not match the manifest;
+updating that binding is part of adding the next generated version.
 The captured artifact should be reviewed and checked in beside that generated
 protocol before the update is considered complete. The workflow requires
 explicit EULA acceptance and never commits or pushes automatically.

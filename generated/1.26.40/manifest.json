@@ -22,6 +22,15 @@
       "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/0e00fe80f4f3c71572ff6429de40146d1f4412fc/json",
       "minecraft_version": "1.26.40",
       "protocol_version": 2168
+    },
+    {
+      "id": "lunar-gophertunnel-1.26.40",
+      "kind": "gophertunnel-exact-codec",
+      "revision": "be6713da4dc051a4197f897d04835e89e9c54321",
+      "digest": "sha256:07135d4e3fb48d09e12b4f1aecd5479b41da0c4f2f4175ef2057b6cb625ece1c",
+      "locator": "https://github.com/HashimTheArab/gophertunnel/tree/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol",
+      "minecraft_version": "1.26.40",
+      "protocol_version": 2168
     }
   ],
   "packets": [

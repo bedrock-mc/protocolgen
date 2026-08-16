@@ -55,7 +55,8 @@ cp "$workspace/vanilla-data/endstone/headless_vanilla_data.h" "$repo_dir/src/end
 cp "$workspace/vanilla-data/endstone/headless_vanilla_data.cpp" "$repo_dir/src/endstone/core/devtools/headless_vanilla_data.cpp"
 
 python3 -m pip install --disable-pip-version-check --user conan
-conan install "$repo_dir" --build=missing -s build_type=Release
+conan_home="$repo_dir/.conan2"
+CONAN_HOME="$conan_home" conan install "$repo_dir" --build=missing -s build_type=Release
 (cd "$repo_dir" && cmake --preset conan-release)
 (cd "$repo_dir" && cmake --build --preset conan-release --parallel)
 python3 -m pip install --disable-pip-version-check --user "$repo_dir" -C "build-dir=$repo_dir/build"

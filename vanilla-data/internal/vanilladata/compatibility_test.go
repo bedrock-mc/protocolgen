@@ -8,8 +8,6 @@ import (
 	"testing"
 
 	"github.com/sandertv/gophertunnel/minecraft/nbt"
-	genprotocol "protocolgen/generated/1.26.44/go/protocol"
-	genpacket "protocolgen/generated/1.26.44/go/protocol/packet"
 )
 
 func TestBuildDerivedArtifactsUsesGeneratedProtocolPackets(t *testing.T) {
@@ -21,26 +19,8 @@ func TestBuildDerivedArtifactsUsesGeneratedProtocolPackets(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	items, err := genpacket.Encode(&genpacket.ItemRegistry{ItemData: []genprotocol.ItemData{
-		{ItemName: "minecraft:stick", ItemID: 280, ItemVersion: genprotocol.ItemVersionNone, ItemComponentData: emptyNBT},
-		{ItemName: "minecraft:test", ItemID: -7, IsComponentBased: true, ItemVersion: genprotocol.ItemVersionDataDriven, ItemComponentData: componentNBT},
-	}})
-	if err != nil {
-		t.Fatal(err)
-	}
-	biomes, err := genpacket.Encode(&genpacket.BiomeDefinitionList{
-		MapOfBiomeNamesToData: []genprotocol.OrderedEntry[uint16, genprotocol.BiomeDefinitionData]{
-			{Key: 0, Value: genprotocol.BiomeDefinitionData{
-				ID: 42, Temperature: 0.8, Downfall: 0.4, FoliageSnow: 0.25, Depth: 0.1, Scale: 0.2,
-				MapWaterColorARGB: -1525384027, Rain: true,
-				Tags: genprotocol.Option(genprotocol.BiomeTagsData{Tags: []uint16{1}}),
-			}},
-		},
-		StringList: genprotocol.BiomeStringList{Strings: []string{"minecraft:test_biome", "overworld"}},
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
+	items := testItemRegistryPayload(t, emptyNBT, componentNBT)
+	biomes := testBiomeDefinitionListPayload(t)
 
 	files, err := BuildDerivedArtifacts(map[string][]byte{
 		"ItemRegistryPacket":        items,
@@ -83,7 +63,7 @@ func TestBuildDerivedArtifactsRejectsPayloadThatGeneratedCodecCannotDecode(t *te
 }
 
 func TestValidateGeneratedTargetRejectsAnotherGeneratedVersion(t *testing.T) {
-	if err := ValidateGeneratedTarget(Target{MinecraftVersion: "1.26.44", ProtocolVersion: 2168}); err != nil {
+	if err := ValidateGeneratedTarget(testGeneratedTarget()); err != nil {
 		t.Fatalf("ValidateGeneratedTarget exact match: %v", err)
 	}
 	if err := ValidateGeneratedTarget(Target{MinecraftVersion: "1.26.50", ProtocolVersion: 2200}); err == nil {
@@ -93,7 +73,12 @@ func TestValidateGeneratedTargetRejectsAnotherGeneratedVersion(t *testing.T) {
 
 func TestCheckedInCaptureReproducesDerivedArtifacts(t *testing.T) {
 	root := filepath.Join("..", "..", "..")
-	capture := filepath.Join(root, "generated", "1.26.44", "vanilla-data")
+	capture := filepath.Join(root, "generated", testGeneratedVersion(), "vanilla-data")
+	if _, err := os.Stat(capture); os.IsNotExist(err) {
+		t.Skipf("checked-in capture for %s is not present yet", testGeneratedVersion())
+	} else if err != nil {
+		t.Fatal(err)
+	}
 	payloads := make(map[string][]byte)
 	for _, spec := range DefaultPacketSpecs() {
 		data, err := os.ReadFile(filepath.Join(capture, spec.File))

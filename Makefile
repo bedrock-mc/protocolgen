@@ -19,6 +19,7 @@ VANILLA_VERSION ?= 1.26.44
 VANILLA_MANIFEST := ../generated/$(VANILLA_VERSION)/manifest.json
 VANILLA_SOURCE := ../generated/$(VANILLA_VERSION)/vanilla-source.json
 VANILLA_OUT := ../generated/$(VANILLA_VERSION)/vanilla-data
+VANILLA_GO_ARGS := $(if $(filter 1.26.40,$(VANILLA_VERSION)),-modfile go-1.26.40.mod -tags protocolgen_12640,)
 BDS_ADDRESS ?= 127.0.0.1:19132
 BDS_BINARY ?=
 
@@ -92,7 +93,7 @@ hotfix:
 
 vanilla-data:
 	@test -n "$(BDS_BINARY)" || (echo "BDS_BINARY is required" >&2; exit 2)
-	$(GO) -C vanilla-data run ./cmd/vanilla-data \
+	$(GO) -C vanilla-data run $(VANILLA_GO_ARGS) ./cmd/vanilla-data \
 		-manifest $(VANILLA_MANIFEST) \
 		-source $(VANILLA_SOURCE) \
 		-out $(VANILLA_OUT) \

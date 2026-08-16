@@ -179,6 +179,7 @@ func run(args []string) error {
 		Target: targetManifest.Target,
 		BDS: vanilladata.BDSProvenance{
 			Version:          source.BDS.Version,
+			ArchiveVersion:   source.BDS.ArchiveVersion,
 			ArchiveURL:       source.BDS.Linux.URL,
 			ArchiveSHA256:    source.BDS.Linux.ArchiveSHA256,
 			BinarySHA256:     binarySHA256,

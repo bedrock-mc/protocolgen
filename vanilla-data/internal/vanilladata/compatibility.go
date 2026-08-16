@@ -11,15 +11,43 @@ import (
 	"sort"
 
 	"github.com/sandertv/gophertunnel/minecraft/nbt"
-	genprotocol "protocolgen/generated/1.26.44/go/protocol"
-	genpacket "protocolgen/generated/1.26.44/go/protocol/packet"
 )
+
+// These small value types keep the derived-data normalizer independent of a
+// particular generated snapshot. The build-tagged codec adapters populate
+// them from the exact generated packet package selected for the capture.
+type generatedItemData struct {
+	ItemName          string
+	ItemID            int16
+	IsComponentBased  bool
+	ItemVersion       int32
+	ItemComponentData []byte
+}
+
+type generatedBiomeEntry struct {
+	Key           uint16
+	ID            uint16
+	Temperature   float32
+	Downfall      float32
+	FoliageSnow   float32
+	Depth         float32
+	Scale         float32
+	MapWaterColor int32
+	Rain          bool
+	Tags          []uint16
+}
+
+type generatedBiomeDefinitionList struct {
+	Entries []generatedBiomeEntry
+	Strings []string
+}
 
 // ValidateGeneratedTarget ensures the derived-data exporter is compiled
 // against the generated packet set selected by the capture manifest.
 func ValidateGeneratedTarget(target Target) error {
-	if target.MinecraftVersion != genprotocol.GAME_VERSION || target.ProtocolVersion != genprotocol.PROTOCOL_VERSION {
-		return fmt.Errorf("derived-data exporter uses generated protocol %s/%d, capture target is %s/%d", genprotocol.GAME_VERSION, genprotocol.PROTOCOL_VERSION, target.MinecraftVersion, target.ProtocolVersion)
+	generatedVersion, generatedProtocol := generatedProtocolTarget()
+	if target.MinecraftVersion != generatedVersion || target.ProtocolVersion != generatedProtocol {
+		return fmt.Errorf("derived-data exporter uses generated protocol %s/%d, capture target is %s/%d", generatedVersion, generatedProtocol, target.MinecraftVersion, target.ProtocolVersion)
 	}
 	return nil
 }
@@ -30,34 +58,34 @@ func ValidateGeneratedTarget(target Target) error {
 func BuildDerivedArtifacts(payloads map[string][]byte) (map[string][]byte, error) {
 	files := make(map[string][]byte)
 	if data, ok := payloads["ItemRegistryPacket"]; ok {
-		var pk genpacket.ItemRegistry
-		if err := genpacket.Decode(data, &pk); err != nil {
+		items, err := decodeItemRegistry(data)
+		if err != nil {
 			return nil, err
 		}
-		required, err := requiredItemList(pk.ItemData)
+		required, err := requiredItemList(items)
 		if err != nil {
 			return nil, err
 		}
 		files["required_item_list.json"] = required
 	}
 	if data, ok := payloads["AvailableActorIdentifiersPacket"]; ok {
-		var pk genpacket.AvailableActorIdentifiers
-		if err := genpacket.Decode(data, &pk); err != nil {
+		identifierList, err := decodeAvailableActorIdentifiers(data)
+		if err != nil {
 			return nil, err
 		}
-		entityMap, err := entityIDMap(pk.IdentifierList)
+		entityMap, err := entityIDMap(identifierList)
 		if err != nil {
 			return nil, err
 		}
 		files["entity_id_map.json"] = entityMap
-		files["entity_identifiers.nbt"] = append([]byte(nil), pk.IdentifierList...)
+		files["entity_identifiers.nbt"] = append([]byte(nil), identifierList...)
 	}
 	if data, ok := payloads["BiomeDefinitionListPacket"]; ok {
-		var pk genpacket.BiomeDefinitionList
-		if err := genpacket.Decode(data, &pk); err != nil {
+		biomes, err := decodeBiomeDefinitionList(data)
+		if err != nil {
 			return nil, err
 		}
-		definitions, err := biomeDefinitions(&pk)
+		definitions, err := biomeDefinitions(&biomes)
 		if err != nil {
 			return nil, err
 		}
@@ -73,7 +101,7 @@ type requiredItemEntry struct {
 	ComponentNBT   string `json:"component_nbt,omitempty"`
 }
 
-func requiredItemList(items []genprotocol.ItemData) ([]byte, error) {
+func requiredItemList(items []generatedItemData) ([]byte, error) {
 	result := make(map[string]requiredItemEntry, len(items))
 	for _, item := range items {
 		entry := requiredItemEntry{RuntimeID: item.ItemID, ComponentBased: item.IsComponentBased, Version: int32(item.ItemVersion)}
@@ -292,28 +320,25 @@ type canonicalBiomeDefinition struct {
 	Temperature    float64         `json:"temperature"`
 }
 
-func biomeDefinitions(pk *genpacket.BiomeDefinitionList) ([]byte, error) {
-	strings := pk.StringList.Strings
-	result := make(map[string]canonicalBiomeDefinition, len(pk.MapOfBiomeNamesToData))
-	for _, entry := range pk.MapOfBiomeNamesToData {
+func biomeDefinitions(pk *generatedBiomeDefinitionList) ([]byte, error) {
+	strings := pk.Strings
+	result := make(map[string]canonicalBiomeDefinition, len(pk.Entries))
+	for _, entry := range pk.Entries {
 		if int(entry.Key) >= len(strings) {
 			return nil, fmt.Errorf("biome name index %d exceeds string list", entry.Key)
 		}
-		definition := entry.Value
 		tags := []string{}
-		if value, ok := definition.Tags.Value(); ok {
-			for _, index := range value.Tags {
-				if int(index) >= len(strings) {
-					return nil, fmt.Errorf("biome tag index %d exceeds string list", index)
-				}
-				tags = append(tags, strings[index])
+		for _, index := range entry.Tags {
+			if int(index) >= len(strings) {
+				return nil, fmt.Errorf("biome tag index %d exceeds string list", index)
 			}
+			tags = append(tags, strings[index])
 		}
-		colour := uint32(definition.MapWaterColorARGB)
+		colour := uint32(entry.MapWaterColor)
 		result[strings[entry.Key]] = canonicalBiomeDefinition{
-			Depth: round3(definition.Depth), Downfall: round3(definition.Downfall), FoliageSnow: round3(definition.FoliageSnow), ID: definition.ID,
+			Depth: round3(entry.Depth), Downfall: round3(entry.Downfall), FoliageSnow: round3(entry.FoliageSnow), ID: entry.ID,
 			MapWaterColour: canonicalColour{A: uint8(colour >> 24), R: uint8(colour >> 16), G: uint8(colour >> 8), B: uint8(colour)},
-			Rain:           definition.Rain, Scale: round3(definition.Scale), Tags: tags, Temperature: round3(definition.Temperature),
+			Rain:           entry.Rain, Scale: round3(entry.Scale), Tags: tags, Temperature: round3(entry.Temperature),
 		}
 	}
 	return marshalCanonicalJSON(result)

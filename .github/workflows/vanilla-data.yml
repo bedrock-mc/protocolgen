@@ -49,6 +49,7 @@ jobs:
           cache-dependency-path: |
             go.sum
             vanilla-data/go.sum
+            vanilla-data/go-1.26.40.sum
 
       - name: Validate the corrected protocol and capture codec
         env:
@@ -63,18 +64,22 @@ jobs:
           test "$(jq -er .minecraft_version "$source_file")" = "$VERSION"
           test "$(jq -er .protocol_version "$source_file")" = "$(jq -er .target.protocol_version "$manifest")"
           test "$(jq -er .gophertunnel.revision "$source_file")" = "$(jq -er '.sources[] | select(.kind == "gophertunnel-exact-codec") | .revision' "$manifest")"
-          module_json="$(go -C vanilla-data list -m -json github.com/sandertv/gophertunnel)"
+          go_args=()
+          if test "$VERSION" = "1.26.40"; then
+            go_args=(-modfile go-1.26.40.mod -tags protocolgen_12640)
+          fi
+          module_json="$(go -C vanilla-data list "${go_args[@]}" -m -json github.com/sandertv/gophertunnel)"
           test "$(jq -er .Replace.Path <<< "$module_json")" = "$(jq -er .gophertunnel.module_path "$source_file")"
           test "$(jq -er .Replace.Version <<< "$module_json")" = "$(jq -er .gophertunnel.module_version "$source_file")"
           go run ./cmd/protocolgen validate -manifest "$manifest"
-          go -C vanilla-data run ./cmd/vanilla-data \
+          go -C vanilla-data run "${go_args[@]}" \
             -manifest "../$manifest" \
             -source "../$source_file" \
             -validate-only
           go test ./...
           go vet ./...
-          go -C vanilla-data test ./...
-          go -C vanilla-data vet ./...
+          go -C vanilla-data test "${go_args[@]}" ./...
+          go -C vanilla-data vet "${go_args[@]}" ./...
 
   capture:
     needs: corrected-protocol
@@ -87,7 +92,9 @@ jobs:
         with:
           go-version: '1.26.x'
           cache: true
-          cache-dependency-path: vanilla-data/go.sum
+          cache-dependency-path: |
+            vanilla-data/go.sum
+            vanilla-data/go-1.26.40.sum
 
       - name: Read version-locked capture source
         env:
@@ -115,7 +122,11 @@ jobs:
       - name: Verify the committed gophertunnel codec lock
         run: |
           set -euo pipefail
-          module_json="$(go -C vanilla-data list -m -json github.com/sandertv/gophertunnel)"
+          go_args=()
+          if test "$VANILLA_VERSION" = "1.26.40"; then
+            go_args=(-modfile go-1.26.40.mod)
+          fi
+          module_json="$(go -C vanilla-data list "${go_args[@]}" -m -json github.com/sandertv/gophertunnel)"
           test "$(jq -er .Replace.Path <<< "$module_json")" = "$GOPHERTUNNEL_MODULE_PATH"
           test "$(jq -er .Replace.Version <<< "$module_json")" = "$GOPHERTUNNEL_VERSION"
 
@@ -130,6 +141,13 @@ jobs:
           echo "$BDS_ARCHIVE_SHA256  $RUNNER_TEMP/protocolgen-bds.zip" | sha256sum --check
           unzip -q "$RUNNER_TEMP/protocolgen-bds.zip" -d "$RUNNER_TEMP/protocolgen-bds"
           chmod +x "$RUNNER_TEMP/protocolgen-bds/bedrock_server"
+
+      - name: Install Endstone headless build dependencies
+        if: env.ENDSTONE_ENABLED == 'true'
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y clang-tools
 
       - name: Extract BDS internal vanilla data with pinned Endstone
         if: env.ENDSTONE_ENABLED == 'true'
@@ -187,7 +205,11 @@ jobs:
           if test "$ENDSTONE_ENABLED" = true; then
             args+=( -internal-data "$RUNNER_TEMP/protocolgen-endstone-data" )
           fi
-          go -C vanilla-data run ./cmd/vanilla-data "${args[@]}"
+          go_args=()
+          if test "$VANILLA_VERSION" = "1.26.40"; then
+            go_args=(-modfile go-1.26.40.mod -tags protocolgen_12640)
+          fi
+          go -C vanilla-data run "${go_args[@]}" ./cmd/vanilla-data "${args[@]}"
 
       - name: Stop BDS
         if: always()

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"net"
 	"os"
 	"path/filepath"
@@ -22,9 +23,10 @@ func TestRunRequiresVersionedCaptureInputs(t *testing.T) {
 
 func TestRunValidateOnlyChecksGeneratedProtocolContract(t *testing.T) {
 	root := filepath.Join("..", "..", "..")
+	version := testGeneratedVersion()
 	if err := run([]string{
-		"-manifest", filepath.Join(root, "generated", "1.26.44", "manifest.json"),
-		"-source", filepath.Join(root, "generated", "1.26.44", "vanilla-source.json"),
+		"-manifest", filepath.Join(root, "generated", version, "manifest.json"),
+		"-source", filepath.Join(root, "generated", version, "vanilla-source.json"),
 		"-validate-only",
 	}); err != nil {
 		t.Fatalf("run validate-only: %v", err)
@@ -33,9 +35,28 @@ func TestRunValidateOnlyChecksGeneratedProtocolContract(t *testing.T) {
 
 func TestRunRejectsInternalDataWithoutVersionLockedEndstoneSource(t *testing.T) {
 	root := filepath.Join("..", "..", "..")
-	err := run([]string{
-		"-manifest", filepath.Join(root, "generated", "1.26.44", "manifest.json"),
-		"-source", filepath.Join(root, "generated", "1.26.44", "vanilla-source.json"),
+	version := testGeneratedVersion()
+	sourcePath := filepath.Join(root, "generated", version, "vanilla-source.json")
+	data, err := os.ReadFile(sourcePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var source map[string]json.RawMessage
+	if err := json.Unmarshal(data, &source); err != nil {
+		t.Fatal(err)
+	}
+	delete(source, "endstone")
+	data, err = json.Marshal(source)
+	if err != nil {
+		t.Fatal(err)
+	}
+	sourcePath = filepath.Join(t.TempDir(), "vanilla-source.json")
+	if err := os.WriteFile(sourcePath, data, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	err = run([]string{
+		"-manifest", filepath.Join(root, "generated", version, "manifest.json"),
+		"-source", sourcePath,
 		"-internal-data", t.TempDir(),
 		"-validate-only",
 	})

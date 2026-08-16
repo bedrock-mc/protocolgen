@@ -148,6 +148,7 @@ func (r *Recorder) Payloads() map[string][]byte {
 // BDSProvenance fingerprints the exact server input used for the capture.
 type BDSProvenance struct {
 	Version          string            `json:"version"`
+	ArchiveVersion   string            `json:"archive_version,omitempty"`
 	ArchiveURL       string            `json:"archive_url"`
 	ArchiveSHA256    string            `json:"archive_sha256"`
 	BinarySHA256     string            `json:"binary_sha256"`
@@ -210,6 +211,13 @@ type CaptureMetadata struct {
 func WriteArtifacts(out string, input ArtifactInput) error {
 	if input.BDS.Version == "" || input.BDS.ArchiveURL == "" || !validHex(input.BDS.ArchiveSHA256, 64) || !validHex(input.BDS.BinarySHA256, 64) {
 		return fmt.Errorf("complete BDS provenance is required")
+	}
+	archiveVersion := input.BDS.ArchiveVersion
+	if archiveVersion == "" {
+		archiveVersion = input.BDS.Version
+	}
+	if !strings.HasSuffix(input.BDS.ArchiveURL, "bedrock-server-"+archiveVersion+".zip") {
+		return fmt.Errorf("BDS archive version %s does not match archive URL", archiveVersion)
 	}
 	if input.Gophertunnel.Repository == "" || input.Gophertunnel.ModulePath == "" || input.Gophertunnel.ModuleVersion == "" || !validHex(input.Gophertunnel.Revision, 40) {
 		return fmt.Errorf("complete gophertunnel provenance is required")
