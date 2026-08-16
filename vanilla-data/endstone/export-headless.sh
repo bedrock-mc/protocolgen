@@ -70,7 +70,8 @@ cmake_preset=conan-relwithdebinfo
 test -f "$repo_dir/CMakeUserPresets.json"
 test -f "$repo_dir/build/RelWithDebInfo/generators/CMakePresets.json"
 (cd "$repo_dir" && cmake --list-presets | grep -Eq "^[[:space:]]+\\\"${cmake_preset}\\\"")
-(cd "$repo_dir" && cmake --preset "$cmake_preset")
+(cd "$repo_dir" && cmake --preset "$cmake_preset" -DBUILD_TESTING=OFF)
+grep -Eq '^BUILD_TESTING:BOOL=OFF$' "$repo_dir/build/RelWithDebInfo/CMakeCache.txt"
 (cd "$repo_dir" && cmake --build --preset "$cmake_preset" --parallel)
 cmake_build_dir="$repo_dir/build/RelWithDebInfo"
 test -d "$cmake_build_dir"
