@@ -57,15 +57,21 @@ cp "$workspace/vanilla-data/endstone/headless_vanilla_data.cpp" "$repo_dir/src/e
 python3 -m pip install --disable-pip-version-check --user conan
 conan_home="$repo_dir/.conan2"
 CONAN_HOME="$conan_home" conan install "$repo_dir" --build=missing -s build_type=Release
-(cd "$repo_dir" && cmake --preset conan-release)
-(cd "$repo_dir" && cmake --build --preset conan-release --parallel)
+cmake_preset=conan-relwithdebinfo
+test -f "$repo_dir/CMakeUserPresets.json"
+test -f "$repo_dir/build/RelWithDebInfo/generators/CMakePresets.json"
+(cd "$repo_dir" && cmake --list-presets | grep -Eq "^[[:space:]]+\\\"${cmake_preset}\\\"")
+(cd "$repo_dir" && cmake --preset "$cmake_preset")
+(cd "$repo_dir" && cmake --build --preset "$cmake_preset" --parallel)
+cmake_build_dir="$repo_dir/build/RelWithDebInfo"
+test -d "$cmake_build_dir"
 python3 -m pip install --disable-pip-version-check --user "$repo_dir" -C "build-dir=$repo_dir/build"
 
 rm -rf "$output_dir"
 mkdir -p "$output_dir"
 export ENDSTONE_VANILLA_DATA_OUT="$output_dir"
 export ENDSTONE_VANILLA_DATA_TIMEOUT_MS=300000
-export LD_LIBRARY_PATH="$repo_dir/build/Release:$repo_dir/build/Release/generators:${LD_LIBRARY_PATH-}"
+export LD_LIBRARY_PATH="$cmake_build_dir:$cmake_build_dir/generators:${LD_LIBRARY_PATH-}"
 
 (
   cd "$bds_dir"
