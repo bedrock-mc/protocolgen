@@ -72,7 +72,7 @@ jobs:
           test "$(jq -er .Replace.Path <<< "$module_json")" = "$(jq -er .gophertunnel.module_path "$source_file")"
           test "$(jq -er .Replace.Version <<< "$module_json")" = "$(jq -er .gophertunnel.module_version "$source_file")"
           go run ./cmd/protocolgen validate -manifest "$manifest"
-          go -C vanilla-data run "${go_args[@]}" \
+          go -C vanilla-data run "${go_args[@]}" ./cmd/vanilla-data \
             -manifest "../$manifest" \
             -source "../$source_file" \
             -validate-only
