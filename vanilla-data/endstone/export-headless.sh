@@ -39,6 +39,8 @@ test "$endstone_revision" != "" && test "${#endstone_revision}" -eq 40
 test "$endstone_patch_sha" = "sha256:cba32423594101ee2cf19aec4be52c253998ccac3f1afa15a6c42fb88051b28f"
 
 repo_dir="$build_dir/endstone"
+conan_home="$build_dir/conan-home"
+mkdir -p "$conan_home"
 rm -rf "$repo_dir"
 git clone --no-checkout "$endstone_repo" "$repo_dir"
 git -C "$repo_dir" checkout --detach "$endstone_revision"
@@ -55,7 +57,14 @@ cp "$workspace/vanilla-data/endstone/headless_vanilla_data.h" "$repo_dir/src/end
 cp "$workspace/vanilla-data/endstone/headless_vanilla_data.cpp" "$repo_dir/src/endstone/core/devtools/headless_vanilla_data.cpp"
 
 python3 -m pip install --disable-pip-version-check --user conan
-conan_home="$repo_dir/.conan2"
+if test ! -f "$conan_home/profiles/default"; then
+  cp -R "$repo_dir/.conan2/profiles" "$conan_home/"
+fi
+for conan_config in global.conf remotes.json settings.yml; do
+  if test -f "$repo_dir/.conan2/$conan_config"; then
+    cp "$repo_dir/.conan2/$conan_config" "$conan_home/$conan_config"
+  fi
+done
 CONAN_HOME="$conan_home" conan install "$repo_dir" --build=missing -s build_type=Release
 cmake_preset=conan-relwithdebinfo
 test -f "$repo_dir/CMakeUserPresets.json"
