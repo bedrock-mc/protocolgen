@@ -147,7 +147,15 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update
-          sudo apt-get install -y clang-tools libc++-dev libc++abi-dev
+          sudo apt-get install -y lsb-release wget software-properties-common gnupg
+          llvm_script="$RUNNER_TEMP/protocolgen-llvm.sh"
+          wget --https-only --quiet --output-document "$llvm_script" https://apt.llvm.org/llvm.sh
+          chmod +x "$llvm_script"
+          sudo "$llvm_script" 20
+          sudo apt-get install -y clang-tools-20 libc++-20-dev libc++abi-20-dev
+          sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-20 100
+          sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-20 100
+          sudo update-alternatives --install /usr/bin/ld ld /usr/bin/ld.lld-20 100
           cxx_probe="$RUNNER_TEMP/protocolgen-clang-libcxx-probe"
           printf 'int main() { return 0; }\n' | clang++ -std=c++20 -stdlib=libc++ -x c++ -o "$cxx_probe" -
           "$cxx_probe"
