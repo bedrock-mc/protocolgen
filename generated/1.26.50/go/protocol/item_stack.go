@@ -1,0 +1,777 @@
+// Code generated from canonical protocol manifest v2. DO NOT EDIT.
+
+package protocol
+
+// AutoCraftRecipeStackRequestAction is sent by the client similarly to the
+// CraftRecipeStackRequestAction. The only difference is that the recipe is automatically created
+// and crafted by shift clicking the recipe book.
+type AutoCraftRecipeStackRequestAction struct {
+	ActionType              ItemStackRequestActionType
+	RecipeNetID             RecipeNetID
+	NumberOfRequestedCrafts uint8
+	// Ingredients is a slice of ItemDescriptorCount that contains the ingredients that were used to
+	// craft the recipe. It is not exactly clear what this is used for, but it is sent by the vanilla
+	// client.
+	Ingredients []RecipeIngredient
+}
+
+func (*AutoCraftRecipeStackRequestAction) isStackRequestAction() {}
+
+// Marshal reads or writes AutoCraftRecipeStackRequestAction using its canonical wire layout.
+func (x *AutoCraftRecipeStackRequestAction) Marshal(io IO) {
+	IntegerFunc(&x.ActionType, io.Uint8)
+	x.RecipeNetID.Marshal(io)
+	io.Uint8(&x.NumberOfRequestedCrafts)
+	Minimum(io, &x.NumberOfRequestedCrafts, 1)
+	Slice(io, &x.Ingredients)
+}
+
+// BeaconPaymentStackRequestAction is sent by the client when it submits an item to enable effects
+// from a beacon. These items will have been moved into the beacon item slot in advance.
+type BeaconPaymentStackRequestAction struct {
+	ActionType        ItemStackRequestActionType
+	PrimaryEffectID   int32
+	SecondaryEffectID int32
+}
+
+func (*BeaconPaymentStackRequestAction) isStackRequestAction() {}
+
+// Marshal reads or writes BeaconPaymentStackRequestAction using its canonical wire layout.
+func (x *BeaconPaymentStackRequestAction) Marshal(io IO) {
+	IntegerFunc(&x.ActionType, io.Uint8)
+	io.Varint32(&x.PrimaryEffectID)
+	Minimum(io, &x.PrimaryEffectID, 0)
+	Maximum(io, &x.PrimaryEffectID, 37)
+	io.Varint32(&x.SecondaryEffectID)
+	Minimum(io, &x.SecondaryEffectID, 0)
+	Maximum(io, &x.SecondaryEffectID, 37)
+}
+
+// ConsumeStackRequestAction is sent by the client when it uses an item to craft another item. The
+// original item is 'consumed'.
+type ConsumeStackRequestAction struct {
+	ActionType ItemStackRequestActionType
+	Amount     uint8
+	Source     StackRequestSlotInfo
+}
+
+func (*ConsumeStackRequestAction) isStackRequestAction() {}
+
+// Marshal reads or writes ConsumeStackRequestAction using its canonical wire layout.
+func (x *ConsumeStackRequestAction) Marshal(io IO) {
+	IntegerFunc(&x.ActionType, io.Uint8)
+	io.Uint8(&x.Amount)
+	Minimum(io, &x.Amount, 1)
+	Maximum(io, &x.Amount, 64)
+	x.Source.Marshal(io)
+}
+
+// CraftCreativeStackRequestAction is sent by the client when it takes an item out fo the creative
+// inventory. The item is thus not really crafted, but instantly created.
+type CraftCreativeStackRequestAction struct {
+	ActionType              ItemStackRequestActionType
+	CreativeItemNetID       uint32
+	NumberOfRequestedCrafts uint8
+}
+
+func (*CraftCreativeStackRequestAction) isStackRequestAction() {}
+
+// Marshal reads or writes CraftCreativeStackRequestAction using its canonical wire layout.
+func (x *CraftCreativeStackRequestAction) Marshal(io IO) {
+	IntegerFunc(&x.ActionType, io.Uint8)
+	io.Varuint32(&x.CreativeItemNetID)
+	Minimum(io, &x.CreativeItemNetID, 1)
+	io.Uint8(&x.NumberOfRequestedCrafts)
+	Minimum(io, &x.NumberOfRequestedCrafts, 1)
+}
+
+// CraftNonImplementedStackRequestAction is an action sent for inventory actions that aren't yet
+// implemented in the new system. These include, for example, anvils.
+type CraftNonImplementedStackRequestAction struct {
+	ActionType ItemStackRequestActionType
+}
+
+func (*CraftNonImplementedStackRequestAction) isStackRequestAction() {}
+
+// Marshal reads or writes CraftNonImplementedStackRequestAction using its canonical wire layout.
+func (x *CraftNonImplementedStackRequestAction) Marshal(io IO) {
+	IntegerFunc(&x.ActionType, io.Uint8)
+}
+
+// CraftRecipeOptionalStackRequestAction is sent when using an anvil. When this action is sent, the
+// FilterStrings field in the respective stack request is non-empty and contains the name of the
+// item created using the anvil or cartography table.
+type CraftRecipeOptionalStackRequestAction struct {
+	ActionType          ItemStackRequestActionType
+	RecipeNetID         RecipeNetID
+	FilteredStringIndex int32
+}
+
+func (*CraftRecipeOptionalStackRequestAction) isStackRequestAction() {}
+
+// Marshal reads or writes CraftRecipeOptionalStackRequestAction using its canonical wire layout.
+func (x *CraftRecipeOptionalStackRequestAction) Marshal(io IO) {
+	IntegerFunc(&x.ActionType, io.Uint8)
+	x.RecipeNetID.Marshal(io)
+	io.Int32(&x.FilteredStringIndex)
+}
+
+// CraftRecipeStackRequestAction is sent by the client the moment it begins crafting an item. This
+// is the first action sent, before the Consume and Create item stack request actions. This action
+// is also sent when an item is enchanted. Enchanting should be treated mostly the same way as
+// crafting, where the old item is consumed.
+type CraftRecipeStackRequestAction struct {
+	ActionType              ItemStackRequestActionType
+	RecipeNetID             RecipeNetID
+	NumberOfRequestedCrafts uint8
+}
+
+func (*CraftRecipeStackRequestAction) isStackRequestAction() {}
+
+// Marshal reads or writes CraftRecipeStackRequestAction using its canonical wire layout.
+func (x *CraftRecipeStackRequestAction) Marshal(io IO) {
+	IntegerFunc(&x.ActionType, io.Uint8)
+	x.RecipeNetID.Marshal(io)
+	io.Uint8(&x.NumberOfRequestedCrafts)
+	Minimum(io, &x.NumberOfRequestedCrafts, 1)
+}
+
+// CraftResultsDeprecatedStackRequestAction is an additional, deprecated packet sent by the client
+// after crafting. It holds the final results and the amount of times the recipe was crafted. It
+// shouldn't be used. This action is also sent when an item is enchanted. Enchanting should be
+// treated mostly the same way as crafting, where the old item is consumed.
+type CraftResultsDeprecatedStackRequestAction struct {
+	ActionType   ItemStackRequestActionType
+	CraftResults []ItemInstance
+	NumCrafts    uint8
+}
+
+func (*CraftResultsDeprecatedStackRequestAction) isStackRequestAction() {}
+
+// Marshal reads or writes CraftResultsDeprecatedStackRequestAction using its canonical wire layout.
+func (x *CraftResultsDeprecatedStackRequestAction) Marshal(io IO) {
+	IntegerFunc(&x.ActionType, io.Uint8)
+	SliceLimits(io, &x.CraftResults, 1, 18446744073709551615)
+	io.Uint8(&x.NumCrafts)
+	Minimum(io, &x.NumCrafts, 1)
+}
+
+// CreateStackRequestAction is sent by the client when an item is created through being used as part
+// of a recipe. For example, when milk is used to craft a cake, the buckets are leftover. The
+// buckets are moved to the slot sent by the client here. Note that before this is sent, an action
+// for consuming all items in the crafting table/grid is sent. Items that are not fully consumed
+// when used for a recipe should not be destroyed there, but instead, should be turned into their
+// respective resulting items.
+type CreateStackRequestAction struct {
+	ActionType   ItemStackRequestActionType
+	ResultsIndex uint8
+}
+
+func (*CreateStackRequestAction) isStackRequestAction() {}
+
+// Marshal reads or writes CreateStackRequestAction using its canonical wire layout.
+func (x *CreateStackRequestAction) Marshal(io IO) {
+	IntegerFunc(&x.ActionType, io.Uint8)
+	io.Uint8(&x.ResultsIndex)
+}
+
+// DestroyStackRequestAction is sent by the client when it destroys an item in creative mode by
+// moving it back into the creative inventory.
+type DestroyStackRequestAction struct {
+	ActionType ItemStackRequestActionType
+	Amount     uint8
+	// Source is the source slot from which items came that were destroyed by moving them into the
+	// creative inventory.
+	Source StackRequestSlotInfo
+}
+
+func (*DestroyStackRequestAction) isStackRequestAction() {}
+
+// Marshal reads or writes DestroyStackRequestAction using its canonical wire layout.
+func (x *DestroyStackRequestAction) Marshal(io IO) {
+	IntegerFunc(&x.ActionType, io.Uint8)
+	io.Uint8(&x.Amount)
+	Minimum(io, &x.Amount, 1)
+	Maximum(io, &x.Amount, 64)
+	x.Source.Marshal(io)
+}
+
+// DropStackRequestAction is sent by the client when it drops an item out of the inventory when it
+// has its inventory opened. This action is not sent when a player drops an item out of the hotbar
+// using the Q button (or the equivalent on mobile). The InventoryTransaction packet is still used
+// for that action, regardless of whether the item stack network IDs are used or not.
+type DropStackRequestAction struct {
+	ActionType ItemStackRequestActionType
+	Amount     uint8
+	// Source is the source slot from which items were dropped to the ground.
+	Source StackRequestSlotInfo
+	// Randomly seems to be set to false in most cases. I'm not entirely sure what this does, but this
+	// is what vanilla calls this field.
+	Randomly bool
+}
+
+func (*DropStackRequestAction) isStackRequestAction() {}
+
+// Marshal reads or writes DropStackRequestAction using its canonical wire layout.
+func (x *DropStackRequestAction) Marshal(io IO) {
+	IntegerFunc(&x.ActionType, io.Uint8)
+	io.Uint8(&x.Amount)
+	Minimum(io, &x.Amount, 1)
+	Maximum(io, &x.Amount, 64)
+	x.Source.Marshal(io)
+	io.Bool(&x.Randomly)
+}
+
+type ItemDescriptor interface {
+	isItemDescriptor()
+}
+
+// MarshalItemDescriptor reads or writes the ItemDescriptor union using its canonical wire layout.
+func MarshalItemDescriptor(io IO, x *ItemDescriptor) {
+	UnionFunc(io,
+		func() {
+			var tag uint32
+			io.Varuint32(&tag)
+			switch int64(tag) {
+			case 0:
+				value := new(InvalidItemDescriptor)
+				value.Marshal(io)
+				*x = value
+			case 1:
+				value := new(DefaultItemDescriptor)
+				value.Marshal(io)
+				*x = value
+			case 2:
+				value := new(MoLangItemDescriptor)
+				value.Marshal(io)
+				*x = value
+			case 3:
+				value := new(ItemTagItemDescriptor)
+				value.Marshal(io)
+				*x = value
+			default:
+				io.InvalidValue(tag, "unknown union tag")
+			}
+		},
+		func() {
+			switch value := (*x).(type) {
+			case *InvalidItemDescriptor:
+				tag := uint32(0)
+				io.Varuint32(&tag)
+				value.Marshal(io)
+			case *DefaultItemDescriptor:
+				tag := uint32(1)
+				io.Varuint32(&tag)
+				value.Marshal(io)
+			case *MoLangItemDescriptor:
+				tag := uint32(2)
+				io.Varuint32(&tag)
+				value.Marshal(io)
+			case *ItemTagItemDescriptor:
+				tag := uint32(3)
+				io.Varuint32(&tag)
+				value.Marshal(io)
+			default:
+				io.InvalidValue(*x, "unknown union value")
+			}
+		},
+	)
+}
+
+type ItemStackLegacyRequestID struct {
+	ID int32
+}
+
+// Marshal reads or writes ItemStackLegacyRequestID using its canonical wire layout.
+func (x *ItemStackLegacyRequestID) Marshal(io IO) {
+	io.Varint32(&x.ID)
+}
+
+type ItemStackNetID struct {
+	ID int32
+}
+
+// Marshal reads or writes ItemStackNetID using its canonical wire layout.
+func (x *ItemStackNetID) Marshal(io IO) {
+	io.Varint32(&x.ID)
+}
+
+type ItemStackNetResult uint8
+
+const (
+	ItemStackNetResultSuccess                                          ItemStackNetResult = 0
+	ItemStackNetResultError                                            ItemStackNetResult = 1
+	ItemStackNetResultInvalidRequestActionType                         ItemStackNetResult = 2
+	ItemStackNetResultActionRequestNotAllowed                          ItemStackNetResult = 3
+	ItemStackNetResultScreenHandlerEndRequestFailed                    ItemStackNetResult = 4
+	ItemStackNetResultItemRequestActionHandlerCommitFailed             ItemStackNetResult = 5
+	ItemStackNetResultInvalidRequestCraftActionType                    ItemStackNetResult = 6
+	ItemStackNetResultInvalidCraftRequest                              ItemStackNetResult = 7
+	ItemStackNetResultInvalidCraftRequestScreen                        ItemStackNetResult = 8
+	ItemStackNetResultInvalidCraftResult                               ItemStackNetResult = 9
+	ItemStackNetResultInvalidCraftResultIndex                          ItemStackNetResult = 10
+	ItemStackNetResultInvalidCraftResultItem                           ItemStackNetResult = 11
+	ItemStackNetResultInvalidItemNetID                                 ItemStackNetResult = 12
+	ItemStackNetResultMissingCreatedOutputContainer                    ItemStackNetResult = 13
+	ItemStackNetResultFailedToSetCreatedItemOutputSlot                 ItemStackNetResult = 14
+	ItemStackNetResultRequestAlreadyInProgress                         ItemStackNetResult = 15
+	ItemStackNetResultFailedToInitSparseContainer                      ItemStackNetResult = 16
+	ItemStackNetResultResultTransferFailed                             ItemStackNetResult = 17
+	ItemStackNetResultExpectedItemSlotNotFullyConsumed                 ItemStackNetResult = 18
+	ItemStackNetResultExpectedAnywhereItemNotFullyConsumed             ItemStackNetResult = 19
+	ItemStackNetResultItemAlreadyConsumedFromSlot                      ItemStackNetResult = 20
+	ItemStackNetResultConsumedTooMuchFromSlot                          ItemStackNetResult = 21
+	ItemStackNetResultMismatchSlotExpectedConsumedItem                 ItemStackNetResult = 22
+	ItemStackNetResultMismatchSlotExpectedConsumedItemNetIDVariant     ItemStackNetResult = 23
+	ItemStackNetResultFailedToMatchExpectedSlotConsumedItem            ItemStackNetResult = 24
+	ItemStackNetResultFailedToMatchExpectedAllowedAnywhereConsumedItem ItemStackNetResult = 25
+	ItemStackNetResultConsumedItemOutOfAllowedSlotRange                ItemStackNetResult = 26
+	ItemStackNetResultConsumedItemNotAllowed                           ItemStackNetResult = 27
+	ItemStackNetResultPlayerNotInCreativeMode                          ItemStackNetResult = 28
+	ItemStackNetResultInvalidExperimentalRecipeRequest                 ItemStackNetResult = 29
+	ItemStackNetResultFailedToCraftCreative                            ItemStackNetResult = 30
+	ItemStackNetResultFailedToGetLevelRecipe                           ItemStackNetResult = 31
+	ItemStackNetResultFailedToFindRecipeByNetID                        ItemStackNetResult = 32
+	ItemStackNetResultMismatchedCraftingSize                           ItemStackNetResult = 33
+	ItemStackNetResultMissingInputSparseContainer                      ItemStackNetResult = 34
+	ItemStackNetResultMismatchedRecipeForInputGridItems                ItemStackNetResult = 35
+	ItemStackNetResultEmptyCraftResults                                ItemStackNetResult = 36
+	ItemStackNetResultFailedToEnchant                                  ItemStackNetResult = 37
+	ItemStackNetResultMissingInputItem                                 ItemStackNetResult = 38
+	ItemStackNetResultInsufficientPlayerLevelToEnchant                 ItemStackNetResult = 39
+	ItemStackNetResultMissingMaterialItem                              ItemStackNetResult = 40
+	ItemStackNetResultMissingActor                                     ItemStackNetResult = 41
+	ItemStackNetResultUnknownPrimaryEffect                             ItemStackNetResult = 42
+	ItemStackNetResultPrimaryEffectOutOfRange                          ItemStackNetResult = 43
+	ItemStackNetResultPrimaryEffectUnavailable                         ItemStackNetResult = 44
+	ItemStackNetResultSecondaryEffectOutOfRange                        ItemStackNetResult = 45
+	ItemStackNetResultSecondaryEffectUnavailable                       ItemStackNetResult = 46
+	ItemStackNetResultDstContainerEqualToCreatedOutputContainer        ItemStackNetResult = 47
+	ItemStackNetResultDstContainerAndSlotEqualToSrcContainerAndSlot    ItemStackNetResult = 48
+	ItemStackNetResultFailedToValidateSrcSlot                          ItemStackNetResult = 49
+	ItemStackNetResultFailedToValidateDstSlot                          ItemStackNetResult = 50
+	ItemStackNetResultInvalidAdjustedAmount                            ItemStackNetResult = 51
+	ItemStackNetResultInvalidItemSetType                               ItemStackNetResult = 52
+	ItemStackNetResultInvalidTransferAmount                            ItemStackNetResult = 53
+	ItemStackNetResultCannotSwapItem                                   ItemStackNetResult = 54
+	ItemStackNetResultCannotPlaceItem                                  ItemStackNetResult = 55
+	ItemStackNetResultUnhandledItemSetType                             ItemStackNetResult = 56
+	ItemStackNetResultInvalidRemovedAmount                             ItemStackNetResult = 57
+	ItemStackNetResultInvalidRegion                                    ItemStackNetResult = 58
+	ItemStackNetResultCannotDropItem                                   ItemStackNetResult = 59
+	ItemStackNetResultCannotDestroyItem                                ItemStackNetResult = 60
+	ItemStackNetResultInvalidSourceContainer                           ItemStackNetResult = 61
+	ItemStackNetResultItemNotConsumed                                  ItemStackNetResult = 62
+	ItemStackNetResultInvalidNumCrafts                                 ItemStackNetResult = 63
+	ItemStackNetResultInvalidCraftResultStackSize                      ItemStackNetResult = 64
+	ItemStackNetResultCannotRemoveItem                                 ItemStackNetResult = 65
+	ItemStackNetResultCannotConsumeItem                                ItemStackNetResult = 66
+	ItemStackNetResultScreenStackError                                 ItemStackNetResult = 67
+)
+
+type ItemStackRequestActionType uint8
+
+const (
+	ItemStackRequestActionTypeTake                     ItemStackRequestActionType = 0
+	ItemStackRequestActionTypePlace                    ItemStackRequestActionType = 1
+	ItemStackRequestActionTypeSwap                     ItemStackRequestActionType = 2
+	ItemStackRequestActionTypeDrop                     ItemStackRequestActionType = 3
+	ItemStackRequestActionTypeDestroy                  ItemStackRequestActionType = 4
+	ItemStackRequestActionTypeConsume                  ItemStackRequestActionType = 5
+	ItemStackRequestActionTypeCreate                   ItemStackRequestActionType = 6
+	ItemStackRequestActionTypePlaceInItemContainer     ItemStackRequestActionType = 7
+	ItemStackRequestActionTypeTakeFromItemContainer    ItemStackRequestActionType = 8
+	ItemStackRequestActionTypeScreenLabTableCombine    ItemStackRequestActionType = 9
+	ItemStackRequestActionTypeScreenBeaconPayment      ItemStackRequestActionType = 10
+	ItemStackRequestActionTypeScreenHUDMineBlock       ItemStackRequestActionType = 11
+	ItemStackRequestActionTypeCraftRecipe              ItemStackRequestActionType = 12
+	ItemStackRequestActionTypeCraftRecipeAuto          ItemStackRequestActionType = 13
+	ItemStackRequestActionTypeCraftCreative            ItemStackRequestActionType = 14
+	ItemStackRequestActionTypeCraftRecipeOptional      ItemStackRequestActionType = 15
+	ItemStackRequestActionTypeCraftRepairAndDisenchant ItemStackRequestActionType = 16
+	ItemStackRequestActionTypeCraftLoom                ItemStackRequestActionType = 17
+	ItemStackRequestActionTypeCraftNonImplemented      ItemStackRequestActionType = 18
+	ItemStackRequestActionTypeCraftResults             ItemStackRequestActionType = 19
+)
+
+// ItemStackRequest represents a single request present in an ItemStackRequest packet sent by the
+// client to change an item in an inventory. Item stack requests are either approved or rejected by
+// the server using the ItemStackResponse packet.
+type ItemStackRequestData struct {
+	ClientRequestID ItemStackRequestID
+	// Actions is a list of actions performed by the client. The actual type of the actions depends on
+	// which ID was present, and is one of the concrete types below.
+	Actions               []StackRequestAction
+	StringsToFilter       []string
+	StringsToFilterOrigin TextProcessingEventOrigin
+}
+
+// Marshal reads or writes ItemStackRequestData using its canonical wire layout.
+func (x *ItemStackRequestData) Marshal(io IO) {
+	x.ClientRequestID.Marshal(io)
+	FuncSliceLimits(io, &x.Actions, io.Varuint32, 1, 100, func(value *StackRequestAction) {
+		MarshalStackRequestAction(io, value)
+	})
+	FuncSlice(io, &x.StringsToFilter, io.Varuint32, func(value *string) {
+		io.StringLimits(value, 0, 1000)
+	})
+	IntegerFunc(&x.StringsToFilterOrigin, io.Int32)
+}
+
+type ItemStackRequestID struct {
+	ID int32
+}
+
+// Marshal reads or writes ItemStackRequestID using its canonical wire layout.
+func (x *ItemStackRequestID) Marshal(io IO) {
+	io.Varint32(&x.ID)
+}
+
+type ItemStackRequestPacketData struct {
+	ClientRequestID       ItemStackRequestID
+	Actions               []StackRequestAction
+	StringsToFilter       []string
+	StringsToFilterOrigin TextProcessingEventOrigin
+}
+
+// Marshal reads or writes ItemStackRequestPacketData using its canonical wire layout.
+func (x *ItemStackRequestPacketData) Marshal(io IO) {
+	x.ClientRequestID.Marshal(io)
+	FuncSliceLimits(io, &x.Actions, io.Varuint32, 1, 100, func(value *StackRequestAction) {
+		MarshalStackRequestAction(io, value)
+	})
+	FuncSlice(io, &x.StringsToFilter, io.Varuint32, func(value *string) {
+		io.StringLimits(value, 0, 1000)
+	})
+	IntegerFunc(&x.StringsToFilterOrigin, io.Int32)
+}
+
+type ItemStackResponseContainerInfo struct {
+	FullContainerName FullContainerName
+	Slots             []ItemStackResponseSlotInfo
+}
+
+// Marshal reads or writes ItemStackResponseContainerInfo using its canonical wire layout.
+func (x *ItemStackResponseContainerInfo) Marshal(io IO) {
+	x.FullContainerName.Marshal(io)
+	Slice(io, &x.Slots)
+}
+
+// ItemStackResponse is a response to an individual ItemStackRequest.
+type ItemStackResponseInfo struct {
+	Result          ItemStackNetResult
+	ClientRequestID ItemStackRequestID
+	Containers      Optional[[]ItemStackResponseContainerInfo]
+}
+
+// Marshal reads or writes ItemStackResponseInfo using its canonical wire layout.
+func (x *ItemStackResponseInfo) Marshal(io IO) {
+	IntegerFunc(&x.Result, io.Uint8)
+	x.ClientRequestID.Marshal(io)
+	OptionalFunc(io, &x.Containers, func(value *[]ItemStackResponseContainerInfo) {
+		Slice(io, value)
+	})
+}
+
+type ItemStackResponseSlotInfo struct {
+	RequestedSlot        uint8
+	Slot                 uint8
+	Amount               uint8
+	ItemStackNetID       Optional[ItemStackNetID]
+	CustomName           BedrockSafetyRedactableString
+	DurabilityCorrection int32
+}
+
+// Marshal reads or writes ItemStackResponseSlotInfo using its canonical wire layout.
+func (x *ItemStackResponseSlotInfo) Marshal(io IO) {
+	io.Uint8(&x.RequestedSlot)
+	io.Uint8(&x.Slot)
+	io.Uint8(&x.Amount)
+	OptionalFunc(io, &x.ItemStackNetID, func(value *ItemStackNetID) {
+		value.Marshal(io)
+	})
+	x.CustomName.Marshal(io)
+	io.Varint32(&x.DurabilityCorrection)
+	Minimum(io, &x.DurabilityCorrection, -32768)
+	Maximum(io, &x.DurabilityCorrection, 32767)
+}
+
+// LabTableCombineStackRequestAction is sent by the client when it uses a lab table to combine item
+// stacks.
+type LabTableCombineStackRequestAction struct {
+	ActionType ItemStackRequestActionType
+}
+
+func (*LabTableCombineStackRequestAction) isStackRequestAction() {}
+
+// Marshal reads or writes LabTableCombineStackRequestAction using its canonical wire layout.
+func (x *LabTableCombineStackRequestAction) Marshal(io IO) {
+	IntegerFunc(&x.ActionType, io.Uint8)
+}
+
+// MineBlockStackRequestAction is sent by the client when it breaks a block.
+type MineBlockStackRequestAction struct {
+	ActionType ItemStackRequestActionType
+	Slot       int32
+	// PredictedDurability is the durability of the item that the client assumes to be present at the
+	// time.
+	PredictedDurability int32
+	NetIDVariant        int32
+}
+
+func (*MineBlockStackRequestAction) isStackRequestAction() {}
+
+// Marshal reads or writes MineBlockStackRequestAction using its canonical wire layout.
+func (x *MineBlockStackRequestAction) Marshal(io IO) {
+	IntegerFunc(&x.ActionType, io.Uint8)
+	io.Varint32(&x.Slot)
+	io.Varint32(&x.PredictedDurability)
+	io.Int32(&x.NetIDVariant)
+}
+
+// PlaceStackRequestAction is sent by the client to the server to place x amount of items from one
+// slot into another slot, such as when shift clicking an item in the inventory to move it around or
+// when moving an item in the cursor into a slot.
+type PlaceStackRequestAction struct {
+	ActionType  ItemStackRequestActionType
+	Amount      uint8
+	Source      StackRequestSlotInfo
+	Destination StackRequestSlotInfo
+}
+
+func (*PlaceStackRequestAction) isStackRequestAction() {}
+
+// Marshal reads or writes PlaceStackRequestAction using its canonical wire layout.
+func (x *PlaceStackRequestAction) Marshal(io IO) {
+	IntegerFunc(&x.ActionType, io.Uint8)
+	io.Uint8(&x.Amount)
+	Minimum(io, &x.Amount, 1)
+	Maximum(io, &x.Amount, 64)
+	x.Source.Marshal(io)
+	x.Destination.Marshal(io)
+}
+
+type StackRequestAction interface {
+	isStackRequestAction()
+}
+
+// MarshalStackRequestAction reads or writes the StackRequestAction union using its canonical wire layout.
+func MarshalStackRequestAction(io IO, x *StackRequestAction) {
+	UnionFunc(io,
+		func() {
+			var tag uint32
+			io.Varuint32(&tag)
+			switch int64(tag) {
+			case 0:
+				value := new(TakeStackRequestAction)
+				value.Marshal(io)
+				*x = value
+			case 1:
+				value := new(PlaceStackRequestAction)
+				value.Marshal(io)
+				*x = value
+			case 2:
+				value := new(SwapStackRequestAction)
+				value.Marshal(io)
+				*x = value
+			case 3:
+				value := new(DropStackRequestAction)
+				value.Marshal(io)
+				*x = value
+			case 4:
+				value := new(DestroyStackRequestAction)
+				value.Marshal(io)
+				*x = value
+			case 5:
+				value := new(ConsumeStackRequestAction)
+				value.Marshal(io)
+				*x = value
+			case 6:
+				value := new(CreateStackRequestAction)
+				value.Marshal(io)
+				*x = value
+			case 7:
+				value := new(LabTableCombineStackRequestAction)
+				value.Marshal(io)
+				*x = value
+			case 8:
+				value := new(BeaconPaymentStackRequestAction)
+				value.Marshal(io)
+				*x = value
+			case 9:
+				value := new(MineBlockStackRequestAction)
+				value.Marshal(io)
+				*x = value
+			case 10:
+				value := new(CraftRecipeStackRequestAction)
+				value.Marshal(io)
+				*x = value
+			case 11:
+				value := new(AutoCraftRecipeStackRequestAction)
+				value.Marshal(io)
+				*x = value
+			case 12:
+				value := new(CraftCreativeStackRequestAction)
+				value.Marshal(io)
+				*x = value
+			case 13:
+				value := new(CraftRecipeOptionalStackRequestAction)
+				value.Marshal(io)
+				*x = value
+			case 14:
+				value := new(CraftRepairAndDisenchantStackRequestAction)
+				value.Marshal(io)
+				*x = value
+			case 15:
+				value := new(CraftLoomStackRequestAction)
+				value.Marshal(io)
+				*x = value
+			case 16:
+				value := new(CraftNonImplementedStackRequestAction)
+				value.Marshal(io)
+				*x = value
+			case 17:
+				value := new(CraftResultsDeprecatedStackRequestAction)
+				value.Marshal(io)
+				*x = value
+			default:
+				io.InvalidValue(tag, "unknown union tag")
+			}
+		},
+		func() {
+			switch value := (*x).(type) {
+			case *TakeStackRequestAction:
+				tag := uint32(0)
+				io.Varuint32(&tag)
+				value.Marshal(io)
+			case *PlaceStackRequestAction:
+				tag := uint32(1)
+				io.Varuint32(&tag)
+				value.Marshal(io)
+			case *SwapStackRequestAction:
+				tag := uint32(2)
+				io.Varuint32(&tag)
+				value.Marshal(io)
+			case *DropStackRequestAction:
+				tag := uint32(3)
+				io.Varuint32(&tag)
+				value.Marshal(io)
+			case *DestroyStackRequestAction:
+				tag := uint32(4)
+				io.Varuint32(&tag)
+				value.Marshal(io)
+			case *ConsumeStackRequestAction:
+				tag := uint32(5)
+				io.Varuint32(&tag)
+				value.Marshal(io)
+			case *CreateStackRequestAction:
+				tag := uint32(6)
+				io.Varuint32(&tag)
+				value.Marshal(io)
+			case *LabTableCombineStackRequestAction:
+				tag := uint32(7)
+				io.Varuint32(&tag)
+				value.Marshal(io)
+			case *BeaconPaymentStackRequestAction:
+				tag := uint32(8)
+				io.Varuint32(&tag)
+				value.Marshal(io)
+			case *MineBlockStackRequestAction:
+				tag := uint32(9)
+				io.Varuint32(&tag)
+				value.Marshal(io)
+			case *CraftRecipeStackRequestAction:
+				tag := uint32(10)
+				io.Varuint32(&tag)
+				value.Marshal(io)
+			case *AutoCraftRecipeStackRequestAction:
+				tag := uint32(11)
+				io.Varuint32(&tag)
+				value.Marshal(io)
+			case *CraftCreativeStackRequestAction:
+				tag := uint32(12)
+				io.Varuint32(&tag)
+				value.Marshal(io)
+			case *CraftRecipeOptionalStackRequestAction:
+				tag := uint32(13)
+				io.Varuint32(&tag)
+				value.Marshal(io)
+			case *CraftRepairAndDisenchantStackRequestAction:
+				tag := uint32(14)
+				io.Varuint32(&tag)
+				value.Marshal(io)
+			case *CraftLoomStackRequestAction:
+				tag := uint32(15)
+				io.Varuint32(&tag)
+				value.Marshal(io)
+			case *CraftNonImplementedStackRequestAction:
+				tag := uint32(16)
+				io.Varuint32(&tag)
+				value.Marshal(io)
+			case *CraftResultsDeprecatedStackRequestAction:
+				tag := uint32(17)
+				io.Varuint32(&tag)
+				value.Marshal(io)
+			default:
+				io.InvalidValue(*x, "unknown union value")
+			}
+		},
+	)
+}
+
+// StackRequestSlotInfo holds information on a specific slot client-side.
+type StackRequestSlotInfo struct {
+	FullContainerName FullContainerName
+	// Slot is the index of the slot within the container with the ContainerID above.
+	Slot         uint8
+	NetIDVariant int32
+}
+
+// Marshal reads or writes StackRequestSlotInfo using its canonical wire layout.
+func (x *StackRequestSlotInfo) Marshal(io IO) {
+	x.FullContainerName.Marshal(io)
+	io.Uint8(&x.Slot)
+	io.Int32(&x.NetIDVariant)
+}
+
+// SwapStackRequestAction is sent by the client to swap the item in its cursor with an item present
+// in another container. The two item stacks swap places.
+type SwapStackRequestAction struct {
+	ActionType ItemStackRequestActionType
+	// Source and Destination point to the source slot from which Count of the item stack were taken and
+	// the destination slot to which this item was moved.
+	Source StackRequestSlotInfo
+	// Source and Destination point to the source slot from which Count of the item stack were taken and
+	// the destination slot to which this item was moved.
+	Destination StackRequestSlotInfo
+}
+
+func (*SwapStackRequestAction) isStackRequestAction() {}
+
+// Marshal reads or writes SwapStackRequestAction using its canonical wire layout.
+func (x *SwapStackRequestAction) Marshal(io IO) {
+	IntegerFunc(&x.ActionType, io.Uint8)
+	x.Source.Marshal(io)
+	x.Destination.Marshal(io)
+}
+
+// TakeStackRequestAction is sent by the client to the server to take x amount of items from one
+// slot in a container to the cursor.
+type TakeStackRequestAction struct {
+	ActionType  ItemStackRequestActionType
+	Amount      uint8
+	Source      StackRequestSlotInfo
+	Destination StackRequestSlotInfo
+}
+
+func (*TakeStackRequestAction) isStackRequestAction() {}
+
+// Marshal reads or writes TakeStackRequestAction using its canonical wire layout.
+func (x *TakeStackRequestAction) Marshal(io IO) {
+	IntegerFunc(&x.ActionType, io.Uint8)
+	io.Uint8(&x.Amount)
+	Minimum(io, &x.Amount, 1)
+	Maximum(io, &x.Amount, 64)
+	x.Source.Marshal(io)
+	x.Destination.Marshal(io)
+}

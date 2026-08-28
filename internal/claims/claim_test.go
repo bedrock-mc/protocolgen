@@ -26,3 +26,31 @@ func TestFingerprintIncludesCompleteClaimContext(t *testing.T) {
 		t.Fatalf("claim fingerprint ignored semantic context")
 	}
 }
+
+func TestWireFingerprintIgnoresSourceMetadataAndConstraints(t *testing.T) {
+	minimum := 1.0
+	left := Claim{
+		SourceID: "mojang",
+		Locator:  "old.json",
+		PacketID: 7, PacketName: "ExamplePacket", FieldPath: "ExamplePacket.Value", Ordinal: 0, Name: "Value",
+		Semantic: "Old Value", Encode: manifest.Primitive("var_u32"), Symmetry: manifest.Symmetric,
+	}
+	left.Encode.Constraints = &manifest.Constraints{Minimum: &minimum}
+	right := left
+	right.SourceID = "endstone"
+	right.Locator = "packets/ExamplePacket.json"
+	right.Semantic = "Renamed Value"
+	right.Encode.Constraints = nil
+
+	leftFingerprint, err := WireFingerprint(left)
+	if err != nil {
+		t.Fatal(err)
+	}
+	rightFingerprint, err := WireFingerprint(right)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if leftFingerprint != rightFingerprint {
+		t.Fatalf("wire fingerprints differ: %s != %s", leftFingerprint, rightFingerprint)
+	}
+}

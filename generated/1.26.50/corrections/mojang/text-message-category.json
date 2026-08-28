@@ -1,0 +1,90 @@
+{
+  "operations": [
+    {
+      "id": "mojang-textpacketpayload-message-category",
+      "file": "TextPacketPayload.json",
+      "pointer": "/properties",
+      "pre_patch_sha256": "sha256:6d6bc64fc71b58922a2b47432cdd1629a2be96e8df4855038224b9b6e4cb4788",
+      "replace": {
+        "Body": {
+          "description": "Message content (variant based on message type)",
+          "oneOf": [
+            {
+              "$ref": "./MessageOnly.json"
+            },
+            {
+              "$ref": "./AuthorAndMessage.json"
+            },
+            {
+              "$ref": "./MessageAndParams.json"
+            }
+          ],
+          "x-control-value-type": "uint32",
+          "x-ordinal-index": 2
+        },
+        "Filtered Message": {
+          "description": "Profanity-filtered version of the message (if applicable)",
+          "type": "string",
+          "x-ordinal-index": 5,
+          "maxLength": 65536
+        },
+        "Localize?": {
+          "type": "boolean",
+          "x-underlying-type": "boolean",
+          "x-ordinal-index": 0
+        },
+        "Platform Id": {
+          "description": "Platform-specific user identifier",
+          "type": "string",
+          "default": "",
+          "x-ordinal-index": 4,
+          "maxLength": 256
+        },
+        "Sender's XUID": {
+          "description": "Xbox User ID of the message sender",
+          "type": "string",
+          "default": "",
+          "x-ordinal-index": 3,
+          "maxLength": 64
+        },
+        "Message Category": {
+          "description": "Message category byte carried on the wire ahead of the message type; derived from the type by vanilla encoders.",
+          "type": "integer",
+          "x-underlying-type": "uint8",
+          "x-ordinal-index": 1
+        }
+      },
+      "why": "Both pinned sources omit the message category byte that the 1.26.40 wire carries between Localize and the message-type tag; production implementations read and write it.",
+      "evidence": [
+        {
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/1653b5407e9b4ce9e8fa272f7713688d42973e3f/minecraft/protocol/packet/text.go",
+          "summary": "Live 1.26.40 fork writes bool, category byte derived from TextType, type byte, then body; chat traffic proxies through it in production."
+        },
+        {
+          "locator": "https://github.com/CloudburstMC/Protocol/blob/develop/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v924/serializer/TextSerializer_v924.java",
+          "summary": "Cloudburst's newest Text serializer writes the category byte (writeByte(0) MessageOnly) before the type ordinal."
+        }
+      ]
+    },
+    {
+      "id": "mojang-textpacketpayload-message-category-required",
+      "file": "TextPacketPayload.json",
+      "pointer": "/required",
+      "pre_patch_sha256": "sha256:7d8446cd7f93a5a89e858ddf554eb90dc5c26e3f5ab0f4dce23c3b1bc950497b",
+      "replace": [
+        "Body",
+        "Localize?",
+        "Message Category",
+        "Platform Id",
+        "Sender's XUID"
+      ],
+      "why": "The inserted message category byte is unconditional on the wire.",
+      "evidence": [
+        {
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/1653b5407e9b4ce9e8fa272f7713688d42973e3f/minecraft/protocol/packet/text.go",
+          "summary": "The category byte is written for every text type."
+        }
+      ]
+    }
+  ]
+}

@@ -355,7 +355,6 @@ func renderEnum(document map[string]any) (string, error) {
 	name := schemaName(document)
 	var output strings.Builder
 	fmt.Fprintln(&output, "const (")
-	seen := map[int64]bool{}
 	for index, rawValue := range values {
 		valueName := naming.GoExportName(fmt.Sprint(rawValue))
 		value := int64(index)
@@ -366,10 +365,6 @@ func renderEnum(document map[string]any) (string, error) {
 			}
 			value = parsed
 		}
-		if seen[value] {
-			return "", fmt.Errorf("enum contains duplicate value %d", value)
-		}
-		seen[value] = true
 		fmt.Fprintf(&output, "\t%s%s = %d\n", name, valueName, value)
 	}
 	fmt.Fprint(&output, ")")
@@ -416,7 +411,9 @@ func schemaFields(document map[string]any, schemas schemaSet, qualifier string) 
 		if !required[rawName] {
 			valueType := goType
 			goType = qualifier + "Optional[" + valueType + "]"
-			if marshaler {
+			if strings.HasPrefix(marshal, "// ") {
+				// Keep the explicit unresolved-wire warning instead of inventing an optional codec.
+			} else if marshaler {
 				marshal = qualifier + "OptionalMarshaler(io, &pk." + name + ")"
 			} else {
 				address := "&pk." + name
@@ -505,6 +502,10 @@ func renderFieldSchema(schema map[string]any, schemas schemaSet, address, qualif
 	case "object":
 		return "", "", false, fmt.Errorf("inline object fields are not supported; extract a named schema")
 	default:
+		if schema["type"] == nil {
+			name := strings.TrimPrefix(address, "&pk.")
+			return "any", "// " + name + " is untyped in the target schema; resolve its wire shape from exact-version evidence.", false, nil
+		}
 		return "", "", false, fmt.Errorf("unsupported schema type %q", schema["type"])
 	}
 }

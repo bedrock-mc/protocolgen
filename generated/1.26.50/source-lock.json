@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "target": {
+    "minecraft_version": "1.26.50",
+    "protocol_version": 2187
+  },
+  "sources": [
+    {
+      "id": "mojang",
+      "kind": "mojang",
+      "revision": "e0a1dad9341b85d3191f998c3d84b7d2c96e6c81",
+      "digest": "sha256:add9ae0935f92d32b33c55e75bda4d0305352f146ba12e0edc5bdd03778ab6c3",
+      "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+      "minecraft_version": "1.26.50",
+      "protocol_version": 2187
+    },
+    {
+      "id": "endstone",
+      "kind": "endstone",
+      "revision": "ce91c055d73000e26a25020c5a0799621e56ed13",
+      "digest": "sha256:745d0f3106e6132d3c921379c52c029f98788bac3f46b20ff5cb5aaae1ecc395",
+      "locator": "https://github.com/EndstoneMC/protocol-docs/tree/ce91c055d73000e26a25020c5a0799621e56ed13",
+      "minecraft_version": "1.26.50",
+      "protocol_version": 2187
+    },
+    {
+      "id": "lens",
+      "kind": "binary-evidence",
+      "revision": "bf48807f236cdc02a44f80d90124323a6b6522a4",
+      "digest": "sha256:9c76fa5086a5bf8172690fa848f3af7d34ced11219da788e51d0634a3e037891",
+      "locator": "https://github.com/HashimTheArab/lens-mcp/tree/bf48807f236cdc02a44f80d90124323a6b6522a4",
+      "minecraft_version": "1.26.50",
+      "protocol_version": 2187
+    }
+  ]
+}

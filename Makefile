@@ -29,7 +29,11 @@ HOTFIX_NAMING := generated/1.26.44/naming.json
 HOTFIX_DOMAINS := generated/1.26.44/domains.json
 HOTFIX_DOCS := generated/1.26.44/docs.json
 
-.PHONY: regen hotfix vanilla-data differential verify
+TARGET_12650 := generated/1.26.50
+CLAIMS_12650_MOJANG ?= /tmp/protocolgen-1.26.50-mojang-claims.json
+CLAIMS_12650_ENDSTONE ?= /tmp/protocolgen-1.26.50-endstone-claims.json
+
+.PHONY: regen regen-1.26.50 hotfix vanilla-data differential verify verify-1.26.50
 
 differential:
 	$(GO) -C differential test ./...
@@ -71,6 +75,44 @@ regen:
 	$(GO) test ./...
 	$(GO) vet ./...
 
+regen-1.26.50:
+	@test -n "$(MOJANG_DIR)" || (echo "MOJANG_DIR is required" >&2; exit 2)
+	@test -n "$(ENDSTONE_DIR)" || (echo "ENDSTONE_DIR is required" >&2; exit 2)
+	$(PROTOCOLGEN) ingest \
+		-lock $(TARGET_12650)/source-lock.json -kind mojang -id mojang \
+		-root $(MOJANG_DIR) -corrections $(TARGET_12650)/corrections/mojang \
+		-out $(CLAIMS_12650_MOJANG)
+	$(PROTOCOLGEN) ingest \
+		-lock $(TARGET_12650)/source-lock.json -kind endstone -id endstone \
+		-root $(ENDSTONE_DIR) -corrections $(TARGET_12650)/corrections/endstone \
+		-out $(CLAIMS_12650_ENDSTONE)
+	$(PROTOCOLGEN) reconcile-claims \
+		-lock $(TARGET_12650)/source-lock.json \
+		-claims $(CLAIMS_12650_MOJANG) \
+		-claims $(CLAIMS_12650_ENDSTONE) \
+		-claims $(TARGET_12650)/lens-claims.json \
+		-adjudications $(TARGET_12650)/adjudications.json \
+		-directions $(TARGET_12650)/directions.json \
+		-nbt-encodings $(TARGET_12650)/nbt-encodings.json \
+		-out $(TARGET_12650)/manifest.json
+	$(PROTOCOLGEN) validate -manifest $(TARGET_12650)/manifest.json
+	$(PROTOCOLGEN) emit-go \
+		-manifest $(TARGET_12650)/manifest.json \
+		-naming $(TARGET_12650)/naming.json \
+		-domains $(TARGET_12650)/domains.json \
+		-docs $(TARGET_12650)/docs.json \
+		-out $(TARGET_12650)/go \
+		-protocol-import protocolgen/generated/1.26.50/go/protocol
+	$(PROTOCOLGEN) emit-rust \
+		-manifest $(TARGET_12650)/manifest.json \
+		-naming $(TARGET_12650)/naming.json \
+		-domains $(TARGET_12650)/domains.json \
+		-docs $(TARGET_12650)/docs.json \
+		-out $(TARGET_12650)/rust
+	cargo fmt --manifest-path $(TARGET_12650)/rust/Cargo.toml
+	$(GO) test ./generated/1.26.50/go/... -count=1
+	cargo test --manifest-path $(TARGET_12650)/rust/Cargo.toml
+
 hotfix:
 	$(PROTOCOLGEN) hotfix \
 		-base $(MANIFEST) \
@@ -102,3 +144,6 @@ vanilla-data:
 
 verify: regen hotfix differential
 	@test -z "$$(git status --porcelain)" || (echo "regeneration produced drift:" >&2; git status --short >&2; exit 1)
+
+verify-1.26.50: regen-1.26.50
+	@git diff --exit-code -- $(TARGET_12650) || (echo "1.26.50 regeneration produced drift" >&2; exit 1)

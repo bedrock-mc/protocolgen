@@ -9,6 +9,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
+	"strings"
 
 	"protocolgen/internal/changelog"
 	"protocolgen/internal/claims"
@@ -36,6 +38,12 @@ func main() {
 	switch os.Args[1] {
 	case "reconcile":
 		err = runReconcile(os.Args[2:])
+	case "reconcile-claims":
+		err = runReconcileClaims(os.Args[2:])
+	case "carry-adjudications":
+		err = runCarryAdjudications(os.Args[2:])
+	case "adjudicate-claims":
+		err = runAdjudicateClaims(os.Args[2:])
 	case "ingest":
 		err = runIngest(os.Args[2:])
 	case "validate":
@@ -67,9 +75,12 @@ func main() {
 }
 
 func usage() {
-	fmt.Fprintln(os.Stderr, `usage: protocolgen <reconcile|ingest|validate|emit-go|emit-rust|parity|verify-gophertunnel|changelog|update-guide|hash-source|hotfix> [flags]
+	fmt.Fprintln(os.Stderr, `usage: protocolgen <reconcile|reconcile-claims|carry-adjudications|adjudicate-claims|ingest|validate|emit-go|emit-rust|parity|verify-gophertunnel|changelog|update-guide|hash-source|hotfix> [flags]
 
 reconcile lowers one or both explicit source checkouts and writes manifest v2.
+reconcile-claims reconciles two or more previously validated claims files and writes manifest v2.
+carry-adjudications re-fingerprints prior adjudications only when the selected target claim remains byte-equivalent.
+adjudicate-claims fingerprints explicit reviewed source selections against target claims.
 ingest lowers one source to auditable machine-derived claims JSON.
 validate checks a canonical manifest and all fingerprint metadata.
 emit-go and emit-rust consume only a canonical manifest.
@@ -79,6 +90,372 @@ changelog diffs two corrected Mojang schema directories into human-readable Mark
 update-guide turns a protocol changelog and its target corrected schemas into gophertunnel transcription snippets.
 hash-source prints the deterministic source-tree digest for a lock file.
 hotfix derives a fingerprinted same-protocol target from a reconciled base manifest.`)
+}
+
+type adjudicationSelectionDocument struct {
+	SchemaVersion uint32                  `json:"schema_version"`
+	Target        manifest.Target         `json:"target"`
+	Selections    []adjudicationSelection `json:"selections"`
+}
+
+type adjudicationSelection struct {
+	ID             string              `json:"id"`
+	Target         string              `json:"target"`
+	SelectedSource string              `json:"selected_source"`
+	Evidence       []manifest.Evidence `json:"evidence"`
+	Reason         string              `json:"reason"`
+}
+
+// runAdjudicateClaims fingerprints explicit reviewed selections against all claims for each target field.
+func runAdjudicateClaims(args []string) error {
+	fs := flag.NewFlagSet("adjudicate-claims", flag.ContinueOnError)
+	lockPath := fs.String("lock", "", "target source lock JSON")
+	var claimPaths stringListFlag
+	fs.Var(&claimPaths, "claims", "target claims JSON; repeat for each source")
+	selectionsPath := fs.String("selections", "", "reviewed source selections JSON")
+	existingPath := fs.String("existing", "", "existing carried adjudications JSON")
+	outPath := fs.String("out", "", "complete adjudications JSON")
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+	if *lockPath == "" || len(claimPaths) < 2 || *selectionsPath == "" || *outPath == "" {
+		return fmt.Errorf("-lock, at least two -claims, -selections, and -out are required")
+	}
+	lock, err := sourcelock.Load(*lockPath)
+	if err != nil {
+		return err
+	}
+	groups := map[string][]claims.Claim{}
+	for _, path := range claimPaths {
+		result, err := loadClaims(path)
+		if err != nil {
+			return err
+		}
+		pin, ok := lock.Source(result.Pin.ID)
+		if !ok || pin != result.Pin || result.Target != lock.Target {
+			return fmt.Errorf("claims %s do not exactly match the target source lock", path)
+		}
+		for _, claim := range result.Claims {
+			groups[claim.FieldPath] = append(groups[claim.FieldPath], claim)
+		}
+	}
+	data, err := os.ReadFile(*selectionsPath)
+	if err != nil {
+		return fmt.Errorf("read selections: %w", err)
+	}
+	var document adjudicationSelectionDocument
+	if err := json.Unmarshal(data, &document); err != nil {
+		return fmt.Errorf("parse selections: %w", err)
+	}
+	if document.SchemaVersion != 1 || document.Target != lock.Target || len(document.Selections) == 0 {
+		return fmt.Errorf("selections do not identify the target snapshot")
+	}
+	var output []manifest.Adjudication
+	if *existingPath != "" {
+		output, err = manifest.LoadAdjudications(*existingPath)
+		if err != nil {
+			return err
+		}
+	}
+	seen := map[string]bool{}
+	for _, adjudication := range output {
+		seen[adjudication.Target] = true
+	}
+	for index, selection := range document.Selections {
+		if selection.ID == "" || selection.Target == "" || selection.SelectedSource == "" || selection.Reason == "" || len(selection.Evidence) == 0 {
+			return fmt.Errorf("selection %d is incomplete", index)
+		}
+		if seen[selection.Target] {
+			return fmt.Errorf("selection target %q is already adjudicated", selection.Target)
+		}
+		group := groups[selection.Target]
+		selected, ok := claimFromSource(group, selection.SelectedSource)
+		if !ok {
+			return fmt.Errorf("selection %q has no %q claim", selection.Target, selection.SelectedSource)
+		}
+		context, err := claims.ContextFingerprint(lock.Target, group)
+		if err != nil {
+			return err
+		}
+		fingerprints := make([]manifest.ClaimFingerprint, 0, len(group))
+		for _, claim := range group {
+			fingerprint, err := claims.Fingerprint(claim)
+			if err != nil {
+				return err
+			}
+			fingerprints = append(fingerprints, manifest.ClaimFingerprint{SourceID: claim.SourceID, Digest: fingerprint})
+		}
+		sort.Slice(fingerprints, func(i, j int) bool { return fingerprints[i].SourceID < fingerprints[j].SourceID })
+		selectedFingerprint, err := claims.Fingerprint(selected)
+		if err != nil {
+			return err
+		}
+		evidence := append([]manifest.Evidence(nil), selection.Evidence...)
+		evidence = append(evidence, manifest.Evidence{SourceID: selected.SourceID, Locator: selected.Locator, ClaimFingerprint: selectedFingerprint, Summary: "Exact target source claim selected by this reviewed adjudication."})
+		output = append(output, manifest.Adjudication{ID: selection.ID, Target: selection.Target, PrePatchContextSHA256: context, Claims: fingerprints, SelectedSource: selection.SelectedSource, Evidence: evidence, Reason: selection.Reason})
+		seen[selection.Target] = true
+	}
+	sort.Slice(output, func(i, j int) bool { return output[i].ID < output[j].ID })
+	return writeJSON(*outPath, output)
+}
+
+type carryReportEntry struct {
+	ID     string `json:"id"`
+	Target string `json:"target"`
+	Reason string `json:"reason"`
+}
+
+type carryReport struct {
+	Carried int                `json:"carried"`
+	Skipped []carryReportEntry `json:"skipped"`
+}
+
+// runCarryAdjudications safely carries prior decisions across a protocol bump when their selected wire shape is unchanged.
+func runCarryAdjudications(args []string) error {
+	fs := flag.NewFlagSet("carry-adjudications", flag.ContinueOnError)
+	basePath := fs.String("base", "", "previous canonical manifest")
+	lockPath := fs.String("lock", "", "target source lock JSON")
+	var claimPaths stringListFlag
+	fs.Var(&claimPaths, "claims", "target claims JSON; repeat for each source")
+	outPath := fs.String("out", "", "carried adjudications JSON")
+	reportPath := fs.String("report", "", "carry report JSON")
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+	if *basePath == "" || *lockPath == "" || len(claimPaths) < 2 || *outPath == "" || *reportPath == "" {
+		return fmt.Errorf("-base, -lock, at least two -claims, -out, and -report are required")
+	}
+	base, err := manifest.Load(*basePath)
+	if err != nil {
+		return err
+	}
+	lock, err := sourcelock.Load(*lockPath)
+	if err != nil {
+		return err
+	}
+	groups := map[string][]claims.Claim{}
+	for _, path := range claimPaths {
+		result, err := loadClaims(path)
+		if err != nil {
+			return err
+		}
+		pin, ok := lock.Source(result.Pin.ID)
+		if !ok || pin != result.Pin || result.Target != lock.Target {
+			return fmt.Errorf("claims %s do not exactly match the target source lock", path)
+		}
+		for _, claim := range result.Claims {
+			groups[claim.FieldPath] = append(groups[claim.FieldPath], claim)
+		}
+	}
+	baseFields := manifestFieldsByPath(base)
+	carried := make([]manifest.Adjudication, 0, len(base.Adjudications))
+	report := carryReport{}
+	for _, previous := range base.Adjudications {
+		field, ok := baseFields[previous.Target]
+		if !ok {
+			report.Skipped = append(report.Skipped, carryReportEntry{ID: previous.ID, Target: previous.Target, Reason: "previous canonical field is unavailable"})
+			continue
+		}
+		group := groups[previous.Target]
+		selected, ok := claimFromSource(group, previous.SelectedSource)
+		if !ok {
+			report.Skipped = append(report.Skipped, carryReportEntry{ID: previous.ID, Target: previous.Target, Reason: "selected source claim is unavailable"})
+			continue
+		}
+		oldWire, err := claims.FieldWireFingerprint(field.PacketID, field.Direction, field.Field)
+		if err != nil {
+			return err
+		}
+		newWire, err := claims.WireFingerprint(selected)
+		if err != nil {
+			return err
+		}
+		if oldWire != newWire {
+			report.Skipped = append(report.Skipped, carryReportEntry{ID: previous.ID, Target: previous.Target, Reason: "selected source wire shape changed"})
+			continue
+		}
+		context, err := claims.ContextFingerprint(lock.Target, group)
+		if err != nil {
+			return err
+		}
+		fingerprints := make([]manifest.ClaimFingerprint, 0, len(group))
+		for _, claim := range group {
+			fingerprint, err := claims.Fingerprint(claim)
+			if err != nil {
+				return err
+			}
+			fingerprints = append(fingerprints, manifest.ClaimFingerprint{SourceID: claim.SourceID, Digest: fingerprint})
+		}
+		sort.Slice(fingerprints, func(i, j int) bool { return fingerprints[i].SourceID < fingerprints[j].SourceID })
+		selectedFingerprint, err := claims.Fingerprint(selected)
+		if err != nil {
+			return err
+		}
+		evidence := append([]manifest.Evidence(nil), previous.Evidence...)
+		evidence = append(evidence, manifest.Evidence{
+			SourceID: selected.SourceID, Locator: selected.Locator, ClaimFingerprint: selectedFingerprint,
+			Summary: "The exact target source claim is byte-equivalent to the previous canonical wire field.",
+		})
+		previous.ID = carriedAdjudicationID(previous.ID, base.Target.ProtocolVersion, lock.Target.ProtocolVersion)
+		previous.PrePatchContextSHA256 = context
+		previous.Claims = fingerprints
+		previous.Evidence = evidence
+		previous.Reason += " Carried forward only after byte-equivalence with the previous canonical field was verified."
+		carried = append(carried, previous)
+	}
+	report.Carried = len(carried)
+	if err := writeJSON(*outPath, carried); err != nil {
+		return err
+	}
+	if err := writeJSON(*reportPath, report); err != nil {
+		return err
+	}
+	fmt.Printf("carried %d adjudications; skipped %d -> %s\n", len(carried), len(report.Skipped), *outPath)
+	return nil
+}
+
+type manifestFieldRef struct {
+	PacketID  uint32
+	Direction manifest.Direction
+	Field     manifest.Field
+}
+
+// manifestFieldsByPath indexes top-level canonical fields using adjudication target paths.
+func manifestFieldsByPath(value manifest.Manifest) map[string]manifestFieldRef {
+	result := map[string]manifestFieldRef{}
+	for _, packet := range value.Packets {
+		for _, field := range packet.Fields {
+			result[packet.Name+"."+field.Name] = manifestFieldRef{PacketID: packet.ID, Direction: packet.Direction, Field: field}
+		}
+	}
+	return result
+}
+
+// claimFromSource selects one exact source claim from a disagreement group.
+func claimFromSource(group []claims.Claim, sourceID string) (claims.Claim, bool) {
+	for _, claim := range group {
+		if claim.SourceID == sourceID {
+			return claim, true
+		}
+	}
+	return claims.Claim{}, false
+}
+
+// carriedAdjudicationID updates an established protocol-prefixed identifier without changing its descriptive suffix.
+func carriedAdjudicationID(id string, fromProtocol, toProtocol int) string {
+	prefix := fmt.Sprintf("protocol-%d-", fromProtocol)
+	if strings.HasPrefix(id, prefix) {
+		return fmt.Sprintf("protocol-%d-%s", toProtocol, strings.TrimPrefix(id, prefix))
+	}
+	return fmt.Sprintf("protocol-%d-carried-%s", toProtocol, id)
+}
+
+// writeJSON writes one deterministic indented JSON artifact.
+func writeJSON(path string, value any) error {
+	data, err := json.MarshalIndent(value, "", "  ")
+	if err != nil {
+		return err
+	}
+	data = append(data, '\n')
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil && filepath.Dir(path) != "." {
+		return err
+	}
+	if err := os.WriteFile(path, data, 0o644); err != nil {
+		return fmt.Errorf("write %s: %w", path, err)
+	}
+	return nil
+}
+
+type stringListFlag []string
+
+// String formats repeated string flags for flag package diagnostics.
+func (values *stringListFlag) String() string {
+	return fmt.Sprint([]string(*values))
+}
+
+// Set appends one repeated string flag value.
+func (values *stringListFlag) Set(value string) error {
+	*values = append(*values, value)
+	return nil
+}
+
+// runReconcileClaims reconciles independently ingested, source-locked claims without assigning source precedence.
+func runReconcileClaims(args []string) error {
+	fs := flag.NewFlagSet("reconcile-claims", flag.ContinueOnError)
+	lockPath := fs.String("lock", "", "source lock JSON")
+	var claimPaths stringListFlag
+	fs.Var(&claimPaths, "claims", "validated claims JSON; repeat for each independent source")
+	adjudicationsPath := fs.String("adjudications", "", "fingerprinted adjudications JSON")
+	directionsPath := fs.String("directions", "", "reviewed packet-direction JSON")
+	nbtEncodingsPath := fs.String("nbt-encodings", "", "reviewed per-field NBT encoding JSON")
+	outPath := fs.String("out", "", "canonical manifest v2 output")
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+	if *lockPath == "" || *directionsPath == "" || *nbtEncodingsPath == "" || *outPath == "" || len(claimPaths) < 2 {
+		return fmt.Errorf("-lock, at least two -claims, -directions, -nbt-encodings, and -out are required")
+	}
+	lock, err := sourcelock.Load(*lockPath)
+	if err != nil {
+		return err
+	}
+	directions, err := direction.Load(*directionsPath)
+	if err != nil {
+		return err
+	}
+	nbtEncodings, err := nbtencoding.Load(*nbtEncodingsPath)
+	if err != nil {
+		return err
+	}
+	results := make([]claims.Result, 0, len(claimPaths))
+	seen := map[string]bool{}
+	for _, path := range claimPaths {
+		result, err := loadClaims(path)
+		if err != nil {
+			return err
+		}
+		pin, ok := lock.Source(result.Pin.ID)
+		if !ok || pin != result.Pin {
+			return fmt.Errorf("claims %s source pin %q does not exactly match the source lock", path, result.Pin.ID)
+		}
+		if seen[result.Pin.ID] {
+			return fmt.Errorf("claims contain duplicate source %q", result.Pin.ID)
+		}
+		seen[result.Pin.ID] = true
+		results = append(results, result)
+	}
+	var adjudications []manifest.Adjudication
+	if *adjudicationsPath != "" {
+		adjudications, err = manifest.LoadAdjudications(*adjudicationsPath)
+		if err != nil {
+			return err
+		}
+	}
+	result, err := reconcile.ReconcileWithDirectionsAndNBT(lock.Target, results, adjudications, directions, nbtEncodings)
+	if err != nil {
+		return err
+	}
+	if err := manifest.Write(*outPath, result); err != nil {
+		return err
+	}
+	fmt.Printf("manifest v2: %d packets, %d source pins, %d adjudications -> %s\n", len(result.Packets), len(result.Sources), len(result.Adjudications), *outPath)
+	return nil
+}
+
+// loadClaims reads one auditable claims file produced by the ingest command.
+func loadClaims(path string) (claims.Result, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return claims.Result{}, fmt.Errorf("read claims %s: %w", path, err)
+	}
+	var result claims.Result
+	if err := json.Unmarshal(data, &result); err != nil {
+		return claims.Result{}, fmt.Errorf("parse claims %s: %w", path, err)
+	}
+	if result.Pin.ID == "" || result.Target.MinecraftVersion == "" || result.Target.ProtocolVersion == 0 {
+		return claims.Result{}, fmt.Errorf("claims %s are incomplete", path)
+	}
+	return result, nil
 }
 
 func runHotfix(args []string) error {

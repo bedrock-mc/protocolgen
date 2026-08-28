@@ -1,0 +1,18 @@
+{
+  "Pin": {
+    "id": "lens",
+    "kind": "binary-evidence",
+    "revision": "bf48807f236cdc02a44f80d90124323a6b6522a4",
+    "digest": "sha256:9c76fa5086a5bf8172690fa848f3af7d34ced11219da788e51d0634a3e037891",
+    "locator": "https://github.com/HashimTheArab/lens-mcp/tree/bf48807f236cdc02a44f80d90124323a6b6522a4",
+    "minecraft_version": "1.26.50",
+    "protocol_version": 2187
+  },
+  "Target": {
+    "minecraft_version": "1.26.50",
+    "protocol_version": 2187
+  },
+  "Packets": [],
+  "Claims": [],
+  "Overrides": []
+}

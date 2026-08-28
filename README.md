@@ -69,6 +69,23 @@ make hotfix
 The derivation fails closed if the base manifest or target node changes. It
 does not relax normal reconciliation or allow arbitrary manifest replacement.
 
+## Regenerating the 1.26.50 snapshot
+
+`generated/1.26.50/` targets Minecraft 1.26.50 preview build 25 and protocol
+2187. It reconciles the pinned raw Mojang schemas with the matching Endstone
+BDS graph and includes separately pinned Lens evidence for disputed directional
+behavior. In particular, the Primitive Shapes evidence corrects the attached
+entity field to an optional runtime actor ID.
+
+```sh
+make regen-1.26.50 \
+  MOJANG_DIR=/path/to/bedrock-protocol-docs/json \
+  ENDSTONE_DIR=/path/to/endstone-protocol-docs
+```
+
+The target refuses stale source trees, stale corrections, stale adjudications,
+and incomplete packet directions before either emitter runs.
+
 ## Capturing vanilla BDS data
 
 Vanilla data is evidence alongside a generated protocol, not an input to wire

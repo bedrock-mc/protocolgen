@@ -1,0 +1,18 @@
+{
+  "operations": [
+    {
+      "id": "resource-pack-response-selector-is-varuint32",
+      "file": "packets/ResourcePackClientResponsePacket.json",
+      "pointer": "/fields/0/type/switch/type",
+      "pre_patch_sha256": "sha256:0a2ac225fd44a466fa5ff090b45894b5d2c74583853f973ea922965940224af1",
+      "replace": "uvarint32",
+      "why": "Protocol 2168 writes the ResourcePackClientResponse discriminator as an unsigned varuint32 before the lowercase response name. Endstone incorrectly declares the selector as int8; values 0 through 3 hide the width error because their canonical one-byte encodings coincide.",
+      "evidence": [
+        {
+          "locator": "https://github.com/hashimthearab/gophertunnel/blob/9f42f3679a573fc4b51104569cc4f422036e28ec/minecraft/protocol/packet/resource_pack_client_response.go#L30-L40",
+          "summary": "The pinned protocol-2168 serializer stores Response as uint32 and marshals it with Varuint32 before the response name and optional pack list."
+        }
+      ]
+    }
+  ]
+}

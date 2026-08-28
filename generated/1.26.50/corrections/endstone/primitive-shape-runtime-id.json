@@ -1,0 +1,19 @@
+{
+  "operations": [
+    {
+      "id": "endstone-2187-primitive-shape-attached-runtime-id",
+      "file": "types/PrimitiveShapeDataPayload.json",
+      "pointer": "/fields/9/type",
+      "pre_patch_sha256": "sha256:51c1a201f3edb5e73735109b3ae5138e0d6d4b2b9e73e43059b820429039c5f1",
+      "replace": "ActorRuntimeID",
+      "why": "The BDS graph labels the field with the wrong semantic ID wrapper; the active endpoint contract uses a runtime actor ID.",
+      "evidence": [
+        {
+          "source_id": "lens",
+          "locator": "https://github.com/HashimTheArab/lens-mcp/tree/bf48807f236cdc02a44f80d90124323a6b6522a4",
+          "summary": "The exact client binding and directional endpoint trace identify Attached To Entity ID as optional ActorRuntimeID encoded with var_u64."
+        }
+      ]
+    }
+  ]
+}

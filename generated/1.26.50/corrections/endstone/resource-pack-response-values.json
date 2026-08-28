@@ -1,0 +1,35 @@
+{
+  "operations": [
+    {
+      "id": "resource-pack-response-values-start-at-zero",
+      "file": "enums/ResourcePackResponse.json",
+      "pointer": "/values",
+      "pre_patch_sha256": "sha256:e162de4c23651738ed1d2bb320a2ae2cb1de5e1453c2b556d49e0c5da6e8f4b8",
+      "replace": [
+        {
+          "name": "Cancel",
+          "value": 0
+        },
+        {
+          "name": "Downloading",
+          "value": 1
+        },
+        {
+          "name": "DownloadingFinished",
+          "value": 2
+        },
+        {
+          "name": "ResourcePackStackFinished",
+          "value": 3
+        }
+      ],
+      "why": "Protocol 2168 numbers ResourcePackClientResponse from zero. The one-based Endstone values make a downloading response decode as downloading-finished and leave the requested pack list unread.",
+      "evidence": [
+        {
+          "locator": "https://github.com/hashimthearab/gophertunnel/blob/9f42f3679a573fc4b51104569cc4f422036e28ec/minecraft/protocol/packet/resource_pack_client_response.go",
+          "summary": "The protocol-2168 serializer declares Refused through Completed with iota, producing values 0 through 3, and writes the pack list only for value 1. A live Lifeboat handoff confirmed value 1 is accepted for downloading."
+        }
+      ]
+    }
+  ]
+}

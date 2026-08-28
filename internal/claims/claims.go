@@ -54,6 +54,33 @@ func Fingerprint(claim Claim) (string, error) {
 	return digest(withoutValidationConstraints(claim))
 }
 
+// WireFingerprint identifies only a claim's encoded contract, excluding source, naming, and validation metadata.
+func WireFingerprint(claim Claim) (string, error) {
+	claim.SourceID = ""
+	claim.Locator = ""
+	claim.PacketName = ""
+	claim.Direction = ""
+	claim.FieldPath = ""
+	claim.Name = ""
+	claim.Semantic = ""
+	claim.TypeID = ""
+	claim.Encode = wireNode(claim.Encode)
+	if claim.Decode != nil {
+		decoded := wireNode(*claim.Decode)
+		claim.Decode = &decoded
+	}
+	return digest(claim)
+}
+
+// FieldWireFingerprint identifies the same encoded contract when it is already stored in a manifest field.
+func FieldWireFingerprint(packetID uint32, direction manifest.Direction, field manifest.Field) (string, error) {
+	return WireFingerprint(Claim{
+		PacketID: packetID, Direction: direction, Ordinal: field.Ordinal,
+		Encode: field.Encode, Decode: field.Decode, Symmetry: field.Symmetry,
+		Reserved: field.Reserved, Ignored: field.Ignored, Compatibility: field.Compatibility,
+	})
+}
+
 func ContextFingerprint(target manifest.Target, input []Claim) (string, error) {
 	claims := append([]Claim(nil), input...)
 	for index := range claims {
@@ -134,6 +161,55 @@ func nodePointerWithoutValidationConstraints(node *manifest.Node) *manifest.Node
 		return nil
 	}
 	updated := nodeWithoutValidationConstraints(*node)
+	return &updated
+}
+
+// wireNode removes recursive source-facing metadata while retaining every byte-affecting node property.
+func wireNode(node manifest.Node) manifest.Node {
+	node = nodeWithoutValidationConstraints(node)
+	node.Semantic = ""
+	node.TypeID = ""
+	node.Reason = ""
+	node.Prefix = wireNodePointer(node.Prefix)
+	node.Element = wireNodePointer(node.Element)
+	node.Value = wireNodePointer(node.Value)
+	node.Key = wireNodePointer(node.Key)
+	node.Control = wireNodePointer(node.Control)
+	node.Default = wireNodePointer(node.Default)
+	for index := range node.Elements {
+		node.Elements[index] = wireNode(node.Elements[index])
+	}
+	for index := range node.Fields {
+		field := &node.Fields[index]
+		field.Name = ""
+		field.Semantic = ""
+		field.TypeID = ""
+		field.Provenance = manifest.Provenance{}
+		field.Encode = wireNode(field.Encode)
+		field.Decode = wireNodePointer(field.Decode)
+	}
+	for index := range node.Variants {
+		node.Variants[index].Name = ""
+		node.Variants[index].Encode = wireNode(node.Variants[index].Encode)
+		node.Variants[index].Decode = wireNodePointer(node.Variants[index].Decode)
+	}
+	for caseIndex := range node.Cases {
+		for index := range node.Cases[caseIndex].Encode {
+			node.Cases[caseIndex].Encode[index] = wireNode(node.Cases[caseIndex].Encode[index])
+		}
+		for index := range node.Cases[caseIndex].Decode {
+			node.Cases[caseIndex].Decode[index] = wireNode(node.Cases[caseIndex].Decode[index])
+		}
+	}
+	return node
+}
+
+// wireNodePointer strips metadata from an optional recursive node pointer.
+func wireNodePointer(node *manifest.Node) *manifest.Node {
+	if node == nil {
+		return nil
+	}
+	updated := wireNode(*node)
 	return &updated
 }
 

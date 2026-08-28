@@ -1,0 +1,612 @@
+{
+  "schema_version": 1,
+  "target": {
+    "minecraft_version": "1.26.50",
+    "protocol_version": 2187
+  },
+  "selections": [
+    {
+      "id": "protocol-2187-reviewed-001",
+      "target": "DisconnectPacket.Reason",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-002",
+      "target": "StartGamePacket.Block Properties",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-003",
+      "target": "StartGamePacket.Player Property Data",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-004",
+      "target": "AddPlayerPacket.Entity Data",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-005",
+      "target": "AddPlayerPacket.Build Platform",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-006",
+      "target": "AddActorPacket.Actor Data",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-007",
+      "target": "AddItemActorPacket.Entity Data",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-008",
+      "target": "InventoryTransactionPacket.Legacy Set Item Slots",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-009",
+      "target": "InventoryTransactionPacket.Transaction",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-010",
+      "target": "SetActorDataPacket.Actor Data",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-011",
+      "target": "InventoryContentPacket.Full Container Name",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-012",
+      "target": "InventorySlotPacket.Full Container Name",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-013",
+      "target": "BlockActorDataPacket.Actor Data Tags",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-014",
+      "target": "PlayerListPacket.Entries",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-015",
+      "target": "LegacyTelemetryEventPacket.Event Data",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-016",
+      "target": "ClientboundMapItemDataPacket.Decorations",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-017",
+      "target": "UpdateTradePacket.Data",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-018",
+      "target": "UpdateEquipPacket.Data",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-019",
+      "target": "PlayerSkinPacket.Serialized Skin",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-020",
+      "target": "SetLastHurtByPacket.LastHurtBy",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-021",
+      "target": "AvailableActorIdentifiersPacket.Identifier List",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-022",
+      "target": "LevelEventGenericPacket.__[[CTD]]__",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-023",
+      "target": "StructureTemplateDataResponsePacket.Structure's NBT",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-024",
+      "target": "PlayerAuthInputPacket.Input Data",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-025",
+      "target": "PlayerAuthInputPacket.Item Use Transaction",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-026",
+      "target": "PlayerAuthInputPacket.Item Stack Request",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-027",
+      "target": "PlayerAuthInputPacket.Player Block Actions",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-028",
+      "target": "PlayerAuthInputPacket.Vehicle Rotation",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-029",
+      "target": "PlayerAuthInputPacket.Client Predicted Vehicle",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-030",
+      "target": "ItemStackRequestPacket.Requests",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-031",
+      "target": "ItemStackResponsePacket.Responses",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-032",
+      "target": "PositionTrackingDBServerBroadcastPacket.Position tracking data",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-033",
+      "target": "ItemRegistryPacket.Item Data",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-034",
+      "target": "SyncActorPropertyPacket.Property Data",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-035",
+      "target": "AddVolumeEntityPacket.Components",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-036",
+      "target": "DimensionDataPacket.Definitions",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-037",
+      "target": "CameraPresetsPacket.Camera Presets",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-038",
+      "target": "JigsawStructureDataPacket.Jigsaw Structure Data Tag",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-039",
+      "target": "ServerboundDiagnosticsPacket.Memory Category Values",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-040",
+      "target": "ServerboundDiagnosticsPacket.Entity Diagnostics",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-041",
+      "target": "ContainerRegistryCleanupPacket.Removed Containers",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-042",
+      "target": "PrimitiveShapesPacket.Array of primitive shapes (can be a mix of new, updated or removed)",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "lens",
+          "locator": "https://github.com/HashimTheArab/lens-mcp/tree/bf48807f236cdc02a44f80d90124323a6b6522a4",
+          "summary": "The pinned directional trace identifies the exact BDS writer, client reader, ordered binding, runtime actor ID, optionals, union selector, and TextDataPayload layout."
+        },
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently supplies field order, variant semantics, and the optional LineGapHeight field."
+        }
+      ],
+      "reason": "Select the corrected exact BDS sender claim after the pinned Lens trace resolves Attached To Entity ID as optional ActorRuntimeID/var_u64, LineGapHeight as optional, and confirms the active client read path."
+    },
+    {
+      "id": "protocol-2187-reviewed-043",
+      "target": "ServerboundPackSettingChangePacket.PackSettingValue",
+      "selected_source": "mojang",
+      "evidence": [
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/EndstoneMC/protocol-docs/tree/ce91c055d73000e26a25020c5a0799621e56ed13",
+          "summary": "The exact BDS graph exposes this field but leaves its dynamic payload unresolved; Mojang retains the complete dynamic-value schema."
+        }
+      ],
+      "reason": "Select Mojang because Endstone marks the dynamic pack-setting payload unresolved and cannot provide a complete wire claim."
+    },
+    {
+      "id": "protocol-2187-reviewed-044",
+      "target": "ClientboundAttributeLayerSyncPacket.Data",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-045",
+      "target": "SetPlayerFurnaceOptionsPacket.FurnaceType",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    },
+    {
+      "id": "protocol-2187-reviewed-046",
+      "target": "SetPlayerFurnaceOptionsPacket.Furnace Options",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
+          "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+    }
+  ]
+}

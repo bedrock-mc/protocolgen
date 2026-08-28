@@ -1,0 +1,22 @@
+{
+  "operations": [
+    {
+      "id": "player-location-primary-selector-is-varuint32",
+      "file": "packets/PlayerLocationPacket.json",
+      "pointer": "/fields/1/type/switch/type",
+      "pre_patch_sha256": "sha256:bf57c4578db03c6ed5c2459342c47dd9c24965fd6115e2a63b0503445c6ce45d",
+      "replace": "uvarint32",
+      "why": "PlayerLocation writes a primary unsigned selector followed by the variant's signed compatibility selector.",
+      "evidence": [
+        {
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/blob/0e00fe80f4f3c71572ff6429de40146d1f4412fc/PlayerLocationPacketPayload.json",
+          "summary": "The outer Location oneOf declares a compressed uint32 control value."
+        },
+        {
+          "locator": "https://github.com/CloudburstMC/Protocol/blob/fbbeee7d/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v2168/serializer/PlayerLocationSerializer_v2168.java",
+          "summary": "The v2168 serializer writes an unsigned selector and then a signed selector before the payload."
+        }
+      ]
+    }
+  ]
+}

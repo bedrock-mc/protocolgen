@@ -1,0 +1,92 @@
+{
+  "operations": [
+    {
+      "id": "death-info-fields-are-not-wrapped",
+      "file": "DeathInfoPacketPayload.json",
+      "pointer": "/properties",
+      "pre_patch_sha256": "sha256:7135c996eaf2a6f1ef0976b2dbdfc5e5e9e7eb1e6d4de32a4ee39cd154e7dbf5",
+      "replace": {
+        "Death Cause Attack Name": {
+          "type": "string",
+          "x-ordinal-index": 0
+        },
+        "Death Cause Message List": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-ordinal-index": 1
+        }
+      },
+      "why": "DeathInfo writes two packet fields directly rather than a nested DeathCauseMessageType wrapper.",
+      "evidence": [
+        {
+          "locator": "https://github.com/CloudburstMC/Protocol/blob/fbbeee7d63f1ea3c586a6d5907bd69196679aee6/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v534/serializer/DeathInfoSerializer_v534.java",
+          "summary": "The inherited serializer writes the cause string and message array directly."
+        }
+      ]
+    },
+    {
+      "id": "death-info-required-fields-follow-flat-layout",
+      "file": "DeathInfoPacketPayload.json",
+      "pointer": "/required",
+      "pre_patch_sha256": "sha256:3ee555d5389102bc31c1d0f3542a2fbe9a34b99a44bb4084ab6eab4f375f71c7",
+      "replace": [
+        "Death Cause Attack Name",
+        "Death Cause Message List"
+      ],
+      "why": "Both directly encoded DeathInfo fields are required.",
+      "evidence": [
+        {
+          "locator": "https://github.com/CloudburstMC/Protocol/blob/fbbeee7d63f1ea3c586a6d5907bd69196679aee6/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v534/serializer/DeathInfoSerializer_v534.java",
+          "summary": "The inherited serializer unconditionally writes both fields."
+        }
+      ]
+    },
+    {
+      "id": "player-video-capture-has-one-fixed-byte-action",
+      "file": "PlayerVideoCapturePacketPayload.json",
+      "pointer": "/properties",
+      "pre_patch_sha256": "sha256:bec1a56f7f8fd8f03d01a077061437916a31634a57f7865fa17bb6e095adf4c3",
+      "replace": {
+        "Action": {
+          "oneOf": [
+            {
+              "$ref": "./Stop_Video_Capture.json"
+            },
+            {
+              "$ref": "./Start_Video_Capture.json"
+            }
+          ],
+          "x-control-value-type": "uint8",
+          "x-ordinal-index": 0
+        }
+      },
+      "why": "PlayerVideoCapture has one fixed-byte action selector, and only the start variant carries a payload.",
+      "evidence": [
+        {
+          "locator": "https://github.com/CloudburstMC/Protocol/blob/fbbeee7d63f1ea3c586a6d5907bd69196679aee6/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v786/serializer/PlayerVideoCaptureSerializer_v786.java",
+          "summary": "The inherited serializer writes one byte and conditionally writes the start payload."
+        }
+      ]
+    },
+    {
+      "id": "player-video-capture-action-is-required",
+      "file": "PlayerVideoCapturePacketPayload.json",
+      "pointer": "#",
+      "pre_patch_sha256": "sha256:796d9c89099c204f9da472f42f70d8de9193c6c4c58a0cbf2244a8b3b6ee1530",
+      "merge": {
+        "required": [
+          "Action"
+        ]
+      },
+      "why": "The action selector is always present.",
+      "evidence": [
+        {
+          "locator": "https://github.com/CloudburstMC/Protocol/blob/fbbeee7d63f1ea3c586a6d5907bd69196679aee6/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v786/serializer/PlayerVideoCaptureSerializer_v786.java",
+          "summary": "The inherited serializer always writes the action byte."
+        }
+      ]
+    }
+  ]
+}

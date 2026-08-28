@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "target": {
+    "minecraft_version": "1.26.50",
+    "protocol_version": 2187
+  },
+  "packet": "PrimitiveShapesPacket",
+  "direction": "clientbound",
+  "sender_write": {
+    "build": "BDS 1.26.50.25",
+    "artifact_id": 5,
+    "payload_writer_rva": "0x29aa380",
+    "payload_binding_rva": "0x29af890"
+  },
+  "receiver_read": {
+    "build": "Minecraft for Windows 1.26.50.26",
+    "artifact_id": 6,
+    "payload_reader_rva": "0x3cafc40",
+    "payload_binding_rva": "0x3cb42a0",
+    "payload_type_load_rva": "0x3d73200"
+  },
+  "fields": [
+    {
+      "ordinal": 8,
+      "name": "Dimension ID",
+      "operation": "optional<zigzag_i32>"
+    },
+    {
+      "ordinal": 9,
+      "name": "Attached To Entity ID",
+      "operation": "optional<var_u64>",
+      "semantic_type": "ActorRuntimeID",
+      "evidence": [
+        "The exact client binding contains mAttachedToId between Dimension ID and Extra Shape Data.",
+        "The recovered 26.30 binding uses the same TypeSchema vtable as ServerWaypoint::Payload::mActorID.",
+        "The field description identifies a runtime ID; ActorUniqueID would instead use zigzag_i64."
+      ]
+    },
+    {
+      "ordinal": 10,
+      "name": "Extra Shape Data",
+      "operation": "union<var_u32>",
+      "optional": false
+    }
+  ],
+  "text_data_payload": {
+    "fields": [
+      "Text",
+      "UseRotation",
+      "BackgroundColor?",
+      "LineGapHeight?",
+      "DepthTest",
+      "ShowBackface",
+      "ShowTextBackface"
+    ]
+  }
+}

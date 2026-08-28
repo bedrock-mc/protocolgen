@@ -77,6 +77,24 @@ func TestResolverDerivesReviewedUnionFamilyName(t *testing.T) {
 	}
 }
 
+func TestResolverUsesReviewedUnnamedIdentity(t *testing.T) {
+	node := manifest.Union(manifest.Primitive("var_u32"),
+		manifest.Variant{Value: 0, Name: "Normal", Encode: manifest.Struct()},
+		manifest.Variant{Value: 1, Name: "ItemUse", Encode: manifest.Struct()},
+	)
+	r := NewResolver(Overlay{})
+	if err := r.Reserve("InventoryTransactionPacket", "Transaction", func(value string) string { return value }); err != nil {
+		t.Fatal(err)
+	}
+	got, err := r.Resolve(node, "TransactionUnion", func(value string) string { return value })
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got != "TransactionPacketData" {
+		t.Fatalf("resolved unnamed union = %q", got)
+	}
+}
+
 func TestValidateOverlayRejectsStaleTypeID(t *testing.T) {
 	m := manifest.Manifest{
 		Target:  manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168},

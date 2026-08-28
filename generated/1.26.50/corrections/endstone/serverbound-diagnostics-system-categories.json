@@ -1,0 +1,24 @@
+{
+  "operations": [
+    {
+      "id": "system-categories-array-is-not-optional",
+      "file": "packets/ServerboundDiagnosticsPacket.json",
+      "pointer": "/fields/12",
+      "pre_patch_sha256": "sha256:c70d32debbe1e972d9991930d2a99a1f05069cc9f10eb5298ebc07c80f8db309",
+      "replace": {
+        "name": "System Categories",
+        "type": "ECS::Profiling::Diagnostics::SystemCategory",
+        "repeat": {
+          "prefix": "uvarint32"
+        }
+      },
+      "why": "System Categories is a normal length-prefixed array with no preceding presence flag.",
+      "evidence": [
+        {
+          "locator": "https://github.com/CloudburstMC/Protocol/blob/fbbeee7d63f1ea3c586a6d5907bd69196679aee6/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v2168/serializer/ServerboundDiagnosticsSerializer_v2168.java",
+          "summary": "The exact v2168 serializer reads and writes the array directly."
+        }
+      ]
+    }
+  ]
+}

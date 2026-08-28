@@ -288,6 +288,48 @@ func TestGenerateIncludesNumericIDForNewPackets(t *testing.T) {
 	}
 }
 
+func TestGenerateMarksUntypedFieldsWithoutInventingWireCode(t *testing.T) {
+	directory := t.TempDir()
+	writeFixture(t, directory, "ChangedPacket.json", `{
+		"title":"ChangedPacket","x-protocol-version":2,"type":"object",
+		"properties":{"Value":{"x-serialization-options":["Compression"],"x-ordinal-index":0}},
+		"required":["Value"]
+	}`)
+	changelog := "# Bedrock protocol changes — 1 to 2\n\n## Modified Packets\n\n### ChangedPacket\npacket id 7 · struct\n"
+	output, err := Generate([]byte(changelog), directory)
+	if err != nil {
+		t.Fatalf("Generate: %v", err)
+	}
+	text := string(output)
+	for _, want := range []string{
+		"Value any",
+		"// Value is untyped in the target schema; resolve its wire shape from exact-version evidence.",
+	} {
+		if !strings.Contains(text, want) {
+			t.Fatalf("output does not contain %q:\n%s", want, text)
+		}
+	}
+}
+
+func TestGeneratePreservesEnumAliases(t *testing.T) {
+	directory := t.TempDir()
+	writeFixture(t, directory, "Aliased.json", `{
+		"title":"Aliased","x-protocol-version":2,"type":"string",
+		"enum":["First","Alias"],"x-enum-values":[7,7],"x-underlying-type":"uint8"
+	}`)
+	changelog := "# Bedrock protocol changes — 1 to 2\n\n## Modified Enums\n\n### Aliased\nenum\n"
+	output, err := Generate([]byte(changelog), directory)
+	if err != nil {
+		t.Fatalf("Generate: %v", err)
+	}
+	text := string(output)
+	for _, want := range []string{"AliasedFirst = 7", "AliasedAlias = 7"} {
+		if !strings.Contains(text, want) {
+			t.Fatalf("output does not contain %q:\n%s", want, text)
+		}
+	}
+}
+
 func writeFixture(t *testing.T, directory, name, contents string) {
 	t.Helper()
 	if err := os.WriteFile(filepath.Join(directory, name), []byte(contents), 0o600); err != nil {

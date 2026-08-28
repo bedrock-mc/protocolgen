@@ -81,7 +81,20 @@ func (r *Resolver) Resolve(node manifest.Node, hint string, casing func(string) 
 		return "", fmt.Errorf("type ID %q resolved to an empty public name", node.TypeID)
 	}
 	if owner, ok := r.usedNames[name]; ok && owner != key {
-		return "", fmt.Errorf("public name %q collides between %s and %s; add naming overlay entries", name, owner, key)
+		if node.TypeID == "" && inferred == "" {
+			for _, suffix := range []string{"PacketData", "Data"} {
+				candidate := casing(neutral + suffix)
+				if _, used := r.usedNames[candidate]; !used {
+					name = candidate
+					break
+				}
+			}
+			if name == casing(neutral) {
+				return "", fmt.Errorf("public name %q collides between %s and %s; add naming overlay entries", name, owner, key)
+			}
+		} else {
+			return "", fmt.Errorf("public name %q collides between %s and %s; add naming overlay entries", name, owner, key)
+		}
 	}
 	r.identity[key] = name
 	r.usedNames[name] = key

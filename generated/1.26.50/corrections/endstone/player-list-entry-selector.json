@@ -1,0 +1,21 @@
+{
+  "operations": [
+    {
+      "id": "player-list-entry-selector-is-varuint32",
+      "file": "packets/PlayerListPacket.json",
+      "pointer": "/fields/0/type/switch",
+      "pre_patch_sha256": "sha256:abd3b532c15c94c725e9ae6bb6edad79a42ff599a2392f61dc362f63934aba90",
+      "replace": {
+        "name": "Variant",
+        "type": "uvarint32"
+      },
+      "why": "Protocol 2168 writes a positional unsigned outer entry variant before the legacy uint8 action carried by each Add/Remove payload. The Endstone dump incorrectly reuses the legacy action enum as the outer selector and thereby reverses Add/Remove while dropping one wire byte.",
+      "evidence": [
+        {
+          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/player.go#L95-L129",
+          "summary": "The pinned serializer writes varuint32 variant 0 for Remove and 1 for Add, then writes the legacy uint8 action before UUID and payload fields. Exact protocol-2168 fixtures reproduce this two-selector layout."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "operations": [
+    {
+      "id": "mojang-2187-primitive-shape-attached-runtime-id",
+      "file": "PrimitiveShapeDataPayload.json",
+      "pointer": "/properties/Attached To Entity ID/$ref",
+      "pre_patch_sha256": "sha256:404754e5fb54eb801b053587a07bb39139fa665da3ee14218ddce218dcb0f83a",
+      "replace": "./ActorRuntimeID.json",
+      "why": "The field is an actor runtime ID on the wire, not an actor unique ID.",
+      "evidence": [
+        {
+          "source_id": "lens",
+          "locator": "https://github.com/HashimTheArab/lens-mcp/tree/bf48807f236cdc02a44f80d90124323a6b6522a4",
+          "summary": "The exact client binding and directional endpoint trace identify Attached To Entity ID as optional ActorRuntimeID encoded with var_u64."
+        }
+      ]
+    }
+  ]
+}
