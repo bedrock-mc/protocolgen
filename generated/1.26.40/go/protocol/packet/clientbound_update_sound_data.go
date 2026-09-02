@@ -11,39 +11,25 @@ import "protocolgen/generated/1.26.40/go/protocol"
 type ClientboundUpdateSoundData struct {
 	// ServerSoundHandle is the server-side handle of the sound to update.
 	ServerSoundHandle protocol.ServerSoundHandle
-	Stop              protocol.Optional[protocol.SoundDataEvent]
-	SetVolume         protocol.Optional[protocol.SoundDataEvent]
-	SetPitch          protocol.Optional[protocol.SoundDataEvent]
-	Fade              protocol.Optional[protocol.SoundDataEvent]
-	SeekTo            protocol.Optional[protocol.SoundDataEvent]
-	Pause             protocol.Optional[protocol.SoundDataEvent]
-	Resume            protocol.Optional[protocol.SoundDataEvent]
+	Stop              protocol.SoundDataEvent
+	SetVolume         protocol.SoundDataEvent
+	SetPitch          protocol.SoundDataEvent
+	Fade              protocol.SoundDataEvent
+	SeekTo            protocol.SoundDataEvent
+	Pause             protocol.SoundDataEvent
+	Resume            protocol.SoundDataEvent
 }
 
 // Marshal reads or writes ClientboundUpdateSoundData using its canonical wire layout.
 func (x *ClientboundUpdateSoundData) Marshal(io protocol.IO) {
 	x.ServerSoundHandle.Marshal(io)
-	protocol.OptionalFunc(io, &x.Stop, func(value *protocol.SoundDataEvent) {
-		protocol.MarshalSoundDataEvent(io, value)
-	})
-	protocol.OptionalFunc(io, &x.SetVolume, func(value *protocol.SoundDataEvent) {
-		protocol.MarshalSoundDataEvent(io, value)
-	})
-	protocol.OptionalFunc(io, &x.SetPitch, func(value *protocol.SoundDataEvent) {
-		protocol.MarshalSoundDataEvent(io, value)
-	})
-	protocol.OptionalFunc(io, &x.Fade, func(value *protocol.SoundDataEvent) {
-		protocol.MarshalSoundDataEvent(io, value)
-	})
-	protocol.OptionalFunc(io, &x.SeekTo, func(value *protocol.SoundDataEvent) {
-		protocol.MarshalSoundDataEvent(io, value)
-	})
-	protocol.OptionalFunc(io, &x.Pause, func(value *protocol.SoundDataEvent) {
-		protocol.MarshalSoundDataEvent(io, value)
-	})
-	protocol.OptionalFunc(io, &x.Resume, func(value *protocol.SoundDataEvent) {
-		protocol.MarshalSoundDataEvent(io, value)
-	})
+	protocol.MarshalSoundDataEvent(io, &x.Stop)
+	protocol.MarshalSoundDataEvent(io, &x.SetVolume)
+	protocol.MarshalSoundDataEvent(io, &x.SetPitch)
+	protocol.MarshalSoundDataEvent(io, &x.Fade)
+	protocol.MarshalSoundDataEvent(io, &x.SeekTo)
+	protocol.MarshalSoundDataEvent(io, &x.Pause)
+	protocol.MarshalSoundDataEvent(io, &x.Resume)
 }
 
 // ID returns the protocol ID for ClientboundUpdateSoundData.

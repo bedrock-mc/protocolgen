@@ -3827,6 +3827,7 @@ impl wire::Encode for CommandOutputData {
     fn encode(&self, writer: &mut wire::Writer) {
         self.output_type.encode(writer);
         self.success_count.encode(writer);
+        wire::assert_number_limits(self.success_count.0, Some(0), None);
         wire::encode_collection(writer, self.output_messages.as_slice());
         match &self.data_set {
             Some(value) => {
@@ -3841,7 +3842,7 @@ impl wire::Encode for CommandOutputData {
 impl wire::Decode for CommandOutputData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let output_type = <String as wire::Decode>::decode(reader)?;
-        let success_count = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let success_count = { let value = <wire::U32LE as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
         let output_messages = wire::decode_collection::<CommandOutputMessage>(reader, 3)?;
         let data_set = {
             if reader.read_u8()? == 0 {

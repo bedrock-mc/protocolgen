@@ -648,3 +648,29 @@ func writeJSON(t *testing.T, path string, value any) {
 		t.Fatal(err)
 	}
 }
+
+func TestMojangDefaultedPropertyIsNotOptional(t *testing.T) {
+	root := t.TempDir()
+	writeJSON(t, filepath.Join(root, "TextData.json"), map[string]any{
+		"title": "TextDataPacket", "$metaProperties": map[string]any{"[cereal:packet]": 1},
+		"x-minecraft-version": "1.26.40", "x-protocol-version": 2168,
+		"properties": map[string]any{
+			"Text":            map[string]any{"type": "string", "x-ordinal-index": 0},
+			"UseRotation":     map[string]any{"type": "boolean", "default": false, "x-ordinal-index": 1},
+			"BackgroundColor": map[string]any{"type": "integer", "x-underlying-type": "uint32", "x-ordinal-index": 2},
+			"LineGapHeight":   map[string]any{"type": "number", "x-underlying-type": "float", "default": 0.0, "x-ordinal-index": 3},
+		},
+		"required": []string{"Text"},
+	})
+	result, err := ParseMojang(root, fixturePin("mojang"), "")
+	if err != nil {
+		t.Fatalf("ParseMojang: %v", err)
+	}
+	for _, claim := range result.Claims {
+		optional := claim.Encode.Kind == manifest.KindOptional
+		want := claim.Name == "BackgroundColor"
+		if optional != want {
+			t.Errorf("%s optional = %v, want %v", claim.Name, optional, want)
+		}
+	}
+}

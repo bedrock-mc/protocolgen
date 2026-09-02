@@ -920,7 +920,7 @@ func matchClaimFingerprints(adjudication manifest.Adjudication, group []claims.C
 		got[claim.SourceID] = claim.Digest
 	}
 	if !reflect.DeepEqual(want, got) {
-		return fmt.Errorf("claim fingerprints no longer match: adjudication has %v, current claims are %v", want, got)
+		return fmt.Errorf("claim fingerprints no longer match: adjudication has %v, current claims are %v", got, want)
 	}
 	return nil
 }

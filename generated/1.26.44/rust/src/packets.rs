@@ -9023,20 +9023,13 @@ impl wire::Decode for ServerPresenceInfo {
 pub struct ClientboundUpdateSoundData {
     /// `server_sound_handle` is the server-side handle of the sound to update.
     pub server_sound_handle: ServerSoundHandle,
-    /// Wire presence: optional value is preceded by a presence marker.
-    pub stop: Option<SoundDataEvent>,
-    /// Wire presence: optional value is preceded by a presence marker.
-    pub set_volume: Option<SoundDataEvent>,
-    /// Wire presence: optional value is preceded by a presence marker.
-    pub set_pitch: Option<SoundDataEvent>,
-    /// Wire presence: optional value is preceded by a presence marker.
-    pub fade: Option<SoundDataEvent>,
-    /// Wire presence: optional value is preceded by a presence marker.
-    pub seek_to: Option<SoundDataEvent>,
-    /// Wire presence: optional value is preceded by a presence marker.
-    pub pause: Option<SoundDataEvent>,
-    /// Wire presence: optional value is preceded by a presence marker.
-    pub resume: Option<SoundDataEvent>,
+    pub stop: SoundDataEvent,
+    pub set_volume: SoundDataEvent,
+    pub set_pitch: SoundDataEvent,
+    pub fade: SoundDataEvent,
+    pub seek_to: SoundDataEvent,
+    pub pause: SoundDataEvent,
+    pub resume: SoundDataEvent,
 }
 
 impl ClientboundUpdateSoundData {
@@ -9045,110 +9038,26 @@ impl ClientboundUpdateSoundData {
 impl wire::Encode for ClientboundUpdateSoundData {
     fn encode(&self, writer: &mut wire::Writer) {
         self.server_sound_handle.encode(writer);
-        match &self.stop {
-            Some(value) => {
-                writer.write_u8(1);
-                value.encode(writer);
-            }
-            None => writer.write_u8(0),
-        }
-        match &self.set_volume {
-            Some(value) => {
-                writer.write_u8(1);
-                value.encode(writer);
-            }
-            None => writer.write_u8(0),
-        }
-        match &self.set_pitch {
-            Some(value) => {
-                writer.write_u8(1);
-                value.encode(writer);
-            }
-            None => writer.write_u8(0),
-        }
-        match &self.fade {
-            Some(value) => {
-                writer.write_u8(1);
-                value.encode(writer);
-            }
-            None => writer.write_u8(0),
-        }
-        match &self.seek_to {
-            Some(value) => {
-                writer.write_u8(1);
-                value.encode(writer);
-            }
-            None => writer.write_u8(0),
-        }
-        match &self.pause {
-            Some(value) => {
-                writer.write_u8(1);
-                value.encode(writer);
-            }
-            None => writer.write_u8(0),
-        }
-        match &self.resume {
-            Some(value) => {
-                writer.write_u8(1);
-                value.encode(writer);
-            }
-            None => writer.write_u8(0),
-        }
+        self.stop.encode(writer);
+        self.set_volume.encode(writer);
+        self.set_pitch.encode(writer);
+        self.fade.encode(writer);
+        self.seek_to.encode(writer);
+        self.pause.encode(writer);
+        self.resume.encode(writer);
     }
 }
 
 impl wire::Decode for ClientboundUpdateSoundData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let server_sound_handle = <ServerSoundHandle as wire::Decode>::decode(reader)?;
-        let stop = {
-            if reader.read_u8()? == 0 {
-                None
-            } else {
-                Some(<SoundDataEvent as wire::Decode>::decode(reader)?)
-            }
-        };
-        let set_volume = {
-            if reader.read_u8()? == 0 {
-                None
-            } else {
-                Some(<SoundDataEvent as wire::Decode>::decode(reader)?)
-            }
-        };
-        let set_pitch = {
-            if reader.read_u8()? == 0 {
-                None
-            } else {
-                Some(<SoundDataEvent as wire::Decode>::decode(reader)?)
-            }
-        };
-        let fade = {
-            if reader.read_u8()? == 0 {
-                None
-            } else {
-                Some(<SoundDataEvent as wire::Decode>::decode(reader)?)
-            }
-        };
-        let seek_to = {
-            if reader.read_u8()? == 0 {
-                None
-            } else {
-                Some(<SoundDataEvent as wire::Decode>::decode(reader)?)
-            }
-        };
-        let pause = {
-            if reader.read_u8()? == 0 {
-                None
-            } else {
-                Some(<SoundDataEvent as wire::Decode>::decode(reader)?)
-            }
-        };
-        let resume = {
-            if reader.read_u8()? == 0 {
-                None
-            } else {
-                Some(<SoundDataEvent as wire::Decode>::decode(reader)?)
-            }
-        };
+        let stop = <SoundDataEvent as wire::Decode>::decode(reader)?;
+        let set_volume = <SoundDataEvent as wire::Decode>::decode(reader)?;
+        let set_pitch = <SoundDataEvent as wire::Decode>::decode(reader)?;
+        let fade = <SoundDataEvent as wire::Decode>::decode(reader)?;
+        let seek_to = <SoundDataEvent as wire::Decode>::decode(reader)?;
+        let pause = <SoundDataEvent as wire::Decode>::decode(reader)?;
+        let resume = <SoundDataEvent as wire::Decode>::decode(reader)?;
         Ok(Self {
             server_sound_handle,
             stop,

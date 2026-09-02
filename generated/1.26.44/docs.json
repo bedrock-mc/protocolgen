@@ -412,7 +412,7 @@
     {
       "type_id": "AvailableCommandsPacketPayload::ParamData",
       "field": "Name",
-      "doc": "Name is the name of the command parameter. It shows up in the usage like \u003c$Name: $Type\u003e, with the\nexception of enum types, which show up simply as a list of options if the list is short enough and\nOptions is set to false."
+      "doc": "Name is the name of the command parameter. It shows up in the usage like <$Name: $Type>, with the\nexception of enum types, which show up simply as a list of options if the list is short enough and\nOptions is set to false."
     },
     {
       "type_id": "AvailableCommandsPacketPayload::ParamData",
@@ -1324,11 +1324,11 @@
       "doc": "UUID is a unique identifier for every instantiation of a command."
     },
     {
-      "type_id": "CommandOutputMessage",
+      "type_id": "CommandOutputMessage.json#",
       "doc": "CommandOutputMessage represents a message sent by a command that holds the output of one of the commands\nexecuted."
     },
     {
-      "type_id": "CommandOutputMessage",
+      "type_id": "CommandOutputMessage.json#",
       "field": "Parameters",
       "doc": "Parameters is a list of parameters that serve to supply the message sent with additional information,\nsuch as the position that a player was teleported to or the effect that was applied to an entity.\nThese parameters only apply for the Minecraft built-in command output."
     },
@@ -3424,7 +3424,7 @@
     {
       "type_id": "SpawnExperienceOrbPacket",
       "field": "XP Value",
-      "doc": "XPValue is the amount of experience in experience points that the orb carries. The client-side\nsize of the orb depends on the amount of experience in the orb: There are 11 possible sizes for the\norb, for 1–2, 3–6, 7–16, 17–36, 37–72, 73–148, 149–306, 307–616, 617–1236, 1237–2476, and 2477 and up."
+      "doc": "XPValue is the amount of experience in experience points that the orb carries. The client-side\nsize of the orb depends on the amount of experience in the orb: There are 11 possible sizes for the\norb, for 1\u20132, 3\u20136, 7\u201316, 17\u201336, 37\u201372, 73\u2013148, 149\u2013306, 307\u2013616, 617\u20131236, 1237\u20132476, and 2477 and up."
     },
     {
       "type_id": "SpawnParticleEffectPacket",
@@ -3741,7 +3741,7 @@
     {
       "type_id": "TrimMaterial",
       "field": "Color",
-      "doc": "Color is the colour code used for text formatting, for example '§j'."
+      "doc": "Color is the colour code used for text formatting, for example '\u00a7j'."
     },
     {
       "type_id": "TrimMaterial",

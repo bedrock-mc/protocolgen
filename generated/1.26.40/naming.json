@@ -61,7 +61,7 @@
       "rationale": "The inferred target union collides with the CommandBlockUpdate packet; Data preserves the payload role."
     },
     {
-      "type_id": "CommandOutput",
+      "type_id": "CommandOutput.json#",
       "name": "CommandOutputData",
       "rationale": "The shared command-output union collides with the CommandOutput packet; Data preserves the payload role."
     },

@@ -2647,15 +2647,15 @@
   {
     "id": "protocol-2168-gophertunnel-packet-348-field-1",
     "target": "ClientboundUpdateSoundDataPacket.Stop",
-    "pre_patch_context_sha256": "sha256:2a747396523bf3f858c39a83de25df1cfcb25e7db642aff329965b6dc4defb2a",
+    "pre_patch_context_sha256": "sha256:60c5350b5702020f77877f8151a70516e07a5433b5668180f90d96c3c48a7f0c",
     "claims": [
       {
         "source_id": "endstone",
-        "digest": "sha256:8888b01602d021247aa12e75676a48b5c6828104e0bccde9e314a174f587b69c"
+        "digest": "sha256:cbd7a96a7ad9efe530e0b0d6c5ac92c50f1c484e0440d76102d90cb8204c72cc"
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:5e37eaeb6cc3ef619823de6c4bc7018371e00262122fd4673568f5bcd13c9414"
+        "digest": "sha256:3d8096875922b9064f1da772cf6b658092e89334a6246591de324ee1904ecde3"
       }
     ],
     "selected_source": "endstone",
@@ -2671,15 +2671,15 @@
   {
     "id": "protocol-2168-gophertunnel-packet-348-field-2",
     "target": "ClientboundUpdateSoundDataPacket.SetVolume",
-    "pre_patch_context_sha256": "sha256:c2adee921d13307ca88c3f3c5b613bc230a16bdad1546accd960f440cfe41341",
+    "pre_patch_context_sha256": "sha256:938992a4ffc36c8a32d0856c90b361ddf47e3a23e1a4d9babec77ebcbcf0aa69",
     "claims": [
       {
         "source_id": "endstone",
-        "digest": "sha256:2864663ff3e6e2987e2a3002817b7d852088becda149741d97051f74dc72d666"
+        "digest": "sha256:3e9b221d5299bb525e4fe41f8c0eb661f1a26e42b549237790eaf028492d7fc5"
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:03e19f88e6caa883c2cd281c4b240f086ce2c382ff9a6f1378b556cc4907ce56"
+        "digest": "sha256:c6b781c4c30f1f59ef126190875acf5ed7da7852511764292715a58bda2f8c4d"
       }
     ],
     "selected_source": "endstone",
@@ -2695,15 +2695,15 @@
   {
     "id": "protocol-2168-gophertunnel-packet-348-field-3",
     "target": "ClientboundUpdateSoundDataPacket.SetPitch",
-    "pre_patch_context_sha256": "sha256:35a9aa456ab2948e14a2f334348f271ccf6ee51b9de1f4424db74f4952697dd1",
+    "pre_patch_context_sha256": "sha256:0016a4c2eae14a274c3716f1f94e51bf876a1fa1efb60a131dfcb49bf0825116",
     "claims": [
       {
         "source_id": "endstone",
-        "digest": "sha256:9c9d56e8e892456521ace1b8eb549b3b360b5f930f96fdf7ac85f50b95ac6e89"
+        "digest": "sha256:6129e704ff12c587526834a696cfc89a308bd18b763bb45d53e331dae6496ad8"
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:e36a50cc2836e5dad8fb7e0cdfcd2c54b2a6fe7f052ea98372da4702640b67b4"
+        "digest": "sha256:e1d5b0b85aafc2bf7748670a3ad3ed2e432e5ac1468aa3bba1b817de5044df25"
       }
     ],
     "selected_source": "endstone",
@@ -2719,15 +2719,15 @@
   {
     "id": "protocol-2168-gophertunnel-packet-348-field-4",
     "target": "ClientboundUpdateSoundDataPacket.Fade",
-    "pre_patch_context_sha256": "sha256:c31b0a47a7f369e1989ea03ed3573c385cc14e4bf7d7481e67c7b1685a454c4c",
+    "pre_patch_context_sha256": "sha256:20ebe8d9681452d8ba183798ec68a3f81c883004010ca336cd0730929b489bfd",
     "claims": [
       {
         "source_id": "endstone",
-        "digest": "sha256:4ab3d138a98ec20970ee5ce7c17dd8e63e6adad0db60726e47ad5cf3d9f1aa2b"
+        "digest": "sha256:878d6df53b66f6a918595549e3cb54e5a117c590fac1486c2ee01c1938ecb82b"
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:6534d0de76ffb057b2c7262544173e13537c65eda1806c53528047293917554a"
+        "digest": "sha256:71fc17be0a2b351ba4482f2cc2aa8dd341b8e943d1e3e771d88b3362193924c7"
       }
     ],
     "selected_source": "endstone",
@@ -2743,15 +2743,15 @@
   {
     "id": "protocol-2168-gophertunnel-packet-348-field-5",
     "target": "ClientboundUpdateSoundDataPacket.SeekTo",
-    "pre_patch_context_sha256": "sha256:e81993bd3eafd9e2964a9257a93268f94ca9668f0632635fe0de85fc59056d6c",
+    "pre_patch_context_sha256": "sha256:f86d81024a4c928b51a74e666910c51033840d42fcad303d72898ffe50e37e19",
     "claims": [
       {
         "source_id": "endstone",
-        "digest": "sha256:435ca8fa16b260a9715a18c7e5c22c9c9065403d448d91e32971add215113732"
+        "digest": "sha256:6c1eaa0bbefdf714bcb62f72d27b072c6c241b2724f7f20a883372dbb16ad49b"
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:1e31bbb329da618443e4bd766c274891af1f418198c4aa5b83cfebba4833d54e"
+        "digest": "sha256:040b98b69217dbdd0735f0d2096f8a2bfad78379a38263cef4a986ec45289208"
       }
     ],
     "selected_source": "endstone",
@@ -2767,15 +2767,15 @@
   {
     "id": "protocol-2168-gophertunnel-packet-348-field-6",
     "target": "ClientboundUpdateSoundDataPacket.Pause",
-    "pre_patch_context_sha256": "sha256:e8b44491d7c2daeffde5e4076f5cefd77cf8bbb35130eba4b8c4c83ea5b7d61f",
+    "pre_patch_context_sha256": "sha256:79927d573f36fea980145e569a7f04f670288438cf595c8d8435e4e81fc551af",
     "claims": [
       {
         "source_id": "endstone",
-        "digest": "sha256:536970744420fb700297123beaab13bfa61cc97764e24dac135759916dd9c2f7"
+        "digest": "sha256:634f6b9afeb04d5f16a2785a92fc2fdd58d2fc033e39484ffc5a0132ea0cfce5"
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:28ddc6ee8f0e876ce2de3768d9400ad941ccc5ec30a16859dbb13b3b199bccc6"
+        "digest": "sha256:0497a3e8cdcc5461d383658a6fffb4a7bb250f72490f380ac06ed522f76d65e6"
       }
     ],
     "selected_source": "endstone",
@@ -2791,15 +2791,15 @@
   {
     "id": "protocol-2168-gophertunnel-packet-348-field-7",
     "target": "ClientboundUpdateSoundDataPacket.Resume",
-    "pre_patch_context_sha256": "sha256:77e384ad10b9a4534f17c5003c03f2e02649932c8381ca4fd59cd55f5e7072c0",
+    "pre_patch_context_sha256": "sha256:7f5fda693813e90bb035c0f505885083556d59977f237400b43a350c7d62c18c",
     "claims": [
       {
         "source_id": "endstone",
-        "digest": "sha256:3fd0fecee37697b953dba66db3694effb42be5880d72ddfbf4a1c5ebdabf4842"
+        "digest": "sha256:d95013636a3688bfbf3e8bdfb4f9abc39ad8b47e7fc79751553b2fd1b65b99be"
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:0f29bd6358cadb04bb01937a854ace1dfeeabbbcfad5c4a0348f5151a8252ca2"
+        "digest": "sha256:d650f91126463d90458d75a043a984fbde8121b0d351829df7283c9630141e5e"
       }
     ],
     "selected_source": "endstone",
@@ -3852,7 +3852,7 @@
   {
     "id": "protocol-2168-packet-122-field-0",
     "target": "BiomeDefinitionListPacket.Map of Biome names to data",
-    "pre_patch_context_sha256": "sha256:77b238f6b81bca9563f93c0805e4fb9a3bbd73c724e53df81f8f1d17431e903f",
+    "pre_patch_context_sha256": "sha256:f0c0ffbd072cbc4e5f5d6edd1398d95e58bc2bad3cc198ddfd02aab1f5f7e126",
     "claims": [
       {
         "source_id": "endstone",
@@ -3860,7 +3860,7 @@
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:3c6bc91bface8f8910b8ef8c60addb32747d5c3e24d46e93b8feed83d08d0d96"
+        "digest": "sha256:956a17611a5c6f3cd84b1d54a47420585dc8451af76082f261ea31dfc9997914"
       }
     ],
     "selected_source": "endstone",
@@ -3972,7 +3972,7 @@
   {
     "id": "protocol-2168-packet-300-field-0",
     "target": "CameraInstructionPacket.Camera Instruction",
-    "pre_patch_context_sha256": "sha256:0b8c7b4ebbe3576c6055c723c09dcf2b273a1aec3c4275924dacce247932f245",
+    "pre_patch_context_sha256": "sha256:0217a849dbd6e9a99c36344e1e55696f8655d1fe6ede9121ad86f5abb8e05a80",
     "claims": [
       {
         "source_id": "endstone",
@@ -3980,7 +3980,7 @@
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:885387c9c0f00b627456bb2a5e85dc0abe5556b25c7abc0eb9e794c4b396f9ad"
+        "digest": "sha256:67cf4f46e4770c05a160c921faa4b4f6aa972e9f58217c11aee0eec1693745be"
       }
     ],
     "selected_source": "endstone",
@@ -4020,7 +4020,7 @@
   {
     "id": "protocol-2168-packet-328-field-0",
     "target": "PrimitiveShapesPacket.Array of primitive shapes (can be a mix of new, updated or removed)",
-    "pre_patch_context_sha256": "sha256:b1ccd4e77a4b76249c667409949ca9a793e803f4dc4de1b40f1097dd20ac9000",
+    "pre_patch_context_sha256": "sha256:faaf7dec03374b2a4766f8f5611354c16ba7c9f5c2b96ebc8d94b64b2700b4d3",
     "claims": [
       {
         "source_id": "endstone",
@@ -4028,7 +4028,7 @@
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:af54cabfdf2ae683b67ed221dae46abace9fe2b49b691211d6c5377f43df5cca"
+        "digest": "sha256:f17f9eff8e536e39dbe05404bd00dfba8aa610a86046cf8b92ac50fc58f89138"
       }
     ],
     "selected_source": "endstone",
@@ -4212,7 +4212,7 @@
   {
     "id": "protocol-2168-packet-79-field-1",
     "target": "CommandOutputPacket.Output",
-    "pre_patch_context_sha256": "sha256:ca451089ce6d1e73e3fd6f881ffd243f75cdc03b082ba2ac8c23bcc0b43cdb82",
+    "pre_patch_context_sha256": "sha256:3de00b2e738e111fe702be9b79c9e5ccd271da382dad89824c00b7e03351052e",
     "claims": [
       {
         "source_id": "endstone",
@@ -4220,7 +4220,7 @@
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:f61f3de62b33439e54837365e11a724e84f39de7e3a21b5b849f4b5b66b37435"
+        "digest": "sha256:84b6eb0d20a5837ae22744654e91e30ed085734c6e735d5c2d616537f171a99a"
       }
     ],
     "selected_source": "endstone",

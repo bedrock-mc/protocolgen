@@ -481,14 +481,19 @@
       "rationale": "Matches the gophertunnel protocol domain file layout."
     },
     {
-      "type_id": "CommandOutput",
+      "type_id": "CommandOutput.json#",
       "domain": "command",
       "rationale": "Grouped by the generated type-family prefix; no direct gophertunnel counterpart."
     },
     {
-      "type_id": "CommandOutputMessage",
+      "type_id": "CommandOutputMessage.json#",
       "domain": "command",
       "rationale": "Matches the gophertunnel protocol domain file layout."
+    },
+    {
+      "type_id": "CommandOutputType.json#",
+      "domain": "command",
+      "rationale": "Shared command-output type reached through the merged Mojang claim; grouped with the rest of the command family."
     },
     {
       "type_id": "CommandPermissionLevel.json#",
@@ -1741,27 +1746,27 @@
       "rationale": "Grouped by the generated type-family prefix; no direct gophertunnel counterpart."
     },
     {
-      "type_id": "TypedClientNetId\u003cstruct ItemStackLegacyRequestIdTag, int32_t, 0\u003e",
+      "type_id": "TypedClientNetId<struct ItemStackLegacyRequestIdTag, int32_t, 0>",
       "domain": "item_stack",
       "rationale": "Grouped by the generated type-family prefix; no direct gophertunnel counterpart."
     },
     {
-      "type_id": "TypedClientNetId\u003cstruct ItemStackRequestIdTag, int32_t, 0\u003e",
+      "type_id": "TypedClientNetId<struct ItemStackRequestIdTag, int32_t, 0>",
       "domain": "item_stack",
       "rationale": "Grouped by the generated type-family prefix; no direct gophertunnel counterpart."
     },
     {
-      "type_id": "TypedServerNetId\u003cstruct CreativeItemNetIdTag\u003e",
+      "type_id": "TypedServerNetId<struct CreativeItemNetIdTag>",
       "domain": "creative",
       "rationale": "Grouped by the generated type-family prefix; no direct gophertunnel counterpart."
     },
     {
-      "type_id": "TypedServerNetId\u003cstruct ItemStackNetIdTag, int32_t, 0\u003e",
+      "type_id": "TypedServerNetId<struct ItemStackNetIdTag, int32_t, 0>",
       "domain": "item_stack",
       "rationale": "Grouped by the generated type-family prefix; no direct gophertunnel counterpart."
     },
     {
-      "type_id": "TypedServerNetId\u003cstruct RecipeNetIdTag\u003e",
+      "type_id": "TypedServerNetId<struct RecipeNetIdTag>",
       "domain": "recipe",
       "rationale": "Grouped by the generated type-family prefix; no direct gophertunnel counterpart."
     },
@@ -1831,22 +1836,22 @@
       "rationale": "Grouped by the generated type-family prefix; no direct gophertunnel counterpart."
     },
     {
-      "type_id": "cerealizer\u003cNetworkItemInstanceDescriptor\u003e::SerializedData",
+      "type_id": "cerealizer<NetworkItemInstanceDescriptor>::SerializedData",
       "domain": "misc",
       "rationale": "Grouped by the generated type-family prefix; no direct gophertunnel counterpart."
     },
     {
-      "type_id": "cerealizer\u003cNetworkItemStackDescriptor\u003e::SerializedData",
+      "type_id": "cerealizer<NetworkItemStackDescriptor>::SerializedData",
       "domain": "misc",
       "rationale": "Grouped by the generated type-family prefix; no direct gophertunnel counterpart."
     },
     {
-      "type_id": "cerealizer\u003cRecipeIngredient\u003e::SerializedData",
+      "type_id": "cerealizer<RecipeIngredient>::SerializedData",
       "domain": "recipe",
       "rationale": "Grouped by the generated type-family prefix; no direct gophertunnel counterpart."
     },
     {
-      "type_id": "cerealizer\u003cRecipeUnlockingRequirement\u003e::SerializedData",
+      "type_id": "cerealizer<RecipeUnlockingRequirement>::SerializedData",
       "domain": "recipe",
       "rationale": "Grouped by the generated type-family prefix; no direct gophertunnel counterpart."
     },

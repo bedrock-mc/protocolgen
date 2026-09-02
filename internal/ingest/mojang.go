@@ -209,7 +209,7 @@ func lowerMojangFields(lowerer *mojangLowerer, packetID uint32, packetName strin
 			fieldPath = parent + "." + item.name
 		}
 		node := lowerer.lowerSchema(item.object, file, packetName+safeIdentifierName(item.name))
-		if !required[item.name] {
+		if !mojangAlwaysPresent(item.object, required[item.name]) {
 			node = manifest.Optional(node)
 			if hasOption(item.object, "+double-optional") {
 				node = manifest.Optional(node)
@@ -520,6 +520,16 @@ func claimsToFields(input []claims.Claim) []manifest.Field {
 		fields = append(fields, manifest.Field{Ordinal: claim.Ordinal, Name: claim.Name, Semantic: claim.Semantic, TypeID: claim.TypeID, Encode: claim.Encode, Decode: claim.Decode, Symmetry: claim.Symmetry, Reserved: claim.Reserved, Ignored: claim.Ignored, Compatibility: claim.Compatibility, Provenance: manifest.Provenance{Pins: []string{claim.SourceID}}})
 	}
 	return fields
+}
+
+// mojangAlwaysPresent reports whether a property is written unconditionally. Mojang omits a property
+// from "required" when it declares a default, because the default is written in place of an unset value.
+func mojangAlwaysPresent(schema map[string]any, listed bool) bool {
+	if listed {
+		return true
+	}
+	_, defaulted := schema["default"]
+	return defaulted
 }
 
 func requiredNames(raw any) map[string]bool {
