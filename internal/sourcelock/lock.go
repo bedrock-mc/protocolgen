@@ -108,6 +108,9 @@ func DigestDirectory(root string) (string, error) {
 		if directoryEntry.Type()&os.ModeSymlink != 0 {
 			return fmt.Errorf("source tree contains unsupported symlink %s", rel)
 		}
+		if directoryEntry.Name() == ".git" && directoryEntry.Type().IsRegular() {
+			return nil
+		}
 		if directoryEntry.IsDir() {
 			return nil
 		}

@@ -37,6 +37,7 @@ type Lock struct {
 // silently turn an arbitrary mismatch into an accepted result.
 type AcceptedDivergence struct {
 	ID                uint32     `json:"id"`
+	Fingerprint       string     `json:"fingerprint"`
 	Name              string     `json:"name"`
 	Reason            string     `json:"reason"`
 	WhatWouldSettleIt string     `json:"what_would_settle_it"`
@@ -114,6 +115,7 @@ type PacketResult struct {
 	Name                 string       `json:"name"`
 	GophertunnelName     string       `json:"gophertunnel_name,omitempty"`
 	Classification       string       `json:"classification"`
+	Fingerprint          string       `json:"fingerprint,omitempty"`
 	OperationCount       int          `json:"operation_count,omitempty"`
 	Reasons              []string     `json:"reasons,omitempty"`
 	ManifestSequence     []string     `json:"manifest_sequence,omitempty"`
@@ -211,6 +213,8 @@ type extraction struct {
 	Diagnostics []diagnostic
 }
 
+var comparisonSHA = regexp.MustCompile(`^sha256:[a-f0-9]{64}$`)
+
 var fullSHA = regexp.MustCompile(`^[0-9a-fA-F]{40}$`)
 
 func LoadLock(path string) (Lock, error) {
@@ -254,6 +258,9 @@ func LoadAccepted(path string) (AcceptedFile, error) {
 	for _, entry := range accepted.Divergences {
 		if entry.ID == 0 || entry.Name == "" || strings.TrimSpace(entry.Reason) == "" || strings.TrimSpace(entry.WhatWouldSettleIt) == "" || len(entry.Evidence) == 0 {
 			return AcceptedFile{}, fmt.Errorf("accepted divergence %d is incomplete", entry.ID)
+		}
+		if !comparisonSHA.MatchString(entry.Fingerprint) {
+			return AcceptedFile{}, fmt.Errorf("accepted divergence %d has no exact comparison fingerprint", entry.ID)
 		}
 		for _, evidence := range entry.Evidence {
 			if strings.TrimSpace(evidence.Locator) == "" || strings.TrimSpace(evidence.Summary) == "" {

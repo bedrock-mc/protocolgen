@@ -35,16 +35,38 @@ jobs:
       - name: Fetch pinned protocol sources
         run: |
           git clone --filter=blob:none --no-checkout https://github.com/Mojang/bedrock-protocol-docs.git "$RUNNER_TEMP/protocolgen-mojang"
-          git -C "$RUNNER_TEMP/protocolgen-mojang" checkout --detach 0e00fe80f4f3c71572ff6429de40146d1f4412fc
+          git -C "$RUNNER_TEMP/protocolgen-mojang" checkout --detach "$(jq -r ' .sources[] | select(.id == "mojang") | .revision' generated/1.26.40/source-lock.json)"
           git clone --filter=blob:none --no-checkout https://github.com/EndstoneMC/protocol-docs.git "$RUNNER_TEMP/protocolgen-endstone"
-          git -C "$RUNNER_TEMP/protocolgen-endstone" checkout --detach a25dea184832f8b0911d669bad400f43bedde1dd
+          git -C "$RUNNER_TEMP/protocolgen-endstone" checkout --detach "$(jq -r ' .sources[] | select(.id == "endstone") | .revision' generated/1.26.40/source-lock.json)"
 
       - name: Regenerate and verify
         run: |
           make verify \
             GO_CACHE="$RUNNER_TEMP/protocolgen-go-cache" \
+            ORACLE_REPORT="$RUNNER_TEMP/gophertunnel-report.json" \
             MOJANG_DIR="$RUNNER_TEMP/protocolgen-mojang/json" \
             ENDSTONE_DIR="$RUNNER_TEMP/protocolgen-endstone"
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+
+      - name: Regenerate and verify 1.26.50
+        run: |
+          git -C "$RUNNER_TEMP/protocolgen-mojang" worktree add --detach "$RUNNER_TEMP/protocolgen-mojang-2187" "$(jq -r '.sources[] | select(.id == "mojang") | .revision' generated/1.26.50/source-lock.json)"
+          git -C "$RUNNER_TEMP/protocolgen-endstone" worktree add --detach "$RUNNER_TEMP/protocolgen-endstone-2187" "$(jq -r '.sources[] | select(.id == "endstone") | .revision' generated/1.26.50/source-lock.json)"
+          make verify-1.26.50 \
+            GO_CACHE="$RUNNER_TEMP/protocolgen-go-cache" \
+            MOJANG_DIR="$RUNNER_TEMP/protocolgen-mojang-2187/json" \
+            ENDSTONE_DIR="$RUNNER_TEMP/protocolgen-endstone-2187"
+
+      - name: Preserve oracle comparison report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gophertunnel-oracle-2168
+          path: ${{ runner.temp }}/gophertunnel-report.json
+          if-no-files-found: warn
 
       - name: Build
         run: |
@@ -68,7 +90,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        version: ['1.26.40', '1.26.44']
+        version: ['1.26.40', '1.26.44', '1.26.50']
     defaults:
       run:
         working-directory: generated/${{ matrix.version }}/rust
@@ -76,6 +98,8 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
 
       - name: Cache Cargo
         uses: actions/cache@v4

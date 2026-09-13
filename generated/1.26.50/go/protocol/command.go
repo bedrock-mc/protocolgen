@@ -185,6 +185,7 @@ type CommandOutputData struct {
 func (x *CommandOutputData) Marshal(io IO) {
 	io.String(&x.OutputType)
 	io.Uint32(&x.SuccessCount)
+	Minimum(io, &x.SuccessCount, 0)
 	Slice(io, &x.OutputMessages)
 	OptionalFunc(io, &x.DataSet, io.String)
 }

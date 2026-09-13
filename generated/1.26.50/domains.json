@@ -511,14 +511,19 @@
       "rationale": "Matches the gophertunnel protocol domain file layout."
     },
     {
-      "type_id": "CommandOutput",
+      "type_id": "CommandOutput.json#",
       "domain": "command",
       "rationale": "Grouped by the generated type-family prefix; no direct gophertunnel counterpart."
     },
     {
-      "type_id": "CommandOutputMessage",
+      "type_id": "CommandOutputMessage.json#",
       "domain": "command",
       "rationale": "Matches the gophertunnel protocol domain file layout."
+    },
+    {
+      "type_id": "CommandOutputType.json#",
+      "domain": "command",
+      "rationale": "The output type belongs to the shared command-output payload."
     },
     {
       "type_id": "CommandPermissionLevel.json#",

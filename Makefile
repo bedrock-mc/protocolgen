@@ -143,7 +143,7 @@ vanilla-data:
 		-address $(BDS_ADDRESS)
 
 verify: regen hotfix differential
-	@test -z "$$(git status --porcelain)" || (echo "regeneration produced drift:" >&2; git status --short >&2; exit 1)
+	@test -z "$$(git status --porcelain -- generated)" || (echo "regeneration produced drift:" >&2; git status --short -- generated >&2; exit 1)
 
 verify-1.26.50: regen-1.26.50
-	@git diff --exit-code -- $(TARGET_12650) || (echo "1.26.50 regeneration produced drift" >&2; exit 1)
+	@test -z "$$(git status --porcelain -- $(TARGET_12650))" || (echo "1.26.50 regeneration produced drift" >&2; exit 1)

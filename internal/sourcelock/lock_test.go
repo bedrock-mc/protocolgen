@@ -47,4 +47,31 @@ func TestDirectoryDigestIsStableAndExcludesGitMetadata(t *testing.T) {
 	if first != second {
 		t.Fatalf("digest changed after .git metadata: %q != %q", first, second)
 	}
+	if err := os.RemoveAll(filepath.Join(root, ".git")); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(root, ".git"), []byte("gitdir: /different/worktree/location\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	worktree, err := DigestDirectory(root)
+	if err != nil {
+		t.Fatalf("DigestDirectory worktree: %v", err)
+	}
+	if first != worktree {
+		t.Fatalf("digest changed for worktree metadata: %q != %q", first, worktree)
+	}
+}
+
+func TestDirectoryDigestRejectsSymlinksIncludingGitMetadata(t *testing.T) {
+	for _, name := range []string{"schema.json", ".git"} {
+		t.Run(name, func(t *testing.T) {
+			root := t.TempDir()
+			if err := os.Symlink(t.TempDir(), filepath.Join(root, name)); err != nil {
+				t.Fatal(err)
+			}
+			if _, err := DigestDirectory(root); err == nil || !strings.Contains(err.Error(), "unsupported symlink") {
+				t.Fatalf("DigestDirectory error = %v, want symlink rejection", err)
+			}
+		})
+	}
 }

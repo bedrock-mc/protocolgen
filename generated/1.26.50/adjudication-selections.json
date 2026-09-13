@@ -542,19 +542,24 @@
       "id": "protocol-2187-reviewed-042",
       "target": "PrimitiveShapesPacket.Array of primitive shapes (can be a mix of new, updated or removed)",
       "selected_source": "endstone",
+      "reason": "Select the exact BDS graph with the existing evidenced ActorRuntimeID correction. LineGapHeight is an always-present float: the target graph has no optional marker and Mojang supplies default 0. Only BackgroundColor is optional in TextDataPayload.",
       "evidence": [
         {
           "source_id": "lens",
           "locator": "https://github.com/HashimTheArab/lens-mcp/tree/bf48807f236cdc02a44f80d90124323a6b6522a4",
-          "summary": "The pinned directional trace identifies the exact BDS writer, client reader, ordered binding, runtime actor ID, optionals, union selector, and TextDataPayload layout."
+          "summary": "The pinned binding identifies Attached To Entity ID as optional ActorRuntimeID/var_u64; retain that independent semantic correction."
+        },
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/EndstoneMC/protocol-docs/blob/ce91c055d73000e26a25020c5a0799621e56ed13/types/TextDataPayload.json",
+          "summary": "The exact target runtime graph marks BackgroundColor optional and LineGapHeight as plain float."
         },
         {
           "source_id": "mojang",
-          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
-          "summary": "The exact target Mojang schema independently supplies field order, variant semantics, and the optional LineGapHeight field."
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/blob/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json/TextDataPayload.json",
+          "summary": "LineGapHeight has default 0; BackgroundColor has no default. Missing required entries with defaults do not establish presence markers."
         }
-      ],
-      "reason": "Select the corrected exact BDS sender claim after the pinned Lens trace resolves Attached To Entity ID as optional ActorRuntimeID/var_u64, LineGapHeight as optional, and confirms the active client read path."
+      ]
     },
     {
       "id": "protocol-2187-reviewed-043",

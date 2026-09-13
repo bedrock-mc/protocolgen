@@ -51,6 +51,9 @@ func CompareFile(options Options) (Report, error) {
 	if options.FailOnUnaccepted && len(report.Unaccepted) > 0 {
 		return report, fmt.Errorf("%d unaccepted gophertunnel wire divergence(s): %s", len(report.Unaccepted), joinIDs(report.Unaccepted))
 	}
+	if options.FailOnUnaccepted && len(report.ResolvedAccepted) > 0 {
+		return report, fmt.Errorf("stale accepted gophertunnel divergence(s) require review: %s", joinIDs(report.ResolvedAccepted))
+	}
 	return report, nil
 }
 
@@ -75,6 +78,7 @@ func Compare(canonical manifest.Manifest, source extraction, lock Lock, accepted
 		sourceByID[packet.ID] = packet
 	}
 	canonicalIDs := make(map[uint32]bool, len(canonical.Packets))
+	divergentIDs := make(map[uint32]bool)
 	for _, packet := range canonical.Packets {
 		canonicalIDs[packet.ID] = true
 		result := PacketResult{ID: packet.ID, Name: packet.Name}
@@ -115,6 +119,7 @@ func Compare(canonical manifest.Manifest, source extraction, lock Lock, accepted
 			continue
 		}
 		result.Classification = "DIVERGENCE"
+		divergentIDs[packet.ID] = true
 		if len(wantPaths) > 0 {
 			result.ManifestSequence = atomDisplays(wantPaths[0].Atoms)
 		}
@@ -130,9 +135,17 @@ func Compare(canonical manifest.Manifest, source extraction, lock Lock, accepted
 			}
 		}
 		report.Counts.Divergence++
-		if _, accepted := acceptedByID[packet.ID]; accepted {
+		var err error
+		result.Fingerprint, err = divergenceFingerprint(packet, oracle, result.Paths, lock)
+		if err != nil {
+			result.Reasons = append(result.Reasons, "cannot fingerprint divergence: "+err.Error())
+		}
+		if entry, accepted := acceptedByID[packet.ID]; accepted && result.Fingerprint != "" && entry.Fingerprint == result.Fingerprint {
 			report.Accepted = append(report.Accepted, packet.ID)
 		} else {
+			if _, exists := acceptedByID[packet.ID]; exists {
+				result.Reasons = append(result.Reasons, "reviewed comparison fingerprint changed; re-review both input shapes")
+			}
 			report.Unaccepted = append(report.Unaccepted, packet.ID)
 		}
 		report.Packets = append(report.Packets, result)
@@ -143,7 +156,7 @@ func Compare(canonical manifest.Manifest, source extraction, lock Lock, accepted
 		}
 	}
 	for _, entry := range accepted.Divergences {
-		if !containsID(report.Accepted, entry.ID) {
+		if !divergentIDs[entry.ID] {
 			report.ResolvedAccepted = append(report.ResolvedAccepted, entry.ID)
 		}
 	}
@@ -170,6 +183,9 @@ func onlyPathExpansionReasons(reasons []string) bool {
 func comparePaths(want, got []wirePath) ([]PathResult, []string, bool) {
 	want = uniqueWirePaths(want)
 	got = uniqueWirePaths(got)
+	if paths, ok := missingVariantMetadataPaths(want, got); ok {
+		return paths, []string{missingVariantMetadataReason}, false
+	}
 	var results []PathResult
 	var reasons []string
 	divergent := false

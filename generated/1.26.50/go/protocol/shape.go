@@ -65,7 +65,7 @@ type TextShape struct {
 	// BackgroundColor is the RGBA colour to use for the text background. This is a translucent black
 	// colour by default.
 	BackgroundColor Optional[color.RGBA]
-	LineGapHeight   Optional[float32]
+	LineGapHeight   float32
 	// DepthTest is whether the text should show through walls. Use true for default behaviour.
 	DepthTest bool
 	// ShowBackface is if the background should render on the back side of the shape. This only has a
@@ -85,7 +85,7 @@ func (x *TextShape) Marshal(io IO) {
 	io.String(&x.Text)
 	io.Bool(&x.UseRotation)
 	OptionalFunc(io, &x.BackgroundColor, io.RGBA)
-	OptionalFunc(io, &x.LineGapHeight, io.Float32)
+	io.Float32(&x.LineGapHeight)
 	io.Bool(&x.DepthTest)
 	io.Bool(&x.ShowBackface)
 	io.Bool(&x.ShowTextBackface)

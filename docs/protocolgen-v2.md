@@ -195,22 +195,23 @@ scalar counts, and union discriminants stay distinct, while fixed-array wrapper
 grouping is compared by its repeated scalar wire values. A marshal the
 extractor cannot statically resolve is `UNRESOLVED` rather than agreement.
 Accepted divergences in `tools/gophertunnel-oracle/accepted-divergences.json`
-require a reason, at least one evidence locator, and a concrete
-`what_would_settle_it`; they record an open question about one packet and are
-rebuilt from actual run output rather than carried forward.
+require a reason, evidence, settlement criteria, and an exact comparison
+fingerprint. They record open comparison questions, not proof of correctness;
+changed inputs or compared paths require renewed review. See
+[the automation audit](automation-readiness.md) for the complete inventory.
 
 ## Gaps deliberately left fail-closed
 
-- This is not full 2168 packet coverage and no live/proprietary corpus is
-  committed.
+- Shared packet-pool corpus coverage does not prove every branch or value.
+  Independent live coverage and narrower differential allowances remain needed.
 - NBT requires a bounded/profile codec in the synthetic interpreter; recursive
   nodes require a profile codec; conditional decode needs discriminator
   context.
 - The Rust emitter provides symmetric encode/decode over an owning slice
   runtime; borrowed packet views remain downstream work. Go emits canonical
-  Marshal logic, but a concrete standalone byte reader/writer or gophertunnel
-  adapter remains downstream work. The older gophertunnel generator remains a
-  narrow `go/ast` assistive adapter.
+  Marshal logic, concrete Reader/Writer implementations, and packet pools.
+  Consumer adoption still needs integration tests. The older gophertunnel
+  generator remains a narrow `go/ast` assistive adapter.
 - Superseded v1 generators are retired; migration history remains under
   `migration/axolotl-protocol/`.
   They are not v2 inputs or emitters and do not weaken v2 validation.

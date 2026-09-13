@@ -2587,212 +2587,247 @@
   {
     "id": "protocol-2187-gophertunnel-packet-348-field-1",
     "target": "ClientboundUpdateSoundDataPacket.Stop",
-    "pre_patch_context_sha256": "sha256:7db04b6ce06fcbd8b678685318d11261c5bfd64161eeae8be92bc92693255721",
+    "pre_patch_context_sha256": "sha256:202abaedf424dbf1971f77a2bff655703293f5dd8244da2517ba82aaeb9bec72",
     "claims": [
       {
         "source_id": "endstone",
-        "digest": "sha256:8888b01602d021247aa12e75676a48b5c6828104e0bccde9e314a174f587b69c"
+        "digest": "sha256:cbd7a96a7ad9efe530e0b0d6c5ac92c50f1c484e0440d76102d90cb8204c72cc"
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:5e37eaeb6cc3ef619823de6c4bc7018371e00262122fd4673568f5bcd13c9414"
+        "digest": "sha256:3d8096875922b9064f1da772cf6b658092e89334a6246591de324ee1904ecde3"
       }
     ],
     "selected_source": "endstone",
     "evidence": [
       {
         "source_id": "endstone",
-        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/clientbound_update_sound_data.go#L25",
-        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+        "locator": "https://github.com/EndstoneMC/protocol-docs/blob/ce91c055d73000e26a25020c5a0799621e56ed13/packets/ClientboundUpdateSoundDataPacket.json",
+        "summary": "The exact target runtime graph declares this slot as an unconditional discriminated union."
+      },
+      {
+        "source_id": "mojang",
+        "locator": "https://github.com/Mojang/bedrock-protocol-docs/blob/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json/ClientboundUpdateSoundDataPacketPayload.json",
+        "summary": "All seven sound slots have default objects; omission from required does not establish optional presence markers."
       },
       {
         "source_id": "endstone",
         "locator": "packets/ClientboundUpdateSoundDataPacket.json#/fields/1",
-        "claim_fingerprint": "sha256:8888b01602d021247aa12e75676a48b5c6828104e0bccde9e314a174f587b69c",
-        "summary": "The exact target source claim is byte-equivalent to the previous canonical wire field."
+        "claim_fingerprint": "sha256:cbd7a96a7ad9efe530e0b0d6c5ac92c50f1c484e0440d76102d90cb8204c72cc",
+        "summary": "Exact target source claim selected by this reviewed adjudication."
       }
     ],
-    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary. Carried forward only after byte-equivalence with the previous canonical field was verified."
+    "reason": "Select the complete exact BDS graph union. This sound slot has no optional marker in the runtime graph, and Mojang supplies a default object rather than an optional presence byte. The older gophertunnel optional wrapper conflicts with these target sources."
   },
   {
     "id": "protocol-2187-gophertunnel-packet-348-field-2",
     "target": "ClientboundUpdateSoundDataPacket.SetVolume",
-    "pre_patch_context_sha256": "sha256:7ce4ff747ea4025198562b9beaa9ac3a4795749e4f936527312b032bd2694c5c",
+    "pre_patch_context_sha256": "sha256:9848726bc019e284bb95ea4495a2a49e50ddb80a622d8a05fb2832676c53beab",
     "claims": [
       {
         "source_id": "endstone",
-        "digest": "sha256:2864663ff3e6e2987e2a3002817b7d852088becda149741d97051f74dc72d666"
+        "digest": "sha256:3e9b221d5299bb525e4fe41f8c0eb661f1a26e42b549237790eaf028492d7fc5"
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:03e19f88e6caa883c2cd281c4b240f086ce2c382ff9a6f1378b556cc4907ce56"
+        "digest": "sha256:c6b781c4c30f1f59ef126190875acf5ed7da7852511764292715a58bda2f8c4d"
       }
     ],
     "selected_source": "endstone",
     "evidence": [
       {
         "source_id": "endstone",
-        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/clientbound_update_sound_data.go#L25",
-        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+        "locator": "https://github.com/EndstoneMC/protocol-docs/blob/ce91c055d73000e26a25020c5a0799621e56ed13/packets/ClientboundUpdateSoundDataPacket.json",
+        "summary": "The exact target runtime graph declares this slot as an unconditional discriminated union."
+      },
+      {
+        "source_id": "mojang",
+        "locator": "https://github.com/Mojang/bedrock-protocol-docs/blob/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json/ClientboundUpdateSoundDataPacketPayload.json",
+        "summary": "All seven sound slots have default objects; omission from required does not establish optional presence markers."
       },
       {
         "source_id": "endstone",
         "locator": "packets/ClientboundUpdateSoundDataPacket.json#/fields/2",
-        "claim_fingerprint": "sha256:2864663ff3e6e2987e2a3002817b7d852088becda149741d97051f74dc72d666",
-        "summary": "The exact target source claim is byte-equivalent to the previous canonical wire field."
+        "claim_fingerprint": "sha256:3e9b221d5299bb525e4fe41f8c0eb661f1a26e42b549237790eaf028492d7fc5",
+        "summary": "Exact target source claim selected by this reviewed adjudication."
       }
     ],
-    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary. Carried forward only after byte-equivalence with the previous canonical field was verified."
+    "reason": "Select the complete exact BDS graph union. This sound slot has no optional marker in the runtime graph, and Mojang supplies a default object rather than an optional presence byte. The older gophertunnel optional wrapper conflicts with these target sources."
   },
   {
     "id": "protocol-2187-gophertunnel-packet-348-field-3",
     "target": "ClientboundUpdateSoundDataPacket.SetPitch",
-    "pre_patch_context_sha256": "sha256:6051f413c8a8b945c82d0db4846643d08add105806e2e6071886d8d0075a48b3",
+    "pre_patch_context_sha256": "sha256:a1cca5621d9d988c7ebed7a8b3ae3ba9ccc198ddb14c8f47ebba56cebb6a1209",
     "claims": [
       {
         "source_id": "endstone",
-        "digest": "sha256:9c9d56e8e892456521ace1b8eb549b3b360b5f930f96fdf7ac85f50b95ac6e89"
+        "digest": "sha256:6129e704ff12c587526834a696cfc89a308bd18b763bb45d53e331dae6496ad8"
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:e36a50cc2836e5dad8fb7e0cdfcd2c54b2a6fe7f052ea98372da4702640b67b4"
+        "digest": "sha256:e1d5b0b85aafc2bf7748670a3ad3ed2e432e5ac1468aa3bba1b817de5044df25"
       }
     ],
     "selected_source": "endstone",
     "evidence": [
       {
         "source_id": "endstone",
-        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/clientbound_update_sound_data.go#L25",
-        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+        "locator": "https://github.com/EndstoneMC/protocol-docs/blob/ce91c055d73000e26a25020c5a0799621e56ed13/packets/ClientboundUpdateSoundDataPacket.json",
+        "summary": "The exact target runtime graph declares this slot as an unconditional discriminated union."
+      },
+      {
+        "source_id": "mojang",
+        "locator": "https://github.com/Mojang/bedrock-protocol-docs/blob/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json/ClientboundUpdateSoundDataPacketPayload.json",
+        "summary": "All seven sound slots have default objects; omission from required does not establish optional presence markers."
       },
       {
         "source_id": "endstone",
         "locator": "packets/ClientboundUpdateSoundDataPacket.json#/fields/3",
-        "claim_fingerprint": "sha256:9c9d56e8e892456521ace1b8eb549b3b360b5f930f96fdf7ac85f50b95ac6e89",
-        "summary": "The exact target source claim is byte-equivalent to the previous canonical wire field."
+        "claim_fingerprint": "sha256:6129e704ff12c587526834a696cfc89a308bd18b763bb45d53e331dae6496ad8",
+        "summary": "Exact target source claim selected by this reviewed adjudication."
       }
     ],
-    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary. Carried forward only after byte-equivalence with the previous canonical field was verified."
+    "reason": "Select the complete exact BDS graph union. This sound slot has no optional marker in the runtime graph, and Mojang supplies a default object rather than an optional presence byte. The older gophertunnel optional wrapper conflicts with these target sources."
   },
   {
     "id": "protocol-2187-gophertunnel-packet-348-field-4",
     "target": "ClientboundUpdateSoundDataPacket.Fade",
-    "pre_patch_context_sha256": "sha256:e3b83a6c43acc63d0e8cd09032f52de261ceab6dbb36eb010970b34142877057",
+    "pre_patch_context_sha256": "sha256:696c338b9a18a5dbe8189e5959d50a6310fc761f4af63f2e4bc48fa5c9a3ce1d",
     "claims": [
       {
         "source_id": "endstone",
-        "digest": "sha256:4ab3d138a98ec20970ee5ce7c17dd8e63e6adad0db60726e47ad5cf3d9f1aa2b"
+        "digest": "sha256:878d6df53b66f6a918595549e3cb54e5a117c590fac1486c2ee01c1938ecb82b"
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:6534d0de76ffb057b2c7262544173e13537c65eda1806c53528047293917554a"
+        "digest": "sha256:71fc17be0a2b351ba4482f2cc2aa8dd341b8e943d1e3e771d88b3362193924c7"
       }
     ],
     "selected_source": "endstone",
     "evidence": [
       {
         "source_id": "endstone",
-        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/clientbound_update_sound_data.go#L25",
-        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+        "locator": "https://github.com/EndstoneMC/protocol-docs/blob/ce91c055d73000e26a25020c5a0799621e56ed13/packets/ClientboundUpdateSoundDataPacket.json",
+        "summary": "The exact target runtime graph declares this slot as an unconditional discriminated union."
+      },
+      {
+        "source_id": "mojang",
+        "locator": "https://github.com/Mojang/bedrock-protocol-docs/blob/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json/ClientboundUpdateSoundDataPacketPayload.json",
+        "summary": "All seven sound slots have default objects; omission from required does not establish optional presence markers."
       },
       {
         "source_id": "endstone",
         "locator": "packets/ClientboundUpdateSoundDataPacket.json#/fields/4",
-        "claim_fingerprint": "sha256:4ab3d138a98ec20970ee5ce7c17dd8e63e6adad0db60726e47ad5cf3d9f1aa2b",
-        "summary": "The exact target source claim is byte-equivalent to the previous canonical wire field."
+        "claim_fingerprint": "sha256:878d6df53b66f6a918595549e3cb54e5a117c590fac1486c2ee01c1938ecb82b",
+        "summary": "Exact target source claim selected by this reviewed adjudication."
       }
     ],
-    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary. Carried forward only after byte-equivalence with the previous canonical field was verified."
+    "reason": "Select the complete exact BDS graph union. This sound slot has no optional marker in the runtime graph, and Mojang supplies a default object rather than an optional presence byte. The older gophertunnel optional wrapper conflicts with these target sources."
   },
   {
     "id": "protocol-2187-gophertunnel-packet-348-field-5",
     "target": "ClientboundUpdateSoundDataPacket.SeekTo",
-    "pre_patch_context_sha256": "sha256:12564d7f26761b00b0e657341b8ccef5b51b2e3876f76ff7dddc9b40b22c5cb4",
+    "pre_patch_context_sha256": "sha256:dde94c34456e7789fced7482ada6631f932def2b49e837629d7ad69e6a5dd71e",
     "claims": [
       {
         "source_id": "endstone",
-        "digest": "sha256:435ca8fa16b260a9715a18c7e5c22c9c9065403d448d91e32971add215113732"
+        "digest": "sha256:6c1eaa0bbefdf714bcb62f72d27b072c6c241b2724f7f20a883372dbb16ad49b"
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:1e31bbb329da618443e4bd766c274891af1f418198c4aa5b83cfebba4833d54e"
+        "digest": "sha256:040b98b69217dbdd0735f0d2096f8a2bfad78379a38263cef4a986ec45289208"
       }
     ],
     "selected_source": "endstone",
     "evidence": [
       {
         "source_id": "endstone",
-        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/clientbound_update_sound_data.go#L25",
-        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+        "locator": "https://github.com/EndstoneMC/protocol-docs/blob/ce91c055d73000e26a25020c5a0799621e56ed13/packets/ClientboundUpdateSoundDataPacket.json",
+        "summary": "The exact target runtime graph declares this slot as an unconditional discriminated union."
+      },
+      {
+        "source_id": "mojang",
+        "locator": "https://github.com/Mojang/bedrock-protocol-docs/blob/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json/ClientboundUpdateSoundDataPacketPayload.json",
+        "summary": "All seven sound slots have default objects; omission from required does not establish optional presence markers."
       },
       {
         "source_id": "endstone",
         "locator": "packets/ClientboundUpdateSoundDataPacket.json#/fields/5",
-        "claim_fingerprint": "sha256:435ca8fa16b260a9715a18c7e5c22c9c9065403d448d91e32971add215113732",
-        "summary": "The exact target source claim is byte-equivalent to the previous canonical wire field."
+        "claim_fingerprint": "sha256:6c1eaa0bbefdf714bcb62f72d27b072c6c241b2724f7f20a883372dbb16ad49b",
+        "summary": "Exact target source claim selected by this reviewed adjudication."
       }
     ],
-    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary. Carried forward only after byte-equivalence with the previous canonical field was verified."
+    "reason": "Select the complete exact BDS graph union. This sound slot has no optional marker in the runtime graph, and Mojang supplies a default object rather than an optional presence byte. The older gophertunnel optional wrapper conflicts with these target sources."
   },
   {
     "id": "protocol-2187-gophertunnel-packet-348-field-6",
     "target": "ClientboundUpdateSoundDataPacket.Pause",
-    "pre_patch_context_sha256": "sha256:86145ab90f7f30c0baa77495fff40a482f2dac8f47db748945822f20d255d6b8",
+    "pre_patch_context_sha256": "sha256:dbeaba25eb23cd350b3ae68cdac22237871a7b8bf006177d6a0a98a5184141e5",
     "claims": [
       {
         "source_id": "endstone",
-        "digest": "sha256:536970744420fb700297123beaab13bfa61cc97764e24dac135759916dd9c2f7"
+        "digest": "sha256:634f6b9afeb04d5f16a2785a92fc2fdd58d2fc033e39484ffc5a0132ea0cfce5"
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:28ddc6ee8f0e876ce2de3768d9400ad941ccc5ec30a16859dbb13b3b199bccc6"
+        "digest": "sha256:0497a3e8cdcc5461d383658a6fffb4a7bb250f72490f380ac06ed522f76d65e6"
       }
     ],
     "selected_source": "endstone",
     "evidence": [
       {
         "source_id": "endstone",
-        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/clientbound_update_sound_data.go#L25",
-        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+        "locator": "https://github.com/EndstoneMC/protocol-docs/blob/ce91c055d73000e26a25020c5a0799621e56ed13/packets/ClientboundUpdateSoundDataPacket.json",
+        "summary": "The exact target runtime graph declares this slot as an unconditional discriminated union."
+      },
+      {
+        "source_id": "mojang",
+        "locator": "https://github.com/Mojang/bedrock-protocol-docs/blob/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json/ClientboundUpdateSoundDataPacketPayload.json",
+        "summary": "All seven sound slots have default objects; omission from required does not establish optional presence markers."
       },
       {
         "source_id": "endstone",
         "locator": "packets/ClientboundUpdateSoundDataPacket.json#/fields/6",
-        "claim_fingerprint": "sha256:536970744420fb700297123beaab13bfa61cc97764e24dac135759916dd9c2f7",
-        "summary": "The exact target source claim is byte-equivalent to the previous canonical wire field."
+        "claim_fingerprint": "sha256:634f6b9afeb04d5f16a2785a92fc2fdd58d2fc033e39484ffc5a0132ea0cfce5",
+        "summary": "Exact target source claim selected by this reviewed adjudication."
       }
     ],
-    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary. Carried forward only after byte-equivalence with the previous canonical field was verified."
+    "reason": "Select the complete exact BDS graph union. This sound slot has no optional marker in the runtime graph, and Mojang supplies a default object rather than an optional presence byte. The older gophertunnel optional wrapper conflicts with these target sources."
   },
   {
     "id": "protocol-2187-gophertunnel-packet-348-field-7",
     "target": "ClientboundUpdateSoundDataPacket.Resume",
-    "pre_patch_context_sha256": "sha256:401a81140aeb5a0b8540c460306df10f1ca208d4638baa11da7ea747c47c48e9",
+    "pre_patch_context_sha256": "sha256:04467867582cb342760e98d9511af8b72e5c53b29eea4eb5b7efd92dccd910af",
     "claims": [
       {
         "source_id": "endstone",
-        "digest": "sha256:3fd0fecee37697b953dba66db3694effb42be5880d72ddfbf4a1c5ebdabf4842"
+        "digest": "sha256:d95013636a3688bfbf3e8bdfb4f9abc39ad8b47e7fc79751553b2fd1b65b99be"
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:0f29bd6358cadb04bb01937a854ace1dfeeabbbcfad5c4a0348f5151a8252ca2"
+        "digest": "sha256:d650f91126463d90458d75a043a984fbde8121b0d351829df7283c9630141e5e"
       }
     ],
     "selected_source": "endstone",
     "evidence": [
       {
         "source_id": "endstone",
-        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/clientbound_update_sound_data.go#L25",
-        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
+        "locator": "https://github.com/EndstoneMC/protocol-docs/blob/ce91c055d73000e26a25020c5a0799621e56ed13/packets/ClientboundUpdateSoundDataPacket.json",
+        "summary": "The exact target runtime graph declares this slot as an unconditional discriminated union."
+      },
+      {
+        "source_id": "mojang",
+        "locator": "https://github.com/Mojang/bedrock-protocol-docs/blob/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json/ClientboundUpdateSoundDataPacketPayload.json",
+        "summary": "All seven sound slots have default objects; omission from required does not establish optional presence markers."
       },
       {
         "source_id": "endstone",
         "locator": "packets/ClientboundUpdateSoundDataPacket.json#/fields/7",
-        "claim_fingerprint": "sha256:3fd0fecee37697b953dba66db3694effb42be5880d72ddfbf4a1c5ebdabf4842",
-        "summary": "The exact target source claim is byte-equivalent to the previous canonical wire field."
+        "claim_fingerprint": "sha256:d95013636a3688bfbf3e8bdfb4f9abc39ad8b47e7fc79751553b2fd1b65b99be",
+        "summary": "Exact target source claim selected by this reviewed adjudication."
       }
     ],
-    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary. Carried forward only after byte-equivalence with the previous canonical field was verified."
+    "reason": "Select the complete exact BDS graph union. This sound slot has no optional marker in the runtime graph, and Mojang supplies a default object rather than an optional presence byte. The older gophertunnel optional wrapper conflicts with these target sources."
   },
   {
     "id": "protocol-2187-gophertunnel-packet-349-field-1",
@@ -3732,7 +3767,7 @@
   {
     "id": "protocol-2187-packet-122-field-0",
     "target": "BiomeDefinitionListPacket.Map of Biome names to data",
-    "pre_patch_context_sha256": "sha256:217cc609212633001feac4d539c6596f4db87ea71ec42176967bca062c90fe1f",
+    "pre_patch_context_sha256": "sha256:c4b2a1b2878fc1090fb3c9a675664c2bb16a25b08abe714c37eef20f77912635",
     "claims": [
       {
         "source_id": "endstone",
@@ -3740,7 +3775,7 @@
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:3c6bc91bface8f8910b8ef8c60addb32747d5c3e24d46e93b8feed83d08d0d96"
+        "digest": "sha256:956a17611a5c6f3cd84b1d54a47420585dc8451af76082f261ea31dfc9997914"
       }
     ],
     "selected_source": "endstone",
@@ -3792,7 +3827,7 @@
   {
     "id": "protocol-2187-packet-300-field-0",
     "target": "CameraInstructionPacket.Camera Instruction",
-    "pre_patch_context_sha256": "sha256:2a64af4a325ecb66078111a6376f4da1a7254d0e0ea450a60d5d54f2f06e5826",
+    "pre_patch_context_sha256": "sha256:21fc0df9a740cc17b6fddd441755ca3f0e8af946097e873f94871dffed66e9d2",
     "claims": [
       {
         "source_id": "endstone",
@@ -3800,7 +3835,7 @@
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:885387c9c0f00b627456bb2a5e85dc0abe5556b25c7abc0eb9e794c4b396f9ad"
+        "digest": "sha256:67cf4f46e4770c05a160c921faa4b4f6aa972e9f58217c11aee0eec1693745be"
       }
     ],
     "selected_source": "endstone",
@@ -4062,7 +4097,7 @@
   {
     "id": "protocol-2187-packet-79-field-1",
     "target": "CommandOutputPacket.Output",
-    "pre_patch_context_sha256": "sha256:ccc903a33c9244f7c3844ca75af02428bf094b4fefa1574fe5b7f25f4e4805c5",
+    "pre_patch_context_sha256": "sha256:edebd8587fdd6c38b531322b7287fe296a4a97a2b30790e716cdc7e40fafab88",
     "claims": [
       {
         "source_id": "endstone",
@@ -4070,7 +4105,7 @@
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:f61f3de62b33439e54837365e11a724e84f39de7e3a21b5b849f4b5b66b37435"
+        "digest": "sha256:84b6eb0d20a5837ae22744654e91e30ed085734c6e735d5c2d616537f171a99a"
       }
     ],
     "selected_source": "endstone",
@@ -5352,15 +5387,15 @@
   {
     "id": "protocol-2187-reviewed-042",
     "target": "PrimitiveShapesPacket.Array of primitive shapes (can be a mix of new, updated or removed)",
-    "pre_patch_context_sha256": "sha256:1657edfeccc51c922ea36f52d0ad4c79abfe50fdff4c07e8b64e92c2c40f4b02",
+    "pre_patch_context_sha256": "sha256:0d6d7e351946c650ce68e405a13ebe50be680767197410a14b1a7d7c103dc77c",
     "claims": [
       {
         "source_id": "endstone",
-        "digest": "sha256:0461cef1947e18a56288d93fd67d755e2448ecb4cd92c52ff78a02c0d81f25e8"
+        "digest": "sha256:7e3e77d263bf7f411bfe939f6f895970e75cdca6114ba54fae5ecd3c9af8a32f"
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:82fc15522e2e7b25dcf5edb1dfc6f5c0d2efd3013668d88074342a39d69f04ec"
+        "digest": "sha256:231e34c7c7f836b7552aef9064ff0af779e9b42b6e6a477636c91d85b2e906f1"
       }
     ],
     "selected_source": "endstone",
@@ -5368,21 +5403,26 @@
       {
         "source_id": "lens",
         "locator": "https://github.com/HashimTheArab/lens-mcp/tree/bf48807f236cdc02a44f80d90124323a6b6522a4",
-        "summary": "The pinned directional trace identifies the exact BDS writer, client reader, ordered binding, runtime actor ID, optionals, union selector, and TextDataPayload layout."
+        "summary": "The pinned binding identifies Attached To Entity ID as optional ActorRuntimeID/var_u64; retain that independent semantic correction."
+      },
+      {
+        "source_id": "endstone",
+        "locator": "https://github.com/EndstoneMC/protocol-docs/blob/ce91c055d73000e26a25020c5a0799621e56ed13/types/TextDataPayload.json",
+        "summary": "The exact target runtime graph marks BackgroundColor optional and LineGapHeight as plain float."
       },
       {
         "source_id": "mojang",
-        "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json",
-        "summary": "The exact target Mojang schema independently supplies field order, variant semantics, and the optional LineGapHeight field."
+        "locator": "https://github.com/Mojang/bedrock-protocol-docs/blob/e0a1dad9341b85d3191f998c3d84b7d2c96e6c81/json/TextDataPayload.json",
+        "summary": "LineGapHeight has default 0; BackgroundColor has no default. Missing required entries with defaults do not establish presence markers."
       },
       {
         "source_id": "endstone",
         "locator": "packets/PrimitiveShapesPacket.json#/fields/0",
-        "claim_fingerprint": "sha256:0461cef1947e18a56288d93fd67d755e2448ecb4cd92c52ff78a02c0d81f25e8",
+        "claim_fingerprint": "sha256:7e3e77d263bf7f411bfe939f6f895970e75cdca6114ba54fae5ecd3c9af8a32f",
         "summary": "Exact target source claim selected by this reviewed adjudication."
       }
     ],
-    "reason": "Select the corrected exact BDS sender claim after the pinned Lens trace resolves Attached To Entity ID as optional ActorRuntimeID/var_u64, LineGapHeight as optional, and confirms the active client read path."
+    "reason": "Select the exact BDS graph with the existing evidenced ActorRuntimeID correction. LineGapHeight is an always-present float: the target graph has no optional marker and Mojang supplies default 0. Only BackgroundColor is optional in TextDataPayload."
   },
   {
     "id": "protocol-2187-reviewed-043",
