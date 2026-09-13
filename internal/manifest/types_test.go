@@ -209,3 +209,40 @@ func adjudicatedFixture() Manifest {
 		}},
 	}
 }
+
+func TestValidateEnumAliasesRetainNameAndRangeChecks(t *testing.T) {
+	for _, test := range []struct {
+		name      string
+		values    []EnumValue
+		wantError string
+	}{
+		{name: "aliases", values: []EnumValue{{Name: "Survival", Value: 0}, {Name: "WorldDefault", Value: 0}}},
+		{name: "duplicate name", values: []EnumValue{{Name: "Survival", Value: 0}, {Name: "Survival", Value: 1}}, wantError: "unique nonempty name"},
+		{name: "empty name", values: []EnumValue{{Name: "", Value: 0}}, wantError: "unique nonempty name"},
+		{name: "out of range aliases", values: []EnumValue{{Name: "TooLarge", Value: 256}, {Name: "Alias", Value: 256}}, wantError: "does not fit u8"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			value := adjudicatedFixture()
+			value.Packets[0].Fields[0].Encode = Enum("u8", test.values...)
+			err := Validate(value)
+			if test.wantError == "" {
+				if err != nil {
+					t.Fatal(err)
+				}
+			} else if err == nil || !strings.Contains(err.Error(), test.wantError) {
+				t.Fatalf("Validate error = %v, want %q", err, test.wantError)
+			}
+		})
+	}
+}
+
+func TestValidateRejectsDuplicateUnionTags(t *testing.T) {
+	value := adjudicatedFixture()
+	value.Packets[0].Fields[0].Encode = Union(Primitive("u8"),
+		Variant{Name: "First", Value: 0, Encode: Void()},
+		Variant{Name: "Alias", Value: 0, Encode: Void()},
+	)
+	if err := Validate(value); err == nil || !strings.Contains(err.Error(), "duplicate or empty explicit identity") {
+		t.Fatalf("Validate error = %v, want duplicate union tag rejection", err)
+	}
+}

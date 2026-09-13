@@ -51,7 +51,7 @@ func Generate(changelog []byte, schemasDir string) ([]byte, error) {
 	}
 	fmt.Fprintln(&output, "Read `changelog.md` for the human-readable diff. This guide gives a target-version `Marshal` transcription for each changed definition.")
 	fmt.Fprintln(&output)
-	fmt.Fprintln(&output, "**The Go below is a transcription aid, not a patch.** Names come from the schema, so they may not match gophertunnel's existing names. Field comments are emitted only when Mojang provides a description.")
+	fmt.Fprintln(&output, "**The Go below is a transcription aid, not a patch.** Names come from the schema, so they may not match gophertunnel's existing names. Field comments preserve Mojang descriptions and runtime constraints; they do not implement validation.")
 
 	emitted := map[string]bool{}
 	for _, section := range parsed.sections {
@@ -348,9 +348,10 @@ func renderEnum(document map[string]any) (string, error) {
 	if !ok || len(values) == 0 {
 		return "", fmt.Errorf("enum has no values")
 	}
-	explicit, _ := document["x-enum-values"].([]any)
-	if document["x-enum-values"] != nil && len(explicit) != len(values) {
-		return "", fmt.Errorf("enum x-enum-values must contain one value for every name")
+	rawExplicit, hasExplicit := document["x-enum-binary-value"]
+	explicit, validExplicit := rawExplicit.([]any)
+	if hasExplicit && (!validExplicit || len(explicit) != len(values)) {
+		return "", fmt.Errorf("enum x-enum-binary-value must contain one value for every name")
 	}
 	name := schemaName(document)
 	var output strings.Builder
@@ -408,7 +409,8 @@ func schemaFields(document map[string]any, schemas schemaSet, qualifier string) 
 		if err != nil {
 			return nil, fmt.Errorf("field %s: %w", rawName, err)
 		}
-		if !required[rawName] {
+		_, defaulted := schema["default"]
+		if !required[rawName] && !defaulted {
 			valueType := goType
 			goType = qualifier + "Optional[" + valueType + "]"
 			if strings.HasPrefix(marshal, "// ") {
@@ -436,6 +438,9 @@ func schemaFields(document map[string]any, schemas schemaSet, qualifier string) 
 			}
 		}
 		description, _ := schema["description"].(string)
+		if constraint, _ := schema["x-runtime-constraint-description"].(string); constraint != "" {
+			description = strings.TrimSpace(description + " Runtime constraint: " + constraint)
+		}
 		fields = append(fields, renderedField{ordinal: int(ordinal), name: name, description: description, goType: goType, marshal: marshal})
 	}
 	sort.SliceStable(fields, func(i, j int) bool { return fields[i].ordinal < fields[j].ordinal })

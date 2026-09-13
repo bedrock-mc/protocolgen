@@ -315,7 +315,7 @@ func TestGeneratePreservesEnumAliases(t *testing.T) {
 	directory := t.TempDir()
 	writeFixture(t, directory, "Aliased.json", `{
 		"title":"Aliased","x-protocol-version":2,"type":"string",
-		"enum":["First","Alias"],"x-enum-values":[7,7],"x-underlying-type":"uint8"
+		"enum":["First","Alias"],"x-enum-binary-value":[7,7],"x-underlying-type":"uint8"
 	}`)
 	changelog := "# Bedrock protocol changes — 1 to 2\n\n## Modified Enums\n\n### Aliased\nenum\n"
 	output, err := Generate([]byte(changelog), directory)
@@ -334,5 +334,58 @@ func writeFixture(t *testing.T, directory, name, contents string) {
 	t.Helper()
 	if err := os.WriteFile(filepath.Join(directory, name), []byte(contents), 0o600); err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestRenderEnumOfficialValues(t *testing.T) {
+	document := map[string]any{"title": "GameType", "enum": []any{"Undefined", "Survival", "Alias", "Default"}, "x-enum-binary-value": []any{float64(-1), float64(0), float64(0), float64(5)}}
+	got, err := renderEnum(document)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, want := range []string{"GameTypeUndefined = -1", "GameTypeSurvival = 0", "GameTypeAlias = 0", "GameTypeDefault = 5"} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("missing %q in %s", want, got)
+		}
+	}
+}
+
+func TestRenderEnumRejectsInvalidOfficialMapping(t *testing.T) {
+	for _, value := range []any{nil, "bad", []any{}, []any{float64(1)}, []any{float64(1), "bad"}} {
+		document := map[string]any{"title": "Mode", "enum": []any{"A", "B"}, "x-enum-binary-value": value}
+		if _, err := renderEnum(document); err == nil {
+			t.Fatalf("accepted invalid mapping %#v", value)
+		}
+	}
+}
+
+func TestSchemaFieldsDefaultPresenceControlsOptionality(t *testing.T) {
+	for _, defaultValue := range []any{false, 0, nil} {
+		document := map[string]any{"properties": map[string]any{
+			"Defaulted": map[string]any{"type": "boolean", "x-ordinal-index": 0, "default": defaultValue},
+			"Optional":  map[string]any{"type": "boolean", "x-ordinal-index": 1},
+			"Required":  map[string]any{"type": "boolean", "x-ordinal-index": 2},
+		}, "required": []any{"Required"}}
+		got, err := schemaFields(document, schemaSet{}, "protocol.")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if got[0].goType != "bool" || strings.Contains(got[0].marshal, "Optional") || got[1].goType != "protocol.Optional[bool]" || got[2].goType != "bool" {
+			t.Fatalf("wrong default optionality for %#v: %+v", defaultValue, got)
+		}
+	}
+}
+
+func TestGeneratePreservesRuntimeConstraintComments(t *testing.T) {
+	directory := t.TempDir()
+	writeFixture(t, directory, "Limited.json", `{"title":"Limited","x-protocol-version":2,"type":"object","properties":{"Value":{"type":"number","x-underlying-type":"float","x-ordinal-index":0,"description":"The override value.","x-runtime-constraint-description":"Must be finite."},"Other":{"type":"number","x-underlying-type":"float","x-ordinal-index":1,"x-runtime-constraint-description":"Must be non-negative."}},"required":["Value","Other"]}`)
+	output, err := Generate([]byte("# Bedrock protocol changes — 1 to 2\n\n## Modified Types\n\n### Limited\nstruct\n"), directory)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, want := range []string{"// Value The override value. Runtime constraint: Must be finite.", "// Other Runtime constraint: Must be non-negative.", "io.Float32(&pk.Value)", "io.Float32(&pk.Other)"} {
+		if !strings.Contains(string(output), want) {
+			t.Fatalf("missing %q in %s", want, output)
+		}
 	}
 }

@@ -150,8 +150,8 @@ func TestGenerateReportsPacketIDArrayAndEnumWireChanges(t *testing.T) {
 	writeSchema(t, to, "ChangedPacket", packetSchema("2.0", 2, 99, "ChangedPacketPayload"))
 	writeSchema(t, from, "ChangedPacketPayload", objectSchema("1.0", 1, `"Values":{"type":"array","items":{"type":"integer","x-underlying-type":"int8"},"x-ordinal-index":0}`, `"Values"`))
 	writeSchema(t, to, "ChangedPacketPayload", objectSchema("2.0", 2, `"Values":{"type":"array","items":{"type":"integer","x-underlying-type":"int64"},"x-ordinal-index":0}`, `"Values"`))
-	writeSchema(t, from, "Mode", `{"title":"Mode","x-minecraft-version":"1.0","x-protocol-version":1,"type":"string","enum":["A","B"],"x-enum-values":[10,20],"x-underlying-type":"uint8"}`)
-	writeSchema(t, to, "Mode", `{"title":"Mode","x-minecraft-version":"2.0","x-protocol-version":2,"type":"string","enum":["B","A"],"x-enum-values":[20,10],"x-underlying-type":"uint32"}`)
+	writeSchema(t, from, "Mode", `{"title":"Mode","x-minecraft-version":"1.0","x-protocol-version":1,"type":"string","enum":["A","B"],"x-enum-binary-value":[10,20],"x-underlying-type":"uint8"}`)
+	writeSchema(t, to, "Mode", `{"title":"Mode","x-minecraft-version":"2.0","x-protocol-version":2,"type":"string","enum":["B","A"],"x-enum-binary-value":[20,10],"x-underlying-type":"uint32"}`)
 
 	got, err := Generate(Config{FromDir: from, ToDir: to})
 	if err != nil {
@@ -232,4 +232,81 @@ func objectWithRef(version string, protocol int, field, ref string) string {
 
 func enumSchema(version string, protocol int, values string) string {
 	return `{"title":"persona::AnimatedTextureType","x-minecraft-version":"` + version + `","x-protocol-version":` + strconv.Itoa(protocol) + `,"type":"string","enum":[` + values + `],"x-underlying-type":"uint32"}`
+}
+
+func TestGenerateReportsOfficialEnumValues(t *testing.T) {
+	from, to := t.TempDir(), t.TempDir()
+	writeSchema(t, from, "Mode", `{"title":"Mode","x-minecraft-version":"1.0","x-protocol-version":1,"type":"string","enum":["A","B"],"x-enum-binary-value":[-1,7],"x-underlying-type":"int32"}`)
+	writeSchema(t, to, "Mode", `{"title":"Mode","x-minecraft-version":"2.0","x-protocol-version":2,"type":"string","enum":["A","B","Alias"],"x-enum-binary-value":[-1,9,9],"x-underlying-type":"int32"}`)
+	got, err := Generate(Config{FromDir: from, ToDir: to})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, want := range []string{"added value `Alias` = 9", "value `B` changed from 7 to 9"} {
+		if !strings.Contains(string(got), want) {
+			t.Fatalf("missing %q in %s", want, got)
+		}
+	}
+}
+
+func TestEnumMetadataAdditionDoesNotInventWireChanges(t *testing.T) {
+	before := &schema{Enum: []string{"A", "B"}, Underlying: "int32"}
+	after := &schema{Enum: []string{"A", "B"}, Underlying: "int32", EnumValues: []interface{}{float64(-1), float64(7)}}
+	got := compareEnums("Mode", before, after)
+	if got.Wire || strings.Contains(strings.Join(got.Bullets, " "), "changed from") {
+		t.Fatalf("metadata addition invented a wire change: %+v", got)
+	}
+	if len(got.Bullets) != 1 || got.Bullets[0] != "explicit binary enum values added" {
+		t.Fatalf("metadata addition missing: %+v", got)
+	}
+}
+
+func TestGenerateRejectsInvalidEnumMappingLength(t *testing.T) {
+	for _, mapping := range []string{"[]", "null", "[1]"} {
+		t.Run(mapping, func(t *testing.T) {
+			from, to := t.TempDir(), t.TempDir()
+			writeSchema(t, from, "Mode", `{"title":"Mode","x-minecraft-version":"1.0","x-protocol-version":1,"type":"string","enum":["A","B"],"x-enum-binary-value":`+mapping+`}`)
+			if _, err := Generate(Config{FromDir: from, ToDir: to}); err == nil || !strings.Contains(err.Error(), "x-enum-binary-value") {
+				t.Fatalf("expected mapping error, got %v", err)
+			}
+		})
+	}
+}
+
+func TestGenerateTracksDefaultPresenceInOptionality(t *testing.T) {
+	for _, defaultValue := range []string{"false", "0", "null"} {
+		t.Run(defaultValue, func(t *testing.T) {
+			from, to := t.TempDir(), t.TempDir()
+			writeSchema(t, from, "Settings", objectSchema("1.0", 1, `"Value":{"type":"boolean","x-ordinal-index":0}`, ``))
+			writeSchema(t, to, "Settings", objectSchema("2.0", 2, `"Value":{"type":"boolean","x-ordinal-index":0,"default":`+defaultValue+`}`, ``))
+			got, err := Generate(Config{FromDir: from, ToDir: to})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !strings.Contains(string(got), "`Value` changed from optional to required") {
+				t.Fatalf("default presence was ignored: %s", got)
+			}
+			reverse, err := Generate(Config{FromDir: to, ToDir: from})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !strings.Contains(string(reverse), "`Value` changed from required to optional") {
+				t.Fatalf("default removal was ignored: %s", reverse)
+			}
+		})
+	}
+}
+
+func TestDefaultValueChangesDoNotChangeWireShape(t *testing.T) {
+	before := map[string]interface{}{"type": "boolean", "default": false}
+	after := map[string]interface{}{"type": "boolean", "default": true}
+	if !equalWire(before, after) {
+		t.Fatal("default value change changed the wire shape")
+	}
+	for _, defaultValue := range []interface{}{false, 0, nil} {
+		s := &schema{Properties: map[string]property{"Value": {Type: "boolean", Raw: map[string]interface{}{"default": defaultValue}}}}
+		if got := fields(s); len(got) != 1 || got[0].Optional {
+			t.Fatalf("defaulted field is optional: %+v", got)
+		}
+	}
 }

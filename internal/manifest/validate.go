@@ -277,12 +277,12 @@ func validateNode(node Node, path string, sourceIDs map[string]bool) error {
 		if !ok || canonical.Width == 0 || !reflect.DeepEqual(canonical, *node.Primitive) {
 			return fmt.Errorf("%s enum underlying primitive is not exact", path)
 		}
-		seenValues, seenNames := map[int64]bool{}, map[string]bool{}
+		seenNames := map[string]bool{}
 		for i, variant := range node.Variants {
-			if variant.Name == "" || seenNames[variant.Name] || seenValues[variant.Value] {
-				return fmt.Errorf("%s enum value[%d] lacks unique explicit ordinal", path, i)
+			if variant.Name == "" || seenNames[variant.Name] {
+				return fmt.Errorf("%s enum value[%d] lacks a unique nonempty name", path, i)
 			}
-			seenNames[variant.Name], seenValues[variant.Value] = true, true
+			seenNames[variant.Name] = true
 			if !enumValueFitsPrimitive(variant.Value, *node.Primitive) {
 				return fmt.Errorf("%s enum value[%d] ordinal %d does not fit %s", path, i, variant.Value, node.Primitive.Code)
 			}
@@ -704,6 +704,10 @@ func normalizeNode(node *Node) {
 	sort.SliceStable(node.Variants, func(i, j int) bool {
 		if node.Variants[i].Value != node.Variants[j].Value {
 			return node.Variants[i].Value < node.Variants[j].Value
+		}
+		// Alias order determines the canonical decoded name, so preserve it.
+		if node.Kind == KindEnum {
+			return false
 		}
 		return node.Variants[i].Name < node.Variants[j].Name
 	})

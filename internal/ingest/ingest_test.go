@@ -25,7 +25,7 @@ func TestMojangIngestionRetainsWireVocabulary(t *testing.T) {
 				map[string]any{"title": "None", "type": "null", "x-ordinal-index": 0},
 				map[string]any{"title": "Payload", "type": "string", "x-ordinal-index": 7},
 			}, "x-control-value-type": "uint8", "x-ordinal-index": 4},
-			"Mode": map[string]any{"type": "integer", "x-underlying-type": "uint8", "enum": []string{"Ready", "Later"}, "x-enum-values": []int{4, 9}, "x-serialization-options": []string{"Enum-as-Value"}, "x-ordinal-index": 5},
+			"Mode": map[string]any{"type": "integer", "x-underlying-type": "uint8", "enum": []string{"Ready", "Later"}, "x-enum-binary-value": []int{4, 9}, "x-serialization-options": []string{"Enum-as-Value"}, "x-ordinal-index": 5},
 		},
 		"required": []string{"Bytes", "Fixed", "Choice", "Mode"},
 	})
@@ -672,5 +672,71 @@ func TestMojangDefaultedPropertyIsNotOptional(t *testing.T) {
 		if optional != want {
 			t.Errorf("%s optional = %v, want %v", claim.Name, optional, want)
 		}
+	}
+}
+
+// TestMojangBinaryEnumUses preserves the U6 mapping for numeric uses and text encoding otherwise.
+func TestMojangBinaryEnumUses(t *testing.T) {
+	root := t.TempDir()
+	writeJSON(t, filepath.Join(root, "Mode.json"), map[string]any{
+		"title": "Mode", "type": "string", "x-underlying-type": "int32",
+		"enum":                []string{"Undefined", "Survival", "Creative", "Default", "WorldDefault"},
+		"x-enum-binary-value": []int{-1, 0, 1, 5, 0},
+	})
+	writeJSON(t, filepath.Join(root, "Packet.json"), map[string]any{
+		"title": "ModesPacket", "$metaProperties": map[string]any{"[cereal:packet]": 1},
+		"x-minecraft-version": "fixture", "x-protocol-version": 2208,
+		"properties": map[string]any{
+			"Numeric": map[string]any{"$ref": "./Mode.json", "x-underlying-type": "int32", "x-serialization-options": []string{"Enum-as-Value", "Compression"}, "x-ordinal-index": 0},
+			"Text":    map[string]any{"$ref": "./Mode.json", "x-ordinal-index": 1},
+		},
+		"required": []string{"Numeric", "Text"},
+	})
+	result, err := ParseMojang(root, manifest.SourcePin{ID: "fixture", MinecraftVersion: "fixture", ProtocolVersion: 2208}, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	numeric := result.Claims[0].Encode
+	if numeric.Kind != manifest.KindEnum || numeric.Primitive.Code != "zigzag_i32" {
+		t.Fatalf("numeric enum = %+v", numeric)
+	}
+	for i, want := range []int64{-1, 0, 1, 5, 0} {
+		if numeric.Variants[i].Value != want {
+			t.Fatalf("variant %d = %+v, want %d", i, numeric.Variants[i], want)
+		}
+	}
+	if text := result.Claims[1].Encode; text.Kind != manifest.KindString || text.Prefix.Primitive.Code != "var_u32" {
+		t.Fatalf("text enum = %+v", text)
+	}
+}
+
+// TestMojangBinaryEnumRejectsInvalidMappings ensures malformed metadata never becomes guessed ordinals.
+func TestMojangBinaryEnumRejectsInvalidMappings(t *testing.T) {
+	for name, mapping := range map[string]any{
+		"missing": nil, "short": []any{float64(1)}, "long": []any{float64(1), float64(2), float64(3)},
+		"not array": "1,2", "fraction": []any{1.5, float64(2)}, "numeric string": []any{"1junk", float64(2)},
+		"rounded": []any{float64(1 << 54), float64(2)},
+	} {
+		t.Run(name, func(t *testing.T) {
+			schema := map[string]any{"type": "string", "enum": []any{"One", "Two"}, "x-underlying-type": "int64", "x-serialization-options": []any{"Enum-as-Value"}}
+			if mapping != nil {
+				schema["x-enum-binary-value"] = mapping
+			}
+			lowerer := &mojangLowerer{}
+			if node := lowerer.lowerSchema(schema, "Mode.json", "Mode"); node.Kind != manifest.KindUnresolved {
+				t.Fatalf("invalid mapping lowered to %+v", node)
+			}
+		})
+	}
+}
+
+// TestMojangEnumReferenceCombinesOptions keeps definition flags when a use selects numeric encoding.
+func TestMojangEnumReferenceCombinesOptions(t *testing.T) {
+	lowerer := &mojangLowerer{active: map[string]bool{}, documents: map[string]any{
+		"Mode.json": map[string]any{"type": "string", "enum": []any{"Value"}, "x-enum-binary-value": []any{float64(7)}, "x-underlying-type": "int32", "x-serialization-options": []any{"Compression"}},
+	}}
+	node := lowerer.lowerSchema(map[string]any{"$ref": "./Mode.json", "x-serialization-options": []any{"Enum-as-Value"}}, "Packet.json", "Mode")
+	if node.Kind != manifest.KindEnum || node.Primitive.Code != "zigzag_i32" {
+		t.Fatalf("combined enum flags = %+v", node)
 	}
 }

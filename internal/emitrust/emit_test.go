@@ -1,6 +1,9 @@
 package emitrust
 
 import (
+	"os"
+	"os/exec"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -712,5 +715,101 @@ func TestGenerateRustRejectsUnknownUnionDiscriminant(t *testing.T) {
 	}
 	if !strings.Contains(source, "wire::DecodeError::UnknownVariant {") {
 		t.Fatalf("union decode does not reject unknown discriminants:\n%s", source)
+	}
+}
+
+func TestRustEnumAliasesEncodeAndDecode(t *testing.T) {
+	var source strings.Builder
+	emitRustEnum(&source, definition{Name: "GameType", Underlying: "i32", Variants: manifest.Enum("zigzag_i32",
+		manifest.EnumValue{Name: "Undefined", Value: -1},
+		manifest.EnumValue{Name: "Survival", Value: 0},
+		manifest.EnumValue{Name: "Creative", Value: 1},
+		manifest.EnumValue{Name: "Adventure", Value: 2},
+		manifest.EnumValue{Name: "Default", Value: 5},
+		manifest.EnumValue{Name: "Spectator", Value: 6},
+		manifest.EnumValue{Name: "WorldDefault", Value: 0},
+	).Variants})
+	if strings.Count(source.String(), "0 => Self::") != 1 || !strings.Contains(source.String(), "0 => Self::Survival") || !strings.Contains(source.String(), "Self::WorldDefault => 0") {
+		t.Fatalf("enum aliases must encode independently and decode canonically:\n%s", source.String())
+	}
+	rustc, err := exec.LookPath("rustc")
+	if err != nil {
+		t.Skip("rustc unavailable; verified emitted alias mappings above")
+	}
+	source.WriteString(`
+fn main() {
+    assert_eq!(GameType::Survival.to_raw(), 0);
+    assert_eq!(GameType::WorldDefault.to_raw(), 0);
+    assert_eq!(GameType::from(0), GameType::Survival);
+    assert_eq!(GameType::from(-1), GameType::Undefined);
+    assert_eq!(GameType::from(5), GameType::Default);
+    assert_eq!(GameType::from(6), GameType::Spectator);
+    assert_eq!(GameType::from(3), GameType::Unknown(3));
+    assert_eq!(GameType::Unknown(3).to_raw(), 3);
+    assert_eq!(GameType::default(), GameType::Undefined);
+    assert_eq!(GameType::from(GameType::default().to_raw()), GameType::default());
+}
+`)
+	dir := t.TempDir()
+	path, binary := filepath.Join(dir, "aliases.rs"), filepath.Join(dir, "aliases")
+	if err := os.WriteFile(path, []byte(source.String()), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if out, err := exec.Command(rustc, "--edition=2021", "-D", "unreachable_patterns", path, "-o", binary).CombinedOutput(); err != nil {
+		t.Fatalf("compile Rust aliases: %v\n%s", err, out)
+	}
+	if out, err := exec.Command(binary).CombinedOutput(); err != nil {
+		t.Fatalf("run Rust aliases: %v\n%s", err, out)
+	}
+}
+
+func TestRustEnumAliasCanonicalNameSurvivesManifestRoundTrip(t *testing.T) {
+	value := manifest.Enum("zigzag_i32",
+		manifest.EnumValue{Name: "Zulu", Value: 0},
+		manifest.EnumValue{Name: "Alpha", Value: 0},
+		manifest.EnumValue{Name: "One", Value: 1},
+	)
+	value.Semantic, value.TypeID = "AliasType", "enums/AliasType"
+	m := manifest.Manifest{
+		SchemaVersion: 2,
+		Target:        manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168},
+		Sources:       []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:aliases", MinecraftVersion: "fixture", ProtocolVersion: 2168}},
+		Packets:       []manifest.Packet{{ID: 1, Name: "AliasPacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{Ordinal: 0, Name: "Alias", Encode: value, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}},
+	}
+	before, err := GenerateFiles(m)
+	if err != nil {
+		t.Fatal(err)
+	}
+	path := filepath.Join(t.TempDir(), "manifest.json")
+	if err := manifest.Write(path, m); err != nil {
+		t.Fatal(err)
+	}
+	loaded, err := manifest.Load(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	after, err := GenerateFiles(loaded)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if before["src/enums.rs"] != after["src/enums.rs"] {
+		t.Fatalf("manifest round trip changed alias decoding or default:\nbefore:\n%s\nafter:\n%s", before["src/enums.rs"], after["src/enums.rs"])
+	}
+	if !strings.Contains(after["src/enums.rs"], "0 => Self::Zulu") {
+		t.Fatalf("canonical alias lost declared order:\n%s", after["src/enums.rs"])
+	}
+	first, err := manifest.MarshalStable(loaded)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := manifest.Write(path, loaded); err != nil {
+		t.Fatal(err)
+	}
+	second, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(first) != string(second) {
+		t.Fatal("alias manifest serialization is not stable")
 	}
 }

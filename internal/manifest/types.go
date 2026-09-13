@@ -172,6 +172,8 @@ type Case struct {
 	Decode []Node `json:"decode,omitempty"`
 }
 
+// EnumValue names a wire value. Distinct names may alias the same numeric value;
+// the first declared name is canonical when decoding to a named variant.
 type EnumValue struct {
 	Name  string `json:"name"`
 	Value int64  `json:"value"`

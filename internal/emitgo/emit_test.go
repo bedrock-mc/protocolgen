@@ -659,3 +659,33 @@ func TestGenerateGoPreservesNBTEncodingOnIOCalls(t *testing.T) {
 		t.Fatalf("runtime IO did not expose format-aware NBT:\n%s", files["protocol/codec.go"])
 	}
 }
+
+func TestGeneratePreservesEnumAliases(t *testing.T) {
+	value := manifest.Enum("zigzag_i32",
+		manifest.EnumValue{Name: "Undefined", Value: -1},
+		manifest.EnumValue{Name: "Survival", Value: 0},
+		manifest.EnumValue{Name: "WorldDefault", Value: 0},
+	)
+	value.Semantic, value.TypeID = "GameType", "enums/GameType"
+	m := manifest.Manifest{
+		SchemaVersion: 2,
+		Target:        manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168},
+		Sources:       []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:aliases", MinecraftVersion: "fixture", ProtocolVersion: 2168}},
+		Packets:       []manifest.Packet{{ID: 1, Name: "AliasPacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{Ordinal: 0, Name: "GameType", Encode: value, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}},
+	}
+	files, err := Generate(m, "wiregen")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var source strings.Builder
+	for _, contents := range files {
+		source.WriteString(contents)
+	}
+	// Whitespace is formatting-dependent; check each declaration after tokenizing it.
+	normalized := strings.Join(strings.Fields(source.String()), " ")
+	for _, want := range []string{"GameTypeUndefined GameType = -1", "GameTypeSurvival GameType = 0", "GameTypeWorldDefault GameType = 0"} {
+		if !strings.Contains(normalized, want) {
+			t.Fatalf("generated Go omits alias declaration %q", want)
+		}
+	}
+}

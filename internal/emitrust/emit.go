@@ -1083,6 +1083,7 @@ func unionControlType(node manifest.Node) (string, error) {
 	return primitiveRustRawType(node.Control.Primitive.Code)
 }
 
+// emitRustEnum preserves every named alias and decodes each value to its first declared name.
 func emitRustEnum(b *strings.Builder, item definition) {
 	for _, doc := range item.Docs {
 		fmt.Fprintf(b, "%s\n", doc)
@@ -1109,7 +1110,12 @@ func emitRustEnum(b *strings.Builder, item definition) {
 	fmt.Fprintf(b, "    %s(%s),\n", unknownName, item.Underlying)
 	b.WriteString("}\n\n")
 	fmt.Fprintf(b, "impl From<%s> for %s {\n    fn from(value: %s) -> Self {\n        match value {\n", item.Underlying, item.Name, item.Underlying)
+	seenValues := map[int64]bool{}
 	for index, variant := range item.Variants {
+		if seenValues[variant.Value] {
+			continue
+		}
+		seenValues[variant.Value] = true
 		fmt.Fprintf(b, "            %d => Self::%s,\n", variant.Value, variantNames[index])
 	}
 	fmt.Fprintf(b, "            value => Self::%s(value),\n        }\n    }\n}\n\n", unknownName)

@@ -28,7 +28,7 @@ type schema struct {
 	Properties map[string]property    `json:"properties"`
 	Required   []string               `json:"required"`
 	Enum       []string               `json:"enum"`
-	EnumValues []interface{}          `json:"x-enum-values"`
+	EnumValues []interface{}          `json:"x-enum-binary-value"`
 	Underlying string                 `json:"x-underlying-type"`
 	Meta       map[string]interface{} `json:"$metaProperties"`
 	Raw        map[string]interface{}
@@ -295,8 +295,8 @@ func loadDir(dir string) (map[string]*schema, string, int, error) {
 		}
 		s.Name = strings.TrimSuffix(entry.Name(), ".json")
 		s.Raw = raw
-		if len(s.EnumValues) != 0 && len(s.EnumValues) != len(s.Enum) {
-			return nil, "", 0, fmt.Errorf("%s: x-enum-values must contain one value for every enum name", entry.Name())
+		if _, present := raw["x-enum-binary-value"]; present && (s.EnumValues == nil || len(s.EnumValues) != len(s.Enum)) {
+			return nil, "", 0, fmt.Errorf("%s: x-enum-binary-value must contain one value for every enum name", entry.Name())
 		}
 		for name, p := range s.Properties {
 			if node, ok := raw["properties"].(map[string]interface{})[name].(map[string]interface{}); ok {
@@ -370,7 +370,12 @@ func normalizeSchema(v interface{}, schemaKeywords bool) interface{} {
 	case map[string]interface{}:
 		out := map[string]interface{}{}
 		for k, child := range x {
-			if schemaKeywords && (k == "x-minecraft-version" || k == "x-protocol-version" || k == "x-format-version" || k == "$schema" || k == "$id" || k == "title" || k == "description" || k == "default" || k == "x-runtime-constraint-description") {
+			if schemaKeywords && k == "default" {
+				// Default presence affects wire optionality; its value does not change the codec.
+				out[k] = true
+				continue
+			}
+			if schemaKeywords && (k == "x-minecraft-version" || k == "x-protocol-version" || k == "x-format-version" || k == "$schema" || k == "$id" || k == "title" || k == "description" || k == "x-runtime-constraint-description") {
 				continue
 			}
 			if k == "properties" {
@@ -403,7 +408,8 @@ func fields(s *schema) []field {
 	}
 	out := make([]field, 0, len(s.Properties))
 	for name, p := range s.Properties {
-		out = append(out, field{Name: name, Type: fieldType(p), Ordinal: p.Ordinal, Optional: !required[name], Raw: p.Raw})
+		_, defaulted := p.Raw["default"]
+		out = append(out, field{Name: name, Type: fieldType(p), Ordinal: p.Ordinal, Optional: !required[name] && !defaulted, Raw: p.Raw})
 	}
 	sort.Slice(out, func(i, j int) bool {
 		if out[i].Ordinal != out[j].Ordinal {
@@ -548,7 +554,12 @@ func compareEnums(name string, before, after *schema) change {
 		c.Bullets = append(c.Bullets, fmt.Sprintf("underlying type changed from %s to %s", before.Underlying, after.Underlying))
 		c.Wire = true
 	}
-	if len(before.EnumValues) != 0 || len(after.EnumValues) != 0 {
+	if len(before.EnumValues) == 0 && len(after.EnumValues) != 0 {
+		c.Bullets = append(c.Bullets, "explicit binary enum values added")
+	} else if len(before.EnumValues) != 0 && len(after.EnumValues) == 0 {
+		c.Bullets = append(c.Bullets, "explicit binary enum values removed")
+	}
+	if len(before.EnumValues) != 0 && len(after.EnumValues) != 0 {
 		beforeIndexes := enumIndexes(before.Enum)
 		for afterIndex, name := range after.Enum {
 			beforeIndex, exists := beforeIndexes[name]

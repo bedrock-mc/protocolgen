@@ -383,14 +383,15 @@ func (l *mojangLowerer) lowerReference(reference, file, hint string, context map
 			return manifest.Unresolved("bare self-referencing Mojang schema "+reference, true)
 		}
 	}
-	if hasOption(context, "Enum-as-Value") {
+	if hasOption(context, "Enum-as-Value") || hasOption(targetObject, "Enum-as-Value") {
 		copyOfTarget := cloneMap(targetObject)
 		if underlying := asString(context["x-underlying-type"]); underlying != "" {
 			copyOfTarget["x-underlying-type"] = underlying
 		}
-		if values := context["x-serialization-options"]; values != nil {
-			copyOfTarget["x-serialization-options"] = values
-		}
+		// Serialization flags on the definition and this use both apply.
+		values, _ := asArray(targetObject["x-serialization-options"])
+		contextValues, _ := asArray(context["x-serialization-options"])
+		copyOfTarget["x-serialization-options"] = append(append([]any(nil), values...), contextValues...)
 		targetObject = copyOfTarget
 	}
 	l.active[typeID] = true
@@ -484,27 +485,39 @@ func (l *mojangLowerer) lowerUnion(schema map[string]any, branches []any, file, 
 	return manifest.Union(control, variants...)
 }
 
+// lowerEnum reads the explicit numeric mapping or the string encoding selected at this use.
 func (l *mojangLowerer) lowerEnum(schema map[string]any, file, hint string) manifest.Node {
 	values, ok := asArray(schema["enum"])
 	if !ok || len(values) == 0 {
 		return manifest.Unresolved("Mojang enum has no values "+hint, true)
 	}
-	explicit, hasExplicit := asArray(schema["x-enum-values"])
+	explicit, hasExplicit := asArray(schema["x-enum-binary-value"])
+	if raw, exists := schema["x-enum-binary-value"]; exists && (!hasExplicit || len(explicit) != len(values)) {
+		return manifest.Unresolved(fmt.Sprintf("Mojang enum has invalid binary value mapping %s: %v", hint, raw), true)
+	}
+	// U6 mappings distinguish named enums from numeric values. Older unmapped enums
+	// remain unresolved, preserving their version-pinned adjudications.
+	if hasExplicit && asString(schema["type"]) == "string" && !hasOption(schema, "Enum-as-Value") {
+		return manifest.String(manifest.Primitive("var_u32"))
+	}
 	variants := make([]manifest.Variant, 0, len(values))
-	seen := map[int64]bool{}
+	seenNames := map[string]bool{}
 	for index, rawValue := range values {
-		value, numeric := asInt(rawValue)
-		if !numeric && hasExplicit && index < len(explicit) {
-			value, numeric = asInt(explicit[index])
+		value, numeric := mojangEnumInteger(rawValue)
+		if hasExplicit {
+			value, numeric = mojangEnumInteger(explicit[index])
 		}
-		if !numeric || seen[value] {
+		if !numeric {
 			return manifest.Unresolved("Mojang enum lacks unique explicit ordinals "+hint, true)
 		}
-		seen[value] = true
 		name := asString(rawValue)
 		if name == "" {
 			name = fmt.Sprintf("Value%d", value)
 		}
+		if seenNames[name] {
+			return manifest.Unresolved("Mojang enum has duplicate names "+hint, true)
+		}
+		seenNames[name] = true
 		variants = append(variants, manifest.Variant{Value: value, Name: name, Encode: manifest.Void()})
 	}
 	underlying := primitive(asString(schema["x-underlying-type"]), options(schema), asString(schema["type"]))
@@ -512,6 +525,17 @@ func (l *mojangLowerer) lowerEnum(schema map[string]any, file, hint string) mani
 		return manifest.Unresolved("Mojang enum has unresolved underlying codec "+hint, true)
 	}
 	return manifest.Node{Kind: manifest.KindEnum, Primitive: underlying.Primitive, Semantic: asString(schema["title"]), TypeID: file + "#" + hint, Variants: variants}
+}
+
+// mojangEnumInteger accepts exact JSON integers, never names or rounded floating-point values.
+func mojangEnumInteger(raw any) (int64, bool) {
+	if _, text := raw.(string); text {
+		return 0, false
+	}
+	if value, floating := raw.(float64); floating && (value > 1<<53-1 || value < -(1<<53-1)) {
+		return 0, false
+	}
+	return asInt(raw)
 }
 
 func claimsToFields(input []claims.Claim) []manifest.Field {
