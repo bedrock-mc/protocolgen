@@ -167,6 +167,7 @@ type EASNoiseAlignment struct {
 func (x *EASNoiseAlignment) Marshal(io IO) {
 	IntegerFunc(&x.Type, io.Uint8)
 	io.Varuint32(&x.Value)
+	Minimum(io, &x.Value, 0)
 }
 
 type EASNoiseAlignmentType uint8

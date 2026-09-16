@@ -564,6 +564,51 @@
       "type_id": "cereal::DynamicValue",
       "name": "DynamicValue",
       "rationale": "Drops the cereal serializer namespace artifact from the public name."
+    },
+    {
+      "type_id": "EnvironmentAttributeData.json#",
+      "name": "EASEnvironmentAttributeData",
+      "rationale": "Distinguishes a single environment attribute from the EnvironmentAttributeData packet payload."
+    },
+    {
+      "type_id": "Resource_Pack_Client_Response_-_Cancel.json#",
+      "name": "Cancel",
+      "rationale": "Retains the existing generated name when Mojang supplies the shared type identity."
+    },
+    {
+      "type_id": "Resource_Pack_Client_Response_-_Downloading.json#",
+      "name": "Downloading",
+      "rationale": "Retains the existing generated name when Mojang supplies the shared type identity."
+    },
+    {
+      "type_id": "Resource_Pack_Client_Response_-_Downloading_Finished.json#",
+      "name": "DownloadingFinished",
+      "rationale": "Retains the existing generated name when Mojang supplies the shared type identity."
+    },
+    {
+      "type_id": "Resource_Pack_Client_Response_-_Resource_Pack_Stack_Finished.json#",
+      "name": "ResourcePackStackFinished",
+      "rationale": "Retains the existing generated name when Mojang supplies the shared type identity."
+    },
+    {
+      "type_id": "BoolAttributeData.json#",
+      "name": "EASBoolAttributeData",
+      "rationale": "Retains the existing generated name when Mojang supplies the shared type identity."
+    },
+    {
+      "type_id": "FloatAttributeData.json#",
+      "name": "EASFloatAttributeData",
+      "rationale": "Retains the existing generated name when Mojang supplies the shared type identity."
+    },
+    {
+      "type_id": "ColorAttributeData.json#",
+      "name": "EASColorAttributeData",
+      "rationale": "Retains the existing generated name when Mojang supplies the shared type identity."
+    },
+    {
+      "type_id": "EAS",
+      "name": "EAS",
+      "rationale": "Preserves the union name independently of the shared AttributeData suffix of its alternatives."
     }
   ]
 }

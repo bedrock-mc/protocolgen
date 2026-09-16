@@ -249,6 +249,7 @@ func (x *BedrockDDUIDataStoreChange) Marshal(io IO) {
 	io.StringLimits(&x.DataStoreName, 1, 1000)
 	io.StringLimits(&x.Property, 1, 1000)
 	io.Uint32(&x.UpdateCount)
+	Minimum(io, &x.UpdateCount, 0)
 	Maximum(io, &x.UpdateCount, 4.294967294e+09)
 	MarshalDynamicValue(io, &x.TheNewPropertyValue)
 }
@@ -938,6 +939,7 @@ func (x *CraftLoomStackRequestAction) Marshal(io IO) {
 	io.String(&x.PatternNameID)
 	io.Uint8(&x.NumCrafts)
 	Minimum(io, &x.NumCrafts, 1)
+	Maximum(io, &x.NumCrafts, 255)
 }
 
 type CraftRepairAndDisenchantStackRequestAction struct {
@@ -955,6 +957,7 @@ func (x *CraftRepairAndDisenchantStackRequestAction) Marshal(io IO) {
 	io.Int32(&x.RecipeNetID)
 	io.Uint8(&x.NumberOfRequestedCrafts)
 	Minimum(io, &x.NumberOfRequestedCrafts, 1)
+	Maximum(io, &x.NumberOfRequestedCrafts, 255)
 	io.Varint32(&x.RepairCost)
 	Minimum(io, &x.RepairCost, 0)
 }
@@ -1010,7 +1013,6 @@ type DataItemEntry struct {
 // Marshal reads or writes DataItemEntry using its canonical wire layout.
 func (x *DataItemEntry) Marshal(io IO) {
 	io.Varuint32(&x.ID)
-	Minimum(io, &x.ID, 0)
 	MarshalDataItemEntryValue(io, &x.Payload)
 }
 
@@ -1393,9 +1395,12 @@ func (x *EASEnvironmentAttributeData) Marshal(io IO) {
 		MarshalEAS(io, value)
 	})
 	io.Uint32(&x.CurrentTransitionTicks)
+	Minimum(io, &x.CurrentTransitionTicks, 0)
 	io.Uint32(&x.TotalTransitionTicks)
+	Minimum(io, &x.TotalTransitionTicks, 0)
 	io.String(&x.Easing)
 	io.Uint32(&x.LocalTransitionTicks)
+	Minimum(io, &x.LocalTransitionTicks, 0)
 	io.Bool(&x.NoiseTransition)
 }
 

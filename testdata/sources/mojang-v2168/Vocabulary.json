@@ -12,7 +12,7 @@
     "Choice": {"oneOf": [
       {"title": "None", "type": "null", "x-ordinal-index": 0},
       {"title": "Payload", "type": "string", "x-wire-kind": "bytes", "x-ordinal-index": 7}
-    ], "x-control-value-type": "uint8", "x-ordinal-index": 5},
+    ], "x-control-value-type": "uint32", "x-ordinal-index": 5},
     "Mode": {"type": "integer", "x-underlying-type": "uint8", "enum": ["Ready", "Later"], "x-enum-binary-value": [4, 9], "x-serialization-options": ["Enum-as-Value"], "x-ordinal-index": 6}
   },
   "required": ["Value", "Text", "Bytes", "Fixed", "Choice", "Mode"]

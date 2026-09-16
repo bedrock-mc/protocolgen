@@ -194,7 +194,7 @@
   {
     "id": "protocol-2168-gophertunnel-packet-108-field-0",
     "target": "SetScorePacket.Score Info",
-    "pre_patch_context_sha256": "sha256:a026e877c5d13677adb54eb4d8ea0bdcaed427a4a2fb6f9790d8b63259d4dc25",
+    "pre_patch_context_sha256": "sha256:9c5bd7e3c4013afa297684230fd7ecd8db8cafc17c2f29b26d51e961fa2a5781",
     "claims": [
       {
         "source_id": "endstone",
@@ -202,7 +202,7 @@
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:872743129b5ce491015fa75b0eebe652f50a62c85eb7babc523a46dd086672f1"
+        "digest": "sha256:cf87f7c5d55296763ba9dd7ba3c4254d284841b7f987581bdb531158fbaad493"
       }
     ],
     "selected_source": "endstone",
@@ -434,7 +434,7 @@
   {
     "id": "protocol-2168-gophertunnel-packet-12-field-10",
     "target": "AddPlayerPacket.Entity Data",
-    "pre_patch_context_sha256": "sha256:37f9131e42af619aad5197102e805df1579fd75b9ba8581887d60165daffd76c",
+    "pre_patch_context_sha256": "sha256:acfdfa3633a4f6cc0351ed9539dafe64883bb0fadabb958ad8ce682a3b712d7f",
     "claims": [
       {
         "source_id": "endstone",
@@ -442,7 +442,7 @@
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:d9f2ee54fb95d0fdccbf2029afa693c39708811f327a4bd04258bec15c94ba42"
+        "digest": "sha256:ae74e7e011a18456c6c0a6ce02c3e8c831fa7af2486436af792772513b758efc"
       }
     ],
     "selected_source": "endstone",
@@ -626,7 +626,7 @@
   {
     "id": "protocol-2168-gophertunnel-packet-13-field-9",
     "target": "AddActorPacket.Actor Data",
-    "pre_patch_context_sha256": "sha256:f215cbe2a9a311f2cf413ecef6dc828fe15565c43264ddf7f49e80b3a1fb088d",
+    "pre_patch_context_sha256": "sha256:d9f7f867b4bc5460bf0c35448231c25c89f1bdca69f13810fb9888826624f3b6",
     "claims": [
       {
         "source_id": "endstone",
@@ -634,7 +634,7 @@
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:5207f83965f9cd52b299909d2b24a1182c20cab794594e1c3fbc75d2b493583f"
+        "digest": "sha256:c96496b85b02b9ebd083b7a81316bbc5bca57299b5fb8d834f8d348dd33d95d5"
       }
     ],
     "selected_source": "endstone",
@@ -794,7 +794,7 @@
   {
     "id": "protocol-2168-gophertunnel-packet-144-field-12",
     "target": "PlayerAuthInputPacket.Item Stack Request",
-    "pre_patch_context_sha256": "sha256:f705993d30e25733a5dad127a0dded2e530cd52b19c101f2723f7fca43064f71",
+    "pre_patch_context_sha256": "sha256:bffb7fddb7ce9e8e1efef0d9c9842bbe1c630f666d1a57c9bed63975452b5a4c",
     "claims": [
       {
         "source_id": "endstone",
@@ -802,7 +802,7 @@
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:5ef1bd1c8a73f045a32c4be476d550f99077a1c740efcd0d01f29ee92271e12b"
+        "digest": "sha256:7cff4b91ea47499198e0be67b1389efc433d701cb7eb10375a554d1d0d80ea84"
       }
     ],
     "selected_source": "endstone",
@@ -986,7 +986,7 @@
   {
     "id": "protocol-2168-gophertunnel-packet-147-field-0",
     "target": "ItemStackRequestPacket.Requests",
-    "pre_patch_context_sha256": "sha256:74a606049b4bdf8ac3d5bba1061369456d8ea4629926490e2d319be68e5a98cf",
+    "pre_patch_context_sha256": "sha256:bc72bcca17639c333414ae34caf68c4707682455f1b66e0a7388ffd5fb9cb075",
     "claims": [
       {
         "source_id": "endstone",
@@ -994,7 +994,7 @@
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:3e41d70e97e7f32944ff170a34db765f512ee8a0a4c2e2fa83a578fd211fe1ca"
+        "digest": "sha256:68cfc6d3ba086dc769248d0a5e194e70c2826ea95f69d71ca97df1cf801ee653"
       }
     ],
     "selected_source": "endstone",
@@ -1058,7 +1058,7 @@
   {
     "id": "protocol-2168-gophertunnel-packet-15-field-5",
     "target": "AddItemActorPacket.Entity Data",
-    "pre_patch_context_sha256": "sha256:9c3ee110bf02825b719cda1e381a28204a67e4c15f38421fe82a555c63254a2a",
+    "pre_patch_context_sha256": "sha256:f351d127fb31a1947de74a76e17cf7155d17eca332e57b520f4c40cee57858f0",
     "claims": [
       {
         "source_id": "endstone",
@@ -1066,7 +1066,7 @@
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:7364819adf40e10c3231b977a0566feebdd21f968244aab285970d6e7bfc8c33"
+        "digest": "sha256:e5b1c2f51f72b2e811b4cfb0435e23123612df6012ae9a660dc34abb972b7424"
       }
     ],
     "selected_source": "endstone",
@@ -1831,7 +1831,7 @@
   {
     "id": "protocol-2168-gophertunnel-packet-30-field-2",
     "target": "InventoryTransactionPacket.Transaction",
-    "pre_patch_context_sha256": "sha256:468bfda7465f395bbefb33a7373677fb0b672b3b4159e61da4363473aa22f679",
+    "pre_patch_context_sha256": "sha256:6718bb039e43d3453cace40da562a80c70a2c883fb1229a4d970f470ebaf0855",
     "claims": [
       {
         "source_id": "endstone",
@@ -1839,7 +1839,7 @@
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:49296569d0345c069177f094b1003a540f5b647727e685c2ac6fad981f27b630"
+        "digest": "sha256:a94dd2668f6a43f43691eb3ac2fe77ff805a7367dca9a7c660fb3c46dcdeb16a"
       }
     ],
     "selected_source": "endstone",
@@ -2335,7 +2335,7 @@
   {
     "id": "protocol-2168-gophertunnel-packet-324-field-0",
     "target": "PlayerVideoCapturePacket.Action",
-    "pre_patch_context_sha256": "sha256:13a6af23bece4afda2a94e871fa380f2fa2870d05a609ca3fec0ec421bb0d194",
+    "pre_patch_context_sha256": "sha256:00ad53e7587ceca4076dcd6caca18c2fa0888c77a4dee11d02fd00fe9a175534",
     "claims": [
       {
         "source_id": "endstone",
@@ -2343,7 +2343,7 @@
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:fd10f5c81f8cea8649ef3976f980d4f2971a8bfd1cecede1a1c3d0c33530c8c9"
+        "digest": "sha256:4059bc301eb888069596792df660e141b94eb542fbf23979c54a4f0161306a5c"
       }
     ],
     "selected_source": "endstone",
@@ -2359,7 +2359,7 @@
   {
     "id": "protocol-2168-gophertunnel-packet-325-field-2",
     "target": "PlayerUpdateEntityOverridesPacket.Update",
-    "pre_patch_context_sha256": "sha256:d3e2d2883b046508041edd7a05d34b811095c883ea8500fec221d6c8b7fca717",
+    "pre_patch_context_sha256": "sha256:9a29b5a9afde87f05ce0d76124ff0e44427a5f87dbfc40850bf1d4dbe33c3f51",
     "claims": [
       {
         "source_id": "endstone",
@@ -2367,7 +2367,7 @@
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:f3e51af9d3c44070523c12548b626f8c9fe55a42a204f7b4f01fb6f6dbce94f1"
+        "digest": "sha256:a5dbdb60860ad97498ed7ece3fc57cc2885ef15b763c692987bf47f1a83b05c4"
       }
     ],
     "selected_source": "endstone",
@@ -2383,7 +2383,7 @@
   {
     "id": "protocol-2168-gophertunnel-packet-326-field-1",
     "target": "PlayerLocationPacket.Location",
-    "pre_patch_context_sha256": "sha256:f78fd3d92302b8cd105c59a54cf422a2a7a9d3c3e0b20bb589f513920931472a",
+    "pre_patch_context_sha256": "sha256:c18b9fd9fe627d4b2ea9ec3ee34f1c9f1d011fb696aaf8cb240bd5e8fb6c5348",
     "claims": [
       {
         "source_id": "endstone",
@@ -2391,7 +2391,7 @@
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:7b4fcfcbcf88f3775f2f579fe10e1e39c8b7a30a90ec7dd3ac11d98369505add"
+        "digest": "sha256:5730b8e58c5e41d1e1e24cda149b6c19125e7981950a613c296d6796d867db61"
       }
     ],
     "selected_source": "endstone",
@@ -2455,7 +2455,7 @@
   {
     "id": "protocol-2168-gophertunnel-packet-330-field-0",
     "target": "ClientboundDataStorePacket.Updates",
-    "pre_patch_context_sha256": "sha256:742db26c0189c143e6acc1131175beeaffd45d84ca6fc0a96d7521f42e790454",
+    "pre_patch_context_sha256": "sha256:76df1f7b25c72f94cc72bf7b7aa9c11c7bad1a2604e6839127801760f2432b7f",
     "claims": [
       {
         "source_id": "endstone",
@@ -2463,7 +2463,7 @@
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:3e04acd761e610c69dc1b8d218fb97ee747ee139f1ea9b4d911ce390792861e7"
+        "digest": "sha256:d8ea19df725b57db5cf5b9402b28cc23a838e5fe0d5219e6b4fd66498187e74a"
       }
     ],
     "selected_source": "endstone",
@@ -2599,7 +2599,7 @@
   {
     "id": "protocol-2168-gophertunnel-packet-344-field-0",
     "target": "SyncWorldClocksPacket.Data",
-    "pre_patch_context_sha256": "sha256:3d71d526e258e42a23d3f319036d4b0ec2f7a21b4d5f9b6d9e900c63cf619d35",
+    "pre_patch_context_sha256": "sha256:6d7b801d678502041f5600acb0786ac916b853c9144e3053c156759792a4fe2b",
     "claims": [
       {
         "source_id": "endstone",
@@ -2607,7 +2607,7 @@
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:6ea132009d6dc24bc7657cbada331c91dada6deb4248213fdf98af967c16af57"
+        "digest": "sha256:00d5c640a611013d0b0213487814d741ec3bc1de88c7836c9162746ee52edb2b"
       }
     ],
     "selected_source": "endstone",
@@ -2623,7 +2623,7 @@
   {
     "id": "protocol-2168-gophertunnel-packet-345-field-0",
     "target": "ClientboundAttributeLayerSyncPacket.Data",
-    "pre_patch_context_sha256": "sha256:e95ee4f49ca3bdf6a965930eb03d2f2aaed2f3629b3f67c820e3bfbc2a235c76",
+    "pre_patch_context_sha256": "sha256:e685377a6b8fb41008acf7800d9a9adf9993ebcf4b38cda519d9b84ea0d22c8f",
     "claims": [
       {
         "source_id": "endstone",
@@ -2631,7 +2631,7 @@
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:dbc533484f8dbde717fd9b3d7013dd27089c8b774c577dac7d4b09cd71cd75ef"
+        "digest": "sha256:780ed2625717e82b66e7a1a7984ae9e2769e6bebbbe211c81cb2a8217b502dfb"
       }
     ],
     "selected_source": "endstone",
@@ -2639,174 +2639,6 @@
       {
         "source_id": "endstone",
         "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/clientbound_attribute_layer_sync.go#L30",
-        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
-      }
-    ],
-    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
-  },
-  {
-    "id": "protocol-2168-gophertunnel-packet-348-field-1",
-    "target": "ClientboundUpdateSoundDataPacket.Stop",
-    "pre_patch_context_sha256": "sha256:60c5350b5702020f77877f8151a70516e07a5433b5668180f90d96c3c48a7f0c",
-    "claims": [
-      {
-        "source_id": "endstone",
-        "digest": "sha256:cbd7a96a7ad9efe530e0b0d6c5ac92c50f1c484e0440d76102d90cb8204c72cc"
-      },
-      {
-        "source_id": "mojang",
-        "digest": "sha256:3d8096875922b9064f1da772cf6b658092e89334a6246591de324ee1904ecde3"
-      }
-    ],
-    "selected_source": "endstone",
-    "evidence": [
-      {
-        "source_id": "endstone",
-        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/clientbound_update_sound_data.go#L25",
-        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
-      }
-    ],
-    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
-  },
-  {
-    "id": "protocol-2168-gophertunnel-packet-348-field-2",
-    "target": "ClientboundUpdateSoundDataPacket.SetVolume",
-    "pre_patch_context_sha256": "sha256:938992a4ffc36c8a32d0856c90b361ddf47e3a23e1a4d9babec77ebcbcf0aa69",
-    "claims": [
-      {
-        "source_id": "endstone",
-        "digest": "sha256:3e9b221d5299bb525e4fe41f8c0eb661f1a26e42b549237790eaf028492d7fc5"
-      },
-      {
-        "source_id": "mojang",
-        "digest": "sha256:c6b781c4c30f1f59ef126190875acf5ed7da7852511764292715a58bda2f8c4d"
-      }
-    ],
-    "selected_source": "endstone",
-    "evidence": [
-      {
-        "source_id": "endstone",
-        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/clientbound_update_sound_data.go#L25",
-        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
-      }
-    ],
-    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
-  },
-  {
-    "id": "protocol-2168-gophertunnel-packet-348-field-3",
-    "target": "ClientboundUpdateSoundDataPacket.SetPitch",
-    "pre_patch_context_sha256": "sha256:0016a4c2eae14a274c3716f1f94e51bf876a1fa1efb60a131dfcb49bf0825116",
-    "claims": [
-      {
-        "source_id": "endstone",
-        "digest": "sha256:6129e704ff12c587526834a696cfc89a308bd18b763bb45d53e331dae6496ad8"
-      },
-      {
-        "source_id": "mojang",
-        "digest": "sha256:e1d5b0b85aafc2bf7748670a3ad3ed2e432e5ac1468aa3bba1b817de5044df25"
-      }
-    ],
-    "selected_source": "endstone",
-    "evidence": [
-      {
-        "source_id": "endstone",
-        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/clientbound_update_sound_data.go#L25",
-        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
-      }
-    ],
-    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
-  },
-  {
-    "id": "protocol-2168-gophertunnel-packet-348-field-4",
-    "target": "ClientboundUpdateSoundDataPacket.Fade",
-    "pre_patch_context_sha256": "sha256:20ebe8d9681452d8ba183798ec68a3f81c883004010ca336cd0730929b489bfd",
-    "claims": [
-      {
-        "source_id": "endstone",
-        "digest": "sha256:878d6df53b66f6a918595549e3cb54e5a117c590fac1486c2ee01c1938ecb82b"
-      },
-      {
-        "source_id": "mojang",
-        "digest": "sha256:71fc17be0a2b351ba4482f2cc2aa8dd341b8e943d1e3e771d88b3362193924c7"
-      }
-    ],
-    "selected_source": "endstone",
-    "evidence": [
-      {
-        "source_id": "endstone",
-        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/clientbound_update_sound_data.go#L25",
-        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
-      }
-    ],
-    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
-  },
-  {
-    "id": "protocol-2168-gophertunnel-packet-348-field-5",
-    "target": "ClientboundUpdateSoundDataPacket.SeekTo",
-    "pre_patch_context_sha256": "sha256:f86d81024a4c928b51a74e666910c51033840d42fcad303d72898ffe50e37e19",
-    "claims": [
-      {
-        "source_id": "endstone",
-        "digest": "sha256:6c1eaa0bbefdf714bcb62f72d27b072c6c241b2724f7f20a883372dbb16ad49b"
-      },
-      {
-        "source_id": "mojang",
-        "digest": "sha256:040b98b69217dbdd0735f0d2096f8a2bfad78379a38263cef4a986ec45289208"
-      }
-    ],
-    "selected_source": "endstone",
-    "evidence": [
-      {
-        "source_id": "endstone",
-        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/clientbound_update_sound_data.go#L25",
-        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
-      }
-    ],
-    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
-  },
-  {
-    "id": "protocol-2168-gophertunnel-packet-348-field-6",
-    "target": "ClientboundUpdateSoundDataPacket.Pause",
-    "pre_patch_context_sha256": "sha256:79927d573f36fea980145e569a7f04f670288438cf595c8d8435e4e81fc551af",
-    "claims": [
-      {
-        "source_id": "endstone",
-        "digest": "sha256:634f6b9afeb04d5f16a2785a92fc2fdd58d2fc033e39484ffc5a0132ea0cfce5"
-      },
-      {
-        "source_id": "mojang",
-        "digest": "sha256:0497a3e8cdcc5461d383658a6fffb4a7bb250f72490f380ac06ed522f76d65e6"
-      }
-    ],
-    "selected_source": "endstone",
-    "evidence": [
-      {
-        "source_id": "endstone",
-        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/clientbound_update_sound_data.go#L25",
-        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
-      }
-    ],
-    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
-  },
-  {
-    "id": "protocol-2168-gophertunnel-packet-348-field-7",
-    "target": "ClientboundUpdateSoundDataPacket.Resume",
-    "pre_patch_context_sha256": "sha256:7f5fda693813e90bb035c0f505885083556d59977f237400b43a350c7d62c18c",
-    "claims": [
-      {
-        "source_id": "endstone",
-        "digest": "sha256:d95013636a3688bfbf3e8bdfb4f9abc39ad8b47e7fc79751553b2fd1b65b99be"
-      },
-      {
-        "source_id": "mojang",
-        "digest": "sha256:d650f91126463d90458d75a043a984fbde8121b0d351829df7283c9630141e5e"
-      }
-    ],
-    "selected_source": "endstone",
-    "evidence": [
-      {
-        "source_id": "endstone",
-        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/clientbound_update_sound_data.go#L25",
         "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
       }
     ],
@@ -2863,7 +2695,7 @@
   {
     "id": "protocol-2168-gophertunnel-packet-39-field-1",
     "target": "SetActorDataPacket.Actor Data",
-    "pre_patch_context_sha256": "sha256:9f266de9bbed3866a35a75b1044ddc13eae53621be3fb0e0239b8d181b4b7977",
+    "pre_patch_context_sha256": "sha256:a9e318bf962b0f0195b358247708651775466a9c4ee6274545f8010132e6f21f",
     "claims": [
       {
         "source_id": "endstone",
@@ -2871,7 +2703,7 @@
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:03aa54d0e11e4151d01dba975a0d584e0b3a4ee8daeeb33cc0124887c1e8d06c"
+        "digest": "sha256:2d7ed5561ae74bb2cf7bc344eeef4079bbae9763c6b3a7b97add712ba787ed8e"
       }
     ],
     "selected_source": "endstone",
@@ -3223,7 +3055,7 @@
   {
     "id": "protocol-2168-gophertunnel-packet-63-field-0",
     "target": "PlayerListPacket.Entries",
-    "pre_patch_context_sha256": "sha256:d8c0a7afd31e42016142903e8248bfbdc6711b06171c25dbe33f4034004c1252",
+    "pre_patch_context_sha256": "sha256:22ac0e14c4c0851200f1bc052c9cd7022e38e82b4a596e099ecac89312982585",
     "claims": [
       {
         "source_id": "endstone",
@@ -3231,7 +3063,7 @@
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:5ad6bc4ac2d06cbec9334bb725ff058e242d03691fe2f0951f141a0d8dbff449"
+        "digest": "sha256:d31b7f240c4511b0bc91caba1cf2341b74074433f10a3dd04c42885338ea2806"
       }
     ],
     "selected_source": "endstone",
@@ -3295,7 +3127,7 @@
   {
     "id": "protocol-2168-gophertunnel-packet-65-field-3",
     "target": "LegacyTelemetryEventPacket.Event Data",
-    "pre_patch_context_sha256": "sha256:42b2118c968290c0482c86b9475b12175a768b1899a10b576563f86909f8596c",
+    "pre_patch_context_sha256": "sha256:9a823ddfc118baa7df5238cd2cd82ea580a5cf6666865012a495bf435435c6a2",
     "claims": [
       {
         "source_id": "endstone",
@@ -3303,7 +3135,7 @@
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:f2004485b6bb079247b9432fc6bbaf41b2ae77a5ffccbee3334b1a12552f5dbd"
+        "digest": "sha256:25ce5d0564eafa34e5cdaa0e6b6a889b1f0a3e5cb2a18e53e54638ce9005822c"
       }
     ],
     "selected_source": "endstone",
@@ -3509,30 +3341,6 @@
     "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
   },
   {
-    "id": "protocol-2168-gophertunnel-packet-78-field-0",
-    "target": "CommandBlockUpdatePacket.Target",
-    "pre_patch_context_sha256": "sha256:b01976b3d4032f30ace3093f58b804b80321d116178370bfb306954c95bb5a04",
-    "claims": [
-      {
-        "source_id": "endstone",
-        "digest": "sha256:6f49433f32940cf74880b577124de2372649f0531ae0d608059b25d7021eb190"
-      },
-      {
-        "source_id": "mojang",
-        "digest": "sha256:e06c9d6f37e70eadc59f72b64719c4ed9422e5bc132582013af5827e4b89194b"
-      }
-    ],
-    "selected_source": "endstone",
-    "evidence": [
-      {
-        "source_id": "endstone",
-        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/command_block_update.go#L67",
-        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
-      }
-    ],
-    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
-  },
-  {
     "id": "protocol-2168-gophertunnel-packet-79-field-0",
     "target": "CommandOutputPacket.Origin Data",
     "pre_patch_context_sha256": "sha256:d19d45c1f91879d2aa98f745fd1ef0ed07e26012941e688bc39f346b3601ce4f",
@@ -3559,7 +3367,7 @@
   {
     "id": "protocol-2168-gophertunnel-packet-8-field-0",
     "target": "ResourcePackClientResponsePacket.Response",
-    "pre_patch_context_sha256": "sha256:ba7203d90a9606fdc8248e2abf2edcffaa0e2841edc507ac2037afe474382420",
+    "pre_patch_context_sha256": "sha256:44d1a1b2dbc2cbd7bb8dd20162847e7a9b6eb54ef7da3a76025e211e729bb5e1",
     "claims": [
       {
         "source_id": "endstone",
@@ -3567,7 +3375,7 @@
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:228c2f3922cc978ebf006b8224751dfb0b101bdb3bbde36ec702f40e41e78af1"
+        "digest": "sha256:05d68145d44dffb339e5f8808c842578cdfb4ea6836cc0441e7eacff6e748e7e"
       }
     ],
     "selected_source": "endstone",
@@ -3660,7 +3468,7 @@
   {
     "id": "protocol-2168-gophertunnel-packet-9-field-2",
     "target": "TextPacket.Body",
-    "pre_patch_context_sha256": "sha256:014fc5b29cff65ed5902f6097336f1bc32d236f6bbead0875cc400207218ce96",
+    "pre_patch_context_sha256": "sha256:32351dc02d180fa25e632b586a623b895acbcc3ba60e69424d820175bccd2369",
     "claims": [
       {
         "source_id": "endstone",
@@ -3668,7 +3476,7 @@
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:c5d0c155ebff4348a9f4f8fcc8c259925f3dff9a5d7fde01fea6edf7f7094b80"
+        "digest": "sha256:eaefd3f13410910a7e1a69ef84f5f021d2911eac118c9736f3103fa95ff08e10"
       }
     ],
     "selected_source": "endstone",
@@ -3752,30 +3560,6 @@
       }
     ],
     "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field."
-  },
-  {
-    "id": "protocol-2168-gophertunnel-packet-97-field-1",
-    "target": "BookEditPacket.Operation",
-    "pre_patch_context_sha256": "sha256:81d3330def624ec5a1409d25feb38867f22ba9b708f351ac9dc073798ae27aa7",
-    "claims": [
-      {
-        "source_id": "endstone",
-        "digest": "sha256:551d05ad1a5d06da3bb970760de99c1f35e2654c8ed378e740cfbad6ded615e3"
-      },
-      {
-        "source_id": "mojang",
-        "digest": "sha256:8c777c761316298139e6562623deccdc64acbf311ed0c0524513befa8915af17"
-      }
-    ],
-    "selected_source": "endstone",
-    "evidence": [
-      {
-        "source_id": "endstone",
-        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/book_edit.go#L54",
-        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
-      }
-    ],
-    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
   },
   {
     "id": "protocol-2168-gophertunnel-packet-98-field-1",
@@ -4044,7 +3828,7 @@
   {
     "id": "protocol-2168-packet-52-field-0",
     "target": "CraftingDataPacket.Shaped Recipes",
-    "pre_patch_context_sha256": "sha256:f3e09f4d00180d335cf8fbf966677916606fd765d70930f9f36d784cb2fd04b8",
+    "pre_patch_context_sha256": "sha256:f4b3a207bd3ef85fbcf22138300ee659c20ac849b0a4ad02497c946d3542c2c1",
     "claims": [
       {
         "source_id": "endstone",
@@ -4052,7 +3836,7 @@
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:ed914bb5b51601cda21c4c380e080ffe251780e065ed0ddcf5d1f7142a61b4ba"
+        "digest": "sha256:d0f31f68dabf876ffa7c4d20b9d2d489d5669e81eca3ee8c5d3eeb54685ae3c5"
       }
     ],
     "selected_source": "endstone",
@@ -4068,7 +3852,7 @@
   {
     "id": "protocol-2168-packet-52-field-1",
     "target": "CraftingDataPacket.Shapeless Recipes",
-    "pre_patch_context_sha256": "sha256:d9e4d96aa6eb913a5ec9e64ae81cdbb497f6ddb5653b5f2021f950adcdecbf65",
+    "pre_patch_context_sha256": "sha256:66503a4d2a6892290ff1b91f0c79af49c239c9bce7fc9e218de3daf400e71fa7",
     "claims": [
       {
         "source_id": "endstone",
@@ -4076,7 +3860,7 @@
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:316a5484ff271375ce034e5b5f5de4df048aefaaddd72006c8d1f45b4c99ac67"
+        "digest": "sha256:89698270852809bbc906fbe8f549ea2aee1cbd05e101ecbdb8e81a94cde3ca42"
       }
     ],
     "selected_source": "endstone",
@@ -4092,7 +3876,7 @@
   {
     "id": "protocol-2168-packet-52-field-3",
     "target": "CraftingDataPacket.User Data Shapeless Recipes",
-    "pre_patch_context_sha256": "sha256:203e43cdd6595fc88e0fcf39c3fbc25e2eae337955572a7ae217bfca5a67e8a2",
+    "pre_patch_context_sha256": "sha256:8cc15e4500377ef2302db67d52fbd33ae64721e214dfc24bc2dc203b0384a568",
     "claims": [
       {
         "source_id": "endstone",
@@ -4100,7 +3884,7 @@
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:2209a0f9d05ddfed84b6efead8826aa842b5fa9a3c7ee8e24c1c60ba38ebfa53"
+        "digest": "sha256:6eb39a2c16e74020ad9d2f543145c2398d6f93bf9884c9b78b453ef3aef1a273"
       }
     ],
     "selected_source": "endstone",
@@ -4116,7 +3900,7 @@
   {
     "id": "protocol-2168-packet-52-field-4",
     "target": "CraftingDataPacket.Shapeless Chemistry Recipes",
-    "pre_patch_context_sha256": "sha256:4fb01be3d91849bde84d032d15e82a93b6fab7de4ebbbafb6084d029910432da",
+    "pre_patch_context_sha256": "sha256:d981ee94a55d1865e89d31c6e6c5865f4bad968d9dd5b68606e36e1ef6305af9",
     "claims": [
       {
         "source_id": "endstone",
@@ -4124,7 +3908,7 @@
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:c69d44d74327a1705b5fd8579dfe81dc3dbf06ef4d9f2442de5d88a63e897c2c"
+        "digest": "sha256:0b6a218dfc3ada1ba32ac3372d70a8cb23d44f8478c0c4a494e8740d20be4e00"
       }
     ],
     "selected_source": "endstone",
@@ -4140,7 +3924,7 @@
   {
     "id": "protocol-2168-packet-52-field-5",
     "target": "CraftingDataPacket.Shaped Chemistry Recipes",
-    "pre_patch_context_sha256": "sha256:be69820f3e63b291bb7aad9b06a86494330b677599dd77dd9d7f0b987ee12227",
+    "pre_patch_context_sha256": "sha256:d73cd74b854c542f32edddcef67a2dee4375d90dbd85489726f15f6fe9222a81",
     "claims": [
       {
         "source_id": "endstone",
@@ -4148,7 +3932,7 @@
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:23c37c1b18e7d6ecc0d34fa219c9710e443bee5b179d0548cef16f43f96bfab7"
+        "digest": "sha256:9129cbd86bfc07d5fc3c3ea0a5e693d08d8bb4938c7e28d0b634bc1a1e271d22"
       }
     ],
     "selected_source": "endstone",
@@ -4164,7 +3948,7 @@
   {
     "id": "protocol-2168-packet-52-field-6",
     "target": "CraftingDataPacket.Smithing Transform Recipes",
-    "pre_patch_context_sha256": "sha256:5c9a12e81f3530a2a25b72ca275c8c54090e2743f8aefc2758db79889a42779d",
+    "pre_patch_context_sha256": "sha256:c92d9be182bd77dd2d2160596b9dcfe931647660b5d133909c987c71c8556727",
     "claims": [
       {
         "source_id": "endstone",
@@ -4172,7 +3956,7 @@
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:a943dd40a1d7920ac81a2bfc5505d1629bec20d529844667cd431ac1019a04ba"
+        "digest": "sha256:bdfd5e2518202d819769a1d58c77f74e402b80e09a578344bdb615fc1b255d02"
       }
     ],
     "selected_source": "endstone",
@@ -4188,7 +3972,7 @@
   {
     "id": "protocol-2168-packet-52-field-7",
     "target": "CraftingDataPacket.Smithing Trim Recipes",
-    "pre_patch_context_sha256": "sha256:6452d73798ac0e39e1a75317a132d09e60dc58f9921ced0a683a4513bfd0c10a",
+    "pre_patch_context_sha256": "sha256:b91430b457e4e379a65b4921ccc88d427c34cdd955cb000612aaabd046072448",
     "claims": [
       {
         "source_id": "endstone",
@@ -4196,7 +3980,7 @@
       },
       {
         "source_id": "mojang",
-        "digest": "sha256:5b0bf2654ac408405fba96bce77d0808c565722d2d448e37fcba3b34d6b422d8"
+        "digest": "sha256:78203acf970f117c52f7fe01f62c41116a88130de5bd4d34d5f8cfa2a1a3fae4"
       }
     ],
     "selected_source": "endstone",

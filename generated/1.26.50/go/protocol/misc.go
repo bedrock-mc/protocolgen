@@ -249,6 +249,7 @@ func (x *BedrockDDUIDataStoreChange) Marshal(io IO) {
 	io.StringLimits(&x.DataStoreName, 1, 1000)
 	io.StringLimits(&x.Property, 1, 1000)
 	io.Uint32(&x.UpdateCount)
+	Minimum(io, &x.UpdateCount, 0)
 	Maximum(io, &x.UpdateCount, 4.294967294e+09)
 	MarshalDynamicValue(io, &x.TheNewPropertyValue)
 }
@@ -948,7 +949,6 @@ type DataItemEntry struct {
 // Marshal reads or writes DataItemEntry using its canonical wire layout.
 func (x *DataItemEntry) Marshal(io IO) {
 	io.Varuint32(&x.ID)
-	Minimum(io, &x.ID, 0)
 	MarshalDataItemEntryValue(io, &x.Payload)
 }
 
@@ -1284,9 +1284,12 @@ func (x *EASEnvironmentAttributeData) Marshal(io IO) {
 		MarshalEAS(io, value)
 	})
 	io.Uint32(&x.CurrentTransitionTicks)
+	Minimum(io, &x.CurrentTransitionTicks, 0)
 	io.Uint32(&x.TotalTransitionTicks)
+	Minimum(io, &x.TotalTransitionTicks, 0)
 	io.String(&x.Easing)
 	io.Uint32(&x.LocalTransitionTicks)
+	Minimum(io, &x.LocalTransitionTicks, 0)
 	io.Bool(&x.NoiseTransition)
 	x.NoiseAlignment.Marshal(io)
 }
