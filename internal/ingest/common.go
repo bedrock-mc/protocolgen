@@ -348,9 +348,9 @@ func primitive(underlying string, options []string, jsonType string) manifest.No
 			return manifest.Primitive("zigzag_i64")
 		case "ulong", "uint64":
 			return manifest.Primitive("var_u64")
-		case "byte", "int8", "sbyte", "short", "int16", "int", "int32":
+		case "int", "int32":
 			return manifest.Primitive("zigzag_i32")
-		case "ubyte", "uint8", "ushort", "uint16", "uint", "uint32":
+		case "uint", "uint32":
 			return manifest.Primitive("var_u32")
 		}
 	}

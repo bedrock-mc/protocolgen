@@ -17180,6 +17180,7 @@
                       "ordinal": 0,
                       "name": "Actions",
                       "semantic": "Actions",
+                      "type_id": "InventoryTransaction.json#",
                       "encode": {
                         "kind": "struct",
                         "semantic": "InventoryTransaction",
@@ -17295,7 +17296,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -17303,6 +17305,7 @@
                                           "ordinal": 2,
                                           "name": "Bit Flags",
                                           "semantic": "Bit Flags",
+                                          "type_id": "InventorySourceFlags.json#",
                                           "encode": {
                                             "kind": "optional",
                                             "value": {
@@ -17362,12 +17365,16 @@
                                         "signed": false,
                                         "zigzag": false,
                                         "endianness": "none"
+                                      },
+                                      "constraints": {
+                                        "minimum": 0
                                       }
                                     },
                                     "symmetry": "symmetric",
                                     "provenance": {
                                       "pins": [
-                                        "endstone"
+                                        "endstone",
+                                        "mojang"
                                       ]
                                     }
                                   },
@@ -17375,6 +17382,7 @@
                                     "ordinal": 2,
                                     "name": "From Item",
                                     "semantic": "From Item",
+                                    "type_id": "NetworkItemStackDescriptor.json#",
                                     "encode": {
                                       "kind": "struct",
                                       "semantic": "cerealizer\u003cNetworkItemStackDescriptor\u003e::SerializedData",
@@ -17397,7 +17405,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -17422,7 +17431,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -17447,7 +17457,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -17455,6 +17466,7 @@
                                           "ordinal": 3,
                                           "name": "Net Id Variant",
                                           "semantic": "Net Id Variant",
+                                          "type_id": "ItemStackNetIdVariant.json#",
                                           "encode": {
                                             "kind": "optional",
                                             "value": {
@@ -17487,12 +17499,16 @@
                                               "signed": false,
                                               "zigzag": false,
                                               "endianness": "none"
+                                            },
+                                            "constraints": {
+                                              "minimum": 0
                                             }
                                           },
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -17517,7 +17533,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         }
@@ -17534,6 +17551,7 @@
                                     "ordinal": 3,
                                     "name": "To Item",
                                     "semantic": "To Item",
+                                    "type_id": "NetworkItemStackDescriptor.json#",
                                     "encode": {
                                       "kind": "struct",
                                       "semantic": "cerealizer\u003cNetworkItemStackDescriptor\u003e::SerializedData",
@@ -17556,7 +17574,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -17581,7 +17600,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -17606,7 +17626,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -17614,6 +17635,7 @@
                                           "ordinal": 3,
                                           "name": "Net Id Variant",
                                           "semantic": "Net Id Variant",
+                                          "type_id": "ItemStackNetIdVariant.json#",
                                           "encode": {
                                             "kind": "optional",
                                             "value": {
@@ -17646,12 +17668,16 @@
                                               "signed": false,
                                               "zigzag": false,
                                               "endianness": "none"
+                                            },
+                                            "constraints": {
+                                              "minimum": 0
                                             }
                                           },
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -17676,7 +17702,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         }
@@ -17723,6 +17750,7 @@
                       "ordinal": 0,
                       "name": "Actions",
                       "semantic": "Actions",
+                      "type_id": "InventoryTransaction.json#",
                       "encode": {
                         "kind": "struct",
                         "semantic": "InventoryTransaction",
@@ -17838,7 +17866,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -17846,6 +17875,7 @@
                                           "ordinal": 2,
                                           "name": "Bit Flags",
                                           "semantic": "Bit Flags",
+                                          "type_id": "InventorySourceFlags.json#",
                                           "encode": {
                                             "kind": "optional",
                                             "value": {
@@ -17905,12 +17935,16 @@
                                         "signed": false,
                                         "zigzag": false,
                                         "endianness": "none"
+                                      },
+                                      "constraints": {
+                                        "minimum": 0
                                       }
                                     },
                                     "symmetry": "symmetric",
                                     "provenance": {
                                       "pins": [
-                                        "endstone"
+                                        "endstone",
+                                        "mojang"
                                       ]
                                     }
                                   },
@@ -17918,6 +17952,7 @@
                                     "ordinal": 2,
                                     "name": "From Item",
                                     "semantic": "From Item",
+                                    "type_id": "NetworkItemStackDescriptor.json#",
                                     "encode": {
                                       "kind": "struct",
                                       "semantic": "cerealizer\u003cNetworkItemStackDescriptor\u003e::SerializedData",
@@ -17940,7 +17975,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -17965,7 +18001,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -17990,7 +18027,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -17998,6 +18036,7 @@
                                           "ordinal": 3,
                                           "name": "Net Id Variant",
                                           "semantic": "Net Id Variant",
+                                          "type_id": "ItemStackNetIdVariant.json#",
                                           "encode": {
                                             "kind": "optional",
                                             "value": {
@@ -18030,12 +18069,16 @@
                                               "signed": false,
                                               "zigzag": false,
                                               "endianness": "none"
+                                            },
+                                            "constraints": {
+                                              "minimum": 0
                                             }
                                           },
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -18060,7 +18103,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         }
@@ -18077,6 +18121,7 @@
                                     "ordinal": 3,
                                     "name": "To Item",
                                     "semantic": "To Item",
+                                    "type_id": "NetworkItemStackDescriptor.json#",
                                     "encode": {
                                       "kind": "struct",
                                       "semantic": "cerealizer\u003cNetworkItemStackDescriptor\u003e::SerializedData",
@@ -18099,7 +18144,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -18124,7 +18170,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -18149,7 +18196,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -18157,6 +18205,7 @@
                                           "ordinal": 3,
                                           "name": "Net Id Variant",
                                           "semantic": "Net Id Variant",
+                                          "type_id": "ItemStackNetIdVariant.json#",
                                           "encode": {
                                             "kind": "optional",
                                             "value": {
@@ -18189,12 +18238,16 @@
                                               "signed": false,
                                               "zigzag": false,
                                               "endianness": "none"
+                                            },
+                                            "constraints": {
+                                              "minimum": 0
                                             }
                                           },
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -18219,7 +18272,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         }
@@ -18266,6 +18320,7 @@
                       "ordinal": 0,
                       "name": "Actions",
                       "semantic": "Actions",
+                      "type_id": "InventoryTransaction.json#",
                       "encode": {
                         "kind": "struct",
                         "semantic": "InventoryTransaction",
@@ -18381,7 +18436,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -18389,6 +18445,7 @@
                                           "ordinal": 2,
                                           "name": "Bit Flags",
                                           "semantic": "Bit Flags",
+                                          "type_id": "InventorySourceFlags.json#",
                                           "encode": {
                                             "kind": "optional",
                                             "value": {
@@ -18448,12 +18505,16 @@
                                         "signed": false,
                                         "zigzag": false,
                                         "endianness": "none"
+                                      },
+                                      "constraints": {
+                                        "minimum": 0
                                       }
                                     },
                                     "symmetry": "symmetric",
                                     "provenance": {
                                       "pins": [
-                                        "endstone"
+                                        "endstone",
+                                        "mojang"
                                       ]
                                     }
                                   },
@@ -18461,6 +18522,7 @@
                                     "ordinal": 2,
                                     "name": "From Item",
                                     "semantic": "From Item",
+                                    "type_id": "NetworkItemStackDescriptor.json#",
                                     "encode": {
                                       "kind": "struct",
                                       "semantic": "cerealizer\u003cNetworkItemStackDescriptor\u003e::SerializedData",
@@ -18483,7 +18545,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -18508,7 +18571,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -18533,7 +18597,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -18541,6 +18606,7 @@
                                           "ordinal": 3,
                                           "name": "Net Id Variant",
                                           "semantic": "Net Id Variant",
+                                          "type_id": "ItemStackNetIdVariant.json#",
                                           "encode": {
                                             "kind": "optional",
                                             "value": {
@@ -18573,12 +18639,16 @@
                                               "signed": false,
                                               "zigzag": false,
                                               "endianness": "none"
+                                            },
+                                            "constraints": {
+                                              "minimum": 0
                                             }
                                           },
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -18603,7 +18673,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         }
@@ -18620,6 +18691,7 @@
                                     "ordinal": 3,
                                     "name": "To Item",
                                     "semantic": "To Item",
+                                    "type_id": "NetworkItemStackDescriptor.json#",
                                     "encode": {
                                       "kind": "struct",
                                       "semantic": "cerealizer\u003cNetworkItemStackDescriptor\u003e::SerializedData",
@@ -18642,7 +18714,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -18667,7 +18740,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -18692,7 +18766,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -18700,6 +18775,7 @@
                                           "ordinal": 3,
                                           "name": "Net Id Variant",
                                           "semantic": "Net Id Variant",
+                                          "type_id": "ItemStackNetIdVariant.json#",
                                           "encode": {
                                             "kind": "optional",
                                             "value": {
@@ -18732,12 +18808,16 @@
                                               "signed": false,
                                               "zigzag": false,
                                               "endianness": "none"
+                                            },
+                                            "constraints": {
+                                              "minimum": 0
                                             }
                                           },
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -18762,7 +18842,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         }
@@ -18897,6 +18978,7 @@
                       "ordinal": 3,
                       "name": "Position",
                       "semantic": "Position",
+                      "type_id": "BlockPos.json#",
                       "encode": {
                         "kind": "struct",
                         "semantic": "BlockPos",
@@ -18970,7 +19052,8 @@
                       "symmetry": "symmetric",
                       "provenance": {
                         "pins": [
-                          "endstone"
+                          "endstone",
+                          "mojang"
                         ]
                       }
                     },
@@ -18986,12 +19069,17 @@
                           "signed": false,
                           "zigzag": false,
                           "endianness": "none"
+                        },
+                        "constraints": {
+                          "minimum": 0,
+                          "maximum": 255
                         }
                       },
                       "symmetry": "symmetric",
                       "provenance": {
                         "pins": [
-                          "endstone"
+                          "endstone",
+                          "mojang"
                         ]
                       }
                     },
@@ -19012,7 +19100,8 @@
                       "symmetry": "symmetric",
                       "provenance": {
                         "pins": [
-                          "endstone"
+                          "endstone",
+                          "mojang"
                         ]
                       }
                     },
@@ -19020,6 +19109,7 @@
                       "ordinal": 6,
                       "name": "Item",
                       "semantic": "Item",
+                      "type_id": "NetworkItemStackDescriptor.json#",
                       "encode": {
                         "kind": "struct",
                         "semantic": "cerealizer\u003cNetworkItemStackDescriptor\u003e::SerializedData",
@@ -19042,7 +19132,8 @@
                             "symmetry": "symmetric",
                             "provenance": {
                               "pins": [
-                                "endstone"
+                                "endstone",
+                                "mojang"
                               ]
                             }
                           },
@@ -19067,7 +19158,8 @@
                             "symmetry": "symmetric",
                             "provenance": {
                               "pins": [
-                                "endstone"
+                                "endstone",
+                                "mojang"
                               ]
                             }
                           },
@@ -19092,7 +19184,8 @@
                             "symmetry": "symmetric",
                             "provenance": {
                               "pins": [
-                                "endstone"
+                                "endstone",
+                                "mojang"
                               ]
                             }
                           },
@@ -19100,6 +19193,7 @@
                             "ordinal": 3,
                             "name": "Net Id Variant",
                             "semantic": "Net Id Variant",
+                            "type_id": "ItemStackNetIdVariant.json#",
                             "encode": {
                               "kind": "optional",
                               "value": {
@@ -19132,12 +19226,16 @@
                                 "signed": false,
                                 "zigzag": false,
                                 "endianness": "none"
+                              },
+                              "constraints": {
+                                "minimum": 0
                               }
                             },
                             "symmetry": "symmetric",
                             "provenance": {
                               "pins": [
-                                "endstone"
+                                "endstone",
+                                "mojang"
                               ]
                             }
                           },
@@ -19162,7 +19260,8 @@
                             "symmetry": "symmetric",
                             "provenance": {
                               "pins": [
-                                "endstone"
+                                "endstone",
+                                "mojang"
                               ]
                             }
                           }
@@ -19179,6 +19278,7 @@
                       "ordinal": 7,
                       "name": "From Position",
                       "semantic": "From Position",
+                      "type_id": "Vec3.json#",
                       "encode": {
                         "kind": "struct",
                         "semantic": "Vec3",
@@ -19252,7 +19352,8 @@
                       "symmetry": "symmetric",
                       "provenance": {
                         "pins": [
-                          "endstone"
+                          "endstone",
+                          "mojang"
                         ]
                       }
                     },
@@ -19260,6 +19361,7 @@
                       "ordinal": 8,
                       "name": "Click Position",
                       "semantic": "Click Position",
+                      "type_id": "Vec3.json#",
                       "encode": {
                         "kind": "struct",
                         "semantic": "Vec3",
@@ -19333,7 +19435,8 @@
                       "symmetry": "symmetric",
                       "provenance": {
                         "pins": [
-                          "endstone"
+                          "endstone",
+                          "mojang"
                         ]
                       }
                     },
@@ -19349,12 +19452,16 @@
                           "signed": false,
                           "zigzag": false,
                           "endianness": "none"
+                        },
+                        "constraints": {
+                          "minimum": 0
                         }
                       },
                       "symmetry": "symmetric",
                       "provenance": {
                         "pins": [
-                          "endstone"
+                          "endstone",
+                          "mojang"
                         ]
                       }
                     },
@@ -19451,6 +19558,7 @@
                       "ordinal": 0,
                       "name": "Actions",
                       "semantic": "Actions",
+                      "type_id": "InventoryTransaction.json#",
                       "encode": {
                         "kind": "struct",
                         "semantic": "InventoryTransaction",
@@ -19566,7 +19674,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -19574,6 +19683,7 @@
                                           "ordinal": 2,
                                           "name": "Bit Flags",
                                           "semantic": "Bit Flags",
+                                          "type_id": "InventorySourceFlags.json#",
                                           "encode": {
                                             "kind": "optional",
                                             "value": {
@@ -19633,12 +19743,16 @@
                                         "signed": false,
                                         "zigzag": false,
                                         "endianness": "none"
+                                      },
+                                      "constraints": {
+                                        "minimum": 0
                                       }
                                     },
                                     "symmetry": "symmetric",
                                     "provenance": {
                                       "pins": [
-                                        "endstone"
+                                        "endstone",
+                                        "mojang"
                                       ]
                                     }
                                   },
@@ -19646,6 +19760,7 @@
                                     "ordinal": 2,
                                     "name": "From Item",
                                     "semantic": "From Item",
+                                    "type_id": "NetworkItemStackDescriptor.json#",
                                     "encode": {
                                       "kind": "struct",
                                       "semantic": "cerealizer\u003cNetworkItemStackDescriptor\u003e::SerializedData",
@@ -19668,7 +19783,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -19693,7 +19809,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -19718,7 +19835,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -19726,6 +19844,7 @@
                                           "ordinal": 3,
                                           "name": "Net Id Variant",
                                           "semantic": "Net Id Variant",
+                                          "type_id": "ItemStackNetIdVariant.json#",
                                           "encode": {
                                             "kind": "optional",
                                             "value": {
@@ -19758,12 +19877,16 @@
                                               "signed": false,
                                               "zigzag": false,
                                               "endianness": "none"
+                                            },
+                                            "constraints": {
+                                              "minimum": 0
                                             }
                                           },
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -19788,7 +19911,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         }
@@ -19805,6 +19929,7 @@
                                     "ordinal": 3,
                                     "name": "To Item",
                                     "semantic": "To Item",
+                                    "type_id": "NetworkItemStackDescriptor.json#",
                                     "encode": {
                                       "kind": "struct",
                                       "semantic": "cerealizer\u003cNetworkItemStackDescriptor\u003e::SerializedData",
@@ -19827,7 +19952,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -19852,7 +19978,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -19877,7 +20004,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -19885,6 +20013,7 @@
                                           "ordinal": 3,
                                           "name": "Net Id Variant",
                                           "semantic": "Net Id Variant",
+                                          "type_id": "ItemStackNetIdVariant.json#",
                                           "encode": {
                                             "kind": "optional",
                                             "value": {
@@ -19917,12 +20046,16 @@
                                               "signed": false,
                                               "zigzag": false,
                                               "endianness": "none"
+                                            },
+                                            "constraints": {
+                                              "minimum": 0
                                             }
                                           },
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -19947,7 +20080,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         }
@@ -19983,6 +20117,7 @@
                       "ordinal": 1,
                       "name": "Runtime Id",
                       "semantic": "Runtime Id",
+                      "type_id": "ActorRuntimeID.json#",
                       "encode": {
                         "kind": "struct",
                         "semantic": "ActorRuntimeID",
@@ -20014,7 +20149,8 @@
                       "symmetry": "symmetric",
                       "provenance": {
                         "pins": [
-                          "endstone"
+                          "endstone",
+                          "mojang"
                         ]
                       }
                     },
@@ -20081,7 +20217,8 @@
                       "symmetry": "symmetric",
                       "provenance": {
                         "pins": [
-                          "endstone"
+                          "endstone",
+                          "mojang"
                         ]
                       }
                     },
@@ -20089,6 +20226,7 @@
                       "ordinal": 4,
                       "name": "Item",
                       "semantic": "Item",
+                      "type_id": "NetworkItemStackDescriptor.json#",
                       "encode": {
                         "kind": "struct",
                         "semantic": "cerealizer\u003cNetworkItemStackDescriptor\u003e::SerializedData",
@@ -20111,7 +20249,8 @@
                             "symmetry": "symmetric",
                             "provenance": {
                               "pins": [
-                                "endstone"
+                                "endstone",
+                                "mojang"
                               ]
                             }
                           },
@@ -20136,7 +20275,8 @@
                             "symmetry": "symmetric",
                             "provenance": {
                               "pins": [
-                                "endstone"
+                                "endstone",
+                                "mojang"
                               ]
                             }
                           },
@@ -20161,7 +20301,8 @@
                             "symmetry": "symmetric",
                             "provenance": {
                               "pins": [
-                                "endstone"
+                                "endstone",
+                                "mojang"
                               ]
                             }
                           },
@@ -20169,6 +20310,7 @@
                             "ordinal": 3,
                             "name": "Net Id Variant",
                             "semantic": "Net Id Variant",
+                            "type_id": "ItemStackNetIdVariant.json#",
                             "encode": {
                               "kind": "optional",
                               "value": {
@@ -20201,12 +20343,16 @@
                                 "signed": false,
                                 "zigzag": false,
                                 "endianness": "none"
+                              },
+                              "constraints": {
+                                "minimum": 0
                               }
                             },
                             "symmetry": "symmetric",
                             "provenance": {
                               "pins": [
-                                "endstone"
+                                "endstone",
+                                "mojang"
                               ]
                             }
                           },
@@ -20231,7 +20377,8 @@
                             "symmetry": "symmetric",
                             "provenance": {
                               "pins": [
-                                "endstone"
+                                "endstone",
+                                "mojang"
                               ]
                             }
                           }
@@ -20248,6 +20395,7 @@
                       "ordinal": 5,
                       "name": "From Position",
                       "semantic": "From Position",
+                      "type_id": "Vec3.json#",
                       "encode": {
                         "kind": "struct",
                         "semantic": "Vec3",
@@ -20321,7 +20469,8 @@
                       "symmetry": "symmetric",
                       "provenance": {
                         "pins": [
-                          "endstone"
+                          "endstone",
+                          "mojang"
                         ]
                       }
                     },
@@ -20329,6 +20478,7 @@
                       "ordinal": 6,
                       "name": "Hit Position",
                       "semantic": "Hit Position",
+                      "type_id": "Vec3.json#",
                       "encode": {
                         "kind": "struct",
                         "semantic": "Vec3",
@@ -20402,7 +20552,8 @@
                       "symmetry": "symmetric",
                       "provenance": {
                         "pins": [
-                          "endstone"
+                          "endstone",
+                          "mojang"
                         ]
                       }
                     }
@@ -20421,6 +20572,7 @@
                       "ordinal": 0,
                       "name": "Actions",
                       "semantic": "Actions",
+                      "type_id": "InventoryTransaction.json#",
                       "encode": {
                         "kind": "struct",
                         "semantic": "InventoryTransaction",
@@ -20536,7 +20688,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -20544,6 +20697,7 @@
                                           "ordinal": 2,
                                           "name": "Bit Flags",
                                           "semantic": "Bit Flags",
+                                          "type_id": "InventorySourceFlags.json#",
                                           "encode": {
                                             "kind": "optional",
                                             "value": {
@@ -20603,12 +20757,16 @@
                                         "signed": false,
                                         "zigzag": false,
                                         "endianness": "none"
+                                      },
+                                      "constraints": {
+                                        "minimum": 0
                                       }
                                     },
                                     "symmetry": "symmetric",
                                     "provenance": {
                                       "pins": [
-                                        "endstone"
+                                        "endstone",
+                                        "mojang"
                                       ]
                                     }
                                   },
@@ -20616,6 +20774,7 @@
                                     "ordinal": 2,
                                     "name": "From Item",
                                     "semantic": "From Item",
+                                    "type_id": "NetworkItemStackDescriptor.json#",
                                     "encode": {
                                       "kind": "struct",
                                       "semantic": "cerealizer\u003cNetworkItemStackDescriptor\u003e::SerializedData",
@@ -20638,7 +20797,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -20663,7 +20823,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -20688,7 +20849,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -20696,6 +20858,7 @@
                                           "ordinal": 3,
                                           "name": "Net Id Variant",
                                           "semantic": "Net Id Variant",
+                                          "type_id": "ItemStackNetIdVariant.json#",
                                           "encode": {
                                             "kind": "optional",
                                             "value": {
@@ -20728,12 +20891,16 @@
                                               "signed": false,
                                               "zigzag": false,
                                               "endianness": "none"
+                                            },
+                                            "constraints": {
+                                              "minimum": 0
                                             }
                                           },
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -20758,7 +20925,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         }
@@ -20775,6 +20943,7 @@
                                     "ordinal": 3,
                                     "name": "To Item",
                                     "semantic": "To Item",
+                                    "type_id": "NetworkItemStackDescriptor.json#",
                                     "encode": {
                                       "kind": "struct",
                                       "semantic": "cerealizer\u003cNetworkItemStackDescriptor\u003e::SerializedData",
@@ -20797,7 +20966,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -20822,7 +20992,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -20847,7 +21018,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -20855,6 +21027,7 @@
                                           "ordinal": 3,
                                           "name": "Net Id Variant",
                                           "semantic": "Net Id Variant",
+                                          "type_id": "ItemStackNetIdVariant.json#",
                                           "encode": {
                                             "kind": "optional",
                                             "value": {
@@ -20887,12 +21060,16 @@
                                               "signed": false,
                                               "zigzag": false,
                                               "endianness": "none"
+                                            },
+                                            "constraints": {
+                                              "minimum": 0
                                             }
                                           },
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         },
@@ -20917,7 +21094,8 @@
                                           "symmetry": "symmetric",
                                           "provenance": {
                                             "pins": [
-                                              "endstone"
+                                              "endstone",
+                                              "mojang"
                                             ]
                                           }
                                         }
@@ -21005,7 +21183,8 @@
                       "symmetry": "symmetric",
                       "provenance": {
                         "pins": [
-                          "endstone"
+                          "endstone",
+                          "mojang"
                         ]
                       }
                     },
@@ -21013,6 +21192,7 @@
                       "ordinal": 3,
                       "name": "Item",
                       "semantic": "Item",
+                      "type_id": "NetworkItemStackDescriptor.json#",
                       "encode": {
                         "kind": "struct",
                         "semantic": "cerealizer\u003cNetworkItemStackDescriptor\u003e::SerializedData",
@@ -21035,7 +21215,8 @@
                             "symmetry": "symmetric",
                             "provenance": {
                               "pins": [
-                                "endstone"
+                                "endstone",
+                                "mojang"
                               ]
                             }
                           },
@@ -21060,7 +21241,8 @@
                             "symmetry": "symmetric",
                             "provenance": {
                               "pins": [
-                                "endstone"
+                                "endstone",
+                                "mojang"
                               ]
                             }
                           },
@@ -21085,7 +21267,8 @@
                             "symmetry": "symmetric",
                             "provenance": {
                               "pins": [
-                                "endstone"
+                                "endstone",
+                                "mojang"
                               ]
                             }
                           },
@@ -21093,6 +21276,7 @@
                             "ordinal": 3,
                             "name": "Net Id Variant",
                             "semantic": "Net Id Variant",
+                            "type_id": "ItemStackNetIdVariant.json#",
                             "encode": {
                               "kind": "optional",
                               "value": {
@@ -21125,12 +21309,16 @@
                                 "signed": false,
                                 "zigzag": false,
                                 "endianness": "none"
+                              },
+                              "constraints": {
+                                "minimum": 0
                               }
                             },
                             "symmetry": "symmetric",
                             "provenance": {
                               "pins": [
-                                "endstone"
+                                "endstone",
+                                "mojang"
                               ]
                             }
                           },
@@ -21155,7 +21343,8 @@
                             "symmetry": "symmetric",
                             "provenance": {
                               "pins": [
-                                "endstone"
+                                "endstone",
+                                "mojang"
                               ]
                             }
                           }
@@ -21172,6 +21361,7 @@
                       "ordinal": 4,
                       "name": "From Position",
                       "semantic": "From Position",
+                      "type_id": "Vec3.json#",
                       "encode": {
                         "kind": "struct",
                         "semantic": "Vec3",
@@ -21245,7 +21435,8 @@
                       "symmetry": "symmetric",
                       "provenance": {
                         "pins": [
-                          "endstone"
+                          "endstone",
+                          "mojang"
                         ]
                       }
                     }
@@ -120211,7 +120402,7 @@
     {
       "id": "protocol-2187-reviewed-009",
       "target": "InventoryTransactionPacket.Transaction",
-      "pre_patch_context_sha256": "sha256:c8373f4098758e4c1ac7fa937f4077ab301e85715e81b75f67e448b77aa4fb53",
+      "pre_patch_context_sha256": "sha256:051e37cdbea7009cc615dd4db7b2f6da55b70e6366581b563b0bb05b2d556f88",
       "claims": [
         {
           "source_id": "endstone",
@@ -120219,7 +120410,7 @@
         },
         {
           "source_id": "mojang",
-          "digest": "sha256:a94dd2668f6a43f43691eb3ac2fe77ff805a7367dca9a7c660fb3c46dcdeb16a"
+          "digest": "sha256:375fb0e1e846ec950a799921a286921515931a3229f5ea98be2ce79252ac9db5"
         }
       ],
       "selected_source": "endstone",
@@ -120236,7 +120427,7 @@
           "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
         }
       ],
-      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence. Refreshed after correcting small-integer Compression handling; the selected claim fingerprint is unchanged."
     },
     {
       "id": "protocol-2187-reviewed-010",
@@ -120391,7 +120582,7 @@
     {
       "id": "protocol-2187-reviewed-015",
       "target": "LegacyTelemetryEventPacket.Event Data",
-      "pre_patch_context_sha256": "sha256:48217992c5c9ee00ab53aec532fe24dc6b8bb4dcb25430b6416e0d0108a24c93",
+      "pre_patch_context_sha256": "sha256:f4888e6beeb23a5e371107040e607dddf665a5b5f3d2e056aeba443346b4d4e6",
       "claims": [
         {
           "source_id": "endstone",
@@ -120399,7 +120590,7 @@
         },
         {
           "source_id": "mojang",
-          "digest": "sha256:25ce5d0564eafa34e5cdaa0e6b6a889b1f0a3e5cb2a18e53e54638ce9005822c"
+          "digest": "sha256:9a56f2336191a7b13de3da905b6827cc197607049c7d7ab072a3f715780c8f85"
         }
       ],
       "selected_source": "endstone",
@@ -120416,7 +120607,7 @@
           "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
         }
       ],
-      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence. Refreshed after correcting small-integer Compression handling; the selected claim fingerprint is unchanged."
     },
     {
       "id": "protocol-2187-reviewed-016",
@@ -120691,7 +120882,7 @@
     {
       "id": "protocol-2187-reviewed-025",
       "target": "PlayerAuthInputPacket.Item Use Transaction",
-      "pre_patch_context_sha256": "sha256:c0769aa6347b66638b81b95e271c6cb4daf7d22b66adaffdc0fc717fd3561ffc",
+      "pre_patch_context_sha256": "sha256:214fb2195297447c00a85a63ff778d056bea507f0596787a68417b5d14225e62",
       "claims": [
         {
           "source_id": "endstone",
@@ -120699,7 +120890,7 @@
         },
         {
           "source_id": "mojang",
-          "digest": "sha256:3cc87cbeb8d89e3724599b9fc9185c82e1ad76e7e0ecde43aa82e8ded008df2d"
+          "digest": "sha256:dc084f4a3f27c7ebda8737f006ef60d7d091ee3fd128438c42f3ae6e9be21edc"
         }
       ],
       "selected_source": "endstone",
@@ -120716,7 +120907,7 @@
           "summary": "The exact target Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
         }
       ],
-      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence."
+      "reason": "Select the complete exact 1.26.50.25 BDS reflection-graph claim, using the exact target Mojang schema as independent field-order and semantic evidence. Refreshed after correcting small-integer Compression handling; the selected claim fingerprint is unchanged."
     },
     {
       "id": "protocol-2187-reviewed-026",

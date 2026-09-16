@@ -6573,6 +6573,7 @@ impl wire::Encode for InventoryAction {
     fn encode(&self, writer: &mut wire::Writer) {
         self.source.encode(writer);
         self.slot.encode(writer);
+        wire::assert_number_limits(self.slot.0, Some(0), None);
         self.from_item.encode(writer);
         self.to_item.encode(writer);
     }
@@ -6581,7 +6582,11 @@ impl wire::Encode for InventoryAction {
 impl wire::Decode for InventoryAction {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let source = <InventorySource as wire::Decode>::decode(reader)?;
-        let slot = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let slot = {
+            let value = <wire::VarUInt as wire::Decode>::decode(reader)?;
+            wire::validate_number_limits(value.0, Some(0), None)?;
+            value
+        };
         let from_item = <NetworkItemStackDescriptorSerializedData as wire::Decode>::decode(reader)?;
         let to_item = <NetworkItemStackDescriptorSerializedData as wire::Decode>::decode(reader)?;
         Ok(Self {
@@ -6870,11 +6875,13 @@ impl wire::Encode for ItemUseInventoryTransaction {
         self.trigger_type.encode(writer);
         self.position.encode(writer);
         self.face.encode(writer);
+        wire::assert_number_limits(self.face.0, Some(0), Some(255));
         self.slot.encode(writer);
         self.item.encode(writer);
         self.from_position.encode(writer);
         self.click_position.encode(writer);
         self.target_block_id.encode(writer);
+        wire::assert_number_limits(self.target_block_id.0, Some(0), None);
         self.client_interact_prediction.encode(writer);
         self.client_cooldown_state.encode(writer);
     }
@@ -6887,12 +6894,20 @@ impl wire::Decode for ItemUseInventoryTransaction {
         let trigger_type =
             <ItemUseInventoryTransactionTriggerType as wire::Decode>::decode(reader)?;
         let position = <BlockPos as wire::Decode>::decode(reader)?;
-        let face = <wire::U8 as wire::Decode>::decode(reader)?;
+        let face = {
+            let value = <wire::U8 as wire::Decode>::decode(reader)?;
+            wire::validate_number_limits(value.0, Some(0), Some(255))?;
+            value
+        };
         let slot = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
         let item = <NetworkItemStackDescriptorSerializedData as wire::Decode>::decode(reader)?;
         let from_position = <glam::Vec3 as wire::Decode>::decode(reader)?;
         let click_position = <glam::Vec3 as wire::Decode>::decode(reader)?;
-        let target_block_id = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let target_block_id = {
+            let value = <wire::VarUInt as wire::Decode>::decode(reader)?;
+            wire::validate_number_limits(value.0, Some(0), None)?;
+            value
+        };
         let client_interact_prediction =
             <ItemUseInventoryTransactionPredictedResult as wire::Decode>::decode(reader)?;
         let client_cooldown_state =

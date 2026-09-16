@@ -116199,7 +116199,7 @@
     {
       "id": "protocol-2168-gophertunnel-packet-30-field-2",
       "target": "InventoryTransactionPacket.Transaction",
-      "pre_patch_context_sha256": "sha256:6718bb039e43d3453cace40da562a80c70a2c883fb1229a4d970f470ebaf0855",
+      "pre_patch_context_sha256": "sha256:9bf64085b72fb081bd96148303221fa62f027ac7bf053f5c9e5c0a5d361be38f",
       "claims": [
         {
           "source_id": "endstone",
@@ -116207,7 +116207,7 @@
         },
         {
           "source_id": "mojang",
-          "digest": "sha256:a94dd2668f6a43f43691eb3ac2fe77ff805a7367dca9a7c660fb3c46dcdeb16a"
+          "digest": "sha256:375fb0e1e846ec950a799921a286921515931a3229f5ea98be2ce79252ac9db5"
         }
       ],
       "selected_source": "endstone",
@@ -116218,7 +116218,7 @@
           "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
         }
       ],
-      "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+      "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary. Refreshed after correcting small-integer Compression handling; the selected claim fingerprint is unchanged."
     },
     {
       "id": "protocol-2168-gophertunnel-packet-304-field-0",
@@ -117495,7 +117495,7 @@
     {
       "id": "protocol-2168-gophertunnel-packet-65-field-3",
       "target": "LegacyTelemetryEventPacket.Event Data",
-      "pre_patch_context_sha256": "sha256:9a823ddfc118baa7df5238cd2cd82ea580a5cf6666865012a495bf435435c6a2",
+      "pre_patch_context_sha256": "sha256:be9d3863f306a460dd6e54c231c1614a6a78bfbade1b545059df4b6490fcb500",
       "claims": [
         {
           "source_id": "endstone",
@@ -117503,7 +117503,7 @@
         },
         {
           "source_id": "mojang",
-          "digest": "sha256:25ce5d0564eafa34e5cdaa0e6b6a889b1f0a3e5cb2a18e53e54638ce9005822c"
+          "digest": "sha256:9a56f2336191a7b13de3da905b6827cc197607049c7d7ab072a3f715780c8f85"
         }
       ],
       "selected_source": "endstone",
@@ -117514,7 +117514,7 @@
           "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
         }
       ],
-      "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary."
+      "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary. Refreshed after correcting small-integer Compression handling; the selected claim fingerprint is unchanged."
     },
     {
       "id": "protocol-2168-gophertunnel-packet-67-field-6",
@@ -118052,7 +118052,7 @@
     {
       "id": "protocol-2168-packet-144-field-11",
       "target": "PlayerAuthInputPacket.Item Use Transaction",
-      "pre_patch_context_sha256": "sha256:3c2ba5f38a1426ba23d49c8fff2cc40d91a520eb9e7197da74532ed9b0a5c6a4",
+      "pre_patch_context_sha256": "sha256:025cf1f611224bf06721a168acf3bd2ddf2a256df92fd2ece60663f37477dc28",
       "claims": [
         {
           "source_id": "endstone",
@@ -118060,7 +118060,7 @@
         },
         {
           "source_id": "mojang",
-          "digest": "sha256:3cc87cbeb8d89e3724599b9fc9185c82e1ad76e7e0ecde43aa82e8ded008df2d"
+          "digest": "sha256:dc084f4a3f27c7ebda8737f006ef60d7d091ee3fd128438c42f3ae6e9be21edc"
         }
       ],
       "selected_source": "endstone",
@@ -118071,7 +118071,7 @@
           "summary": "The exact v2168 codec writes two presence booleans before Item Use Transaction."
         }
       ],
-      "reason": "The exact Cloudburst 1.26.40 serializer agrees with the Endstone claim."
+      "reason": "The exact Cloudburst 1.26.40 serializer agrees with the Endstone claim. Refreshed after correcting small-integer Compression handling; the selected claim fingerprint is unchanged."
     },
     {
       "id": "protocol-2168-packet-148-field-0",
@@ -119682,7 +119682,7 @@
       "minecraft_version": "1.26.40",
       "protocol_version": 2168
     },
-    "base_manifest_sha256": "sha256:c365b0b1f6fcbcd8c2603e9828952b2e472ab6d966d8815e5d30d0549d768603",
+    "base_manifest_sha256": "sha256:67dff1c28a08ce6907d01cd7d0ea1fc6f1c079afbdf5ae547666d577845cb012",
     "operations": [
       {
         "id": "set-score-remove-objective-double-optional",

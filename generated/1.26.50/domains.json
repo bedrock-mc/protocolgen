@@ -26,6 +26,11 @@
       "rationale": "Grouped by the generated type-family prefix; no direct gophertunnel counterpart."
     },
     {
+      "type_id": "ActorRuntimeID.json#",
+      "domain": "actor",
+      "rationale": "Uses the same domain as the equivalent type identified by Endstone."
+    },
+    {
       "type_id": "ActorSwingSource.json#",
       "domain": "actor",
       "rationale": "Grouped by the generated type-family prefix; no direct gophertunnel counterpart."
@@ -449,6 +454,11 @@
       "type_id": "cerealizer<NetworkItemStackDescriptor>::SerializedData",
       "domain": "misc",
       "rationale": "Grouped by the generated type-family prefix; no direct gophertunnel counterpart."
+    },
+    {
+      "type_id": "NetworkItemStackDescriptor.json#",
+      "domain": "misc",
+      "rationale": "Uses the same domain as the equivalent type identified by Endstone."
     },
     {
       "type_id": "cerealizer<RecipeIngredient>::SerializedData",
@@ -971,6 +981,11 @@
       "rationale": "Grouped by the generated type-family prefix; no direct gophertunnel counterpart."
     },
     {
+      "type_id": "InventorySourceFlags.json#",
+      "domain": "inventory",
+      "rationale": "Uses the same domain as the equivalent type identified by Endstone."
+    },
+    {
       "type_id": "enums/InventorySourceType",
       "domain": "inventory",
       "rationale": "Grouped by the generated type-family prefix; no direct gophertunnel counterpart."
@@ -1444,6 +1459,11 @@
       "type_id": "InventoryTransaction",
       "domain": "inventory",
       "rationale": "Matches the gophertunnel protocol domain file layout."
+    },
+    {
+      "type_id": "InventoryTransaction.json#",
+      "domain": "inventory",
+      "rationale": "Uses the same domain as the equivalent type identified by Endstone."
     },
     {
       "type_id": "ItemData",

@@ -1,0 +1,59 @@
+{
+  "operations": [
+    {
+      "id": "protocol-2211-death-info-properties",
+      "file": "DeathInfoPacketPayload.json",
+      "pointer": "/properties",
+      "pre_patch_sha256": "sha256:7135c996eaf2a6f1ef0976b2dbdfc5e5e9e7eb1e6d4de32a4ee39cd154e7dbf5",
+      "replace": {
+        "Death Cause Attack Name": {
+          "type": "string",
+          "x-ordinal-index": 0
+        },
+        "Death Cause Message List": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-ordinal-index": 1
+        }
+      },
+      "why": "Flatten the unframed Death Cause Message structure so the same two consecutive fields align with the Endstone packet layout. Both fields already exist in Mojang schemas.",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/blob/70e71f267fd17af0c4ac3c635e8435bc9d8ebaea/json/DeathCauseMessageType.json",
+          "summary": "The referenced object contains the required attack-name string followed by the required string list."
+        },
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/EndstoneMC/protocol-docs/blob/13c1dd81468b6aa816dc76a1039578ec1408dd67/packets/DeathInfoPacket.json",
+          "summary": "The same two fields appear directly in the packet with matching encodings and order."
+        }
+      ]
+    },
+    {
+      "id": "protocol-2211-death-info-required",
+      "file": "DeathInfoPacketPayload.json",
+      "pointer": "/required",
+      "pre_patch_sha256": "sha256:3ee555d5389102bc31c1d0f3542a2fbe9a34b99a44bb4084ab6eab4f375f71c7",
+      "replace": [
+        "Death Cause Attack Name",
+        "Death Cause Message List"
+      ],
+      "why": "Flatten the unframed Death Cause Message structure so the same two consecutive fields align with the Endstone packet layout. Both fields already exist in Mojang schemas.",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/blob/70e71f267fd17af0c4ac3c635e8435bc9d8ebaea/json/DeathCauseMessageType.json",
+          "summary": "The referenced object contains the required attack-name string followed by the required string list."
+        },
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/EndstoneMC/protocol-docs/blob/13c1dd81468b6aa816dc76a1039578ec1408dd67/packets/DeathInfoPacket.json",
+          "summary": "The same two fields appear directly in the packet with matching encodings and order."
+        }
+      ]
+    }
+  ]
+}

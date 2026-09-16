@@ -1,0 +1,194 @@
+{
+  "operations": [
+    {
+      "id": "protocol-2211-recipe-serialized-definition",
+      "file": "RecipeIngredient.json",
+      "pointer": "#",
+      "pre_patch_sha256": "sha256:ffd0b80eab65643fcb431520fb87588b7e28f0ff868bbd561d4dcddeff88c3b7",
+      "merge": {
+        "definitions": {
+          "SerializedData": {
+            "type": "object",
+            "properties": {
+              "Descriptor": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "x-ordinal-index": 0
+              },
+              "Aux Value": {
+                "type": "integer",
+                "x-underlying-type": "int32",
+                "x-serialization-options": [
+                  "Compression"
+                ],
+                "x-ordinal-index": 1,
+                "minimum": 0,
+                "maximum": 32767
+              },
+              "Stack Size": {
+                "type": "integer",
+                "x-underlying-type": "int32",
+                "x-serialization-options": [
+                  "Compression"
+                ],
+                "x-ordinal-index": 2,
+                "minimum": 0,
+                "maximum": 64
+              }
+            },
+            "required": [
+              "Descriptor",
+              "Aux Value",
+              "Stack Size"
+            ]
+          }
+        }
+      },
+      "why": "Add the serialized recipe ingredient representation used by CraftingData. Preserve the original descriptor union and uint16 count used by item-stack requests.",
+      "evidence": [
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/EndstoneMC/protocol-docs/blob/13c1dd81468b6aa816dc76a1039578ec1408dd67/types/cerealizer_RecipeIngredient___SerializedData.json",
+          "summary": "The pinned protocol-2211 serialized type contains Descriptor as a string map, Aux Value as varint32 bounded 0..32767, and Stack Size as varint32 bounded 0..64. This representation agrees with separately reviewed vanilla serialization behavior."
+        }
+      ]
+    },
+    {
+      "id": "protocol-2211-recipe-serialized-use-1",
+      "file": "ShapedRecipePayload.json",
+      "pointer": "/properties/Ingredients/items/$ref",
+      "pre_patch_sha256": "sha256:c77d9e43c4c8becce34f668d6f463717a608ee3d1f277cf6a3a16b9df68d2d58",
+      "replace": "./RecipeIngredient.json#/definitions/SerializedData",
+      "why": "Select the CraftingData serialized ingredient representation at this use site. Item-stack requests retain their separate union-based representation.",
+      "evidence": [
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/EndstoneMC/protocol-docs/blob/13c1dd81468b6aa816dc76a1039578ec1408dd67/types/ShapedRecipePayload.json",
+          "summary": "This field uses cerealizer<RecipeIngredient>::SerializedData, rather than ItemStackRequestCereal::RecipeIngredientData."
+        }
+      ]
+    },
+    {
+      "id": "protocol-2211-recipe-serialized-use-2",
+      "file": "ShapelessRecipePayload.json",
+      "pointer": "/properties/Ingredients/items/$ref",
+      "pre_patch_sha256": "sha256:c77d9e43c4c8becce34f668d6f463717a608ee3d1f277cf6a3a16b9df68d2d58",
+      "replace": "./RecipeIngredient.json#/definitions/SerializedData",
+      "why": "Select the CraftingData serialized ingredient representation at this use site. Item-stack requests retain their separate union-based representation.",
+      "evidence": [
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/EndstoneMC/protocol-docs/blob/13c1dd81468b6aa816dc76a1039578ec1408dd67/types/ShapelessRecipePayload.json",
+          "summary": "This field uses cerealizer<RecipeIngredient>::SerializedData, rather than ItemStackRequestCereal::RecipeIngredientData."
+        }
+      ]
+    },
+    {
+      "id": "protocol-2211-recipe-serialized-use-3",
+      "file": "SmithingTransformRecipePayload.json",
+      "pointer": "/properties/Template Ingredient/$ref",
+      "pre_patch_sha256": "sha256:c77d9e43c4c8becce34f668d6f463717a608ee3d1f277cf6a3a16b9df68d2d58",
+      "replace": "./RecipeIngredient.json#/definitions/SerializedData",
+      "why": "Select the CraftingData serialized ingredient representation at this use site. Item-stack requests retain their separate union-based representation.",
+      "evidence": [
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/EndstoneMC/protocol-docs/blob/13c1dd81468b6aa816dc76a1039578ec1408dd67/types/SmithingTransformRecipePayload.json",
+          "summary": "This field uses cerealizer<RecipeIngredient>::SerializedData, rather than ItemStackRequestCereal::RecipeIngredientData."
+        }
+      ]
+    },
+    {
+      "id": "protocol-2211-recipe-serialized-use-4",
+      "file": "SmithingTransformRecipePayload.json",
+      "pointer": "/properties/Base Ingredient/$ref",
+      "pre_patch_sha256": "sha256:c77d9e43c4c8becce34f668d6f463717a608ee3d1f277cf6a3a16b9df68d2d58",
+      "replace": "./RecipeIngredient.json#/definitions/SerializedData",
+      "why": "Select the CraftingData serialized ingredient representation at this use site. Item-stack requests retain their separate union-based representation.",
+      "evidence": [
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/EndstoneMC/protocol-docs/blob/13c1dd81468b6aa816dc76a1039578ec1408dd67/types/SmithingTransformRecipePayload.json",
+          "summary": "This field uses cerealizer<RecipeIngredient>::SerializedData, rather than ItemStackRequestCereal::RecipeIngredientData."
+        }
+      ]
+    },
+    {
+      "id": "protocol-2211-recipe-serialized-use-5",
+      "file": "SmithingTransformRecipePayload.json",
+      "pointer": "/properties/Addition Ingredient/$ref",
+      "pre_patch_sha256": "sha256:c77d9e43c4c8becce34f668d6f463717a608ee3d1f277cf6a3a16b9df68d2d58",
+      "replace": "./RecipeIngredient.json#/definitions/SerializedData",
+      "why": "Select the CraftingData serialized ingredient representation at this use site. Item-stack requests retain their separate union-based representation.",
+      "evidence": [
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/EndstoneMC/protocol-docs/blob/13c1dd81468b6aa816dc76a1039578ec1408dd67/types/SmithingTransformRecipePayload.json",
+          "summary": "This field uses cerealizer<RecipeIngredient>::SerializedData, rather than ItemStackRequestCereal::RecipeIngredientData."
+        }
+      ]
+    },
+    {
+      "id": "protocol-2211-recipe-serialized-use-6",
+      "file": "SmithingTrimRecipePayload.json",
+      "pointer": "/properties/Template Ingredient/$ref",
+      "pre_patch_sha256": "sha256:c77d9e43c4c8becce34f668d6f463717a608ee3d1f277cf6a3a16b9df68d2d58",
+      "replace": "./RecipeIngredient.json#/definitions/SerializedData",
+      "why": "Select the CraftingData serialized ingredient representation at this use site. Item-stack requests retain their separate union-based representation.",
+      "evidence": [
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/EndstoneMC/protocol-docs/blob/13c1dd81468b6aa816dc76a1039578ec1408dd67/types/SmithingTrimRecipePayload.json",
+          "summary": "This field uses cerealizer<RecipeIngredient>::SerializedData, rather than ItemStackRequestCereal::RecipeIngredientData."
+        }
+      ]
+    },
+    {
+      "id": "protocol-2211-recipe-serialized-use-7",
+      "file": "SmithingTrimRecipePayload.json",
+      "pointer": "/properties/Base Ingredient/$ref",
+      "pre_patch_sha256": "sha256:c77d9e43c4c8becce34f668d6f463717a608ee3d1f277cf6a3a16b9df68d2d58",
+      "replace": "./RecipeIngredient.json#/definitions/SerializedData",
+      "why": "Select the CraftingData serialized ingredient representation at this use site. Item-stack requests retain their separate union-based representation.",
+      "evidence": [
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/EndstoneMC/protocol-docs/blob/13c1dd81468b6aa816dc76a1039578ec1408dd67/types/SmithingTrimRecipePayload.json",
+          "summary": "This field uses cerealizer<RecipeIngredient>::SerializedData, rather than ItemStackRequestCereal::RecipeIngredientData."
+        }
+      ]
+    },
+    {
+      "id": "protocol-2211-recipe-serialized-use-8",
+      "file": "SmithingTrimRecipePayload.json",
+      "pointer": "/properties/Addition Ingredient/$ref",
+      "pre_patch_sha256": "sha256:c77d9e43c4c8becce34f668d6f463717a608ee3d1f277cf6a3a16b9df68d2d58",
+      "replace": "./RecipeIngredient.json#/definitions/SerializedData",
+      "why": "Select the CraftingData serialized ingredient representation at this use site. Item-stack requests retain their separate union-based representation.",
+      "evidence": [
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/EndstoneMC/protocol-docs/blob/13c1dd81468b6aa816dc76a1039578ec1408dd67/types/SmithingTrimRecipePayload.json",
+          "summary": "This field uses cerealizer<RecipeIngredient>::SerializedData, rather than ItemStackRequestCereal::RecipeIngredientData."
+        }
+      ]
+    },
+    {
+      "id": "protocol-2211-recipe-serialized-use-9",
+      "file": "RecipeUnlockingRequirement.json",
+      "pointer": "/properties/Unlocking Ingredients/items/$ref",
+      "pre_patch_sha256": "sha256:c77d9e43c4c8becce34f668d6f463717a608ee3d1f277cf6a3a16b9df68d2d58",
+      "replace": "./RecipeIngredient.json#/definitions/SerializedData",
+      "why": "Select the CraftingData serialized ingredient representation at this use site. Item-stack requests retain their separate union-based representation.",
+      "evidence": [
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/EndstoneMC/protocol-docs/blob/13c1dd81468b6aa816dc76a1039578ec1408dd67/types/cerealizer_RecipeUnlockingRequirement___SerializedData.json",
+          "summary": "This field uses cerealizer<RecipeIngredient>::SerializedData, rather than ItemStackRequestCereal::RecipeIngredientData."
+        }
+      ]
+    }
+  ]
+}

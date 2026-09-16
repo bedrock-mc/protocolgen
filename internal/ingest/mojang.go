@@ -387,7 +387,8 @@ func (l *mojangLowerer) lowerReference(reference, file, hint string, context map
 			return manifest.Unresolved("bare self-referencing Mojang schema "+reference, true)
 		}
 	}
-	if hasOption(context, "Enum-as-Value") || hasOption(targetObject, "Enum-as-Value") {
+	targetType := asString(targetObject["type"])
+	if targetType == "integer" || targetType == "number" || hasOption(context, "Enum-as-Value") || hasOption(targetObject, "Enum-as-Value") {
 		copyOfTarget := cloneMap(targetObject)
 		if underlying := asString(context["x-underlying-type"]); underlying != "" {
 			copyOfTarget["x-underlying-type"] = underlying

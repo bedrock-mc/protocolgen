@@ -86,6 +86,14 @@ make regen-1.26.50 \
 The target refuses stale source trees, stale corrections, stale adjudications,
 and incomplete packet directions before either emitter runs.
 
+## Preparing the 1.26.60 preview
+
+Candidate inputs for protocol 2211 are available under
+[`candidates/1.26.60-preview.25/`](candidates/1.26.60-preview.25/).
+`make ingest-1.26.60` verifies the pinned sources and applies the reviewed
+corrections. This candidate still needs reconciliation and release validation
+before Go or Rust codecs can be emitted.
+
 ## Capturing vanilla BDS data
 
 Vanilla data is evidence alongside a generated protocol, not an input to wire

@@ -813,6 +813,41 @@ func TestMojangEnumReferenceCombinesOptions(t *testing.T) {
 	}
 }
 
+// TestMojangScalarReferencePreservesUseSiteEncoding checks one shared integer in fixed and compressed fields.
+func TestMojangScalarReferencePreservesUseSiteEncoding(t *testing.T) {
+	definition := map[string]any{"type": "integer", "x-underlying-type": "int32"}
+	lowerer := &mojangLowerer{documents: map[string]any{"StackID.json": definition}, active: map[string]bool{}}
+	for _, test := range []struct {
+		options []any
+		code    string
+	}{
+		{[]any{"Compression"}, "zigzag_i32"},
+		{nil, "i32le"},
+		{[]any{"Big Endian"}, "i32be"},
+	} {
+		node := lowerer.lowerSchema(map[string]any{"$ref": "./StackID.json", "x-serialization-options": test.options}, "Packet.json", "ID")
+		if node.Kind != manifest.KindPrimitive || node.Primitive.Code != test.code {
+			t.Fatalf("reference with options %v = %#v, want %s", test.options, node, test.code)
+		}
+	}
+	if _, exists := definition["x-serialization-options"]; exists {
+		t.Fatal("use-site encoding changed the shared definition")
+	}
+}
+
+// TestMojangCompressionPreservesSmallIntegerWidths checks the documented 32- and 64-bit compression boundary.
+func TestMojangCompressionPreservesSmallIntegerWidths(t *testing.T) {
+	for _, test := range []struct{ underlying, code string }{
+		{"int8", "i8"}, {"uint8", "u8"}, {"int16", "i16le"}, {"uint16", "u16le"},
+		{"int32", "zigzag_i32"}, {"uint32", "var_u32"}, {"int64", "zigzag_i64"}, {"uint64", "var_u64"},
+	} {
+		node := primitive(test.underlying, []string{"Compression"}, "integer")
+		if node.Kind != manifest.KindPrimitive || node.Primitive.Code != test.code {
+			t.Fatalf("compressed %s = %#v, want %s", test.underlying, node, test.code)
+		}
+	}
+}
+
 // TestEndstoneU6StringDiscriminatorPreservesItsWidthAndOrdinalCases checks the compact U6 schema form.
 func TestEndstoneU6StringDiscriminatorPreservesItsWidthAndOrdinalCases(t *testing.T) {
 	lowerer := &endstoneLowerer{types: map[string]any{}, enums: map[string]any{}, active: map[string]bool{}}

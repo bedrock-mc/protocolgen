@@ -68,6 +68,15 @@ jobs:
           path: ${{ runner.temp }}/gophertunnel-report.json
           if-no-files-found: warn
 
+      - name: Verify 1.26.60 preview source corrections
+        run: |
+          git -C "$RUNNER_TEMP/protocolgen-mojang" worktree add --detach "$RUNNER_TEMP/protocolgen-mojang-2211" "$(jq -r '.sources[] | select(.id == "mojang") | .revision' candidates/1.26.60-preview.25/source-lock.json)"
+          git -C "$RUNNER_TEMP/protocolgen-endstone" worktree add --detach "$RUNNER_TEMP/protocolgen-endstone-2211" "$(jq -r '.sources[] | select(.id == "endstone") | .revision' candidates/1.26.60-preview.25/source-lock.json)"
+          make ingest-1.26.60 \
+            GO_CACHE="$RUNNER_TEMP/protocolgen-go-cache" \
+            MOJANG_DIR="$RUNNER_TEMP/protocolgen-mojang-2211/json" \
+            ENDSTONE_DIR="$RUNNER_TEMP/protocolgen-endstone-2211"
+
       - name: Build
         run: |
           go build ./...

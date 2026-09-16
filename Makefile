@@ -33,10 +33,25 @@ TARGET_12650 := generated/1.26.50
 CLAIMS_12650_MOJANG ?= /tmp/protocolgen-1.26.50-mojang-claims.json
 CLAIMS_12650_ENDSTONE ?= /tmp/protocolgen-1.26.50-endstone-claims.json
 
-.PHONY: regen regen-1.26.50 hotfix vanilla-data differential verify verify-1.26.50
+CANDIDATE_12660 := candidates/1.26.60-preview.25
+CLAIMS_12660_MOJANG ?= /tmp/protocolgen-1.26.60-preview.25-mojang-claims.json
+CLAIMS_12660_ENDSTONE ?= /tmp/protocolgen-1.26.60-preview.25-endstone-claims.json
+
+.PHONY: regen regen-1.26.50 ingest-1.26.60 hotfix vanilla-data differential verify verify-1.26.50
 
 differential:
 	$(GO) -C differential test ./...
+
+ingest-1.26.60:
+	@test -n "$(MOJANG_DIR)" || (echo "MOJANG_DIR is required" >&2; exit 2)
+	@test -n "$(ENDSTONE_DIR)" || (echo "ENDSTONE_DIR is required" >&2; exit 2)
+	$(PROTOCOLGEN) ingest \
+		-lock $(CANDIDATE_12660)/source-lock.json -kind mojang -id mojang \
+		-root $(MOJANG_DIR) -corrections $(CANDIDATE_12660)/corrections/mojang \
+		-out $(CLAIMS_12660_MOJANG)
+	$(PROTOCOLGEN) ingest \
+		-lock $(CANDIDATE_12660)/source-lock.json -kind endstone -id endstone \
+		-root $(ENDSTONE_DIR) -out $(CLAIMS_12660_ENDSTONE)
 
 regen:
 	@test -n "$(MOJANG_DIR)" || (echo "MOJANG_DIR is required" >&2; exit 2)
