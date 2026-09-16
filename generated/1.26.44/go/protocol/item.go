@@ -65,7 +65,6 @@ func (x *ItemInstance) Marshal(io IO) {
 	Minimum(io, &x.StackSize, 1)
 	Maximum(io, &x.StackSize, 64)
 	io.Varuint32(&x.BlockRuntimeID)
-	Minimum(io, &x.BlockRuntimeID, 0)
 	io.Bytes(&x.UserDataBuffer)
 }
 

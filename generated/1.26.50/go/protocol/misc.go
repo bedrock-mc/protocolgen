@@ -233,7 +233,6 @@ func (x *BedrockDDUIDataStoreChange) Marshal(io IO) {
 	io.StringLimits(&x.DataStoreName, 1, 1000)
 	io.StringLimits(&x.Property, 1, 1000)
 	io.Uint32(&x.UpdateCount)
-	Minimum(io, &x.UpdateCount, 0)
 	Maximum(io, &x.UpdateCount, 4.294967294e+09)
 	MarshalDynamicValue(io, &x.TheNewPropertyValue)
 }
@@ -1261,12 +1260,9 @@ func (x *EASEnvironmentAttributeData) Marshal(io IO) {
 		MarshalEAS(io, value)
 	})
 	io.Uint32(&x.CurrentTransitionTicks)
-	Minimum(io, &x.CurrentTransitionTicks, 0)
 	io.Uint32(&x.TotalTransitionTicks)
-	Minimum(io, &x.TotalTransitionTicks, 0)
 	io.String(&x.Easing)
 	io.Uint32(&x.LocalTransitionTicks)
-	Minimum(io, &x.LocalTransitionTicks, 0)
 	io.Bool(&x.NoiseTransition)
 	x.NoiseAlignment.Marshal(io)
 }
