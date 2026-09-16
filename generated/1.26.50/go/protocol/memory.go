@@ -116,3 +116,6 @@ const (
 	MemoryCategoryGamefaceScript                        MemoryCategory = 108
 	MemoryCategoryGamefaceLayout                        MemoryCategory = 109
 )
+
+// Marshal reads or writes MemoryCategory through its uint8 wire encoding.
+func (x *MemoryCategory) Marshal(io IO) { io.Uint8((*uint8)(x)) }

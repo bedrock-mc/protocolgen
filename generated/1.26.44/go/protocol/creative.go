@@ -15,7 +15,7 @@ type CreativeGroupInfo struct {
 
 // Marshal reads or writes CreativeGroupInfo using its canonical wire layout.
 func (x *CreativeGroupInfo) Marshal(io IO) {
-	IntegerFunc(&x.CreativeCategory, io.Uint8)
+	x.CreativeCategory.Marshal(io)
 	io.String(&x.Name)
 	x.GroupIconItem.Marshal(io)
 }
@@ -29,6 +29,9 @@ const (
 	CreativeItemCategoryItems           CreativeItemCategory = 4
 	CreativeItemCategoryItemCommandOnly CreativeItemCategory = 5
 )
+
+// Marshal reads or writes CreativeItemCategory through its uint8 wire encoding.
+func (x *CreativeItemCategory) Marshal(io IO) { io.Uint8((*uint8)(x)) }
 
 type CreativeItemEntry struct {
 	CreativeNetID CreativeItemNetID

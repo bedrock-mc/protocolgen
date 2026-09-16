@@ -20,7 +20,7 @@ func (x *RequestAbility) Marshal(io protocol.IO) {
 	io.Varint32(&x.Ability)
 	protocol.Minimum(io, &x.Ability, 0)
 	protocol.Maximum(io, &x.Ability, 19)
-	protocol.IntegerFunc(&x.ValueType, io.Uint8)
+	x.ValueType.Marshal(io)
 	io.Bool(&x.Bool)
 	io.Float32(&x.Float)
 }

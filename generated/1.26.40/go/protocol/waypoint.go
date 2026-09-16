@@ -16,7 +16,7 @@ type LocatorBarWaypoint struct {
 func (x *LocatorBarWaypoint) Marshal(io IO) {
 	x.GroupHandle.Marshal(io)
 	x.ServerWaypointPayload.Marshal(io)
-	IntegerFunc(&x.ActionFlag, io.Uint8)
+	x.ActionFlag.Marshal(io)
 }
 
 type WaypointGroupWaypointHandle struct {

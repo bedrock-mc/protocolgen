@@ -29,6 +29,9 @@ const (
 	InventoryLayoutRecipeBookOnly InventoryLayout = 3
 )
 
+// Marshal reads or writes InventoryLayout through its int32 wire encoding.
+func (x *InventoryLayout) Marshal(io IO) { io.Varint32((*int32)(x)) }
+
 type InventoryLeftTabIndex int32
 
 const (
@@ -41,11 +44,14 @@ const (
 	InventoryLeftTabIndexSurvival           InventoryLeftTabIndex = 6
 )
 
+// Marshal reads or writes InventoryLeftTabIndex through its int32 wire encoding.
+func (x *InventoryLeftTabIndex) Marshal(io IO) { io.Varint32((*int32)(x)) }
+
 type InventoryMismatchData struct {
 	Actions InventoryTransactionData
 }
 
-func (*InventoryMismatchData) isInventoryTransactionPacketData() {}
+func (*InventoryMismatchData) tagInventoryTransactionPacketData() uint32 { return 1 }
 
 // Marshal reads or writes InventoryMismatchData using its canonical wire layout.
 func (x *InventoryMismatchData) Marshal(io IO) {
@@ -62,11 +68,11 @@ type InventoryOptions struct {
 
 // Marshal reads or writes InventoryOptions using its canonical wire layout.
 func (x *InventoryOptions) Marshal(io IO) {
-	IntegerFunc(&x.LeftInventoryTab, io.Varint32)
-	IntegerFunc(&x.RightInventoryTab, io.Varint32)
+	x.LeftInventoryTab.Marshal(io)
+	x.RightInventoryTab.Marshal(io)
 	io.Bool(&x.Filtering)
-	IntegerFunc(&x.LayoutInv, io.Varint32)
-	IntegerFunc(&x.LayoutCraft, io.Varint32)
+	x.LayoutInv.Marshal(io)
+	x.LayoutCraft.Marshal(io)
 }
 
 type InventoryRightTabIndex int32
@@ -78,6 +84,9 @@ const (
 	InventoryRightTabIndexArmor      InventoryRightTabIndex = 3
 )
 
+// Marshal reads or writes InventoryRightTabIndex through its int32 wire encoding.
+func (x *InventoryRightTabIndex) Marshal(io IO) { io.Varint32((*int32)(x)) }
+
 type InventorySource struct {
 	SourceType  InventorySourceType
 	ContainerID Optional[int8]
@@ -86,11 +95,9 @@ type InventorySource struct {
 
 // Marshal reads or writes InventorySource using its canonical wire layout.
 func (x *InventorySource) Marshal(io IO) {
-	IntegerFunc(&x.SourceType, io.Varuint32)
+	x.SourceType.Marshal(io)
 	OptionalFunc(io, &x.ContainerID, io.Int8)
-	OptionalFunc(io, &x.BitFlags, func(value *InventorySourceInventorySourceFlags) {
-		IntegerFunc(value, io.Varuint32)
-	})
+	OptionalMarshaler(io, &x.BitFlags)
 }
 
 type InventorySourceInventorySourceFlags uint32
@@ -99,6 +106,9 @@ const (
 	InventorySourceInventorySourceFlagsNoFlag                 InventorySourceInventorySourceFlags = 0
 	InventorySourceInventorySourceFlagsWorldInteractionRandom InventorySourceInventorySourceFlags = 1
 )
+
+// Marshal reads or writes InventorySourceInventorySourceFlags through its uint32 wire encoding.
+func (x *InventorySourceInventorySourceFlags) Marshal(io IO) { io.Varuint32((*uint32)(x)) }
 
 type InventorySourceType uint32
 
@@ -109,6 +119,9 @@ const (
 	InventorySourceTypeCreativeInventory         InventorySourceType = 3
 	InventorySourceTypeNonImplementedFeatureTODO InventorySourceType = 99999
 )
+
+// Marshal reads or writes InventorySourceType through its uint32 wire encoding.
+func (x *InventorySourceType) Marshal(io IO) { io.Varuint32((*uint32)(x)) }
 
 // InventoryTransactionData represents an object that holds data specific to an inventory
 // transaction type. The data it holds depends on the type.
@@ -127,7 +140,7 @@ type NormalTransactionData struct {
 	Actions InventoryTransactionData
 }
 
-func (*NormalTransactionData) isInventoryTransactionPacketData() {}
+func (*NormalTransactionData) tagInventoryTransactionPacketData() uint32 { return 0 }
 
 // Marshal reads or writes NormalTransactionData using its canonical wire layout.
 func (x *NormalTransactionData) Marshal(io IO) {

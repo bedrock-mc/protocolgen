@@ -311,10 +311,6 @@ func (r *Reader) BytesLimits(x *[]byte, min, max uint64) {
 	*x = append((*x)[:0], data...)
 }
 
-func (r *Reader) readLength(context string) (int, bool) {
-	return r.readLengthLimits(context, 0, ^uint64(0))
-}
-
 func (r *Reader) readLengthLimits(context string, min, max uint64) (int, bool) {
 	var length uint32
 	r.Varuint32(&length)
@@ -428,9 +424,11 @@ func (r *Reader) Bitset(words []uint64, bits uint64) {
 	}
 }
 
-func (r *Reader) SliceLength(value uint64, _ uint64) bool {
-	if r.limitsEnabled && value > r.maxSliceLength {
-		r.InvalidValue(value, "collection length exceeds decoder limit")
+// SliceLength reports whether a decoded collection count is within the
+// decoder limit, recording an error otherwise.
+func (r *Reader) SliceLength(length uint64) bool {
+	if r.limitsEnabled && length > r.maxSliceLength {
+		r.InvalidValue(length, "collection length exceeds decoder limit")
 		return false
 	}
 	return true

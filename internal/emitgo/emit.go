@@ -7,6 +7,8 @@ import (
 	"embed"
 	"fmt"
 	"go/format"
+	"math"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -26,10 +28,19 @@ type typeDefinition struct {
 	EntryKey   string
 	EntryValue string
 	Underlying string
+	Primitive  string
 	Variants   []manifest.Variant
 	Union      []goUnionMember
-	Implements []string
+	Implements []unionMembership
 	BitLength  uint64
+}
+
+// unionMembership records the tag a struct carries when written as a variant
+// of one union; a struct may belong to several unions with different tags.
+type unionMembership struct {
+	Union   string
+	Tag     int64
+	TagType string
 }
 
 type typedField struct {
@@ -288,11 +299,19 @@ func (g *generator) goType(node manifest.Node, hint string) (string, error) {
 			if node.Control == nil || node.Control.Primitive == nil {
 				return "", fmt.Errorf("union has no primitive discriminator")
 			}
-			g.definitions[name] = typeDefinition{Name: name, TypeID: nodeTypeID(node), Kind: manifest.KindUnion, Underlying: node.Control.Primitive.Code}
+			tagType, err := primitiveGoType(node.Control.Primitive.Code)
+			if err != nil {
+				return "", err
+			}
+			g.definitions[name] = typeDefinition{Name: name, TypeID: nodeTypeID(node), Kind: manifest.KindUnion, Underlying: tagType, Primitive: node.Control.Primitive.Code}
 			members := make([]goUnionMember, 0, len(node.Variants))
 			usedMembers := map[string]bool{}
 			for _, variant := range node.Variants {
-				member, err := g.registerUnionMember(name, variant)
+				if !fitsGoInteger(variant.Value, tagType) {
+					return "", fmt.Errorf("union %s variant %s tag %d does not fit %s", name, variant.Name, variant.Value, tagType)
+				}
+				membership := unionMembership{Union: name, Tag: variant.Value, TagType: tagType}
+				member, err := g.registerUnionMember(membership, variant)
 				if err != nil {
 					return "", err
 				}
@@ -303,7 +322,7 @@ func (g *generator) goType(node manifest.Node, hint string) (string, error) {
 						TypeID:     nodeTypeID(variant.Encode),
 						Kind:       manifest.KindStruct,
 						Fields:     []typedField{{Name: "Value", WireName: "Value", Type: member, Node: variant.Encode}},
-						Implements: []string{name},
+						Implements: []unionMembership{membership},
 					}
 					member = wrapper
 				}
@@ -319,6 +338,9 @@ func (g *generator) goType(node manifest.Node, hint string) (string, error) {
 		if node.Primitive == nil {
 			return "", fmt.Errorf("enum has no underlying primitive")
 		}
+		if len(node.Variants) == 0 {
+			return "", fmt.Errorf("enum has no variants")
+		}
 		underlying, err := primitiveGoType(node.Primitive.Code)
 		if err != nil {
 			return "", err
@@ -327,8 +349,10 @@ func (g *generator) goType(node manifest.Node, hint string) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		if _, exists := g.definitions[name]; !exists {
-			g.definitions[name] = typeDefinition{Name: name, TypeID: nodeTypeID(node), Kind: manifest.KindEnum, Underlying: underlying, Variants: append([]manifest.Variant(nil), node.Variants...)}
+		if existing, exists := g.definitions[name]; !exists {
+			g.definitions[name] = typeDefinition{Name: name, TypeID: nodeTypeID(node), Kind: manifest.KindEnum, Underlying: underlying, Primitive: node.Primitive.Code, Variants: append([]manifest.Variant(nil), node.Variants...)}
+		} else if existing.Primitive != node.Primitive.Code {
+			return "", fmt.Errorf("enum %s is encoded as both %s and %s", name, existing.Primitive, node.Primitive.Code)
 		}
 		return name, nil
 	case manifest.KindReserved, manifest.KindIgnored:
@@ -448,7 +472,8 @@ func primitiveStructCode(node manifest.Node) (string, bool) {
 	return field.Primitive.Code, true
 }
 
-func (g *generator) registerUnionMember(union string, variant manifest.Variant) (string, error) {
+func (g *generator) registerUnionMember(membership unionMembership, variant manifest.Variant) (string, error) {
+	union := membership.Union
 	member, err := g.goType(variant.Encode, union+exportName(naming.PublicVariantName(shortTypeName(variant.Name))))
 	if err != nil {
 		return "", err
@@ -460,23 +485,38 @@ func (g *generator) registerUnionMember(union string, variant manifest.Variant) 
 	definition, ok := g.definitions[member]
 	if !ok || definition.Kind != manifest.KindStruct {
 		wrapper := g.unique(union + exportName(naming.PublicVariantName(shortTypeName(variant.Name))))
-		g.definitions[wrapper] = typeDefinition{Name: wrapper, TypeID: nodeTypeID(variant.Encode), Kind: manifest.KindStruct, Fields: []typedField{{Name: "Value", WireName: "Value", Type: member, Node: variant.Encode}}, Implements: []string{union}}
+		g.definitions[wrapper] = typeDefinition{Name: wrapper, TypeID: nodeTypeID(variant.Encode), Kind: manifest.KindStruct, Fields: []typedField{{Name: "Value", WireName: "Value", Type: member, Node: variant.Encode}}, Implements: []unionMembership{membership}}
 		return wrapper, nil
 	}
-	if !containsString(definition.Implements, union) {
-		definition.Implements = append(definition.Implements, union)
+	if !slices.ContainsFunc(definition.Implements, func(existing unionMembership) bool { return existing.Union == union }) {
+		definition.Implements = append(definition.Implements, membership)
 	}
 	g.definitions[member] = definition
 	return member, nil
 }
 
-func containsString(values []string, target string) bool {
-	for _, value := range values {
-		if value == target {
-			return true
-		}
+// fitsGoInteger reports whether value is representable by the named Go integer type.
+func fitsGoInteger(value int64, typ string) bool {
+	switch typ {
+	case "int8":
+		return value >= math.MinInt8 && value <= math.MaxInt8
+	case "int16":
+		return value >= math.MinInt16 && value <= math.MaxInt16
+	case "int32":
+		return value >= math.MinInt32 && value <= math.MaxInt32
+	case "int64":
+		return true
+	case "uint8":
+		return value >= 0 && value <= math.MaxUint8
+	case "uint16":
+		return value >= 0 && value <= math.MaxUint16
+	case "uint32":
+		return value >= 0 && value <= math.MaxUint32
+	case "uint64":
+		return value >= 0
+	default:
+		return false
 	}
-	return false
 }
 
 func nodeTypeID(node manifest.Node) string {
@@ -691,8 +731,8 @@ func emitDefinitionBody(g *generator, definition typeDefinition) (string, error)
 			fmt.Fprintf(&b, "\t%s %s\n", field.Name, field.Type)
 		}
 		b.WriteString("}\n\n")
-		for _, union := range definition.Implements {
-			fmt.Fprintf(&b, "func (*%s) is%s() {}\n\n", definition.Name, union)
+		for _, membership := range definition.Implements {
+			fmt.Fprintf(&b, "func (*%s) tag%s() %s { return %d }\n\n", definition.Name, membership.Union, membership.TagType, membership.Tag)
 		}
 		fmt.Fprintf(&b, "// Marshal reads or writes %s using its canonical wire layout.\n", definition.Name)
 		fmt.Fprintf(&b, "func (x *%s) Marshal(io IO) {\n", definition.Name)
@@ -704,7 +744,7 @@ func emitDefinitionBody(g *generator, definition typeDefinition) (string, error)
 		}
 		b.WriteString("}\n")
 	case manifest.KindUnion:
-		fmt.Fprintf(&b, "type %s interface {\n\tis%s()\n}\n\n", definition.Name, definition.Name)
+		fmt.Fprintf(&b, "type %s interface {\n\tMarshaler\n\ttag%s() %s\n}\n\n", definition.Name, definition.Name, definition.Underlying)
 		emitter := marshalEmitter{g: g}
 		if err := emitter.union(&b, definition); err != nil {
 			return "", err
@@ -720,7 +760,13 @@ func emitDefinitionBody(g *generator, definition typeDefinition) (string, error)
 			variantNames[name] = variant.Name
 			fmt.Fprintf(&b, "\t%s%s %s = %d\n", definition.Name, name, definition.Name, variant.Value)
 		}
-		b.WriteString(")\n")
+		b.WriteString(")\n\n")
+		method, err := primitiveIOMethod(definition.Primitive)
+		if err != nil {
+			return "", err
+		}
+		fmt.Fprintf(&b, "// Marshal reads or writes %s through its %s wire encoding.\n", definition.Name, definition.Underlying)
+		fmt.Fprintf(&b, "func (x *%s) Marshal(io IO) { io.%s((*%s)(x)) }\n", definition.Name, method, definition.Underlying)
 	case manifest.KindBitset:
 		fmt.Fprintf(&b, "// %s stores the %d-bit value used by the wire bitset encoding.\n", definition.Name, definition.BitLength)
 		fmt.Fprintf(&b, "type %s [%d]uint64\n", definition.Name, (definition.BitLength+63)/64)
@@ -907,9 +953,9 @@ func NewClientPacket(id uint32) (Packet, bool) { return newFromPool(clientPacket
 func NewServerPacket(id uint32) (Packet, bool) { return newFromPool(serverPacketFactories, id) }
 
 func clonePool(source Pool) Pool {
-	copy := make(Pool, len(source))
-	for id, factory := range source { copy[id] = factory }
-	return copy
+	pool := make(Pool, len(source))
+	for id, factory := range source { pool[id] = factory }
+	return pool
 }
 
 func newFromPool(pool Pool, id uint32) (Packet, bool) {
@@ -976,7 +1022,7 @@ func (a addressStrategy) container(expression string) string {
 
 func (a addressStrategy) element(expression, index string) string {
 	if a.pointer {
-		return "&(*" + expression + ")[" + index + "]"
+		return "(*" + expression + ")[" + index + "]"
 	}
 	return expression + "[" + index + "]"
 }
@@ -1056,11 +1102,12 @@ func (e *marshalEmitter) node(b *strings.Builder, node manifest.Node, expression
 	case manifest.KindStruct:
 		fmt.Fprintf(b, "%s%s.Marshal(io)\n", indent, expression)
 		return nil
+	case manifest.KindEnum:
+		fmt.Fprintf(b, "%s%s.Marshal(io)\n", indent, expression)
+		return e.numberConstraints(b, node, expression, indent, address)
 	case manifest.KindRecursive:
 		fmt.Fprintf(b, "%s%s(io, %s)\n", indent, e.runtime("Marshal"+e.g.identity[node.Target]), address.address(expression))
 		return nil
-	case manifest.KindEnum:
-		return e.enum(b, node, expression, hint, indent, address)
 	case manifest.KindOptional:
 		if node.Value == nil {
 			return fmt.Errorf("optional has no value")
@@ -1084,7 +1131,7 @@ func (e *marshalEmitter) node(b *strings.Builder, node manifest.Node, expression
 		}
 		index := e.temporary("index")
 		fmt.Fprintf(b, "%sfor %s := range %s {\n", indent, index, address.container(expression))
-		if err := e.node(b, *node.Element, address.element(expression, index), hint+"Item", indent+"\t", address); err != nil {
+		if err := e.node(b, *node.Element, address.element(expression, index), hint+"Item", indent+"\t", addressStrategy{}); err != nil {
 			return err
 		}
 		fmt.Fprintf(b, "%s}\n", indent)
@@ -1125,6 +1172,10 @@ func nativeMethod(native string) string {
 }
 
 func (e *marshalEmitter) optionalCall(b *strings.Builder, helper string, value manifest.Node, expression, hint, indent string, address addressStrategy) error {
+	if helper == "OptionalFunc" && e.marshalable(value, hint) {
+		fmt.Fprintf(b, "%s%s(io, %s)\n", indent, e.runtime("OptionalMarshaler"), address.address(expression))
+		return nil
+	}
 	fmt.Fprintf(b, "%s%s(io, %s, ", indent, e.runtime(helper), address.address(expression))
 	if method, ok := e.directIOCall(value); ok {
 		fmt.Fprintf(b, "io.%s)\n", method)
@@ -1149,7 +1200,7 @@ func (e *marshalEmitter) collection(b *strings.Builder, node manifest.Node, expr
 		return err
 	}
 	min, max, constrained := itemBounds(node.Constraints)
-	if prefix.Primitive.Code == "var_u32" && e.marshalableElement(element, hint) {
+	if prefix.Primitive.Code == "var_u32" && e.marshalable(element, hint) {
 		helper := "Slice"
 		if constrained {
 			helper = "SliceLimits"
@@ -1182,13 +1233,21 @@ func (e *marshalEmitter) collection(b *strings.Builder, node manifest.Node, expr
 	return nil
 }
 
-func (e *marshalEmitter) marshalableElement(element manifest.Node, hint string) bool {
-	if element.Kind != manifest.KindStruct && element.Kind != manifest.KindRecursive {
+// marshalable reports whether a node is emitted as a generated struct or enum
+// whose pointer marshals itself without further per-site constraints.
+func (e *marshalEmitter) marshalable(node manifest.Node, hint string) bool {
+	if node.Constraints != nil {
 		return false
 	}
-	typ := mustGoType(e.g, element, hint)
+	if node.Kind != manifest.KindStruct && node.Kind != manifest.KindEnum && node.Kind != manifest.KindRecursive {
+		return false
+	}
+	if _, native, _ := e.g.nativeGoType(node); native {
+		return false
+	}
+	typ := mustGoType(e.g, node, hint)
 	definition, ok := e.g.definitions[typ]
-	return ok && definition.Kind == manifest.KindStruct
+	return ok && (definition.Kind == manifest.KindStruct || definition.Kind == manifest.KindEnum)
 }
 
 func (e *marshalEmitter) mapEntries(b *strings.Builder, node manifest.Node, expression, hint, indent string, address addressStrategy) error {
@@ -1231,35 +1290,55 @@ func (e *marshalEmitter) mapEntries(b *strings.Builder, node manifest.Node, expr
 	return nil
 }
 
-func (e *marshalEmitter) enum(b *strings.Builder, node manifest.Node, expression, hint, indent string, address addressStrategy) error {
-	if node.Primitive == nil {
-		return fmt.Errorf("enum has no primitive")
-	}
-	if len(node.Variants) == 0 {
-		return fmt.Errorf("enum has no variants")
-	}
-	if _, err := primitiveGoType(node.Primitive.Code); err != nil {
-		return err
-	}
-	method, err := primitiveIOMethod(node.Primitive.Code)
-	if err != nil {
-		return err
-	}
-	fmt.Fprintf(b, "%s%s(%s, io.%s)\n", indent, e.runtime("IntegerFunc"), address.address(expression), method)
-	return e.numberConstraints(b, node, expression, indent, address)
-}
-
+// numberConstraints emits schema bounds that the wire type cannot already
+// guarantee, so an unsigned field never checks a minimum of zero.
 func (e *marshalEmitter) numberConstraints(b *strings.Builder, node manifest.Node, expression, indent string, address addressStrategy) error {
 	if node.Constraints == nil {
 		return nil
 	}
-	if node.Constraints.Minimum != nil {
-		fmt.Fprintf(b, "%s%s(io, %s, %s)\n", indent, e.runtime("Minimum"), address.address(expression), strconv.FormatFloat(*node.Constraints.Minimum, 'g', -1, 64))
+	low, high, bounded := wireRange(node)
+	if minimum := node.Constraints.Minimum; minimum != nil && !(bounded && *minimum <= low) {
+		fmt.Fprintf(b, "%s%s(io, %s, %s)\n", indent, e.runtime("Minimum"), address.address(expression), strconv.FormatFloat(*minimum, 'g', -1, 64))
 	}
-	if node.Constraints.Maximum != nil {
-		fmt.Fprintf(b, "%s%s(io, %s, %s)\n", indent, e.runtime("Maximum"), address.address(expression), strconv.FormatFloat(*node.Constraints.Maximum, 'g', -1, 64))
+	if maximum := node.Constraints.Maximum; maximum != nil && !(bounded && *maximum >= high) {
+		fmt.Fprintf(b, "%s%s(io, %s, %s)\n", indent, e.runtime("Maximum"), address.address(expression), strconv.FormatFloat(*maximum, 'g', -1, 64))
 	}
 	return nil
+}
+
+// wireRange reports the value range an integer wire encoding can carry.
+func wireRange(node manifest.Node) (low, high float64, ok bool) {
+	code := ""
+	switch {
+	case node.Primitive != nil:
+		code = node.Primitive.Code
+	case node.Kind == manifest.KindStruct:
+		code, _ = primitiveStructCode(node)
+	}
+	typ, err := primitiveGoType(code)
+	if err != nil {
+		return 0, 0, false
+	}
+	switch typ {
+	case "int8":
+		return math.MinInt8, math.MaxInt8, true
+	case "int16":
+		return math.MinInt16, math.MaxInt16, true
+	case "int32":
+		return math.MinInt32, math.MaxInt32, true
+	case "int64":
+		return math.MinInt64, math.MaxInt64, true
+	case "uint8":
+		return 0, math.MaxUint8, true
+	case "uint16":
+		return 0, math.MaxUint16, true
+	case "uint32":
+		return 0, math.MaxUint32, true
+	case "uint64":
+		return 0, math.MaxUint64, true
+	default:
+		return 0, 0, false
+	}
 }
 
 func lengthBounds(minimum, maximum *uint64) (uint64, uint64) {
@@ -1388,29 +1467,6 @@ func semanticIOCall(node manifest.Node) (string, bool) {
 	return (&marshalEmitter{g: &generator{nativeTypes: true}}).semanticIOCall(node)
 }
 
-func integerTypeMaximum(typ string) string {
-	switch typ {
-	case "uint8":
-		return "uint64(^uint8(0))"
-	case "uint16":
-		return "uint64(^uint16(0))"
-	case "uint32":
-		return "uint64(^uint32(0))"
-	case "uint64":
-		return "^uint64(0)"
-	case "int8":
-		return "uint64(^uint8(0) >> 1)"
-	case "int16":
-		return "uint64(^uint16(0) >> 1)"
-	case "int32":
-		return "uint64(^uint32(0) >> 1)"
-	case "int64":
-		return "uint64(^uint64(0) >> 1)"
-	default:
-		return ""
-	}
-}
-
 func (e *marshalEmitter) union(b *strings.Builder, definition typeDefinition) error {
 	fmt.Fprintf(b, "// Marshal%s reads or writes the %s union using its canonical wire layout.\n", definition.Name, definition.Name)
 	fmt.Fprintf(b, "func Marshal%s(io %s, x *%s) {\n", definition.Name, e.ioType(), definition.Name)
@@ -1418,34 +1474,15 @@ func (e *marshalEmitter) union(b *strings.Builder, definition typeDefinition) er
 		b.WriteString("\tio.InvalidValue(nil, \"union has no variants\")\n}\n\n")
 		return nil
 	}
-	// Every union member is a generated struct (or a wrapper around a scalar),
-	// so payload dispatch can remain fully typed in both directions.
-	if definition.Underlying == "" {
-		return fmt.Errorf("union %s has no discriminator primitive", definition.Name)
-	}
-	controlNode := manifest.Primitive(definition.Underlying)
-	tagType, err := primitiveGoType(definition.Underlying)
+	tagMethod, err := primitiveIOMethod(definition.Primitive)
 	if err != nil {
 		return err
 	}
-	fmt.Fprintf(b, "\t%s(io,\n\t\tfunc() {\n", e.runtime("UnionFunc"))
-	fmt.Fprintf(b, "\t\tvar tag %s\n", tagType)
-	if err := e.node(b, controlNode, "tag", definition.Name+"Tag", "\t\t", addressStrategy{}); err != nil {
-		return err
-	}
-	b.WriteString("\t\tswitch int64(tag) {\n")
+	fmt.Fprintf(b, "\t%s(io, x, io.%s, %s.tag%s, func(tag %s) %s {\n\t\tswitch tag {\n", e.runtime("Union"), tagMethod, definition.Name, definition.Name, definition.Underlying, definition.Name)
 	for _, member := range definition.Union {
-		fmt.Fprintf(b, "\t\tcase %d:\n\t\t\tvalue := new(%s)\n\t\t\tvalue.Marshal(io)\n\t\t\t*x = value\n", member.Value, member.Name)
+		fmt.Fprintf(b, "\t\tcase %d:\n\t\t\treturn new(%s)\n", member.Value, member.Name)
 	}
-	b.WriteString("\t\tdefault:\n\t\t\tio.InvalidValue(tag, \"unknown union tag\")\n\t\t}\n\t\t},\n\t\tfunc() {\n\t\tswitch value := (*x).(type) {\n")
-	for _, member := range definition.Union {
-		fmt.Fprintf(b, "\t\tcase *%s:\n\t\t\ttag := %s(%d)\n", member.Name, tagType, member.Value)
-		if err := e.node(b, controlNode, "tag", definition.Name+"Tag", "\t\t\t", addressStrategy{}); err != nil {
-			return err
-		}
-		b.WriteString("\t\t\tvalue.Marshal(io)\n")
-	}
-	b.WriteString("\t\tdefault:\n\t\t\tio.InvalidValue(*x, \"unknown union value\")\n\t\t}\n\t\t},\n\t)\n}\n\n")
+	b.WriteString("\t\t}\n\t\treturn nil\n\t})\n}\n\n")
 	return nil
 }
 

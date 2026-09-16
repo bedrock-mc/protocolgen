@@ -15,7 +15,7 @@ type SetSpawnPosition struct {
 
 // Marshal reads or writes SetSpawnPosition using its canonical wire layout.
 func (x *SetSpawnPosition) Marshal(io protocol.IO) {
-	protocol.IntegerFunc(&x.SpawnPositionType, io.Varint32)
+	x.SpawnPositionType.Marshal(io)
 	x.BlockPosition.Marshal(io)
 	x.DimensionType.Marshal(io)
 	x.SpawnBlockPos.Marshal(io)

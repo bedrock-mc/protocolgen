@@ -26,7 +26,7 @@ type UpdateSoftEnum struct {
 func (x *UpdateSoftEnum) Marshal(io protocol.IO) {
 	io.String(&x.EnumName)
 	protocol.FuncSlice(io, &x.Values, io.Varuint32, io.String)
-	protocol.IntegerFunc(&x.UpdateType, io.Uint8)
+	x.UpdateType.Marshal(io)
 }
 
 // ID returns the protocol ID for UpdateSoftEnum.

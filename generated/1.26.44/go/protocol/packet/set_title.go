@@ -23,7 +23,7 @@ type SetTitle struct {
 
 // Marshal reads or writes SetTitle using its canonical wire layout.
 func (x *SetTitle) Marshal(io protocol.IO) {
-	protocol.IntegerFunc(&x.TitleType, io.Varint32)
+	x.TitleType.Marshal(io)
 	io.String(&x.TitleText)
 	io.Varint32(&x.FadeInTime)
 	io.Varint32(&x.StayTime)

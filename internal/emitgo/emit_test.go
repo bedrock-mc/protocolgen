@@ -186,9 +186,9 @@ func TestGenerateUsesRuntimeHelpersForEnumsAndOptionals(t *testing.T) {
 	}
 	source := files["protocol/packet/helper.go"]
 	for _, want := range []string{
-		"protocol.IntegerFunc(&x.Kind, io.Uint8)",
+		"x.Kind.Marshal(io)",
 		"protocol.OptionalFunc(io, &x.Maybe, io.Int32)",
-		"protocol.IntegerFunc(value, io.Uint8)",
+		"protocol.Slice(io, &x.Kinds)",
 		"protocol.Slice(io, &x.Entries)",
 	} {
 		if !strings.Contains(source, want) {
@@ -201,11 +201,14 @@ func TestGenerateUsesRuntimeHelpersForEnumsAndOptionals(t *testing.T) {
 	if strings.Contains(source, "item := *value") || strings.Contains(source, "*value = item") {
 		t.Fatalf("callback codec copied values instead of using the supplied pointer:\n%s", source)
 	}
-	if !strings.Contains(source, "FuncSlice(io, value, io.Varuint32") {
+	if !strings.Contains(source, "protocol.Slice(io, value)") {
 		t.Fatalf("nested collection callback did not retain the supplied slice pointer:\n%s", source)
 	}
-	if strings.Contains(source, "FuncSlice(io, &x.Entries") {
-		t.Fatalf("struct slice still emits an escaping callback:\n%s", source)
+	if strings.Contains(source, "FuncSlice(io, &x.") || strings.Contains(source, "IntegerFunc") {
+		t.Fatalf("self-marshaling values still emit an escaping callback:\n%s", source)
+	}
+	if !strings.Contains(generatedSource(files), "Marshal(io IO) { io.Uint8((*uint8)(x)) }") {
+		t.Fatalf("enum does not marshal itself:\n%s", generatedSource(files))
 	}
 }
 
@@ -229,7 +232,7 @@ func TestGenerateKeepsUnionValidation(t *testing.T) {
 		t.Fatalf("union discriminator validation was removed:\n%s", marshal)
 	}
 	for name, source := range files {
-		if strings.Contains(source, "unknown union tag") && strings.Contains(source, "io.Reading()") {
+		if name != "protocol/helpers.go" && strings.Contains(source, "io.Reading()") {
 			t.Fatalf("union direction mechanics leaked into %s:\n%s", name, source)
 		}
 	}
@@ -248,7 +251,7 @@ func TestGenerateIncludesConcreteCodecRuntime(t *testing.T) {
 	}
 	for name, wants := range map[string][]string{
 		"protocol/codec.go":   {"type IO interface"},
-		"protocol/helpers.go": {"func IntegerFunc", "func OptionalFunc", "func UnionFunc", "func FuncSlice"},
+		"protocol/helpers.go": {"func OptionalMarshaler", "func OptionalFunc", "func Union", "func FuncSlice"},
 		"protocol/reader.go":  {"type Reader struct", "func NewReader", "func (r *Reader) NBT", "func (r *Reader) SliceLength"},
 		"protocol/writer.go":  {"type Writer struct", "func NewWriter", "func (w *Writer) NBT", "func (w *Writer) Data"},
 		"protocol/types.go":   {"type Optional", "type OrderedEntry"},
@@ -285,10 +288,10 @@ func TestGenerateWrapsRepeatedUnionPayloadTypes(t *testing.T) {
 		t.Fatal(err)
 	}
 	marshal := generatedSource(files)
-	if strings.Count(marshal, "case *Message:") != 1 || !strings.Contains(marshal, "case *ChoiceSecond:") {
+	if !strings.Contains(marshal, "func (*Message) tagChoice() uint8 { return 0 }") || !strings.Contains(marshal, "func (*ChoiceSecond) tagChoice() uint8 { return 1 }") {
 		t.Fatalf("repeated union payloads were not made tag-distinct:\n%s", marshal)
 	}
-	if !strings.Contains(marshal, "value := new(Message)") || !strings.Contains(marshal, "*x = value") {
+	if !strings.Contains(marshal, "return new(Message)") || !strings.Contains(marshal, "return new(ChoiceSecond)") {
 		t.Fatalf("union decode does not allocate pointer payloads:\n%s", marshal)
 	}
 }
@@ -371,7 +374,7 @@ func TestGenerateUsesTypedUnionInterface(t *testing.T) {
 		t.Fatalf("Generate: %v", err)
 	}
 	source := generatedSource(files)
-	if !strings.Contains(source, "type SoundDataEvent interface") || !strings.Contains(source, "func (*SoundDataEventSetVolume) isSoundDataEvent()") || strings.Contains(source, "Tag int64") {
+	if !strings.Contains(source, "type SoundDataEvent interface") || !strings.Contains(source, "func (*SoundDataEventSetVolume) tagSoundDataEvent() uint32 { return 1 }") || !strings.Contains(source, "Union(io, x, io.Varuint32, SoundDataEvent.tagSoundDataEvent, func(tag uint32) SoundDataEvent {") || strings.Contains(source, "Tag int64") {
 		t.Fatalf("generated Go did not emit a typed union interface:\n%s", source)
 	}
 }

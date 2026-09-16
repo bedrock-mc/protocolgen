@@ -13,7 +13,7 @@ type SimpleEvent struct {
 
 // Marshal reads or writes SimpleEvent using its canonical wire layout.
 func (x *SimpleEvent) Marshal(io protocol.IO) {
-	protocol.IntegerFunc(&x.Type, io.Uint16)
+	x.Type.Marshal(io)
 }
 
 // ID returns the protocol ID for SimpleEvent.

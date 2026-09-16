@@ -34,12 +34,10 @@ func (x *MovePlayer) Marshal(io protocol.IO) {
 	io.Vec3(&x.Position)
 	io.Vec2(&x.Rotation)
 	io.Float32(&x.YHeadRotation)
-	protocol.IntegerFunc(&x.PositionMode, io.Uint8)
+	x.PositionMode.Marshal(io)
 	io.Bool(&x.OnGround)
 	io.ActorRuntimeID(&x.RidingRuntimeID)
-	protocol.OptionalFunc(io, &x.TeleportData, func(value *protocol.MovePlayerTeleportData) {
-		value.Marshal(io)
-	})
+	protocol.OptionalMarshaler(io, &x.TeleportData)
 	io.PlayerInputTick(&x.Tick)
 }
 

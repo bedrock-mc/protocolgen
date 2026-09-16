@@ -13,7 +13,7 @@ type SetDefaultGameType struct {
 
 // Marshal reads or writes SetDefaultGameType using its canonical wire layout.
 func (x *SetDefaultGameType) Marshal(io protocol.IO) {
-	protocol.IntegerFunc(&x.DefaultGameType, io.Varint32)
+	x.DefaultGameType.Marshal(io)
 }
 
 // ID returns the protocol ID for SetDefaultGameType.

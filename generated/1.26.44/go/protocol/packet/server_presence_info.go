@@ -12,9 +12,7 @@ type ServerPresenceInfo struct {
 
 // Marshal reads or writes ServerPresenceInfo using its canonical wire layout.
 func (x *ServerPresenceInfo) Marshal(io protocol.IO) {
-	protocol.OptionalFunc(io, &x.PresenceConfiguration, func(value *protocol.ServerConfigurationPresenceConfiguration) {
-		value.Marshal(io)
-	})
+	protocol.OptionalMarshaler(io, &x.PresenceConfiguration)
 }
 
 // ID returns the protocol ID for ServerPresenceInfo.

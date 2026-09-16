@@ -16,8 +16,8 @@ type PacketViolationWarning struct {
 
 // Marshal reads or writes PacketViolationWarning using its canonical wire layout.
 func (x *PacketViolationWarning) Marshal(io protocol.IO) {
-	protocol.IntegerFunc(&x.ViolationType, io.Varint32)
-	protocol.IntegerFunc(&x.ViolationSeverity, io.Varint32)
+	x.ViolationType.Marshal(io)
+	x.ViolationSeverity.Marshal(io)
 	io.Varint32(&x.ViolationPacketID)
 	io.String(&x.ViolationContext)
 }

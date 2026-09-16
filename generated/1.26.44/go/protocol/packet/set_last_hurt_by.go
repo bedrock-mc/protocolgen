@@ -13,7 +13,7 @@ type SetLastHurtBy struct {
 
 // Marshal reads or writes SetLastHurtBy using its canonical wire layout.
 func (x *SetLastHurtBy) Marshal(io protocol.IO) {
-	protocol.IntegerFunc(&x.LastHurtBy, io.Varint32)
+	x.LastHurtBy.Marshal(io)
 }
 
 // ID returns the protocol ID for SetLastHurtBy.

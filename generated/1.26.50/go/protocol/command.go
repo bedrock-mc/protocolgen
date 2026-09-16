@@ -65,7 +65,6 @@ func (x *Command) Marshal(io IO) {
 	io.StringLimits(&x.Name, 0, 1000)
 	io.StringLimits(&x.Description, 0, 1000)
 	io.Uint16(&x.Flags)
-	Minimum(io, &x.Flags, 0)
 	io.String(&x.PermissionLevel)
 	io.Int32(&x.AliasEnum)
 	FuncSliceLimits(io, &x.CommandDataChainedSubcommandIndexes, io.Varuint32, 0, 250, io.Uint32)
@@ -73,43 +72,21 @@ func (x *Command) Marshal(io IO) {
 }
 
 type CommandBlockUpdateData interface {
-	isCommandBlockUpdateData()
+	Marshaler
+	tagCommandBlockUpdateData() uint32
 }
 
 // MarshalCommandBlockUpdateData reads or writes the CommandBlockUpdateData union using its canonical wire layout.
 func MarshalCommandBlockUpdateData(io IO, x *CommandBlockUpdateData) {
-	UnionFunc(io,
-		func() {
-			var tag uint32
-			io.Varuint32(&tag)
-			switch int64(tag) {
-			case 0:
-				value := new(EntityCommandTarget)
-				value.Marshal(io)
-				*x = value
-			case 1:
-				value := new(BlockCommandData)
-				value.Marshal(io)
-				*x = value
-			default:
-				io.InvalidValue(tag, "unknown union tag")
-			}
-		},
-		func() {
-			switch value := (*x).(type) {
-			case *EntityCommandTarget:
-				tag := uint32(0)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *BlockCommandData:
-				tag := uint32(1)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			default:
-				io.InvalidValue(*x, "unknown union value")
-			}
-		},
-	)
+	Union(io, x, io.Varuint32, CommandBlockUpdateData.tagCommandBlockUpdateData, func(tag uint32) CommandBlockUpdateData {
+		switch tag {
+		case 0:
+			return new(EntityCommandTarget)
+		case 1:
+			return new(BlockCommandData)
+		}
+		return nil
+	})
 }
 
 // CommandEnum represents an enum in a command usage. The enum typically has a type and a set of
@@ -185,7 +162,6 @@ type CommandOutputData struct {
 func (x *CommandOutputData) Marshal(io IO) {
 	io.String(&x.OutputType)
 	io.Uint32(&x.SuccessCount)
-	Minimum(io, &x.SuccessCount, 0)
 	Slice(io, &x.OutputMessages)
 	OptionalFunc(io, &x.DataSet, io.String)
 }
@@ -258,6 +234,9 @@ const (
 	CommandPermissionLevelOwner         CommandPermissionLevel = 4
 	CommandPermissionLevelInternal      CommandPermissionLevel = 5
 )
+
+// Marshal reads or writes CommandPermissionLevel through its uint8 wire encoding.
+func (x *CommandPermissionLevel) Marshal(io IO) { io.Uint8((*uint8)(x)) }
 
 // DynamicEnum is an enum variant that can have its options changed during runtime, without sending
 // a new AvailableCommands packet.

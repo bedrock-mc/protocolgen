@@ -25,7 +25,7 @@ type DimensionDefinition struct {
 func (x *DimensionDefinition) Marshal(io IO) {
 	io.Varint32(&x.HeightMaximum)
 	io.Varint32(&x.HeightMinimum)
-	IntegerFunc(&x.GeneratorType, io.Varint32)
+	x.GeneratorType.Marshal(io)
 	x.DimensionType.Marshal(io)
 	io.UUID(&x.PackID)
 }

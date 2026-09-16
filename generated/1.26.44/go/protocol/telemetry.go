@@ -38,3 +38,6 @@ const (
 	LegacyTelemetryTypeCarefulRestoration              LegacyTelemetryType = 30
 	LegacyTelemetryTypeItemUsed                        LegacyTelemetryType = 31
 )
+
+// Marshal reads or writes LegacyTelemetryType through its int32 wire encoding.
+func (x *LegacyTelemetryType) Marshal(io IO) { io.Varint32((*int32)(x)) }

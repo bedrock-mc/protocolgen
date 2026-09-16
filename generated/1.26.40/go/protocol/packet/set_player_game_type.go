@@ -12,7 +12,7 @@ type SetPlayerGameType struct {
 
 // Marshal reads or writes SetPlayerGameType using its canonical wire layout.
 func (x *SetPlayerGameType) Marshal(io protocol.IO) {
-	protocol.IntegerFunc(&x.PlayerGameType, io.Varint32)
+	x.PlayerGameType.Marshal(io)
 }
 
 // ID returns the protocol ID for SetPlayerGameType.

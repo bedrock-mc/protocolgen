@@ -575,11 +575,11 @@ func NewClientPacket(id uint32) (Packet, bool) { return newFromPool(clientPacket
 func NewServerPacket(id uint32) (Packet, bool) { return newFromPool(serverPacketFactories, id) }
 
 func clonePool(source Pool) Pool {
-	copy := make(Pool, len(source))
+	pool := make(Pool, len(source))
 	for id, factory := range source {
-		copy[id] = factory
+		pool[id] = factory
 	}
-	return copy
+	return pool
 }
 
 func newFromPool(pool Pool, id uint32) (Packet, bool) {

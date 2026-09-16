@@ -41,18 +41,14 @@ type PrimitiveShape struct {
 // Marshal reads or writes PrimitiveShape using its canonical wire layout.
 func (x *PrimitiveShape) Marshal(io IO) {
 	io.Varuint64(&x.NetworkID)
-	OptionalFunc(io, &x.ShapeType, func(value *ScriptModuleMinecraftScriptPrimitiveShapeType) {
-		IntegerFunc(value, io.Uint8)
-	})
+	OptionalMarshaler(io, &x.ShapeType)
 	OptionalFunc(io, &x.Location, io.Vec3)
 	OptionalFunc(io, &x.Scale, io.Float32)
 	OptionalFunc(io, &x.Rotation, io.Vec3)
 	OptionalFunc(io, &x.TotalTimeLeft, io.Float32)
 	OptionalFunc(io, &x.MaximumRenderDistance, io.Float32)
 	OptionalFunc(io, &x.Color, io.RGBA)
-	OptionalFunc(io, &x.DimensionID, func(value *DimensionType) {
-		value.Marshal(io)
-	})
+	OptionalMarshaler(io, &x.DimensionID)
 	OptionalFunc(io, &x.AttachedToEntityID, io.ActorUniqueID)
 	MarshalPrimitiveShapeExtraShapeData(io, &x.ExtraShapeData)
 }
@@ -79,7 +75,7 @@ type TextShape struct {
 	ShowTextBackface bool
 }
 
-func (*TextShape) isPrimitiveShapeExtraShapeData() {}
+func (*TextShape) tagPrimitiveShapeExtraShapeData() uint32 { return 2 }
 
 // Marshal reads or writes TextShape using its canonical wire layout.
 func (x *TextShape) Marshal(io IO) {

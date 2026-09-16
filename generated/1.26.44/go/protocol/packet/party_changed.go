@@ -12,9 +12,7 @@ type PartyChanged struct {
 
 // Marshal reads or writes PartyChanged using its canonical wire layout.
 func (x *PartyChanged) Marshal(io protocol.IO) {
-	protocol.OptionalFunc(io, &x.PartyInfo, func(value *protocol.PlayerPartyInfo) {
-		value.Marshal(io)
-	})
+	protocol.OptionalMarshaler(io, &x.PartyInfo)
 }
 
 // ID returns the protocol ID for PartyChanged.

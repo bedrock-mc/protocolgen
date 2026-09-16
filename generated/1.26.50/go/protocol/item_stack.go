@@ -15,11 +15,11 @@ type AutoCraftRecipeStackRequestAction struct {
 	Ingredients []RecipeIngredient
 }
 
-func (*AutoCraftRecipeStackRequestAction) isStackRequestAction() {}
+func (*AutoCraftRecipeStackRequestAction) tagStackRequestAction() uint32 { return 11 }
 
 // Marshal reads or writes AutoCraftRecipeStackRequestAction using its canonical wire layout.
 func (x *AutoCraftRecipeStackRequestAction) Marshal(io IO) {
-	IntegerFunc(&x.ActionType, io.Uint8)
+	x.ActionType.Marshal(io)
 	x.RecipeNetID.Marshal(io)
 	io.Uint8(&x.NumberOfRequestedCrafts)
 	Minimum(io, &x.NumberOfRequestedCrafts, 1)
@@ -34,11 +34,11 @@ type BeaconPaymentStackRequestAction struct {
 	SecondaryEffectID int32
 }
 
-func (*BeaconPaymentStackRequestAction) isStackRequestAction() {}
+func (*BeaconPaymentStackRequestAction) tagStackRequestAction() uint32 { return 8 }
 
 // Marshal reads or writes BeaconPaymentStackRequestAction using its canonical wire layout.
 func (x *BeaconPaymentStackRequestAction) Marshal(io IO) {
-	IntegerFunc(&x.ActionType, io.Uint8)
+	x.ActionType.Marshal(io)
 	io.Varint32(&x.PrimaryEffectID)
 	Minimum(io, &x.PrimaryEffectID, 0)
 	Maximum(io, &x.PrimaryEffectID, 37)
@@ -55,11 +55,11 @@ type ConsumeStackRequestAction struct {
 	Source     StackRequestSlotInfo
 }
 
-func (*ConsumeStackRequestAction) isStackRequestAction() {}
+func (*ConsumeStackRequestAction) tagStackRequestAction() uint32 { return 5 }
 
 // Marshal reads or writes ConsumeStackRequestAction using its canonical wire layout.
 func (x *ConsumeStackRequestAction) Marshal(io IO) {
-	IntegerFunc(&x.ActionType, io.Uint8)
+	x.ActionType.Marshal(io)
 	io.Uint8(&x.Amount)
 	Minimum(io, &x.Amount, 1)
 	Maximum(io, &x.Amount, 64)
@@ -74,11 +74,11 @@ type CraftCreativeStackRequestAction struct {
 	NumberOfRequestedCrafts uint8
 }
 
-func (*CraftCreativeStackRequestAction) isStackRequestAction() {}
+func (*CraftCreativeStackRequestAction) tagStackRequestAction() uint32 { return 12 }
 
 // Marshal reads or writes CraftCreativeStackRequestAction using its canonical wire layout.
 func (x *CraftCreativeStackRequestAction) Marshal(io IO) {
-	IntegerFunc(&x.ActionType, io.Uint8)
+	x.ActionType.Marshal(io)
 	io.Varuint32(&x.CreativeItemNetID)
 	Minimum(io, &x.CreativeItemNetID, 1)
 	io.Uint8(&x.NumberOfRequestedCrafts)
@@ -91,11 +91,11 @@ type CraftNonImplementedStackRequestAction struct {
 	ActionType ItemStackRequestActionType
 }
 
-func (*CraftNonImplementedStackRequestAction) isStackRequestAction() {}
+func (*CraftNonImplementedStackRequestAction) tagStackRequestAction() uint32 { return 16 }
 
 // Marshal reads or writes CraftNonImplementedStackRequestAction using its canonical wire layout.
 func (x *CraftNonImplementedStackRequestAction) Marshal(io IO) {
-	IntegerFunc(&x.ActionType, io.Uint8)
+	x.ActionType.Marshal(io)
 }
 
 // CraftRecipeOptionalStackRequestAction is sent when using an anvil. When this action is sent, the
@@ -107,11 +107,11 @@ type CraftRecipeOptionalStackRequestAction struct {
 	FilteredStringIndex int32
 }
 
-func (*CraftRecipeOptionalStackRequestAction) isStackRequestAction() {}
+func (*CraftRecipeOptionalStackRequestAction) tagStackRequestAction() uint32 { return 13 }
 
 // Marshal reads or writes CraftRecipeOptionalStackRequestAction using its canonical wire layout.
 func (x *CraftRecipeOptionalStackRequestAction) Marshal(io IO) {
-	IntegerFunc(&x.ActionType, io.Uint8)
+	x.ActionType.Marshal(io)
 	x.RecipeNetID.Marshal(io)
 	io.Int32(&x.FilteredStringIndex)
 }
@@ -126,11 +126,11 @@ type CraftRecipeStackRequestAction struct {
 	NumberOfRequestedCrafts uint8
 }
 
-func (*CraftRecipeStackRequestAction) isStackRequestAction() {}
+func (*CraftRecipeStackRequestAction) tagStackRequestAction() uint32 { return 10 }
 
 // Marshal reads or writes CraftRecipeStackRequestAction using its canonical wire layout.
 func (x *CraftRecipeStackRequestAction) Marshal(io IO) {
-	IntegerFunc(&x.ActionType, io.Uint8)
+	x.ActionType.Marshal(io)
 	x.RecipeNetID.Marshal(io)
 	io.Uint8(&x.NumberOfRequestedCrafts)
 	Minimum(io, &x.NumberOfRequestedCrafts, 1)
@@ -146,11 +146,11 @@ type CraftResultsDeprecatedStackRequestAction struct {
 	NumCrafts    uint8
 }
 
-func (*CraftResultsDeprecatedStackRequestAction) isStackRequestAction() {}
+func (*CraftResultsDeprecatedStackRequestAction) tagStackRequestAction() uint32 { return 17 }
 
 // Marshal reads or writes CraftResultsDeprecatedStackRequestAction using its canonical wire layout.
 func (x *CraftResultsDeprecatedStackRequestAction) Marshal(io IO) {
-	IntegerFunc(&x.ActionType, io.Uint8)
+	x.ActionType.Marshal(io)
 	SliceLimits(io, &x.CraftResults, 1, 18446744073709551615)
 	io.Uint8(&x.NumCrafts)
 	Minimum(io, &x.NumCrafts, 1)
@@ -167,11 +167,11 @@ type CreateStackRequestAction struct {
 	ResultsIndex uint8
 }
 
-func (*CreateStackRequestAction) isStackRequestAction() {}
+func (*CreateStackRequestAction) tagStackRequestAction() uint32 { return 6 }
 
 // Marshal reads or writes CreateStackRequestAction using its canonical wire layout.
 func (x *CreateStackRequestAction) Marshal(io IO) {
-	IntegerFunc(&x.ActionType, io.Uint8)
+	x.ActionType.Marshal(io)
 	io.Uint8(&x.ResultsIndex)
 }
 
@@ -185,11 +185,11 @@ type DestroyStackRequestAction struct {
 	Source StackRequestSlotInfo
 }
 
-func (*DestroyStackRequestAction) isStackRequestAction() {}
+func (*DestroyStackRequestAction) tagStackRequestAction() uint32 { return 4 }
 
 // Marshal reads or writes DestroyStackRequestAction using its canonical wire layout.
 func (x *DestroyStackRequestAction) Marshal(io IO) {
-	IntegerFunc(&x.ActionType, io.Uint8)
+	x.ActionType.Marshal(io)
 	io.Uint8(&x.Amount)
 	Minimum(io, &x.Amount, 1)
 	Maximum(io, &x.Amount, 64)
@@ -210,11 +210,11 @@ type DropStackRequestAction struct {
 	Randomly bool
 }
 
-func (*DropStackRequestAction) isStackRequestAction() {}
+func (*DropStackRequestAction) tagStackRequestAction() uint32 { return 3 }
 
 // Marshal reads or writes DropStackRequestAction using its canonical wire layout.
 func (x *DropStackRequestAction) Marshal(io IO) {
-	IntegerFunc(&x.ActionType, io.Uint8)
+	x.ActionType.Marshal(io)
 	io.Uint8(&x.Amount)
 	Minimum(io, &x.Amount, 1)
 	Maximum(io, &x.Amount, 64)
@@ -223,59 +223,25 @@ func (x *DropStackRequestAction) Marshal(io IO) {
 }
 
 type ItemDescriptor interface {
-	isItemDescriptor()
+	Marshaler
+	tagItemDescriptor() uint32
 }
 
 // MarshalItemDescriptor reads or writes the ItemDescriptor union using its canonical wire layout.
 func MarshalItemDescriptor(io IO, x *ItemDescriptor) {
-	UnionFunc(io,
-		func() {
-			var tag uint32
-			io.Varuint32(&tag)
-			switch int64(tag) {
-			case 0:
-				value := new(InvalidItemDescriptor)
-				value.Marshal(io)
-				*x = value
-			case 1:
-				value := new(DefaultItemDescriptor)
-				value.Marshal(io)
-				*x = value
-			case 2:
-				value := new(MoLangItemDescriptor)
-				value.Marshal(io)
-				*x = value
-			case 3:
-				value := new(ItemTagItemDescriptor)
-				value.Marshal(io)
-				*x = value
-			default:
-				io.InvalidValue(tag, "unknown union tag")
-			}
-		},
-		func() {
-			switch value := (*x).(type) {
-			case *InvalidItemDescriptor:
-				tag := uint32(0)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *DefaultItemDescriptor:
-				tag := uint32(1)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *MoLangItemDescriptor:
-				tag := uint32(2)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *ItemTagItemDescriptor:
-				tag := uint32(3)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			default:
-				io.InvalidValue(*x, "unknown union value")
-			}
-		},
-	)
+	Union(io, x, io.Varuint32, ItemDescriptor.tagItemDescriptor, func(tag uint32) ItemDescriptor {
+		switch tag {
+		case 0:
+			return new(InvalidItemDescriptor)
+		case 1:
+			return new(DefaultItemDescriptor)
+		case 2:
+			return new(MoLangItemDescriptor)
+		case 3:
+			return new(ItemTagItemDescriptor)
+		}
+		return nil
+	})
 }
 
 type ItemStackLegacyRequestID struct {
@@ -369,6 +335,9 @@ const (
 	ItemStackNetResultScreenStackError                                 ItemStackNetResult = 67
 )
 
+// Marshal reads or writes ItemStackNetResult through its uint8 wire encoding.
+func (x *ItemStackNetResult) Marshal(io IO) { io.Uint8((*uint8)(x)) }
+
 type ItemStackRequestActionType uint8
 
 const (
@@ -394,6 +363,9 @@ const (
 	ItemStackRequestActionTypeCraftResults             ItemStackRequestActionType = 19
 )
 
+// Marshal reads or writes ItemStackRequestActionType through its uint8 wire encoding.
+func (x *ItemStackRequestActionType) Marshal(io IO) { io.Uint8((*uint8)(x)) }
+
 // ItemStackRequest represents a single request present in an ItemStackRequest packet sent by the
 // client to change an item in an inventory. Item stack requests are either approved or rejected by
 // the server using the ItemStackResponse packet.
@@ -415,7 +387,7 @@ func (x *ItemStackRequestData) Marshal(io IO) {
 	FuncSlice(io, &x.StringsToFilter, io.Varuint32, func(value *string) {
 		io.StringLimits(value, 0, 1000)
 	})
-	IntegerFunc(&x.StringsToFilterOrigin, io.Int32)
+	x.StringsToFilterOrigin.Marshal(io)
 }
 
 type ItemStackRequestID struct {
@@ -443,7 +415,7 @@ func (x *ItemStackRequestPacketData) Marshal(io IO) {
 	FuncSlice(io, &x.StringsToFilter, io.Varuint32, func(value *string) {
 		io.StringLimits(value, 0, 1000)
 	})
-	IntegerFunc(&x.StringsToFilterOrigin, io.Int32)
+	x.StringsToFilterOrigin.Marshal(io)
 }
 
 type ItemStackResponseContainerInfo struct {
@@ -466,7 +438,7 @@ type ItemStackResponseInfo struct {
 
 // Marshal reads or writes ItemStackResponseInfo using its canonical wire layout.
 func (x *ItemStackResponseInfo) Marshal(io IO) {
-	IntegerFunc(&x.Result, io.Uint8)
+	x.Result.Marshal(io)
 	x.ClientRequestID.Marshal(io)
 	OptionalFunc(io, &x.Containers, func(value *[]ItemStackResponseContainerInfo) {
 		Slice(io, value)
@@ -487,9 +459,7 @@ func (x *ItemStackResponseSlotInfo) Marshal(io IO) {
 	io.Uint8(&x.RequestedSlot)
 	io.Uint8(&x.Slot)
 	io.Uint8(&x.Amount)
-	OptionalFunc(io, &x.ItemStackNetID, func(value *ItemStackNetID) {
-		value.Marshal(io)
-	})
+	OptionalMarshaler(io, &x.ItemStackNetID)
 	x.CustomName.Marshal(io)
 	io.Varint32(&x.DurabilityCorrection)
 	Minimum(io, &x.DurabilityCorrection, -32768)
@@ -502,11 +472,11 @@ type LabTableCombineStackRequestAction struct {
 	ActionType ItemStackRequestActionType
 }
 
-func (*LabTableCombineStackRequestAction) isStackRequestAction() {}
+func (*LabTableCombineStackRequestAction) tagStackRequestAction() uint32 { return 7 }
 
 // Marshal reads or writes LabTableCombineStackRequestAction using its canonical wire layout.
 func (x *LabTableCombineStackRequestAction) Marshal(io IO) {
-	IntegerFunc(&x.ActionType, io.Uint8)
+	x.ActionType.Marshal(io)
 }
 
 // MineBlockStackRequestAction is sent by the client when it breaks a block.
@@ -519,11 +489,11 @@ type MineBlockStackRequestAction struct {
 	NetIDVariant        int32
 }
 
-func (*MineBlockStackRequestAction) isStackRequestAction() {}
+func (*MineBlockStackRequestAction) tagStackRequestAction() uint32 { return 9 }
 
 // Marshal reads or writes MineBlockStackRequestAction using its canonical wire layout.
 func (x *MineBlockStackRequestAction) Marshal(io IO) {
-	IntegerFunc(&x.ActionType, io.Uint8)
+	x.ActionType.Marshal(io)
 	io.Varint32(&x.Slot)
 	io.Varint32(&x.PredictedDurability)
 	io.Int32(&x.NetIDVariant)
@@ -539,11 +509,11 @@ type PlaceStackRequestAction struct {
 	Destination StackRequestSlotInfo
 }
 
-func (*PlaceStackRequestAction) isStackRequestAction() {}
+func (*PlaceStackRequestAction) tagStackRequestAction() uint32 { return 1 }
 
 // Marshal reads or writes PlaceStackRequestAction using its canonical wire layout.
 func (x *PlaceStackRequestAction) Marshal(io IO) {
-	IntegerFunc(&x.ActionType, io.Uint8)
+	x.ActionType.Marshal(io)
 	io.Uint8(&x.Amount)
 	Minimum(io, &x.Amount, 1)
 	Maximum(io, &x.Amount, 64)
@@ -552,171 +522,53 @@ func (x *PlaceStackRequestAction) Marshal(io IO) {
 }
 
 type StackRequestAction interface {
-	isStackRequestAction()
+	Marshaler
+	tagStackRequestAction() uint32
 }
 
 // MarshalStackRequestAction reads or writes the StackRequestAction union using its canonical wire layout.
 func MarshalStackRequestAction(io IO, x *StackRequestAction) {
-	UnionFunc(io,
-		func() {
-			var tag uint32
-			io.Varuint32(&tag)
-			switch int64(tag) {
-			case 0:
-				value := new(TakeStackRequestAction)
-				value.Marshal(io)
-				*x = value
-			case 1:
-				value := new(PlaceStackRequestAction)
-				value.Marshal(io)
-				*x = value
-			case 2:
-				value := new(SwapStackRequestAction)
-				value.Marshal(io)
-				*x = value
-			case 3:
-				value := new(DropStackRequestAction)
-				value.Marshal(io)
-				*x = value
-			case 4:
-				value := new(DestroyStackRequestAction)
-				value.Marshal(io)
-				*x = value
-			case 5:
-				value := new(ConsumeStackRequestAction)
-				value.Marshal(io)
-				*x = value
-			case 6:
-				value := new(CreateStackRequestAction)
-				value.Marshal(io)
-				*x = value
-			case 7:
-				value := new(LabTableCombineStackRequestAction)
-				value.Marshal(io)
-				*x = value
-			case 8:
-				value := new(BeaconPaymentStackRequestAction)
-				value.Marshal(io)
-				*x = value
-			case 9:
-				value := new(MineBlockStackRequestAction)
-				value.Marshal(io)
-				*x = value
-			case 10:
-				value := new(CraftRecipeStackRequestAction)
-				value.Marshal(io)
-				*x = value
-			case 11:
-				value := new(AutoCraftRecipeStackRequestAction)
-				value.Marshal(io)
-				*x = value
-			case 12:
-				value := new(CraftCreativeStackRequestAction)
-				value.Marshal(io)
-				*x = value
-			case 13:
-				value := new(CraftRecipeOptionalStackRequestAction)
-				value.Marshal(io)
-				*x = value
-			case 14:
-				value := new(CraftRepairAndDisenchantStackRequestAction)
-				value.Marshal(io)
-				*x = value
-			case 15:
-				value := new(CraftLoomStackRequestAction)
-				value.Marshal(io)
-				*x = value
-			case 16:
-				value := new(CraftNonImplementedStackRequestAction)
-				value.Marshal(io)
-				*x = value
-			case 17:
-				value := new(CraftResultsDeprecatedStackRequestAction)
-				value.Marshal(io)
-				*x = value
-			default:
-				io.InvalidValue(tag, "unknown union tag")
-			}
-		},
-		func() {
-			switch value := (*x).(type) {
-			case *TakeStackRequestAction:
-				tag := uint32(0)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *PlaceStackRequestAction:
-				tag := uint32(1)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *SwapStackRequestAction:
-				tag := uint32(2)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *DropStackRequestAction:
-				tag := uint32(3)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *DestroyStackRequestAction:
-				tag := uint32(4)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *ConsumeStackRequestAction:
-				tag := uint32(5)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *CreateStackRequestAction:
-				tag := uint32(6)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *LabTableCombineStackRequestAction:
-				tag := uint32(7)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *BeaconPaymentStackRequestAction:
-				tag := uint32(8)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *MineBlockStackRequestAction:
-				tag := uint32(9)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *CraftRecipeStackRequestAction:
-				tag := uint32(10)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *AutoCraftRecipeStackRequestAction:
-				tag := uint32(11)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *CraftCreativeStackRequestAction:
-				tag := uint32(12)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *CraftRecipeOptionalStackRequestAction:
-				tag := uint32(13)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *CraftRepairAndDisenchantStackRequestAction:
-				tag := uint32(14)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *CraftLoomStackRequestAction:
-				tag := uint32(15)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *CraftNonImplementedStackRequestAction:
-				tag := uint32(16)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *CraftResultsDeprecatedStackRequestAction:
-				tag := uint32(17)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			default:
-				io.InvalidValue(*x, "unknown union value")
-			}
-		},
-	)
+	Union(io, x, io.Varuint32, StackRequestAction.tagStackRequestAction, func(tag uint32) StackRequestAction {
+		switch tag {
+		case 0:
+			return new(TakeStackRequestAction)
+		case 1:
+			return new(PlaceStackRequestAction)
+		case 2:
+			return new(SwapStackRequestAction)
+		case 3:
+			return new(DropStackRequestAction)
+		case 4:
+			return new(DestroyStackRequestAction)
+		case 5:
+			return new(ConsumeStackRequestAction)
+		case 6:
+			return new(CreateStackRequestAction)
+		case 7:
+			return new(LabTableCombineStackRequestAction)
+		case 8:
+			return new(BeaconPaymentStackRequestAction)
+		case 9:
+			return new(MineBlockStackRequestAction)
+		case 10:
+			return new(CraftRecipeStackRequestAction)
+		case 11:
+			return new(AutoCraftRecipeStackRequestAction)
+		case 12:
+			return new(CraftCreativeStackRequestAction)
+		case 13:
+			return new(CraftRecipeOptionalStackRequestAction)
+		case 14:
+			return new(CraftRepairAndDisenchantStackRequestAction)
+		case 15:
+			return new(CraftLoomStackRequestAction)
+		case 16:
+			return new(CraftNonImplementedStackRequestAction)
+		case 17:
+			return new(CraftResultsDeprecatedStackRequestAction)
+		}
+		return nil
+	})
 }
 
 // StackRequestSlotInfo holds information on a specific slot client-side.
@@ -746,11 +598,11 @@ type SwapStackRequestAction struct {
 	Destination StackRequestSlotInfo
 }
 
-func (*SwapStackRequestAction) isStackRequestAction() {}
+func (*SwapStackRequestAction) tagStackRequestAction() uint32 { return 2 }
 
 // Marshal reads or writes SwapStackRequestAction using its canonical wire layout.
 func (x *SwapStackRequestAction) Marshal(io IO) {
-	IntegerFunc(&x.ActionType, io.Uint8)
+	x.ActionType.Marshal(io)
 	x.Source.Marshal(io)
 	x.Destination.Marshal(io)
 }
@@ -764,11 +616,11 @@ type TakeStackRequestAction struct {
 	Destination StackRequestSlotInfo
 }
 
-func (*TakeStackRequestAction) isStackRequestAction() {}
+func (*TakeStackRequestAction) tagStackRequestAction() uint32 { return 0 }
 
 // Marshal reads or writes TakeStackRequestAction using its canonical wire layout.
 func (x *TakeStackRequestAction) Marshal(io IO) {
-	IntegerFunc(&x.ActionType, io.Uint8)
+	x.ActionType.Marshal(io)
 	io.Uint8(&x.Amount)
 	Minimum(io, &x.Amount, 1)
 	Maximum(io, &x.Amount, 64)

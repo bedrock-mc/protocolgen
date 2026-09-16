@@ -15,11 +15,9 @@ type NpcRequest struct {
 // Marshal reads or writes NpcRequest using its canonical wire layout.
 func (x *NpcRequest) Marshal(io protocol.IO) {
 	io.ActorRuntimeID(&x.NPCRuntimeID)
-	protocol.IntegerFunc(&x.RequestType, io.Uint8)
+	x.RequestType.Marshal(io)
 	io.String(&x.Actions)
 	io.Uint8(&x.ActionIndex)
-	protocol.Minimum(io, &x.ActionIndex, 0)
-	protocol.Maximum(io, &x.ActionIndex, 255)
 	io.String(&x.SceneName)
 }
 

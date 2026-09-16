@@ -10,7 +10,7 @@ type MultiplayerSettings struct {
 
 // Marshal reads or writes MultiplayerSettings using its canonical wire layout.
 func (x *MultiplayerSettings) Marshal(io protocol.IO) {
-	protocol.IntegerFunc(&x.PacketType, io.Varint32)
+	x.PacketType.Marshal(io)
 }
 
 // ID returns the protocol ID for MultiplayerSettings.

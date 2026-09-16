@@ -19,7 +19,7 @@ type MovementEffect struct {
 // Marshal reads or writes MovementEffect using its canonical wire layout.
 func (x *MovementEffect) Marshal(io protocol.IO) {
 	io.ActorRuntimeID(&x.TargetRuntimeID)
-	protocol.IntegerFunc(&x.EffectID, io.Varint32)
+	x.EffectID.Marshal(io)
 	io.Varint32(&x.EffectDuration)
 	io.PlayerInputTick(&x.Tick)
 }

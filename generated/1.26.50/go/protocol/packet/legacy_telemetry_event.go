@@ -14,7 +14,7 @@ type LegacyTelemetryEvent struct {
 // Marshal reads or writes LegacyTelemetryEvent using its canonical wire layout.
 func (x *LegacyTelemetryEvent) Marshal(io protocol.IO) {
 	io.ActorUniqueID(&x.TargetActorID)
-	protocol.IntegerFunc(&x.EventType, io.Varint32)
+	x.EventType.Marshal(io)
 	io.Bool(&x.UsePlayerID)
 	protocol.MarshalEventData(io, &x.EventData)
 }

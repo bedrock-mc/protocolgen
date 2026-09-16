@@ -16,7 +16,7 @@ type PositionTrackingDBClientRequest struct {
 
 // Marshal reads or writes PositionTrackingDBClientRequest using its canonical wire layout.
 func (x *PositionTrackingDBClientRequest) Marshal(io protocol.IO) {
-	protocol.IntegerFunc(&x.Action, io.Uint8)
+	x.Action.Marshal(io)
 	x.IDValue.Marshal(io)
 }
 

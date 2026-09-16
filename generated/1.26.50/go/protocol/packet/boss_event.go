@@ -24,12 +24,12 @@ type BossEvent struct {
 func (x *BossEvent) Marshal(io protocol.IO) {
 	io.ActorUniqueID(&x.TargetActorID)
 	io.ActorUniqueID(&x.PlayerID)
-	protocol.IntegerFunc(&x.EventType, io.Uint8)
+	x.EventType.Marshal(io)
 	io.StringLimits(&x.Name, 0, 256)
 	io.StringLimits(&x.FilteredName, 0, 256)
 	io.Float32(&x.HealthPercent)
-	protocol.IntegerFunc(&x.Color, io.Uint8)
-	protocol.IntegerFunc(&x.Overlay, io.Uint8)
+	x.Color.Marshal(io)
+	x.Overlay.Marshal(io)
 }
 
 // ID returns the protocol ID for BossEvent.

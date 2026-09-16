@@ -10,6 +10,9 @@ const (
 	EducationEditionOfferChinaDeprecated EducationEditionOffer = 2
 )
 
+// Marshal reads or writes EducationEditionOffer through its uint32 wire encoding.
+func (x *EducationEditionOffer) Marshal(io IO) { io.Varuint32((*uint32)(x)) }
+
 type EducationLevelSettings struct {
 	CodeBuilderDefaultURI        string
 	CodeBuilderTitle             string
@@ -34,9 +37,7 @@ func (x *EducationLevelSettings) Marshal(io IO) {
 	OptionalFunc(io, &x.AgentCapabilities, io.Bool)
 	x.LocalSettings.Marshal(io)
 	io.Bool(&x.DeprecatedAlwaysFalse)
-	OptionalFunc(io, &x.ExternalLinkSettings, func(value *ExternalLinkSettings) {
-		value.Marshal(io)
-	})
+	OptionalMarshaler(io, &x.ExternalLinkSettings)
 }
 
 type EducationLocalLevelSettings struct {

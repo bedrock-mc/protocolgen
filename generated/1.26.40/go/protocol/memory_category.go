@@ -11,7 +11,6 @@ type MemoryCategoryCounter struct {
 
 // Marshal reads or writes MemoryCategoryCounter using its canonical wire layout.
 func (x *MemoryCategoryCounter) Marshal(io IO) {
-	IntegerFunc(&x.Category, io.Uint8)
+	x.Category.Marshal(io)
 	io.Uint64(&x.CurrentBytes)
-	Minimum(io, &x.CurrentBytes, 0)
 }

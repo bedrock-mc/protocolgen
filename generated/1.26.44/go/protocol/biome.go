@@ -124,7 +124,7 @@ func (x *BiomeCoordinateData) Marshal(io IO) {
 	io.Uint16(&x.MaxValue)
 	io.Uint32(&x.GridOffset)
 	io.Uint32(&x.GridStepSize)
-	IntegerFunc(&x.Distribution, io.Varint32)
+	x.Distribution.Marshal(io)
 }
 
 type BiomeDefinitionChunkGenData struct {
@@ -143,39 +143,17 @@ type BiomeDefinitionChunkGenData struct {
 
 // Marshal reads or writes BiomeDefinitionChunkGenData using its canonical wire layout.
 func (x *BiomeDefinitionChunkGenData) Marshal(io IO) {
-	OptionalFunc(io, &x.Climate, func(value *BiomeClimateData) {
-		value.Marshal(io)
-	})
-	OptionalFunc(io, &x.ConsolidatedFeatures, func(value *BiomeConsolidatedFeaturesData) {
-		value.Marshal(io)
-	})
-	OptionalFunc(io, &x.MountainParams, func(value *BiomeMountainParamsData) {
-		value.Marshal(io)
-	})
-	OptionalFunc(io, &x.SurfaceMaterialAdjustments, func(value *BiomeSurfaceMaterialAdjustmentData) {
-		value.Marshal(io)
-	})
-	OptionalFunc(io, &x.OverworldGenRules, func(value *BiomeOverworldGenRulesData) {
-		value.Marshal(io)
-	})
-	OptionalFunc(io, &x.MultinoiseGenRules, func(value *BiomeMultinoiseGenRulesData) {
-		value.Marshal(io)
-	})
-	OptionalFunc(io, &x.LegacyWorldGenRules, func(value *BiomeLegacyWorldGenRulesData) {
-		value.Marshal(io)
-	})
-	OptionalFunc(io, &x.ReplacementBiomes, func(value *BiomeReplacementsData) {
-		value.Marshal(io)
-	})
-	OptionalFunc(io, &x.VillageType, func(value *VillageType) {
-		IntegerFunc(value, io.Uint8)
-	})
-	OptionalFunc(io, &x.SurfaceBuilderData, func(value *BiomeSurfaceBuilderData) {
-		value.Marshal(io)
-	})
-	OptionalFunc(io, &x.SubsurfaceBuilderData, func(value *BiomeSurfaceBuilderData) {
-		value.Marshal(io)
-	})
+	OptionalMarshaler(io, &x.Climate)
+	OptionalMarshaler(io, &x.ConsolidatedFeatures)
+	OptionalMarshaler(io, &x.MountainParams)
+	OptionalMarshaler(io, &x.SurfaceMaterialAdjustments)
+	OptionalMarshaler(io, &x.OverworldGenRules)
+	OptionalMarshaler(io, &x.MultinoiseGenRules)
+	OptionalMarshaler(io, &x.LegacyWorldGenRules)
+	OptionalMarshaler(io, &x.ReplacementBiomes)
+	OptionalMarshaler(io, &x.VillageType)
+	OptionalMarshaler(io, &x.SurfaceBuilderData)
+	OptionalMarshaler(io, &x.SubsurfaceBuilderData)
 }
 
 // BiomeDefinition represents a biome definition in the game. This can be a vanilla biome or a
@@ -211,12 +189,8 @@ func (x *BiomeDefinitionData) Marshal(io IO) {
 	io.Float32(&x.Scale)
 	io.Int32(&x.MapWaterColorARGB)
 	io.Bool(&x.Rain)
-	OptionalFunc(io, &x.Tags, func(value *BiomeTagsData) {
-		value.Marshal(io)
-	})
-	OptionalFunc(io, &x.ChunkGenData, func(value *BiomeDefinitionChunkGenData) {
-		value.Marshal(io)
-	})
+	OptionalMarshaler(io, &x.Tags)
+	OptionalMarshaler(io, &x.ChunkGenData)
 }
 
 // BiomeElementData are set rules to adjust the surface materials of the biome.
@@ -403,7 +377,7 @@ type BiomeScatterParamData struct {
 // Marshal reads or writes BiomeScatterParamData using its canonical wire layout.
 func (x *BiomeScatterParamData) Marshal(io IO) {
 	Slice(io, &x.Coordinates)
-	IntegerFunc(&x.EvalOrder, io.Varint32)
+	x.EvalOrder.Marshal(io)
 	io.Varint32(&x.ChancePercentType)
 	io.Uint16(&x.ChancePercent)
 	io.Int32(&x.ChanceNumerator)
@@ -443,22 +417,14 @@ type BiomeSurfaceBuilderData struct {
 
 // Marshal reads or writes BiomeSurfaceBuilderData using its canonical wire layout.
 func (x *BiomeSurfaceBuilderData) Marshal(io IO) {
-	OptionalFunc(io, &x.SurfaceMaterials, func(value *BiomeSurfaceMaterialData) {
-		value.Marshal(io)
-	})
+	OptionalMarshaler(io, &x.SurfaceMaterials)
 	io.Bool(&x.HasDefaultOverworldSurface)
 	io.Bool(&x.HasSwampSurface)
 	io.Bool(&x.HasFrozenOceanSurface)
 	io.Bool(&x.HasTheEndSurface)
-	OptionalFunc(io, &x.MesaSurface, func(value *BiomeMesaSurfaceData) {
-		value.Marshal(io)
-	})
-	OptionalFunc(io, &x.CappedSurface, func(value *BiomeCappedSurfaceData) {
-		value.Marshal(io)
-	})
-	OptionalFunc(io, &x.NoiseGradientSurface, func(value *BiomeNoiseGradientSurfaceData) {
-		value.Marshal(io)
-	})
+	OptionalMarshaler(io, &x.MesaSurface)
+	OptionalMarshaler(io, &x.CappedSurface)
+	OptionalMarshaler(io, &x.NoiseGradientSurface)
 }
 
 type BiomeSurfaceMaterialAdjustmentData struct {

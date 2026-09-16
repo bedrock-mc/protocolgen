@@ -24,8 +24,6 @@ type ClientboundMapItemData struct {
 func (x *ClientboundMapItemData) Marshal(io protocol.IO) {
 	io.ActorUniqueID(&x.MapID)
 	io.Uint8(&x.Dimension)
-	protocol.Minimum(io, &x.Dimension, 0)
-	protocol.Maximum(io, &x.Dimension, 255)
 	io.Bool(&x.IsLocked)
 	x.MapOrigin.Marshal(io)
 	protocol.OptionalFunc(io, &x.CreationMapIDs, func(value *[]int64) {

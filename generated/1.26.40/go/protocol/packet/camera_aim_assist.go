@@ -36,8 +36,8 @@ func (x *CameraAimAssist) Marshal(io protocol.IO) {
 	io.Float32(&x.Distance)
 	protocol.Minimum(io, &x.Distance, 1)
 	protocol.Maximum(io, &x.Distance, 16)
-	protocol.IntegerFunc(&x.TargetMode, io.Uint8)
-	protocol.IntegerFunc(&x.Action, io.Uint8)
+	x.TargetMode.Marshal(io)
+	x.Action.Marshal(io)
 	io.Bool(&x.ShowDebugRender)
 }
 

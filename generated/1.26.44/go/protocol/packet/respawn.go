@@ -25,7 +25,7 @@ type Respawn struct {
 // Marshal reads or writes Respawn using its canonical wire layout.
 func (x *Respawn) Marshal(io protocol.IO) {
 	io.Vec3(&x.Position)
-	protocol.IntegerFunc(&x.State, io.Uint8)
+	x.State.Marshal(io)
 	io.ActorRuntimeID(&x.PlayerRuntimeID)
 }
 

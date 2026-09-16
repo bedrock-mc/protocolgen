@@ -13,7 +13,7 @@ type AgentActionEvent struct {
 // Marshal reads or writes AgentActionEvent using its canonical wire layout.
 func (x *AgentActionEvent) Marshal(io protocol.IO) {
 	io.String(&x.RequestID)
-	protocol.IntegerFunc(&x.Action, io.Int32)
+	x.Action.Marshal(io)
 	io.String(&x.Response)
 }
 

@@ -23,7 +23,7 @@ type ActorEvent struct {
 // Marshal reads or writes ActorEvent using its canonical wire layout.
 func (x *ActorEvent) Marshal(io protocol.IO) {
 	io.ActorRuntimeID(&x.TargetRuntimeID)
-	protocol.IntegerFunc(&x.EventID, io.Uint8)
+	x.EventID.Marshal(io)
 	io.Varint32(&x.Data)
 	protocol.OptionalFunc(io, &x.FireAtPosition, io.Vec3)
 }

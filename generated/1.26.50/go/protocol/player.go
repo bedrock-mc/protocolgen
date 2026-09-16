@@ -48,6 +48,9 @@ const (
 	PlayerActionTypeCount                 PlayerActionType = 39
 )
 
+// Marshal reads or writes PlayerActionType through its int32 wire encoding.
+func (x *PlayerActionType) Marshal(io IO) { io.Varint32((*int32)(x)) }
+
 // PlayerBlockAction ...
 type PlayerBlockActionData struct {
 	PlayerActionType PlayerActionType
@@ -57,7 +60,7 @@ type PlayerBlockActionData struct {
 
 // Marshal reads or writes PlayerBlockActionData using its canonical wire layout.
 func (x *PlayerBlockActionData) Marshal(io IO) {
-	IntegerFunc(&x.PlayerActionType, io.Varint32)
+	x.PlayerActionType.Marshal(io)
 	x.Position.Marshal(io)
 	io.Varint32(&x.Facing)
 }
@@ -69,7 +72,7 @@ type PlayerDied struct {
 	DiedInRaid           bool
 }
 
-func (*PlayerDied) isEventData() {}
+func (*PlayerDied) tagEventData() uint32 { return 6 }
 
 // Marshal reads or writes PlayerDied using its canonical wire layout.
 func (x *PlayerDied) Marshal(io IO) {
@@ -80,43 +83,21 @@ func (x *PlayerDied) Marshal(io IO) {
 }
 
 type PlayerListData interface {
-	isPlayerListData()
+	Marshaler
+	tagPlayerListData() uint32
 }
 
 // MarshalPlayerListData reads or writes the PlayerListData union using its canonical wire layout.
 func MarshalPlayerListData(io IO, x *PlayerListData) {
-	UnionFunc(io,
-		func() {
-			var tag uint32
-			io.Varuint32(&tag)
-			switch int64(tag) {
-			case 0:
-				value := new(RemoveEntry)
-				value.Marshal(io)
-				*x = value
-			case 1:
-				value := new(AddEntry)
-				value.Marshal(io)
-				*x = value
-			default:
-				io.InvalidValue(tag, "unknown union tag")
-			}
-		},
-		func() {
-			switch value := (*x).(type) {
-			case *RemoveEntry:
-				tag := uint32(0)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *AddEntry:
-				tag := uint32(1)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			default:
-				io.InvalidValue(*x, "unknown union value")
-			}
-		},
-	)
+	Union(io, x, io.Varuint32, PlayerListData.tagPlayerListData, func(tag uint32) PlayerListData {
+		switch tag {
+		case 0:
+			return new(RemoveEntry)
+		case 1:
+			return new(AddEntry)
+		}
+		return nil
+	})
 }
 
 type PlayerListPacketType uint8
@@ -125,44 +106,25 @@ const (
 	PlayerListPacketTypeRemove PlayerListPacketType = 1
 )
 
+// Marshal reads or writes PlayerListPacketType through its uint8 wire encoding.
+func (x *PlayerListPacketType) Marshal(io IO) { io.Uint8((*uint8)(x)) }
+
 type PlayerLocationData interface {
-	isPlayerLocationData()
+	Marshaler
+	tagPlayerLocationData() uint32
 }
 
 // MarshalPlayerLocationData reads or writes the PlayerLocationData union using its canonical wire layout.
 func MarshalPlayerLocationData(io IO, x *PlayerLocationData) {
-	UnionFunc(io,
-		func() {
-			var tag uint32
-			io.Varuint32(&tag)
-			switch int64(tag) {
-			case 0:
-				value := new(CoordinatesLocation)
-				value.Marshal(io)
-				*x = value
-			case 1:
-				value := new(HiddenLocation)
-				value.Marshal(io)
-				*x = value
-			default:
-				io.InvalidValue(tag, "unknown union tag")
-			}
-		},
-		func() {
-			switch value := (*x).(type) {
-			case *CoordinatesLocation:
-				tag := uint32(0)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *HiddenLocation:
-				tag := uint32(1)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			default:
-				io.InvalidValue(*x, "unknown union value")
-			}
-		},
-	)
+	Union(io, x, io.Varuint32, PlayerLocationData.tagPlayerLocationData, func(tag uint32) PlayerLocationData {
+		switch tag {
+		case 0:
+			return new(CoordinatesLocation)
+		case 1:
+			return new(HiddenLocation)
+		}
+		return nil
+	})
 }
 
 type PlayerLocationType int32
@@ -170,6 +132,9 @@ type PlayerLocationType int32
 const (
 	PlayerLocationTypePlayerLocationCoordinates PlayerLocationType = 0
 )
+
+// Marshal reads or writes PlayerLocationType through its int32 wire encoding.
+func (x *PlayerLocationType) Marshal(io IO) { io.Varint32((*int32)(x)) }
 
 type PlayerPartyInfo struct {
 	PartyID       string
@@ -191,6 +156,9 @@ const (
 	PlayerPermissionLevelCustom   PlayerPermissionLevel = 3
 )
 
+// Marshal reads or writes PlayerPermissionLevel through its int8 wire encoding.
+func (x *PlayerPermissionLevel) Marshal(io IO) { io.Int8((*int8)(x)) }
+
 type PlayerPositionModeComponentPositionMode uint8
 
 const (
@@ -200,6 +168,9 @@ const (
 	PlayerPositionModeComponentPositionModeOnlyHeadRot PlayerPositionModeComponentPositionMode = 3
 )
 
+// Marshal reads or writes PlayerPositionModeComponentPositionMode through its uint8 wire encoding.
+func (x *PlayerPositionModeComponentPositionMode) Marshal(io IO) { io.Uint8((*uint8)(x)) }
+
 type PlayerRespawnState uint8
 
 const (
@@ -207,6 +178,9 @@ const (
 	PlayerRespawnStateReadyToSpawn       PlayerRespawnState = 1
 	PlayerRespawnStateClientReadyToSpawn PlayerRespawnState = 2
 )
+
+// Marshal reads or writes PlayerRespawnState through its uint8 wire encoding.
+func (x *PlayerRespawnState) Marshal(io IO) { io.Uint8((*uint8)(x)) }
 
 type PlayerScoreboardID struct {
 	PlayerUniqueID int64
@@ -218,50 +192,28 @@ func (x *PlayerScoreboardID) Marshal(io IO) {
 }
 
 type PlayerVideoCaptureData interface {
-	isPlayerVideoCaptureData()
+	Marshaler
+	tagPlayerVideoCaptureData() uint8
 }
 
 // MarshalPlayerVideoCaptureData reads or writes the PlayerVideoCaptureData union using its canonical wire layout.
 func MarshalPlayerVideoCaptureData(io IO, x *PlayerVideoCaptureData) {
-	UnionFunc(io,
-		func() {
-			var tag uint8
-			io.Uint8(&tag)
-			switch int64(tag) {
-			case 0:
-				value := new(StopVideoCapture)
-				value.Marshal(io)
-				*x = value
-			case 1:
-				value := new(StartVideoCapture)
-				value.Marshal(io)
-				*x = value
-			default:
-				io.InvalidValue(tag, "unknown union tag")
-			}
-		},
-		func() {
-			switch value := (*x).(type) {
-			case *StopVideoCapture:
-				tag := uint8(0)
-				io.Uint8(&tag)
-				value.Marshal(io)
-			case *StartVideoCapture:
-				tag := uint8(1)
-				io.Uint8(&tag)
-				value.Marshal(io)
-			default:
-				io.InvalidValue(*x, "unknown union value")
-			}
-		},
-	)
+	Union(io, x, io.Uint8, PlayerVideoCaptureData.tagPlayerVideoCaptureData, func(tag uint8) PlayerVideoCaptureData {
+		switch tag {
+		case 0:
+			return new(StopVideoCapture)
+		case 1:
+			return new(StartVideoCapture)
+		}
+		return nil
+	})
 }
 
 type PlayerWaxedOrUnwaxedCopper struct {
 	PlayerWaxedOrUnwaxedCopperBlockID int32
 }
 
-func (*PlayerWaxedOrUnwaxedCopper) isEventData() {}
+func (*PlayerWaxedOrUnwaxedCopper) tagEventData() uint32 { return 17 }
 
 // Marshal reads or writes PlayerWaxedOrUnwaxedCopper using its canonical wire layout.
 func (x *PlayerWaxedOrUnwaxedCopper) Marshal(io IO) {

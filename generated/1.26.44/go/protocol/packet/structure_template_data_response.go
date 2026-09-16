@@ -20,7 +20,7 @@ type StructureTemplateDataResponse struct {
 func (x *StructureTemplateDataResponse) Marshal(io protocol.IO) {
 	io.String(&x.StructureName)
 	io.NBT(&x.StructureSNBT, protocol.NBTNetwork)
-	protocol.IntegerFunc(&x.ResponseType, io.Uint8)
+	x.ResponseType.Marshal(io)
 }
 
 // ID returns the protocol ID for StructureTemplateDataResponse.

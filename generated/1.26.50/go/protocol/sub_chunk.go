@@ -13,7 +13,7 @@ type SubChunkData struct {
 // Marshal reads or writes SubChunkData using its canonical wire layout.
 func (x *SubChunkData) Marshal(io IO) {
 	x.SubChunkPosOffset.Marshal(io)
-	IntegerFunc(&x.SubChunkRequestResult, io.Uint8)
+	x.SubChunkRequestResult.Marshal(io)
 	OptionalFunc(io, &x.SerializedSubChunk, io.Bytes)
 	x.HeightMapData.Marshal(io)
 	OptionalFunc(io, &x.BlobID, io.Uint64)
@@ -51,3 +51,6 @@ const (
 	SubChunkRequestResultIndexOutOfBounds      SubChunkRequestResult = 5
 	SubChunkRequestResultSuccessAllAir         SubChunkRequestResult = 6
 )
+
+// Marshal reads or writes SubChunkRequestResult through its uint8 wire encoding.
+func (x *SubChunkRequestResult) Marshal(io IO) { io.Uint8((*uint8)(x)) }

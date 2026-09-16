@@ -28,3 +28,6 @@ const (
 	ScoreboardIdentityPacketTypeUpdate ScoreboardIdentityPacketType = 0
 	ScoreboardIdentityPacketTypeRemove ScoreboardIdentityPacketType = 1
 )
+
+// Marshal reads or writes ScoreboardIdentityPacketType through its uint8 wire encoding.
+func (x *ScoreboardIdentityPacketType) Marshal(io IO) { io.Uint8((*uint8)(x)) }

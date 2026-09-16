@@ -11,6 +11,9 @@ const (
 	CameraAimAssistActionClear CameraAimAssistAction = 1
 )
 
+// Marshal reads or writes CameraAimAssistAction through its uint8 wire encoding.
+func (x *CameraAimAssistAction) Marshal(io IO) { io.Uint8((*uint8)(x)) }
+
 // CameraAimAssistActorPriorityData represents priority data for aim assist actor targeting.
 type CameraAimAssistActorPriorityData struct {
 	// PresetIndex is the index of the aim assist preset.
@@ -95,9 +98,7 @@ type CameraAimAssistCommandPresetDefinition struct {
 // Marshal reads or writes CameraAimAssistCommandPresetDefinition using its canonical wire layout.
 func (x *CameraAimAssistCommandPresetDefinition) Marshal(io IO) {
 	OptionalFunc(io, &x.PresetID, io.String)
-	OptionalFunc(io, &x.TargetMode, func(value *CameraAimAssistTargetMode) {
-		IntegerFunc(value, io.Int32)
-	})
+	OptionalMarshaler(io, &x.TargetMode)
 	OptionalFunc(io, &x.ViewAngle, io.Vec2)
 	OptionalFunc(io, &x.Distance, io.Float32)
 }
@@ -143,12 +144,18 @@ const (
 	CameraAimAssistPresetOperationAddToExisting CameraAimAssistPresetOperation = 1
 )
 
+// Marshal reads or writes CameraAimAssistPresetOperation through its uint8 wire encoding.
+func (x *CameraAimAssistPresetOperation) Marshal(io IO) { io.Uint8((*uint8)(x)) }
+
 type CameraAimAssistTargetMode int32
 
 const (
 	CameraAimAssistTargetModeAngle    CameraAimAssistTargetMode = 0
 	CameraAimAssistTargetModeDistance CameraAimAssistTargetMode = 1
 )
+
+// Marshal reads or writes CameraAimAssistTargetMode through its int32 wire encoding.
+func (x *CameraAimAssistTargetMode) Marshal(io IO) { io.Int32((*int32)(x)) }
 
 // CameraEase represents an easing function that can be used by a CameraInstructionSet.
 type CameraEase struct {
@@ -230,26 +237,14 @@ type CameraInstructionData struct {
 
 // Marshal reads or writes CameraInstructionData using its canonical wire layout.
 func (x *CameraInstructionData) Marshal(io IO) {
-	OptionalFunc(io, &x.Set, func(value *CameraInstructionSet) {
-		value.Marshal(io)
-	})
+	OptionalMarshaler(io, &x.Set)
 	OptionalFunc(io, &x.Clear, io.Bool)
-	OptionalFunc(io, &x.Fade, func(value *CameraInstructionFade) {
-		value.Marshal(io)
-	})
-	OptionalFunc(io, &x.Target, func(value *CameraInstructionTargetData) {
-		value.Marshal(io)
-	})
+	OptionalMarshaler(io, &x.Fade)
+	OptionalMarshaler(io, &x.Target)
 	OptionalFunc(io, &x.RemoveTarget, io.Bool)
-	OptionalFunc(io, &x.FieldOfView, func(value *CameraInstructionFieldOfView) {
-		value.Marshal(io)
-	})
-	OptionalFunc(io, &x.Spline, func(value *CameraSplineInstruction) {
-		value.Marshal(io)
-	})
-	OptionalFunc(io, &x.AttachToEntity, func(value *CameraInstructionTarget) {
-		value.Marshal(io)
-	})
+	OptionalMarshaler(io, &x.FieldOfView)
+	OptionalMarshaler(io, &x.Spline)
+	OptionalMarshaler(io, &x.AttachToEntity)
 	OptionalFunc(io, &x.DetachFromEntity, io.Bool)
 }
 
@@ -265,12 +260,8 @@ type CameraInstructionFade struct {
 
 // Marshal reads or writes CameraInstructionFade using its canonical wire layout.
 func (x *CameraInstructionFade) Marshal(io IO) {
-	OptionalFunc(io, &x.Time, func(value *CameraFadeTimeData) {
-		value.Marshal(io)
-	})
-	OptionalFunc(io, &x.Color, func(value *CameraFadeColor) {
-		value.Marshal(io)
-	})
+	OptionalMarshaler(io, &x.Time)
+	OptionalMarshaler(io, &x.Color)
 }
 
 // CameraInstructionFieldOfView represents a camera instruction that updates the field of view.
@@ -318,24 +309,12 @@ type CameraInstructionSet struct {
 // Marshal reads or writes CameraInstructionSet using its canonical wire layout.
 func (x *CameraInstructionSet) Marshal(io IO) {
 	io.Uint32(&x.Preset)
-	OptionalFunc(io, &x.Ease, func(value *CameraEase) {
-		value.Marshal(io)
-	})
-	OptionalFunc(io, &x.Pos, func(value *CameraPosition) {
-		value.Marshal(io)
-	})
-	OptionalFunc(io, &x.Rot, func(value *CameraRotation) {
-		value.Marshal(io)
-	})
-	OptionalFunc(io, &x.Facing, func(value *CameraFacing) {
-		value.Marshal(io)
-	})
-	OptionalFunc(io, &x.ViewOffset, func(value *CameraViewOffset) {
-		value.Marshal(io)
-	})
-	OptionalFunc(io, &x.EntityOffset, func(value *CameraEntityOffset) {
-		value.Marshal(io)
-	})
+	OptionalMarshaler(io, &x.Ease)
+	OptionalMarshaler(io, &x.Pos)
+	OptionalMarshaler(io, &x.Rot)
+	OptionalMarshaler(io, &x.Facing)
+	OptionalMarshaler(io, &x.ViewOffset)
+	OptionalMarshaler(io, &x.EntityOffset)
 	OptionalFunc(io, &x.Default, io.Bool)
 	io.Bool(&x.RemoveIgnoreStartingValuesComponent)
 }
@@ -420,16 +399,10 @@ func (x *CameraPreset) Marshal(io IO) {
 	OptionalFunc(io, &x.Radius, io.Float32)
 	OptionalFunc(io, &x.YawLimitMin, io.Float32)
 	OptionalFunc(io, &x.YawLimitMax, io.Float32)
-	OptionalFunc(io, &x.Listener, func(value *CameraPresetAudioListener) {
-		IntegerFunc(value, io.Uint8)
-	})
+	OptionalMarshaler(io, &x.Listener)
 	OptionalFunc(io, &x.PlayerEffects, io.Bool)
-	OptionalFunc(io, &x.AimAssist, func(value *CameraAimAssistCommandPresetDefinition) {
-		value.Marshal(io)
-	})
-	OptionalFunc(io, &x.ControlScheme, func(value *ControlScheme) {
-		IntegerFunc(value, io.Uint8)
-	})
+	OptionalMarshaler(io, &x.AimAssist)
+	OptionalMarshaler(io, &x.ControlScheme)
 	io.Bool(&x.ApplyInheritedStartingRotation)
 	OptionalFunc(io, &x.StartingRotation, io.Vec2)
 }
@@ -440,6 +413,9 @@ const (
 	CameraPresetAudioListenerCamera CameraPresetAudioListener = 0
 	CameraPresetAudioListenerPlayer CameraPresetAudioListener = 1
 )
+
+// Marshal reads or writes CameraPresetAudioListener through its uint8 wire encoding.
+func (x *CameraPresetAudioListener) Marshal(io IO) { io.Uint8((*uint8)(x)) }
 
 type CameraPresetList struct {
 	Presets []CameraPreset
@@ -496,12 +472,18 @@ const (
 	CameraShakeActionStop CameraShakeAction = 1
 )
 
+// Marshal reads or writes CameraShakeAction through its uint8 wire encoding.
+func (x *CameraShakeAction) Marshal(io IO) { io.Uint8((*uint8)(x)) }
+
 type CameraShakeType uint8
 
 const (
 	CameraShakeTypePositional CameraShakeType = 0
 	CameraShakeTypeRotational CameraShakeType = 1
 )
+
+// Marshal reads or writes CameraShakeType through its uint8 wire encoding.
+func (x *CameraShakeType) Marshal(io IO) { io.Uint8((*uint8)(x)) }
 
 type CameraSplineControlPoint struct {
 	Position mgl32.Vec3

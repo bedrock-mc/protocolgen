@@ -26,7 +26,7 @@ type ActorDefinition struct {
 	EventName string
 }
 
-func (*ActorDefinition) isEventData() {}
+func (*ActorDefinition) tagEventData() uint32 { return 13 }
 
 // Marshal reads or writes ActorDefinition using its canonical wire layout.
 func (x *ActorDefinition) Marshal(io IO) {
@@ -99,6 +99,9 @@ const (
 	ActorEventTypeHurtWithoutReceivingDamage       ActorEventType = 81
 )
 
+// Marshal reads or writes ActorEventType through its uint8 wire encoding.
+func (x *ActorEventType) Marshal(io IO) { io.Uint8((*uint8)(x)) }
+
 type ActorLinkType uint8
 
 const (
@@ -106,6 +109,9 @@ const (
 	ActorLinkTypeRiding    ActorLinkType = 1
 	ActorLinkTypePassenger ActorLinkType = 2
 )
+
+// Marshal reads or writes ActorLinkType through its uint8 wire encoding.
+func (x *ActorLinkType) Marshal(io IO) { io.Uint8((*uint8)(x)) }
 
 type ActorType int32
 
@@ -270,3 +276,6 @@ const (
 	ActorTypeVillager                   ActorType = 16777999
 	ActorTypeVillagerV2                 ActorType = 16778099
 )
+
+// Marshal reads or writes ActorType through its int32 wire encoding.
+func (x *ActorType) Marshal(io IO) { io.Varint32((*int32)(x)) }

@@ -10,11 +10,11 @@ type DefaultItemDescriptor struct {
 	AuxValue       int32
 }
 
-func (*DefaultItemDescriptor) isItemDescriptor() {}
+func (*DefaultItemDescriptor) tagItemDescriptor() uint32 { return 1 }
 
 // Marshal reads or writes DefaultItemDescriptor using its canonical wire layout.
 func (x *DefaultItemDescriptor) Marshal(io IO) {
-	IntegerFunc(&x.DescriptorType, io.Uint8)
+	x.DescriptorType.Marshal(io)
 	io.StringLimits(&x.FullName, 1, 18446744073709551615)
 	io.Varint32(&x.AuxValue)
 	Minimum(io, &x.AuxValue, 0)
@@ -27,11 +27,11 @@ type InvalidItemDescriptor struct {
 	DescriptorType ItemDescriptorType
 }
 
-func (*InvalidItemDescriptor) isItemDescriptor() {}
+func (*InvalidItemDescriptor) tagItemDescriptor() uint32 { return 0 }
 
 // Marshal reads or writes InvalidItemDescriptor using its canonical wire layout.
 func (x *InvalidItemDescriptor) Marshal(io IO) {
-	IntegerFunc(&x.DescriptorType, io.Uint8)
+	x.DescriptorType.Marshal(io)
 }
 
 // ItemDescriptor represents a type of item descriptor. This is one of the concrete types below. It
@@ -45,6 +45,9 @@ const (
 	ItemDescriptorTypeItemTag  ItemDescriptorType = 3
 )
 
+// Marshal reads or writes ItemDescriptorType through its uint8 wire encoding.
+func (x *ItemDescriptorType) Marshal(io IO) { io.Uint8((*uint8)(x)) }
+
 // ItemTagItemDescriptor represents an item descriptor that uses item tagging. This should be used
 // to reduce duplicative entries for items that can be grouped under a single tag.
 type ItemTagItemDescriptor struct {
@@ -52,11 +55,11 @@ type ItemTagItemDescriptor struct {
 	ItemTag        string
 }
 
-func (*ItemTagItemDescriptor) isItemDescriptor() {}
+func (*ItemTagItemDescriptor) tagItemDescriptor() uint32 { return 3 }
 
 // Marshal reads or writes ItemTagItemDescriptor using its canonical wire layout.
 func (x *ItemTagItemDescriptor) Marshal(io IO) {
-	IntegerFunc(&x.DescriptorType, io.Uint8)
+	x.DescriptorType.Marshal(io)
 	io.StringLimits(&x.ItemTag, 1, 18446744073709551615)
 }
 
@@ -68,11 +71,11 @@ type MoLangItemDescriptor struct {
 	MoLangVersion  MoLangVersion
 }
 
-func (*MoLangItemDescriptor) isItemDescriptor() {}
+func (*MoLangItemDescriptor) tagItemDescriptor() uint32 { return 2 }
 
 // Marshal reads or writes MoLangItemDescriptor using its canonical wire layout.
 func (x *MoLangItemDescriptor) Marshal(io IO) {
-	IntegerFunc(&x.DescriptorType, io.Uint8)
+	x.DescriptorType.Marshal(io)
 	io.StringLimits(&x.TagExpression, 1, 18446744073709551615)
-	IntegerFunc(&x.MoLangVersion, io.Int16)
+	x.MoLangVersion.Marshal(io)
 }

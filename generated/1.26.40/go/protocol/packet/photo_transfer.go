@@ -35,8 +35,8 @@ func (x *PhotoTransfer) Marshal(io protocol.IO) {
 	protocol.Pattern(io, &x.PhotoName, "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.jpeg$")
 	io.BytesLimits(&x.PhotoData, 0, 20971520)
 	io.String(&x.BookID)
-	protocol.IntegerFunc(&x.Type, io.Uint8)
-	protocol.IntegerFunc(&x.SourceType, io.Uint8)
+	x.Type.Marshal(io)
+	x.SourceType.Marshal(io)
 	io.Int64(&x.OwnerID)
 	io.String(&x.NewPhotoName)
 }
