@@ -8,7 +8,7 @@ CI verifies reproducible generation, tests, and an exact reviewed comparison bas
 |---|---:|---:|---:|---:|---:|
 | 1.26.40 | 2168 | 229 | 168 | 81 | 81 |
 | 1.26.44 | 2168 | 229 | 168 | 0 | 81 |
-| 1.26.50 | 2187 | 231 | 174 | 83 | 83 |
+| 1.26.50 | 2187 | 231 | 173 | 83 | 83 |
 
 The .44 snapshot inherits .40 and applies an evidenced RemoveScore.ObjectiveName optional-wrapper hotfix. These manifests have no unresolved/opaque nodes; their decisions are resolved for their pinned targets. The baseline .50 manifest retained eight obsolete overrides after commit `bbaa61a` deliberately removed their source corrections (TextData.LineGapHeight and seven sound-slot optional markers). Regeneration now removes those stale wrappers and records 83 overrides, matching 83 correction operations.
 
@@ -81,7 +81,7 @@ Zero unresolved nodes alone does not prove wire correctness.
 
 - Source corrections: arbitrary byte buffers versus UTF-8 (login, chunks, item user data, features, hashes, script/debug/photo payloads); default/required/conditional fields; flattened packet structure; discriminator widths and values; fixed-u8 inventory/equipment fields; NBT editor payload; camera target mode; optional booleans; diagnostics arrays; Text category; PrimitiveShapes attached actor runtime ID.
 
-- Adjudications: .40 has 168 complete-field selections; .50 has 174, of which 128 carry prior decisions after byte-equivalence checks and 46 are reviewed new selections (44 BDS-graph selections, PrimitiveShapes Lens evidence, pack-setting Mojang selection). Commands `carry-adjudications` and `adjudicate-claims` already automate safe fingerprinting; humans review changes and evidence, not manually recompute hashes.
+- Adjudications: .40 has 168 complete-field selections; .50 has 173, of which 128 carry prior decisions after byte-equivalence checks and 45 are reviewed new selections. Commands `carry-adjudications` and `adjudicate-claims` already automate safe fingerprinting; humans review changes and evidence, not manually recompute hashes.
 
 - Direction overlays:229/.40 and 231/.50 packet entries, pinned to gophertunnel pool evidence. NBT overlays:18 exact field-path encoding entries per snapshot. Add/update machine extraction with exhaustiveness guards for new versions.
 

@@ -106754,7 +106754,7 @@
             "variants": [
               {
                 "value": 0,
-                "name": "Variant0",
+                "name": "float",
                 "encode": {
                   "kind": "primitive",
                   "primitive": {
@@ -106768,7 +106768,7 @@
               },
               {
                 "value": 1,
-                "name": "Variant1",
+                "name": "bool",
                 "encode": {
                   "kind": "primitive",
                   "primitive": {
@@ -106782,7 +106782,7 @@
               },
               {
                 "value": 2,
-                "name": "Variant2",
+                "name": "string",
                 "encode": {
                   "kind": "string",
                   "prefix": {
@@ -106801,7 +106801,7 @@
               },
               {
                 "value": 3,
-                "name": "Variant3",
+                "name": "Case3",
                 "encode": {
                   "kind": "array",
                   "prefix": {
@@ -106846,20 +106846,8 @@
           "symmetry": "symmetric",
           "provenance": {
             "pins": [
+              "endstone",
               "mojang"
-            ],
-            "evidence": [
-              {
-                "source_id": "endstone",
-                "locator": "https://github.com/EndstoneMC/protocol-docs/tree/ce91c055d73000e26a25020c5a0799621e56ed13",
-                "summary": "The exact BDS graph exposes this field but leaves its dynamic payload unresolved; Mojang retains the complete dynamic-value schema."
-              },
-              {
-                "source_id": "mojang",
-                "locator": "ServerboundPackSettingChangePacketPayload.json#/properties/PackSettingValue",
-                "claim_fingerprint": "sha256:70de43b02a94cd46042952f8bfd74ca013a6cc8e4a93558fb85dddb53d354ecd",
-                "summary": "Exact target source claim selected by this reviewed adjudication."
-              }
             ]
           }
         }
@@ -121249,36 +121237,6 @@
         }
       ],
       "reason": "Select the exact BDS graph with the existing evidenced ActorRuntimeID correction. LineGapHeight is an always-present float: the target graph has no optional marker and Mojang supplies default 0. Only BackgroundColor is optional in TextDataPayload."
-    },
-    {
-      "id": "protocol-2187-reviewed-043",
-      "target": "ServerboundPackSettingChangePacket.PackSettingValue",
-      "pre_patch_context_sha256": "sha256:4274b66b58ce769492bd96c51d83dae7010f16a4e1af5e65107ee522506eb0db",
-      "claims": [
-        {
-          "source_id": "endstone",
-          "digest": "sha256:fb61194ec925f6953026e04d01d1ab672185cdb5472b4a9584bf87c11dcdf6a5"
-        },
-        {
-          "source_id": "mojang",
-          "digest": "sha256:70de43b02a94cd46042952f8bfd74ca013a6cc8e4a93558fb85dddb53d354ecd"
-        }
-      ],
-      "selected_source": "mojang",
-      "evidence": [
-        {
-          "source_id": "endstone",
-          "locator": "https://github.com/EndstoneMC/protocol-docs/tree/ce91c055d73000e26a25020c5a0799621e56ed13",
-          "summary": "The exact BDS graph exposes this field but leaves its dynamic payload unresolved; Mojang retains the complete dynamic-value schema."
-        },
-        {
-          "source_id": "mojang",
-          "locator": "ServerboundPackSettingChangePacketPayload.json#/properties/PackSettingValue",
-          "claim_fingerprint": "sha256:70de43b02a94cd46042952f8bfd74ca013a6cc8e4a93558fb85dddb53d354ecd",
-          "summary": "Exact target source claim selected by this reviewed adjudication."
-        }
-      ],
-      "reason": "Select Mojang because Endstone marks the dynamic pack-setting payload unresolved and cannot provide a complete wire claim."
     },
     {
       "id": "protocol-2187-reviewed-044",

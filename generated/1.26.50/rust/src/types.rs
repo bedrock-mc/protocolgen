@@ -6309,26 +6309,26 @@ impl wire::Decode for PrimitiveShapeExtraShapeData {
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum ServerboundPackSettingChangePackSettingValue {
-    Variant0(wire::F32LE),
-    Variant1(bool),
-    Variant2(String),
-    Variant3(Vec<String>),
+    Float(wire::F32LE),
+    Bool(bool),
+    String(String),
+    Case3(Vec<String>),
 }
 
 impl ServerboundPackSettingChangePackSettingValue {
     pub fn discriminant(&self) -> u32 {
         match self {
-            Self::Variant0(..) => 0,
-            Self::Variant1(..) => 1,
-            Self::Variant2(..) => 2,
-            Self::Variant3(..) => 3,
+            Self::Float(..) => 0,
+            Self::Bool(..) => 1,
+            Self::String(..) => 2,
+            Self::Case3(..) => 3,
         }
     }
 }
 
 impl Default for ServerboundPackSettingChangePackSettingValue {
     fn default() -> Self {
-        Self::Variant0(Default::default())
+        Self::Float(Default::default())
     }
 }
 
@@ -6336,16 +6336,16 @@ impl wire::Encode for ServerboundPackSettingChangePackSettingValue {
     fn encode(&self, writer: &mut wire::Writer) {
         wire::VarUInt(self.discriminant()).encode(writer);
         match self {
-            Self::Variant0(value) => {
+            Self::Float(value) => {
                 value.encode(writer);
             }
-            Self::Variant1(value) => {
+            Self::Bool(value) => {
                 value.encode(writer);
             }
-            Self::Variant2(value) => {
+            Self::String(value) => {
                 value.encode(writer);
             }
-            Self::Variant3(value) => {
+            Self::Case3(value) => {
                 wire::encode_collection(writer, value.as_slice());
             }
         }
@@ -6356,10 +6356,10 @@ impl wire::Decode for ServerboundPackSettingChangePackSettingValue {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let discriminant = <wire::VarUInt as wire::Decode>::decode(reader)?.0;
         Ok(match discriminant {
-            0 => Self::Variant0(<wire::F32LE as wire::Decode>::decode(reader)?),
-            1 => Self::Variant1(<bool as wire::Decode>::decode(reader)?),
-            2 => Self::Variant2(<String as wire::Decode>::decode(reader)?),
-            3 => Self::Variant3(wire::decode_collection::<String>(reader, 1)?),
+            0 => Self::Float(<wire::F32LE as wire::Decode>::decode(reader)?),
+            1 => Self::Bool(<bool as wire::Decode>::decode(reader)?),
+            2 => Self::String(<String as wire::Decode>::decode(reader)?),
+            3 => Self::Case3(wire::decode_collection::<String>(reader, 1)?),
             value => {
                 return Err(wire::DecodeError::UnknownVariant {
                     type_name: "ServerboundPackSettingChangePackSettingValue",

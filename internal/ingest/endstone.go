@@ -277,7 +277,7 @@ func (l *endstoneLowerer) applyFieldWrappers(node manifest.Node, field map[strin
 	if enumName := asString(field["enum"]); enumName != "" && node.Kind == manifest.KindPrimitive {
 		node = l.lowerEnum(enumName, node, context, endstoneEnumConstraints(field))
 	}
-	if repeat, ok := asMap(field["repeat"]); ok {
+	if repeat, ok := field["repeat"]; ok {
 		node = lowerEndstoneRepeat(repeat, node, context)
 	}
 	node = withEndstoneConstraints(node, field)
@@ -364,13 +364,23 @@ func (l *endstoneLowerer) lowerTypeValue(value any, hint, context string) manife
 	if !ok {
 		return manifest.Unresolved("Endstone type is not a string or object at "+context, true)
 	}
-	if switchObject, ok := asMap(object["switch"]); ok {
+	// U6 emits primitive cereal discriminators directly as strings. The
+	// existing object form also carries legacy enum/name metadata.
+	switchObject, hasSwitch := asMap(object["switch"])
+	compactControl, compactSwitch := object["switch"].(string)
+	if compactSwitch {
+		switchObject = map[string]any{"type": compactControl}
+		hasSwitch = true
+	}
+	if hasSwitch {
 		controlName := asString(switchObject["type"])
 		control := endstoneScalar(controlName)
 		enumName := asString(switchObject["enum"])
 		discriminants := l.enumValues(enumName)
 		cases, ok := asArray(object["cases"])
-		if ok {
+		// Compact switches are cereal variants. Their outer index is separate
+		// from any constrained legacy tag inside the selected branch.
+		if ok && !compactSwitch {
 			if variants, found := l.constrainedSwitchVariants(cases, control, asString(switchObject["name"]), enumName, context); found {
 				return manifest.Union(control, variants...)
 			}
@@ -393,9 +403,9 @@ func (l *endstoneLowerer) lowerTypeValue(value any, hint, context string) manife
 			}
 			caseName, ok := rawCase.(string)
 			if !ok {
-				return manifest.Unresolved("Endstone switch case is not a named type at "+context, true)
+				caseName = fmt.Sprintf("Case%d", index)
 			}
-			variants = append(variants, manifest.Variant{Value: value, Name: caseName, Encode: l.lowerTypeValue(caseName, hint+caseName, context)})
+			variants = append(variants, manifest.Variant{Value: value, Name: caseName, Encode: l.lowerTypeValue(rawCase, hint+caseName, context)})
 		}
 		return manifest.Union(control, variants...)
 	}
@@ -416,7 +426,7 @@ func (l *endstoneLowerer) lowerTypeValue(value any, hint, context string) manife
 		if enumName := asString(object["enum"]); enumName != "" && result.Kind == manifest.KindPrimitive {
 			result = l.lowerEnum(enumName, result, context, endstoneEnumConstraints(object))
 		}
-		if repeat, ok := asMap(object["repeat"]); ok {
+		if repeat, ok := object["repeat"]; ok {
 			result = lowerEndstoneRepeat(repeat, result, context)
 		}
 		return result
@@ -624,7 +634,18 @@ func endstoneScalar(name string) manifest.Node {
 	return manifest.Unresolved("unknown Endstone scalar "+name, false)
 }
 
-func lowerEndstoneRepeat(repeat map[string]any, inner manifest.Node, context string) manifest.Node {
+// lowerEndstoneRepeat preserves both legacy and compact U6 array framing.
+func lowerEndstoneRepeat(raw any, inner manifest.Node, context string) manifest.Node {
+	repeat, ok := asMap(raw)
+	if !ok {
+		if prefix, ok := raw.(string); ok {
+			repeat = map[string]any{"prefix": prefix}
+		} else if count, ok := asInt(raw); ok {
+			repeat = map[string]any{"count": count}
+		} else {
+			return manifest.Unresolved("unsupported Endstone repeat at "+context, true)
+		}
+	}
 	if prefix := asString(repeat["prefix"]); prefix != "" {
 		prefixNode := endstoneScalar(prefix)
 		if prefixNode.Kind == manifest.KindUnresolved {

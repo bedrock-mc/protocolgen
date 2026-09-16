@@ -812,3 +812,89 @@ func TestMojangEnumReferenceCombinesOptions(t *testing.T) {
 		t.Fatalf("combined enum flags = %+v", node)
 	}
 }
+
+// TestEndstoneU6StringDiscriminatorPreservesItsWidthAndOrdinalCases checks the compact U6 schema form.
+func TestEndstoneU6StringDiscriminatorPreservesItsWidthAndOrdinalCases(t *testing.T) {
+	lowerer := &endstoneLowerer{types: map[string]any{}, enums: map[string]any{}, active: map[string]bool{}}
+	for _, control := range []string{"uvarint32", "uint8"} {
+		compact := lowerer.lowerTypeValue(map[string]any{"switch": control, "cases": []any{nil, nil}}, "Choice", "Packet.Choice")
+		previous := lowerer.lowerTypeValue(map[string]any{"switch": map[string]any{"type": control}, "cases": []any{nil, nil}}, "Choice", "Packet.Choice")
+		if !reflect.DeepEqual(compact, previous) || compact.Kind != manifest.KindUnion || len(compact.Variants) != 2 || compact.Variants[1].Value != 1 {
+			t.Fatalf("compact switch differs: %#v vs %#v", compact, previous)
+		}
+	}
+}
+
+// TestEndstoneCompactRepeatPreservesAllFraming checks variable and fixed U6 arrays and rejects malformed metadata.
+func TestEndstoneCompactRepeatPreservesAllFraming(t *testing.T) {
+	inner := manifest.Primitive("u8")
+	for _, pair := range []struct {
+		compact any
+		legacy  map[string]any
+	}{
+		{"uvarint32", map[string]any{"prefix": "uvarint32"}},
+		{"uint32", map[string]any{"prefix": "uint32"}},
+		{float64(4), map[string]any{"count": float64(4)}},
+	} {
+		a, b := lowerEndstoneRepeat(pair.compact, inner, "fixture"), lowerEndstoneRepeat(pair.legacy, inner, "fixture")
+		if !reflect.DeepEqual(a, b) || a.Kind == manifest.KindUnresolved {
+			t.Fatalf("compact repeat differs: %#v / %#v", a, b)
+		}
+	}
+	if node := lowerEndstoneRepeat(true, inner, "fixture"); node.Kind != manifest.KindUnresolved {
+		t.Fatal("malformed repeat silently disappeared")
+	}
+	lowerer := &endstoneLowerer{types: map[string]any{}, enums: map[string]any{}, active: map[string]bool{}}
+	node := lowerer.lowerTypeValue(map[string]any{"switch": "uvarint32", "cases": []any{map[string]any{"type": "string", "repeat": "uvarint32"}}}, "Choice", "Packet.Choice")
+	if node.Kind != manifest.KindUnion || node.Variants[0].Encode.Kind != manifest.KindArray {
+		t.Fatalf("inline repeated union case: %#v", node)
+	}
+}
+
+// TestEndstoneCompactSwitchKeepsInnerTagsSeparate checks reversed and multi-value legacy tags.
+func TestEndstoneCompactSwitchKeepsInnerTagsSeparate(t *testing.T) {
+	for _, control := range []string{"uint8", "uvarint32"} {
+		for _, firstValues := range [][]any{{1}, {1, 2}} {
+			lowerer := &endstoneLowerer{
+				types: map[string]any{},
+				enums: map[string]any{"Action.json": map[string]any{"values": []any{
+					map[string]any{"name": "Add", "value": 0},
+					map[string]any{"name": "Remove", "value": 1},
+					map[string]any{"name": "Other", "value": 2},
+				}}},
+				active: map[string]bool{},
+			}
+			for i, name := range []string{"First", "Second"} {
+				values := []any{0}
+				if i == 0 {
+					values = firstValues
+				}
+				lowerer.types[name+".json"] = map[string]any{"name": name, "fields": []any{
+					map[string]any{"name": "Action", "type": "uint8", "enum": "Action", "constraints": map[string]any{"enum_values": values}},
+				}}
+			}
+			node := lowerer.lowerTypeValue(map[string]any{"switch": control, "cases": []any{"First", "Second"}}, "Choice", "Packet.Choice")
+			if node.Kind != manifest.KindUnion || len(node.Variants) != 2 {
+				t.Fatalf("compact switch = %#v, want two positional alternatives", node)
+			}
+			for i, variant := range node.Variants {
+				if variant.Value != int64(i) || variant.Encode.Kind != manifest.KindStruct || len(variant.Encode.Fields) != 1 {
+					t.Fatalf("variant %d = %#v, want its index and retained Action field", i, variant)
+				}
+				action := variant.Encode.Fields[0].Encode
+				want := []any{0}
+				if i == 0 {
+					want = firstValues
+				}
+				if action.Kind != manifest.KindEnum || action.Primitive.Code != "u8" || len(action.Variants) != len(want) {
+					t.Fatalf("inner tag = %#v, want its own constrained uint8 enum", action)
+				}
+				for j, value := range want {
+					if action.Variants[j].Value != int64(value.(int)) {
+						t.Fatalf("inner tag value = %d, want %v", action.Variants[j].Value, value)
+					}
+				}
+			}
+		}
+	}
+}
