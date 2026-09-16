@@ -189,11 +189,15 @@ matches gophertunnel. The checkout is parsed, never imported or built, so the
 oracle cannot become a second protocol schema.
 
 Each manifest packet is classified `AGREEMENT`, `DIVERGENCE`, `UNRESOLVED`, or
-`NO_ORACLE_PACKET`. Only the documented byte-equivalences are normalized;
+`NO_ORACLE_PACKET`. Both sides are lowered to a finite wire language and
+compared as automata, so no packet is skipped for having too many optional or
+union paths, and a divergence is reported as the shortest wire path on which
+the languages differ. Only the documented byte-equivalences are normalized;
 width, endianness, varint family, option presence, array prefixes, fixed-array
 scalar counts, and union discriminants stay distinct, while fixed-array wrapper
-grouping is compared by its repeated scalar wire values. A marshal the
-extractor cannot statically resolve is `UNRESOLVED` rather than agreement.
+grouping is compared by its repeated scalar wire values and a bool-guarded
+field is compared as an optional. A marshal the extractor cannot lower at all
+is `UNRESOLVED` rather than agreement.
 Accepted divergences in `tools/gophertunnel-oracle/accepted-divergences.json`
 require a reason, evidence, settlement criteria, and an exact comparison
 fingerprint. They record open comparison questions, not proof of correctness;

@@ -91,11 +91,11 @@ Zero unresolved nodes alone does not prove wire correctness.
 
 ## Independent oracle verification (protocol 2168)
 
-The regenerated `.40` manifest compared with gophertunnel `be6713da4dc051a4197f897d04835e89e9c54321` has **190 agreements, 23 reviewed divergences, 15 unresolved comparisons, and one packet without an oracle**. The reviewed divergences include extractor limitations; they are not 23 proved vanilla bugs. No disputed codec was changed merely to satisfy this oracle.
+The regenerated `.40` manifest compared with gophertunnel `be6713da4dc051a4197f897d04835e89e9c54321` has **196 agreements, 22 reviewed divergences, 10 divergences awaiting adjudication, no unresolved comparisons, and one packet without an oracle**. The reviewed divergences include extractor limitations; they are not proved vanilla bugs. No disputed codec was changed merely to satisfy this oracle.
 
-CI fails on a new or changed divergence. Each reviewed entry pins the complete manifest packet, source operation tree, compared paths, and oracle revision, excluding diagnostic checkout paths. If analysis or input changes, its acceptance fingerprint expires. Entries that stop diverging must also be removed after review. Unresolved comparisons remain visible and non-fatal; a fully automatic promotion gate must eventually require coverage rather than only this divergence baseline.
+The comparison is exact: both sides are lowered to a finite wire language and compared as automata, so optional fields and unions never need a cartesian path product and no packet is skipped for size. A disagreement is reported as the shortest wire path on which the two languages differ. Bool-guarded Go fields compare as optionals, a Go conditional or switch on a discriminant read earlier compares as the union variant on that read (with an `else` covering every other discriminant), a constant discriminant written at the start of a type-switch case names its variant, `if ...; return` leaves the rest of the block as the else path, and recursive types are unrolled twice on both sides before the remainder is compared as one recursion marker. Only extraction the oracle cannot lower at all (an opaque helper, a runtime loop bound) is `UNRESOLVED`; there are none at this pin.
 
-The four newly distinguished selector-binding limits (8, 72, 324, 329) are **UNRESOLVED**, not agreements: byte-operation paths match but the extractor cannot prove the branch-to-discriminant relationship.
+CI fails on a new or changed divergence. Each reviewed entry pins the complete manifest packet, source operation tree, diverging path, and oracle revision, excluding diagnostic checkout paths. If analysis or input changes, its acceptance fingerprint expires. Entries that stop diverging must also be removed after review.
 
 ### All reviewed divergences
 
@@ -123,29 +123,25 @@ The authoritative per-packet evidence and settlement criteria are in [accepted-d
 | 164 | `ClientboundDebugRendererPacket` | Wire conflict: the manifest adds optional bool presence around DebugMarkerData, while pinned DebugRenderer includes marker data under its string-type condition without that presence byte. |
 | 187 | `UpdateAbilitiesPacket` | The canonical manifest prefixes Layers with unsigned var_u32, while the pinned gophertunnel AbilityData Marshal uses SliceUint8Length and therefore an unsigned fixed u8 count. The array-prefix distinction is intentionally preserved. |
 | 325 | `PlayerUpdateEntityOverridesPacket` | Wire conflict: pinned PlayerUpdateEntityOverrides emits an extra var_u32/legacy dispatch layout while the canonical update payload contains a Type string not represented by that marshal. |
-| 326 | `PlayerLocationPacket` | Extractor limitation: PlayerLocation writes the control, then a reserved zigzag_i32, then dispatches. The canonical annotation is immediately after the control; identical wire fields do not prove which value selects the branch. |
 | 338 | `CameraSplinePacket` | Wire conflict: canonical spline_type is unconditional but pinned CameraSpline makes it optional; canonical progress/rotation easing is optional but pinned code writes strings unconditionally. |
 | 347 | `ServerPresenceInfoPacket` | The canonical manifest contains only the optional rich-presence value, while the pinned gophertunnel PresenceInfo type adds optional ExperienceName and WorldName and an unconditional RichPresenceID inside the outer optional. This can change packet length rather than merely field grouping. |
 
-### All unresolved comparisons
+### Divergences awaiting adjudication
 
-| ID | Packet | Limitation |
+These were hidden behind the old path-expansion limit and are now proved by the exact comparison. They are not in the accepted baseline, so `verify-gophertunnel` fails until each is adjudicated with a pinned wire-layout source.
+
+| ID | Packet | Shortest diverging path |
 |---:|---|---|
-| 8 | `ResourcePackClientResponsePacket` | gophertunnel: byte operations match but union selector binding is unproved because conditional paths lack variant metadata |
-| 11 | `StartGamePacket` | control-flow path expansion exceeds limit 256 |
-| 30 | `InventoryTransactionPacket` | control-flow path expansion exceeds limit 256 |
-| 32 | `MobArmorEquipmentPacket` | control-flow path expansion exceeds limit 256 |
-| 52 | `CraftingDataPacket` | control-flow path expansion exceeds limit 256 |
-| 67 | `ClientboundMapItemDataPacket` | control-flow path expansion exceeds limit 256 |
-| 72 | `GameRulesChangedPacket` | gophertunnel: byte operations match but union selector binding is unproved because conditional paths lack variant metadata |
-| 144 | `PlayerAuthInputPacket` | control-flow path expansion exceeds limit 256 |
-| 300 | `CameraInstructionPacket` | control-flow path expansion exceeds limit 256 |
-| 324 | `PlayerVideoCapturePacket` | gophertunnel: byte operations match but union selector binding is unproved because conditional paths lack variant metadata |
-| 328 | `PrimitiveShapesPacket` | control-flow path expansion exceeds limit 256 |
-| 329 | `ServerboundPackSettingChangePacket` | gophertunnel: byte operations match but union selector binding is unproved because conditional paths lack variant metadata |
-| 330 | `ClientboundDataStorePacket` | manifest: recursive node at Updates[].variant.The New Property Value.variant[] is not statically finite; manifest: recursive node at Updates[].variant.The New Property Value.variant.<value> is not statically finite; gophertunnel: recursive local helper call at ClientBoundDataStore.Updates[].Change.NewValue.ListValue[] (/Users/hashim/Library/Caches/protocolgen/gophertunnel/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/data_store.go:139); gophertunnel: recursive local helper call at ClientBoundDataStore.Updates[].Change.NewValue.MapValue[] (/Users/hashim/Library/Caches/protocolgen/gophertunnel/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/data_store.go:144) |
-| 345 | `ClientboundAttributeLayerSyncPacket` | control-flow path expansion exceeds limit 256 |
-| 348 | `ClientboundUpdateSoundDataPacket` | control-flow path expansion exceeds limit 256 |
+| 11 | `StartGamePacket` | position 98: manifest missing () vs gophertunnel option(presence=bool) (StartGame.ServerJoinInformation.PresenceInfo.WorldName) |
+| 30 | `InventoryTransactionPacket` | position 3: manifest missing () vs gophertunnel var_u32 (InventoryTransaction.TransactionData) |
+| 32 | `MobArmorEquipmentPacket` | position 6: manifest missing () vs gophertunnel array(prefix=u32le) (MobArmourEquipment.Helmet.canBePlacedOn) |
+| 52 | `CraftingDataPacket` | position 5: manifest map(prefix=var_u32) (Shaped Recipes[].Ingredients[].Descriptor) vs gophertunnel var_u32 (CraftingData.ShapedRecipes[].Input[]) |
+| 67 | `ClientboundMapItemDataPacket` | position 16: manifest i32le (Decorations[].Color.Color) vs gophertunnel i32be (ClientBoundMapItemData.Decorations[].Colour) |
+| 144 | `PlayerAuthInputPacket` | position 23: manifest missing () vs gophertunnel zigzag_i32 (PlayerAuthInput.ItemInteractionData.ActionType) |
+| 300 | `CameraInstructionPacket` | position 8: manifest u8 (Camera Instruction.Spline.type) vs gophertunnel option(presence=bool) (CameraInstruction.Spline.SplineType) |
+| 328 | `PrimitiveShapesPacket` | position 9: manifest i32le (Array of primitive shapes (can be a mix of new, updated or removed)[].Color.Color) vs gophertunnel i32be (PrimitiveShapes.Shapes[].Colour) |
+| 345 | `ClientboundAttributeLayerSyncPacket` | position 10: manifest string(prefix=var_u32) (Data.variant.Attributes[].FromAttribute.variant.operation) vs gophertunnel option(presence=bool) (ClientBoundAttributeLayerSync.EnvironmentAttributes[].FromAttribute.BoolOperation) |
+| 348 | `ClientboundUpdateSoundDataPacket` | position 1: manifest union(control=var_u32) (Stop) vs gophertunnel option(presence=bool) (ClientboundUpdateSoundData.Stop) |
 
 `ServerPlayerPostMovePositionPacket` (ID 16) has no oracle implementation. Five deprecated oracle-only IDs are intentionally excluded from the generated pools: 55 `AdventureSettings`, 117 `ScriptCustomEvent`, 163 `FilterText`, 173 `PhotoInfoRequest`, 197 `ClientCheatAbility`. This is a coverage boundary, not a request to restore obsolete packets.
 

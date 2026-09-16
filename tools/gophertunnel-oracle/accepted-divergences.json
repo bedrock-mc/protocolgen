@@ -18,7 +18,7 @@
           "summary": "Pinned source operations were compared with the canonical packet, including branch and codec differences described above."
         }
       ],
-      "fingerprint": "sha256:0b67f2701453978f18cc08690bda0e7929e037fae931dec02198f53b4b97ac6c"
+      "fingerprint": "sha256:d181d7d2ac2a4b389394f724df917d3658e65a6be92f84fa0a2ab2bf16265e2c"
     },
     {
       "id": 12,
@@ -39,7 +39,7 @@
           "summary": "itemUserData first reads extraData through the outer reader, then parses canBePlacedOn/canBreak through a separate bufReader. The extractor currently counts these inner reads again."
         }
       ],
-      "fingerprint": "sha256:fbf95a911ba3906b876ad8b6c22b936c95dd174df9141ddadbe2a72b3ac12d6b"
+      "fingerprint": "sha256:4d1616b34207fa177b78f2a57064789830ca0a9d773336456bb22559c6afc3da"
     },
     {
       "id": 13,
@@ -56,7 +56,7 @@
           "summary": "Pinned source operations were compared with the canonical packet, including branch and codec differences described above."
         }
       ],
-      "fingerprint": "sha256:e046a2f0d768d155e60a6bf70b080d82efa498343b79233d4766d59d166457fb"
+      "fingerprint": "sha256:b659eb72fafc7c19fdb9111fa3394771fd3a1b7d9b1d1c6c823b536335209996"
     },
     {
       "id": 15,
@@ -77,7 +77,7 @@
           "summary": "itemUserData first reads extraData through the outer reader, then parses canBePlacedOn/canBreak through a separate bufReader. The extractor currently counts these inner reads again."
         }
       ],
-      "fingerprint": "sha256:3a5baf810361c4263a594e2c01dfecb497bffcd379d0ed232db284685668c312"
+      "fingerprint": "sha256:c19e1b64a6f1a30574ca3f7cb06b360972101c1bef060d2f1ddf927fbe16a95a"
     },
     {
       "id": 31,
@@ -98,7 +98,7 @@
           "summary": "itemUserData first reads extraData through the outer reader, then parses canBePlacedOn/canBreak through a separate bufReader. The extractor currently counts these inner reads again."
         }
       ],
-      "fingerprint": "sha256:7675f7ec43172c4a2c6738496601daafeb0eac71dad4e0c96f21ca3722df6566"
+      "fingerprint": "sha256:21725742a4aa29685d98ccc9f7e01f72bbf934e70336e44108ada54a3f1d53d8"
     },
     {
       "id": 38,
@@ -115,7 +115,7 @@
           "summary": "The pinned prior adjudication records the same unsigned-versus-zigzag conflict and its independent-source rationale."
         }
       ],
-      "fingerprint": "sha256:8050866122447aeec9c015a6a50dd9225e85c6398dcb057c2050504bb20277a8"
+      "fingerprint": "sha256:8d5ecf4ff2a9412df9cfeb9f5a6a1fe0f27ed79f4725fc77e27551c3fb433972"
     },
     {
       "id": 39,
@@ -132,7 +132,7 @@
           "summary": "Pinned source operations were compared with the canonical packet, including branch and codec differences described above."
         }
       ],
-      "fingerprint": "sha256:f8cb450e730c5611918f2ebd4fb3feed5de7461966f64f7cd6c0de6792371fb6"
+      "fingerprint": "sha256:471322fa8ff722b824db8fb624f63527d2b5c472225350ae53d54112b1f803c4"
     },
     {
       "id": 49,
@@ -153,7 +153,7 @@
           "summary": "itemUserData first reads extraData through the outer reader, then parses canBePlacedOn/canBreak through a separate bufReader. The extractor currently counts these inner reads again."
         }
       ],
-      "fingerprint": "sha256:107db0c722a771b32b6b0eccfe8ab03af26bb5ec72cdc3d30f1e6cfda2fe7d5a"
+      "fingerprint": "sha256:c7c3cb98be2f941e0939b44881837a858be0aef13553c0ee40ade94bf632c10c"
     },
     {
       "id": 50,
@@ -174,7 +174,7 @@
           "summary": "itemUserData first reads extraData through the outer reader, then parses canBePlacedOn/canBreak through a separate bufReader. The extractor currently counts these inner reads again."
         }
       ],
-      "fingerprint": "sha256:45939706dee100028652695396810f6035d73758e612aa06ca284521e4aa3626"
+      "fingerprint": "sha256:8d3e0cbd9dbfcd8cc1abe11541736099e0f4a4034cfeb340b6d050f267d09ef1"
     },
     {
       "id": 63,
@@ -191,7 +191,7 @@
           "summary": "Pinned source operations were compared with the canonical packet, including branch and codec differences described above."
         }
       ],
-      "fingerprint": "sha256:14ec500a9244aa5dfd3be1ee036fa624d71a634c29054bd68d4b49880c2c3dfd"
+      "fingerprint": "sha256:bf91c280a523252c32df9914f419c909623a2c7517a2ab4e820c04e219fa1d15"
     },
     {
       "id": 65,
@@ -208,7 +208,7 @@
           "summary": "Pinned source operations were compared with the canonical packet, including branch and codec differences described above."
         }
       ],
-      "fingerprint": "sha256:02da3ea96787d96c8ce146096feb7ab9a120ef46d06aa66b6f06e1a3865d9394"
+      "fingerprint": "sha256:564e8f0cf6addc2c5e9c271242e250f7b18242b146878de640254f33612c6b4d"
     },
     {
       "id": 78,
@@ -225,7 +225,7 @@
           "summary": "Pinned source operations were compared with the canonical packet, including branch and codec differences described above."
         }
       ],
-      "fingerprint": "sha256:9d8a2781df6d8e604945c9ded779e07e057e8a8eaf81abfd20b3aecaef403eaf"
+      "fingerprint": "sha256:998d7ee8b2bc05b00033f0b5b03658b98af3083708c699b951f79e9ccf4cbb6e"
     },
     {
       "id": 93,
@@ -242,7 +242,7 @@
           "summary": "Pinned source operations were compared with the canonical packet, including branch and codec differences described above."
         }
       ],
-      "fingerprint": "sha256:494ac82aec051eabb8682949eb78e8f18766587d3612c6b39db14e0256c0f3da"
+      "fingerprint": "sha256:6512f71ce6050765119c5a02b4c071d5ad315b6825247006618de7316c6c82c8"
     },
     {
       "id": 108,
@@ -263,7 +263,7 @@
           "summary": "ScoreboardEntry writes Varuint32 for variant, its type name and EntryID before dispatch; removal entries have a separate marshaler."
         }
       ],
-      "fingerprint": "sha256:06dff97ff6f99a06238f24ae99194caef88530e6d1d73406dc2f05e4b3ca3271"
+      "fingerprint": "sha256:e8f989e19d905fa0a63aaaf3ff128090e7fc76d429351755288c5f456e21bfc2"
     },
     {
       "id": 133,
@@ -280,7 +280,7 @@
           "summary": "Pinned source operations were compared with the canonical packet, including branch and codec differences described above."
         }
       ],
-      "fingerprint": "sha256:ed9d4c199f477549a88260959ff9bfbb6ba35e072bfc4bb1d20ea8220232d73b"
+      "fingerprint": "sha256:e454a97527dd848c564b858f8f643711c709575bd2a2e4e33e53bf7f318da8b6"
     },
     {
       "id": 145,
@@ -301,7 +301,7 @@
           "summary": "itemUserData first reads extraData through the outer reader, then parses canBePlacedOn/canBreak through a separate bufReader. The extractor currently counts these inner reads again."
         }
       ],
-      "fingerprint": "sha256:bd00fabe81b04f88aaaf1315fa36eb438cfa7e98fbcd8a170b71c16942258118"
+      "fingerprint": "sha256:00c784cbc2a3d67886b62c6303903119d8fc04e393bffa4d583619a6a5b5e264"
     },
     {
       "id": 147,
@@ -318,7 +318,7 @@
           "summary": "Pinned source operations were compared with the canonical packet, including branch and codec differences described above."
         }
       ],
-      "fingerprint": "sha256:c7414227ede0bd2aaea3f3be80603f4bb76f9aae7c663c5acc4d0b97bdd924b5"
+      "fingerprint": "sha256:c209041b1074928d2b564eecacf408f3226ea9c22ca38fa0d898d28ed6534c15"
     },
     {
       "id": 164,
@@ -335,7 +335,7 @@
           "summary": "Pinned source operations were compared with the canonical packet, including branch and codec differences described above."
         }
       ],
-      "fingerprint": "sha256:3f3c820c4efecf92c839732f1f0183eabf095cd2aeaef439779cbd28ba6febe5"
+      "fingerprint": "sha256:660201adafee00bf46e8268ca0f225bc10852c80316bf7da739e28b5aef9f9c1"
     },
     {
       "id": 187,
@@ -352,7 +352,7 @@
           "summary": "The prior reviewed divergence records the one-source-versus-one-source prefix conflict."
         }
       ],
-      "fingerprint": "sha256:0fd6ab936446ca2e0eb7f69f5d8e9d7525125d897f7eeb9ac1d0b85b3565d0ae"
+      "fingerprint": "sha256:d4eeedaee69edece2bbe4a8aea3c70bff0988a5e3f68c08a5bb553ce9a5d117c"
     },
     {
       "id": 325,
@@ -369,24 +369,7 @@
           "summary": "Pinned source operations were compared with the canonical packet, including branch and codec differences described above."
         }
       ],
-      "fingerprint": "sha256:11fb131d2dc0bac90cce6fb6e71bdc8103122e0ddd28c995eea160a444cd79b2"
-    },
-    {
-      "id": 326,
-      "name": "PlayerLocationPacket",
-      "reason": "Extractor limitation: PlayerLocation writes the control, then a reserved zigzag_i32, then dispatches. The canonical annotation is immediately after the control; identical wire fields do not prove which value selects the branch.",
-      "what_would_settle_it": "Track control binding across intervening reserved fields and prove each location variant rather than comparing annotation position.",
-      "evidence": [
-        {
-          "locator": "https://github.com/bedrock-mc/protocolgen/blob/640546428536dcc837a13fff070c30cd2f5b61d3/generated/1.26.40/manifest.json",
-          "summary": "The immutable canonical input contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
-        },
-        {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/player_location.go",
-          "summary": "Pinned source operations were compared with the canonical packet, including branch and codec differences described above."
-        }
-      ],
-      "fingerprint": "sha256:b8f6db357f799de929fbb0364de611af3de58af24677d98932e38f91e6fd314d"
+      "fingerprint": "sha256:aab0c3197b642cfb04a9aa7fe8043d5492bc8adfe691c461a15f92faabd99ad9"
     },
     {
       "id": 338,
@@ -403,7 +386,7 @@
           "summary": "Pinned source operations were compared with the canonical packet, including branch and codec differences described above."
         }
       ],
-      "fingerprint": "sha256:5fefb38f0a70451d91b673e043fad551dfd5e37e18939d95377aaf6d7574f142"
+      "fingerprint": "sha256:4ea951b2d3174ea7eddd14a714bf6442d519476408a2863213b03c74ab67780a"
     },
     {
       "id": 347,
@@ -420,7 +403,7 @@
           "summary": "The prior reviewed divergence records the same type and field-count disagreement."
         }
       ],
-      "fingerprint": "sha256:5ecda3ada940afc94d17c2c5829f2cc50519a7ec31b5a0a969868f824a612e1d"
+      "fingerprint": "sha256:f9129b6645a061f57ac837e66588fda175bdf228254a013c2c74f7a41bf7c312"
     }
   ]
 }

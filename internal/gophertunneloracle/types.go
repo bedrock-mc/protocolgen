@@ -177,25 +177,20 @@ type sourceOperation struct {
 }
 
 type sourceVariant struct {
-	Value      int64
-	Values     []int64
-	Name       string
-	Constraint string
-	Site       string
-	Ops        []sourceOperation
-}
-
-type sourcePath struct {
-	Constraints []string
-	Operations  []sourceOperation
-	Reasons     []string
+	Value        int64
+	Values       []int64
+	Name         string
+	Constraint   string
+	Site         string
+	Discriminant bool // Values were resolved from an integer comparison, not a bool guard.
+	Negated      bool // The branch runs when the compared field is not in Values.
+	Ops          []sourceOperation
 }
 
 type sourcePacket struct {
 	ID         uint32
 	Name       string
 	Operations []sourceOperation
-	Paths      []sourcePath
 }
 
 type diagnostic struct {

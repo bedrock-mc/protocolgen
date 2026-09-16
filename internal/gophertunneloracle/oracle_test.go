@@ -31,26 +31,29 @@ func TestNormalizationAppliesOnlyDocumentedByteEquivalences(t *testing.T) {
 	}
 }
 
+func manifestExpr(node manifest.Node) shapeExpr {
+	return (&canonicalContext{ancestors: map[string]manifest.Node{}, depth: map[string]int{}}).node("Field", node)
+}
+
 func TestUUIDNormalizesOnlyItsExactSixteenByteShape(t *testing.T) {
-	manifestAtoms, manifestReasons := manifestNodeAtoms("UUID", manifest.FixedArray(16, manifest.Primitive("u8")))
-	sourceAtoms, sourceReasons := sourceOperationAtoms(sourceOperation{Kind: "uuid", Field: "UUID"})
-	if len(manifestReasons) != 0 || len(sourceReasons) != 0 || !atomsEqual(manifestAtoms, sourceAtoms) {
-		t.Fatalf("UUID shape did not normalize: manifest=%#v/%#v source=%#v/%#v", manifestAtoms, manifestReasons, sourceAtoms, sourceReasons)
+	uuid := manifestExpr(manifest.FixedArray(16, manifest.Primitive("u8")))
+	if witness := compareLanguages(uuid, sourceOperationExpr(sourceOperation{Kind: "uuid", Field: "UUID"})); witness != nil {
+		t.Fatalf("UUID shape did not normalize: %#v", witness)
 	}
-	shortAtoms, _ := sourceOperationAtoms(sourceOperation{Kind: "fixed_array", Length: 15, Element: []sourceOperation{{Kind: "primitive", Code: "u8"}}})
-	if atomsEqual(manifestAtoms, shortAtoms) {
+	short := sourceOperationExpr(sourceOperation{Kind: "fixed_array", Length: 15, Element: []sourceOperation{{Kind: "primitive", Code: "u8"}}})
+	if compareLanguages(uuid, short) == nil {
 		t.Fatal("UUID normalization collapsed a non-16-byte fixed array")
 	}
 }
 
 func TestFixedArrayGroupingNormalizesOnlyWireEquivalentScalarLayout(t *testing.T) {
-	nested, reasons := manifestNodeAtoms("Nested", manifest.FixedArray(16, manifest.FixedArray(16, manifest.Primitive("i8"))))
-	flat, flatReasons := sourceOperationAtoms(sourceOperation{Kind: "fixed_array", Length: 256, Element: []sourceOperation{{Kind: "primitive", Code: "i8"}}})
-	if len(reasons) != 0 || len(flatReasons) != 0 || !atomsEqual(normalizeFixedArrayGrouping(nested), normalizeFixedArrayGrouping(flat)) {
-		t.Fatalf("nested and flat fixed arrays did not normalize: nested=%#v flat=%#v", nested, flat)
+	nested := manifestExpr(manifest.FixedArray(16, manifest.FixedArray(16, manifest.Primitive("i8"))))
+	flat := sourceOperationExpr(sourceOperation{Kind: "fixed_array", Length: 256, Element: []sourceOperation{{Kind: "primitive", Code: "i8"}}})
+	if witness := compareLanguages(nested, flat); witness != nil {
+		t.Fatalf("nested and flat fixed arrays did not normalize: %#v", witness)
 	}
-	short, _ := sourceOperationAtoms(sourceOperation{Kind: "fixed_array", Length: 255, Element: []sourceOperation{{Kind: "primitive", Code: "i8"}}})
-	if atomsEqual(normalizeFixedArrayGrouping(nested), normalizeFixedArrayGrouping(short)) {
+	short := sourceOperationExpr(sourceOperation{Kind: "fixed_array", Length: 255, Element: []sourceOperation{{Kind: "primitive", Code: "i8"}}})
+	if compareLanguages(nested, short) == nil {
 		t.Fatal("different scalar counts were normalized as equivalent")
 	}
 }
@@ -84,20 +87,84 @@ func TestNormalizationPreservesWireShapeDistinctions(t *testing.T) {
 			want: sourceOperation{Kind: "primitive", Code: "f32le"},
 			got:  sourceOperation{Kind: "primitive", Code: "i32le"},
 		},
+		"union-discriminant": {
+			want: sourceOperation{Kind: "union", Control: "var_u32", Variants: []sourceVariant{{Value: 0}, {Value: 1}}},
+			got:  sourceOperation{Kind: "union", Control: "var_u32", Variants: []sourceVariant{{Value: 0}, {Value: 2}}},
+		},
 	} {
-		wantAtoms, wantReasons := sourceOperationAtoms(pair.want)
-		gotAtoms, gotReasons := sourceOperationAtoms(pair.got)
-		if len(wantReasons) != 0 || len(gotReasons) != 0 || atomsEqual(wantAtoms, gotAtoms) {
-			t.Errorf("%s was collapsed: want=%#v got=%#v", name, wantAtoms, gotAtoms)
+		if compareLanguages(sourceOperationExpr(pair.want), sourceOperationExpr(pair.got)) == nil {
+			t.Errorf("%s was collapsed", name)
 		}
 	}
+}
 
-	unionWant := sourceOperation{Kind: "union", Control: "var_u32", Variants: []sourceVariant{{Value: 0}, {Value: 1}}}
-	unionGot := sourceOperation{Kind: "union", Control: "var_u32", Variants: []sourceVariant{{Value: 0}, {Value: 2}}}
-	wantAtoms, _ := sourceOperationAtoms(unionWant)
-	gotAtoms, _ := sourceOperationAtoms(unionGot)
-	if atomsEqual(wantAtoms, gotAtoms) {
-		t.Fatal("union discriminant was collapsed")
+// A bool-guarded field and a manifest optional are the same bytes.
+func TestBoolGuardedFieldMatchesManifestOptional(t *testing.T) {
+	want := manifestExpr(manifest.Optional(manifest.Primitive("u16le")))
+	got := sourceSequenceExpr([]sourceOperation{
+		{Kind: "primitive", Code: "bool", Field: "Field.Has"},
+		{Kind: "conditional", CompareTo: "Field.Has", Variants: []sourceVariant{{Value: 1, Values: []int64{1}, Ops: []sourceOperation{{Kind: "primitive", Code: "u16le"}}}}, HasDefault: true},
+	})
+	if witness := compareLanguages(want, got); witness != nil {
+		t.Fatalf("bool guard did not match optional: %#v", witness)
+	}
+}
+
+// A conditional on a discriminant read earlier compares as that union variant,
+// with the else branch covering every other discriminant.
+func TestDiscriminantConditionalHoistsToTheControlRead(t *testing.T) {
+	variants := []manifest.Variant{}
+	for value := int64(0); value < 4; value++ {
+		payload := manifest.Struct(manifest.Field{Ordinal: 0, Name: "Value", Encode: manifest.Primitive("u16le"), Symmetry: manifest.Symmetric})
+		if value == 3 {
+			payload = manifest.Struct(
+				manifest.Field{Ordinal: 0, Name: "Value", Encode: manifest.Primitive("u16le"), Symmetry: manifest.Symmetric},
+				manifest.Field{Ordinal: 1, Name: "Flag", Encode: manifest.Primitive("bool"), Symmetry: manifest.Symmetric},
+			)
+		}
+		variants = append(variants, manifest.Variant{Value: value, Name: "V", Encode: payload})
+	}
+	want := manifestExpr(manifest.Union(manifest.Primitive("var_u32"), variants...))
+	got := sourceSequenceExpr([]sourceOperation{
+		{Kind: "primitive", Code: "var_u32", Field: "Field.Type"},
+		{Kind: "primitive", Code: "u16le", Field: "Field.Value"},
+		{Kind: "conditional", CompareTo: "Field.Type", Variants: []sourceVariant{{Values: []int64{3}, Discriminant: true, Ops: []sourceOperation{{Kind: "primitive", Code: "bool"}}}}, HasDefault: true},
+	})
+	if witness := compareLanguages(want, got); witness != nil {
+		t.Fatalf("discriminant conditional was not hoisted: %#v", witness)
+	}
+	negated := sourceSequenceExpr([]sourceOperation{
+		{Kind: "primitive", Code: "var_u32", Field: "Field.Type"},
+		{Kind: "primitive", Code: "u16le", Field: "Field.Value"},
+		{Kind: "conditional", CompareTo: "Field.Type", Variants: []sourceVariant{{Values: []int64{3}, Discriminant: true, Negated: true}}, Default: []sourceOperation{{Kind: "primitive", Code: "bool"}}, HasDefault: true},
+	})
+	if witness := compareLanguages(want, negated); witness != nil {
+		t.Fatalf("negated discriminant conditional was not hoisted: %#v", witness)
+	}
+	if compareLanguages(want, sourceSequenceExpr([]sourceOperation{
+		{Kind: "primitive", Code: "var_u32", Field: "Field.Type"},
+		{Kind: "primitive", Code: "u16le", Field: "Field.Value"},
+		{Kind: "conditional", CompareTo: "Field.Type", Variants: []sourceVariant{{Values: []int64{2}, Discriminant: true, Ops: []sourceOperation{{Kind: "primitive", Code: "bool"}}}}, HasDefault: true},
+	})) == nil {
+		t.Fatal("a different discriminant value was accepted")
+	}
+}
+
+func TestLanguageWitnessNamesTheFirstDivergingAtom(t *testing.T) {
+	want := manifestExpr(manifest.Struct(
+		manifest.Field{Ordinal: 0, Name: "A", Encode: manifest.Primitive("u8"), Symmetry: manifest.Symmetric},
+		manifest.Field{Ordinal: 1, Name: "B", Encode: manifest.Optional(manifest.Primitive("u16le")), Symmetry: manifest.Symmetric},
+	))
+	got := sourceSequenceExpr([]sourceOperation{
+		{Kind: "primitive", Code: "u8", Field: "A"},
+		{Kind: "optional", Presence: "bool", Field: "B", Value: []sourceOperation{{Kind: "primitive", Code: "u32le", Field: "B"}}},
+	})
+	witness := compareLanguages(want, got)
+	if witness == nil {
+		t.Fatal("different optional payload widths compared equal")
+	}
+	if len(witness.prefix) != 2 || witness.manifest[0].Token != "P:FIXED16LE" || witness.gophertunnel[0].Token != "P:FIXED32LE" {
+		t.Fatalf("witness = %#v", witness)
 	}
 }
 
@@ -194,14 +261,66 @@ func (pk *Fixture) Marshal(io protocol.IO) {
 	if len(result.Packets) != 1 {
 		t.Fatalf("packets = %#v", result.Packets)
 	}
-	packet := result.Packets[0]
-	if len(packet.Paths) != 4 {
-		t.Fatalf("paths = %#v, want switch x if path expansion", packet.Paths)
+	got := sourceSequenceExpr(result.Packets[0].Operations)
+	value := atomExpr(atom{Token: "P:FIXED16LE"})
+	tail := altExpr(emptyExpr(), value)
+	want := concatExpr(atomExpr(atom{Token: "P:FIXED8"}), altExpr(
+		concatExpr(atomExpr(atom{Token: "VARIANT:1"}), value, tail),
+		concatExpr(atomExpr(atom{Token: "VARIANT:2"}), atomExpr(atom{Token: "P:bool"}), tail),
+	))
+	if witness := compareLanguages(want, got); witness != nil {
+		t.Fatalf("switch and conditional did not resolve to variants: %#v\n%s", witness, expressionKey(got))
 	}
-	for _, path := range packet.Paths {
-		if len(path.Constraints) == 0 || len(path.Operations) == 0 {
-			t.Fatalf("path lost control-flow metadata: %#v", path)
-		}
+}
+
+// A hand-written type switch that writes a constant discriminant at the start
+// of each case compares as a manifest union.
+func TestExtractResolvesTypeSwitchDiscriminants(t *testing.T) {
+	root := t.TempDir()
+	packetDir := filepath.Join(root, "minecraft", "protocol", "packet")
+	if err := os.MkdirAll(packetDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	idSource := `package packet
+const (
+	IDFixture = iota + 1
+	TypeBool = 1
+)
+`
+	packetSource := `package packet
+import "github.com/sandertv/gophertunnel/minecraft/protocol"
+type Fixture struct { Value any }
+func (*Fixture) ID() uint32 { return IDFixture }
+func (pk *Fixture) Marshal(io protocol.IO) {
+	switch v := pk.Value.(type) {
+	case bool:
+		id := uint32(TypeBool)
+		io.Varuint32(&id)
+		io.Bool(&v)
+	case float32:
+		id := uint32(2)
+		io.Varuint32(&id)
+		io.Float32(&v)
+	}
+}
+`
+	if err := os.WriteFile(filepath.Join(packetDir, "id.go"), []byte(idSource), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(packetDir, "fixture.go"), []byte(packetSource), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	result, err := Extract(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := manifestExpr(manifest.Union(manifest.Primitive("var_u32"),
+		manifest.Variant{Value: 1, Name: "Bool", Encode: manifest.Primitive("bool")},
+		manifest.Variant{Value: 2, Name: "Float", Encode: manifest.Primitive("f32le")},
+	))
+	got := sourceSequenceExpr(result.Packets[0].Operations)
+	if witness := compareLanguages(want, got); witness != nil {
+		t.Fatalf("type switch discriminants were not resolved: %#v\n%s", witness, expressionKey(got))
 	}
 }
 
@@ -281,17 +400,17 @@ func TestComparePreservesExactUnionVariantValues(t *testing.T) {
 			{Values: []int64{2}},
 		}},
 	}
-	source := extraction{Packets: []sourcePacket{{ID: 1, Name: "Fixture", Operations: operations, Paths: expandSourcePaths(operations)}}}
+	source := extraction{Packets: []sourcePacket{{ID: 1, Name: "Fixture", Operations: operations}}}
 	report := Compare(m, source, fixtureLock(), emptyAccepted(), "manifest.json")
 	if report.Counts.Divergence != 1 || report.Counts.Agreement != 0 {
 		t.Fatalf("counts = %#v, packets = %#v", report.Counts, report.Packets)
 	}
-	if len(report.Packets[0].Paths) == 0 || report.Packets[0].Paths[0].ManifestConstraint == "" {
-		t.Fatalf("variant path evidence missing: %#v", report.Packets[0])
+	if len(report.Packets[0].Differences) == 0 || len(report.Packets[0].ManifestSequence) == 0 || report.Packets[0].Fingerprint == "" {
+		t.Fatalf("variant witness evidence missing: %#v", report.Packets[0])
 	}
 }
 
-func TestSymbolicComparisonAvoidsOptionalCartesianProduct(t *testing.T) {
+func TestOptionalUnionsCompareWithoutCartesianProduct(t *testing.T) {
 	fields := make([]manifest.Node, 6)
 	operations := make([]sourceOperation, 0, len(fields))
 	for index := range fields {
@@ -309,10 +428,7 @@ func TestSymbolicComparisonAvoidsOptionalCartesianProduct(t *testing.T) {
 		}})
 	}
 	m := fixtureManifest(fields...)
-	source := extraction{Packets: []sourcePacket{{ID: 1, Name: "Fixture", Operations: operations, Paths: expandSourcePaths(operations)}}}
-	if len(source.Packets[0].Paths) != 1 {
-		t.Fatalf("fixture should hit the bounded path product: %d paths", len(source.Packets[0].Paths))
-	}
+	source := extraction{Packets: []sourcePacket{{ID: 1, Name: "Fixture", Operations: operations}}}
 	report := Compare(m, source, fixtureLock(), emptyAccepted(), "manifest.json")
 	if report.Counts.Agreement != 1 || report.Counts.Unresolved != 0 {
 		t.Fatalf("counts = %#v, packets = %#v", report.Counts, report.Packets)
@@ -320,12 +436,12 @@ func TestSymbolicComparisonAvoidsOptionalCartesianProduct(t *testing.T) {
 }
 
 func TestExternalLengthIsCoalescedWithTheFollowingArray(t *testing.T) {
-	atoms, reasons := sourcePathAtoms(sourcePath{Operations: []sourceOperation{
+	expression := sourceSequenceExpr([]sourceOperation{
 		{Kind: "primitive", Code: "u32le"},
 		{Kind: "array", Prefix: "u32le", ConsumesPrefix: true, Element: []sourceOperation{{Kind: "primitive", Code: "u8"}}},
-	}})
-	if len(reasons) != 0 || len(atoms) != 1 || atoms[0].Token != "LEN:FIXED32LE" {
-		t.Fatalf("external length was not coalesced: atoms=%#v reasons=%#v", atoms, reasons)
+	})
+	if key := expressionKey(expression); key != "t:LEN:FIXED32LE" {
+		t.Fatalf("external length was not coalesced: %s", key)
 	}
 }
 
