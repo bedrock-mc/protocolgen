@@ -44,7 +44,7 @@
       ]
     },
     {
-      "id": "player-video-capture-has-one-fixed-byte-action",
+      "id": "player-video-capture-has-one-action-union",
       "file": "PlayerVideoCapturePacketPayload.json",
       "pointer": "/properties",
       "pre_patch_sha256": "sha256:bec1a56f7f8fd8f03d01a077061437916a31634a57f7865fa17bb6e095adf4c3",
@@ -58,15 +58,15 @@
               "$ref": "./Start_Video_Capture.json"
             }
           ],
-          "x-control-value-type": "uint8",
+          "x-control-value-type": "uint32",
           "x-ordinal-index": 0
         }
       },
-      "why": "PlayerVideoCapture has one fixed-byte action selector, and only the start variant carries a payload.",
+      "why": "PlayerVideoCapture has one action union, and only the start variant carries a payload. Preserve the published uint32 selector type; indices 0 and 1 each occupy one varuint32 byte.",
       "evidence": [
         {
           "locator": "https://github.com/CloudburstMC/Protocol/blob/fbbeee7d63f1ea3c586a6d5907bd69196679aee6/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v786/serializer/PlayerVideoCaptureSerializer_v786.java",
-          "summary": "The inherited serializer writes one byte and conditionally writes the start payload."
+          "summary": "The inherited serializer writes one action value (0 or 1), then the payload only for start. Both selectors fit in one varuint32 byte."
         }
       ]
     },
@@ -74,7 +74,7 @@
       "id": "player-video-capture-action-is-required",
       "file": "PlayerVideoCapturePacketPayload.json",
       "pointer": "#",
-      "pre_patch_sha256": "sha256:796d9c89099c204f9da472f42f70d8de9193c6c4c58a0cbf2244a8b3b6ee1530",
+      "pre_patch_sha256": "sha256:944849ebce5faa8ac117236e9682480948392c14b59429bc7cf3e107926c3a1c",
       "merge": {
         "required": [
           "Action"

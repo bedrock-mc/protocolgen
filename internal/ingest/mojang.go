@@ -339,8 +339,12 @@ func withMojangConstraints(node manifest.Node, schema map[string]any) manifest.N
 	setUint("maxLength", &constraints.MaxLength)
 	setUint("minItems", &constraints.MinItems)
 	setUint("maxItems", &constraints.MaxItems)
-	setUint("minProperties", &constraints.MinProperties)
-	setUint("maxProperties", &constraints.MaxProperties)
+	// JSON Schema property bounds do not constrain arrays. Some published
+	// packet schemas put maxProperties on an array; do not invent a wire bound.
+	if kind := asString(schema["type"]); kind == "object" || kind == "" {
+		setUint("minProperties", &constraints.MinProperties)
+		setUint("maxProperties", &constraints.MaxProperties)
+	}
 	setFloat("minimum", &constraints.Minimum)
 	setFloat("maximum", &constraints.Maximum)
 	constraints.Pattern = asString(schema["pattern"])
@@ -436,53 +440,30 @@ func mergeMojangConstraints(node manifest.Node, schema map[string]any) manifest.
 	return node
 }
 
+// lowerUnion writes a wire variant's zero-based index as a varuint32 before its fields.
 func (l *mojangLowerer) lowerUnion(schema map[string]any, branches []any, file, hint string) manifest.Node {
-	controlType := asString(schema["x-control-value-type"])
-	if controlType == "" {
-		return manifest.Unresolved("Mojang oneOf has no explicit control codec "+hint, true)
+	// A plain JSON oneOf can describe alternate representations of the same value,
+	// such as hexadecimal and array colours. Only marked wire variants use this rule.
+	if asString(schema["x-control-value-type"]) != "uint32" {
+		return manifest.Unresolved("Mojang oneOf lacks a supported wire selector type "+hint, true)
 	}
-	control := primitive(controlType, options(schema), "integer")
-	controlValues, _ := asArray(schema["x-control-values"])
-	positionalConfirmed, positionalCompatible := false, true
-	for index, rawBranch := range branches {
-		branch, ok := asMap(rawBranch)
-		if !ok {
-			continue
-		}
-		value, explicit := asInt(branch["x-ordinal-index"])
-		if !explicit && index < len(controlValues) {
-			value, explicit = asInt(controlValues[index])
-		}
-		if explicit {
-			positionalConfirmed = true
-			positionalCompatible = positionalCompatible && value == int64(index)
-		}
+	if len(branches) == 0 {
+		return manifest.Unresolved("Mojang oneOf has no alternatives "+hint, true)
 	}
 	variants := make([]manifest.Variant, 0, len(branches))
-	seen := map[int64]bool{}
 	for index, rawBranch := range branches {
 		branch, ok := asMap(rawBranch)
 		if !ok {
 			return manifest.Unresolved(fmt.Sprintf("Mojang oneOf branch %d is not an object", index), true)
 		}
-		value, ok := asInt(branch["x-ordinal-index"])
-		if !ok && index < len(controlValues) {
-			value, ok = asInt(controlValues[index])
-		}
-		if !ok && positionalConfirmed && positionalCompatible {
-			value, ok = int64(index), true
-		}
-		if !ok || seen[value] {
-			return manifest.Unresolved("Mojang oneOf lacks unique explicit control values "+hint, true)
-		}
-		seen[value] = true
+		value := int64(index)
 		name := asString(branch["title"])
 		if name == "" {
 			name = fmt.Sprintf("Variant%d", value)
 		}
 		variants = append(variants, manifest.Variant{Value: value, Name: name, Encode: l.lowerSchema(branch, file, hint+name)})
 	}
-	return manifest.Union(control, variants...)
+	return manifest.Union(manifest.Primitive("var_u32"), variants...)
 }
 
 // lowerEnum reads the explicit numeric mapping or the string encoding selected at this use.

@@ -656,12 +656,12 @@
       "rationale": "Grouped by the generated type-family prefix; no direct gophertunnel counterpart."
     },
     {
-      "type_id": "EAS::BoolAttributeData",
+      "type_id": "BoolAttributeData.json#",
       "domain": "misc",
       "rationale": "Grouped by the generated type-family prefix; no direct gophertunnel counterpart."
     },
     {
-      "type_id": "EAS::ColorAttributeData",
+      "type_id": "ColorAttributeData.json#",
       "domain": "misc",
       "rationale": "Grouped by the generated type-family prefix; no direct gophertunnel counterpart."
     },
@@ -671,7 +671,7 @@
       "rationale": "Grouped by the generated type-family prefix; no direct gophertunnel counterpart."
     },
     {
-      "type_id": "EAS::FloatAttributeData",
+      "type_id": "FloatAttributeData.json#",
       "domain": "misc",
       "rationale": "Grouped by the generated type-family prefix; no direct gophertunnel counterpart."
     },
@@ -2056,22 +2056,22 @@
       "rationale": "Assigned from the owning target-version protocol subsystem."
     },
     {
-      "type_id": "ResourcePackClientResponsePacketPayload::Cancel",
+      "type_id": "Resource_Pack_Client_Response_-_Cancel.json#",
       "domain": "misc",
       "rationale": "Grouped by the generated type-family prefix; no direct gophertunnel counterpart."
     },
     {
-      "type_id": "ResourcePackClientResponsePacketPayload::Downloading",
+      "type_id": "Resource_Pack_Client_Response_-_Downloading.json#",
       "domain": "misc",
       "rationale": "Grouped by the generated type-family prefix; no direct gophertunnel counterpart."
     },
     {
-      "type_id": "ResourcePackClientResponsePacketPayload::DownloadingFinished",
+      "type_id": "Resource_Pack_Client_Response_-_Downloading_Finished.json#",
       "domain": "misc",
       "rationale": "Grouped by the generated type-family prefix; no direct gophertunnel counterpart."
     },
     {
-      "type_id": "ResourcePackClientResponsePacketPayload::ResourcePackStackFinished",
+      "type_id": "Resource_Pack_Client_Response_-_Resource_Pack_Stack_Finished.json#",
       "domain": "resource_pack",
       "rationale": "Grouped by the generated type-family prefix; no direct gophertunnel counterpart."
     },
@@ -2524,6 +2524,36 @@
       "type_id": "WorldPosition",
       "domain": "world",
       "rationale": "Grouped by the generated type-family prefix; no direct gophertunnel counterpart."
+    },
+    {
+      "type_id": "AttributeLayerSettings.json#",
+      "domain": "misc",
+      "rationale": "Keep the newly resolved Mojang type in the same domain as its existing payload."
+    },
+    {
+      "type_id": "BoolAttributeOperation.json#",
+      "domain": "misc",
+      "rationale": "Keep the newly resolved Mojang type in the same domain as its existing payload."
+    },
+    {
+      "type_id": "Color255RGBA.json#",
+      "domain": "misc",
+      "rationale": "Keep the newly resolved Mojang type in the same domain as its existing payload."
+    },
+    {
+      "type_id": "ColorAttributeOperation.json#",
+      "domain": "misc",
+      "rationale": "Keep the newly resolved Mojang type in the same domain as its existing payload."
+    },
+    {
+      "type_id": "FloatAttributeOperation.json#",
+      "domain": "misc",
+      "rationale": "Keep the newly resolved Mojang type in the same domain as its existing payload."
+    },
+    {
+      "type_id": "ResourcePackResponse.json#",
+      "domain": "resource_pack",
+      "rationale": "Keep the newly resolved Mojang type in the same domain as its existing payload."
     }
   ]
 }

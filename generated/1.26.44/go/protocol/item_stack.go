@@ -23,6 +23,7 @@ func (x *AutoCraftRecipeStackRequestAction) Marshal(io IO) {
 	x.RecipeNetID.Marshal(io)
 	io.Uint8(&x.NumberOfRequestedCrafts)
 	Minimum(io, &x.NumberOfRequestedCrafts, 1)
+	Maximum(io, &x.NumberOfRequestedCrafts, 255)
 	Slice(io, &x.Ingredients)
 }
 
@@ -83,6 +84,7 @@ func (x *CraftCreativeStackRequestAction) Marshal(io IO) {
 	Minimum(io, &x.CreativeItemNetID, 1)
 	io.Uint8(&x.NumberOfRequestedCrafts)
 	Minimum(io, &x.NumberOfRequestedCrafts, 1)
+	Maximum(io, &x.NumberOfRequestedCrafts, 255)
 }
 
 // CraftNonImplementedStackRequestAction is an action sent for inventory actions that aren't yet
@@ -134,6 +136,7 @@ func (x *CraftRecipeStackRequestAction) Marshal(io IO) {
 	x.RecipeNetID.Marshal(io)
 	io.Uint8(&x.NumberOfRequestedCrafts)
 	Minimum(io, &x.NumberOfRequestedCrafts, 1)
+	Maximum(io, &x.NumberOfRequestedCrafts, 255)
 }
 
 // CraftResultsDeprecatedStackRequestAction is an additional, deprecated packet sent by the client
@@ -154,6 +157,7 @@ func (x *CraftResultsDeprecatedStackRequestAction) Marshal(io IO) {
 	SliceLimits(io, &x.CraftResults, 1, 18446744073709551615)
 	io.Uint8(&x.NumCrafts)
 	Minimum(io, &x.NumCrafts, 1)
+	Maximum(io, &x.NumCrafts, 255)
 }
 
 // CreateStackRequestAction is sent by the client when an item is created through being used as part
@@ -173,6 +177,8 @@ func (*CreateStackRequestAction) tagStackRequestAction() uint32 { return 6 }
 func (x *CreateStackRequestAction) Marshal(io IO) {
 	x.ActionType.Marshal(io)
 	io.Uint8(&x.ResultsIndex)
+	Minimum(io, &x.ResultsIndex, 0)
+	Maximum(io, &x.ResultsIndex, 255)
 }
 
 // DestroyStackRequestAction is sent by the client when it destroys an item in creative mode by
@@ -513,6 +519,8 @@ type StackRequestSlotInfo struct {
 func (x *StackRequestSlotInfo) Marshal(io IO) {
 	x.FullContainerName.Marshal(io)
 	io.Uint8(&x.Slot)
+	Minimum(io, &x.Slot, 0)
+	Maximum(io, &x.Slot, 255)
 	io.Int32(&x.NetIDVariant)
 }
 

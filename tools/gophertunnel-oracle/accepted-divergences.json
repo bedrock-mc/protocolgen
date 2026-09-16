@@ -39,7 +39,7 @@
           "summary": "itemUserData first reads extraData through the outer reader, then parses canBePlacedOn/canBreak through a separate bufReader. The extractor currently counts these inner reads again."
         }
       ],
-      "fingerprint": "sha256:91018b44f56ec7b20ea3b692d17a1bda3bf752524af6c8a4e98642618fa11b55"
+      "fingerprint": "sha256:fbf95a911ba3906b876ad8b6c22b936c95dd174df9141ddadbe2a72b3ac12d6b"
     },
     {
       "id": 13,
@@ -56,7 +56,7 @@
           "summary": "Pinned source operations were compared with the canonical packet, including branch and codec differences described above."
         }
       ],
-      "fingerprint": "sha256:4141c8c1f0b0b14ec9b492d68021403f68bad32391e54d878d0a8e40f5226450"
+      "fingerprint": "sha256:e046a2f0d768d155e60a6bf70b080d82efa498343b79233d4766d59d166457fb"
     },
     {
       "id": 15,
@@ -77,7 +77,7 @@
           "summary": "itemUserData first reads extraData through the outer reader, then parses canBePlacedOn/canBreak through a separate bufReader. The extractor currently counts these inner reads again."
         }
       ],
-      "fingerprint": "sha256:a046b60683dfefb9a179a57927c56b98b91d5ad8f133239d7a6609e62cfe2f65"
+      "fingerprint": "sha256:3a5baf810361c4263a594e2c01dfecb497bffcd379d0ed232db284685668c312"
     },
     {
       "id": 31,
@@ -132,7 +132,7 @@
           "summary": "Pinned source operations were compared with the canonical packet, including branch and codec differences described above."
         }
       ],
-      "fingerprint": "sha256:b797f555b9ed0fea7c77b47d784bca93b8f9b6aa12dcc743ae088e448634561e"
+      "fingerprint": "sha256:f8cb450e730c5611918f2ebd4fb3feed5de7461966f64f7cd6c0de6792371fb6"
     },
     {
       "id": 49,
@@ -191,7 +191,7 @@
           "summary": "Pinned source operations were compared with the canonical packet, including branch and codec differences described above."
         }
       ],
-      "fingerprint": "sha256:4437fa4207450e0c233627edf6d51b3b7f315bc3926b8e4eeb8dbbc8a00ab11f"
+      "fingerprint": "sha256:14ec500a9244aa5dfd3be1ee036fa624d71a634c29054bd68d4b49880c2c3dfd"
     },
     {
       "id": 65,
@@ -225,7 +225,7 @@
           "summary": "Pinned source operations were compared with the canonical packet, including branch and codec differences described above."
         }
       ],
-      "fingerprint": "sha256:40cd14f44bb4c375efa4fd7419a9c12b84c8f24cca7dbb9950c9406f0d7134f9"
+      "fingerprint": "sha256:9d8a2781df6d8e604945c9ded779e07e057e8a8eaf81abfd20b3aecaef403eaf"
     },
     {
       "id": 93,
@@ -318,7 +318,7 @@
           "summary": "Pinned source operations were compared with the canonical packet, including branch and codec differences described above."
         }
       ],
-      "fingerprint": "sha256:e0e654c71e8b1b62a1ec40b7a8f3bd8a094f39669cadec16e32ee13b2547b5e8"
+      "fingerprint": "sha256:c7414227ede0bd2aaea3f3be80603f4bb76f9aae7c663c5acc4d0b97bdd924b5"
     },
     {
       "id": 164,
@@ -386,7 +386,7 @@
           "summary": "Pinned source operations were compared with the canonical packet, including branch and codec differences described above."
         }
       ],
-      "fingerprint": "sha256:dd3be18ea5c6183eb55627df2c96ef85376eb57bd47a5052b0d188d19b73f3ce"
+      "fingerprint": "sha256:b8f6db357f799de929fbb0364de611af3de58af24677d98932e38f91e6fd314d"
     },
     {
       "id": 338,

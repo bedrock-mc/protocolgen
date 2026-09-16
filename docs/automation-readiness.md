@@ -1,4 +1,4 @@
-# Automation readiness — September 13, 2026
+# Automation readiness — September 16, 2026
 
 CI verifies reproducible generation, tests, and an exact reviewed comparison baseline. Passing CI is not proof that every packet agrees with vanilla. This inventory separates decisions already resolved for a pinned release, new U6 schema gaps, and independent-verification limits.
 
@@ -6,56 +6,23 @@ CI verifies reproducible generation, tests, and an exact reviewed comparison bas
 
 | Snapshot | Protocol | Packets | Adjudications | Correction operations in current files | Recorded manifest overrides |
 |---|---:|---:|---:|---:|---:|
-| 1.26.40 | 2168 | 229 | 177 | 81 | 81 |
-| 1.26.44 | 2168 | 229 | 177 | 0 | 81 |
-| 1.26.50 | 2187 | 231 | 183 | 83 | 83 |
+| 1.26.40 | 2168 | 229 | 168 | 81 | 81 |
+| 1.26.44 | 2168 | 229 | 168 | 0 | 81 |
+| 1.26.50 | 2187 | 231 | 174 | 83 | 83 |
 
 The .44 snapshot inherits .40 and applies an evidenced RemoveScore.ObjectiveName optional-wrapper hotfix. These manifests have no unresolved/opaque nodes; their decisions are resolved for their pinned targets. The baseline .50 manifest retained eight obsolete overrides after commit `bbaa61a` deliberately removed their source corrections (TextData.LineGapHeight and seven sound-slot optional markers). Regeneration now removes those stale wrappers and records 83 overrides, matching 83 correction operations.
 
 ## U6 raw Mojang gaps
 
-Pinned source `19e25de129227373e97dfa340af93ccf12c0feb9`, Minecraft 1.26.60-beta.23/protocol 2208: 235 packets, 745 top-level field claims, 73 reachable unresolved node occurrences. This is raw ingestion, not a reconciled U6 release. All 235 packet directions are unknown in this raw source.
+Pinned source `19e25de129227373e97dfa340af93ccf12c0feb9`, Minecraft 1.26.60-beta.23/protocol 2208: 235 packets, 745 top-level field claims, **79 reachable unresolved node occurrences**. This is raw ingestion, not a reconciled U6 release. All 235 packet directions are unknown in this raw source.
 
-### 44 union/control-selector occurrences (35 fields)
-- `ResourcePackClientResponsePacket.Response`
-- `TextPacket.Body`
-- `AddPlayerPacket.Entity Data`
-- `AddActorPacket.Actor Data`
-- `AddItemActorPacket.Entity Data`
-- `InventoryTransactionPacket.Transaction`
-- `SetActorDataPacket.Actor Data`
-- `CraftingDataPacket.Shaped Recipes` (2 occurrences)
-- `CraftingDataPacket.Shapeless Recipes` (2 occurrences)
-- `CraftingDataPacket.User Data Shapeless Recipes` (2 occurrences)
-- `CraftingDataPacket.Shapeless Chemistry Recipes` (2 occurrences)
-- `CraftingDataPacket.Shaped Chemistry Recipes` (2 occurrences)
-- `CraftingDataPacket.Smithing Transform Recipes` (3 occurrences)
-- `CraftingDataPacket.Smithing Trim Recipes` (3 occurrences)
-- `PlayerListPacket.Entries`
-- `LegacyTelemetryEventPacket.Event Data`
-- `CommandBlockUpdatePacket.Target`
-- `BookEditPacket.Operation`
-- `SetScorePacket.Score Info`
-- `PlayerAuthInputPacket.Item Stack Request`
-- `ItemStackRequestPacket.Requests`
-- `PlayerVideoCapturePacket.Start Video Capture`
-- `PlayerVideoCapturePacket.Stop Video Capture`
-- `PlayerUpdateEntityOverridesPacket.Update`
-- `PlayerLocationPacket.Location`
-- `ClientboundDataStorePacket.Updates`
-- `SyncWorldClocksPacket.Data`
-- `ClientboundAttributeLayerSyncPacket.Data`
-- `ClientboundUpdateSoundDataPacket.Stop`
-- `ClientboundUpdateSoundDataPacket.SetVolume`
-- `ClientboundUpdateSoundDataPacket.SetPitch`
-- `ClientboundUpdateSoundDataPacket.Fade`
-- `ClientboundUpdateSoundDataPacket.SeekTo`
-- `ClientboundUpdateSoundDataPacket.Pause`
-- `ClientboundUpdateSoundDataPacket.Resume`
+The previous 44 selector gaps are resolved by the zero-based VarUInt32 rule for wire variants. No new discriminator field is needed. Entering those alternatives reveals 50 additional unresolved nodes, so the total changes from 73 to 79 rather than falling to 29. See [the rule and PlayerList example](mojang-u6-metadata.md#variant-selectors).
 
-### 15 ItemStackNetIdVariant integer occurrences (13 fields)
+### 50 ItemStackNetIdVariant occurrences (16 fields)
+
 - `AddPlayerPacket.Carried Item`
 - `AddItemActorPacket.Item`
+- `InventoryTransactionPacket.Transaction` (13 occurrences)
 - `MobEquipmentPacket.Item`
 - `MobArmorEquipmentPacket.Head`
 - `MobArmorEquipmentPacket.Torso`
@@ -67,10 +34,17 @@ Pinned source `19e25de129227373e97dfa340af93ccf12c0feb9`, Minecraft 1.26.60-beta
 - `InventorySlotPacket.Storage Item`
 - `InventorySlotPacket.Item`
 - `PlayerAuthInputPacket.Item Use Transaction` (3 occurrences)
+- `PlayerAuthInputPacket.Item Stack Request` (11 occurrences)
+- `ItemStackRequestPacket.Requests` (11 occurrences)
 
-### 13 untyped schemas (NBT/payload interpretation needed)
+### 18 untyped payload occurrences
+
 - `StartGamePacket.Block Properties`
 - `StartGamePacket.Player Property Data`
+- `AddPlayerPacket.Entity Data`
+- `AddActorPacket.Actor Data`
+- `AddItemActorPacket.Entity Data`
+- `SetActorDataPacket.Actor Data`
 - `BlockActorDataPacket.Actor Data Tags`
 - `UpdateTradePacket.Data`
 - `UpdateEquipPacket.Data`
@@ -82,21 +56,36 @@ Pinned source `19e25de129227373e97dfa340af93ccf12c0feb9`, Minecraft 1.26.60-beta
 - `SyncActorPropertyPacket.Property Data`
 - `AddVolumeEntityPacket.Components`
 - `JigsawStructureDataPacket.Jigsaw Structure Data Tag`
+- `ClientboundDataStorePacket.Updates`
+
+### 10 colour alternatives
+
+All ten occurrences are inside `ClientboundAttributeLayerSyncPacket.Data`.
+The colour schemas describe alternate JSON representations without a wire
+selector marker. Their actual binary representation still needs evidence.
 
 ### 1 WebToken self-reference
+
 - `ServerToClientHandshakePacket.Handshake WebToken`
 
-Selectors need exact discriminator values, primitive widths and control-field relationships, not guessed oneOf positions. Untyped values need payload semantics and NBT encoding evidence. ItemStackNetIdVariant needs an explicit integer wire representation; WebToken needs concrete string/buffer structure. Also reconcile apparently resolved optionals/defaults, bytes versus text, signedness/prefixes, and encode/decode asymmetry against the exact same release—zero unresolved nodes alone does not prove wire correctness.
+The largest remaining metadata win is the precise wire representation of
+[ItemStackNetIdVariant](https://github.com/Mojang/bedrock-protocol-docs/blob/19e25de129227373e97dfa340af93ccf12c0feb9/json/ItemStackNetIdVariant.json).
+Next are concrete encodings for untyped payloads, including which NBT format
+and framing each field uses, followed by colour and WebToken representations.
+Byte examples for representative variants would help independently verify
+these rules. Also reconcile optionals/defaults, bytes versus text, signedness,
+length prefixes, and encode/decode asymmetry against the exact same release.
+Zero unresolved nodes alone does not prove wire correctness.
 
 ## Existing manual evidence categories
 
 - Source corrections: arbitrary byte buffers versus UTF-8 (login, chunks, item user data, features, hashes, script/debug/photo payloads); default/required/conditional fields; flattened packet structure; discriminator widths and values; fixed-u8 inventory/equipment fields; NBT editor payload; camera target mode; optional booleans; diagnostics arrays; Text category; PrimitiveShapes attached actor runtime ID.
 
-- Adjudications: .40 has 177 complete-field selections; .50 has 183, of which 137 carry prior decisions after byte-equivalence checks and 46 are reviewed new selections (44 BDS-graph selections, PrimitiveShapes Lens evidence, pack-setting Mojang selection). Commands `carry-adjudications` and `adjudicate-claims` already automate safe fingerprinting; humans review changes and evidence, not manually recompute hashes.
+- Adjudications: .40 has 168 complete-field selections; .50 has 174, of which 128 carry prior decisions after byte-equivalence checks and 46 are reviewed new selections (44 BDS-graph selections, PrimitiveShapes Lens evidence, pack-setting Mojang selection). Commands `carry-adjudications` and `adjudicate-claims` already automate safe fingerprinting; humans review changes and evidence, not manually recompute hashes.
 
 - Direction overlays:229/.40 and 231/.50 packet entries, pinned to gophertunnel pool evidence. NBT overlays:18 exact field-path encoding entries per snapshot. Add/update machine extraction with exhaustiveness guards for new versions.
 
-- Consumer metadata overlays: naming 112 entries per snapshot; domains 498/.40 and 504/.50; documentation 859/.40 and 834/.50. These are ergonomics/semantic mappings, not unresolved wire layouts. Seeding exists under tools/seed-gophertunnel-overlays; changed/new names and hand-written integration still need review.
+- Consumer metadata overlays: naming 121/.40 and 120/.50 entries; domains 504/.40 and 510/.50; documentation 859/.40 and 834/.50. These are ergonomics/semantic mappings, not unresolved wire layouts. Seeding exists under tools/seed-gophertunnel-overlays; changed/new names and hand-written integration still need review.
 
 - Same-protocol hotfix derivation currently supports only wrap_optional and needs pinned exact-version evidence/base hashes. Other hotfix shapes require implementing an explicit safe operation, not arbitrary replacement.
 
@@ -172,7 +161,7 @@ Affected IDs: 8, 9, 11, 12, 15, 30, 31, 32, 49, 50, 52, 56, 65, 80, 81, 86, 93, 
 
 2. Group changed disagreements by reusable type and present exact evidence to review. Safely carry unchanged adjudications using the existing command; never blindly carry corrections or let one source silently win. Add official metadata to remove manual decisions where it actually supplies equivalent evidence.
 
-3. Resolve the raw union/primitive/NBT/WebToken gaps above and verify source optionality and directional asymmetry. Some require better metadata/frontends, some a wire capture or binary serializer trace. Human adjudication remains appropriate whenever the upstream sources contradict.
+3. Resolve the remaining raw primitive, untyped payload, colour and WebToken gaps above and verify source optionality and directional asymmetry. Some require better metadata/frontends, some a wire capture or binary serializer trace. Human adjudication remains appropriate whenever the upstream sources contradict.
 
 4. Complete independent verification: comparator control-flow/recursive/encapsulated-buffer handling; per-version oracle locks and coverage; live decode/encode corpus of rare branches. Axolotl parity is currently a synthetic small check in make regen; the parity adapter rejects asymmetric fields, and the CI parity command exercises only a small synthetic fixture. Recursive and encapsulated markers already have adapter support.
 

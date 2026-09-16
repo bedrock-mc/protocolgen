@@ -540,13 +540,18 @@ impl wire::Encode for EASNoiseAlignment {
     fn encode(&self, writer: &mut wire::Writer) {
         self.type_.encode(writer);
         self.value.encode(writer);
+        wire::assert_number_limits(self.value.0, Some(0), None);
     }
 }
 
 impl wire::Decode for EASNoiseAlignment {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let type_ = <EASNoiseAlignmentType as wire::Decode>::decode(reader)?;
-        let value = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let value = {
+            let value = <wire::VarUInt as wire::Decode>::decode(reader)?;
+            wire::validate_number_limits(value.0, Some(0), None)?;
+            value
+        };
         Ok(Self { type_, value })
     }
 }
@@ -8208,7 +8213,7 @@ impl wire::Encode for BedrockDDUI {
                 wire::encode_string_limits(writer, data_store_name, 1, 1000);
                 wire::encode_string_limits(writer, property, 1, 1000);
                 update_count.encode(writer);
-                wire::assert_number_limits(update_count.0, None, Some(4294967294));
+                wire::assert_number_limits(update_count.0, Some(0), Some(4294967294));
                 the_new_property_value.encode(writer);
             }
             Self::DataStoreRemoval { data_store_name } => {
@@ -8230,7 +8235,7 @@ impl wire::Decode for BedrockDDUI {
                 let property = wire::decode_string_limits(reader, 1, 1000)?;
                 let update_count = {
                     let value = <wire::U32LE as wire::Decode>::decode(reader)?;
-                    wire::validate_number_limits(value.0, None, Some(4294967294))?;
+                    wire::validate_number_limits(value.0, Some(0), Some(4294967294))?;
                     value
                 };
                 let the_new_property_value = <DynamicValue as wire::Decode>::decode(reader)?;
@@ -8332,18 +8337,13 @@ pub struct DataItemEntry {
 impl wire::Encode for DataItemEntry {
     fn encode(&self, writer: &mut wire::Writer) {
         self.id.encode(writer);
-        wire::assert_number_limits(self.id.0, Some(0), None);
         self.payload.encode(writer);
     }
 }
 
 impl wire::Decode for DataItemEntry {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let id = {
-            let value = <wire::VarUInt as wire::Decode>::decode(reader)?;
-            wire::validate_number_limits(value.0, Some(0), None)?;
-            value
-        };
+        let id = <wire::VarUInt as wire::Decode>::decode(reader)?;
         let payload = <DataItemEntryValue as wire::Decode>::decode(reader)?;
         Ok(Self { id, payload })
     }
@@ -8587,9 +8587,12 @@ impl wire::Encode for EASEnvironmentAttributeData {
             None => writer.write_u8(0),
         }
         self.current_transition_ticks.encode(writer);
+        wire::assert_number_limits(self.current_transition_ticks.0, Some(0), None);
         self.total_transition_ticks.encode(writer);
+        wire::assert_number_limits(self.total_transition_ticks.0, Some(0), None);
         self.easing.encode(writer);
         self.local_transition_ticks.encode(writer);
+        wire::assert_number_limits(self.local_transition_ticks.0, Some(0), None);
         self.noise_transition.encode(writer);
         self.noise_alignment.encode(writer);
     }
@@ -8613,10 +8616,22 @@ impl wire::Decode for EASEnvironmentAttributeData {
                 Some(<EAS as wire::Decode>::decode(reader)?)
             }
         };
-        let current_transition_ticks = <wire::U32LE as wire::Decode>::decode(reader)?;
-        let total_transition_ticks = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let current_transition_ticks = {
+            let value = <wire::U32LE as wire::Decode>::decode(reader)?;
+            wire::validate_number_limits(value.0, Some(0), None)?;
+            value
+        };
+        let total_transition_ticks = {
+            let value = <wire::U32LE as wire::Decode>::decode(reader)?;
+            wire::validate_number_limits(value.0, Some(0), None)?;
+            value
+        };
         let easing = <String as wire::Decode>::decode(reader)?;
-        let local_transition_ticks = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let local_transition_ticks = {
+            let value = <wire::U32LE as wire::Decode>::decode(reader)?;
+            wire::validate_number_limits(value.0, Some(0), None)?;
+            value
+        };
         let noise_transition = <bool as wire::Decode>::decode(reader)?;
         let noise_alignment = <EASNoiseAlignment as wire::Decode>::decode(reader)?;
         Ok(Self {

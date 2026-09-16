@@ -5994,6 +5994,7 @@ impl wire::Encode for ItemInstance {
         self.stack_size.encode(writer);
         wire::assert_number_limits(self.stack_size.0, Some(1), Some(64));
         self.block_runtime_id.encode(writer);
+        wire::assert_number_limits(self.block_runtime_id.0, Some(0), None);
         self.user_data_buffer.encode(writer);
     }
 }
@@ -6002,7 +6003,7 @@ impl wire::Decode for ItemInstance {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let item_descriptor = <ItemDescriptor as wire::Decode>::decode(reader)?;
         let stack_size = { let value = <wire::U16LE as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(1), Some(64))?; value };
-        let block_runtime_id = <wire::VarUInt as wire::Decode>::decode(reader)?;
+        let block_runtime_id = { let value = <wire::VarUInt as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
         let user_data_buffer = <bytes::Bytes as wire::Decode>::decode(reader)?;
         Ok(Self {
             item_descriptor,
@@ -6374,6 +6375,7 @@ impl wire::Encode for StackRequestAction {
             Self::CreateActionData { action_type, results_index } => {
                 action_type.encode(writer);
                 results_index.encode(writer);
+                wire::assert_number_limits(results_index.0, Some(0), Some(255));
             }
             Self::LabTableCombineActionData { action_type } => {
                 action_type.encode(writer);
@@ -6395,13 +6397,13 @@ impl wire::Encode for StackRequestAction {
                 action_type.encode(writer);
                 recipe_net_id.encode(writer);
                 number_of_requested_crafts.encode(writer);
-                wire::assert_number_limits(number_of_requested_crafts.0, Some(1), None);
+                wire::assert_number_limits(number_of_requested_crafts.0, Some(1), Some(255));
             }
             Self::CraftRecipeAutoActionData { action_type, recipe_net_id, number_of_requested_crafts, ingredients } => {
                 action_type.encode(writer);
                 recipe_net_id.encode(writer);
                 number_of_requested_crafts.encode(writer);
-                wire::assert_number_limits(number_of_requested_crafts.0, Some(1), None);
+                wire::assert_number_limits(number_of_requested_crafts.0, Some(1), Some(255));
                 wire::encode_collection(writer, ingredients.as_slice());
             }
             Self::CraftCreativeActionData { action_type, creative_item_net_id, number_of_requested_crafts } => {
@@ -6409,7 +6411,7 @@ impl wire::Encode for StackRequestAction {
                 creative_item_net_id.encode(writer);
                 wire::assert_number_limits(creative_item_net_id.0, Some(1), None);
                 number_of_requested_crafts.encode(writer);
-                wire::assert_number_limits(number_of_requested_crafts.0, Some(1), None);
+                wire::assert_number_limits(number_of_requested_crafts.0, Some(1), Some(255));
             }
             Self::CraftRecipeOptionalActionData { action_type, recipe_net_id, filtered_string_index } => {
                 action_type.encode(writer);
@@ -6420,7 +6422,7 @@ impl wire::Encode for StackRequestAction {
                 action_type.encode(writer);
                 recipe_net_id.encode(writer);
                 number_of_requested_crafts.encode(writer);
-                wire::assert_number_limits(number_of_requested_crafts.0, Some(1), None);
+                wire::assert_number_limits(number_of_requested_crafts.0, Some(1), Some(255));
                 repair_cost.encode(writer);
                 wire::assert_number_limits(repair_cost.0, Some(0), None);
             }
@@ -6428,7 +6430,7 @@ impl wire::Encode for StackRequestAction {
                 action_type.encode(writer);
                 pattern_name_id.encode(writer);
                 num_crafts.encode(writer);
-                wire::assert_number_limits(num_crafts.0, Some(1), None);
+                wire::assert_number_limits(num_crafts.0, Some(1), Some(255));
             }
             Self::CraftNonImplementedActionData { action_type } => {
                 action_type.encode(writer);
@@ -6437,7 +6439,7 @@ impl wire::Encode for StackRequestAction {
                 action_type.encode(writer);
                 wire::encode_collection_limits(writer, craft_results.as_slice(), 1, 18446744073709551615);
                 num_crafts.encode(writer);
-                wire::assert_number_limits(num_crafts.0, Some(1), None);
+                wire::assert_number_limits(num_crafts.0, Some(1), Some(255));
             }
         }
     }
@@ -6488,7 +6490,7 @@ impl wire::Decode for StackRequestAction {
             }
             6 => {
                 let action_type = <ItemStackRequestActionType as wire::Decode>::decode(reader)?;
-                let results_index = <wire::U8 as wire::Decode>::decode(reader)?;
+                let results_index = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), Some(255))?; value };
                 Self::CreateActionData { action_type, results_index }
             }
             7 => {
@@ -6511,20 +6513,20 @@ impl wire::Decode for StackRequestAction {
             10 => {
                 let action_type = <ItemStackRequestActionType as wire::Decode>::decode(reader)?;
                 let recipe_net_id = <RecipeNetID as wire::Decode>::decode(reader)?;
-                let number_of_requested_crafts = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(1), None)?; value };
+                let number_of_requested_crafts = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(1), Some(255))?; value };
                 Self::CraftRecipeActionData { action_type, recipe_net_id, number_of_requested_crafts }
             }
             11 => {
                 let action_type = <ItemStackRequestActionType as wire::Decode>::decode(reader)?;
                 let recipe_net_id = <RecipeNetID as wire::Decode>::decode(reader)?;
-                let number_of_requested_crafts = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(1), None)?; value };
+                let number_of_requested_crafts = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(1), Some(255))?; value };
                 let ingredients = wire::decode_collection::<RecipeIngredient>(reader, 4)?;
                 Self::CraftRecipeAutoActionData { action_type, recipe_net_id, number_of_requested_crafts, ingredients }
             }
             12 => {
                 let action_type = <ItemStackRequestActionType as wire::Decode>::decode(reader)?;
                 let creative_item_net_id = { let value = <wire::VarUInt as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(1), None)?; value };
-                let number_of_requested_crafts = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(1), None)?; value };
+                let number_of_requested_crafts = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(1), Some(255))?; value };
                 Self::CraftCreativeActionData { action_type, creative_item_net_id, number_of_requested_crafts }
             }
             13 => {
@@ -6536,14 +6538,14 @@ impl wire::Decode for StackRequestAction {
             14 => {
                 let action_type = <ItemStackRequestActionType as wire::Decode>::decode(reader)?;
                 let recipe_net_id = <wire::I32LE as wire::Decode>::decode(reader)?;
-                let number_of_requested_crafts = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(1), None)?; value };
+                let number_of_requested_crafts = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(1), Some(255))?; value };
                 let repair_cost = { let value = <wire::ZigZag32 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
                 Self::CraftRepairAndDisenchantActionData { action_type, recipe_net_id, number_of_requested_crafts, repair_cost }
             }
             15 => {
                 let action_type = <ItemStackRequestActionType as wire::Decode>::decode(reader)?;
                 let pattern_name_id = <String as wire::Decode>::decode(reader)?;
-                let num_crafts = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(1), None)?; value };
+                let num_crafts = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(1), Some(255))?; value };
                 Self::CraftLoomActionData { action_type, pattern_name_id, num_crafts }
             }
             16 => {
@@ -6553,7 +6555,7 @@ impl wire::Decode for StackRequestAction {
             17 => {
                 let action_type = <ItemStackRequestActionType as wire::Decode>::decode(reader)?;
                 let craft_results = wire::decode_collection_limits::<ItemInstance>(reader, 6, 1, 18446744073709551615)?;
-                let num_crafts = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(1), None)?; value };
+                let num_crafts = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(1), Some(255))?; value };
                 Self::CraftResultsActionData { action_type, craft_results, num_crafts }
             }
             value => {
@@ -6817,6 +6819,7 @@ impl wire::Encode for StackRequestSlotInfo {
     fn encode(&self, writer: &mut wire::Writer) {
         self.full_container_name.encode(writer);
         self.slot.encode(writer);
+        wire::assert_number_limits(self.slot.0, Some(0), Some(255));
         self.net_id_variant.encode(writer);
     }
 }
@@ -6824,7 +6827,7 @@ impl wire::Encode for StackRequestSlotInfo {
 impl wire::Decode for StackRequestSlotInfo {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let full_container_name = <FullContainerName as wire::Decode>::decode(reader)?;
-        let slot = <wire::U8 as wire::Decode>::decode(reader)?;
+        let slot = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), Some(255))?; value };
         let net_id_variant = <wire::I32LE as wire::Decode>::decode(reader)?;
         Ok(Self {
             full_container_name,
@@ -7129,7 +7132,7 @@ impl wire::Encode for BedrockDDUI {
                 wire::encode_string_limits(writer, data_store_name, 1, 1000);
                 wire::encode_string_limits(writer, property, 1, 1000);
                 update_count.encode(writer);
-                wire::assert_number_limits(update_count.0, None, Some(4294967294));
+                wire::assert_number_limits(update_count.0, Some(0), Some(4294967294));
                 the_new_property_value.encode(writer);
             }
             Self::DataStoreRemoval { data_store_name } => {
@@ -7147,7 +7150,7 @@ impl wire::Decode for BedrockDDUI {
             1 => {
                 let data_store_name = wire::decode_string_limits(reader, 1, 1000)?;
                 let property = wire::decode_string_limits(reader, 1, 1000)?;
-                let update_count = { let value = <wire::U32LE as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, None, Some(4294967294))?; value };
+                let update_count = { let value = <wire::U32LE as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), Some(4294967294))?; value };
                 let the_new_property_value = <DynamicValue as wire::Decode>::decode(reader)?;
                 Self::DataStoreChange { data_store_name, property, update_count, the_new_property_value }
             }
@@ -7355,14 +7358,13 @@ pub struct DataItemEntry {
 impl wire::Encode for DataItemEntry {
     fn encode(&self, writer: &mut wire::Writer) {
         self.id.encode(writer);
-        wire::assert_number_limits(self.id.0, Some(0), None);
         self.payload.encode(writer);
     }
 }
 
 impl wire::Decode for DataItemEntry {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let id = { let value = <wire::VarUInt as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
+        let id = <wire::VarUInt as wire::Decode>::decode(reader)?;
         let payload = <DataItemEntryValue as wire::Decode>::decode(reader)?;
         Ok(Self {
             id,
@@ -7725,9 +7727,12 @@ impl wire::Encode for EASEnvironmentAttributeData {
             None => writer.write_u8(0),
         }
         self.current_transition_ticks.encode(writer);
+        wire::assert_number_limits(self.current_transition_ticks.0, Some(0), None);
         self.total_transition_ticks.encode(writer);
+        wire::assert_number_limits(self.total_transition_ticks.0, Some(0), None);
         self.easing.encode(writer);
         self.local_transition_ticks.encode(writer);
+        wire::assert_number_limits(self.local_transition_ticks.0, Some(0), None);
         self.noise_transition.encode(writer);
     }
 }
@@ -7750,10 +7755,10 @@ impl wire::Decode for EASEnvironmentAttributeData {
                 Some(<EAS as wire::Decode>::decode(reader)?)
             }
         };
-        let current_transition_ticks = <wire::U32LE as wire::Decode>::decode(reader)?;
-        let total_transition_ticks = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let current_transition_ticks = { let value = <wire::U32LE as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
+        let total_transition_ticks = { let value = <wire::U32LE as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
         let easing = <String as wire::Decode>::decode(reader)?;
-        let local_transition_ticks = <wire::U32LE as wire::Decode>::decode(reader)?;
+        let local_transition_ticks = { let value = <wire::U32LE as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
         let noise_transition = <bool as wire::Decode>::decode(reader)?;
         Ok(Self {
             attribute_name,

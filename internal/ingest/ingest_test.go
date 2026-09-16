@@ -24,7 +24,7 @@ func TestMojangIngestionRetainsWireVocabulary(t *testing.T) {
 			"Choice": map[string]any{"oneOf": []any{
 				map[string]any{"title": "None", "type": "null", "x-ordinal-index": 0},
 				map[string]any{"title": "Payload", "type": "string", "x-ordinal-index": 7},
-			}, "x-control-value-type": "uint8", "x-ordinal-index": 4},
+			}, "x-control-value-type": "uint32", "x-ordinal-index": 4},
 			"Mode": map[string]any{"type": "integer", "x-underlying-type": "uint8", "enum": []string{"Ready", "Later"}, "x-enum-binary-value": []int{4, 9}, "x-serialization-options": []string{"Enum-as-Value"}, "x-ordinal-index": 5},
 		},
 		"required": []string{"Bytes", "Fixed", "Choice", "Mode"},
@@ -48,7 +48,7 @@ func TestMojangIngestionRetainsWireVocabulary(t *testing.T) {
 	if got := result.Claims[3].Encode.Kind; got != manifest.KindFixedArray || result.Claims[3].Encode.Length != 2 {
 		t.Errorf("fixed array = %+v", result.Claims[3].Encode)
 	}
-	if got := result.Claims[4].Encode.Kind; got != manifest.KindUnion || result.Claims[4].Encode.Variants[1].Value != 7 {
+	if got := result.Claims[4].Encode.Kind; got != manifest.KindUnion || result.Claims[4].Encode.Variants[1].Value != 1 {
 		t.Errorf("union = %+v", result.Claims[4].Encode)
 	}
 	if got := result.Claims[5].Encode.Kind; got != manifest.KindEnum || result.Claims[5].Encode.Variants[0].Value != 4 {
@@ -75,6 +75,17 @@ func TestMojangIngestionRetainsValidationConstraints(t *testing.T) {
 				t.Fatalf("constraints = %#v, want %#v", node.Constraints, test.want)
 			}
 		})
+	}
+}
+
+func TestMojangArrayIgnoresObjectPropertyBounds(t *testing.T) {
+	lowerer := &mojangLowerer{documents: map[string]any{}, active: map[string]bool{}}
+	node := lowerer.lowerSchema(map[string]any{
+		"type": "array", "items": map[string]any{"type": "string"},
+		"maxProperties": 65535, "maxItems": 100,
+	}, "Resource_Pack_Client_Response_-_Downloading.json", "Downloading Packs")
+	if node.Kind != manifest.KindArray || node.Constraints == nil || node.Constraints.MaxProperties != nil || node.Constraints.MaxItems == nil || *node.Constraints.MaxItems != 100 {
+		t.Fatalf("array = %#v, want only the valid item bound", node)
 	}
 }
 
@@ -154,17 +165,78 @@ func TestMojangBareSelfReferenceIsUnresolved(t *testing.T) {
 	}
 }
 
-func TestMojangUnionInfersMissingPositionalSelectorWhenPublishedSelectorsConfirmOrder(t *testing.T) {
+func TestMojangUnionUsesPositionalVaruint32WithoutCompressionOrOrdinals(t *testing.T) {
 	lowerer := &mojangLowerer{documents: map[string]any{}, active: map[string]bool{}}
 	node := lowerer.lowerSchema(map[string]any{
+		"x-control-value-type": "uint32",
 		"oneOf": []any{
 			map[string]any{"title": "Payload", "type": "string"},
-			map[string]any{"title": "None", "type": "null", "x-ordinal-index": 1},
+			map[string]any{"title": "None", "type": "null"},
 		},
-		"x-control-value-type": "uint32",
 	}, "Packet.json", "PacketChoice")
 	if node.Kind != manifest.KindUnion || len(node.Variants) != 2 || node.Variants[0].Value != 0 || node.Variants[1].Value != 1 {
 		t.Fatalf("union = %#v, want positional selectors 0 and 1", node)
+	}
+	if node.Control.Primitive == nil || node.Control.Primitive.Code != "var_u32" {
+		t.Fatalf("control = %#v, want varuint32", node.Control)
+	}
+}
+
+func TestMojangUnionKeepsInnerTagSeparateFromSelector(t *testing.T) {
+	lowerer := &mojangLowerer{documents: map[string]any{}, active: map[string]bool{}}
+	branches := []any{}
+	for _, value := range []int{1, 0} {
+		branches = append(branches, map[string]any{
+			"type": "object",
+			"properties": map[string]any{
+				"Action": map[string]any{
+					"type": "string", "enum": []any{"Action"},
+					"x-enum-binary-value": []any{value}, "x-underlying-type": "uint8",
+					"x-serialization-options": []any{"Enum-as-Value"}, "x-ordinal-index": 0,
+				},
+			},
+			"required": []any{"Action"},
+		})
+	}
+	node := lowerer.lowerSchema(map[string]any{
+		"oneOf": branches, "x-control-value-type": "uint32",
+	}, "Packet.json", "Entries")
+	if node.Kind != manifest.KindUnion || node.Control.Primitive == nil || node.Control.Primitive.Code != "var_u32" || len(node.Variants) != 2 {
+		t.Fatalf("union = %#v, want two alternatives with a varuint32 selector", node)
+	}
+	for i, variant := range node.Variants {
+		if variant.Value != int64(i) || variant.Encode.Kind != manifest.KindStruct || len(variant.Encode.Fields) != 1 {
+			t.Fatalf("variant %d = %#v, want its index followed by the Action field", i, variant)
+		}
+		action := variant.Encode.Fields[0].Encode
+		if action.Kind != manifest.KindEnum || action.Primitive.Code != "u8" || len(action.Variants) != 1 || action.Variants[0].Value != int64(1-i) {
+			t.Fatalf("Action %d = %#v, want uint8 value %d", i, action, 1-i)
+		}
+	}
+}
+
+func TestMojangUnionRejectsMissingOrMalformedAlternatives(t *testing.T) {
+	for _, branches := range [][]any{{}, {"invalid"}} {
+		lowerer := &mojangLowerer{documents: map[string]any{}, active: map[string]bool{}}
+		node := lowerer.lowerSchema(map[string]any{"oneOf": branches, "x-control-value-type": "uint32"}, "Packet.json", "Choice")
+		if node.Kind != manifest.KindUnresolved {
+			t.Fatalf("union = %#v, want unresolved malformed alternatives", node)
+		}
+	}
+}
+
+// TestMojangJSONColourAlternativesRemainUnresolved uses the published Color255RGB shape.
+func TestMojangJSONColourAlternativesRemainUnresolved(t *testing.T) {
+	lowerer := &mojangLowerer{documents: map[string]any{}, active: map[string]bool{}}
+	node := lowerer.lowerSchema(map[string]any{
+		"title": "Color255RGB",
+		"oneOf": []any{
+			map[string]any{"type": "string", "pattern": "^#[a-fA-F0-9]{6}$"},
+			map[string]any{"type": "array", "items": map[string]any{"type": "integer", "x-underlying-type": "int32"}, "minItems": 3, "maxItems": 3},
+		},
+	}, "Color255RGB.json", "Color255RGB")
+	if node.Kind != manifest.KindUnresolved {
+		t.Fatalf("colour = %#v, want unresolved JSON alternatives", node)
 	}
 }
 
