@@ -10,6 +10,9 @@ const (
 	FurnaceLayoutDefault       FurnaceLayout = 2
 )
 
+// Marshal reads or writes FurnaceLayout through its int32 wire encoding.
+func (x *FurnaceLayout) Marshal(io IO) { io.Varint32((*int32)(x)) }
+
 type FurnaceLeftTabIndex int32
 
 const (
@@ -21,6 +24,9 @@ const (
 	FurnaceLeftTabIndexInventory    FurnaceLeftTabIndex = 5
 )
 
+// Marshal reads or writes FurnaceLeftTabIndex through its int32 wire encoding.
+func (x *FurnaceLeftTabIndex) Marshal(io IO) { io.Varint32((*int32)(x)) }
+
 type FurnaceOptions struct {
 	LeftFurnaceTab FurnaceLeftTabIndex
 	Filtering      bool
@@ -29,9 +35,9 @@ type FurnaceOptions struct {
 
 // Marshal reads or writes FurnaceOptions using its canonical wire layout.
 func (x *FurnaceOptions) Marshal(io IO) {
-	IntegerFunc(&x.LeftFurnaceTab, io.Varint32)
+	x.LeftFurnaceTab.Marshal(io)
 	io.Bool(&x.Filtering)
-	IntegerFunc(&x.Layout, io.Varint32)
+	x.Layout.Marshal(io)
 }
 
 type FurnaceType uint8
@@ -42,3 +48,6 @@ const (
 	FurnaceTypeBlastFurnace FurnaceType = 2
 	FurnaceTypeSmoker       FurnaceType = 3
 )
+
+// Marshal reads or writes FurnaceType through its uint8 wire encoding.
+func (x *FurnaceType) Marshal(io IO) { io.Uint8((*uint8)(x)) }

@@ -10,7 +10,7 @@ type ClientboundControlSchemeSet struct {
 
 // Marshal reads or writes ClientboundControlSchemeSet using its canonical wire layout.
 func (x *ClientboundControlSchemeSet) Marshal(io protocol.IO) {
-	protocol.IntegerFunc(&x.ControlScheme, io.Uint8)
+	x.ControlScheme.Marshal(io)
 }
 
 // ID returns the protocol ID for ClientboundControlSchemeSet.

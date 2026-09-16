@@ -16,7 +16,6 @@ type UpdateClientInputLocks struct {
 // Marshal reads or writes UpdateClientInputLocks using its canonical wire layout.
 func (x *UpdateClientInputLocks) Marshal(io protocol.IO) {
 	io.Varuint32(&x.InputLockComponentData)
-	protocol.Minimum(io, &x.InputLockComponentData, 0)
 }
 
 // ID returns the protocol ID for UpdateClientInputLocks.

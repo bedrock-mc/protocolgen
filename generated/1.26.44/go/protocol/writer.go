@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"image/color"
 	"math"
+	"math/bits"
 
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/google/uuid"
@@ -281,49 +282,35 @@ func (w *Writer) RGBA(x *color.RGBA) {
 	w.Uint32(&value)
 }
 
-func (w *Writer) Bitset(words []uint64, bits uint64) {
-	wordCount := bits / 64
-	if bits%64 != 0 {
+func (w *Writer) Bitset(words []uint64, width uint64) {
+	wordCount := width / 64
+	if width%64 != 0 {
 		wordCount++
 	}
 	if uint64(len(words)) != wordCount {
 		w.InvalidValue(len(words), "bitset word count does not match declared width")
 		return
 	}
-	if bits%64 != 0 && words[len(words)-1]>>(bits%64) != 0 {
+	if width%64 != 0 && words[len(words)-1]>>(width%64) != 0 {
 		w.InvalidValue(words[len(words)-1], "bitset contains bits outside its declared width")
 		return
 	}
-	last := uint64(0)
-	found := false
-	for index, word := range words {
-		if word == 0 {
-			continue
-		}
-		found = true
-		for bit := uint64(64); bit > 0; bit-- {
-			if word&(uint64(1)<<(bit-1)) != 0 {
-				last = uint64(index)*64 + bit - 1
-				break
-			}
-		}
-		if index == len(words)-1 {
-			break
+	last := -1
+	for index := len(words) - 1; index >= 0 && last < 0; index-- {
+		if words[index] != 0 {
+			last = index*64 + bits.Len64(words[index]) - 1
 		}
 	}
-	if !found {
+	if last < 0 {
 		w.writeByte(0)
 		return
 	}
-	groups := last/7 + 1
+	groups := uint64(last)/7 + 1
 	for group := uint64(0); group < groups; group++ {
 		offset := group * 7
-		width := bits - offset
-		if width > 7 {
-			width = 7
-		}
+		remaining := min(width-offset, 7)
 		var value byte
-		for bit := uint64(0); bit < width; bit++ {
+		for bit := uint64(0); bit < remaining; bit++ {
 			index := offset + bit
 			if words[index/64]&(uint64(1)<<(index%64)) != 0 {
 				value |= 1 << bit

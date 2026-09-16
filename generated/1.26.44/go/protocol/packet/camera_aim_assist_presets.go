@@ -21,7 +21,7 @@ type CameraAimAssistPresets struct {
 func (x *CameraAimAssistPresets) Marshal(io protocol.IO) {
 	protocol.Slice(io, &x.CameraAimAssistPresets)
 	protocol.Slice(io, &x.CameraAimAssistCategories)
-	protocol.IntegerFunc(&x.Operation, io.Uint8)
+	x.Operation.Marshal(io)
 }
 
 // ID returns the protocol ID for CameraAimAssistPresets.

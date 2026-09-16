@@ -20,7 +20,7 @@ type EntityLink struct {
 func (x *EntityLink) Marshal(io IO) {
 	io.ActorUniqueID(&x.TargetA)
 	io.ActorUniqueID(&x.TargetB)
-	IntegerFunc(&x.Type, io.Uint8)
+	x.Type.Marshal(io)
 	io.Bool(&x.Immediate)
 	io.Bool(&x.PassengerInitiated)
 	io.Float32(&x.VehicleAngularVelocity)

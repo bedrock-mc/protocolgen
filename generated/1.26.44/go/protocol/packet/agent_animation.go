@@ -13,7 +13,7 @@ type AgentAnimation struct {
 
 // Marshal reads or writes AgentAnimation using its canonical wire layout.
 func (x *AgentAnimation) Marshal(io protocol.IO) {
-	protocol.IntegerFunc(&x.AgentAnimation, io.Uint8)
+	x.AgentAnimation.Marshal(io)
 	io.ActorRuntimeID(&x.RuntimeID)
 }
 

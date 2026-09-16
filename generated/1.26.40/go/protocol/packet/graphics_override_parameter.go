@@ -33,7 +33,7 @@ func (x *GraphicsOverrideParameter) Marshal(io protocol.IO) {
 	protocol.OptionalFunc(io, &x.PlayerIdentifier, func(value *string) {
 		io.StringLimits(value, 0, 255)
 	})
-	protocol.IntegerFunc(&x.IdentifierForParameter, io.Uint8)
+	x.IdentifierForParameter.Marshal(io)
 	io.Bool(&x.ResetParameter)
 }
 

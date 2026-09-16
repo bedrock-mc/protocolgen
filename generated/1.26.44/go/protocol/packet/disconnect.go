@@ -15,7 +15,7 @@ type Disconnect struct {
 
 // Marshal reads or writes Disconnect using its canonical wire layout.
 func (x *Disconnect) Marshal(io protocol.IO) {
-	protocol.IntegerFunc(&x.Reason, io.Varint32)
+	x.Reason.Marshal(io)
 	protocol.MarshalDisconnectMessages(io, &x.Messages)
 }
 

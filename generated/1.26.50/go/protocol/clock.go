@@ -20,59 +20,25 @@ func (x *SyncWorldClockStateData) Marshal(io IO) {
 }
 
 type SyncWorldClocksData interface {
-	isSyncWorldClocksData()
+	Marshaler
+	tagSyncWorldClocksData() uint32
 }
 
 // MarshalSyncWorldClocksData reads or writes the SyncWorldClocksData union using its canonical wire layout.
 func MarshalSyncWorldClocksData(io IO, x *SyncWorldClocksData) {
-	UnionFunc(io,
-		func() {
-			var tag uint32
-			io.Varuint32(&tag)
-			switch int64(tag) {
-			case 0:
-				value := new(SyncStateData)
-				value.Marshal(io)
-				*x = value
-			case 1:
-				value := new(InitializeRegistryData)
-				value.Marshal(io)
-				*x = value
-			case 2:
-				value := new(AddTimeMarkerData)
-				value.Marshal(io)
-				*x = value
-			case 3:
-				value := new(RemoveTimeMarkerData)
-				value.Marshal(io)
-				*x = value
-			default:
-				io.InvalidValue(tag, "unknown union tag")
-			}
-		},
-		func() {
-			switch value := (*x).(type) {
-			case *SyncStateData:
-				tag := uint32(0)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *InitializeRegistryData:
-				tag := uint32(1)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *AddTimeMarkerData:
-				tag := uint32(2)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *RemoveTimeMarkerData:
-				tag := uint32(3)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			default:
-				io.InvalidValue(*x, "unknown union value")
-			}
-		},
-	)
+	Union(io, x, io.Varuint32, SyncWorldClocksData.tagSyncWorldClocksData, func(tag uint32) SyncWorldClocksData {
+		switch tag {
+		case 0:
+			return new(SyncStateData)
+		case 1:
+			return new(InitializeRegistryData)
+		case 2:
+			return new(AddTimeMarkerData)
+		case 3:
+			return new(RemoveTimeMarkerData)
+		}
+		return nil
+	})
 }
 
 // TimeMarkerData represents a time marker within a world clock.

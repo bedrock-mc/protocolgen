@@ -19,9 +19,9 @@ type CodeBuilderSource struct {
 
 // Marshal reads or writes CodeBuilderSource using its canonical wire layout.
 func (x *CodeBuilderSource) Marshal(io protocol.IO) {
-	protocol.IntegerFunc(&x.Operation, io.Uint8)
-	protocol.IntegerFunc(&x.Category, io.Uint8)
-	protocol.IntegerFunc(&x.CodeStatus, io.Uint8)
+	x.Operation.Marshal(io)
+	x.Category.Marshal(io)
+	x.CodeStatus.Marshal(io)
 }
 
 // ID returns the protocol ID for CodeBuilderSource.

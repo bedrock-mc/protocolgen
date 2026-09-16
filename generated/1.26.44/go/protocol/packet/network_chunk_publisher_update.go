@@ -28,7 +28,6 @@ type NetworkChunkPublisherUpdate struct {
 func (x *NetworkChunkPublisherUpdate) Marshal(io protocol.IO) {
 	x.NewPositionForView.Marshal(io)
 	io.Varuint32(&x.NewRadiusForView)
-	protocol.Minimum(io, &x.NewRadiusForView, 0)
 	protocol.FuncSliceLimits(io, &x.ServerBuiltChunksList, io.Uint32, 0, 9216, func(value *protocol.ChunkPos) {
 		value.Marshal(io)
 	})

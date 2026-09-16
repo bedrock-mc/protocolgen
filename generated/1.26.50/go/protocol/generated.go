@@ -3,58 +3,30 @@
 package protocol
 
 type BedrockDDUIDataStoreUpdateData interface {
-	isBedrockDDUIDataStoreUpdateData()
+	Marshaler
+	tagBedrockDDUIDataStoreUpdateData() uint32
 }
 
 // MarshalBedrockDDUIDataStoreUpdateData reads or writes the BedrockDDUIDataStoreUpdateData union using its canonical wire layout.
 func MarshalBedrockDDUIDataStoreUpdateData(io IO, x *BedrockDDUIDataStoreUpdateData) {
-	UnionFunc(io,
-		func() {
-			var tag uint32
-			io.Varuint32(&tag)
-			switch int64(tag) {
-			case 0:
-				value := new(BedrockDDUIDataStoreUpdateDataDouble)
-				value.Marshal(io)
-				*x = value
-			case 1:
-				value := new(BedrockDDUIDataStoreUpdateDataBool)
-				value.Marshal(io)
-				*x = value
-			case 2:
-				value := new(BedrockDDUIDataStoreUpdateDataString)
-				value.Marshal(io)
-				*x = value
-			default:
-				io.InvalidValue(tag, "unknown union tag")
-			}
-		},
-		func() {
-			switch value := (*x).(type) {
-			case *BedrockDDUIDataStoreUpdateDataDouble:
-				tag := uint32(0)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *BedrockDDUIDataStoreUpdateDataBool:
-				tag := uint32(1)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *BedrockDDUIDataStoreUpdateDataString:
-				tag := uint32(2)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			default:
-				io.InvalidValue(*x, "unknown union value")
-			}
-		},
-	)
+	Union(io, x, io.Varuint32, BedrockDDUIDataStoreUpdateData.tagBedrockDDUIDataStoreUpdateData, func(tag uint32) BedrockDDUIDataStoreUpdateData {
+		switch tag {
+		case 0:
+			return new(BedrockDDUIDataStoreUpdateDataDouble)
+		case 1:
+			return new(BedrockDDUIDataStoreUpdateDataBool)
+		case 2:
+			return new(BedrockDDUIDataStoreUpdateDataString)
+		}
+		return nil
+	})
 }
 
 type BedrockDDUIDataStoreUpdateDataBool struct {
 	Value bool
 }
 
-func (*BedrockDDUIDataStoreUpdateDataBool) isBedrockDDUIDataStoreUpdateData() {}
+func (*BedrockDDUIDataStoreUpdateDataBool) tagBedrockDDUIDataStoreUpdateData() uint32 { return 1 }
 
 // Marshal reads or writes BedrockDDUIDataStoreUpdateDataBool using its canonical wire layout.
 func (x *BedrockDDUIDataStoreUpdateDataBool) Marshal(io IO) {
@@ -65,7 +37,7 @@ type BedrockDDUIDataStoreUpdateDataDouble struct {
 	Value float64
 }
 
-func (*BedrockDDUIDataStoreUpdateDataDouble) isBedrockDDUIDataStoreUpdateData() {}
+func (*BedrockDDUIDataStoreUpdateDataDouble) tagBedrockDDUIDataStoreUpdateData() uint32 { return 0 }
 
 // Marshal reads or writes BedrockDDUIDataStoreUpdateDataDouble using its canonical wire layout.
 func (x *BedrockDDUIDataStoreUpdateDataDouble) Marshal(io IO) {
@@ -76,7 +48,7 @@ type BedrockDDUIDataStoreUpdateDataString struct {
 	Value string
 }
 
-func (*BedrockDDUIDataStoreUpdateDataString) isBedrockDDUIDataStoreUpdateData() {}
+func (*BedrockDDUIDataStoreUpdateDataString) tagBedrockDDUIDataStoreUpdateData() uint32 { return 2 }
 
 // Marshal reads or writes BedrockDDUIDataStoreUpdateDataString using its canonical wire layout.
 func (x *BedrockDDUIDataStoreUpdateDataString) Marshal(io IO) {
@@ -116,145 +88,59 @@ func (b Bitset131) Load(i int) bool {
 func (b Bitset131) Len() int { return Bitset131Length }
 
 type DataItemEntryValue interface {
-	isDataItemEntryValue()
+	Marshaler
+	tagDataItemEntryValue() uint8
 }
 
 // MarshalDataItemEntryValue reads or writes the DataItemEntryValue union using its canonical wire layout.
 func MarshalDataItemEntryValue(io IO, x *DataItemEntryValue) {
-	UnionFunc(io,
-		func() {
-			var tag uint8
-			io.Uint8(&tag)
-			switch int64(tag) {
-			case 0:
-				value := new(DataItemByte)
-				value.Marshal(io)
-				*x = value
-			case 1:
-				value := new(DataItemShort)
-				value.Marshal(io)
-				*x = value
-			case 2:
-				value := new(DataItemInt)
-				value.Marshal(io)
-				*x = value
-			case 3:
-				value := new(DataItemFloat)
-				value.Marshal(io)
-				*x = value
-			case 4:
-				value := new(DataItemString)
-				value.Marshal(io)
-				*x = value
-			case 5:
-				value := new(DataItemCompoundTag)
-				value.Marshal(io)
-				*x = value
-			case 6:
-				value := new(DataItemPos)
-				value.Marshal(io)
-				*x = value
-			case 7:
-				value := new(DataItemInt64)
-				value.Marshal(io)
-				*x = value
-			case 8:
-				value := new(DataItemVec3)
-				value.Marshal(io)
-				*x = value
-			default:
-				io.InvalidValue(tag, "unknown union tag")
-			}
-		},
-		func() {
-			switch value := (*x).(type) {
-			case *DataItemByte:
-				tag := uint8(0)
-				io.Uint8(&tag)
-				value.Marshal(io)
-			case *DataItemShort:
-				tag := uint8(1)
-				io.Uint8(&tag)
-				value.Marshal(io)
-			case *DataItemInt:
-				tag := uint8(2)
-				io.Uint8(&tag)
-				value.Marshal(io)
-			case *DataItemFloat:
-				tag := uint8(3)
-				io.Uint8(&tag)
-				value.Marshal(io)
-			case *DataItemString:
-				tag := uint8(4)
-				io.Uint8(&tag)
-				value.Marshal(io)
-			case *DataItemCompoundTag:
-				tag := uint8(5)
-				io.Uint8(&tag)
-				value.Marshal(io)
-			case *DataItemPos:
-				tag := uint8(6)
-				io.Uint8(&tag)
-				value.Marshal(io)
-			case *DataItemInt64:
-				tag := uint8(7)
-				io.Uint8(&tag)
-				value.Marshal(io)
-			case *DataItemVec3:
-				tag := uint8(8)
-				io.Uint8(&tag)
-				value.Marshal(io)
-			default:
-				io.InvalidValue(*x, "unknown union value")
-			}
-		},
-	)
+	Union(io, x, io.Uint8, DataItemEntryValue.tagDataItemEntryValue, func(tag uint8) DataItemEntryValue {
+		switch tag {
+		case 0:
+			return new(DataItemByte)
+		case 1:
+			return new(DataItemShort)
+		case 2:
+			return new(DataItemInt)
+		case 3:
+			return new(DataItemFloat)
+		case 4:
+			return new(DataItemString)
+		case 5:
+			return new(DataItemCompoundTag)
+		case 6:
+			return new(DataItemPos)
+		case 7:
+			return new(DataItemInt64)
+		case 8:
+			return new(DataItemVec3)
+		}
+		return nil
+	})
 }
 
 type DisconnectMessages interface {
-	isDisconnectMessages()
+	Marshaler
+	tagDisconnectMessages() uint32
 }
 
 // MarshalDisconnectMessages reads or writes the DisconnectMessages union using its canonical wire layout.
 func MarshalDisconnectMessages(io IO, x *DisconnectMessages) {
-	UnionFunc(io,
-		func() {
-			var tag uint32
-			io.Varuint32(&tag)
-			switch int64(tag) {
-			case 0:
-				value := new(DisconnectMessagesData)
-				value.Marshal(io)
-				*x = value
-			case 1:
-				value := new(DisconnectMessagesEmpty)
-				value.Marshal(io)
-				*x = value
-			default:
-				io.InvalidValue(tag, "unknown union tag")
-			}
-		},
-		func() {
-			switch value := (*x).(type) {
-			case *DisconnectMessagesData:
-				tag := uint32(0)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *DisconnectMessagesEmpty:
-				tag := uint32(1)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			default:
-				io.InvalidValue(*x, "unknown union value")
-			}
-		},
-	)
+	Union(io, x, io.Varuint32, DisconnectMessages.tagDisconnectMessages, func(tag uint32) DisconnectMessages {
+		switch tag {
+		case 0:
+			return new(DisconnectMessagesData)
+		case 1:
+			return new(DisconnectMessagesEmpty)
+		}
+		return nil
+	})
 }
 
 type DisconnectMessagesEmpty struct {
 }
 
-func (*DisconnectMessagesEmpty) isDisconnectMessages() {}
+func (*DisconnectMessagesEmpty) tagDisconnectMessages() uint32 { return 1 }
 
 // Marshal reads or writes DisconnectMessagesEmpty using its canonical wire layout.
 func (x *DisconnectMessagesEmpty) Marshal(io IO) {
@@ -264,7 +150,7 @@ type DynamicValueBool struct {
 	Value bool
 }
 
-func (*DynamicValueBool) isDynamicValue() {}
+func (*DynamicValueBool) tagDynamicValue() int32 { return 1 }
 
 // Marshal reads or writes DynamicValueBool using its canonical wire layout.
 func (x *DynamicValueBool) Marshal(io IO) {
@@ -275,7 +161,7 @@ type DynamicValueDouble struct {
 	Value float64
 }
 
-func (*DynamicValueDouble) isDynamicValue() {}
+func (*DynamicValueDouble) tagDynamicValue() int32 { return 3 }
 
 // Marshal reads or writes DynamicValueDouble using its canonical wire layout.
 func (x *DynamicValueDouble) Marshal(io IO) {
@@ -286,7 +172,7 @@ type DynamicValueInt64 struct {
 	Value int64
 }
 
-func (*DynamicValueInt64) isDynamicValue() {}
+func (*DynamicValueInt64) tagDynamicValue() int32 { return 2 }
 
 // Marshal reads or writes DynamicValueInt64 using its canonical wire layout.
 func (x *DynamicValueInt64) Marshal(io IO) {
@@ -297,7 +183,7 @@ type DynamicValueList struct {
 	Value []DynamicValue
 }
 
-func (*DynamicValueList) isDynamicValue() {}
+func (*DynamicValueList) tagDynamicValue() int32 { return 5 }
 
 // Marshal reads or writes DynamicValueList using its canonical wire layout.
 func (x *DynamicValueList) Marshal(io IO) {
@@ -310,7 +196,7 @@ type DynamicValueMap struct {
 	Value []OrderedEntry[string, DynamicValue]
 }
 
-func (*DynamicValueMap) isDynamicValue() {}
+func (*DynamicValueMap) tagDynamicValue() int32 { return 6 }
 
 // Marshal reads or writes DynamicValueMap using its canonical wire layout.
 func (x *DynamicValueMap) Marshal(io IO) {
@@ -322,7 +208,7 @@ func (x *DynamicValueMap) Marshal(io IO) {
 type DynamicValueNone struct {
 }
 
-func (*DynamicValueNone) isDynamicValue() {}
+func (*DynamicValueNone) tagDynamicValue() int32 { return 0 }
 
 // Marshal reads or writes DynamicValueNone using its canonical wire layout.
 func (x *DynamicValueNone) Marshal(io IO) {
@@ -332,7 +218,7 @@ type DynamicValueString struct {
 	Value string
 }
 
-func (*DynamicValueString) isDynamicValue() {}
+func (*DynamicValueString) tagDynamicValue() int32 { return 4 }
 
 // Marshal reads or writes DynamicValueString using its canonical wire layout.
 func (x *DynamicValueString) Marshal(io IO) {
@@ -340,66 +226,32 @@ func (x *DynamicValueString) Marshal(io IO) {
 }
 
 type GameRuleValue interface {
-	isGameRuleValue()
+	Marshaler
+	tagGameRuleValue() uint32
 }
 
 // MarshalGameRuleValue reads or writes the GameRuleValue union using its canonical wire layout.
 func MarshalGameRuleValue(io IO, x *GameRuleValue) {
-	UnionFunc(io,
-		func() {
-			var tag uint32
-			io.Varuint32(&tag)
-			switch int64(tag) {
-			case 0:
-				value := new(GameRuleValueEmpty)
-				value.Marshal(io)
-				*x = value
-			case 1:
-				value := new(GameRuleValueBool)
-				value.Marshal(io)
-				*x = value
-			case 2:
-				value := new(GameRuleValueInt32)
-				value.Marshal(io)
-				*x = value
-			case 3:
-				value := new(GameRuleValueFloat)
-				value.Marshal(io)
-				*x = value
-			default:
-				io.InvalidValue(tag, "unknown union tag")
-			}
-		},
-		func() {
-			switch value := (*x).(type) {
-			case *GameRuleValueEmpty:
-				tag := uint32(0)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *GameRuleValueBool:
-				tag := uint32(1)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *GameRuleValueInt32:
-				tag := uint32(2)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *GameRuleValueFloat:
-				tag := uint32(3)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			default:
-				io.InvalidValue(*x, "unknown union value")
-			}
-		},
-	)
+	Union(io, x, io.Varuint32, GameRuleValue.tagGameRuleValue, func(tag uint32) GameRuleValue {
+		switch tag {
+		case 0:
+			return new(GameRuleValueEmpty)
+		case 1:
+			return new(GameRuleValueBool)
+		case 2:
+			return new(GameRuleValueInt32)
+		case 3:
+			return new(GameRuleValueFloat)
+		}
+		return nil
+	})
 }
 
 type GameRuleValueBool struct {
 	Value bool
 }
 
-func (*GameRuleValueBool) isGameRuleValue() {}
+func (*GameRuleValueBool) tagGameRuleValue() uint32 { return 1 }
 
 // Marshal reads or writes GameRuleValueBool using its canonical wire layout.
 func (x *GameRuleValueBool) Marshal(io IO) {
@@ -409,7 +261,7 @@ func (x *GameRuleValueBool) Marshal(io IO) {
 type GameRuleValueEmpty struct {
 }
 
-func (*GameRuleValueEmpty) isGameRuleValue() {}
+func (*GameRuleValueEmpty) tagGameRuleValue() uint32 { return 0 }
 
 // Marshal reads or writes GameRuleValueEmpty using its canonical wire layout.
 func (x *GameRuleValueEmpty) Marshal(io IO) {
@@ -419,7 +271,7 @@ type GameRuleValueFloat struct {
 	Value float32
 }
 
-func (*GameRuleValueFloat) isGameRuleValue() {}
+func (*GameRuleValueFloat) tagGameRuleValue() uint32 { return 3 }
 
 // Marshal reads or writes GameRuleValueFloat using its canonical wire layout.
 func (x *GameRuleValueFloat) Marshal(io IO) {
@@ -430,7 +282,7 @@ type GameRuleValueInt32 struct {
 	Value int32
 }
 
-func (*GameRuleValueInt32) isGameRuleValue() {}
+func (*GameRuleValueInt32) tagGameRuleValue() uint32 { return 2 }
 
 // Marshal reads or writes GameRuleValueInt32 using its canonical wire layout.
 func (x *GameRuleValueInt32) Marshal(io IO) {
@@ -438,243 +290,100 @@ func (x *GameRuleValueInt32) Marshal(io IO) {
 }
 
 type InventoryTransactionPacketData interface {
-	isInventoryTransactionPacketData()
+	Marshaler
+	tagInventoryTransactionPacketData() uint32
 }
 
 // MarshalInventoryTransactionPacketData reads or writes the InventoryTransactionPacketData union using its canonical wire layout.
 func MarshalInventoryTransactionPacketData(io IO, x *InventoryTransactionPacketData) {
-	UnionFunc(io,
-		func() {
-			var tag uint32
-			io.Varuint32(&tag)
-			switch int64(tag) {
-			case 0:
-				value := new(NormalTransactionData)
-				value.Marshal(io)
-				*x = value
-			case 1:
-				value := new(InventoryMismatchData)
-				value.Marshal(io)
-				*x = value
-			case 2:
-				value := new(ItemUseInventoryTransaction)
-				value.Marshal(io)
-				*x = value
-			case 3:
-				value := new(ItemUseOnActorInventoryTransaction)
-				value.Marshal(io)
-				*x = value
-			case 4:
-				value := new(ItemReleaseInventoryTransaction)
-				value.Marshal(io)
-				*x = value
-			default:
-				io.InvalidValue(tag, "unknown union tag")
-			}
-		},
-		func() {
-			switch value := (*x).(type) {
-			case *NormalTransactionData:
-				tag := uint32(0)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *InventoryMismatchData:
-				tag := uint32(1)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *ItemUseInventoryTransaction:
-				tag := uint32(2)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *ItemUseOnActorInventoryTransaction:
-				tag := uint32(3)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *ItemReleaseInventoryTransaction:
-				tag := uint32(4)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			default:
-				io.InvalidValue(*x, "unknown union value")
-			}
-		},
-	)
+	Union(io, x, io.Varuint32, InventoryTransactionPacketData.tagInventoryTransactionPacketData, func(tag uint32) InventoryTransactionPacketData {
+		switch tag {
+		case 0:
+			return new(NormalTransactionData)
+		case 1:
+			return new(InventoryMismatchData)
+		case 2:
+			return new(ItemUseInventoryTransaction)
+		case 3:
+			return new(ItemUseOnActorInventoryTransaction)
+		case 4:
+			return new(ItemReleaseInventoryTransaction)
+		}
+		return nil
+	})
 }
 
 type PrimitiveShapeExtraShapeData interface {
-	isPrimitiveShapeExtraShapeData()
+	Marshaler
+	tagPrimitiveShapeExtraShapeData() uint32
 }
 
 // MarshalPrimitiveShapeExtraShapeData reads or writes the PrimitiveShapeExtraShapeData union using its canonical wire layout.
 func MarshalPrimitiveShapeExtraShapeData(io IO, x *PrimitiveShapeExtraShapeData) {
-	UnionFunc(io,
-		func() {
-			var tag uint32
-			io.Varuint32(&tag)
-			switch int64(tag) {
-			case 0:
-				value := new(PrimitiveShapeExtraShapeDataEmpty)
-				value.Marshal(io)
-				*x = value
-			case 1:
-				value := new(ArrowData)
-				value.Marshal(io)
-				*x = value
-			case 2:
-				value := new(TextShape)
-				value.Marshal(io)
-				*x = value
-			case 3:
-				value := new(BoxData)
-				value.Marshal(io)
-				*x = value
-			case 4:
-				value := new(LineData)
-				value.Marshal(io)
-				*x = value
-			case 5:
-				value := new(SphereData)
-				value.Marshal(io)
-				*x = value
-			case 6:
-				value := new(CylinderData)
-				value.Marshal(io)
-				*x = value
-			case 7:
-				value := new(PyramidData)
-				value.Marshal(io)
-				*x = value
-			case 8:
-				value := new(EllipsoidData)
-				value.Marshal(io)
-				*x = value
-			case 9:
-				value := new(ConeData)
-				value.Marshal(io)
-				*x = value
-			default:
-				io.InvalidValue(tag, "unknown union tag")
-			}
-		},
-		func() {
-			switch value := (*x).(type) {
-			case *PrimitiveShapeExtraShapeDataEmpty:
-				tag := uint32(0)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *ArrowData:
-				tag := uint32(1)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *TextShape:
-				tag := uint32(2)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *BoxData:
-				tag := uint32(3)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *LineData:
-				tag := uint32(4)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *SphereData:
-				tag := uint32(5)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *CylinderData:
-				tag := uint32(6)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *PyramidData:
-				tag := uint32(7)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *EllipsoidData:
-				tag := uint32(8)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *ConeData:
-				tag := uint32(9)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			default:
-				io.InvalidValue(*x, "unknown union value")
-			}
-		},
-	)
+	Union(io, x, io.Varuint32, PrimitiveShapeExtraShapeData.tagPrimitiveShapeExtraShapeData, func(tag uint32) PrimitiveShapeExtraShapeData {
+		switch tag {
+		case 0:
+			return new(PrimitiveShapeExtraShapeDataEmpty)
+		case 1:
+			return new(ArrowData)
+		case 2:
+			return new(TextShape)
+		case 3:
+			return new(BoxData)
+		case 4:
+			return new(LineData)
+		case 5:
+			return new(SphereData)
+		case 6:
+			return new(CylinderData)
+		case 7:
+			return new(PyramidData)
+		case 8:
+			return new(EllipsoidData)
+		case 9:
+			return new(ConeData)
+		}
+		return nil
+	})
 }
 
 type PrimitiveShapeExtraShapeDataEmpty struct {
 }
 
-func (*PrimitiveShapeExtraShapeDataEmpty) isPrimitiveShapeExtraShapeData() {}
+func (*PrimitiveShapeExtraShapeDataEmpty) tagPrimitiveShapeExtraShapeData() uint32 { return 0 }
 
 // Marshal reads or writes PrimitiveShapeExtraShapeDataEmpty using its canonical wire layout.
 func (x *PrimitiveShapeExtraShapeDataEmpty) Marshal(io IO) {
 }
 
 type ServerboundPackSettingChangePackSettingValue interface {
-	isServerboundPackSettingChangePackSettingValue()
+	Marshaler
+	tagServerboundPackSettingChangePackSettingValue() uint32
 }
 
 // MarshalServerboundPackSettingChangePackSettingValue reads or writes the ServerboundPackSettingChangePackSettingValue union using its canonical wire layout.
 func MarshalServerboundPackSettingChangePackSettingValue(io IO, x *ServerboundPackSettingChangePackSettingValue) {
-	UnionFunc(io,
-		func() {
-			var tag uint32
-			io.Varuint32(&tag)
-			switch int64(tag) {
-			case 0:
-				value := new(ServerboundPackSettingChangePackSettingValueVariant0)
-				value.Marshal(io)
-				*x = value
-			case 1:
-				value := new(ServerboundPackSettingChangePackSettingValueVariant1)
-				value.Marshal(io)
-				*x = value
-			case 2:
-				value := new(ServerboundPackSettingChangePackSettingValueVariant2)
-				value.Marshal(io)
-				*x = value
-			case 3:
-				value := new(ServerboundPackSettingChangePackSettingValueVariant3)
-				value.Marshal(io)
-				*x = value
-			default:
-				io.InvalidValue(tag, "unknown union tag")
-			}
-		},
-		func() {
-			switch value := (*x).(type) {
-			case *ServerboundPackSettingChangePackSettingValueVariant0:
-				tag := uint32(0)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *ServerboundPackSettingChangePackSettingValueVariant1:
-				tag := uint32(1)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *ServerboundPackSettingChangePackSettingValueVariant2:
-				tag := uint32(2)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *ServerboundPackSettingChangePackSettingValueVariant3:
-				tag := uint32(3)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			default:
-				io.InvalidValue(*x, "unknown union value")
-			}
-		},
-	)
+	Union(io, x, io.Varuint32, ServerboundPackSettingChangePackSettingValue.tagServerboundPackSettingChangePackSettingValue, func(tag uint32) ServerboundPackSettingChangePackSettingValue {
+		switch tag {
+		case 0:
+			return new(ServerboundPackSettingChangePackSettingValueVariant0)
+		case 1:
+			return new(ServerboundPackSettingChangePackSettingValueVariant1)
+		case 2:
+			return new(ServerboundPackSettingChangePackSettingValueVariant2)
+		case 3:
+			return new(ServerboundPackSettingChangePackSettingValueVariant3)
+		}
+		return nil
+	})
 }
 
 type ServerboundPackSettingChangePackSettingValueVariant0 struct {
 	Value float32
 }
 
-func (*ServerboundPackSettingChangePackSettingValueVariant0) isServerboundPackSettingChangePackSettingValue() {
+func (*ServerboundPackSettingChangePackSettingValueVariant0) tagServerboundPackSettingChangePackSettingValue() uint32 {
+	return 0
 }
 
 // Marshal reads or writes ServerboundPackSettingChangePackSettingValueVariant0 using its canonical wire layout.
@@ -686,7 +395,8 @@ type ServerboundPackSettingChangePackSettingValueVariant1 struct {
 	Value bool
 }
 
-func (*ServerboundPackSettingChangePackSettingValueVariant1) isServerboundPackSettingChangePackSettingValue() {
+func (*ServerboundPackSettingChangePackSettingValueVariant1) tagServerboundPackSettingChangePackSettingValue() uint32 {
+	return 1
 }
 
 // Marshal reads or writes ServerboundPackSettingChangePackSettingValueVariant1 using its canonical wire layout.
@@ -698,7 +408,8 @@ type ServerboundPackSettingChangePackSettingValueVariant2 struct {
 	Value string
 }
 
-func (*ServerboundPackSettingChangePackSettingValueVariant2) isServerboundPackSettingChangePackSettingValue() {
+func (*ServerboundPackSettingChangePackSettingValueVariant2) tagServerboundPackSettingChangePackSettingValue() uint32 {
+	return 2
 }
 
 // Marshal reads or writes ServerboundPackSettingChangePackSettingValueVariant2 using its canonical wire layout.
@@ -710,7 +421,8 @@ type ServerboundPackSettingChangePackSettingValueVariant3 struct {
 	Value []string
 }
 
-func (*ServerboundPackSettingChangePackSettingValueVariant3) isServerboundPackSettingChangePackSettingValue() {
+func (*ServerboundPackSettingChangePackSettingValueVariant3) tagServerboundPackSettingChangePackSettingValue() uint32 {
+	return 3
 }
 
 // Marshal reads or writes ServerboundPackSettingChangePackSettingValueVariant3 using its canonical wire layout.
@@ -719,57 +431,23 @@ func (x *ServerboundPackSettingChangePackSettingValueVariant3) Marshal(io IO) {
 }
 
 type SetScoreInfoItem interface {
-	isSetScoreInfoItem()
+	Marshaler
+	tagSetScoreInfoItem() uint8
 }
 
 // MarshalSetScoreInfoItem reads or writes the SetScoreInfoItem union using its canonical wire layout.
 func MarshalSetScoreInfoItem(io IO, x *SetScoreInfoItem) {
-	UnionFunc(io,
-		func() {
-			var tag uint8
-			io.Uint8(&tag)
-			switch int64(tag) {
-			case 0:
-				value := new(RemoveScore)
-				value.Marshal(io)
-				*x = value
-			case 1:
-				value := new(ChangePlayerScore)
-				value.Marshal(io)
-				*x = value
-			case 2:
-				value := new(ChangeEntityScore)
-				value.Marshal(io)
-				*x = value
-			case 3:
-				value := new(ChangeFakePlayerScore)
-				value.Marshal(io)
-				*x = value
-			default:
-				io.InvalidValue(tag, "unknown union tag")
-			}
-		},
-		func() {
-			switch value := (*x).(type) {
-			case *RemoveScore:
-				tag := uint8(0)
-				io.Uint8(&tag)
-				value.Marshal(io)
-			case *ChangePlayerScore:
-				tag := uint8(1)
-				io.Uint8(&tag)
-				value.Marshal(io)
-			case *ChangeEntityScore:
-				tag := uint8(2)
-				io.Uint8(&tag)
-				value.Marshal(io)
-			case *ChangeFakePlayerScore:
-				tag := uint8(3)
-				io.Uint8(&tag)
-				value.Marshal(io)
-			default:
-				io.InvalidValue(*x, "unknown union value")
-			}
-		},
-	)
+	Union(io, x, io.Uint8, SetScoreInfoItem.tagSetScoreInfoItem, func(tag uint8) SetScoreInfoItem {
+		switch tag {
+		case 0:
+			return new(RemoveScore)
+		case 1:
+			return new(ChangePlayerScore)
+		case 2:
+			return new(ChangeEntityScore)
+		case 3:
+			return new(ChangeFakePlayerScore)
+		}
+		return nil
+	})
 }

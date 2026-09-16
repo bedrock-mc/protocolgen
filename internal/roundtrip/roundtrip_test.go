@@ -74,7 +74,7 @@ func TestRuntimeVarintsRoundTrip(t *testing.T) {
 
 func TestRuntimeSliceLimit(t *testing.T) {
 	reader := protocol.NewReaderWithLimit(nil, 2)
-	if reader.SliceLength(3, 4096) {
+	if reader.SliceLength(3) {
 		t.Fatal("slice length above the reader limit was accepted")
 	}
 	if reader.Err() == nil {
@@ -82,7 +82,7 @@ func TestRuntimeSliceLimit(t *testing.T) {
 	}
 
 	reader = protocol.NewReaderWithLimit(nil, 4)
-	if !reader.SliceLength(1, 2) {
+	if !reader.SliceLength(1) {
 		t.Fatal("slice length below the helper limit was rejected")
 	}
 }

@@ -23,7 +23,7 @@ type ShowStoreOffer struct {
 // Marshal reads or writes ShowStoreOffer using its canonical wire layout.
 func (x *ShowStoreOffer) Marshal(io protocol.IO) {
 	io.UUID(&x.OfferID)
-	protocol.IntegerFunc(&x.RedirectType, io.Uint8)
+	x.RedirectType.Marshal(io)
 }
 
 // ID returns the protocol ID for ShowStoreOffer.

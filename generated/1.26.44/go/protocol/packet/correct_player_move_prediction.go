@@ -28,7 +28,7 @@ type CorrectPlayerMovePrediction struct {
 
 // Marshal reads or writes CorrectPlayerMovePrediction using its canonical wire layout.
 func (x *CorrectPlayerMovePrediction) Marshal(io protocol.IO) {
-	protocol.IntegerFunc(&x.PredictionType, io.Uint8)
+	x.PredictionType.Marshal(io)
 	io.Vec3(&x.Pos)
 	io.Vec3(&x.PosDelta)
 	io.Vec2(&x.Rotation)

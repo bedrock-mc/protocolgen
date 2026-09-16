@@ -21,7 +21,7 @@ type SetScoreboardIdentity struct {
 
 // Marshal reads or writes SetScoreboardIdentity using its canonical wire layout.
 func (x *SetScoreboardIdentity) Marshal(io protocol.IO) {
-	protocol.IntegerFunc(&x.ScoreboardIdentityPacketType, io.Uint8)
+	x.ScoreboardIdentityPacketType.Marshal(io)
 	protocol.Slice(io, &x.ScoreboardIdentityInfo)
 }
 

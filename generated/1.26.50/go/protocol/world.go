@@ -26,7 +26,7 @@ type DimensionDefinition struct {
 func (x *DimensionDefinition) Marshal(io IO) {
 	io.Varint32(&x.MinimumY)
 	io.Varint32(&x.HeightRange)
-	IntegerFunc(&x.GeneratorType, io.Varint32)
+	x.GeneratorType.Marshal(io)
 	x.DimensionType.Marshal(io)
 	io.UUID(&x.PackID)
 	io.StringLimits(&x.DefaultBiome, 0, 256)

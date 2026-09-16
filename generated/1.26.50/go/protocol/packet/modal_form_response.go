@@ -24,11 +24,8 @@ type ModalFormResponse struct {
 // Marshal reads or writes ModalFormResponse using its canonical wire layout.
 func (x *ModalFormResponse) Marshal(io protocol.IO) {
 	io.Varuint32(&x.FormID)
-	protocol.Minimum(io, &x.FormID, 0)
 	protocol.OptionalFunc(io, &x.JSONResponse, io.String)
-	protocol.OptionalFunc(io, &x.FormCancelReason, func(value *protocol.ModalFormCancelReason) {
-		protocol.IntegerFunc(value, io.Uint8)
-	})
+	protocol.OptionalMarshaler(io, &x.FormCancelReason)
 }
 
 // ID returns the protocol ID for ModalFormResponse.

@@ -17,7 +17,7 @@ func (x *ItemData) Marshal(io IO) {
 	io.String(&x.ItemName)
 	io.Int16(&x.ItemID)
 	io.Bool(&x.IsComponentBased)
-	IntegerFunc(&x.ItemVersion, io.Varint32)
+	x.ItemVersion.Marshal(io)
 	io.NBT(&x.ItemComponentData, NBTNetwork)
 }
 
@@ -31,8 +31,6 @@ type ItemEnchantOption struct {
 // Marshal reads or writes ItemEnchantOption using its canonical wire layout.
 func (x *ItemEnchantOption) Marshal(io IO) {
 	io.Uint8(&x.Cost)
-	Minimum(io, &x.Cost, 0)
-	Maximum(io, &x.Cost, 255)
 	x.Enchants.Marshal(io)
 	io.StringLimits(&x.EnchantName, 1, 256)
 	x.EnchantNetID.Marshal(io)
@@ -78,12 +76,12 @@ type ItemReleaseInventoryTransaction struct {
 	FromPosition mgl32.Vec3
 }
 
-func (*ItemReleaseInventoryTransaction) isInventoryTransactionValue() {}
+func (*ItemReleaseInventoryTransaction) tagInventoryTransactionValue() uint32 { return 4 }
 
 // Marshal reads or writes ItemReleaseInventoryTransaction using its canonical wire layout.
 func (x *ItemReleaseInventoryTransaction) Marshal(io IO) {
 	x.Actions.Marshal(io)
-	IntegerFunc(&x.ActionType, io.Varint32)
+	x.ActionType.Marshal(io)
 	io.Varint32(&x.Slot)
 	x.Item.Marshal(io)
 	io.Vec3(&x.FromPosition)
@@ -95,6 +93,9 @@ const (
 	ItemReleaseInventoryTransactionActionTypeRelease ItemReleaseInventoryTransactionActionType = 0
 	ItemReleaseInventoryTransactionActionTypeUse     ItemReleaseInventoryTransactionActionType = 1
 )
+
+// Marshal reads or writes ItemReleaseInventoryTransactionActionType through its int32 wire encoding.
+func (x *ItemReleaseInventoryTransactionActionType) Marshal(io IO) { io.Varint32((*int32)(x)) }
 
 type ItemUseInventoryTransaction struct {
 	Actions                  InventoryTransactionData
@@ -111,13 +112,13 @@ type ItemUseInventoryTransaction struct {
 	ClientCooldownState      ItemUseInventoryTransactionClientCooldownState
 }
 
-func (*ItemUseInventoryTransaction) isInventoryTransactionValue() {}
+func (*ItemUseInventoryTransaction) tagInventoryTransactionValue() uint32 { return 2 }
 
 // Marshal reads or writes ItemUseInventoryTransaction using its canonical wire layout.
 func (x *ItemUseInventoryTransaction) Marshal(io IO) {
 	x.Actions.Marshal(io)
-	IntegerFunc(&x.ActionType, io.Varint32)
-	IntegerFunc(&x.TriggerType, io.Uint8)
+	x.ActionType.Marshal(io)
+	x.TriggerType.Marshal(io)
 	x.Position.Marshal(io)
 	io.Uint8(&x.Face)
 	io.Varint32(&x.Slot)
@@ -125,8 +126,8 @@ func (x *ItemUseInventoryTransaction) Marshal(io IO) {
 	io.Vec3(&x.FromPosition)
 	io.Vec3(&x.ClickPosition)
 	io.Varuint32(&x.TargetBlockID)
-	IntegerFunc(&x.ClientInteractPrediction, io.Uint8)
-	IntegerFunc(&x.ClientCooldownState, io.Uint8)
+	x.ClientInteractPrediction.Marshal(io)
+	x.ClientCooldownState.Marshal(io)
 }
 
 type ItemUseInventoryTransactionActionType int32
@@ -138,12 +139,18 @@ const (
 	ItemUseInventoryTransactionActionTypeUseAsAttack ItemUseInventoryTransactionActionType = 3
 )
 
+// Marshal reads or writes ItemUseInventoryTransactionActionType through its int32 wire encoding.
+func (x *ItemUseInventoryTransactionActionType) Marshal(io IO) { io.Varint32((*int32)(x)) }
+
 type ItemUseInventoryTransactionClientCooldownState uint8
 
 const (
 	ItemUseInventoryTransactionClientCooldownStateOff ItemUseInventoryTransactionClientCooldownState = 0
 	ItemUseInventoryTransactionClientCooldownStateOn  ItemUseInventoryTransactionClientCooldownState = 1
 )
+
+// Marshal reads or writes ItemUseInventoryTransactionClientCooldownState through its uint8 wire encoding.
+func (x *ItemUseInventoryTransactionClientCooldownState) Marshal(io IO) { io.Uint8((*uint8)(x)) }
 
 type ItemUseInventoryTransactionPredictedResult uint8
 
@@ -152,6 +159,9 @@ const (
 	ItemUseInventoryTransactionPredictedResultSuccess ItemUseInventoryTransactionPredictedResult = 1
 )
 
+// Marshal reads or writes ItemUseInventoryTransactionPredictedResult through its uint8 wire encoding.
+func (x *ItemUseInventoryTransactionPredictedResult) Marshal(io IO) { io.Uint8((*uint8)(x)) }
+
 type ItemUseInventoryTransactionTriggerType uint8
 
 const (
@@ -159,6 +169,9 @@ const (
 	ItemUseInventoryTransactionTriggerTypePlayerInput    ItemUseInventoryTransactionTriggerType = 1
 	ItemUseInventoryTransactionTriggerTypeSimulationTick ItemUseInventoryTransactionTriggerType = 2
 )
+
+// Marshal reads or writes ItemUseInventoryTransactionTriggerType through its uint8 wire encoding.
+func (x *ItemUseInventoryTransactionTriggerType) Marshal(io IO) { io.Uint8((*uint8)(x)) }
 
 type ItemUseOnActorInventoryTransaction struct {
 	Actions      InventoryTransactionData
@@ -170,13 +183,13 @@ type ItemUseOnActorInventoryTransaction struct {
 	HitPosition  mgl32.Vec3
 }
 
-func (*ItemUseOnActorInventoryTransaction) isInventoryTransactionValue() {}
+func (*ItemUseOnActorInventoryTransaction) tagInventoryTransactionValue() uint32 { return 3 }
 
 // Marshal reads or writes ItemUseOnActorInventoryTransaction using its canonical wire layout.
 func (x *ItemUseOnActorInventoryTransaction) Marshal(io IO) {
 	x.Actions.Marshal(io)
 	io.ActorRuntimeID(&x.RuntimeID)
-	IntegerFunc(&x.ActionType, io.Varint32)
+	x.ActionType.Marshal(io)
 	io.Varint32(&x.Slot)
 	x.Item.Marshal(io)
 	io.Vec3(&x.FromPosition)
@@ -191,6 +204,9 @@ const (
 	ItemUseOnActorInventoryTransactionActionTypeItemInteract ItemUseOnActorInventoryTransactionActionType = 2
 )
 
+// Marshal reads or writes ItemUseOnActorInventoryTransactionActionType through its int32 wire encoding.
+func (x *ItemUseOnActorInventoryTransactionActionType) Marshal(io IO) { io.Varint32((*int32)(x)) }
+
 type ItemUsed struct {
 	ItemID    int16
 	ItemAux   int32
@@ -198,7 +214,7 @@ type ItemUsed struct {
 	Count     int32
 }
 
-func (*ItemUsed) isEventData() {}
+func (*ItemUsed) tagEventData() uint32 { return 20 }
 
 // Marshal reads or writes ItemUsed using its canonical wire layout.
 func (x *ItemUsed) Marshal(io IO) {
@@ -215,3 +231,6 @@ const (
 	ItemVersionDataDriven ItemVersion = 1
 	ItemVersionNone       ItemVersion = 2
 )
+
+// Marshal reads or writes ItemVersion through its int32 wire encoding.
+func (x *ItemVersion) Marshal(io IO) { io.Varint32((*int32)(x)) }

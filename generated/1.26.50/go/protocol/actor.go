@@ -26,7 +26,7 @@ type ActorDefinition struct {
 	EventName string
 }
 
-func (*ActorDefinition) isEventData() {}
+func (*ActorDefinition) tagEventData() uint32 { return 13 }
 
 // Marshal reads or writes ActorDefinition using its canonical wire layout.
 func (x *ActorDefinition) Marshal(io IO) {
@@ -99,6 +99,9 @@ const (
 	ActorEventTypeHurtWithoutReceivingDamage       ActorEventType = 81
 )
 
+// Marshal reads or writes ActorEventType through its uint8 wire encoding.
+func (x *ActorEventType) Marshal(io IO) { io.Uint8((*uint8)(x)) }
+
 type ActorLinkType uint8
 
 const (
@@ -106,6 +109,9 @@ const (
 	ActorLinkTypeRiding    ActorLinkType = 1
 	ActorLinkTypePassenger ActorLinkType = 2
 )
+
+// Marshal reads or writes ActorLinkType through its uint8 wire encoding.
+func (x *ActorLinkType) Marshal(io IO) { io.Uint8((*uint8)(x)) }
 
 type ActorType int32
 
@@ -271,58 +277,27 @@ const (
 	ActorTypeVillagerV2                 ActorType = 16778099
 )
 
+// Marshal reads or writes ActorType through its int32 wire encoding.
+func (x *ActorType) Marshal(io IO) { io.Varint32((*int32)(x)) }
+
 type PlayerUpdateEntityOverridesData interface {
-	isPlayerUpdateEntityOverridesData()
+	Marshaler
+	tagPlayerUpdateEntityOverridesData() uint8
 }
 
 // MarshalPlayerUpdateEntityOverridesData reads or writes the PlayerUpdateEntityOverridesData union using its canonical wire layout.
 func MarshalPlayerUpdateEntityOverridesData(io IO, x *PlayerUpdateEntityOverridesData) {
-	UnionFunc(io,
-		func() {
-			var tag uint8
-			io.Uint8(&tag)
-			switch int64(tag) {
-			case 0:
-				value := new(ClearOverride)
-				value.Marshal(io)
-				*x = value
-			case 1:
-				value := new(RemoveOverride)
-				value.Marshal(io)
-				*x = value
-			case 2:
-				value := new(IntOverride)
-				value.Marshal(io)
-				*x = value
-			case 3:
-				value := new(FloatOverride)
-				value.Marshal(io)
-				*x = value
-			default:
-				io.InvalidValue(tag, "unknown union tag")
-			}
-		},
-		func() {
-			switch value := (*x).(type) {
-			case *ClearOverride:
-				tag := uint8(0)
-				io.Uint8(&tag)
-				value.Marshal(io)
-			case *RemoveOverride:
-				tag := uint8(1)
-				io.Uint8(&tag)
-				value.Marshal(io)
-			case *IntOverride:
-				tag := uint8(2)
-				io.Uint8(&tag)
-				value.Marshal(io)
-			case *FloatOverride:
-				tag := uint8(3)
-				io.Uint8(&tag)
-				value.Marshal(io)
-			default:
-				io.InvalidValue(*x, "unknown union value")
-			}
-		},
-	)
+	Union(io, x, io.Uint8, PlayerUpdateEntityOverridesData.tagPlayerUpdateEntityOverridesData, func(tag uint8) PlayerUpdateEntityOverridesData {
+		switch tag {
+		case 0:
+			return new(ClearOverride)
+		case 1:
+			return new(RemoveOverride)
+		case 2:
+			return new(IntOverride)
+		case 3:
+			return new(FloatOverride)
+		}
+		return nil
+	})
 }

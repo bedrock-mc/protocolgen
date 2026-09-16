@@ -54,7 +54,7 @@ type StartGame struct {
 func (x *StartGame) Marshal(io protocol.IO) {
 	io.ActorUniqueID(&x.EntityID)
 	io.ActorRuntimeID(&x.RuntimeID)
-	protocol.IntegerFunc(&x.GameType, io.Varint32)
+	x.GameType.Marshal(io)
 	io.Vec3(&x.Position)
 	io.Vec2(&x.Rotation)
 	x.Settings.Marshal(io)
@@ -64,7 +64,6 @@ func (x *StartGame) Marshal(io protocol.IO) {
 	io.Bool(&x.IsTrial)
 	x.MovementSettings.Marshal(io)
 	io.Uint64(&x.LevelCurrentTime)
-	protocol.Minimum(io, &x.LevelCurrentTime, 0)
 	io.Varint32(&x.EnchantmentSeed)
 	protocol.Slice(io, &x.BlockProperties)
 	io.String(&x.MultiplayerCorrelationID)
@@ -72,14 +71,11 @@ func (x *StartGame) Marshal(io protocol.IO) {
 	io.String(&x.ServerVersion)
 	io.NBT(&x.PlayerPropertyData, protocol.NBTNetwork)
 	io.Uint64(&x.ServerBlockTypeRegistryChecksum)
-	protocol.Minimum(io, &x.ServerBlockTypeRegistryChecksum, 0)
 	io.UUID(&x.WorldTemplateID)
 	io.Bool(&x.ServerEnabledClientSideGeneration)
 	io.Bool(&x.BlockNetworkIdsAreHashes)
 	x.NetworkPermissions.Marshal(io)
-	protocol.OptionalFunc(io, &x.ServerConfigurationJoinInfo, func(value *protocol.ServerConfigurationServerConfigurationJoinInfo) {
-		value.Marshal(io)
-	})
+	protocol.OptionalMarshaler(io, &x.ServerConfigurationJoinInfo)
 	x.ServerTelemetryData.Marshal(io)
 }
 

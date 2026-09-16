@@ -22,7 +22,7 @@ type GameTestRequest struct {
 func (x *GameTestRequest) Marshal(io protocol.IO) {
 	io.Varint32(&x.MaxTestsPerBatch)
 	io.Varint32(&x.RepeatCount)
-	protocol.IntegerFunc(&x.Rotation, io.Uint8)
+	x.Rotation.Marshal(io)
 	io.Bool(&x.StopOnFailure)
 	x.TestPos.Marshal(io)
 	io.Varint32(&x.TestsPerRow)

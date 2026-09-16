@@ -22,7 +22,7 @@ type Interact struct {
 
 // Marshal reads or writes Interact using its canonical wire layout.
 func (x *Interact) Marshal(io protocol.IO) {
-	protocol.IntegerFunc(&x.Action, io.Uint8)
+	x.Action.Marshal(io)
 	io.ActorRuntimeID(&x.TargetRuntimeID)
 	protocol.OptionalFunc(io, &x.Position, io.Vec3)
 }

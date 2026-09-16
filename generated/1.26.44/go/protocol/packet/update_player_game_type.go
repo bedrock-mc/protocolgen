@@ -16,7 +16,7 @@ type UpdatePlayerGameType struct {
 
 // Marshal reads or writes UpdatePlayerGameType using its canonical wire layout.
 func (x *UpdatePlayerGameType) Marshal(io protocol.IO) {
-	protocol.IntegerFunc(&x.PlayerGameType, io.Varint32)
+	x.PlayerGameType.Marshal(io)
 	io.ActorUniqueID(&x.TargetPlayer)
 	io.PlayerInputTick(&x.Tick)
 }

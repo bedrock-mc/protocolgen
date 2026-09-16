@@ -15,6 +15,9 @@ const (
 	StructureBlockTypeExport  StructureBlockType = 5
 )
 
+// Marshal reads or writes StructureBlockType through its int32 wire encoding.
+func (x *StructureBlockType) Marshal(io IO) { io.Varint32((*int32)(x)) }
+
 type StructureEditorData struct {
 	StructureName         BedrockSafetyRedactableString
 	DataField             string
@@ -31,9 +34,9 @@ func (x *StructureEditorData) Marshal(io IO) {
 	io.String(&x.DataField)
 	io.Bool(&x.ShouldIncludePlayers)
 	io.Bool(&x.ShouldShowBoundingBox)
-	IntegerFunc(&x.StructureBlockType, io.Varint32)
+	x.StructureBlockType.Marshal(io)
 	x.StructureSettings.Marshal(io)
-	IntegerFunc(&x.RedstoneSaveMode, io.Uint8)
+	x.RedstoneSaveMode.Marshal(io)
 }
 
 type StructureRedstoneSaveMode uint8
@@ -42,6 +45,9 @@ const (
 	StructureRedstoneSaveModeSavesToMemory StructureRedstoneSaveMode = 0
 	StructureRedstoneSaveModeSavesToDisk   StructureRedstoneSaveMode = 1
 )
+
+// Marshal reads or writes StructureRedstoneSaveMode through its uint8 wire encoding.
+func (x *StructureRedstoneSaveMode) Marshal(io IO) { io.Uint8((*uint8)(x)) }
 
 // StructureSettings is a struct holding settings of a structure block. Its fields may be changed
 // using the in-game UI on the client-side.
@@ -76,9 +82,9 @@ func (x *StructureSettings) Marshal(io IO) {
 	x.StructureSize.Marshal(io)
 	x.StructureOffset.Marshal(io)
 	io.ActorUniqueID(&x.LastEditPlayer)
-	IntegerFunc(&x.Rotation, io.Uint8)
-	IntegerFunc(&x.Mirror, io.Uint8)
-	IntegerFunc(&x.AnimationMode, io.Uint8)
+	x.Rotation.Marshal(io)
+	x.Mirror.Marshal(io)
+	x.AnimationMode.Marshal(io)
 	io.Float32(&x.AnimationSeconds)
 	io.Float32(&x.IntegrityValue)
 	io.Uint32(&x.IntegritySeed)
@@ -94,6 +100,9 @@ const (
 	StructureTemplateRequestOperationQuerySavedStructure StructureTemplateRequestOperation = 3
 )
 
+// Marshal reads or writes StructureTemplateRequestOperation through its uint8 wire encoding.
+func (x *StructureTemplateRequestOperation) Marshal(io IO) { io.Uint8((*uint8)(x)) }
+
 type StructureTemplateResponseType uint8
 
 const (
@@ -101,3 +110,6 @@ const (
 	StructureTemplateResponseTypeExport StructureTemplateResponseType = 1
 	StructureTemplateResponseTypeQuery  StructureTemplateResponseType = 2
 )
+
+// Marshal reads or writes StructureTemplateResponseType through its uint8 wire encoding.
+func (x *StructureTemplateResponseType) Marshal(io IO) { io.Uint8((*uint8)(x)) }

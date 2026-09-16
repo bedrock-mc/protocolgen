@@ -26,7 +26,6 @@ func (x *RecipeIngredient) Marshal(io IO) {
 	MarshalItemDescriptor(io, &x.ItemDescriptor)
 	io.Uint16(&x.StackSize)
 	Minimum(io, &x.StackSize, 1)
-	Maximum(io, &x.StackSize, 65535)
 }
 
 type RecipeIngredientSerializedData struct {
@@ -62,7 +61,7 @@ type RecipeUnlockRequirementSerializedData struct {
 
 // Marshal reads or writes RecipeUnlockRequirementSerializedData using its canonical wire layout.
 func (x *RecipeUnlockRequirementSerializedData) Marshal(io IO) {
-	IntegerFunc(&x.UnlockingContext, io.Varint32)
+	x.UnlockingContext.Marshal(io)
 	OptionalFunc(io, &x.UnlockingIngredients, func(value *[]RecipeIngredientSerializedData) {
 		SliceLimits(io, value, 0, 128)
 	})
@@ -76,6 +75,9 @@ const (
 	RecipeUnlockingRequirementUnlockingContextPlayerInWater      RecipeUnlockingRequirementUnlockingContext = 2
 	RecipeUnlockingRequirementUnlockingContextPlayerHasManyItems RecipeUnlockingRequirementUnlockingContext = 3
 )
+
+// Marshal reads or writes RecipeUnlockingRequirementUnlockingContext through its int32 wire encoding.
+func (x *RecipeUnlockingRequirementUnlockingContext) Marshal(io IO) { io.Varint32((*int32)(x)) }
 
 // ShapedRecipe is a recipe that has a specific shape that must be used to craft the output of the
 // recipe. Trying to craft the item in any other shape will not work. The ShapedRecipe is of the
@@ -115,9 +117,7 @@ func (x *ShapedRecipe) Marshal(io IO) {
 	io.String(&x.Tag)
 	io.Varint32(&x.Priority)
 	io.Bool(&x.AssumeSymmetry)
-	OptionalFunc(io, &x.UnlockingRequirement, func(value *RecipeUnlockRequirementSerializedData) {
-		value.Marshal(io)
-	})
+	OptionalMarshaler(io, &x.UnlockingRequirement)
 	x.NetID.Marshal(io)
 }
 
@@ -147,9 +147,7 @@ func (x *ShapelessRecipe) Marshal(io IO) {
 	io.UUID(&x.UUID)
 	io.String(&x.Tag)
 	io.Varint32(&x.Priority)
-	OptionalFunc(io, &x.UnlockingRequirement, func(value *RecipeUnlockRequirementSerializedData) {
-		value.Marshal(io)
-	})
+	OptionalMarshaler(io, &x.UnlockingRequirement)
 	x.NetID.Marshal(io)
 }
 

@@ -24,7 +24,7 @@ func (x *StructureTemplateDataRequest) Marshal(io protocol.IO) {
 	io.StringLimits(&x.StructureName, 0, 256)
 	x.StructurePosition.Marshal(io)
 	x.StructureSettings.Marshal(io)
-	protocol.IntegerFunc(&x.RequestedOperation, io.Uint8)
+	x.RequestedOperation.Marshal(io)
 }
 
 // ID returns the protocol ID for StructureTemplateDataRequest.

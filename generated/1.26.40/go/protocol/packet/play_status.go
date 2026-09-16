@@ -13,7 +13,7 @@ type PlayStatus struct {
 
 // Marshal reads or writes PlayStatus using its canonical wire layout.
 func (x *PlayStatus) Marshal(io protocol.IO) {
-	protocol.IntegerFunc(&x.Status, io.BEInt32)
+	x.Status.Marshal(io)
 }
 
 // ID returns the protocol ID for PlayStatus.

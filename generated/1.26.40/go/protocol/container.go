@@ -74,6 +74,9 @@ const (
 	ContainerEnumNameRecipeFurnaceItemsContainer         ContainerEnumName = 66
 )
 
+// Marshal reads or writes ContainerEnumName through its uint8 wire encoding.
+func (x *ContainerEnumName) Marshal(io IO) { io.Uint8((*uint8)(x)) }
+
 type ContainerMixDataEntry struct {
 	FromItemID    int32
 	ReagentItemID int32
@@ -99,6 +102,6 @@ type FullContainerName struct {
 
 // Marshal reads or writes FullContainerName using its canonical wire layout.
 func (x *FullContainerName) Marshal(io IO) {
-	IntegerFunc(&x.ContainerName, io.Uint8)
+	x.ContainerName.Marshal(io)
 	OptionalFunc(io, &x.DynamicID, io.Uint32)
 }

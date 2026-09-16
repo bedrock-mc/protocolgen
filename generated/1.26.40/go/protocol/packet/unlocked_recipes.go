@@ -13,7 +13,7 @@ type UnlockedRecipes struct {
 
 // Marshal reads or writes UnlockedRecipes using its canonical wire layout.
 func (x *UnlockedRecipes) Marshal(io protocol.IO) {
-	protocol.IntegerFunc(&x.PacketType, io.Uint32)
+	x.PacketType.Marshal(io)
 	protocol.FuncSlice(io, &x.UnlockedRecipesList, io.Varuint32, io.String)
 }
 

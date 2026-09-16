@@ -36,9 +36,7 @@ func (x *PlaySound) Marshal(io protocol.IO) {
 	io.Float32(&x.Pitch)
 	io.Varint32(&x.LoopCount)
 	io.Bool(&x.BypassListenerRangeCheck)
-	protocol.OptionalFunc(io, &x.ServerSoundHandle, func(value *protocol.ServerSoundHandle) {
-		value.Marshal(io)
-	})
+	protocol.OptionalMarshaler(io, &x.ServerSoundHandle)
 	protocol.OptionalFunc(io, &x.PlaybackPositionSeconds, io.Float32)
 }
 

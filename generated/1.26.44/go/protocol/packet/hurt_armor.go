@@ -15,7 +15,6 @@ func (x *HurtArmor) Marshal(io protocol.IO) {
 	io.Varint32(&x.Cause)
 	io.Varint32(&x.Damage)
 	io.Varuint64(&x.ArmorSlots)
-	protocol.Minimum(io, &x.ArmorSlots, 0)
 }
 
 // ID returns the protocol ID for HurtArmor.

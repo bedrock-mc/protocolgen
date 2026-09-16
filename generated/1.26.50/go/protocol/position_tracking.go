@@ -8,6 +8,9 @@ const (
 	PositionTrackingDBClientRequestActionQuery PositionTrackingDBClientRequestAction = 0
 )
 
+// Marshal reads or writes PositionTrackingDBClientRequestAction through its uint8 wire encoding.
+func (x *PositionTrackingDBClientRequestAction) Marshal(io IO) { io.Uint8((*uint8)(x)) }
+
 type PositionTrackingDBServerBroadcastAction uint8
 
 const (
@@ -15,6 +18,9 @@ const (
 	PositionTrackingDBServerBroadcastActionDestroy  PositionTrackingDBServerBroadcastAction = 1
 	PositionTrackingDBServerBroadcastActionNotFound PositionTrackingDBServerBroadcastAction = 2
 )
+
+// Marshal reads or writes PositionTrackingDBServerBroadcastAction through its uint8 wire encoding.
+func (x *PositionTrackingDBServerBroadcastAction) Marshal(io IO) { io.Uint8((*uint8)(x)) }
 
 type PositionTrackingID struct {
 	Value int32

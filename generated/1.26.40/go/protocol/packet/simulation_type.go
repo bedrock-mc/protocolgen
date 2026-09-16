@@ -12,7 +12,7 @@ type SimulationType struct {
 
 // Marshal reads or writes SimulationType using its canonical wire layout.
 func (x *SimulationType) Marshal(io protocol.IO) {
-	protocol.IntegerFunc(&x.SimType, io.Uint8)
+	x.SimType.Marshal(io)
 }
 
 // ID returns the protocol ID for SimulationType.

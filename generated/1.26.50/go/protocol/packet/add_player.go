@@ -55,13 +55,13 @@ func (x *AddPlayer) Marshal(io protocol.IO) {
 	io.Vec2(&x.Rotation)
 	io.Float32(&x.YHeadRotation)
 	x.CarriedItem.Marshal(io)
-	protocol.IntegerFunc(&x.PlayerGameType, io.Varint32)
+	x.PlayerGameType.Marshal(io)
 	x.EntityData.Marshal(io)
 	x.SynchedProperties.Marshal(io)
 	x.AbilitiesData.Marshal(io)
 	protocol.Slice(io, &x.ActorLinks)
 	io.String(&x.DeviceID)
-	protocol.IntegerFunc(&x.BuildPlatform, io.Int32)
+	x.BuildPlatform.Marshal(io)
 }
 
 // ID returns the protocol ID for AddPlayer.

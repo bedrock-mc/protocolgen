@@ -35,6 +35,9 @@ const (
 	PersonaPieceTypeEmote         PersonaPieceType = 27
 )
 
+// Marshal reads or writes PersonaPieceType through its uint32 wire encoding.
+func (x *PersonaPieceType) Marshal(io IO) { io.Uint32((*uint32)(x)) }
+
 type SkinImage struct {
 	Width      uint32
 	Height     uint32

@@ -83,7 +83,7 @@ func Test32BitVarintsRejectSixByteEncoding(t *testing.T) {
 
 func TestReaderRejectsSliceOverLimit(t *testing.T) {
 	reader := NewReader(nil)
-	if reader.SliceLength(maxSliceLength+1, maxSliceLength) {
+	if reader.SliceLength(maxSliceLength + 1) {
 		t.Fatal("SliceLength accepted a collection over the default limit")
 	}
 	if reader.Err() == nil {
@@ -106,7 +106,7 @@ func TestFuncSliceAcceptsRaisedLimit(t *testing.T) {
 
 func TestReaderWithoutLimitAcceptsLargeSlice(t *testing.T) {
 	reader := NewReaderWithoutLimit(nil)
-	if !reader.SliceLength(maxSliceLength+1, maxSliceLength) {
+	if !reader.SliceLength(maxSliceLength + 1) {
 		t.Fatal("unlimited reader rejected a collection")
 	}
 }

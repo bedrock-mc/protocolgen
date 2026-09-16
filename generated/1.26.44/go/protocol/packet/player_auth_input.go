@@ -58,13 +58,11 @@ func (x *PlayerAuthInput) Marshal(io protocol.IO) {
 	io.Vec2(&x.MoveVector)
 	io.Float32(&x.PlayerHeadRotation)
 	protocol.OptionalFunc(io, &x.InputData, func(value *[]protocol.InputData) {
-		protocol.FuncSlice(io, value, io.Varuint32, func(value *protocol.InputData) {
-			protocol.IntegerFunc(value, io.Varint32)
-		})
+		protocol.Slice(io, value)
 	})
-	protocol.IntegerFunc(&x.InputMode, io.Varuint32)
-	protocol.IntegerFunc(&x.PlayMode, io.Varuint32)
-	protocol.IntegerFunc(&x.NewInteractionModel, io.Varint32)
+	x.InputMode.Marshal(io)
+	x.PlayMode.Marshal(io)
+	x.NewInteractionModel.Marshal(io)
 	io.Vec2(&x.InteractRotation)
 	io.PlayerInputTick(&x.ClientTick)
 	io.Vec3(&x.PosDelta)

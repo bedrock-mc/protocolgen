@@ -11,7 +11,7 @@ type SetPlayerFurnaceOptions struct {
 
 // Marshal reads or writes SetPlayerFurnaceOptions using its canonical wire layout.
 func (x *SetPlayerFurnaceOptions) Marshal(io protocol.IO) {
-	protocol.IntegerFunc(&x.FurnaceType, io.Uint8)
+	x.FurnaceType.Marshal(io)
 	x.FurnaceOptions.Marshal(io)
 }
 

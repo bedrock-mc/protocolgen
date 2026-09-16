@@ -17,15 +17,13 @@ type ClientboundTextureShift struct {
 
 // Marshal reads or writes ClientboundTextureShift using its canonical wire layout.
 func (x *ClientboundTextureShift) Marshal(io protocol.IO) {
-	protocol.IntegerFunc(&x.ActionID, io.Uint8)
+	x.ActionID.Marshal(io)
 	io.String(&x.CollectionName)
 	io.String(&x.FromStep)
 	io.String(&x.ToStep)
 	protocol.FuncSlice(io, &x.AllSteps, io.Varuint32, io.String)
 	io.Varuint64(&x.CurrentLengthInTicks)
-	protocol.Minimum(io, &x.CurrentLengthInTicks, 0)
 	io.Varuint64(&x.TotalLengthInTicks)
-	protocol.Minimum(io, &x.TotalLengthInTicks, 0)
 	io.Bool(&x.Enabled)
 }
 

@@ -14,7 +14,6 @@ type ClientboundDataDrivenUIShowScreen struct {
 func (x *ClientboundDataDrivenUIShowScreen) Marshal(io protocol.IO) {
 	io.StringLimits(&x.ScreenID, 0, 500)
 	io.Uint32(&x.FormID)
-	protocol.Minimum(io, &x.FormID, 0)
 	protocol.OptionalFunc(io, &x.DataInstanceID, io.Uint32)
 }
 

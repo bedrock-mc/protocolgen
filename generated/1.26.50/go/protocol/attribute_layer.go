@@ -31,7 +31,7 @@ type AttributeLayerData struct {
 	AttributeLayers []EASAttributeLayerData
 }
 
-func (*AttributeLayerData) isAttributeLayerSyncData() {}
+func (*AttributeLayerData) tagAttributeLayerSyncData() uint32 { return 0 }
 
 // Marshal reads or writes AttributeLayerData using its canonical wire layout.
 func (x *AttributeLayerData) Marshal(io IO) {
@@ -45,7 +45,7 @@ type AttributeLayerSettings struct {
 	AttributesLayerSettings EASAttributeLayerSettings
 }
 
-func (*AttributeLayerSettings) isAttributeLayerSyncData() {}
+func (*AttributeLayerSettings) tagAttributeLayerSyncData() uint32 { return 1 }
 
 // Marshal reads or writes AttributeLayerSettings using its canonical wire layout.
 func (x *AttributeLayerSettings) Marshal(io IO) {
@@ -55,107 +55,45 @@ func (x *AttributeLayerSettings) Marshal(io IO) {
 }
 
 type AttributeLayerSyncData interface {
-	isAttributeLayerSyncData()
+	Marshaler
+	tagAttributeLayerSyncData() uint32
 }
 
 // MarshalAttributeLayerSyncData reads or writes the AttributeLayerSyncData union using its canonical wire layout.
 func MarshalAttributeLayerSyncData(io IO, x *AttributeLayerSyncData) {
-	UnionFunc(io,
-		func() {
-			var tag uint32
-			io.Varuint32(&tag)
-			switch int64(tag) {
-			case 0:
-				value := new(AttributeLayerData)
-				value.Marshal(io)
-				*x = value
-			case 1:
-				value := new(AttributeLayerSettings)
-				value.Marshal(io)
-				*x = value
-			case 2:
-				value := new(EnvironmentAttributeData)
-				value.Marshal(io)
-				*x = value
-			case 3:
-				value := new(RemoveEnvironmentAttributes)
-				value.Marshal(io)
-				*x = value
-			default:
-				io.InvalidValue(tag, "unknown union tag")
-			}
-		},
-		func() {
-			switch value := (*x).(type) {
-			case *AttributeLayerData:
-				tag := uint32(0)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *AttributeLayerSettings:
-				tag := uint32(1)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *EnvironmentAttributeData:
-				tag := uint32(2)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *RemoveEnvironmentAttributes:
-				tag := uint32(3)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			default:
-				io.InvalidValue(*x, "unknown union value")
-			}
-		},
-	)
+	Union(io, x, io.Varuint32, AttributeLayerSyncData.tagAttributeLayerSyncData, func(tag uint32) AttributeLayerSyncData {
+		switch tag {
+		case 0:
+			return new(AttributeLayerData)
+		case 1:
+			return new(AttributeLayerSettings)
+		case 2:
+			return new(EnvironmentAttributeData)
+		case 3:
+			return new(RemoveEnvironmentAttributes)
+		}
+		return nil
+	})
 }
 
 type EAS interface {
-	isEAS()
+	Marshaler
+	tagEAS() uint32
 }
 
 // MarshalEAS reads or writes the EAS union using its canonical wire layout.
 func MarshalEAS(io IO, x *EAS) {
-	UnionFunc(io,
-		func() {
-			var tag uint32
-			io.Varuint32(&tag)
-			switch int64(tag) {
-			case 0:
-				value := new(EASBoolAttributeData)
-				value.Marshal(io)
-				*x = value
-			case 1:
-				value := new(EASFloatAttributeData)
-				value.Marshal(io)
-				*x = value
-			case 2:
-				value := new(EASColorAttributeData)
-				value.Marshal(io)
-				*x = value
-			default:
-				io.InvalidValue(tag, "unknown union tag")
-			}
-		},
-		func() {
-			switch value := (*x).(type) {
-			case *EASBoolAttributeData:
-				tag := uint32(0)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *EASFloatAttributeData:
-				tag := uint32(1)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			case *EASColorAttributeData:
-				tag := uint32(2)
-				io.Varuint32(&tag)
-				value.Marshal(io)
-			default:
-				io.InvalidValue(*x, "unknown union value")
-			}
-		},
-	)
+	Union(io, x, io.Varuint32, EAS.tagEAS, func(tag uint32) EAS {
+		switch tag {
+		case 0:
+			return new(EASBoolAttributeData)
+		case 1:
+			return new(EASFloatAttributeData)
+		case 2:
+			return new(EASColorAttributeData)
+		}
+		return nil
+	})
 }
 
 type EASNoiseAlignment struct {
@@ -165,7 +103,7 @@ type EASNoiseAlignment struct {
 
 // Marshal reads or writes EASNoiseAlignment using its canonical wire layout.
 func (x *EASNoiseAlignment) Marshal(io IO) {
-	IntegerFunc(&x.Type, io.Uint8)
+	x.Type.Marshal(io)
 	io.Varuint32(&x.Value)
 }
 
@@ -175,6 +113,9 @@ const (
 	EASNoiseAlignmentTypeMinLocalTransitionEnd EASNoiseAlignmentType = 0
 )
 
+// Marshal reads or writes EASNoiseAlignmentType through its uint8 wire encoding.
+func (x *EASNoiseAlignmentType) Marshal(io IO) { io.Uint8((*uint8)(x)) }
+
 // EnvironmentAttributeData represents an environment attribute with optional transition data.
 type EnvironmentAttributeData struct {
 	AttributeLayerName      string
@@ -182,7 +123,7 @@ type EnvironmentAttributeData struct {
 	Attributes              []EASEnvironmentAttributeData
 }
 
-func (*EnvironmentAttributeData) isAttributeLayerSyncData() {}
+func (*EnvironmentAttributeData) tagAttributeLayerSyncData() uint32 { return 2 }
 
 // Marshal reads or writes EnvironmentAttributeData using its canonical wire layout.
 func (x *EnvironmentAttributeData) Marshal(io IO) {

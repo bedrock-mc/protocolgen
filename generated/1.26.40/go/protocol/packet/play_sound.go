@@ -33,9 +33,7 @@ func (x *PlaySound) Marshal(io protocol.IO) {
 	io.Float32(&x.Volume)
 	io.Float32(&x.Pitch)
 	io.Varint32(&x.LoopCount)
-	protocol.OptionalFunc(io, &x.ServerSoundHandle, func(value *protocol.ServerSoundHandle) {
-		value.Marshal(io)
-	})
+	protocol.OptionalMarshaler(io, &x.ServerSoundHandle)
 }
 
 // ID returns the protocol ID for PlaySound.

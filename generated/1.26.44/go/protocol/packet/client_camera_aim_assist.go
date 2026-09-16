@@ -20,7 +20,7 @@ type ClientCameraAimAssist struct {
 // Marshal reads or writes ClientCameraAimAssist using its canonical wire layout.
 func (x *ClientCameraAimAssist) Marshal(io protocol.IO) {
 	io.String(&x.CameraPresetID)
-	protocol.IntegerFunc(&x.Action, io.Uint8)
+	x.Action.Marshal(io)
 	io.Bool(&x.AllowAimAssist)
 }
 

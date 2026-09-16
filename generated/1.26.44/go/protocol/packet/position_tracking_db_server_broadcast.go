@@ -20,7 +20,7 @@ type PositionTrackingDBServerBroadcast struct {
 
 // Marshal reads or writes PositionTrackingDBServerBroadcast using its canonical wire layout.
 func (x *PositionTrackingDBServerBroadcast) Marshal(io protocol.IO) {
-	protocol.IntegerFunc(&x.Action, io.Uint8)
+	x.Action.Marshal(io)
 	x.IDValue.Marshal(io)
 	io.NBT(&x.PositionTrackingData, protocol.NBTNetwork)
 }

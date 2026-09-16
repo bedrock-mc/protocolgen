@@ -19,7 +19,6 @@ type ServerSettingsResponse struct {
 // Marshal reads or writes ServerSettingsResponse using its canonical wire layout.
 func (x *ServerSettingsResponse) Marshal(io protocol.IO) {
 	io.Varuint32(&x.FormID)
-	protocol.Minimum(io, &x.FormID, 0)
 	io.String(&x.FormUIJSON)
 }
 

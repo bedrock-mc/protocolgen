@@ -19,8 +19,8 @@ type CameraShake struct {
 func (x *CameraShake) Marshal(io protocol.IO) {
 	io.Float32(&x.Intensity)
 	io.Float32(&x.Seconds)
-	protocol.IntegerFunc(&x.ShakeType, io.Uint8)
-	protocol.IntegerFunc(&x.ShakeAction, io.Uint8)
+	x.ShakeType.Marshal(io)
+	x.ShakeAction.Marshal(io)
 }
 
 // ID returns the protocol ID for CameraShake.

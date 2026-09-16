@@ -19,7 +19,7 @@ type PlayerAction struct {
 // Marshal reads or writes PlayerAction using its canonical wire layout.
 func (x *PlayerAction) Marshal(io protocol.IO) {
 	io.ActorRuntimeID(&x.PlayerRuntimeID)
-	protocol.IntegerFunc(&x.Action, io.Varint32)
+	x.Action.Marshal(io)
 	x.BlockPosition.Marshal(io)
 	x.ResultPos.Marshal(io)
 	io.Varint32(&x.Face)

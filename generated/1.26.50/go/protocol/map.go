@@ -22,16 +22,10 @@ type MapDecoration struct {
 
 // Marshal reads or writes MapDecoration using its canonical wire layout.
 func (x *MapDecoration) Marshal(io IO) {
-	IntegerFunc(&x.ImageType, io.Int8)
+	x.ImageType.Marshal(io)
 	io.Uint8(&x.Rotation)
-	Minimum(io, &x.Rotation, 0)
-	Maximum(io, &x.Rotation, 255)
 	io.Uint8(&x.X)
-	Minimum(io, &x.X, 0)
-	Maximum(io, &x.X, 255)
 	io.Uint8(&x.Y)
-	Minimum(io, &x.Y, 0)
-	Maximum(io, &x.Y, 255)
 	io.String(&x.Label)
 	io.RGBA(&x.Color)
 }
@@ -74,6 +68,9 @@ const (
 	MapDecorationTypeCount             MapDecorationType = 30
 )
 
+// Marshal reads or writes MapDecorationType through its int8 wire encoding.
+func (x *MapDecorationType) Marshal(io IO) { io.Int8((*int8)(x)) }
+
 type MapItemTrackedActorType int32
 
 const (
@@ -81,6 +78,9 @@ const (
 	MapItemTrackedActorTypeBlockEntity MapItemTrackedActorType = 1
 	MapItemTrackedActorTypeOther       MapItemTrackedActorType = 2
 )
+
+// Marshal reads or writes MapItemTrackedActorType through its int32 wire encoding.
+func (x *MapItemTrackedActorType) Marshal(io IO) { io.Int32((*int32)(x)) }
 
 type MapItemTrackedActorUniqueID struct {
 	Type          MapItemTrackedActorType
@@ -90,11 +90,9 @@ type MapItemTrackedActorUniqueID struct {
 
 // Marshal reads or writes MapItemTrackedActorUniqueID using its canonical wire layout.
 func (x *MapItemTrackedActorUniqueID) Marshal(io IO) {
-	IntegerFunc(&x.Type, io.Int32)
+	x.Type.Marshal(io)
 	OptionalFunc(io, &x.EntityID, io.ActorUniqueID)
-	OptionalFunc(io, &x.BlockPosition, func(value *BlockPos) {
-		value.Marshal(io)
-	})
+	OptionalMarshaler(io, &x.BlockPosition)
 }
 
 // PixelRequest is the request for the colour of a pixel in a MapInfoRequest packet.
