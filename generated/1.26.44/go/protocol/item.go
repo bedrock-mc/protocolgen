@@ -2,7 +2,9 @@
 
 package protocol
 
-import "github.com/go-gl/mathgl/mgl32"
+import (
+	"github.com/go-gl/mathgl/mgl32"
+)
 
 type ItemData struct {
 	ItemName          string
@@ -49,8 +51,8 @@ func (x *ItemEnchants) Marshal(io IO) {
 	}
 }
 
-// ItemInstance represents a unique instance of an item stack. These instances carry a specific
-// network ID that is persistent for the stack.
+// ItemInstance represents a unique instance of an item stack. These instances carry a specific network ID
+// that is persistent for the stack.
 type ItemInstance struct {
 	ItemDescriptor ItemDescriptor
 	StackSize      uint16
@@ -207,6 +209,7 @@ const (
 // Marshal reads or writes ItemUseOnActorInventoryTransactionActionType through its int32 wire encoding.
 func (x *ItemUseOnActorInventoryTransactionActionType) Marshal(io IO) { io.Varint32((*int32)(x)) }
 
+// ItemUsed is when a player right clicks a item.
 type ItemUsed struct {
 	ItemID    int16
 	ItemAux   int32

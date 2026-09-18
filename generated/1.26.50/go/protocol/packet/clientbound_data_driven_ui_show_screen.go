@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 type ClientboundDataDrivenUIShowScreen struct {
 	ScreenID       string
@@ -10,12 +12,13 @@ type ClientboundDataDrivenUIShowScreen struct {
 	DataInstanceID protocol.Optional[uint32]
 }
 
-// Marshal reads or writes ClientboundDataDrivenUIShowScreen using its canonical wire layout.
-func (x *ClientboundDataDrivenUIShowScreen) Marshal(io protocol.IO) {
-	io.StringLimits(&x.ScreenID, 0, 500)
-	io.Uint32(&x.FormID)
-	protocol.OptionalFunc(io, &x.DataInstanceID, io.Uint32)
+// ID ...
+func (*ClientboundDataDrivenUIShowScreen) ID() uint32 {
+	return IDClientboundDataDrivenUIShowScreen
 }
 
-// ID returns the protocol ID for ClientboundDataDrivenUIShowScreen.
-func (*ClientboundDataDrivenUIShowScreen) ID() uint32 { return IDClientboundDataDrivenUIShowScreen }
+func (pk *ClientboundDataDrivenUIShowScreen) Marshal(io protocol.IO) {
+	io.StringLimits(&pk.ScreenID, 0, 500)
+	io.Uint32(&pk.FormID)
+	protocol.OptionalFunc(io, &pk.DataInstanceID, io.Uint32)
+}

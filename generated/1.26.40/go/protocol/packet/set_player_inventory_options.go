@@ -2,18 +2,29 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
-// SetPlayerInventoryOptions is a bidirectional packet that can be used to update the inventory
-// options of a player.
+// SetPlayerInventoryOptions is a bidirectional packet that can be used to update the inventory options of a
+// player.
 type SetPlayerInventoryOptions struct {
-	InventoryOptions protocol.InventoryOptions
+	LeftInventoryTab  protocol.InventoryLeftTabIndex
+	RightInventoryTab protocol.InventoryRightTabIndex
+	Filtering         bool
+	LayoutInv         protocol.InventoryLayout
+	LayoutCraft       protocol.InventoryLayout
 }
 
-// Marshal reads or writes SetPlayerInventoryOptions using its canonical wire layout.
-func (x *SetPlayerInventoryOptions) Marshal(io protocol.IO) {
-	x.InventoryOptions.Marshal(io)
+// ID ...
+func (*SetPlayerInventoryOptions) ID() uint32 {
+	return IDSetPlayerInventoryOptions
 }
 
-// ID returns the protocol ID for SetPlayerInventoryOptions.
-func (*SetPlayerInventoryOptions) ID() uint32 { return IDSetPlayerInventoryOptions }
+func (pk *SetPlayerInventoryOptions) Marshal(io protocol.IO) {
+	pk.LeftInventoryTab.Marshal(io)
+	pk.RightInventoryTab.Marshal(io)
+	io.Bool(&pk.Filtering)
+	pk.LayoutInv.Marshal(io)
+	pk.LayoutCraft.Marshal(io)
+}

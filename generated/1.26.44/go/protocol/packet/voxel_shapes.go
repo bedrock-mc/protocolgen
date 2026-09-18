@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.44/go/protocol"
+import (
+	"protocolgen/generated/1.26.44/go/protocol"
+)
 
 // VoxelShapes is sent by the server to send voxel shape data to the client.
 type VoxelShapes struct {
@@ -14,14 +16,15 @@ type VoxelShapes struct {
 	CustomShapeCount uint16
 }
 
-// Marshal reads or writes VoxelShapes using its canonical wire layout.
-func (x *VoxelShapes) Marshal(io protocol.IO) {
-	protocol.Slice(io, &x.Shapes)
-	protocol.OrderedMap(io, &x.NameMap, io.Varuint32, io.String, func(value *protocol.VoxelShapesRegistryHandle) {
-		value.Marshal(io)
-	})
-	io.Uint16(&x.CustomShapeCount)
+// ID ...
+func (*VoxelShapes) ID() uint32 {
+	return IDVoxelShapes
 }
 
-// ID returns the protocol ID for VoxelShapes.
-func (*VoxelShapes) ID() uint32 { return IDVoxelShapes }
+func (pk *VoxelShapes) Marshal(io protocol.IO) {
+	protocol.Slice(io, &pk.Shapes)
+	protocol.OrderedMap(io, &pk.NameMap, io.Varuint32, io.String, func(value *protocol.VoxelShapesRegistryHandle) {
+		value.Marshal(io)
+	})
+	io.Uint16(&pk.CustomShapeCount)
+}

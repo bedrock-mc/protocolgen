@@ -2,11 +2,12 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
-// EditorNetwork is a packet sent from the server to the client and vise-versa to communicate
-// editor-mode related information. It carries a single compound tag containing the relevant
-// information.
+// EditorNetwork is a packet sent from the server to the client and vise-versa to communicate editor-mode
+// related information. It carries a single compound tag containing the relevant information.
 type EditorNetwork struct {
 	// RouteToManager ...
 	RouteToManager bool
@@ -14,11 +15,12 @@ type EditorNetwork struct {
 	Payload []byte
 }
 
-// Marshal reads or writes EditorNetwork using its canonical wire layout.
-func (x *EditorNetwork) Marshal(io protocol.IO) {
-	io.Bool(&x.RouteToManager)
-	io.NBT(&x.Payload, protocol.NBTNetwork)
+// ID ...
+func (*EditorNetwork) ID() uint32 {
+	return IDEditorNetwork
 }
 
-// ID returns the protocol ID for EditorNetwork.
-func (*EditorNetwork) ID() uint32 { return IDEditorNetwork }
+func (pk *EditorNetwork) Marshal(io protocol.IO) {
+	io.Bool(&pk.RouteToManager)
+	io.NBT(&pk.Payload, protocol.NBTNetwork)
+}

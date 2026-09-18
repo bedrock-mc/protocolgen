@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
 // SetHud is sent by the server to set the visibility of individual HUD elements on the client.
 type SetHud struct {
@@ -10,11 +12,12 @@ type SetHud struct {
 	HudVisible protocol.HudVisibility
 }
 
-// Marshal reads or writes SetHud using its canonical wire layout.
-func (x *SetHud) Marshal(io protocol.IO) {
-	protocol.Slice(io, &x.HudElement)
-	x.HudVisible.Marshal(io)
+// ID ...
+func (*SetHud) ID() uint32 {
+	return IDSetHud
 }
 
-// ID returns the protocol ID for SetHud.
-func (*SetHud) ID() uint32 { return IDSetHud }
+func (pk *SetHud) Marshal(io protocol.IO) {
+	protocol.Slice(io, &pk.HudElement)
+	pk.HudVisible.Marshal(io)
+}

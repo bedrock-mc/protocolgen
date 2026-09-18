@@ -2,11 +2,12 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
-// SetActorData is sent by the server to update the entity metadata of an entity. It includes flags
-// such as if the entity is on fire, but also properties such as the air it has left until it starts
-// drowning.
+// SetActorData is sent by the server to update the entity metadata of an entity. It includes flags such as if
+// the entity is on fire, but also properties such as the air it has left until it starts drowning.
 type SetActorData struct {
 	TargetRuntimeID   uint64
 	ActorData         protocol.SynchedActorDataCopyableDataList
@@ -16,13 +17,14 @@ type SetActorData struct {
 	Tick uint64
 }
 
-// Marshal reads or writes SetActorData using its canonical wire layout.
-func (x *SetActorData) Marshal(io protocol.IO) {
-	io.ActorRuntimeID(&x.TargetRuntimeID)
-	x.ActorData.Marshal(io)
-	x.SynchedProperties.Marshal(io)
-	io.PlayerInputTick(&x.Tick)
+// ID ...
+func (*SetActorData) ID() uint32 {
+	return IDSetActorData
 }
 
-// ID returns the protocol ID for SetActorData.
-func (*SetActorData) ID() uint32 { return IDSetActorData }
+func (pk *SetActorData) Marshal(io protocol.IO) {
+	io.ActorRuntimeID(&pk.TargetRuntimeID)
+	pk.ActorData.Marshal(io)
+	pk.SynchedProperties.Marshal(io)
+	io.PlayerInputTick(&pk.Tick)
+}

@@ -2,7 +2,9 @@
 
 package protocol
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+)
 
 // MultiRecipe serves as an 'enable' switch for multi-shape recipes.
 type MultiRecipe struct {
@@ -79,12 +81,12 @@ const (
 // Marshal reads or writes RecipeUnlockingRequirementUnlockingContext through its int32 wire encoding.
 func (x *RecipeUnlockingRequirementUnlockingContext) Marshal(io IO) { io.Varint32((*int32)(x)) }
 
-// ShapedRecipe is a recipe that has a specific shape that must be used to craft the output of the
-// recipe. Trying to craft the item in any other shape will not work. The ShapedRecipe is of the
-// same structure as the ShapedChemistryRecipe.
+// ShapedRecipe is a recipe that has a specific shape that must be used to craft the output of the recipe.
+// Trying to craft the item in any other shape will not work. The ShapedRecipe is of the same structure as the
+// ShapedChemistryRecipe.
 type ShapedRecipe struct {
-	// RecipeID is a unique ID of the recipe. This ID must be unique amongst all other types of recipes
-	// too, but its functionality is not exactly known.
+	// RecipeID is a unique ID of the recipe. This ID must be unique amongst all other types of recipes too, but
+	// its functionality is not exactly known.
 	RecipeID string
 	// Width is the width of the recipe's shape.
 	Width int32
@@ -92,15 +94,14 @@ type ShapedRecipe struct {
 	Height      int32
 	Ingredients []RecipeIngredientSerializedData
 	Results     []NetworkItemInstanceDescriptorSerializedData
-	// UUID is a UUID identifying the recipe. Since the CraftingEvent packet no longer exists, this can
-	// always be empty.
+	// UUID is a UUID identifying the recipe. Since the CraftingEvent packet no longer exists, this can always be
+	// empty.
 	UUID uuid.UUID
 	Tag  string
 	// Priority ...
 	Priority int32
-	// AssumeSymmetry specifies if the recipe is symmetrical. If this is set to true, the recipe will be
-	// mirrored along the diagonal axis. This means that the recipe will be the same if rotated 180
-	// degrees.
+	// AssumeSymmetry specifies if the recipe is symmetrical. If this is set to true, the recipe will be mirrored
+	// along the diagonal axis. This means that the recipe will be the same if rotated 180 degrees.
 	AssumeSymmetry       bool
 	UnlockingRequirement Optional[RecipeUnlockRequirementSerializedData]
 	NetID                RecipeNetID
@@ -124,13 +125,13 @@ func (x *ShapedRecipe) Marshal(io IO) {
 // ShapelessRecipe is a recipe that has no particular shape. Its functionality is shared with the
 // RecipeShulkerBox and RecipeShapelessChemistry types.
 type ShapelessRecipe struct {
-	// RecipeID is a unique ID of the recipe. This ID must be unique amongst all other types of recipes
-	// too, but its functionality is not exactly known.
+	// RecipeID is a unique ID of the recipe. This ID must be unique amongst all other types of recipes too, but
+	// its functionality is not exactly known.
 	RecipeID    string
 	Ingredients []RecipeIngredientSerializedData
 	Results     []NetworkItemInstanceDescriptorSerializedData
-	// UUID is a UUID identifying the recipe. Since the CraftingEvent packet no longer exists, this can
-	// always be empty.
+	// UUID is a UUID identifying the recipe. Since the CraftingEvent packet no longer exists, this can always be
+	// empty.
 	UUID uuid.UUID
 	Tag  string
 	// Priority ...
@@ -151,11 +152,11 @@ func (x *ShapelessRecipe) Marshal(io IO) {
 	x.NetID.Marshal(io)
 }
 
-// SmithingTransformRecipe is a recipe specifically used for smithing tables. It has three input
-// items and adds them together, resulting in a new item.
+// SmithingTransformRecipe is a recipe specifically used for smithing tables. It has three input items and
+// adds them together, resulting in a new item.
 type SmithingTransformRecipe struct {
-	// RecipeID is a unique ID of the recipe. This ID must be unique amongst all other types of recipes
-	// too, but its functionality is not exactly known.
+	// RecipeID is a unique ID of the recipe. This ID must be unique amongst all other types of recipes too, but
+	// its functionality is not exactly known.
 	RecipeID           string
 	TemplateIngredient RecipeIngredientSerializedData
 	BaseIngredient     RecipeIngredientSerializedData
@@ -177,11 +178,11 @@ func (x *SmithingTransformRecipe) Marshal(io IO) {
 	x.NetID.Marshal(io)
 }
 
-// SmithingTrimRecipe is a recipe specifically used for applying armour trims to an armour piece
-// inside a smithing table.
+// SmithingTrimRecipe is a recipe specifically used for applying armour trims to an armour piece inside a
+// smithing table.
 type SmithingTrimRecipe struct {
-	// RecipeID is a unique ID of the recipe. This ID must be unique amongst all other types of recipes
-	// too, but its functionality is not exactly known.
+	// RecipeID is a unique ID of the recipe. This ID must be unique amongst all other types of recipes too, but
+	// its functionality is not exactly known.
 	RecipeID           string
 	TemplateIngredient RecipeIngredientSerializedData
 	BaseIngredient     RecipeIngredientSerializedData

@@ -714,6 +714,7 @@ func runEmitGo(args []string) error {
 	domainsPath := fs.String("domains", "", "reviewed domain overlay JSON; defaults to domains.json beside the manifest")
 	docsPath := fs.String("docs", "", "reviewed documentation overlay JSON; defaults to docs.json beside the manifest")
 	protocolImport := fs.String("protocol-import", "", "import path of the generated protocol package")
+	layoutPath := fs.String("layout", "", "reviewed layout overlay JSON that places constants and names fields like a gophertunnel checkout; never defaulted")
 	nativeTypes := fs.Bool("native-types", true, "map canonical semantic shapes to established Go types such as uuid.UUID and mgl32 vectors")
 	packetRuntime := fs.Bool("packet-runtime", true, "emit the packet interface and ID methods")
 	packetPools := fs.Bool("packet-pools", true, "emit packet factory pools")
@@ -731,6 +732,7 @@ func runEmitGo(args []string) error {
 		NamingPath:   *namingPath,
 		DomainsPath:  *domainsPath,
 		DocsPath:     *docsPath,
+		LayoutPath:   *layoutPath,
 		OutputDir:    *out,
 	}, emitter.Func(func(input emitter.Input) (map[string]string, error) {
 		return emitgo.GenerateWithOptions(input.Manifest, emitgo.Options{
@@ -738,6 +740,7 @@ func runEmitGo(args []string) error {
 			Naming:             input.Naming,
 			Domains:            input.Domains,
 			Docs:               input.Docs,
+			Layout:             input.Layout,
 			NativeTypes:        *nativeTypes,
 			EmitPacketRuntime:  *packetRuntime,
 			EmitPacketPools:    *packetPools,

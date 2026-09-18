@@ -2,10 +2,12 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
-// ResourcePackDataInfo is sent by the server to the client to inform the client about the data
-// contained in one of the resource packs that are about to be sent.
+// ResourcePackDataInfo is sent by the server to the client to inform the client about the data contained in
+// one of the resource packs that are about to be sent.
 type ResourcePackDataInfo struct {
 	ResourceName   string
 	ChunkSize      uint32
@@ -13,21 +15,22 @@ type ResourcePackDataInfo struct {
 	FileSize       uint64
 	FileHash       []byte
 	IsPremiumPack  bool
-	// PackType is the type of the resource pack. It is one of the resource pack types that may be found
-	// in the constants above.
+	// PackType is the type of the resource pack. It is one of the resource pack types that may be found in the
+	// constants above.
 	PackType uint8
 }
 
-// Marshal reads or writes ResourcePackDataInfo using its canonical wire layout.
-func (x *ResourcePackDataInfo) Marshal(io protocol.IO) {
-	io.String(&x.ResourceName)
-	io.Uint32(&x.ChunkSize)
-	io.Uint32(&x.NumberOfChunks)
-	io.Uint64(&x.FileSize)
-	io.Bytes(&x.FileHash)
-	io.Bool(&x.IsPremiumPack)
-	io.Uint8(&x.PackType)
+// ID ...
+func (*ResourcePackDataInfo) ID() uint32 {
+	return IDResourcePackDataInfo
 }
 
-// ID returns the protocol ID for ResourcePackDataInfo.
-func (*ResourcePackDataInfo) ID() uint32 { return IDResourcePackDataInfo }
+func (pk *ResourcePackDataInfo) Marshal(io protocol.IO) {
+	io.String(&pk.ResourceName)
+	io.Uint32(&pk.ChunkSize)
+	io.Uint32(&pk.NumberOfChunks)
+	io.Uint64(&pk.FileSize)
+	io.Bytes(&pk.FileHash)
+	io.Bool(&pk.IsPremiumPack)
+	io.Uint8(&pk.PackType)
+}

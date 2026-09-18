@@ -2,16 +2,19 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
 type EduURIResource struct {
 	EduSharedURIResource protocol.EduSharedURIResource
 }
 
-// Marshal reads or writes EduURIResource using its canonical wire layout.
-func (x *EduURIResource) Marshal(io protocol.IO) {
-	x.EduSharedURIResource.Marshal(io)
+// ID ...
+func (*EduURIResource) ID() uint32 {
+	return IDEduURIResource
 }
 
-// ID returns the protocol ID for EduURIResource.
-func (*EduURIResource) ID() uint32 { return IDEduURIResource }
+func (pk *EduURIResource) Marshal(io protocol.IO) {
+	pk.EduSharedURIResource.Marshal(io)
+}

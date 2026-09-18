@@ -2,26 +2,29 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
-// StructureTemplateDataResponse is sent by the server to send data of a structure to the client in
-// response to a StructureTemplateDataRequest packet.
+// StructureTemplateDataResponse is sent by the server to send data of a structure to the client in response
+// to a StructureTemplateDataRequest packet.
 type StructureTemplateDataResponse struct {
-	// StructureName is the name of the structure that was requested. This is the name used to export
-	// the structure to a file.
+	// StructureName is the name of the structure that was requested. This is the name used to export the
+	// structure to a file.
 	StructureName string
 	StructureSNBT []byte
-	// ResponseType specifies the response type of the packet. This depends on the RequestType field
-	// sent in the StructureTemplateDataRequest packet and is one of the constants above.
+	// ResponseType specifies the response type of the packet. This depends on the RequestType field sent in the
+	// StructureTemplateDataRequest packet and is one of the constants above.
 	ResponseType protocol.StructureTemplateResponseType
 }
 
-// Marshal reads or writes StructureTemplateDataResponse using its canonical wire layout.
-func (x *StructureTemplateDataResponse) Marshal(io protocol.IO) {
-	io.String(&x.StructureName)
-	io.NBT(&x.StructureSNBT, protocol.NBTNetwork)
-	x.ResponseType.Marshal(io)
+// ID ...
+func (*StructureTemplateDataResponse) ID() uint32 {
+	return IDStructureTemplateDataResponse
 }
 
-// ID returns the protocol ID for StructureTemplateDataResponse.
-func (*StructureTemplateDataResponse) ID() uint32 { return IDStructureTemplateDataResponse }
+func (pk *StructureTemplateDataResponse) Marshal(io protocol.IO) {
+	io.String(&pk.StructureName)
+	io.NBT(&pk.StructureSNBT, protocol.NBTNetwork)
+	pk.ResponseType.Marshal(io)
+}

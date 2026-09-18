@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 type NpcDialogue struct {
 	NpcIDRawID            uint64
@@ -13,15 +15,16 @@ type NpcDialogue struct {
 	ActionJSON            string
 }
 
-// Marshal reads or writes NpcDialogue using its canonical wire layout.
-func (x *NpcDialogue) Marshal(io protocol.IO) {
-	io.Uint64(&x.NpcIDRawID)
-	x.NpcDialogueActionType.Marshal(io)
-	io.String(&x.Dialogue)
-	io.String(&x.SceneName)
-	io.String(&x.NpcName)
-	io.String(&x.ActionJSON)
+// ID ...
+func (*NpcDialogue) ID() uint32 {
+	return IDNpcDialogue
 }
 
-// ID returns the protocol ID for NpcDialogue.
-func (*NpcDialogue) ID() uint32 { return IDNpcDialogue }
+func (pk *NpcDialogue) Marshal(io protocol.IO) {
+	io.Uint64(&pk.NpcIDRawID)
+	pk.NpcDialogueActionType.Marshal(io)
+	io.String(&pk.Dialogue)
+	io.String(&pk.SceneName)
+	io.String(&pk.NpcName)
+	io.String(&pk.ActionJSON)
+}

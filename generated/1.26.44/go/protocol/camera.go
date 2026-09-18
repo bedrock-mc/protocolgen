@@ -2,7 +2,9 @@
 
 package protocol
 
-import "github.com/go-gl/mathgl/mgl32"
+import (
+	"github.com/go-gl/mathgl/mgl32"
+)
 
 type CameraAimAssistAction uint8
 
@@ -34,8 +36,13 @@ func (x *CameraAimAssistActorPriorityData) Marshal(io IO) {
 	io.Int32(&x.PriorityValue)
 }
 
+// CameraAimAssistCategoryDefinition is an aim assist category that defines priorities for specific blocks and
+// entities.
 type CameraAimAssistCategoryDefinition struct {
-	Name       string
+	// Name is the name of the category which can be used by a CameraAimAssistPreset.
+	Name string
+	// Priorities represents the block and entity specific priorities as well as the default priorities for this
+	// category.
 	Priorities CameraAimAssistCategoryPriorities
 }
 
@@ -45,13 +52,21 @@ func (x *CameraAimAssistCategoryDefinition) Marshal(io IO) {
 	x.Priorities.Marshal(io)
 }
 
+// CameraAimAssistCategoryPriorities represents the block and entity specific priorities for targetting. The
+// aim assist will select the block or entity with the highest priority within the specified thresholds.
 type CameraAimAssistCategoryPriorities struct {
-	Entities           []OrderedEntry[string, int32]
-	Blocks             []OrderedEntry[string, int32]
-	BlockTags          []OrderedEntry[string, int32]
+	// Entities is a list of priorities for specific entity identifiers.
+	Entities []OrderedEntry[string, int32]
+	// Blocks is a list of priorities for specific block identifiers.
+	Blocks []OrderedEntry[string, int32]
+	// BlockTags is a list of priorities for specific block tags.
+	BlockTags []OrderedEntry[string, int32]
+	// EntityTypeFamilies is a list of priorities for specific entity type families.
 	EntityTypeFamilies []OrderedEntry[string, int32]
-	EntityDefault      Optional[int32]
-	BlockDefault       Optional[int32]
+	// EntityDefault is the default priority for entities.
+	EntityDefault Optional[int32]
+	// BlockDefault is the default priority for blocks.
+	BlockDefault Optional[int32]
 }
 
 // Marshal reads or writes CameraAimAssistCategoryPriorities using its canonical wire layout.
@@ -223,36 +238,10 @@ func (x *CameraFadeTimeData) Marshal(io IO) {
 	io.Float32(&x.FadeOutTime)
 }
 
-type CameraInstructionData struct {
-	Set              Optional[CameraInstructionSet]
-	Clear            Optional[bool]
-	Fade             Optional[CameraInstructionFade]
-	Target           Optional[CameraInstructionTargetData]
-	RemoveTarget     Optional[bool]
-	FieldOfView      Optional[CameraInstructionFieldOfView]
-	Spline           Optional[CameraSplineInstruction]
-	AttachToEntity   Optional[CameraInstructionTarget]
-	DetachFromEntity Optional[bool]
-}
-
-// Marshal reads or writes CameraInstructionData using its canonical wire layout.
-func (x *CameraInstructionData) Marshal(io IO) {
-	OptionalMarshaler(io, &x.Set)
-	OptionalFunc(io, &x.Clear, io.Bool)
-	OptionalMarshaler(io, &x.Fade)
-	OptionalMarshaler(io, &x.Target)
-	OptionalFunc(io, &x.RemoveTarget, io.Bool)
-	OptionalMarshaler(io, &x.FieldOfView)
-	OptionalMarshaler(io, &x.Spline)
-	OptionalMarshaler(io, &x.AttachToEntity)
-	OptionalFunc(io, &x.DetachFromEntity, io.Bool)
-}
-
-// CameraInstructionFade represents a camera instruction that fades the screen to a specified
-// colour.
+// CameraInstructionFade represents a camera instruction that fades the screen to a specified colour.
 type CameraInstructionFade struct {
-	// Time is the time data for the fade, which includes the fade in duration, wait duration and fade
-	// out duration.
+	// Time is the time data for the fade, which includes the fade in duration, wait duration and fade out
+	// duration.
 	Time Optional[CameraFadeTimeData]
 	// Color is the colour of the screen to fade to. This only uses the red, green and blue components.
 	Color Optional[CameraFadeColor]
@@ -281,8 +270,8 @@ func (x *CameraInstructionFieldOfView) Marshal(io IO) {
 	io.Bool(&x.FieldOfViewClear)
 }
 
-// CameraInstructionSet represents a camera instruction that sets the camera to a specified preset
-// and can be extended with easing functions and translations to the camera's position and rotation.
+// CameraInstructionSet represents a camera instruction that sets the camera to a specified preset and can be
+// extended with easing functions and translations to the camera's position and rotation.
 type CameraInstructionSet struct {
 	// Preset is the index of the preset in the CameraPresets packet sent to the player.
 	Preset uint32
@@ -292,11 +281,10 @@ type CameraInstructionSet struct {
 	Pos Optional[CameraPosition]
 	// Rot represents the rotation of the camera.
 	Rot Optional[CameraRotation]
-	// Facing is a vector that the camera will always face towards during the duration of the
-	// instruction.
+	// Facing is a vector that the camera will always face towards during the duration of the instruction.
 	Facing Optional[CameraFacing]
-	// ViewOffset is an offset based on a pivot point to the player, causing the camera to be shifted in
-	// a certain direction.
+	// ViewOffset is an offset based on a pivot point to the player, causing the camera to be shifted in a certain
+	// direction.
 	ViewOffset Optional[CameraViewOffset]
 	// EntityOffset is an offset from the entity that the camera should be rendered at.
 	EntityOffset Optional[CameraEntityOffset]
@@ -380,34 +368,33 @@ type CameraPreset struct {
 	ContinueTargeting Optional[bool]
 	// BlockListeningRadius is the radius around the camera that the aim assist should track targets.
 	BlockListeningRadius Optional[float32]
-	// ViewOffset is only used in a follow_orbit camera and controls an offset based on a pivot point to
-	// the player, causing it to be shifted in a certain direction.
+	// ViewOffset is only used in a follow_orbit camera and controls an offset based on a pivot point to the
+	// player, causing it to be shifted in a certain direction.
 	ViewOffset Optional[mgl32.Vec2]
 	// EntityOffset controls the offset from the entity that the camera should be rendered at.
 	EntityOffset Optional[mgl32.Vec3]
-	// Radius is only used in a follow_orbit camera and controls how far away from the player the camera
-	// should be rendered.
+	// Radius is only used in a follow_orbit camera and controls how far away from the player the camera should be
+	// rendered.
 	Radius Optional[float32]
 	// YawLimitMin is the minimum yaw limit of the camera.
 	YawLimitMin Optional[float32]
 	// YawLimitMax is the maximum yaw limit of the camera.
 	YawLimitMax Optional[float32]
-	// Listener defines where the audio should be played from when using this preset. This is one of the
-	// constants above.
+	// Listener defines where the audio should be played from when using this preset. This is one of the constants
+	// above.
 	Listener Optional[CameraPresetAudioListener]
 	// PlayerEffects is currently unknown.
 	PlayerEffects Optional[bool]
 	// AimAssist defines the aim assist to use when using this preset.
 	AimAssist Optional[CameraAimAssistCommandPresetDefinition]
-	// ControlScheme is the control scheme that the client should use in this camera. It is one of the
-	// following: - ControlSchemeLockedPlayerRelativeStrafe is the default behaviour, this cannot be set
-	// when the client is in a custom camera. - ControlSchemeCameraRelative makes movement relative to
-	// the camera's transform, with the client's rotation being relative to the client's movement. -
-	// ControlSchemeCameraRelativeStrafe makes movement relative to the camera's transform, with the
-	// client's rotation being locked. - ControlSchemePlayerRelative makes movement relative to the
-	// player's transform, meaning holding left/right will make the player turn in a circle. -
-	// ControlSchemePlayerRelativeStrafe makes movement the same as the default behaviour, but can be
-	// used in a custom camera.
+	// ControlScheme is the control scheme that the client should use in this camera. It is one of the following:
+	// - ControlSchemeLockedPlayerRelativeStrafe is the default behaviour, this cannot be set when the client is
+	// in a custom camera. - ControlSchemeCameraRelative makes movement relative to the camera's transform, with
+	// the client's rotation being relative to the client's movement. - ControlSchemeCameraRelativeStrafe makes
+	// movement relative to the camera's transform, with the client's rotation being locked. -
+	// ControlSchemePlayerRelative makes movement relative to the player's transform, meaning holding left/right
+	// will make the player turn in a circle. - ControlSchemePlayerRelativeStrafe makes movement the same as the
+	// default behaviour, but can be used in a custom camera.
 	ControlScheme Optional[ControlScheme]
 }
 
@@ -446,15 +433,6 @@ const (
 
 // Marshal reads or writes CameraPresetAudioListener through its uint8 wire encoding.
 func (x *CameraPresetAudioListener) Marshal(io IO) { io.Uint8((*uint8)(x)) }
-
-type CameraPresetList struct {
-	Presets []CameraPreset
-}
-
-// Marshal reads or writes CameraPresetList using its canonical wire layout.
-func (x *CameraPresetList) Marshal(io IO) {
-	Slice(io, &x.Presets)
-}
 
 // CameraProgressOption represents a progress keyframe option for camera spline instructions.
 type CameraProgressOption struct {
@@ -553,8 +531,8 @@ func (x *CameraSplineDefinition) Marshal(io IO) {
 	Slice(io, &x.RotationKeyFrames)
 }
 
-// CameraSplineInstruction represents a camera instruction that creates a spline path for the camera
-// to follow.
+// CameraSplineInstruction represents a camera instruction that creates a spline path for the camera to
+// follow.
 type CameraSplineInstruction struct {
 	// TotalTime is the total time for the spline animation.
 	TotalTime float32

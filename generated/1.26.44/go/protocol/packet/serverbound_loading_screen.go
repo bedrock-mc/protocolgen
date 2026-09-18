@@ -2,18 +2,26 @@
 
 package packet
 
-import "protocolgen/generated/1.26.44/go/protocol"
+import (
+	"protocolgen/generated/1.26.44/go/protocol"
+)
 
+// ServerboundLoadingScreen is sent by the client to tell the server about the state of the loading screen
+// that the client is currently displaying.
 type ServerboundLoadingScreen struct {
+	// Type is the type of the loading screen event. It is one of the constants that may be found above.
 	LoadingScreenPacketType protocol.ServerboundLoadingScreenType
-	LoadingScreenID         protocol.Optional[uint32]
+	// LoadingScreenID is the ID of the screen that was previously sent by the server in the ChangeDimension
+	// packet. The server should validate that the ID matches the last one it sent.
+	LoadingScreenID protocol.Optional[uint32]
 }
 
-// Marshal reads or writes ServerboundLoadingScreen using its canonical wire layout.
-func (x *ServerboundLoadingScreen) Marshal(io protocol.IO) {
-	x.LoadingScreenPacketType.Marshal(io)
-	protocol.OptionalFunc(io, &x.LoadingScreenID, io.Uint32)
+// ID ...
+func (*ServerboundLoadingScreen) ID() uint32 {
+	return IDServerboundLoadingScreen
 }
 
-// ID returns the protocol ID for ServerboundLoadingScreen.
-func (*ServerboundLoadingScreen) ID() uint32 { return IDServerboundLoadingScreen }
+func (pk *ServerboundLoadingScreen) Marshal(io protocol.IO) {
+	pk.LoadingScreenPacketType.Marshal(io)
+	protocol.OptionalFunc(io, &pk.LoadingScreenID, io.Uint32)
+}

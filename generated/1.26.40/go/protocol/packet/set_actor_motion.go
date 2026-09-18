@@ -8,8 +8,8 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 )
 
-// SetActorMotion is sent by the server to change the client-side velocity of an entity. It is
-// usually used in combination with server-side movement calculation.
+// SetActorMotion is sent by the server to change the client-side velocity of an entity. It is usually used in
+// combination with server-side movement calculation.
 type SetActorMotion struct {
 	TargetRuntimeID uint64
 	Motion          mgl32.Vec3
@@ -18,12 +18,13 @@ type SetActorMotion struct {
 	Tick uint64
 }
 
-// Marshal reads or writes SetActorMotion using its canonical wire layout.
-func (x *SetActorMotion) Marshal(io protocol.IO) {
-	io.ActorRuntimeID(&x.TargetRuntimeID)
-	io.Vec3(&x.Motion)
-	io.PlayerInputTick(&x.Tick)
+// ID ...
+func (*SetActorMotion) ID() uint32 {
+	return IDSetActorMotion
 }
 
-// ID returns the protocol ID for SetActorMotion.
-func (*SetActorMotion) ID() uint32 { return IDSetActorMotion }
+func (pk *SetActorMotion) Marshal(io protocol.IO) {
+	io.ActorRuntimeID(&pk.TargetRuntimeID)
+	io.Vec3(&pk.Motion)
+	io.PlayerInputTick(&pk.Tick)
+}

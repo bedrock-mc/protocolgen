@@ -2,7 +2,9 @@
 
 package protocol
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+)
 
 // LocatorBarWaypoint represents a waypoint entry in the locator bar packet.
 type LocatorBarWaypoint struct {

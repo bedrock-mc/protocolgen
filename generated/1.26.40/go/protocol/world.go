@@ -7,15 +7,14 @@ import (
 	"github.com/google/uuid"
 )
 
-// DimensionDefinition contains information specifying dimension-specific properties, used for
-// data-driven dimensions. These include the range (the height min/max), generator variant, and
-// more.
+// DimensionDefinition contains information specifying dimension-specific properties, used for data-driven
+// dimensions. These include the range (the height min/max), generator variant, and more.
 type DimensionDefinition struct {
 	HeightMaximum int32
 	HeightMinimum int32
 	GeneratorType GeneratorType
-	// DimensionType is the numeric identifier of the dimension. This cannot override a vanilla
-	// dimension (0-2), but custom dimensions should start from 1000 like vanilla.
+	// DimensionType is the numeric identifier of the dimension. This cannot override a vanilla dimension (0-2),
+	// but custom dimensions should start from 1000 like vanilla.
 	DimensionType DimensionType
 	// PackID is the UUID of the behaviour pack which has added the dimension.
 	PackID uuid.UUID

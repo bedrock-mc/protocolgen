@@ -2,16 +2,19 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 type ClientboundAttributeLayerSync struct {
 	Data protocol.AttributeLayerSyncData
 }
 
-// Marshal reads or writes ClientboundAttributeLayerSync using its canonical wire layout.
-func (x *ClientboundAttributeLayerSync) Marshal(io protocol.IO) {
-	protocol.MarshalAttributeLayerSyncData(io, &x.Data)
+// ID ...
+func (*ClientboundAttributeLayerSync) ID() uint32 {
+	return IDClientboundAttributeLayerSync
 }
 
-// ID returns the protocol ID for ClientboundAttributeLayerSync.
-func (*ClientboundAttributeLayerSync) ID() uint32 { return IDClientboundAttributeLayerSync }
+func (pk *ClientboundAttributeLayerSync) Marshal(io protocol.IO) {
+	protocol.MarshalAttributeLayerSyncData(io, &pk.Data)
+}

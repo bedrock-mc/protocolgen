@@ -2,20 +2,23 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
-// UnlockedRecipes gives the client a list of recipes that have been unlocked, restricting the
-// recipes that appear in the recipe book.
+// UnlockedRecipes gives the client a list of recipes that have been unlocked, restricting the recipes that
+// appear in the recipe book.
 type UnlockedRecipes struct {
 	PacketType          protocol.PacketType
 	UnlockedRecipesList []string
 }
 
-// Marshal reads or writes UnlockedRecipes using its canonical wire layout.
-func (x *UnlockedRecipes) Marshal(io protocol.IO) {
-	x.PacketType.Marshal(io)
-	protocol.FuncSlice(io, &x.UnlockedRecipesList, io.Varuint32, io.String)
+// ID ...
+func (*UnlockedRecipes) ID() uint32 {
+	return IDUnlockedRecipes
 }
 
-// ID returns the protocol ID for UnlockedRecipes.
-func (*UnlockedRecipes) ID() uint32 { return IDUnlockedRecipes }
+func (pk *UnlockedRecipes) Marshal(io protocol.IO) {
+	pk.PacketType.Marshal(io)
+	protocol.FuncSlice(io, &pk.UnlockedRecipesList, io.Varuint32, io.String)
+}

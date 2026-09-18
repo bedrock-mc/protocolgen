@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
 type HurtArmor struct {
 	Cause      int32
@@ -10,12 +12,13 @@ type HurtArmor struct {
 	ArmorSlots uint64
 }
 
-// Marshal reads or writes HurtArmor using its canonical wire layout.
-func (x *HurtArmor) Marshal(io protocol.IO) {
-	io.Varint32(&x.Cause)
-	io.Varint32(&x.Damage)
-	io.Varuint64(&x.ArmorSlots)
+// ID ...
+func (*HurtArmor) ID() uint32 {
+	return IDHurtArmor
 }
 
-// ID returns the protocol ID for HurtArmor.
-func (*HurtArmor) ID() uint32 { return IDHurtArmor }
+func (pk *HurtArmor) Marshal(io protocol.IO) {
+	io.Varint32(&pk.Cause)
+	io.Varint32(&pk.Damage)
+	io.Varuint64(&pk.ArmorSlots)
+}

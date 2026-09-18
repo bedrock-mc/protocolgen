@@ -12,10 +12,11 @@ type ServerPlayerPostMovePosition struct {
 	Pos mgl32.Vec3
 }
 
-// Marshal reads or writes ServerPlayerPostMovePosition using its canonical wire layout.
-func (x *ServerPlayerPostMovePosition) Marshal(io protocol.IO) {
-	io.Vec3(&x.Pos)
+// ID ...
+func (*ServerPlayerPostMovePosition) ID() uint32 {
+	return IDServerPlayerPostMovePosition
 }
 
-// ID returns the protocol ID for ServerPlayerPostMovePosition.
-func (*ServerPlayerPostMovePosition) ID() uint32 { return IDServerPlayerPostMovePosition }
+func (pk *ServerPlayerPostMovePosition) Marshal(io protocol.IO) {
+	io.Vec3(&pk.Pos)
+}

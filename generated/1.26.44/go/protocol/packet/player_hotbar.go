@@ -2,20 +2,30 @@
 
 package packet
 
-import "protocolgen/generated/1.26.44/go/protocol"
+import (
+	"protocolgen/generated/1.26.44/go/protocol"
+)
 
+// PlayerHotbar is sent by the server to the client. It used to be used to link hot bar slots of the player to
+// actual slots in the inventory, but as of 1.2, this was changed and hot bar slots are no longer a free
+// floating part of the inventory. Since 1.2, the packet has been re-purposed, but its new functionality is
+// not clear.
 type PlayerHotbar struct {
-	SelectedSlot     uint32
-	ContainerID      uint8
+	// SelectedHotBarSlot ...
+	SelectedSlot uint32
+	// WindowID ...
+	ContainerID uint8
+	// SelectHotBarSlot ...
 	ShouldSelectSlot bool
 }
 
-// Marshal reads or writes PlayerHotbar using its canonical wire layout.
-func (x *PlayerHotbar) Marshal(io protocol.IO) {
-	io.Varuint32(&x.SelectedSlot)
-	io.Uint8(&x.ContainerID)
-	io.Bool(&x.ShouldSelectSlot)
+// ID ...
+func (*PlayerHotbar) ID() uint32 {
+	return IDPlayerHotbar
 }
 
-// ID returns the protocol ID for PlayerHotbar.
-func (*PlayerHotbar) ID() uint32 { return IDPlayerHotbar }
+func (pk *PlayerHotbar) Marshal(io protocol.IO) {
+	io.Varuint32(&pk.SelectedSlot)
+	io.Uint8(&pk.ContainerID)
+	io.Bool(&pk.ShouldSelectSlot)
+}

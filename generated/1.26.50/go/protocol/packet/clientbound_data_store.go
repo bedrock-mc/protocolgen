@@ -2,18 +2,21 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 type ClientboundDataStore struct {
 	Updates []protocol.BedrockDDUI
 }
 
-// Marshal reads or writes ClientboundDataStore using its canonical wire layout.
-func (x *ClientboundDataStore) Marshal(io protocol.IO) {
-	protocol.FuncSliceLimits(io, &x.Updates, io.Varuint32, 0, 500, func(value *protocol.BedrockDDUI) {
+// ID ...
+func (*ClientboundDataStore) ID() uint32 {
+	return IDClientboundDataStore
+}
+
+func (pk *ClientboundDataStore) Marshal(io protocol.IO) {
+	protocol.FuncSliceLimits(io, &pk.Updates, io.Varuint32, 0, 500, func(value *protocol.BedrockDDUI) {
 		protocol.MarshalBedrockDDUI(io, value)
 	})
 }
-
-// ID returns the protocol ID for ClientboundDataStore.
-func (*ClientboundDataStore) ID() uint32 { return IDClientboundDataStore }

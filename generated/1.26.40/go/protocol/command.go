@@ -2,10 +2,12 @@
 
 package protocol
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+)
 
-// ChainedSubcommand represents a subcommand that can have chained commands, such as /execute which
-// allows you to run another command as another entity or at a different position etc.
+// ChainedSubcommand represents a subcommand that can have chained commands, such as /execute which allows you
+// to run another command as another entity or at a different position etc.
 type ChainedSubcommand struct {
 	// Name is the name of the chained subcommand and shows up in the list as a regular subcommand enum.
 	Name string
@@ -24,9 +26,9 @@ type ChainedSubcommandValue struct {
 	// SubCommandFirstValue is the index of the argument in the ChainedSubcommandValues slice from the
 	// AvailableCommands packet. This is then used to set the type specified by the Value field below.
 	SubCommandFirstValue uint32
-	// SubCommandSecondValue is a combination of the flags above and specified the type of argument.
-	// Unlike regular parameter types, this should NOT contain any of the special flags (valid, enum,
-	// suffixed or soft enum) but only the basic types.
+	// SubCommandSecondValue is a combination of the flags above and specified the type of argument. Unlike
+	// regular parameter types, this should NOT contain any of the special flags (valid, enum, suffixed or soft
+	// enum) but only the basic types.
 	SubCommandSecondValue uint32
 }
 
@@ -36,27 +38,25 @@ func (x *ChainedSubcommandValue) Marshal(io IO) {
 	io.Varuint32(&x.SubCommandSecondValue)
 }
 
-// Command holds the data that a command requires to be shown to a player client-side. The command
-// is shown in the /help command and auto-completed using this data.
+// Command holds the data that a command requires to be shown to a player client-side. The command is shown in
+// the /help command and auto-completed using this data.
 type Command struct {
-	// Name is the name of the command. The command may be executed using this name, and will be shown
-	// in the /help list with it. It currently seems that the client crashes if the Name contains
-	// uppercase letters.
+	// Name is the name of the command. The command may be executed using this name, and will be shown in the
+	// /help list with it. It currently seems that the client crashes if the Name contains uppercase letters.
 	Name string
-	// Description is the description of the command. It is shown in the /help list and when starting to
-	// write a command.
+	// Description is the description of the command. It is shown in the /help list and when starting to write a
+	// command.
 	Description string
-	// Flags is a combination of flags not currently known. Leaving the Flags field empty appears to
-	// work.
+	// Flags is a combination of flags not currently known. Leaving the Flags field empty appears to work.
 	Flags uint16
-	// PermissionLevel is the command permission level that the player required to execute this command.
-	// The field no longer seems to serve a purpose, as the client does not handle the execution of
-	// commands anymore: The permissions should be checked server-side.
+	// PermissionLevel is the command permission level that the player required to execute this command. The field
+	// no longer seems to serve a purpose, as the client does not handle the execution of commands anymore: The
+	// permissions should be checked server-side.
 	PermissionLevel                     string
 	AliasEnum                           int32
 	CommandDataChainedSubcommandIndexes []uint32
-	// Overloads is a list of command overloads that specify the ways in which a command may be
-	// executed. The overloads may be completely different.
+	// Overloads is a list of command overloads that specify the ways in which a command may be executed. The
+	// overloads may be completely different.
 	Overloads []CommandOverload
 }
 
@@ -89,16 +89,15 @@ func MarshalCommandBlockUpdateData(io IO, x *CommandBlockUpdateData) {
 	})
 }
 
-// CommandEnum represents an enum in a command usage. The enum typically has a type and a set of
-// options that are valid. A value that is not one of the options results in a failure during
-// execution.
+// CommandEnum represents an enum in a command usage. The enum typically has a type and a set of options that
+// are valid. A value that is not one of the options results in a failure during execution.
 type CommandEnum struct {
-	// Name is the type of the command enum. The type will show up in the command usage as the type of
-	// the argument if it has a certain amount of arguments, or when Options is set to true in the
-	// command holding the enum.
+	// Name is the type of the command enum. The type will show up in the command usage as the type of the
+	// argument if it has a certain amount of arguments, or when Options is set to true in the command holding the
+	// enum.
 	Name string
-	// Values holds a list of indices that point to the EnumValues slice in the AvailableCommandsPacket.
-	// These represent the options of the enum.
+	// Values holds a list of indices that point to the EnumValues slice in the AvailableCommandsPacket. These
+	// represent the options of the enum.
 	Values []uint32
 }
 
@@ -108,14 +107,13 @@ func (x *CommandEnum) Marshal(io IO) {
 	FuncSlice(io, &x.Values, io.Varuint32, io.Uint32)
 }
 
-// CommandEnumConstraint is sent in the AvailableCommands packet to limit what values of an enum may
-// be used taking in account things such as whether cheats are enabled.
+// CommandEnumConstraint is sent in the AvailableCommands packet to limit what values of an enum may be used
+// taking in account things such as whether cheats are enabled.
 type CommandEnumConstraint struct {
-	// EnumValueSymbol points to an enum value in the AvailableCommands packet that this constraint
-	// should apply to.
+	// EnumValueSymbol points to an enum value in the AvailableCommands packet that this constraint should apply
+	// to.
 	EnumValueSymbol uint32
-	// EnumSymbol points to an enum in the AvailableCommands packet to which this constraint should
-	// apply to.
+	// EnumSymbol points to an enum in the AvailableCommands packet to which this constraint should apply to.
 	EnumSymbol uint32
 	// ConstraintIndices holds a slice of constraints as present in the constants above.
 	ConstraintIndices []uint8
@@ -128,17 +126,17 @@ func (x *CommandEnumConstraint) Marshal(io IO) {
 	FuncSliceLimits(io, &x.ConstraintIndices, io.Varuint32, 0, 250, io.Uint8)
 }
 
-// CommandOrigin holds data that identifies the origin of the requesting of a command. It holds
-// several fields that may be used to get specific information. When sent in a CommandRequest
-// packet, the same CommandOrigin should be sent in a CommandOutput packet.
+// CommandOrigin holds data that identifies the origin of the requesting of a command. It holds several fields
+// that may be used to get specific information. When sent in a CommandRequest packet, the same CommandOrigin
+// should be sent in a CommandOutput packet.
 type CommandOriginData struct {
 	Type string
 	// UUID is a unique identifier for every instantiation of a command.
 	UUID uuid.UUID
-	// RequestID is an ID that identifies the request of the client. The server should send a
-	// CommandOrigin with the same request ID to ensure it can be matched with the request by the caller
-	// of the command. This is especially important for websocket servers and it seems that this field
-	// is only non-empty for these websocket servers.
+	// RequestID is an ID that identifies the request of the client. The server should send a CommandOrigin with
+	// the same request ID to ensure it can be matched with the request by the caller of the command. This is
+	// especially important for websocket servers and it seems that this field is only non-empty for these
+	// websocket servers.
 	RequestID string
 	PlayerID  int64
 }
@@ -166,14 +164,14 @@ func (x *CommandOutputData) Marshal(io IO) {
 	OptionalFunc(io, &x.DataSet, io.String)
 }
 
-// CommandOutputMessage represents a message sent by a command that holds the output of one of the
-// commands executed.
+// CommandOutputMessage represents a message sent by a command that holds the output of one of the commands
+// executed.
 type CommandOutputMessage struct {
 	MessageID  string
 	Successful bool
-	// Parameters is a list of parameters that serve to supply the message sent with additional
-	// information, such as the position that a player was teleported to or the effect that was applied
-	// to an entity. These parameters only apply for the Minecraft built-in command output.
+	// Parameters is a list of parameters that serve to supply the message sent with additional information, such
+	// as the position that a player was teleported to or the effect that was applied to an entity. These
+	// parameters only apply for the Minecraft built-in command output.
 	Parameters []string
 }
 
@@ -184,14 +182,14 @@ func (x *CommandOutputMessage) Marshal(io IO) {
 	FuncSlice(io, &x.Parameters, io.Varuint32, io.String)
 }
 
-// CommandOverload represents an overload of a command. This overload can be compared to function
-// overloading in languages such as java. It represents a single usage of the command. A command may
-// have multiple different overloads, which are handled differently.
+// CommandOverload represents an overload of a command. This overload can be compared to function overloading
+// in languages such as java. It represents a single usage of the command. A command may have multiple
+// different overloads, which are handled differently.
 type CommandOverload struct {
 	// IsChaining determines if the parameters use chained subcommands or not.
 	IsChaining bool
-	// ParameterData is a list of command parameters that are part of the overload. These parameters
-	// specify the usage of the command when this overload is applied.
+	// ParameterData is a list of command parameters that are part of the overload. These parameters specify the
+	// usage of the command when this overload is applied.
 	ParameterData []CommandParameter
 }
 
@@ -201,18 +199,17 @@ func (x *CommandOverload) Marshal(io IO) {
 	Slice(io, &x.ParameterData)
 }
 
-// CommandParameter represents a single parameter of a command overload, which accepts a certain
-// type of input values. It has a name and a type which show up client-side when a player is
-// entering the command.
+// CommandParameter represents a single parameter of a command overload, which accepts a certain type of input
+// values. It has a name and a type which show up client-side when a player is entering the command.
 type CommandParameter struct {
-	// Name is the name of the command parameter. It shows up in the usage like <$Name: $Type>, with the
-	// exception of enum types, which show up simply as a list of options if the list is short enough
-	// and Options is set to false.
+	// Name is the name of the command parameter. It shows up in the usage like <$Name: $Type>, with the exception
+	// of enum types, which show up simply as a list of options if the list is short enough and Options is set to
+	// false.
 	Name        string
 	ParseSymbol uint32
 	IsOptional  bool
-	// Options holds a combinations of options that additionally apply to the command parameter. The
-	// list of options can be found above.
+	// Options holds a combinations of options that additionally apply to the command parameter. The list of
+	// options can be found above.
 	Options uint8
 }
 
@@ -238,12 +235,12 @@ const (
 // Marshal reads or writes CommandPermissionLevel through its uint8 wire encoding.
 func (x *CommandPermissionLevel) Marshal(io IO) { io.Uint8((*uint8)(x)) }
 
-// DynamicEnum is an enum variant that can have its options changed during runtime, without sending
-// a new AvailableCommands packet.
+// DynamicEnum is an enum variant that can have its options changed during runtime, without sending a new
+// AvailableCommands packet.
 type DynamicEnum struct {
-	// EnumName is the type of the command enum. The type will show up in the command usage as the type
-	// of the argument if it has a certain amount of arguments, or when Options is set to true in the
-	// command holding the enum.
+	// EnumName is the type of the command enum. The type will show up in the command usage as the type of the
+	// argument if it has a certain amount of arguments, or when Options is set to true in the command holding the
+	// enum.
 	EnumName string
 	// EnumOptions is a slice of possible options for the enum.
 	EnumOptions []string

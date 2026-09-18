@@ -2,10 +2,12 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
-// SetSpawnPosition is sent by the server to update the spawn position of a player, for example when
-// sleeping in a bed.
+// SetSpawnPosition is sent by the server to update the spawn position of a player, for example when sleeping
+// in a bed.
 type SetSpawnPosition struct {
 	SpawnPositionType protocol.SpawnPositionType
 	BlockPosition     protocol.BlockPos
@@ -13,13 +15,14 @@ type SetSpawnPosition struct {
 	SpawnBlockPos     protocol.BlockPos
 }
 
-// Marshal reads or writes SetSpawnPosition using its canonical wire layout.
-func (x *SetSpawnPosition) Marshal(io protocol.IO) {
-	x.SpawnPositionType.Marshal(io)
-	x.BlockPosition.Marshal(io)
-	x.DimensionType.Marshal(io)
-	x.SpawnBlockPos.Marshal(io)
+// ID ...
+func (*SetSpawnPosition) ID() uint32 {
+	return IDSetSpawnPosition
 }
 
-// ID returns the protocol ID for SetSpawnPosition.
-func (*SetSpawnPosition) ID() uint32 { return IDSetSpawnPosition }
+func (pk *SetSpawnPosition) Marshal(io protocol.IO) {
+	pk.SpawnPositionType.Marshal(io)
+	pk.BlockPosition.Marshal(io)
+	pk.DimensionType.Marshal(io)
+	pk.SpawnBlockPos.Marshal(io)
+}

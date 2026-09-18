@@ -2,17 +2,20 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 // CameraPresets gives the client a list of custom camera presets.
 type CameraPresets struct {
-	CameraPresets protocol.CameraPresetList
+	Presets []protocol.CameraPreset
 }
 
-// Marshal reads or writes CameraPresets using its canonical wire layout.
-func (x *CameraPresets) Marshal(io protocol.IO) {
-	x.CameraPresets.Marshal(io)
+// ID ...
+func (*CameraPresets) ID() uint32 {
+	return IDCameraPresets
 }
 
-// ID returns the protocol ID for CameraPresets.
-func (*CameraPresets) ID() uint32 { return IDCameraPresets }
+func (pk *CameraPresets) Marshal(io protocol.IO) {
+	protocol.Slice(io, &pk.Presets)
+}

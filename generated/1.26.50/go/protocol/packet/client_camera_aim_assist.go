@@ -2,11 +2,12 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
-// ClientCameraAimAssist is sent by the server to send a player animation from one player to all
-// viewers of that player. It is used for a couple of actions, such as arm swimming and critical
-// hits.
+// ClientCameraAimAssist is sent by the server to send a player animation from one player to all viewers of
+// that player. It is used for a couple of actions, such as arm swimming and critical hits.
 type ClientCameraAimAssist struct {
 	// CameraPresetID is the identifier of the preset to use which was previously defined in the
 	// CameraAimAssistPresets packet.
@@ -17,12 +18,13 @@ type ClientCameraAimAssist struct {
 	AllowAimAssist bool
 }
 
-// Marshal reads or writes ClientCameraAimAssist using its canonical wire layout.
-func (x *ClientCameraAimAssist) Marshal(io protocol.IO) {
-	io.String(&x.CameraPresetID)
-	x.Action.Marshal(io)
-	io.Bool(&x.AllowAimAssist)
+// ID ...
+func (*ClientCameraAimAssist) ID() uint32 {
+	return IDClientCameraAimAssist
 }
 
-// ID returns the protocol ID for ClientCameraAimAssist.
-func (*ClientCameraAimAssist) ID() uint32 { return IDClientCameraAimAssist }
+func (pk *ClientCameraAimAssist) Marshal(io protocol.IO) {
+	io.String(&pk.CameraPresetID)
+	pk.Action.Marshal(io)
+	io.Bool(&pk.AllowAimAssist)
+}

@@ -2,21 +2,24 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
-// DebugInfo is a packet sent by the server to the client. It does not seem to do anything when sent
-// to the normal client in 1.16.
+// DebugInfo is a packet sent by the server to the client. It does not seem to do anything when sent to the
+// normal client in 1.16.
 type DebugInfo struct {
 	ActorID int64
 	// Data is the debug data.
 	Data []byte
 }
 
-// Marshal reads or writes DebugInfo using its canonical wire layout.
-func (x *DebugInfo) Marshal(io protocol.IO) {
-	io.ActorUniqueID(&x.ActorID)
-	io.Bytes(&x.Data)
+// ID ...
+func (*DebugInfo) ID() uint32 {
+	return IDDebugInfo
 }
 
-// ID returns the protocol ID for DebugInfo.
-func (*DebugInfo) ID() uint32 { return IDDebugInfo }
+func (pk *DebugInfo) Marshal(io protocol.IO) {
+	io.ActorUniqueID(&pk.ActorID)
+	io.Bytes(&pk.Data)
+}

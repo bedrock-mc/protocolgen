@@ -66,23 +66,6 @@ func (x *AddTimeMarkerData) Marshal(io IO) {
 	SliceLimits(io, &x.TimeMarkers, 0, 256)
 }
 
-type AdventureSettings struct {
-	NoPvM          bool
-	NoMvP          bool
-	ImmutableWorld bool
-	ShowNameTags   bool
-	AutoJump       bool
-}
-
-// Marshal reads or writes AdventureSettings using its canonical wire layout.
-func (x *AdventureSettings) Marshal(io IO) {
-	io.Bool(&x.NoPvM)
-	io.Bool(&x.NoMvP)
-	io.Bool(&x.ImmutableWorld)
-	io.Bool(&x.ShowNameTags)
-	io.Bool(&x.AutoJump)
-}
-
 type AgentActionType int32
 
 const (
@@ -2281,54 +2264,6 @@ const (
 // Marshal reads or writes ModalFormCancelReason through its uint8 wire encoding.
 func (x *ModalFormCancelReason) Marshal(io IO) { io.Uint8((*uint8)(x)) }
 
-type MoveActorAbsoluteData struct {
-	ActorRuntimeID uint64
-	Header         uint8
-	Position       mgl32.Vec3
-	RotationX      uint8
-	RotationY      uint8
-	RotationYHead  uint8
-}
-
-// Marshal reads or writes MoveActorAbsoluteData using its canonical wire layout.
-func (x *MoveActorAbsoluteData) Marshal(io IO) {
-	io.ActorRuntimeID(&x.ActorRuntimeID)
-	io.Uint8(&x.Header)
-	io.Vec3(&x.Position)
-	io.Uint8(&x.RotationX)
-	io.Uint8(&x.RotationY)
-	io.Uint8(&x.RotationYHead)
-}
-
-type MoveActorDeltaData struct {
-	ActorRuntimeID       uint64
-	NewPositionX         Optional[float32]
-	NewPositionY         Optional[float32]
-	NewPositionZ         Optional[float32]
-	RotationX            Optional[int8]
-	RotationY            Optional[int8]
-	RotationYHead        Optional[int8]
-	IsOnGround           bool
-	ForceMove            bool
-	ForceMoveLocalEntity bool
-	ForceCompletion      bool
-}
-
-// Marshal reads or writes MoveActorDeltaData using its canonical wire layout.
-func (x *MoveActorDeltaData) Marshal(io IO) {
-	io.ActorRuntimeID(&x.ActorRuntimeID)
-	OptionalFunc(io, &x.NewPositionX, io.Float32)
-	OptionalFunc(io, &x.NewPositionY, io.Float32)
-	OptionalFunc(io, &x.NewPositionZ, io.Float32)
-	OptionalFunc(io, &x.RotationX, io.Int8)
-	OptionalFunc(io, &x.RotationY, io.Int8)
-	OptionalFunc(io, &x.RotationYHead, io.Int8)
-	io.Bool(&x.IsOnGround)
-	io.Bool(&x.ForceMove)
-	io.Bool(&x.ForceMoveLocalEntity)
-	io.Bool(&x.ForceCompletion)
-}
-
 type MovePlayerTeleportData struct {
 	TeleportationCause int32
 	SourceActorType    int32
@@ -3499,12 +3434,3 @@ const (
 
 // Marshal reads or writes VillageType through its uint8 wire encoding.
 func (x *VillageType) Marshal(io IO) { io.Uint8((*uint8)(x)) }
-
-type WebSocketData struct {
-	WebsocketServerURI string
-}
-
-// Marshal reads or writes WebSocketData using its canonical wire layout.
-func (x *WebSocketData) Marshal(io IO) {
-	io.String(&x.WebsocketServerURI)
-}

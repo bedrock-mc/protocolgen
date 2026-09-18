@@ -14,12 +14,13 @@ type ServerboundPackSettingChange struct {
 	PackSettingValue protocol.ServerboundPackSettingChangePackSettingValue
 }
 
-// Marshal reads or writes ServerboundPackSettingChange using its canonical wire layout.
-func (x *ServerboundPackSettingChange) Marshal(io protocol.IO) {
-	io.UUID(&x.PackID)
-	io.StringLimits(&x.PackSettingName, 0, 128)
-	protocol.MarshalServerboundPackSettingChangePackSettingValue(io, &x.PackSettingValue)
+// ID ...
+func (*ServerboundPackSettingChange) ID() uint32 {
+	return IDServerboundPackSettingChange
 }
 
-// ID returns the protocol ID for ServerboundPackSettingChange.
-func (*ServerboundPackSettingChange) ID() uint32 { return IDServerboundPackSettingChange }
+func (pk *ServerboundPackSettingChange) Marshal(io protocol.IO) {
+	io.UUID(&pk.PackID)
+	io.StringLimits(&pk.PackSettingName, 0, 128)
+	protocol.MarshalServerboundPackSettingChangePackSettingValue(io, &pk.PackSettingValue)
+}

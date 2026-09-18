@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 type ServerboundDiagnostics struct {
 	AvgFps                    float32
@@ -21,23 +23,24 @@ type ServerboundDiagnostics struct {
 	WhiskerScopes             []protocol.BedrockProfileWhiskerDiagnosticsScopeDataSummary
 }
 
-// Marshal reads or writes ServerboundDiagnostics using its canonical wire layout.
-func (x *ServerboundDiagnostics) Marshal(io protocol.IO) {
-	io.Float32(&x.AvgFps)
-	io.Float32(&x.AvgServerSimTickTimeMS)
-	io.Float32(&x.AvgClientSimTickTimeMS)
-	io.Float32(&x.AvgBeginFrameTimeMS)
-	io.Float32(&x.AvgInputTimeMS)
-	io.Float32(&x.AvgRenderTimeMS)
-	io.Float32(&x.AvgEndFrameTimeMS)
-	io.Float32(&x.AvgRemainderTimePercent)
-	io.Float32(&x.AvgUnaccountedTimePercent)
-	protocol.Slice(io, &x.MemoryCategoryValues)
-	protocol.Slice(io, &x.EntityDiagnostics)
-	protocol.Slice(io, &x.SystemDiagnostics)
-	protocol.Slice(io, &x.SystemCategories)
-	protocol.Slice(io, &x.WhiskerScopes)
+// ID ...
+func (*ServerboundDiagnostics) ID() uint32 {
+	return IDServerboundDiagnostics
 }
 
-// ID returns the protocol ID for ServerboundDiagnostics.
-func (*ServerboundDiagnostics) ID() uint32 { return IDServerboundDiagnostics }
+func (pk *ServerboundDiagnostics) Marshal(io protocol.IO) {
+	io.Float32(&pk.AvgFps)
+	io.Float32(&pk.AvgServerSimTickTimeMS)
+	io.Float32(&pk.AvgClientSimTickTimeMS)
+	io.Float32(&pk.AvgBeginFrameTimeMS)
+	io.Float32(&pk.AvgInputTimeMS)
+	io.Float32(&pk.AvgRenderTimeMS)
+	io.Float32(&pk.AvgEndFrameTimeMS)
+	io.Float32(&pk.AvgRemainderTimePercent)
+	io.Float32(&pk.AvgUnaccountedTimePercent)
+	protocol.Slice(io, &pk.MemoryCategoryValues)
+	protocol.Slice(io, &pk.EntityDiagnostics)
+	protocol.Slice(io, &pk.SystemDiagnostics)
+	protocol.Slice(io, &pk.SystemCategories)
+	protocol.Slice(io, &pk.WhiskerScopes)
+}

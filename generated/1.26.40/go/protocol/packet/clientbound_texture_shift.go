@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
 type ClientboundTextureShift struct {
 	ActionID             protocol.ClientboundTextureShiftAction
@@ -15,17 +17,18 @@ type ClientboundTextureShift struct {
 	Enabled              bool
 }
 
-// Marshal reads or writes ClientboundTextureShift using its canonical wire layout.
-func (x *ClientboundTextureShift) Marshal(io protocol.IO) {
-	x.ActionID.Marshal(io)
-	io.String(&x.CollectionName)
-	io.String(&x.FromStep)
-	io.String(&x.ToStep)
-	protocol.FuncSlice(io, &x.AllSteps, io.Varuint32, io.String)
-	io.Varuint64(&x.CurrentLengthInTicks)
-	io.Varuint64(&x.TotalLengthInTicks)
-	io.Bool(&x.Enabled)
+// ID ...
+func (*ClientboundTextureShift) ID() uint32 {
+	return IDClientboundTextureShift
 }
 
-// ID returns the protocol ID for ClientboundTextureShift.
-func (*ClientboundTextureShift) ID() uint32 { return IDClientboundTextureShift }
+func (pk *ClientboundTextureShift) Marshal(io protocol.IO) {
+	pk.ActionID.Marshal(io)
+	io.String(&pk.CollectionName)
+	io.String(&pk.FromStep)
+	io.String(&pk.ToStep)
+	protocol.FuncSlice(io, &pk.AllSteps, io.Varuint32, io.String)
+	io.Varuint64(&pk.CurrentLengthInTicks)
+	io.Varuint64(&pk.TotalLengthInTicks)
+	io.Bool(&pk.Enabled)
+}

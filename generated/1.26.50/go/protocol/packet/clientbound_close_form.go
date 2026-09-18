@@ -2,14 +2,17 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 type ClientboundCloseForm struct {
 }
 
-// Marshal reads or writes ClientboundCloseForm using its canonical wire layout.
-func (x *ClientboundCloseForm) Marshal(io protocol.IO) {
+// ID ...
+func (*ClientboundCloseForm) ID() uint32 {
+	return IDClientboundCloseForm
 }
 
-// ID returns the protocol ID for ClientboundCloseForm.
-func (*ClientboundCloseForm) ID() uint32 { return IDClientboundCloseForm }
+func (pk *ClientboundCloseForm) Marshal(io protocol.IO) {
+}

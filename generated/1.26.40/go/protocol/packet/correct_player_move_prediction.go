@@ -8,9 +8,9 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 )
 
-// CorrectPlayerMovePrediction is sent by the server if and only if
-// StartGame.ServerAuthoritativeMovementMode is set to AuthoritativeMovementModeServerWithRewind.
-// The packet is used to correct movement at a specific point in time.
+// CorrectPlayerMovePrediction is sent by the server if and only if StartGame.ServerAuthoritativeMovementMode
+// is set to AuthoritativeMovementModeServerWithRewind. The packet is used to correct movement at a specific
+// point in time.
 type CorrectPlayerMovePrediction struct {
 	// PredictionType is the type of prediction that was corrected. It is one of the constants above.
 	PredictionType protocol.RewindType
@@ -26,16 +26,17 @@ type CorrectPlayerMovePrediction struct {
 	Tick uint64
 }
 
-// Marshal reads or writes CorrectPlayerMovePrediction using its canonical wire layout.
-func (x *CorrectPlayerMovePrediction) Marshal(io protocol.IO) {
-	x.PredictionType.Marshal(io)
-	io.Vec3(&x.Pos)
-	io.Vec3(&x.PosDelta)
-	io.Vec2(&x.Rotation)
-	protocol.OptionalFunc(io, &x.VehicleAngularVelocity, io.Float32)
-	io.Bool(&x.OnGround)
-	io.PlayerInputTick(&x.Tick)
+// ID ...
+func (*CorrectPlayerMovePrediction) ID() uint32 {
+	return IDCorrectPlayerMovePrediction
 }
 
-// ID returns the protocol ID for CorrectPlayerMovePrediction.
-func (*CorrectPlayerMovePrediction) ID() uint32 { return IDCorrectPlayerMovePrediction }
+func (pk *CorrectPlayerMovePrediction) Marshal(io protocol.IO) {
+	pk.PredictionType.Marshal(io)
+	io.Vec3(&pk.Pos)
+	io.Vec3(&pk.PosDelta)
+	io.Vec2(&pk.Rotation)
+	protocol.OptionalFunc(io, &pk.VehicleAngularVelocity, io.Float32)
+	io.Bool(&pk.OnGround)
+	io.PlayerInputTick(&pk.Tick)
+}

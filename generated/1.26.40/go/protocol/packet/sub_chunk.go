@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
 // SubChunk sends data about multiple sub-chunks around a center point.
 type SubChunk struct {
@@ -13,13 +15,14 @@ type SubChunk struct {
 	SubChunkData  []protocol.SubChunkData
 }
 
-// Marshal reads or writes SubChunk using its canonical wire layout.
-func (x *SubChunk) Marshal(io protocol.IO) {
-	io.Bool(&x.CacheEnabled)
-	x.DimensionType.Marshal(io)
-	x.CenterPos.Marshal(io)
-	protocol.SliceLimits(io, &x.SubChunkData, 0, 8192)
+// ID ...
+func (*SubChunk) ID() uint32 {
+	return IDSubChunk
 }
 
-// ID returns the protocol ID for SubChunk.
-func (*SubChunk) ID() uint32 { return IDSubChunk }
+func (pk *SubChunk) Marshal(io protocol.IO) {
+	io.Bool(&pk.CacheEnabled)
+	pk.DimensionType.Marshal(io)
+	pk.CenterPos.Marshal(io)
+	protocol.SliceLimits(io, &pk.SubChunkData, 0, 8192)
+}

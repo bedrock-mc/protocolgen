@@ -2,28 +2,31 @@
 
 package packet
 
-import "protocolgen/generated/1.26.44/go/protocol"
+import (
+	"protocolgen/generated/1.26.44/go/protocol"
+)
 
-// PlayerAction is sent by the client when it executes any action, for example starting to sprint,
-// swim, starting the breaking of a block, dropping an item, etc.
+// PlayerAction is sent by the client when it executes any action, for example starting to sprint, swim,
+// starting the breaking of a block, dropping an item, etc.
 type PlayerAction struct {
 	PlayerRuntimeID uint64
 	Action          protocol.PlayerActionType
-	// BlockPosition is the position of the target block, if the action with the ActionType set
-	// concerned a block. If that is not the case, the block position will be zero.
+	// BlockPosition is the position of the target block, if the action with the ActionType set concerned a block.
+	// If that is not the case, the block position will be zero.
 	BlockPosition protocol.BlockPos
 	ResultPos     protocol.BlockPos
 	Face          int32
 }
 
-// Marshal reads or writes PlayerAction using its canonical wire layout.
-func (x *PlayerAction) Marshal(io protocol.IO) {
-	io.ActorRuntimeID(&x.PlayerRuntimeID)
-	x.Action.Marshal(io)
-	x.BlockPosition.Marshal(io)
-	x.ResultPos.Marshal(io)
-	io.Varint32(&x.Face)
+// ID ...
+func (*PlayerAction) ID() uint32 {
+	return IDPlayerAction
 }
 
-// ID returns the protocol ID for PlayerAction.
-func (*PlayerAction) ID() uint32 { return IDPlayerAction }
+func (pk *PlayerAction) Marshal(io protocol.IO) {
+	io.ActorRuntimeID(&pk.PlayerRuntimeID)
+	pk.Action.Marshal(io)
+	pk.BlockPosition.Marshal(io)
+	pk.ResultPos.Marshal(io)
+	io.Varint32(&pk.Face)
+}

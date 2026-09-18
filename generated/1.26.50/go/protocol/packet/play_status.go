@@ -2,19 +2,22 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
-// PlayStatus is sent by the server to update a player on the play status. This includes failed
-// statuses due to a mismatched version, but also success statuses.
+// PlayStatus is sent by the server to update a player on the play status. This includes failed statuses due
+// to a mismatched version, but also success statuses.
 type PlayStatus struct {
 	// Status is the status of the packet. It is one of the constants found above.
 	Status protocol.PlayStatusType
 }
 
-// Marshal reads or writes PlayStatus using its canonical wire layout.
-func (x *PlayStatus) Marshal(io protocol.IO) {
-	x.Status.Marshal(io)
+// ID ...
+func (*PlayStatus) ID() uint32 {
+	return IDPlayStatus
 }
 
-// ID returns the protocol ID for PlayStatus.
-func (*PlayStatus) ID() uint32 { return IDPlayStatus }
+func (pk *PlayStatus) Marshal(io protocol.IO) {
+	pk.Status.Marshal(io)
+}

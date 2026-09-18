@@ -2,20 +2,23 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
-// RemoveObjective is sent by the server to remove a scoreboard objective. It is used to stop
-// showing a scoreboard to a player.
+// RemoveObjective is sent by the server to remove a scoreboard objective. It is used to stop showing a
+// scoreboard to a player.
 type RemoveObjective struct {
-	// ObjectiveName is the name of the objective that the scoreboard currently active has. This name
-	// must be identical to the one sent in the SetDisplayObjective packet.
+	// ObjectiveName is the name of the objective that the scoreboard currently active has. This name must be
+	// identical to the one sent in the SetDisplayObjective packet.
 	ObjectiveName string
 }
 
-// Marshal reads or writes RemoveObjective using its canonical wire layout.
-func (x *RemoveObjective) Marshal(io protocol.IO) {
-	io.String(&x.ObjectiveName)
+// ID ...
+func (*RemoveObjective) ID() uint32 {
+	return IDRemoveObjective
 }
 
-// ID returns the protocol ID for RemoveObjective.
-func (*RemoveObjective) ID() uint32 { return IDRemoveObjective }
+func (pk *RemoveObjective) Marshal(io protocol.IO) {
+	io.String(&pk.ObjectiveName)
+}

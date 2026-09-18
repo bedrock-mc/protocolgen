@@ -2,21 +2,24 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
-// UpdateClientInputLocks is sent by the server to the client to lock specific player inputs such as
-// camera rotation, movement, jumping, sneaking, mounting or individual directional movement.
+// UpdateClientInputLocks is sent by the server to the client to lock specific player inputs such as camera
+// rotation, movement, jumping, sneaking, mounting or individual directional movement.
 type UpdateClientInputLocks struct {
-	// InputLockComponentData is a set of flags that specify which client inputs are disabled, such as
-	// whether the player can move, rotate the camera, jump, sneak or mount/dismount entities. It is a
-	// combination of the ClientInputLock constants above.
+	// InputLockComponentData is a set of flags that specify which client inputs are disabled, such as whether the
+	// player can move, rotate the camera, jump, sneak or mount/dismount entities. It is a combination of the
+	// ClientInputLock constants above.
 	InputLockComponentData uint32
 }
 
-// Marshal reads or writes UpdateClientInputLocks using its canonical wire layout.
-func (x *UpdateClientInputLocks) Marshal(io protocol.IO) {
-	io.Varuint32(&x.InputLockComponentData)
+// ID ...
+func (*UpdateClientInputLocks) ID() uint32 {
+	return IDUpdateClientInputLocks
 }
 
-// ID returns the protocol ID for UpdateClientInputLocks.
-func (*UpdateClientInputLocks) ID() uint32 { return IDUpdateClientInputLocks }
+func (pk *UpdateClientInputLocks) Marshal(io protocol.IO) {
+	io.Varuint32(&pk.InputLockComponentData)
+}

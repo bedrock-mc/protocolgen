@@ -8,26 +8,26 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 )
 
-// PlayerAuthInput is sent by the client to allow for server authoritative movement. It is used to
-// synchronise the player input with the position server-side. The client sends this packet when the
-// ServerAuthoritativeMovementMode field in the StartGame packet is set to true, instead of the
-// MovePlayer packet. The client will send this packet once every tick.
+// PlayerAuthInput is sent by the client to allow for server authoritative movement. It is used to synchronise
+// the player input with the position server-side. The client sends this packet when the
+// ServerAuthoritativeMovementMode field in the StartGame packet is set to true, instead of the MovePlayer
+// packet. The client will send this packet once every tick.
 type PlayerAuthInput struct {
 	PlayerRotation mgl32.Vec2
 	// Position holds the position that the player reports it has.
 	Position mgl32.Vec3
-	// MoveVector is a Vec2 that specifies the direction in which the player moved, as a combination of
-	// X/Z values which are created using the WASD/controller stick state.
+	// MoveVector is a Vec2 that specifies the direction in which the player moved, as a combination of X/Z values
+	// which are created using the WASD/controller stick state.
 	MoveVector         mgl32.Vec2
 	PlayerHeadRotation float32
-	// InputData is the set of input flags that together specify the way the player moved last tick. It
-	// holds the flags above.
+	// InputData is the set of input flags that together specify the way the player moved last tick. It holds the
+	// flags above.
 	InputData protocol.Optional[[]protocol.InputData]
-	// InputMode specifies the way that the client inputs data to the screen. It is one of the constants
-	// that may be found above.
+	// InputMode specifies the way that the client inputs data to the screen. It is one of the constants that may
+	// be found above.
 	InputMode protocol.InputMode
-	// PlayMode specifies the way that the player is playing. The values it holds, which are rather
-	// random, may be found above.
+	// PlayMode specifies the way that the player is playing. The values it holds, which are rather random, may be
+	// found above.
 	PlayMode            protocol.ClientPlayMode
 	NewInteractionModel protocol.NewInteractionModel
 	InteractRotation    mgl32.Vec2
@@ -39,48 +39,48 @@ type PlayerAuthInput struct {
 	PlayerBlockActions protocol.Optional[[]protocol.PlayerBlockActionData]
 	// VehicleRotation is the rotation of the vehicle that the player is in, if any.
 	VehicleRotation protocol.Optional[mgl32.Vec2]
-	// ClientPredictedVehicle is the unique ID of the vehicle that the client predicts the player to be
-	// in.
+	// ClientPredictedVehicle is the unique ID of the vehicle that the client predicts the player to be in.
 	ClientPredictedVehicle protocol.Optional[int64]
 	AnalogMoveVector       mgl32.Vec2
-	// CameraOrientation is the vector that represents the camera's forward direction which can be used
-	// to transform movement to be camera relative.
+	// CameraOrientation is the vector that represents the camera's forward direction which can be used to
+	// transform movement to be camera relative.
 	CameraOrientation mgl32.Vec3
-	// RawMoveVector is the value of MoveVector before it is affected by input permissions, sneaking/fly
-	// speeds and isn't normalised for analogue inputs.
+	// RawMoveVector is the value of MoveVector before it is affected by input permissions, sneaking/fly speeds
+	// and isn't normalised for analogue inputs.
 	RawMoveVector mgl32.Vec2
 }
 
-// Marshal reads or writes PlayerAuthInput using its canonical wire layout.
-func (x *PlayerAuthInput) Marshal(io protocol.IO) {
-	io.Vec2(&x.PlayerRotation)
-	io.Vec3(&x.Position)
-	io.Vec2(&x.MoveVector)
-	io.Float32(&x.PlayerHeadRotation)
-	protocol.OptionalFunc(io, &x.InputData, func(value *[]protocol.InputData) {
-		protocol.Slice(io, value)
-	})
-	x.InputMode.Marshal(io)
-	x.PlayMode.Marshal(io)
-	x.NewInteractionModel.Marshal(io)
-	io.Vec2(&x.InteractRotation)
-	io.PlayerInputTick(&x.ClientTick)
-	io.Vec3(&x.PosDelta)
-	protocol.DoubleOptionalFunc(io, &x.ItemUseTransaction, func(value *protocol.PackedItemUseLegacyInventoryTransaction) {
-		value.Marshal(io)
-	})
-	protocol.DoubleOptionalFunc(io, &x.ItemStackRequest, func(value *protocol.ItemStackRequestData) {
-		value.Marshal(io)
-	})
-	protocol.DoubleOptionalFunc(io, &x.PlayerBlockActions, func(value *[]protocol.PlayerBlockActionData) {
-		protocol.SliceLimits(io, value, 0, 100)
-	})
-	protocol.DoubleOptionalFunc(io, &x.VehicleRotation, io.Vec2)
-	protocol.DoubleOptionalFunc(io, &x.ClientPredictedVehicle, io.ActorUniqueID)
-	io.Vec2(&x.AnalogMoveVector)
-	io.Vec3(&x.CameraOrientation)
-	io.Vec2(&x.RawMoveVector)
+// ID ...
+func (*PlayerAuthInput) ID() uint32 {
+	return IDPlayerAuthInput
 }
 
-// ID returns the protocol ID for PlayerAuthInput.
-func (*PlayerAuthInput) ID() uint32 { return IDPlayerAuthInput }
+func (pk *PlayerAuthInput) Marshal(io protocol.IO) {
+	io.Vec2(&pk.PlayerRotation)
+	io.Vec3(&pk.Position)
+	io.Vec2(&pk.MoveVector)
+	io.Float32(&pk.PlayerHeadRotation)
+	protocol.OptionalFunc(io, &pk.InputData, func(value *[]protocol.InputData) {
+		protocol.Slice(io, value)
+	})
+	pk.InputMode.Marshal(io)
+	pk.PlayMode.Marshal(io)
+	pk.NewInteractionModel.Marshal(io)
+	io.Vec2(&pk.InteractRotation)
+	io.PlayerInputTick(&pk.ClientTick)
+	io.Vec3(&pk.PosDelta)
+	protocol.DoubleOptionalFunc(io, &pk.ItemUseTransaction, func(value *protocol.PackedItemUseLegacyInventoryTransaction) {
+		value.Marshal(io)
+	})
+	protocol.DoubleOptionalFunc(io, &pk.ItemStackRequest, func(value *protocol.ItemStackRequestData) {
+		value.Marshal(io)
+	})
+	protocol.DoubleOptionalFunc(io, &pk.PlayerBlockActions, func(value *[]protocol.PlayerBlockActionData) {
+		protocol.SliceLimits(io, value, 0, 100)
+	})
+	protocol.DoubleOptionalFunc(io, &pk.VehicleRotation, io.Vec2)
+	protocol.DoubleOptionalFunc(io, &pk.ClientPredictedVehicle, io.ActorUniqueID)
+	io.Vec2(&pk.AnalogMoveVector)
+	io.Vec3(&pk.CameraOrientation)
+	io.Vec2(&pk.RawMoveVector)
+}

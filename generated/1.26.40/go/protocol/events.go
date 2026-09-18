@@ -2,8 +2,7 @@
 
 package protocol
 
-// Event represents an object that holds data specific to an event. The data it holds depends on the
-// type.
+// Event represents an object that holds data specific to an event. The data it holds depends on the type.
 type EventData interface {
 	Marshaler
 	tagEventData() uint32

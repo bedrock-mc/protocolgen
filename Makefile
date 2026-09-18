@@ -162,3 +162,28 @@ verify: regen hotfix differential
 
 verify-1.26.50: regen-1.26.50
 	@test -z "$$(git status --porcelain -- $(TARGET_12650))" || (echo "1.26.50 regeneration produced drift" >&2; exit 1)
+
+# Emit the 1.26.44 tree laid out like the gophertunnel checkout in
+# GOPHERTUNNEL_DIR (constants beside their packets under fork names, fork field
+# names) into build/gophertunnel-layout, and refresh the seeded overlay and gap
+# report. The overlay is never applied to the checked-in generated tree.
+GOPHERTUNNEL_DIR ?= ../gophertunnel
+LAYOUT_TARGET = generated/1.26.44
+
+gophertunnel-layout:
+	$(GO) run ./tools/seed-gophertunnel-layout \
+		-manifest $(LAYOUT_TARGET)/manifest.json \
+		-naming $(LAYOUT_TARGET)/naming.json \
+		-gophertunnel $(GOPHERTUNNEL_DIR) \
+		-out $(LAYOUT_TARGET)/gophertunnel-layout.json \
+		-docs $(LAYOUT_TARGET)/docs.json \
+		-report docs/gophertunnel-gap-1.26.44.md
+	rm -rf build/gophertunnel-layout
+	$(PROTOCOLGEN) emit-go \
+		-manifest $(LAYOUT_TARGET)/manifest.json \
+		-naming $(LAYOUT_TARGET)/naming.json \
+		-domains $(LAYOUT_TARGET)/domains.json \
+		-docs $(LAYOUT_TARGET)/docs.json \
+		-layout $(LAYOUT_TARGET)/gophertunnel-layout.json \
+		-out build/gophertunnel-layout \
+		-protocol-import protocolgen/build/gophertunnel-layout/protocol

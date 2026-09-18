@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
 // LocatorBar is sent by the server to add, remove or update waypoints on the client's locator bar.
 type LocatorBar struct {
@@ -10,10 +12,11 @@ type LocatorBar struct {
 	Waypoints []protocol.LocatorBarWaypoint
 }
 
-// Marshal reads or writes LocatorBar using its canonical wire layout.
-func (x *LocatorBar) Marshal(io protocol.IO) {
-	protocol.SliceLimits(io, &x.Waypoints, 0, 40000)
+// ID ...
+func (*LocatorBar) ID() uint32 {
+	return IDLocatorBar
 }
 
-// ID returns the protocol ID for LocatorBar.
-func (*LocatorBar) ID() uint32 { return IDLocatorBar }
+func (pk *LocatorBar) Marshal(io protocol.IO) {
+	protocol.SliceLimits(io, &pk.Waypoints, 0, 40000)
+}

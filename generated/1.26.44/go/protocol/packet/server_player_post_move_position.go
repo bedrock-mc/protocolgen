@@ -8,14 +8,17 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 )
 
+// ServerPlayerPostMovePosition is sent by the server with the player's position after movement processing.
 type ServerPlayerPostMovePosition struct {
+	// Position is the player's position after the server has processed movement.
 	Pos mgl32.Vec3
 }
 
-// Marshal reads or writes ServerPlayerPostMovePosition using its canonical wire layout.
-func (x *ServerPlayerPostMovePosition) Marshal(io protocol.IO) {
-	io.Vec3(&x.Pos)
+// ID ...
+func (*ServerPlayerPostMovePosition) ID() uint32 {
+	return IDServerPlayerPostMovePosition
 }
 
-// ID returns the protocol ID for ServerPlayerPostMovePosition.
-func (*ServerPlayerPostMovePosition) ID() uint32 { return IDServerPlayerPostMovePosition }
+func (pk *ServerPlayerPostMovePosition) Marshal(io protocol.IO) {
+	io.Vec3(&pk.Pos)
+}

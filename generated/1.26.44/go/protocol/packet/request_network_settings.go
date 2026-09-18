@@ -2,22 +2,25 @@
 
 package packet
 
-import "protocolgen/generated/1.26.44/go/protocol"
+import (
+	"protocolgen/generated/1.26.44/go/protocol"
+)
 
-// RequestNetworkSettings is sent by the client to request network settings, such as compression,
-// from the server.
+// RequestNetworkSettings is sent by the client to request network settings, such as compression, from the
+// server.
 type RequestNetworkSettings struct {
-	// ClientNetworkVersion is the protocol version of the player. The player is disconnected if the
-	// protocol is incompatible with the protocol of the server.
+	// ClientNetworkVersion is the protocol version of the player. The player is disconnected if the protocol is
+	// incompatible with the protocol of the server.
 	ClientNetworkVersion int32
 }
 
-// Marshal reads or writes RequestNetworkSettings using its canonical wire layout.
-func (x *RequestNetworkSettings) Marshal(io protocol.IO) {
-	io.BEInt32(&x.ClientNetworkVersion)
-	protocol.Minimum(io, &x.ClientNetworkVersion, 2168)
-	protocol.Maximum(io, &x.ClientNetworkVersion, 2168)
+// ID ...
+func (*RequestNetworkSettings) ID() uint32 {
+	return IDRequestNetworkSettings
 }
 
-// ID returns the protocol ID for RequestNetworkSettings.
-func (*RequestNetworkSettings) ID() uint32 { return IDRequestNetworkSettings }
+func (pk *RequestNetworkSettings) Marshal(io protocol.IO) {
+	io.BEInt32(&pk.ClientNetworkVersion)
+	protocol.Minimum(io, &pk.ClientNetworkVersion, 2168)
+	protocol.Maximum(io, &pk.ClientNetworkVersion, 2168)
+}

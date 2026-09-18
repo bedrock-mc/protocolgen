@@ -8,14 +8,17 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 )
 
-// CorrectPlayerMovePrediction is sent by the server if and only if
-// StartGame.ServerAuthoritativeMovementMode is set to AuthoritativeMovementModeServerWithRewind.
-// The packet is used to correct movement at a specific point in time.
+// CorrectPlayerMovePrediction is sent by the server if and only if StartGame.ServerAuthoritativeMovementMode
+// is set to AuthoritativeMovementModeServerWithRewind. The packet is used to correct movement at a specific
+// point in time.
 type CorrectPlayerMovePrediction struct {
 	// PredictionType is the type of prediction that was corrected. It is one of the constants above.
 	PredictionType protocol.RewindType
-	Pos            mgl32.Vec3
-	PosDelta       mgl32.Vec3
+	// Position is the position that the player is supposed to be at the tick written in the field below. The
+	// client will change its current position based on movement after that tick starting from the Position.
+	Pos mgl32.Vec3
+	// Delta is the change in position compared to what the client sent as its position at that specific tick.
+	PosDelta mgl32.Vec3
 	// Rotation is the rotation of the player at the tick written in the field below.
 	Rotation mgl32.Vec2
 	// VehicleAngularVelocity is the angular velocity of the vehicle that the rider is riding.
@@ -26,16 +29,17 @@ type CorrectPlayerMovePrediction struct {
 	Tick uint64
 }
 
-// Marshal reads or writes CorrectPlayerMovePrediction using its canonical wire layout.
-func (x *CorrectPlayerMovePrediction) Marshal(io protocol.IO) {
-	x.PredictionType.Marshal(io)
-	io.Vec3(&x.Pos)
-	io.Vec3(&x.PosDelta)
-	io.Vec2(&x.Rotation)
-	protocol.OptionalFunc(io, &x.VehicleAngularVelocity, io.Float32)
-	io.Bool(&x.OnGround)
-	io.PlayerInputTick(&x.Tick)
+// ID ...
+func (*CorrectPlayerMovePrediction) ID() uint32 {
+	return IDCorrectPlayerMovePrediction
 }
 
-// ID returns the protocol ID for CorrectPlayerMovePrediction.
-func (*CorrectPlayerMovePrediction) ID() uint32 { return IDCorrectPlayerMovePrediction }
+func (pk *CorrectPlayerMovePrediction) Marshal(io protocol.IO) {
+	pk.PredictionType.Marshal(io)
+	io.Vec3(&pk.Pos)
+	io.Vec3(&pk.PosDelta)
+	io.Vec2(&pk.Rotation)
+	protocol.OptionalFunc(io, &pk.VehicleAngularVelocity, io.Float32)
+	io.Bool(&pk.OnGround)
+	io.PlayerInputTick(&pk.Tick)
+}

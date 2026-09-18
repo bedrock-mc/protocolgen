@@ -2,16 +2,19 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 type MultiplayerSettings struct {
 	PacketType protocol.MultiplayerSettingsType
 }
 
-// Marshal reads or writes MultiplayerSettings using its canonical wire layout.
-func (x *MultiplayerSettings) Marshal(io protocol.IO) {
-	x.PacketType.Marshal(io)
+// ID ...
+func (*MultiplayerSettings) ID() uint32 {
+	return IDMultiplayerSettings
 }
 
-// ID returns the protocol ID for MultiplayerSettings.
-func (*MultiplayerSettings) ID() uint32 { return IDMultiplayerSettings }
+func (pk *MultiplayerSettings) Marshal(io protocol.IO) {
+	pk.PacketType.Marshal(io)
+}

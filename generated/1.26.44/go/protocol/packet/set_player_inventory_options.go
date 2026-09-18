@@ -2,18 +2,36 @@
 
 package packet
 
-import "protocolgen/generated/1.26.44/go/protocol"
+import (
+	"protocolgen/generated/1.26.44/go/protocol"
+)
 
-// SetPlayerInventoryOptions is a bidirectional packet that can be used to update the inventory
-// options of a player.
+// SetPlayerInventoryOptions is a bidirectional packet that can be used to update the inventory options of a
+// player.
 type SetPlayerInventoryOptions struct {
-	InventoryOptions protocol.InventoryOptions
+	// LeftInventoryTab is the tab that is selected on the left side of the inventory. This is usually for the
+	// creative inventory. It is one of the InventoryLeftTab constants above.
+	LeftInventoryTab protocol.InventoryLeftTabIndex
+	// RightInventoryTab is the tab that is selected on the right side of the inventory. This is usually for the
+	// player's own inventory. It is one of the InventoryRightTab constants above.
+	RightInventoryTab protocol.InventoryRightTabIndex
+	// Filtering is whether the player has enabled the filtering between recipes they have unlocked or not.
+	Filtering bool
+	// InventoryLayout is the layout of the inventory. It is one of the InventoryLayout constants above.
+	LayoutInv protocol.InventoryLayout
+	// CraftingLayout is the layout of the crafting inventory. It is one of the InventoryLayout constants above.
+	LayoutCraft protocol.InventoryLayout
 }
 
-// Marshal reads or writes SetPlayerInventoryOptions using its canonical wire layout.
-func (x *SetPlayerInventoryOptions) Marshal(io protocol.IO) {
-	x.InventoryOptions.Marshal(io)
+// ID ...
+func (*SetPlayerInventoryOptions) ID() uint32 {
+	return IDSetPlayerInventoryOptions
 }
 
-// ID returns the protocol ID for SetPlayerInventoryOptions.
-func (*SetPlayerInventoryOptions) ID() uint32 { return IDSetPlayerInventoryOptions }
+func (pk *SetPlayerInventoryOptions) Marshal(io protocol.IO) {
+	pk.LeftInventoryTab.Marshal(io)
+	pk.RightInventoryTab.Marshal(io)
+	io.Bool(&pk.Filtering)
+	pk.LayoutInv.Marshal(io)
+	pk.LayoutCraft.Marshal(io)
+}

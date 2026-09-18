@@ -2,10 +2,12 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
-// ActorPickRequest is sent by the client when it tries to pick an entity, so that it gets a spawn
-// egg which can spawn that entity.
+// ActorPickRequest is sent by the client when it tries to pick an entity, so that it gets a spawn egg which
+// can spawn that entity.
 type ActorPickRequest struct {
 	ActorID  int64
 	MaxSlots uint8
@@ -13,12 +15,13 @@ type ActorPickRequest struct {
 	WithData bool
 }
 
-// Marshal reads or writes ActorPickRequest using its canonical wire layout.
-func (x *ActorPickRequest) Marshal(io protocol.IO) {
-	io.Int64(&x.ActorID)
-	io.Uint8(&x.MaxSlots)
-	io.Bool(&x.WithData)
+// ID ...
+func (*ActorPickRequest) ID() uint32 {
+	return IDActorPickRequest
 }
 
-// ID returns the protocol ID for ActorPickRequest.
-func (*ActorPickRequest) ID() uint32 { return IDActorPickRequest }
+func (pk *ActorPickRequest) Marshal(io protocol.IO) {
+	io.Int64(&pk.ActorID)
+	io.Uint8(&pk.MaxSlots)
+	io.Bool(&pk.WithData)
+}

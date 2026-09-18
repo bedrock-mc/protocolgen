@@ -8,8 +8,8 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 )
 
-// PrimitiveShape defines a single shape to be rendered on the client. Each shape has a unique
-// NetworkID and a set of optional parameters depending on its type.
+// PrimitiveShape defines a single shape to be rendered on the client. Each shape has a unique NetworkID and a
+// set of optional parameters depending on its type.
 type PrimitiveShape struct {
 	// NetworkID is the network ID of the shape.
 	NetworkID uint64
@@ -31,8 +31,7 @@ type PrimitiveShape struct {
 	DimensionID Optional[DimensionType]
 	// AttachedToEntityID is the optional runtime ID of the entity the shape is attached to.
 	AttachedToEntityID Optional[uint64]
-	// ExtraShapeData holding data specific to the type of shape (such as text string for the text
-	// shape).
+	// ExtraShapeData holding data specific to the type of shape (such as text string for the text shape).
 	ExtraShapeData PrimitiveShapeExtraShapeData
 }
 
@@ -55,22 +54,22 @@ func (x *PrimitiveShape) Marshal(io IO) {
 type TextShape struct {
 	// Text is the text of the debug text shape.
 	Text string
-	// UseRotation is if the text should use the provided rotation, meaning it will be static and does
-	// not follow the camera. Use false for default behaviour.
+	// UseRotation is if the text should use the provided rotation, meaning it will be static and does not follow
+	// the camera. Use false for default behaviour.
 	UseRotation bool
-	// BackgroundColor is the RGBA colour to use for the text background. This is a translucent black
-	// colour by default.
+	// BackgroundColor is the RGBA colour to use for the text background. This is a translucent black colour by
+	// default.
 	BackgroundColor Optional[color.RGBA]
 	LineGapHeight   float32
 	// DepthTest is whether the text should show through walls. Use true for default behaviour.
 	DepthTest bool
-	// ShowBackface is if the background should render on the back side of the shape. This only has a
-	// visible effect when UseRotation is true since you cannot see the back side of the text otherwise.
-	// Use true for default behaviour.
+	// ShowBackface is if the background should render on the back side of the shape. This only has a visible
+	// effect when UseRotation is true since you cannot see the back side of the text otherwise. Use true for
+	// default behaviour.
 	ShowBackface bool
-	// ShowTextBackface is if the text should render on the back side of the shape. This only has a
-	// visible effect when UseRotation is true since you cannot see the back side of the text otherwise.
-	// Use true for default behaviour.
+	// ShowTextBackface is if the text should render on the back side of the shape. This only has a visible effect
+	// when UseRotation is true since you cannot see the back side of the text otherwise. Use true for default
+	// behaviour.
 	ShowTextBackface bool
 }
 

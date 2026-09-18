@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
 type MobArmorEquipment struct {
 	TargetRuntimeID uint64
@@ -13,15 +15,16 @@ type MobArmorEquipment struct {
 	Body            protocol.NetworkItemStackDescriptorSerializedData
 }
 
-// Marshal reads or writes MobArmorEquipment using its canonical wire layout.
-func (x *MobArmorEquipment) Marshal(io protocol.IO) {
-	io.ActorRuntimeID(&x.TargetRuntimeID)
-	x.Head.Marshal(io)
-	x.Torso.Marshal(io)
-	x.Legs.Marshal(io)
-	x.Feet.Marshal(io)
-	x.Body.Marshal(io)
+// ID ...
+func (*MobArmorEquipment) ID() uint32 {
+	return IDMobArmorEquipment
 }
 
-// ID returns the protocol ID for MobArmorEquipment.
-func (*MobArmorEquipment) ID() uint32 { return IDMobArmorEquipment }
+func (pk *MobArmorEquipment) Marshal(io protocol.IO) {
+	io.ActorRuntimeID(&pk.TargetRuntimeID)
+	pk.Head.Marshal(io)
+	pk.Torso.Marshal(io)
+	pk.Legs.Marshal(io)
+	pk.Feet.Marshal(io)
+	pk.Body.Marshal(io)
+}

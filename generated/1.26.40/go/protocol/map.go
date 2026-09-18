@@ -2,14 +2,16 @@
 
 package protocol
 
-import "image/color"
+import (
+	"image/color"
+)
 
-// MapDecoration is a fixed decoration on a map: Its position or other properties do not change
-// automatically client-side.
+// MapDecoration is a fixed decoration on a map: Its position or other properties do not change automatically
+// client-side.
 type MapDecoration struct {
 	ImageType MapDecorationType
-	// Rotation is the rotation of the map decoration. It is byte due to the 16 fixed directions that
-	// the map decoration may face.
+	// Rotation is the rotation of the map decoration. It is byte due to the 16 fixed directions that the map
+	// decoration may face.
 	Rotation uint8
 	// X is the offset on the X axis in pixels of the decoration.
 	X uint8
@@ -30,8 +32,8 @@ func (x *MapDecoration) Marshal(io IO) {
 	io.RGBA(&x.Color)
 }
 
-// MapDecoration is a fixed decoration on a map: Its position or other properties do not change
-// automatically client-side.
+// MapDecoration is a fixed decoration on a map: Its position or other properties do not change automatically
+// client-side.
 type MapDecorationType int8
 
 const (

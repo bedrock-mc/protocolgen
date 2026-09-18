@@ -2,25 +2,28 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
-// SettingsCommand is sent by the client when it changes a setting in the settings that results in
-// the issuing of a command to the server, such as when Show Coordinates is enabled.
+// SettingsCommand is sent by the client when it changes a setting in the settings that results in the issuing
+// of a command to the server, such as when Show Coordinates is enabled.
 type SettingsCommand struct {
-	// Command is the full command line that was sent to the server as a result of the setting that the
-	// client changed.
+	// Command is the full command line that was sent to the server as a result of the setting that the client
+	// changed.
 	Command string
-	// SuppressOutput specifies if the client requests the suppressing of the output of the command that
-	// was executed. Generally this is set to true, as the client won't need a message to confirm the
-	// output of the change.
+	// SuppressOutput specifies if the client requests the suppressing of the output of the command that was
+	// executed. Generally this is set to true, as the client won't need a message to confirm the output of the
+	// change.
 	SuppressOutput bool
 }
 
-// Marshal reads or writes SettingsCommand using its canonical wire layout.
-func (x *SettingsCommand) Marshal(io protocol.IO) {
-	io.String(&x.Command)
-	io.Bool(&x.SuppressOutput)
+// ID ...
+func (*SettingsCommand) ID() uint32 {
+	return IDSettingsCommand
 }
 
-// ID returns the protocol ID for SettingsCommand.
-func (*SettingsCommand) ID() uint32 { return IDSettingsCommand }
+func (pk *SettingsCommand) Marshal(io protocol.IO) {
+	io.String(&pk.Command)
+	io.Bool(&pk.SuppressOutput)
+}

@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
 type PlayerHotbar struct {
 	SelectedSlot     uint32
@@ -10,12 +12,13 @@ type PlayerHotbar struct {
 	ShouldSelectSlot bool
 }
 
-// Marshal reads or writes PlayerHotbar using its canonical wire layout.
-func (x *PlayerHotbar) Marshal(io protocol.IO) {
-	io.Varuint32(&x.SelectedSlot)
-	io.Uint8(&x.ContainerID)
-	io.Bool(&x.ShouldSelectSlot)
+// ID ...
+func (*PlayerHotbar) ID() uint32 {
+	return IDPlayerHotbar
 }
 
-// ID returns the protocol ID for PlayerHotbar.
-func (*PlayerHotbar) ID() uint32 { return IDPlayerHotbar }
+func (pk *PlayerHotbar) Marshal(io protocol.IO) {
+	io.Varuint32(&pk.SelectedSlot)
+	io.Uint8(&pk.ContainerID)
+	io.Bool(&pk.ShouldSelectSlot)
+}

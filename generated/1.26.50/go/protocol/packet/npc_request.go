@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 type NpcRequest struct {
 	NPCRuntimeID uint64
@@ -12,14 +14,15 @@ type NpcRequest struct {
 	SceneName    string
 }
 
-// Marshal reads or writes NpcRequest using its canonical wire layout.
-func (x *NpcRequest) Marshal(io protocol.IO) {
-	io.ActorRuntimeID(&x.NPCRuntimeID)
-	x.RequestType.Marshal(io)
-	io.String(&x.Actions)
-	io.Uint8(&x.ActionIndex)
-	io.String(&x.SceneName)
+// ID ...
+func (*NpcRequest) ID() uint32 {
+	return IDNpcRequest
 }
 
-// ID returns the protocol ID for NpcRequest.
-func (*NpcRequest) ID() uint32 { return IDNpcRequest }
+func (pk *NpcRequest) Marshal(io protocol.IO) {
+	io.ActorRuntimeID(&pk.NPCRuntimeID)
+	pk.RequestType.Marshal(io)
+	io.String(&pk.Actions)
+	io.Uint8(&pk.ActionIndex)
+	io.String(&pk.SceneName)
+}

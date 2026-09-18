@@ -2,16 +2,19 @@
 
 package packet
 
-import "protocolgen/generated/1.26.44/go/protocol"
+import (
+	"protocolgen/generated/1.26.44/go/protocol"
+)
 
 type SetLocalPlayerAsInitialized struct {
 	PlayerID uint64
 }
 
-// Marshal reads or writes SetLocalPlayerAsInitialized using its canonical wire layout.
-func (x *SetLocalPlayerAsInitialized) Marshal(io protocol.IO) {
-	io.ActorRuntimeID(&x.PlayerID)
+// ID ...
+func (*SetLocalPlayerAsInitialized) ID() uint32 {
+	return IDSetLocalPlayerAsInitialized
 }
 
-// ID returns the protocol ID for SetLocalPlayerAsInitialized.
-func (*SetLocalPlayerAsInitialized) ID() uint32 { return IDSetLocalPlayerAsInitialized }
+func (pk *SetLocalPlayerAsInitialized) Marshal(io protocol.IO) {
+	io.ActorRuntimeID(&pk.PlayerID)
+}

@@ -2,19 +2,22 @@
 
 package packet
 
-import "protocolgen/generated/1.26.44/go/protocol"
+import (
+	"protocolgen/generated/1.26.44/go/protocol"
+)
 
-// SetCommandsEnabled is sent by the server to enable or disable the ability to execute commands for
-// the client. If disabled, the client itself will stop the execution of commands.
+// SetCommandsEnabled is sent by the server to enable or disable the ability to execute commands for the
+// client. If disabled, the client itself will stop the execution of commands.
 type SetCommandsEnabled struct {
 	// CommandsEnabled defines if the commands should be enabled, or if false, disabled.
 	CommandsEnabled bool
 }
 
-// Marshal reads or writes SetCommandsEnabled using its canonical wire layout.
-func (x *SetCommandsEnabled) Marshal(io protocol.IO) {
-	io.Bool(&x.CommandsEnabled)
+// ID ...
+func (*SetCommandsEnabled) ID() uint32 {
+	return IDSetCommandsEnabled
 }
 
-// ID returns the protocol ID for SetCommandsEnabled.
-func (*SetCommandsEnabled) ID() uint32 { return IDSetCommandsEnabled }
+func (pk *SetCommandsEnabled) Marshal(io protocol.IO) {
+	io.Bool(&pk.CommandsEnabled)
+}

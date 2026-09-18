@@ -5,7 +5,8 @@ package protocol
 // MemoryCategoryCounter represents a memory usage counter for a specific category.
 type MemoryCategoryCounter struct {
 	// Category is the memory category. It is one of the MemoryCategory constants above.
-	Category     MemoryCategory
+	Category MemoryCategory
+	// Bytes is the number of bytes used by this category.
 	CurrentBytes uint64
 }
 

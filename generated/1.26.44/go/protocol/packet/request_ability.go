@@ -2,10 +2,12 @@
 
 package packet
 
-import "protocolgen/generated/1.26.44/go/protocol"
+import (
+	"protocolgen/generated/1.26.44/go/protocol"
+)
 
-// RequestAbility is a packet sent by the client to the server to request permission for a specific
-// ability from the server. These abilities are defined above.
+// RequestAbility is a packet sent by the client to the server to request permission for a specific ability
+// from the server. These abilities are defined above.
 type RequestAbility struct {
 	// Ability is the ability that the client is requesting. This is one of the constants defined in the
 	// protocol/ability.go file.
@@ -15,15 +17,16 @@ type RequestAbility struct {
 	Float     float32
 }
 
-// Marshal reads or writes RequestAbility using its canonical wire layout.
-func (x *RequestAbility) Marshal(io protocol.IO) {
-	io.Varint32(&x.Ability)
-	protocol.Minimum(io, &x.Ability, 0)
-	protocol.Maximum(io, &x.Ability, 19)
-	x.ValueType.Marshal(io)
-	io.Bool(&x.Bool)
-	io.Float32(&x.Float)
+// ID ...
+func (*RequestAbility) ID() uint32 {
+	return IDRequestAbility
 }
 
-// ID returns the protocol ID for RequestAbility.
-func (*RequestAbility) ID() uint32 { return IDRequestAbility }
+func (pk *RequestAbility) Marshal(io protocol.IO) {
+	io.Varint32(&pk.Ability)
+	protocol.Minimum(io, &pk.Ability, 0)
+	protocol.Maximum(io, &pk.Ability, 19)
+	pk.ValueType.Marshal(io)
+	io.Bool(&pk.Bool)
+	io.Float32(&pk.Float)
+}

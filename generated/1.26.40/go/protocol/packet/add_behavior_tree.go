@@ -2,16 +2,19 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
 type AddBehaviorTree struct {
 	BehaviorTreeStructureJSON string
 }
 
-// Marshal reads or writes AddBehaviorTree using its canonical wire layout.
-func (x *AddBehaviorTree) Marshal(io protocol.IO) {
-	io.String(&x.BehaviorTreeStructureJSON)
+// ID ...
+func (*AddBehaviorTree) ID() uint32 {
+	return IDAddBehaviorTree
 }
 
-// ID returns the protocol ID for AddBehaviorTree.
-func (*AddBehaviorTree) ID() uint32 { return IDAddBehaviorTree }
+func (pk *AddBehaviorTree) Marshal(io protocol.IO) {
+	io.String(&pk.BehaviorTreeStructureJSON)
+}

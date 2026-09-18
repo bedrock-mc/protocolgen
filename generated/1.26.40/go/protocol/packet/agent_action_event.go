@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
 type AgentActionEvent struct {
 	RequestID string
@@ -10,12 +12,13 @@ type AgentActionEvent struct {
 	Response  string
 }
 
-// Marshal reads or writes AgentActionEvent using its canonical wire layout.
-func (x *AgentActionEvent) Marshal(io protocol.IO) {
-	io.String(&x.RequestID)
-	x.Action.Marshal(io)
-	io.String(&x.Response)
+// ID ...
+func (*AgentActionEvent) ID() uint32 {
+	return IDAgentActionEvent
 }
 
-// ID returns the protocol ID for AgentActionEvent.
-func (*AgentActionEvent) ID() uint32 { return IDAgentActionEvent }
+func (pk *AgentActionEvent) Marshal(io protocol.IO) {
+	io.String(&pk.RequestID)
+	pk.Action.Marshal(io)
+	io.String(&pk.Response)
+}

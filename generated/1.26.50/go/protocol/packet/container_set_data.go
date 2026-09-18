@@ -2,11 +2,13 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
-// ContainerSetData is sent by the server to update specific data of a single container, meaning a
-// block such as a furnace or a brewing stand. This data is usually used by the client to display
-// certain features client-side.
+// ContainerSetData is sent by the server to update specific data of a single container, meaning a block such
+// as a furnace or a brewing stand. This data is usually used by the client to display certain features
+// client-side.
 type ContainerSetData struct {
 	ContainerID uint8
 	IDValue     int32
@@ -14,12 +16,13 @@ type ContainerSetData struct {
 	Value int32
 }
 
-// Marshal reads or writes ContainerSetData using its canonical wire layout.
-func (x *ContainerSetData) Marshal(io protocol.IO) {
-	io.Uint8(&x.ContainerID)
-	io.Varint32(&x.IDValue)
-	io.Varint32(&x.Value)
+// ID ...
+func (*ContainerSetData) ID() uint32 {
+	return IDContainerSetData
 }
 
-// ID returns the protocol ID for ContainerSetData.
-func (*ContainerSetData) ID() uint32 { return IDContainerSetData }
+func (pk *ContainerSetData) Marshal(io protocol.IO) {
+	io.Uint8(&pk.ContainerID)
+	io.Varint32(&pk.IDValue)
+	io.Varint32(&pk.Value)
+}

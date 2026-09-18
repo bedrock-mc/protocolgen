@@ -2,14 +2,18 @@
 
 package protocol
 
-import "image/color"
+import (
+	"image/color"
+)
 
-// MapDecoration is a fixed decoration on a map: Its position or other properties do not change
-// automatically client-side.
+// MapDecoration is a fixed decoration on a map: Its position or other properties do not change automatically
+// client-side.
 type MapDecoration struct {
+	// Type is the type of the map decoration. The type specifies the shape (and sometimes the colour) that the
+	// map decoration gets. It is one of the MapDecorationType constants above.
 	ImageType MapDecorationType
-	// Rotation is the rotation of the map decoration. It is byte due to the 16 fixed directions that
-	// the map decoration may face.
+	// Rotation is the rotation of the map decoration. It is byte due to the 16 fixed directions that the map
+	// decoration may face.
 	Rotation uint8
 	// X is the offset on the X axis in pixels of the decoration.
 	X uint8
@@ -17,6 +21,8 @@ type MapDecoration struct {
 	Y uint8
 	// Label is the name of the map decoration. This name may be of any value.
 	Label string
+	// Colour is the colour of the map decoration. Some map decoration types have a specific colour set
+	// automatically, whereas others may be changed.
 	Color color.RGBA
 }
 
@@ -30,8 +36,8 @@ func (x *MapDecoration) Marshal(io IO) {
 	io.RGBA(&x.Color)
 }
 
-// MapDecoration is a fixed decoration on a map: Its position or other properties do not change
-// automatically client-side.
+// MapDecoration is a fixed decoration on a map: Its position or other properties do not change automatically
+// client-side.
 type MapDecorationType int8
 
 const (
@@ -77,9 +83,14 @@ const (
 // Marshal reads or writes MapItemTrackedActorType through its int32 wire encoding.
 func (x *MapItemTrackedActorType) Marshal(io IO) { io.Int32((*int32)(x)) }
 
+// MapItemTrackedActorUniqueID is an object on a map that is 'tracked' by the client, such as an entity or a
+// block. This object may move, which is handled client-side.
 type MapItemTrackedActorUniqueID struct {
-	Type          MapItemTrackedActorType
-	EntityID      Optional[int64]
+	// Type is the type of the tracked object. It is either MapObjectTypeEntity or MapObjectTypeBlock.
+	Type MapItemTrackedActorType
+	// EntityUniqueID is the optional unique ID of the tracked entity.
+	EntityID Optional[int64]
+	// BlockPosition is the optional position of the tracked block.
 	BlockPosition Optional[BlockPos]
 }
 

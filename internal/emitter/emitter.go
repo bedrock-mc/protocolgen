@@ -12,6 +12,7 @@ import (
 
 	"protocolgen/internal/docs"
 	"protocolgen/internal/domains"
+	"protocolgen/internal/layout"
 	"protocolgen/internal/manifest"
 	"protocolgen/internal/naming"
 )
@@ -21,6 +22,7 @@ type Input struct {
 	Naming   naming.Overlay
 	Domains  domains.Overlay
 	Docs     docs.Overlay
+	Layout   layout.Overlay // only when Config.LayoutPath is set; never defaulted from the manifest directory
 }
 
 type Backend interface {
@@ -36,6 +38,7 @@ type Config struct {
 	NamingPath   string
 	DomainsPath  string
 	DocsPath     string
+	LayoutPath   string
 	OutputDir    string
 }
 
@@ -75,7 +78,14 @@ func Run(config Config, backend Backend) (Result, error) {
 	if err != nil {
 		return Result{}, err
 	}
-	files, err := backend.Generate(Input{Manifest: m, Naming: namingOverlay, Domains: domainOverlay, Docs: docOverlay})
+	var layoutOverlay layout.Overlay
+	if config.LayoutPath != "" {
+		layoutOverlay, err = layout.LoadOverlay(config.LayoutPath, m)
+		if err != nil {
+			return Result{}, err
+		}
+	}
+	files, err := backend.Generate(Input{Manifest: m, Naming: namingOverlay, Domains: domainOverlay, Docs: docOverlay, Layout: layoutOverlay})
 	if err != nil {
 		return Result{}, err
 	}

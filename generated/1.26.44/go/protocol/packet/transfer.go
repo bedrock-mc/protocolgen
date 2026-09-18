@@ -2,14 +2,14 @@
 
 package packet
 
-import "protocolgen/generated/1.26.44/go/protocol"
+import (
+	"protocolgen/generated/1.26.44/go/protocol"
+)
 
-// Transfer is sent by the server to transfer a player from the current server to another. Doing so
-// will fully disconnect the client, bring it back to the main menu and make it connect to the next
-// server.
+// Transfer is sent by the server to transfer a player from the current server to another. Doing so will fully
+// disconnect the client, bring it back to the main menu and make it connect to the next server.
 type Transfer struct {
-	// ServerAddress is the address of the new server, which might be either a hostname or an actual IP
-	// address.
+	// ServerAddress is the address of the new server, which might be either a hostname or an actual IP address.
 	ServerAddress string
 	// ServerPort is the UDP port of the new server.
 	ServerPort uint16
@@ -19,13 +19,14 @@ type Transfer struct {
 	GatheringsConfiguration protocol.Optional[protocol.ServerConfigurationGatheringsConfigurationJoinInfo]
 }
 
-// Marshal reads or writes Transfer using its canonical wire layout.
-func (x *Transfer) Marshal(io protocol.IO) {
-	io.String(&x.ServerAddress)
-	io.Uint16(&x.ServerPort)
-	io.Bool(&x.ReloadWorld)
-	protocol.OptionalMarshaler(io, &x.GatheringsConfiguration)
+// ID ...
+func (*Transfer) ID() uint32 {
+	return IDTransfer
 }
 
-// ID returns the protocol ID for Transfer.
-func (*Transfer) ID() uint32 { return IDTransfer }
+func (pk *Transfer) Marshal(io protocol.IO) {
+	io.String(&pk.ServerAddress)
+	io.Uint16(&pk.ServerPort)
+	io.Bool(&pk.ReloadWorld)
+	protocol.OptionalMarshaler(io, &pk.GatheringsConfiguration)
+}
