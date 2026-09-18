@@ -13,6 +13,12 @@
       "rationale": "gophertunnel marshals ActorPickRequest.EntityUniqueID with an ActorUniqueID operation."
     },
     {
+      "type_id": "CameraInstructionOptions::AttachToEntityInstruction",
+      "field": "Entity Actor ID",
+      "semantic": "ActorUniqueID",
+      "rationale": "gophertunnel marshals CameraInstruction.AttachToEntity with an ActorUniqueID operation."
+    },
+    {
       "type_id": "CameraInstructionOptions::TargetInstruction",
       "field": "Target Actor ID",
       "semantic": "ActorUniqueID",
@@ -23,6 +29,24 @@
       "field": "Raw ID",
       "semantic": "ActorUniqueID",
       "rationale": "gophertunnel marshals CreatePhoto.EntityUniqueID with an ActorUniqueID operation."
+    },
+    {
+      "type_id": "LegacyTelemetryEventPacketPayload::BossKilled",
+      "field": "Boss Actor ID",
+      "semantic": "ActorUniqueID",
+      "rationale": "gophertunnel marshals BossKilledEvent.BossEntityUniqueID with an ActorUniqueID operation."
+    },
+    {
+      "type_id": "LegacyTelemetryEventPacketPayload::MobKilled",
+      "field": "Instigator Actor ID",
+      "semantic": "ActorUniqueID",
+      "rationale": "gophertunnel marshals MobKilledEvent.KillerEntityUniqueID with an ActorUniqueID operation."
+    },
+    {
+      "type_id": "LegacyTelemetryEventPacketPayload::MobKilled",
+      "field": "Target Actor ID",
+      "semantic": "ActorUniqueID",
+      "rationale": "gophertunnel marshals MobKilledEvent.VictimEntityUniqueID with an ActorUniqueID operation."
     },
     {
       "type_id": "LevelSoundEventPacket",
@@ -65,12 +89,6 @@
       "field": "Unique Actor Id",
       "semantic": "ActorUniqueID",
       "rationale": "gophertunnel marshals UpdateBlockSynced.EntityUniqueID with an ActorUniqueID operation."
-    },
-    {
-      "type_id": "UpdateSubChunkNetworkBlockInfo",
-      "field": "Runtime Id",
-      "semantic": "ActorRuntimeID",
-      "rationale": "Wire field name names an actor identifier; not confirmed by the fork."
     },
     {
       "type_id": "UpdateSubChunkNetworkBlockInfo",

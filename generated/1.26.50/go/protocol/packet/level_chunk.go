@@ -40,5 +40,5 @@ func (pk *LevelChunk) Marshal(io protocol.IO) {
 	})
 	io.Bool(&pk.CacheEnabled)
 	protocol.SliceLimits(io, &pk.CacheMetadata, 0, 65)
-	io.Bytes(&pk.SerializedChunkData)
+	io.ByteSlice(&pk.SerializedChunkData)
 }

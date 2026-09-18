@@ -12,8 +12,8 @@ import (
 // IO is the minimal symmetric wire interface used by generated Marshal methods.
 // Reading reports whether calls populate values. InvalidValue must stop the
 // current codec operation, typically by panicking or recording a terminal error.
-// String and Bytes use a varuint32 byte-length prefix. UUID uses Bedrock's
-// little-endian 64-bit halves. NBT readers scan one format-selected tag;
+// String and ByteSlice use a varuint32 byte-length prefix. UUID uses Bedrock's
+// little-endian 64-bit halves. RGBA is one little-endian ARGB int. NBT readers scan one format-selected tag;
 // writers copy the already encoded bytes. Bitset uses seven payload bits per
 // continuation byte.
 type IO interface {
@@ -58,8 +58,8 @@ type IO interface {
 
 	String(*string)
 	StringLimits(*string, uint64, uint64)
-	Bytes(*[]byte)
-	BytesLimits(*[]byte, uint64, uint64)
+	ByteSlice(*[]byte)
+	ByteSliceLimits(*[]byte, uint64, uint64)
 	NBT(*[]byte, NBTEncoding)
 	UUID(*uuid.UUID)
 	UUIDBytes(*[16]byte)

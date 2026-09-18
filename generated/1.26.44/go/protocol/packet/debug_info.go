@@ -22,5 +22,5 @@ func (*DebugInfo) ID() uint32 {
 
 func (pk *DebugInfo) Marshal(io protocol.IO) {
 	io.ActorUniqueID(&pk.ActorID)
-	io.Bytes(&pk.Data)
+	io.ByteSlice(&pk.Data)
 }

@@ -67,7 +67,7 @@ func (x *ItemInstance) Marshal(io IO) {
 	Minimum(io, &x.StackSize, 1)
 	Maximum(io, &x.StackSize, 64)
 	io.Varuint32(&x.BlockRuntimeID)
-	io.Bytes(&x.UserDataBuffer)
+	io.ByteSlice(&x.UserDataBuffer)
 }
 
 type ItemReleaseInventoryTransaction struct {

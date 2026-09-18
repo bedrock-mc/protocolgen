@@ -73,6 +73,7 @@ type generator struct {
 	layout             layout.Overlay
 	semantics          semantics.Overlay
 	usage              flatten.Usage
+	enumIdentities     map[string]int      // enum definitions per type ID; layout constants apply only to unique ones
 	packetConstants    map[string][]string // packet file stem -> const blocks relocated there by the layout overlay
 }
 
@@ -646,8 +647,12 @@ const (
 
 func (g *generator) emitFiles(m manifest.Manifest, packets []manifest.Packet, packetNames map[uint32]string) (map[string]string, error) {
 	definitions := make([]typeDefinition, 0, len(g.definitions))
+	g.enumIdentities = map[string]int{}
 	for _, definition := range g.definitions {
 		definitions = append(definitions, definition)
+		if definition.Kind == manifest.KindEnum {
+			g.enumIdentities[definition.TypeID]++
+		}
 	}
 	sort.Slice(definitions, func(i, j int) bool { return definitions[i].Name < definitions[j].Name })
 
@@ -828,6 +833,11 @@ func emitDefinitionBody(g *generator, definition typeDefinition) (string, error)
 	case manifest.KindEnum:
 		fmt.Fprintf(&b, "type %s %s\n\n", definition.Name, definition.Underlying)
 		placement, placed := g.layout.Constants[definition.TypeID]
+		if g.enumIdentities[definition.TypeID] != 1 {
+			// Anonymous enums can share an inferred identity; a reviewed
+			// placement cannot tell them apart, so neither gets it.
+			placement, placed = layout.Placement{}, false
+		}
 		constants, err := enumConstants(definition, placement)
 		if err != nil {
 			return "", err
@@ -880,7 +890,7 @@ func enumConstants(definition typeDefinition, placement layout.Placement) (strin
 	for _, variant := range definition.Variants {
 		name := placement.Names[variant.Name]
 		if name == "" {
-			name = definition.Name + enumVariantName(variant.Name)
+			name = definition.Name + naming.EnumVariantName(variant.Name)
 		}
 		if previous, exists := used[name]; exists {
 			return "", fmt.Errorf("enum %s variants %q and %q both map to %s", definition.Name, previous, variant.Name, name)
@@ -1200,9 +1210,9 @@ func (e *marshalEmitter) node(b *strings.Builder, node manifest.Node, expression
 		}
 		if node.Constraints != nil && (node.Constraints.MinLength != nil || node.Constraints.MaxLength != nil) {
 			min, max := lengthBounds(node.Constraints.MinLength, node.Constraints.MaxLength)
-			fmt.Fprintf(b, "%sio.BytesLimits(%s, %d, %d)\n", indent, address.address(expression), min, max)
+			fmt.Fprintf(b, "%sio.ByteSliceLimits(%s, %d, %d)\n", indent, address.address(expression), min, max)
 		} else {
-			fmt.Fprintf(b, "%sio.Bytes(%s)\n", indent, address.address(expression))
+			fmt.Fprintf(b, "%sio.ByteSlice(%s)\n", indent, address.address(expression))
 		}
 		return nil
 	case manifest.KindBitset:
@@ -1512,7 +1522,7 @@ func (e *marshalEmitter) directIOCall(node manifest.Node) (string, bool) {
 		}
 	case manifest.KindBytes:
 		if varuint32Prefix(node) {
-			return "Bytes", true
+			return "ByteSlice", true
 		}
 	}
 	return "", false
@@ -1793,61 +1803,6 @@ func primitiveGoType(code string) (string, error) {
 	default:
 		return "", fmt.Errorf("unsupported primitive code %q", code)
 	}
-}
-
-func enumVariantName(value string) string {
-	if value == "" {
-		return "Unknown"
-	}
-	allUpper := true
-	for _, r := range value {
-		if unicode.IsLetter(r) && unicode.IsLower(r) {
-			allUpper = false
-			break
-		}
-	}
-	if !allUpper {
-		return normalizeEnumInitialisms(exportName(value))
-	}
-	var b strings.Builder
-	for _, token := range strings.FieldsFunc(value, func(r rune) bool { return !unicode.IsLetter(r) && !unicode.IsDigit(r) }) {
-		if token == "" {
-			continue
-		}
-		if initialism, ok := enumInitialisms[token]; ok {
-			b.WriteString(initialism)
-			continue
-		}
-		lower := strings.ToLower(token)
-		b.WriteString(exportName(lower))
-	}
-	if b.Len() == 0 {
-		return "Unknown"
-	}
-	return normalizeGoInitialisms(b.String())
-}
-
-func normalizeEnumInitialisms(value string) string {
-	for _, replacement := range []struct{ from, to string }{
-		{from: "Tntcart", to: "TNTCart"},
-		{from: "Fishpos", to: "FishPosition"},
-		{from: "Hooktime", to: "HookTime"},
-		{from: "Tnt", to: "TNT"},
-		{from: "Nbt", to: "NBT"},
-		{from: "Uuid", to: "UUID"},
-		{from: "Argb", to: "ARGB"},
-		{from: "Rgba", to: "RGBA"},
-		{from: "Rgb", to: "RGB"},
-		{from: "Uwp", to: "UWP"},
-		{from: "Osx", to: "OSX"},
-	} {
-		value = strings.ReplaceAll(value, replacement.from, replacement.to)
-	}
-	return value
-}
-
-var enumInitialisms = map[string]string{
-	"ANIM": "Animation", "FISHPOS": "FishPosition", "HOOKTIME": "HookTime", "ID": "ID", "NBT": "NBT", "OSX": "OSX", "RGBA": "RGBA", "RGB": "RGB", "TNT": "TNT", "TNTCART": "TNTCart", "UWP": "UWP", "URL": "URL", "URI": "URI", "UUID": "UUID", "X": "X", "Y": "Y", "Z": "Z",
 }
 
 func publicTypeName(value string) string {

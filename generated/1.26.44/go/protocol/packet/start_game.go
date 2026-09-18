@@ -13,21 +13,36 @@ import (
 // contains information about the position the player spawns in, and information about the world in general
 // such as its game rules.
 type StartGame struct {
-	EntityID  int64
+	// EntityUniqueID is the unique ID of the player. The unique ID is a value that remains consistent across
+	// different sessions of the same world, but most servers simply fill the runtime ID of the entity out for
+	// this field.
+	EntityID int64
+	// EntityRuntimeID is the runtime ID of the player. The runtime ID is unique for each world session, and
+	// entities are generally identified in packets using this runtime ID.
 	RuntimeID uint64
-	GameType  protocol.GameType
-	Position  mgl32.Vec3
-	Rotation  mgl32.Vec2
-	Settings  protocol.LevelSettings
+	// PlayerGameMode is the game mode the player currently has. It is a value from 0-4, with 0 being survival
+	// mode, 1 being creative mode, 2 being adventure mode, 3 being survival spectator and 4 being creative
+	// spectator. This field may be set to 5 to make the client fall back to the game mode set in the
+	// WorldGameMode field.
+	GameType protocol.GameType
+	// PlayerPosition is the spawn position of the player in the world. In servers this is often the same as the
+	// world's spawn position found below.
+	Position mgl32.Vec3
+	Rotation mgl32.Vec2
+	// PlayerMovementSettings ...
+	Settings protocol.LevelSettings
 	// LevelID is a base64 encoded world ID that is used to identify the world.
 	LevelID   string
 	LevelName string
 	// TemplateContentIdentity is a UUID specific to the premium world template that might have been used to
 	// generate the world. Servers should always fill out an empty string for this.
 	TemplateContentIdentity string
-	IsTrial                 bool
-	MovementSettings        protocol.SyncedPlayerMovementSettings
-	LevelCurrentTime        uint64
+	// Trial specifies if the world was a trial world, meaning features are limited and there is a time limit on
+	// the world.
+	IsTrial          bool
+	MovementSettings protocol.SyncedPlayerMovementSettings
+	// Time is the total time that has elapsed since the start of the world.
+	LevelCurrentTime uint64
 	// EnchantmentSeed is the seed used to seed the random used to produce enchantments in the enchantment table.
 	// Note that the exact correct random implementation must be used to produce the correct results both client-
 	// and server-side.
@@ -42,7 +57,9 @@ type StartGame struct {
 	ServerBlockTypeRegistryChecksum uint64
 	// WorldTemplateID is a UUID that identifies the template that was used to generate the world. Servers that do
 	// not use a world based off of a template can set this to an empty UUID.
-	WorldTemplateID                   uuid.UUID
+	WorldTemplateID uuid.UUID
+	// ClientSideGeneration is true if the client should use the features registered in the FeatureRegistry packet
+	// to generate terrain client-side to save on bandwidth.
 	ServerEnabledClientSideGeneration bool
 	BlockNetworkIdsAreHashes          bool
 	NetworkPermissions                protocol.NetworkPermissions

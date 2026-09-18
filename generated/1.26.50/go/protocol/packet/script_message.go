@@ -21,5 +21,5 @@ func (*ScriptMessage) ID() uint32 {
 
 func (pk *ScriptMessage) Marshal(io protocol.IO) {
 	io.String(&pk.MessageID)
-	io.Bytes(&pk.MessageValue)
+	io.ByteSlice(&pk.MessageValue)
 }

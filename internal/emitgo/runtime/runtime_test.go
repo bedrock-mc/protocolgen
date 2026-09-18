@@ -2,6 +2,7 @@ package protocol
 
 import (
 	"bytes"
+	"image/color"
 	"math"
 	"strings"
 	"testing"
@@ -434,4 +435,19 @@ func appendNetworkNamedList(data []byte, name string, element byte, values [][]b
 		payload = append(payload, value...)
 	}
 	return appendNetworkNamed(data, name, 9, payload)
+}
+
+// RGBA is one little-endian ARGB int, so blue is the low byte on the wire.
+func TestRGBAIsALittleEndianARGBInt(t *testing.T) {
+	writer := NewWriter()
+	colour := color.RGBA{R: 0x11, G: 0x22, B: 0x33, A: 0x44}
+	writer.RGBA(&colour)
+	if got := writer.Data(); !bytes.Equal(got, []byte{0x33, 0x22, 0x11, 0x44}) {
+		t.Fatalf("encoded %x", got)
+	}
+	var decoded color.RGBA
+	NewReader(writer.Data()).RGBA(&decoded)
+	if decoded != colour {
+		t.Fatalf("decoded %#v", decoded)
+	}
 }

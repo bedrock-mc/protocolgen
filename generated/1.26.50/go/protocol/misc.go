@@ -1389,7 +1389,7 @@ type FeatureRegistryFeatureBinaryJSONFormat struct {
 // Marshal reads or writes FeatureRegistryFeatureBinaryJSONFormat using its canonical wire layout.
 func (x *FeatureRegistryFeatureBinaryJSONFormat) Marshal(io IO) {
 	io.String(&x.FeatureName)
-	io.Bytes(&x.BinaryJSONOutput)
+	io.ByteSlice(&x.BinaryJSONOutput)
 }
 
 type FloatOverride struct {
@@ -2143,7 +2143,7 @@ type MissingBlobData struct {
 // Marshal reads or writes MissingBlobData using its canonical wire layout.
 func (x *MissingBlobData) Marshal(io IO) {
 	io.Uint64(&x.BlobID)
-	io.Bytes(&x.BlobData)
+	io.ByteSlice(&x.BlobData)
 }
 
 type MoLangVersion int16
@@ -2279,7 +2279,7 @@ func (x *NetworkItemInstanceDescriptorSerializedData) Marshal(io IO) {
 	io.Varuint32(&x.AuxValue)
 	Maximum(io, &x.AuxValue, 32767)
 	io.Varint32(&x.BlockRuntimeID)
-	io.Bytes(&x.UserDataBuffer)
+	io.ByteSlice(&x.UserDataBuffer)
 }
 
 type NetworkItemStackDescriptorSerializedData struct {
@@ -2300,7 +2300,7 @@ func (x *NetworkItemStackDescriptorSerializedData) Marshal(io IO) {
 	Maximum(io, &x.AuxValue, 32767)
 	OptionalFunc(io, &x.NetIDVariant, io.Varint32)
 	io.Varuint32(&x.BlockRuntimeID)
-	io.Bytes(&x.UserDataBuffer)
+	io.ByteSlice(&x.UserDataBuffer)
 }
 
 type NetworkPermissions struct {

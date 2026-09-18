@@ -171,7 +171,13 @@ func (x *CommandOutputData) Marshal(io IO) {
 // CommandOutputMessage represents a message sent by a command that holds the output of one of the commands
 // executed.
 type CommandOutputMessage struct {
-	MessageID  string
+	// Message is the message that is sent to the client in the chat window. It may either be simply a message or
+	// a translated built-in string like 'commands.tp.success.coordinates', combined with specific parameters
+	// below.
+	MessageID string
+	// Success indicates if the output message was one of a successful command execution. If set to true, the
+	// output message is by default coloured white, whereas if set to false, the message is by default coloured
+	// red.
 	Successful bool
 	// Parameters is a list of parameters that serve to supply the message sent with additional information, such
 	// as the position that a player was teleported to or the effect that was applied to an entity. These

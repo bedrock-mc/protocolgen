@@ -12,6 +12,7 @@ import (
 	"protocolgen/internal/domains"
 	"protocolgen/internal/layout"
 	"protocolgen/internal/manifest"
+	"protocolgen/internal/naming"
 	"protocolgen/internal/semantics"
 )
 
@@ -452,7 +453,7 @@ func TestGoNamesUseCommonInitialisms(t *testing.T) {
 			t.Errorf("exportName(%q) = %q, want %q", input, got, want)
 		}
 	}
-	if got := enumVariantName("VALUE_ID"); got != "ValueID" {
+	if got := naming.EnumVariantName("VALUE_ID"); got != "ValueID" {
 		t.Fatalf("enumVariantName initialism = %q, want ValueID", got)
 	}
 }
@@ -471,8 +472,8 @@ func TestEnumVariantNamesAreIdiomaticGo(t *testing.T) {
 		"OSX":                     "OSX",
 		"UWP":                     "UWP",
 	} {
-		if got := enumVariantName(input); got != want {
-			t.Fatalf("enumVariantName(%q) = %q, want %q", input, got, want)
+		if got := naming.EnumVariantName(input); got != want {
+			t.Fatalf("naming.EnumVariantName(%q) = %q, want %q", input, got, want)
 		}
 	}
 }

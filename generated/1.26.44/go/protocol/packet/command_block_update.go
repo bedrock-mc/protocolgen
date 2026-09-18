@@ -22,7 +22,9 @@ type CommandBlockUpdate struct {
 	// FilteredName is a filtered version of Name with all the profanity removed. The client will use this over
 	// Name if this field is not empty and they have the "Filter Profanity" setting enabled.
 	FilteredName string
-	TrackOutput  bool
+	// ShouldTrackOutput specifies if the command block tracks output. If set to false, the output box won't be
+	// shown within the command block.
+	TrackOutput bool
 	// TickDelay is the delay in ticks between executions of a command block, if it is a repeating command block.
 	TickDelay int32
 	// ExecuteOnFirstTick specifies if the command block should execute on the first tick, AKA as soon as the

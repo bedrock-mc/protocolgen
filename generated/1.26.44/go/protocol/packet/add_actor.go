@@ -11,7 +11,12 @@ import (
 // AddActor is sent by the server to the client to spawn an entity to the player. It is used for every entity
 // except other players, for which the AddPlayer packet is used.
 type AddActor struct {
-	TargetActorID   int64
+	// EntityUniqueID is the unique ID of the entity. The unique ID is a value that remains consistent across
+	// different sessions of the same world, but most servers simply fill the runtime ID of the entity out for
+	// this field.
+	TargetActorID int64
+	// EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and
+	// entities are generally identified in packets using this runtime ID.
 	TargetRuntimeID uint64
 	// EntityType is the string entity type of the entity, for example 'minecraft:skeleton'. A list of these
 	// entities may be found online.
@@ -21,10 +26,12 @@ type AddActor struct {
 	Position mgl32.Vec3
 	// Velocity is the initial velocity the entity spawns with. This velocity will initiate client side movement
 	// of the entity.
-	Velocity          mgl32.Vec3
-	Rotation          mgl32.Vec2
-	YHeadRotation     float32
-	YBodyRotation     float32
+	Velocity      mgl32.Vec3
+	Rotation      mgl32.Vec2
+	YHeadRotation float32
+	YBodyRotation float32
+	// Attributes is a slice of attributes that the entity has. It includes attributes such as its health,
+	// movement speed, etc.
 	AttributesList    []protocol.SyncedAttribute
 	ActorData         protocol.SynchedActorDataCopyableDataList
 	SynchedProperties protocol.PropertySyncData

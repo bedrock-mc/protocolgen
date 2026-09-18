@@ -10,6 +10,7 @@ import (
 // or remove them completely. The client will determine how to render the player on the locator bar based on
 // their own distance to Position.
 type PlayerLocation struct {
+	// Type is the action that is being performed. It is one of the constants above.
 	TargetActorID int64
 	Location      protocol.PlayerLocationData
 }

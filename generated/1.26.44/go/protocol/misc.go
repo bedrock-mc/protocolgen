@@ -267,7 +267,9 @@ func (x *BedrockDDUIDataStoreUpdate) Marshal(io IO) {
 	Maximum(io, &x.PathUpdateCount, 4.294967294e+09)
 }
 
+// BellUsedEvent is the event data sent when a bell is used.
 type BellUsed struct {
+	// ItemID ...
 	ItemID int32
 }
 
@@ -417,17 +419,21 @@ const (
 // Marshal reads or writes BossEventUpdateType through its uint8 wire encoding.
 func (x *BossEventUpdateType) Marshal(io IO) { io.Uint8((*uint8)(x)) }
 
+// BossKilledEvent is the event data sent when a boss dies.
 type BossKilled struct {
+	// BossEntityUniqueID ...
 	BossActorID int64
-	PartySize   int32
-	BossType    int32
+	// PlayerPartySize ...
+	PartySize int32
+	// InteractionEntityType ...
+	BossType int32
 }
 
 func (*BossKilled) tagEventData() uint32 { return 7 }
 
 // Marshal reads or writes BossKilled using its canonical wire layout.
 func (x *BossKilled) Marshal(io IO) {
-	io.Varint64(&x.BossActorID)
+	io.ActorUniqueID(&x.BossActorID)
 	io.Varint32(&x.PartySize)
 	io.Varint32(&x.BossType)
 }
@@ -477,10 +483,14 @@ func (x *Cancel) Marshal(io IO) {
 	io.String(&x.ResponseType)
 }
 
+// CauldronUsedEvent is the event data sent when a cauldron is used.
 type CauldronUsed struct {
+	// Colour ...
 	ContentsColor uint32
-	ContentsType  int32
-	FillLevel     int32
+	// PotionID ...
+	ContentsType int32
+	// FillLevel ...
+	FillLevel int32
 }
 
 func (*CauldronUsed) tagEventData() uint32 { return 5 }
@@ -626,7 +636,10 @@ const (
 // Marshal reads or writes CodeBuilderExecutionStateCodeStatus through its uint8 wire encoding.
 func (x *CodeBuilderExecutionStateCodeStatus) Marshal(io IO) { io.Uint8((*uint8)(x)) }
 
+// CodeBuilderRuntimeActionEvent is an event sent by the server when a code builder runtime action is
+// performed.
 type CodeBuilderRuntimeAction struct {
+	// Action ...
 	CodeBuilderRuntimeAction string
 }
 
@@ -1472,7 +1485,7 @@ type FeatureRegistryFeatureBinaryJSONFormat struct {
 // Marshal reads or writes FeatureRegistryFeatureBinaryJSONFormat using its canonical wire layout.
 func (x *FeatureRegistryFeatureBinaryJSONFormat) Marshal(io IO) {
 	io.String(&x.FeatureName)
-	io.Bytes(&x.BinaryJSONOutput)
+	io.ByteSlice(&x.BinaryJSONOutput)
 }
 
 type FloatOverride struct {
@@ -2226,7 +2239,7 @@ type MissingBlobData struct {
 // Marshal reads or writes MissingBlobData using its canonical wire layout.
 func (x *MissingBlobData) Marshal(io IO) {
 	io.Uint64(&x.BlobID)
-	io.Bytes(&x.BlobData)
+	io.ByteSlice(&x.BlobData)
 }
 
 type MoLangVersion int16
@@ -2253,10 +2266,14 @@ const (
 // Marshal reads or writes MoLangVersion through its int16 wire encoding.
 func (x *MoLangVersion) Marshal(io IO) { io.Int16((*int16)(x)) }
 
+// MobBornEvent is the event data sent when a mob is born.
 type MobBorn struct {
-	BornBabyEntityType    int32
+	// EntityType ...
+	BornBabyEntityType int32
+	// Variant ...
 	BornBabyEntityVariant int32
-	BornBabyColor         uint8
+	// Colour ...
+	BornBabyColor uint8
 }
 
 func (*MobBorn) tagEventData() uint32 { return 9 }
@@ -2280,21 +2297,28 @@ const (
 // Marshal reads or writes MobEffectEvent through its uint8 wire encoding.
 func (x *MobEffectEvent) Marshal(io IO) { io.Uint8((*uint8)(x)) }
 
+// MobKilledEvent is the event data sent when a mob is killed.
 type MobKilled struct {
-	InstigatorActorID         int64
-	TargetActorID             int64
+	// KillerEntityUniqueID ...
+	InstigatorActorID int64
+	// VictimEntityUniqueID ...
+	TargetActorID int64
+	// KillerEntityType ...
 	InstigatorSChildActorType ActorType
-	DamageSource              int32
-	TradeTier                 int32
-	TraderName                string
+	// EntityDamageCause ...
+	DamageSource int32
+	// VillagerTradeTier -1 if not a trading actor.
+	TradeTier int32
+	// VillagerDisplayName Empty if not a trading actor.
+	TraderName string
 }
 
 func (*MobKilled) tagEventData() uint32 { return 4 }
 
 // Marshal reads or writes MobKilled using its canonical wire layout.
 func (x *MobKilled) Marshal(io IO) {
-	io.Varint64(&x.InstigatorActorID)
-	io.Varint64(&x.TargetActorID)
+	io.ActorUniqueID(&x.InstigatorActorID)
+	io.ActorUniqueID(&x.TargetActorID)
 	x.InstigatorSChildActorType.Marshal(io)
 	io.Varint32(&x.DamageSource)
 	io.Varint32(&x.TradeTier)
@@ -2362,7 +2386,7 @@ func (x *NetworkItemInstanceDescriptorSerializedData) Marshal(io IO) {
 	io.Varuint32(&x.AuxValue)
 	Maximum(io, &x.AuxValue, 32767)
 	io.Varint32(&x.BlockRuntimeID)
-	io.Bytes(&x.UserDataBuffer)
+	io.ByteSlice(&x.UserDataBuffer)
 }
 
 type NetworkItemStackDescriptorSerializedData struct {
@@ -2383,7 +2407,7 @@ func (x *NetworkItemStackDescriptorSerializedData) Marshal(io IO) {
 	Maximum(io, &x.AuxValue, 32767)
 	OptionalFunc(io, &x.NetIDVariant, io.Varint32)
 	io.Varuint32(&x.BlockRuntimeID)
-	io.Bytes(&x.UserDataBuffer)
+	io.ByteSlice(&x.UserDataBuffer)
 }
 
 type NetworkPermissions struct {
@@ -2571,8 +2595,11 @@ func (x *PortalCreated) Marshal(io IO) {
 	io.Varint32(&x.DimensionID)
 }
 
+// PortalUsedEvent is the event data sent when a portal is used.
 type PortalUsed struct {
+	// FromDimensionID ...
 	SourceDimensionID int32
+	// ToDimensionID ...
 	TargetDimensionID int32
 }
 
@@ -2636,9 +2663,13 @@ func (x *PropertySyncDataPropertySyncIntEntry) Marshal(io IO) {
 	io.Varint32(&x.Data)
 }
 
+// PyramidShape represents a pyramid debug shape.
 type PyramidData struct {
-	Width  float32
-	Depth  Optional[float32]
+	// Width is the width along the X axis of the pyramid base.
+	Width float32
+	// Depth is the optional depth along the Z axis of the pyramid base. It defaults to Width if unset.
+	Depth Optional[float32]
+	// Height is the height of the pyramid.
 	Height float32
 }
 
@@ -2651,10 +2682,14 @@ func (x *PyramidData) Marshal(io IO) {
 	io.Float32(&x.Height)
 }
 
+// RaidUpdateEvent is an event used to update a raids progress client side.
 type RaidUpdate struct {
+	// CurrentRaidWave ...
 	CurrentWave int32
-	TotalWaves  int32
-	Success     bool
+	// TotalRaidWaves ...
+	TotalWaves int32
+	// WonRaid ...
+	Success bool
 }
 
 func (*RaidUpdate) tagEventData() uint32 { return 14 }
@@ -3346,7 +3381,9 @@ func (x *SynchedActorDataCopyableDataList) Marshal(io IO) {
 	Slice(io, &x.Data)
 }
 
+// TargetBlockHitEvent is an event used when a target block is hit by a arrow.
 type TargetBlockHit struct {
+	// RedstoneLevel ...
 	RedstoneLevel int32
 }
 
@@ -3516,7 +3553,7 @@ type UpdateSubChunkNetworkBlockInfo struct {
 // Marshal reads or writes UpdateSubChunkNetworkBlockInfo using its canonical wire layout.
 func (x *UpdateSubChunkNetworkBlockInfo) Marshal(io IO) {
 	x.Pos.Marshal(io)
-	io.ActorRuntimeIDVaruint32(&x.RuntimeID)
+	io.Varuint32(&x.RuntimeID)
 	io.Varuint32(&x.UpdateFlags)
 	io.ActorUniqueIDVaruint64(&x.SyncMessageEntityUniqueID)
 	io.Varuint32(&x.SyncMessageMessage)

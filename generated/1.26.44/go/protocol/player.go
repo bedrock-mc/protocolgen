@@ -68,11 +68,16 @@ func (x *PlayerBlockActionData) Marshal(io IO) {
 	io.Varint32(&x.Facing)
 }
 
+// PlayerDiedEvent is the event data sent when a player dies.
 type PlayerDied struct {
-	InstigatorActorID    int32
+	// AttackerEntityID ...
+	InstigatorActorID int32
+	// AttackerVariant ...
 	InstigatorMobVariant int32
-	DamageSource         int32
-	DiedInRaid           bool
+	// EntityDamageCause ...
+	DamageSource int32
+	// InRaid ...
+	DiedInRaid bool
 }
 
 func (*PlayerDied) tagEventData() uint32 { return 6 }

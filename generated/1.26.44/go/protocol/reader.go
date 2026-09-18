@@ -295,11 +295,11 @@ func (r *Reader) StringLimits(x *string, min, max uint64) {
 	*x = string(r.readN(length))
 }
 
-func (r *Reader) Bytes(x *[]byte) {
-	r.BytesLimits(x, 0, ^uint64(0))
+func (r *Reader) ByteSlice(x *[]byte) {
+	r.ByteSliceLimits(x, 0, ^uint64(0))
 }
 
-func (r *Reader) BytesLimits(x *[]byte, min, max uint64) {
+func (r *Reader) ByteSliceLimits(x *[]byte, min, max uint64) {
 	length, ok := r.readLengthLimits("byte slice", min, max)
 	if !ok {
 		return
@@ -380,7 +380,8 @@ func (r *Reader) Vec3(x *mgl32.Vec3) {
 func (r *Reader) RGBA(x *color.RGBA) {
 	var value uint32
 	r.Uint32(&value)
-	*x = color.RGBA{R: byte(value), G: byte(value >> 8), B: byte(value >> 16), A: byte(value >> 24)}
+	// The wire int is ARGB: blue in the low byte, alpha in the high byte.
+	*x = color.RGBA{R: byte(value >> 16), G: byte(value >> 8), B: byte(value), A: byte(value >> 24)}
 }
 
 func (r *Reader) Bitset(words []uint64, bits uint64) {

@@ -78,7 +78,9 @@ func MarshalAttributeLayerSyncData(io IO, x *AttributeLayerSyncData) {
 
 // EnvironmentAttributeData represents an environment attribute with optional transition data.
 type EnvironmentAttributeData struct {
-	AttributeLayerName      string
+	// AttributeName is the name of the attribute.
+	AttributeLayerName string
+	// Attribute is the current attribute value.
 	AttributeLayerDimension DimensionType
 	Attributes              []EASEnvironmentAttributeData
 }
