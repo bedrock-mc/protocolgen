@@ -9,6 +9,7 @@ import (
 // ChangeMobProperty is a packet sent from the server to the client to change one of the properties of a mob
 // client-side.
 type ChangeMobProperty struct {
+	// EntityUniqueID is the unique ID of the entity whose property is being changed.
 	ActorID int64
 	// Property is the name of the property being updated.
 	PropertyName string

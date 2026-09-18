@@ -13,12 +13,6 @@
       "rationale": "gophertunnel marshals ActorPickRequest.EntityUniqueID with an ActorUniqueID operation."
     },
     {
-      "type_id": "CameraInstructionOptions::AttachToEntityInstruction",
-      "field": "Entity Actor ID",
-      "semantic": "ActorUniqueID",
-      "rationale": "gophertunnel marshals CameraInstructionTarget.EntityUniqueID with an ActorUniqueID operation."
-    },
-    {
       "type_id": "CameraInstructionOptions::TargetInstruction",
       "field": "Target Actor ID",
       "semantic": "ActorUniqueID",

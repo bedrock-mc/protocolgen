@@ -17,7 +17,9 @@ type Respawn struct {
 	Position mgl32.Vec3
 	// State is the 'state' of the respawn. It is one of the constants that may be found above, and the value the
 	// packet contains depends on whether the server or client sends it.
-	State           protocol.PlayerRespawnState
+	State protocol.PlayerRespawnState
+	// EntityRuntimeID is the entity runtime ID of the player that the respawn packet concerns. This is apparently
+	// for the server to recognise which player sends this packet.
 	PlayerRuntimeID uint64
 }
 

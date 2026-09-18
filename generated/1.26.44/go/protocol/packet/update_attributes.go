@@ -9,6 +9,8 @@ import (
 // UpdateAttributes is sent by the server to update an amount of attributes of any entity in the world. These
 // attributes include ones such as the health or the movement speed of the entity.
 type UpdateAttributes struct {
+	// EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and
+	// entities are generally identified in packets using this runtime ID.
 	TargetRuntimeID uint64
 	// Attributes is a slice of new attributes that the entity gets. It includes attributes such as its health,
 	// movement speed, etc. Note that only changed attributes have to be sent in this packet. It is not required

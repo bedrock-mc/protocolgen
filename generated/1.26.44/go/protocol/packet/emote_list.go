@@ -13,6 +13,8 @@ import (
 // this packet is not sent. Under certain circumstances, this packet is also sent from the server to the
 // client, but I was unable to find when this is done.
 type EmoteList struct {
+	// PlayerRuntimeID is the runtime ID of the player that owns the emote pieces below. If sent by the client,
+	// this player runtime ID is always that of the player itself.
 	RuntimeID uint64
 	// EmotePieces is a list of emote pieces that the player with the runtime ID above has.
 	EmotePieceIds []uuid.UUID

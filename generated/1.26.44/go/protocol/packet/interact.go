@@ -13,7 +13,9 @@ import (
 type Interact struct {
 	// Action type is the ID of the action that was executed by the player. It is one of the constants that may be
 	// found above.
-	Action          protocol.InteractAction
+	Action protocol.InteractAction
+	// TargetEntityRuntimeID is the runtime ID of the entity that the player interacted with. This is empty for
+	// the InteractActionOpenInventory action type.
 	TargetRuntimeID uint64
 	// Position associated with the ActionType above. For the InteractActionMouseOverEntity, this is the position
 	// relative to the entity moused over over which the player hovered with its mouse/touch. For the

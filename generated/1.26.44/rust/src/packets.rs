@@ -766,6 +766,9 @@ impl wire::Decode for AddActor {
 /// side. Sending this packet if the client cannot already see this entity will have no effect.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct RemoveActor {
+    /// EntityUniqueID is the unique ID of the entity to be removed. The unique ID is a value that remains
+    /// consistent across different sessions of the same world, but most servers simply fill the runtime ID of the
+    /// entity out for this field.
     pub target_actor_id: ActorUniqueID,
 }
 
@@ -791,7 +794,12 @@ impl wire::Decode for RemoveActor {
 /// entities that cannot be sent using the AddActor packet
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct AddItemActor {
+    /// EntityUniqueID is the unique ID of the entity. The unique ID is a value that remains consistent across
+    /// different sessions of the same world, but most servers simply fill the runtime ID of the entity out for
+    /// this field.
     pub target_actor_id: ActorUniqueID,
+    /// EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and
+    /// entities are generally identified in packets using this runtime ID.
     pub target_runtime_id: ActorRuntimeID,
     /// `item` is the item that is spawned. It must have a valid ID for it to show up client-side. If it is not a
     /// valid item, the client will crash when coming near.
@@ -876,7 +884,11 @@ impl wire::Decode for ServerPlayerPostMovePosition {
 /// disappear to viewers and shows the pick-up animation.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct TakeItemActor {
+    /// ItemEntityRuntimeID is the entity runtime ID of the item that is being taken by another entity. It will
+    /// disappear to viewers after showing the pick-up animation.
     pub item_runtime_id: ActorRuntimeID,
+    /// TakerEntityRuntimeID is the runtime ID of the entity that took the item, which is usually a player, but
+    /// could be another entity like a zombie too.
     pub actor_runtime_id: ActorRuntimeID,
 }
 
@@ -1057,7 +1069,12 @@ impl wire::Decode for UpdateBlock {
 /// entities that cannot be sent using the AddActor packet.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct AddPainting {
+    /// EntityUniqueID is the unique ID of the entity. The unique ID is a value that remains consistent across
+    /// different sessions of the same world, but most servers simply fill the runtime ID of the entity out for
+    /// this field.
     pub target_actor_id: ActorUniqueID,
+    /// EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and
+    /// entities are generally identified in packets using this runtime ID.
     pub target_runtime_id: ActorRuntimeID,
     /// `position` is the position to spawn the entity on. If the entity is on a distance that the player cannot
     /// see it, the entity will still show up if the player moves closer.
@@ -1180,6 +1197,8 @@ impl wire::Decode for BlockEvent {
 /// entity, such as dying.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ActorEvent {
+    /// EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and
+    /// entities are generally identified in packets using this runtime ID.
     pub target_runtime_id: ActorRuntimeID,
     /// EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and
     /// entities are generally identified in packets using this runtime ID.
@@ -1235,6 +1254,8 @@ impl wire::Decode for ActorEvent {
 /// may also be used to modify existing effects, or removing them completely.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct MobEffect {
+    /// EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and
+    /// entities are generally identified in packets using this runtime ID.
     pub target_runtime_id: ActorRuntimeID,
     /// EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and
     /// entities are generally identified in packets using this runtime ID.
@@ -1302,6 +1323,8 @@ impl wire::Decode for MobEffect {
 /// attributes include ones such as the health or the movement speed of the entity.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct UpdateAttributes {
+    /// EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and
+    /// entities are generally identified in packets using this runtime ID.
     pub target_runtime_id: ActorRuntimeID,
     /// Attributes is a slice of new attributes that the entity gets. It includes attributes such as its health,
     /// movement speed, etc. Note that only changed attributes have to be sent in this packet. It is not required
@@ -1410,6 +1433,8 @@ impl wire::Decode for InventoryTransaction {
 /// zombies too.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct MobEquipment {
+    /// EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and
+    /// entities are generally identified in packets using this runtime ID.
     pub target_runtime_id: ActorRuntimeID,
     /// NewItem is the new item held after sending the MobEquipment packet. The entity will be shown holding that
     /// item to the player it was sent to.
@@ -1462,6 +1487,8 @@ impl wire::Decode for MobEquipment {
 /// sent for both players and other entities, such as zombies.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct MobArmorEquipment {
+    /// EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and
+    /// entities are generally identified in packets using this runtime ID.
     pub target_runtime_id: ActorRuntimeID,
     /// Helmet is the equipped helmet of the entity. Items that are not wearable on the head will not be rendered
     /// by the client. Unlike in Java Edition, blocks cannot be worn.
@@ -1518,6 +1545,8 @@ pub struct Interact {
     /// `action` type is the ID of the action that was executed by the player. It is one of the constants that may
     /// be found above.
     pub action: InteractAction,
+    /// TargetEntityRuntimeID is the runtime ID of the entity that the player interacted with. This is empty for
+    /// the InteractActionOpenInventory action type.
     pub target_runtime_id: ActorRuntimeID,
     /// `position` associated with the ActionType above. For the InteractActionMouseOverEntity, this is the
     /// position relative to the entity moused over over which the player hovered with its mouse/touch. For the
@@ -1644,6 +1673,8 @@ impl wire::Decode for ActorPickRequest {
 /// starting the breaking of a block, dropping an item, etc.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PlayerAction {
+    /// EntityRuntimeID is the runtime ID of the player. The runtime ID is unique for each world session, and
+    /// entities are generally identified in packets using this runtime ID.
     pub player_runtime_id: ActorRuntimeID,
     /// EntityRuntimeID is the runtime ID of the player. The runtime ID is unique for each world session, and
     /// entities are generally identified in packets using this runtime ID.
@@ -1734,6 +1765,8 @@ impl wire::Decode for HurtArmor {
 /// if the entity is on fire, but also properties such as the air it has left until it starts drowning.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SetActorData {
+    /// EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and
+    /// entities are generally identified in packets using this runtime ID.
     pub target_runtime_id: ActorRuntimeID,
     /// EntityMetadata is a map of entity metadata, which includes flags and data properties that alter in
     /// particular the way the entity looks. Flags include ones such as 'on fire' and 'sprinting'. The metadata
@@ -1778,6 +1811,8 @@ impl wire::Decode for SetActorData {
 /// in combination with server-side movement calculation.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SetActorMotion {
+    /// EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and
+    /// entities are generally identified in packets using this runtime ID.
     pub target_runtime_id: ActorRuntimeID,
     /// Velocity is the new velocity the entity gets. This velocity will initiate the client-side movement of the
     /// entity.
@@ -1917,6 +1952,8 @@ pub struct Animate {
     /// ActionType is the ID of the animation action to execute. It is one of the action type constants that may
     /// be found above.
     pub action: AnimateAction,
+    /// EntityRuntimeID is the runtime ID of the player that the animation should be played upon. The runtime ID
+    /// is unique for each world session, and entities are generally identified in packets using this runtime ID.
     pub target_actor_runtime_id: ActorRuntimeID,
     /// `data` ...
     pub data: wire::F32LE,
@@ -1976,6 +2013,8 @@ pub struct Respawn {
     /// `state` is the 'state' of the respawn. It is one of the constants that may be found above, and the value
     /// the packet contains depends on whether the server or client sends it.
     pub state: PlayerRespawnState,
+    /// EntityRuntimeID is the entity runtime ID of the player that the respawn packet concerns. This is
+    /// apparently for the server to recognise which player sends this packet.
     pub player_runtime_id: ActorRuntimeID,
 }
 
@@ -2019,6 +2058,8 @@ pub struct ContainerOpen {
     /// actually has a container. If that is not the case, the window will not be opened and the packet will be
     /// ignored, if a valid ContainerEntityUniqueID has not also been provided.
     pub position: BlockPos,
+    /// ContainerEntityUniqueID is the unique ID of the entity container that was opened. It is only used if the
+    /// ContainerType is one that points to an entity, for example a horse.
     pub target_actor_id: ActorUniqueID,
 }
 
@@ -3021,6 +3062,8 @@ impl wire::Decode for ClientboundMapItemData {
 /// inventory of the player. The server should respond with a ClientBoundMapItemData packet.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct MapInfoRequest {
+    /// MapID is the unique identifier that represents the map that is requested over network. It remains
+    /// consistent across sessions.
     pub map_unique_id: ActorUniqueID,
     /// ClientPixels is a slice of pixels sent from the client to notify the server about the pixels that it isn't
     /// aware of.
@@ -3141,7 +3184,11 @@ impl wire::Decode for GameRulesChanged {
 /// client-side.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct Camera {
+    /// CameraEntityUniqueID is the unique ID of the camera entity from which the picture was taken.
     pub camera_id: ActorUniqueID,
+    /// TargetPlayerUniqueID is the unique ID of the target player. The unique ID is a value that remains
+    /// consistent across different sessions of the same world, but most servers simply fill the runtime ID of the
+    /// player out for this field.
     pub target_player_id: ActorUniqueID,
 }
 
@@ -4294,6 +4341,8 @@ impl wire::Decode for BookEdit {
 /// Education Edition, where NPCs are available to use.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct NpcRequest {
+    /// EntityRuntimeID is the runtime ID of the NPC entity that the player interacted with. It is the same as
+    /// sent by the server when spawning the entity.
     pub npc_runtime_id: ActorRuntimeID,
     /// `request_type` is the type of the request, which depends on the permission that the player has. It will be
     /// either a type that indicates that the NPC should show its dialog, or that it should open the editing
@@ -4993,6 +5042,9 @@ pub struct SpawnParticleEffect {
     /// Dimension is the dimension that the particle is spawned in. Its exact usage is not clear, as the dimension
     /// has no direct effect on the particle.
     pub dimension_id: wire::U8,
+    /// EntityUniqueID is the unique ID of the entity that the spawned particle may be attached to. If this ID is
+    /// not -1, the Position below will be interpreted as relative to the position of the entity associated with
+    /// this unique ID.
     pub actor_id: ActorUniqueID,
     /// `position` is the position that the particle should be spawned at. If the position is too far away from
     /// the player, it will not show up. If EntityUniqueID is not -1, the position will be relative to the
@@ -6206,6 +6258,8 @@ pub struct UpdatePlayerGameType {
     /// set_player_game_type.go. Some of these game types require additional flags to be set in an UpdateAbilities
     /// packet for the game mode to obtain its full functionality.
     pub player_game_type: GameType,
+    /// PlayerUniqueID is the entity unique ID of the player that should have its game mode updated. If this
+    /// packet is sent to other clients with the player unique ID of another player, nothing happens.
     pub target_player: ActorUniqueID,
     /// `tick` is the server tick at which the packet was sent. It is used in relation to
     /// CorrectPlayerMovePrediction.
@@ -6242,6 +6296,8 @@ impl wire::Decode for UpdatePlayerGameType {
 /// to the client, but I was unable to find when this is done.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct EmoteList {
+    /// PlayerRuntimeID is the runtime ID of the player that owns the emote pieces below. If sent by the client,
+    /// this player runtime ID is always that of the player itself.
     pub runtime_id: ActorRuntimeID,
     /// EmotePieces is a list of emote pieces that the player with the runtime ID above has.
     pub emote_piece_ids: Vec<uuid::Uuid>,
@@ -6348,6 +6404,7 @@ impl wire::Decode for PositionTrackingDBClientRequest {
 /// normal client in 1.16.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct DebugInfo {
+    /// PlayerUniqueID is the unique ID of the player that the packet is sent to.
     pub actor_id: ActorUniqueID,
     /// `data` is the debug data.
     pub data: bytes::Bytes,
@@ -6422,6 +6479,7 @@ impl wire::Decode for PacketViolationWarning {
 /// enabled.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct MotionPredictionHints {
+    /// EntityRuntimeID is the runtime ID of the entity whose velocity is sent to the client.
     pub m_runtime_id: ActorRuntimeID,
     /// Velocity is the server-calculated velocity of the entity at the point of sending the packet.
     pub m_motion: glam::Vec3,
@@ -7266,6 +7324,7 @@ impl wire::Decode for AgentActionEvent {
 /// client-side.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ChangeMobProperty {
+    /// EntityUniqueID is the unique ID of the entity whose property is being changed.
     pub actor_id: ActorUniqueID,
     /// Property is the name of the property being updated.
     pub property_name: String,
@@ -7933,6 +7992,8 @@ pub struct AgentAnimation {
     /// Animation is the ID of the animation that the agent should perform. As of its implementation, there are no
     /// IDs that can be used in the regular client.
     pub agent_animation: AgentAnimationType,
+    /// EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and
+    /// entities are generally identified in packets using this runtime ID.
     pub runtime_id: ActorRuntimeID,
 }
 
@@ -8410,6 +8471,8 @@ impl wire::Decode for ContainerRegistryCleanup {
 /// client the exact duration of the boost.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct MovementEffect {
+    /// EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and
+    /// entities are generally identified in packets using this runtime ID.
     pub target_runtime_id: ActorRuntimeID,
     /// EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and
     /// entities are generally identified in packets using this runtime ID.

@@ -9,6 +9,8 @@ import (
 // PlayerAction is sent by the client when it executes any action, for example starting to sprint, swim,
 // starting the breaking of a block, dropping an item, etc.
 type PlayerAction struct {
+	// EntityRuntimeID is the runtime ID of the player. The runtime ID is unique for each world session, and
+	// entities are generally identified in packets using this runtime ID.
 	PlayerRuntimeID uint64
 	// EntityRuntimeID is the runtime ID of the player. The runtime ID is unique for each world session, and
 	// entities are generally identified in packets using this runtime ID.

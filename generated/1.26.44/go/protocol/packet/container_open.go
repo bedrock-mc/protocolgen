@@ -20,7 +20,9 @@ type ContainerOpen struct {
 	// ContainerPosition is the position of the container opened. The position must point to a block entity that
 	// actually has a container. If that is not the case, the window will not be opened and the packet will be
 	// ignored, if a valid ContainerEntityUniqueID has not also been provided.
-	Position      protocol.BlockPos
+	Position protocol.BlockPos
+	// ContainerEntityUniqueID is the unique ID of the entity container that was opened. It is only used if the
+	// ContainerType is one that points to an entity, for example a horse.
 	TargetActorID int64
 }
 

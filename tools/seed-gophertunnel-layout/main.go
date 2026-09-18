@@ -888,8 +888,9 @@ func matchFields(owner ownerInfo, source forkType, gap *fieldGap, docOverlay doc
 			}
 		}
 	}
-	// Leftover fields are aligned in wire order where their categories agree,
-	// so a renamed field still takes the fork's name and comment.
+	// Leftover fields are aligned in wire order, but only when every leftover
+	// on both sides pairs up by category; a partial alignment shifts names
+	// onto the wrong fields.
 	if len(matched) < len(owner.Fields) {
 		var left, right []int
 		for i := range owner.Fields {
@@ -902,8 +903,11 @@ func matchFields(owner ownerInfo, source forkType, gap *fieldGap, docOverlay doc
 				right = append(right, j)
 			}
 		}
-		for _, pairIndex := range alignByCategory(owner.Fields, source.Fields, left, right) {
-			matched[pairIndex[0]], usedFork[pairIndex[1]] = pairIndex[1], true
+		pairs := alignByCategory(owner.Fields, source.Fields, left, right)
+		if len(pairs) == len(left) && len(pairs) == len(right) {
+			for _, pairIndex := range pairs {
+				matched[pairIndex[0]], usedFork[pairIndex[1]] = pairIndex[1], true
+			}
 			gap.Positional = true
 		}
 	}
@@ -1058,6 +1062,13 @@ func typeCategory(node manifest.Node) string {
 		return "optional"
 	case manifest.KindMap:
 		return "map"
+	case manifest.KindStruct:
+		// Actor identifiers and input ticks are plain integers in Go.
+		switch node.TypeID {
+		case "ActorUniqueID", "ActorRuntimeID", "PlayerInputTick":
+			return "integer"
+		}
+		return "named"
 	default:
 		return "named"
 	}

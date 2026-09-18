@@ -10,6 +10,8 @@ import (
 // to predict its movement. For example, fireworks used during gliding will send this packet to tell the
 // client the exact duration of the boost.
 type MovementEffect struct {
+	// EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and
+	// entities are generally identified in packets using this runtime ID.
 	TargetRuntimeID uint64
 	// EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and
 	// entities are generally identified in packets using this runtime ID.

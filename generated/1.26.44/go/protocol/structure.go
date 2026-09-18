@@ -72,7 +72,9 @@ type StructureSettings struct {
 	// Offset is the offset position that was set in the structure block. The area exported is offset by this
 	// position.
 	StructureOffset BlockPos
-	LastEditPlayer  int64
+	// LastEditingPlayerUniqueID is the unique ID of the player that last edited the structure block that these
+	// settings concern.
+	LastEditPlayer int64
 	// Rotation is the rotation that the structure block should obtain. See the constants above for available
 	// options.
 	Rotation Rotation

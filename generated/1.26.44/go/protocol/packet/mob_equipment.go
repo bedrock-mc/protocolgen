@@ -10,6 +10,8 @@ import (
 // of the new item that an entity is holding. It is used to show the item in the hand of entities such as
 // zombies too.
 type MobEquipment struct {
+	// EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and
+	// entities are generally identified in packets using this runtime ID.
 	TargetRuntimeID uint64
 	// NewItem is the new item held after sending the MobEquipment packet. The entity will be shown holding that
 	// item to the player it was sent to.

@@ -316,7 +316,7 @@ type CameraInstructionTarget struct {
 
 // Marshal reads or writes CameraInstructionTarget using its canonical wire layout.
 func (x *CameraInstructionTarget) Marshal(io IO) {
-	io.ActorUniqueIDInt64(&x.EntityActorID)
+	io.Int64(&x.EntityActorID)
 }
 
 // CameraInstructionTarget represents a camera instruction that targets a specific entity.

@@ -4395,7 +4395,11 @@ impl wire::Decode for EntityNetId {
 /// EntityLink is a link between two entities, typically being one entity riding another.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct EntityLink {
+    /// RiddenEntityUniqueID is the entity unique ID of the entity that is being ridden. For a player sitting in a
+    /// boat, this is the unique ID of the boat.
     pub target_a: ActorUniqueID,
+    /// RiderEntityUniqueID is the entity unique ID of the entity that is riding. For a player sitting in a boat,
+    /// this is the unique ID of the player.
     pub target_b: ActorUniqueID,
     /// `type_` is one of the types above. It specifies the way the entity is linked to another entity.
     pub type_: ActorLinkType,
@@ -11580,6 +11584,8 @@ pub struct StructureSettings {
     /// Offset is the offset position that was set in the structure block. The area exported is offset by this
     /// position.
     pub structure_offset: BlockPos,
+    /// LastEditingPlayerUniqueID is the unique ID of the player that last edited the structure block that these
+    /// settings concern.
     pub last_edit_player: ActorUniqueID,
     /// `rotation` is the rotation that the structure block should obtain. See the constants above for available
     /// options.

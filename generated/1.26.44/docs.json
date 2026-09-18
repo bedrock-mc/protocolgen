@@ -26,6 +26,11 @@
       "doc": "FireAtPosition is the position in the same world at which the event should fire. If this is not present,\nthe position entity will be used instead."
     },
     {
+      "type_id": "ActorEventPacket",
+      "field": "Target Runtime ID",
+      "doc": "EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and\nentities are generally identified in packets using this runtime ID."
+    },
+    {
       "type_id": "ActorLink",
       "doc": "EntityLink is a link between two entities, typically being one entity riding another."
     },
@@ -38,6 +43,16 @@
       "type_id": "ActorLink",
       "field": "Passenger Initiated",
       "doc": "RiderInitiated specifies if the link was created by the rider, for example the player starting to ride\na horse by itself. This is generally true in vanilla environment for players."
+    },
+    {
+      "type_id": "ActorLink",
+      "field": "Target A",
+      "doc": "RiddenEntityUniqueID is the entity unique ID of the entity that is being ridden. For a player sitting\nin a boat, this is the unique ID of the boat."
+    },
+    {
+      "type_id": "ActorLink",
+      "field": "Target B",
+      "doc": "RiderEntityUniqueID is the entity unique ID of the entity that is riding. For a player sitting in a\nboat, this is the unique ID of the player."
     },
     {
       "type_id": "ActorLink",
@@ -152,6 +167,16 @@
     },
     {
       "type_id": "AddItemActorPacket",
+      "field": "Target Actor ID",
+      "doc": "EntityUniqueID is the unique ID of the entity. The unique ID is a value that remains consistent across\ndifferent sessions of the same world, but most servers simply fill the runtime ID of the entity out for\nthis field."
+    },
+    {
+      "type_id": "AddItemActorPacket",
+      "field": "Target Runtime ID",
+      "doc": "EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and\nentities are generally identified in packets using this runtime ID."
+    },
+    {
+      "type_id": "AddItemActorPacket",
       "field": "Velocity",
       "doc": "Velocity is the initial velocity the entity spawns with. This velocity will initiate client side\nmovement of the entity."
     },
@@ -173,6 +198,16 @@
       "type_id": "AddPaintingPacket",
       "field": "Position",
       "doc": "Position is the position to spawn the entity on. If the entity is on a distance that the player cannot\nsee it, the entity will still show up if the player moves closer."
+    },
+    {
+      "type_id": "AddPaintingPacket",
+      "field": "Target Actor ID",
+      "doc": "EntityUniqueID is the unique ID of the entity. The unique ID is a value that remains consistent across\ndifferent sessions of the same world, but most servers simply fill the runtime ID of the entity out for\nthis field."
+    },
+    {
+      "type_id": "AddPaintingPacket",
+      "field": "Target Runtime ID",
+      "doc": "EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and\nentities are generally identified in packets using this runtime ID."
     },
     {
       "type_id": "AddPlayerPacket",
@@ -325,6 +360,11 @@
       "doc": "Animation is the ID of the animation that the agent should perform. As of its implementation, there are no IDs\nthat can be used in the regular client."
     },
     {
+      "type_id": "AgentAnimationPacket",
+      "field": "Runtime Id",
+      "doc": "EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and\nentities are generally identified in packets using this runtime ID."
+    },
+    {
       "type_id": "AnimateEntityPacket",
       "doc": "AnimateEntity is sent by the server to animate an entity client-side. It may be used to play a single\nanimation, or to activate a controller which can start a sequence of animations based on different\nconditions specified in an animation controller.\nMuch of the documentation of this packet can be found at\nhttps://learn.microsoft.com/en-us/minecraft/creator/reference/content/animationsreference"
     },
@@ -381,6 +421,11 @@
       "type_id": "AnimatePacket",
       "field": "Swing Source",
       "doc": "SwingSource is the source for swing actions. It is one of the action type constants that\nmay be found above."
+    },
+    {
+      "type_id": "AnimatePacket",
+      "field": "Target Actor Runtime ID",
+      "doc": "EntityRuntimeID is the runtime ID of the player that the animation should be played upon. The runtime\nID is unique for each world session, and entities are generally identified in packets using this\nruntime ID."
     },
     {
       "type_id": "AnvilDamagePacket",
@@ -1726,6 +1771,16 @@
       "doc": "Camera is sent by the server to use an Education Edition camera on a player. It produces an image\nclient-side."
     },
     {
+      "type_id": "CameraPacket",
+      "field": "Camera ID",
+      "doc": "CameraEntityUniqueID is the unique ID of the camera entity from which the picture was taken."
+    },
+    {
+      "type_id": "CameraPacket",
+      "field": "Target Player ID",
+      "doc": "TargetPlayerUniqueID is the unique ID of the target player. The unique ID is a value that remains\nconsistent across different sessions of the same world, but most servers simply fill the runtime ID of\nthe player out for this field."
+    },
+    {
       "type_id": "CameraPresets",
       "doc": "CameraPresets gives the client a list of custom camera presets."
     },
@@ -1793,6 +1848,11 @@
     {
       "type_id": "ChangeMobPropertyPacket",
       "doc": "ChangeMobProperty is a packet sent from the server to the client to change one of the properties of a mob client-side."
+    },
+    {
+      "type_id": "ChangeMobPropertyPacket",
+      "field": "Actor Id",
+      "doc": "EntityUniqueID is the unique ID of the entity whose property is being changed."
     },
     {
       "type_id": "ChangeMobPropertyPacket",
@@ -2315,6 +2375,11 @@
       "doc": "ContainerPosition is the position of the container opened. The position must point to a block entity\nthat actually has a container. If that is not the case, the window will not be opened and the packet\nwill be ignored, if a valid ContainerEntityUniqueID has not also been provided."
     },
     {
+      "type_id": "ContainerOpenPacket",
+      "field": "Target Actor ID",
+      "doc": "ContainerEntityUniqueID is the unique ID of the entity container that was opened. It is only used if\nthe ContainerType is one that points to an entity, for example a horse."
+    },
+    {
       "type_id": "ContainerRegistryCleanupPacket",
       "doc": "ContainerRegistryCleanup is sent by the server to trigger a client-side cleanup of the dynamic container\nregistry."
     },
@@ -2529,6 +2594,11 @@
     },
     {
       "type_id": "DebugInfoPacket",
+      "field": "Actor Id",
+      "doc": "PlayerUniqueID is the unique ID of the player that the packet is sent to."
+    },
+    {
+      "type_id": "DebugInfoPacket",
       "field": "Data",
       "doc": "Data is the debug data."
     },
@@ -2710,6 +2780,11 @@
       "type_id": "EmoteListPacket",
       "field": "Emote piece ids",
       "doc": "EmotePieces is a list of emote pieces that the player with the runtime ID above has."
+    },
+    {
+      "type_id": "EmoteListPacket",
+      "field": "Runtime id",
+      "doc": "PlayerRuntimeID is the runtime ID of the player that owns the emote pieces below. If sent by the\nclient, this player runtime ID is always that of the player itself."
     },
     {
       "type_id": "EmotePacket",
@@ -2946,6 +3021,11 @@
       "type_id": "InteractPacket",
       "field": "Position",
       "doc": "Position associated with the ActionType above. For the InteractActionMouseOverEntity, this is the\nposition relative to the entity moused over over which the player hovered with its mouse/touch. For the\nInteractActionLeaveVehicle, this is the position that the player spawns at after leaving the vehicle."
+    },
+    {
+      "type_id": "InteractPacket",
+      "field": "Target Runtime ID",
+      "doc": "TargetEntityRuntimeID is the runtime ID of the entity that the player interacted with. This is empty\nfor the InteractActionOpenInventory action type."
     },
     {
       "type_id": "InventoryAction",
@@ -3694,6 +3774,11 @@
       "doc": "ClientPixels is a slice of pixels sent from the client to notify the server about the pixels that it isn't aware\nof."
     },
     {
+      "type_id": "MapInfoRequestPacket",
+      "field": "Map Unique ID",
+      "doc": "MapID is the unique identifier that represents the map that is requested over network. It remains\nconsistent across sessions."
+    },
+    {
       "type_id": "MapInfoRequestPacketAnon::ClientPixelsProxy",
       "doc": "PixelRequest is the request for the colour of a pixel in a MapInfoRequest packet."
     },
@@ -3756,6 +3841,11 @@
     },
     {
       "type_id": "MobArmorEquipmentPacket",
+      "field": "Target Runtime ID",
+      "doc": "EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and\nentities are generally identified in packets using this runtime ID."
+    },
+    {
+      "type_id": "MobArmorEquipmentPacket",
       "field": "Torso",
       "doc": "Chestplate is the chestplate of the entity. Items that are not wearable as chestplate will not be\nrendered."
     },
@@ -3795,6 +3885,11 @@
     },
     {
       "type_id": "MobEffectPacket",
+      "field": "Target Runtime ID",
+      "doc": "EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and\nentities are generally identified in packets using this runtime ID."
+    },
+    {
+      "type_id": "MobEffectPacket",
       "field": "Tick",
       "doc": "Tick is the server tick at which the packet was sent. It is used in relation to CorrectPlayerMovePrediction."
     },
@@ -3821,6 +3916,11 @@
       "type_id": "MobEquipmentPacket",
       "field": "Slot",
       "doc": "InventorySlot is the slot in the inventory that was held. This is the same as HotBarSlot, and only\nremains for backwards compatibility."
+    },
+    {
+      "type_id": "MobEquipmentPacket",
+      "field": "Target Runtime ID",
+      "doc": "EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and\nentities are generally identified in packets using this runtime ID."
     },
     {
       "type_id": "ModalFormRequestPacket",
@@ -3863,6 +3963,11 @@
       "type_id": "MotionPredictionHintsPacket",
       "field": "mOnGround",
       "doc": "OnGround specifies if the server currently thinks the entity is on the ground."
+    },
+    {
+      "type_id": "MotionPredictionHintsPacket",
+      "field": "mRuntimeId",
+      "doc": "EntityRuntimeID is the runtime ID of the entity whose velocity is sent to the client."
     },
     {
       "type_id": "MoveActorAbsoluteData",
@@ -3971,6 +4076,11 @@
     {
       "type_id": "MovementEffectPacket",
       "field": "Effect ID",
+      "doc": "EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and\nentities are generally identified in packets using this runtime ID."
+    },
+    {
+      "type_id": "MovementEffectPacket",
+      "field": "Target Runtime ID",
       "doc": "EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and\nentities are generally identified in packets using this runtime ID."
     },
     {
@@ -4109,6 +4219,11 @@
       "type_id": "NpcRequestPacket",
       "field": "Actions",
       "doc": "CommandString is the command string set in the NPC. It may consist of multiple commands, depending on\nwhat the player set in it."
+    },
+    {
+      "type_id": "NpcRequestPacket",
+      "field": "NPC Runtime ID",
+      "doc": "EntityRuntimeID is the runtime ID of the NPC entity that the player interacted with. It is the same\nas sent by the server when spawning the entity."
     },
     {
       "type_id": "NpcRequestPacket",
@@ -4304,6 +4419,11 @@
       "type_id": "PlayerActionPacket",
       "field": "Face",
       "doc": "BlockFace is the face of the target block that was touched. If the action with the ActionType set\nconcerned a block. If not, the face is always 0."
+    },
+    {
+      "type_id": "PlayerActionPacket",
+      "field": "Player Runtime ID",
+      "doc": "EntityRuntimeID is the runtime ID of the player. The runtime ID is unique for each world session, and\nentities are generally identified in packets using this runtime ID."
     },
     {
       "type_id": "PlayerActionPacket",
@@ -4652,6 +4772,11 @@
       "doc": "RemoveActor is sent by the server to remove an entity that currently exists in the world from the client-\nside. Sending this packet if the client cannot already see this entity will have no effect."
     },
     {
+      "type_id": "RemoveActorPacket",
+      "field": "Target Actor ID",
+      "doc": "EntityUniqueID is the unique ID of the entity to be removed. The unique ID is a value that remains\nconsistent across different sessions of the same world, but most servers simply fill the runtime ID\nof the entity out for this field."
+    },
+    {
       "type_id": "RemoveObjectivePacket",
       "doc": "RemoveObjective is sent by the server to remove a scoreboard objective. It is used to stop showing a\nscoreboard to a player."
     },
@@ -4871,6 +4996,11 @@
     {
       "type_id": "RespawnPacket",
       "doc": "Respawn is sent by the server to make a player respawn client-side. It is sent in response to a\nPlayerAction packet with ActionType PlayerActionRespawn.\nAs of 1.13, the server sends two of these packets with different states, and the client sends one of these\nback in order to complete the respawn."
+    },
+    {
+      "type_id": "RespawnPacket",
+      "field": "Player Runtime Id",
+      "doc": "EntityRuntimeID is the entity runtime ID of the player that the respawn packet concerns. This is\napparently for the server to recognise which player sends this packet."
     },
     {
       "type_id": "RespawnPacket",
@@ -5293,6 +5423,11 @@
     },
     {
       "type_id": "SetActorDataPacket",
+      "field": "Target Runtime ID",
+      "doc": "EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and\nentities are generally identified in packets using this runtime ID."
+    },
+    {
+      "type_id": "SetActorDataPacket",
       "field": "Tick",
       "doc": "Tick is the server tick at which the packet was sent. It is used in relation to CorrectPlayerMovePrediction."
     },
@@ -5313,6 +5448,11 @@
       "type_id": "SetActorMotionPacket",
       "field": "Motion",
       "doc": "Velocity is the new velocity the entity gets. This velocity will initiate the client-side movement of\nthe entity."
+    },
+    {
+      "type_id": "SetActorMotionPacket",
+      "field": "Target Runtime ID",
+      "doc": "EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and\nentities are generally identified in packets using this runtime ID."
     },
     {
       "type_id": "SetActorMotionPacket",
@@ -5993,6 +6133,11 @@
     },
     {
       "type_id": "SpawnParticleEffectPacket",
+      "field": "Actor Id",
+      "doc": "EntityUniqueID is the unique ID of the entity that the spawned particle may be attached to. If this ID\nis not -1, the Position below will be interpreted as relative to the position of the entity associated\nwith this unique ID."
+    },
+    {
+      "type_id": "SpawnParticleEffectPacket",
       "field": "Dimension Id",
       "doc": "Dimension is the dimension that the particle is spawned in. Its exact usage is not clear, as the\ndimension has no direct effect on the particle."
     },
@@ -6184,6 +6329,11 @@
     },
     {
       "type_id": "StructureSettings",
+      "field": "Last Edit Player",
+      "doc": "LastEditingPlayerUniqueID is the unique ID of the player that last edited the structure block that\nthese settings concern."
+    },
+    {
+      "type_id": "StructureSettings",
       "field": "Mirror",
       "doc": "Mirror specifies the way the structure should be mirrored. It is either no mirror at all, mirror on the\nx/z axis or both."
     },
@@ -6360,6 +6510,16 @@
     {
       "type_id": "TakeItemActorPacket",
       "doc": "TakeItemActor is sent by the server when a player picks up an item entity. It makes the item entity\ndisappear to viewers and shows the pick-up animation."
+    },
+    {
+      "type_id": "TakeItemActorPacket",
+      "field": "Actor Runtime ID",
+      "doc": "TakerEntityRuntimeID is the runtime ID of the entity that took the item, which is usually a player, but\ncould be another entity like a zombie too."
+    },
+    {
+      "type_id": "TakeItemActorPacket",
+      "field": "Item Runtime ID",
+      "doc": "ItemEntityRuntimeID is the entity runtime ID of the item that is being taken by another entity. It will\ndisappear to viewers after showing the pick-up animation."
     },
     {
       "type_id": "TextDataPayload",
@@ -6575,6 +6735,11 @@
     },
     {
       "type_id": "UpdateAttributesPacket",
+      "field": "Target Runtime ID",
+      "doc": "EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and\nentities are generally identified in packets using this runtime ID."
+    },
+    {
+      "type_id": "UpdateAttributesPacket",
       "field": "Tick",
       "doc": "Tick is the server tick at which the packet was sent. It is used in relation to CorrectPlayerMovePrediction."
     },
@@ -6691,6 +6856,11 @@
       "type_id": "UpdatePlayerGameTypePacket",
       "field": "Player Game Type",
       "doc": "GameType is the new game type of the player. It is one of the constants that can be found in\nset_player_game_type.go. Some of these game types require additional flags to be set in an\nUpdateAbilities packet for the game mode to obtain its full functionality."
+    },
+    {
+      "type_id": "UpdatePlayerGameTypePacket",
+      "field": "Target player",
+      "doc": "PlayerUniqueID is the entity unique ID of the player that should have its game mode updated. If this\npacket is sent to other clients with the player unique ID of another player, nothing happens."
     },
     {
       "type_id": "UpdatePlayerGameTypePacket",

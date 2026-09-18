@@ -12,6 +12,8 @@ import (
 // these events are entity-specific, for example a wolf shaking itself dry, but others are used for each
 // entity, such as dying.
 type ActorEvent struct {
+	// EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and
+	// entities are generally identified in packets using this runtime ID.
 	TargetRuntimeID uint64
 	// EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and
 	// entities are generally identified in packets using this runtime ID.
