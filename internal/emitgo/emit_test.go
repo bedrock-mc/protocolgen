@@ -8,6 +8,7 @@ import (
 
 	"protocolgen/internal/docs"
 	"protocolgen/internal/domains"
+	"protocolgen/internal/layout"
 	"protocolgen/internal/manifest"
 )
 
@@ -690,5 +691,49 @@ func TestGeneratePreservesEnumAliases(t *testing.T) {
 		if !strings.Contains(normalized, want) {
 			t.Fatalf("generated Go omits alias declaration %q", want)
 		}
+	}
+}
+
+// A layout overlay moves an enum's constants next to the packet that uses them
+// under the fork's names and renames fields, without changing wire code or the
+// names of nested anonymous types.
+func TestGenerateAppliesLayoutOverlay(t *testing.T) {
+	kind := manifest.Enum("u8", manifest.EnumValue{Value: 0, Name: "Survival"}, manifest.EnumValue{Value: 1, Name: "Creative"})
+	kind.TypeID = "enums/GameType"
+	entry := manifest.Struct(manifest.Field{Ordinal: 0, Name: "Value", Encode: manifest.Primitive("u8"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}})
+	m := manifest.Manifest{
+		SchemaVersion: 2,
+		Target:        manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168},
+		Sources:       []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:layout", MinecraftVersion: "fixture", ProtocolVersion: 2168}},
+		Packets: []manifest.Packet{{ID: 1, Name: "SetPlayerGameTypePacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{
+			{Ordinal: 0, Name: "Game Type", Encode: kind, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+			{Ordinal: 1, Name: "Entries", Encode: manifest.Array(manifest.Primitive("var_u32"), entry), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		}}},
+	}
+	overlay := layout.Overlay{
+		Constants: map[string]layout.Placement{"enums/GameType": {Package: "packet", File: "set_player_game_type", Names: map[string]string{"Creative": "GameTypeCreative"}}},
+		Fields:    map[string]string{layout.FieldKey("SetPlayerGameTypePacket", "Game Type"): "PlayerGameMode", layout.FieldKey("SetPlayerGameTypePacket", "Entries"): "Rows"},
+	}
+	files, err := GenerateWithOptions(m, Options{ProtocolImportPath: "wiregen", NativeTypes: true, EmitPacketRuntime: true, EmitPacketPools: true, Layout: overlay})
+	if err != nil {
+		t.Fatal(err)
+	}
+	packet := files["protocol/packet/set_player_game_type.go"]
+	for _, want := range []string{
+		"PlayerGameMode protocol.GameType",
+		"x.PlayerGameMode.Marshal(io)",
+		"[]protocol.SetPlayerGameTypeRowsItemStruct",
+		"GameTypeCreative protocol.GameType = 1",
+		"GameTypeSurvival protocol.GameType = 0",
+	} {
+		if !strings.Contains(packet, want) {
+			t.Fatalf("layout output omits %q:\n%s", want, packet)
+		}
+	}
+	if strings.Contains(generatedSource(files), "GameTypeCreative GameType = 1") {
+		t.Fatal("relocated constants were also emitted in the protocol package")
+	}
+	if strings.Contains(packet, "GameTypeGameTypeCreative") {
+		t.Fatal("reviewed constant name was prefixed with the enum name")
 	}
 }

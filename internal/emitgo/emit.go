@@ -16,6 +16,7 @@ import (
 
 	"protocolgen/internal/docs"
 	"protocolgen/internal/domains"
+	"protocolgen/internal/layout"
 	"protocolgen/internal/manifest"
 	"protocolgen/internal/naming"
 )
@@ -67,6 +68,8 @@ type generator struct {
 	emitPacketPools    bool
 	domains            domains.Overlay
 	docs               docs.Overlay
+	layout             layout.Overlay
+	packetConstants    map[string][]string // packet file stem -> const blocks relocated there by the layout overlay
 }
 
 //go:embed runtime/codec.go runtime/helpers.go runtime/reader.go runtime/types.go runtime/writer.go
@@ -94,6 +97,7 @@ type Options struct {
 	Naming             naming.Overlay
 	Domains            domains.Overlay
 	Docs               docs.Overlay
+	Layout             layout.Overlay
 	NativeTypes        bool
 	EmitPacketRuntime  bool
 	EmitPacketPools    bool
@@ -140,6 +144,8 @@ func GenerateWithOptions(m manifest.Manifest, options Options) (map[string]strin
 		emitPacketPools:    options.EmitPacketPools,
 		domains:            options.Domains,
 		docs:               options.Docs,
+		layout:             options.Layout,
+		packetConstants:    map[string][]string{},
 	}
 	packets := append([]manifest.Packet(nil), m.Packets...)
 	sort.Slice(packets, func(i, j int) bool { return packets[i].ID < packets[j].ID })
@@ -155,7 +161,7 @@ func GenerateWithOptions(m manifest.Manifest, options Options) (map[string]strin
 			if err := ensureCodecSymmetric(field); err != nil {
 				return nil, fmt.Errorf("packet %s field %s: %w", packet.Name, field.Name, err)
 			}
-			if _, err := g.goType(field.Encode, name+exportName(field.Name)); err != nil {
+			if _, err := g.goType(field.Encode, name+g.fieldName(packet.Name, field.Name)); err != nil {
 				return nil, fmt.Errorf("packet %s field %s: %w", packet.Name, field.Name, err)
 			}
 		}
@@ -538,7 +544,7 @@ func (g *generator) registerStruct(node manifest.Node, hint string) (string, err
 	used := map[string]bool{}
 	var fields []typedField
 	for _, field := range node.Fields {
-		fieldName := uniqueFieldName(exportName(field.Name), used)
+		fieldName := uniqueFieldName(g.fieldName(nodeTypeID(node), field.Name), used)
 		fieldType, err := g.goType(field.Encode, name+fieldName)
 		if err != nil {
 			return "", err
@@ -549,6 +555,14 @@ func (g *generator) registerStruct(node manifest.Node, hint string) (string, err
 	definition.Fields = fields
 	g.definitions[name] = definition
 	return name, nil
+}
+
+// fieldName is the reviewed layout name for a field, else its exported wire name.
+func (g *generator) fieldName(owner, wire string) string {
+	if name := g.layout.FieldName(owner, wire); name != "" {
+		return name
+	}
+	return exportName(wire)
 }
 
 func (g *generator) registerIdentity(node manifest.Node, hint string) (string, error) {
@@ -660,6 +674,19 @@ func (g *generator) emitFiles(m manifest.Manifest, packets []manifest.Packet, pa
 		}
 		packetFiles[name] = source
 	}
+	for stem, blocks := range g.packetConstants {
+		name := stem + ".go"
+		source, exists := packetFiles[name]
+		if !exists {
+			source = fmt.Sprintf("// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\npackage packet\n\nimport %q\n\n", g.protocolImportPath)
+		}
+		source += "\n" + strings.Join(blocks, "\n")
+		formatted, err := formatGoSource(source)
+		if err != nil {
+			return nil, fmt.Errorf("packet constants in %s: %w", name, err)
+		}
+		packetFiles[name] = formatted
+	}
 	for name, source := range packetFiles {
 		files["protocol/packet/"+name] = source
 	}
@@ -750,17 +777,18 @@ func emitDefinitionBody(g *generator, definition typeDefinition) (string, error)
 			return "", err
 		}
 	case manifest.KindEnum:
-		fmt.Fprintf(&b, "type %s %s\n\nconst (\n", definition.Name, definition.Underlying)
-		variantNames := map[string]string{}
-		for _, variant := range definition.Variants {
-			name := enumVariantName(variant.Name)
-			if previous, exists := variantNames[name]; exists {
-				return "", fmt.Errorf("enum %s variants %q and %q both map to %s", definition.Name, previous, variant.Name, name)
-			}
-			variantNames[name] = variant.Name
-			fmt.Fprintf(&b, "\t%s%s %s = %d\n", definition.Name, name, definition.Name, variant.Value)
+		fmt.Fprintf(&b, "type %s %s\n\n", definition.Name, definition.Underlying)
+		placement, placed := g.layout.Constants[definition.TypeID]
+		constants, err := enumConstants(definition, placement)
+		if err != nil {
+			return "", err
 		}
-		b.WriteString(")\n\n")
+		if placed && placement.Package == "packet" {
+			g.packetConstants[placement.File] = append(g.packetConstants[placement.File], constants)
+		} else {
+			b.WriteString(constants)
+			b.WriteString("\n")
+		}
 		method, err := primitiveIOMethod(definition.Primitive)
 		if err != nil {
 			return "", err
@@ -790,6 +818,31 @@ func emitDefinitionBody(g *generator, definition typeDefinition) (string, error)
 	return b.String(), nil
 }
 
+// enumConstants renders an enum's constant block. A layout placement renames
+// variants and, for the packet package, qualifies the enum type.
+func enumConstants(definition typeDefinition, placement layout.Placement) (string, error) {
+	qualifier := ""
+	if placement.Package == "packet" {
+		qualifier = "protocol."
+	}
+	var b strings.Builder
+	b.WriteString("const (\n")
+	used := map[string]string{}
+	for _, variant := range definition.Variants {
+		name := placement.Names[variant.Name]
+		if name == "" {
+			name = definition.Name + enumVariantName(variant.Name)
+		}
+		if previous, exists := used[name]; exists {
+			return "", fmt.Errorf("enum %s variants %q and %q both map to %s", definition.Name, previous, variant.Name, name)
+		}
+		used[name] = variant.Name
+		fmt.Fprintf(&b, "\t%s %s%s = %d\n", name, qualifier, definition.Name, variant.Value)
+	}
+	b.WriteString(")\n")
+	return b.String(), nil
+}
+
 type packetField struct {
 	name     string
 	wireName string
@@ -803,7 +856,7 @@ func (g *generator) emitPacket(packet manifest.Packet, packetName string) (strin
 	used := map[string]bool{}
 	fields := make([]packetField, 0, len(packet.Fields))
 	for _, field := range packet.Fields {
-		baseName := exportName(field.Name)
+		baseName := g.fieldName(packet.Name, field.Name)
 		if g.emitPacketRuntime && baseName == "ID" {
 			// ID is reserved by the generated packet runtime method. Keep the
 			// wire field explicit without making the struct fail to compile.

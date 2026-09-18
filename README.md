@@ -209,6 +209,18 @@ still matches the source content it was written against.
 Both backends add target-language ergonomics on top of the manifest; neither
 infers wire shape from anything but it.
 
+## Laying the tree out like gophertunnel
+
+`make gophertunnel-layout GOPHERTUNNEL_DIR=/path/to/gophertunnel` emits the
+1.26.44 tree into `build/gophertunnel-layout` with each enum's constants
+beside the packet that uses them under the fork's names and with the fork's
+field names, so `diff -r` against the checkout shows real shape gaps rather
+than naming. The reviewed mapping is `generated/1.26.44/gophertunnel-layout.json`
+(seeded by `tools/seed-gophertunnel-layout`, hand-editable) and the remaining
+gaps are listed in `docs/gophertunnel-gap-1.26.44.md`. The overlay is only
+applied when `emit-go -layout` is given; the checked-in generated tree never
+uses it.
+
 ## Cross-checking against independent implementations
 
 - `parity` compares the manifest against an independently generated Axolotl

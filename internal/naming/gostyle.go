@@ -77,3 +77,20 @@ func goCamelWords(value string) []string {
 	}
 	return append(words, string(runes[start:]))
 }
+
+// IsExportedGoIdentifier reports whether value is a valid exported Go identifier.
+func IsExportedGoIdentifier(value string) bool {
+	if value == "" {
+		return false
+	}
+	for index, r := range value {
+		switch {
+		case index == 0 && !unicode.IsUpper(r):
+			return false
+		case r == '_' || unicode.IsLetter(r) || unicode.IsDigit(r):
+		default:
+			return false
+		}
+	}
+	return true
+}
