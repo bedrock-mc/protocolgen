@@ -195,8 +195,9 @@ union paths, and a divergence is reported as the shortest wire path on which
 the languages differ. Only the documented byte-equivalences are normalized;
 width, endianness, varint family, option presence, array prefixes, fixed-array
 scalar counts, and union discriminants stay distinct, while fixed-array wrapper
-grouping is compared by its repeated scalar wire values and a bool-guarded
-field is compared as an optional. A marshal the extractor cannot lower at all
+grouping is compared by its repeated scalar wire values, a bool-guarded
+field is compared as an optional, and a little-endian colour int is the same
+bytes as gophertunnel's channel-swapped big-endian `BEARGB`. A marshal the extractor cannot lower at all
 is `UNRESOLVED` rather than agreement.
 Accepted divergences in `tools/gophertunnel-oracle/accepted-divergences.json`
 require a reason, evidence, settlement criteria, and an exact comparison

@@ -98,6 +98,18 @@ func TestNormalizationPreservesWireShapeDistinctions(t *testing.T) {
 	}
 }
 
+// A little-endian colour int and BEARGB are the same four bytes; a plain
+// big-endian int is not.
+func TestColourIntMatchesBEARGB(t *testing.T) {
+	want := manifestExpr(manifest.Primitive("i32le"))
+	if witness := compareLanguages(want, sourceOperationExpr(sourceOperation{Kind: "primitive", Code: "argb32"})); witness != nil {
+		t.Fatalf("colour did not normalize: %#v", witness)
+	}
+	if compareLanguages(want, sourceOperationExpr(sourceOperation{Kind: "primitive", Code: "i32be"})) == nil {
+		t.Fatal("a plain big-endian int was accepted as a colour")
+	}
+}
+
 // A bool-guarded field and a manifest optional are the same bytes.
 func TestBoolGuardedFieldMatchesManifestOptional(t *testing.T) {
 	want := manifestExpr(manifest.Optional(manifest.Primitive("u16le")))

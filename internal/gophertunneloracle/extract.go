@@ -76,6 +76,7 @@ var sourcePrimitive = map[string]string{
 	"Uint32":                  "u32le",
 	"Int32":                   "i32le",
 	"BEInt32":                 "i32be",
+	"BEARGB":                  "argb32", // channel-swapped big-endian write; same bytes as a little-endian ARGB int
 	"Uint64":                  "u64le",
 	"Int64":                   "i64le",
 	"Float32":                 "f32le",
@@ -124,7 +125,6 @@ var sourceArrayPrefixes = map[string]string{
 // the source revision used by the lock file.
 var reviewedIOHelpers = map[string]bool{
 	"AbilityValue":          true,
-	"BEARGB":                true,
 	"EntityMetadata":        true,
 	"EventOrdinal":          true,
 	"EventType":             true,

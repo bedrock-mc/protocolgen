@@ -102,6 +102,7 @@ type Normalization struct {
 	ByteArrays    string   `json:"byte_arrays"`
 	UUID          string   `json:"uuid"`
 	PreencodedNBT string   `json:"preencoded_nbt"`
+	Colour        string   `json:"colour"`
 	Preserved     []string `json:"preserved_distinctions"`
 }
 

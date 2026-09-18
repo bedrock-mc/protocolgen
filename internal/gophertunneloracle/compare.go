@@ -166,6 +166,7 @@ func defaultNormalization() Normalization {
 		ByteArrays:    "A prefixed array of single u8 elements is equivalent to a byte slice with the same prefix.",
 		UUID:          "UUID is compared as 16 bytes at its wire position; gophertunnel's internal UUID byte ordering is intentionally not validated.",
 		PreencodedNBT: "RawBytes named SerialisedOffers, SerialisedInventoryData, SerialisedEntityIdentifiers, or SerialisedEventData normalize to nbt_le.",
+		Colour:        "A little-endian 32-bit colour int and gophertunnel's BEARGB (channels swapped, then big-endian) are the same four bytes.",
 		Preserved: []string{
 			"integer width",
 			"endianness",
@@ -202,7 +203,9 @@ func canonicalPrimitive(code string) string {
 		return "FIXED16LE"
 	case "i16be", "u16be":
 		return "FIXED16BE"
-	case "i32le", "u32le":
+	case "i32le", "u32le", "argb32":
+		// BEARGB swaps the channels and writes big-endian, which is byte for
+		// byte a little-endian ARGB int.
 		return "FIXED32LE"
 	case "i32be", "u32be":
 		return "FIXED32BE"
