@@ -12,8 +12,8 @@ type PlayerAction struct {
 	// EntityRuntimeID is the runtime ID of the player. The runtime ID is unique for each world session, and
 	// entities are generally identified in packets using this runtime ID.
 	PlayerRuntimeID uint64
-	// EntityRuntimeID is the runtime ID of the player. The runtime ID is unique for each world session, and
-	// entities are generally identified in packets using this runtime ID.
+	// ActionType is the ID of the action that was executed by the player. It is one of the constants that may be
+	// found in protocol/player.go.
 	Action protocol.PlayerActionType
 	// BlockPosition is the position of the target block, if the action with the ActionType set concerned a block.
 	// If that is not the case, the block position will be zero.

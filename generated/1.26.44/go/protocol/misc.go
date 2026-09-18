@@ -676,7 +676,7 @@ const (
 // Marshal reads or writes CodeBuilderStorageQueryOptionsOperation through its uint8 wire encoding.
 func (x *CodeBuilderStorageQueryOptionsOperation) Marshal(io IO) { io.Uint8((*uint8)(x)) }
 
-// ComposterInteractEvent is the event data sent when a composter is interacted with.
+// CauldronInteractEvent is the event data sent when a composter is interacted with.
 type ComposterUsed struct {
 	// BlockInteractionType ...
 	BlockInteractionType MinecraftEventingPOIBlockInteractionType
@@ -2407,7 +2407,7 @@ const (
 // Marshal reads or writes NewInteractionModel through its int32 wire encoding.
 func (x *NewInteractionModel) Marshal(io IO) { io.Varint32((*int32)(x)) }
 
-// CauldronInteractEvent is the event data sent when a cauldron is interacted with.
+// ComposterInteractEvent is the event data sent when a cauldron is interacted with.
 type POICauldronUsed struct {
 	// BlockInteractionType ...
 	BlockInteractionType MinecraftEventingPOIBlockInteractionType

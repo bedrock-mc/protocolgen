@@ -18,8 +18,7 @@ type PlayerAuthInput struct {
 	Position mgl32.Vec3
 	// MoveVector is a Vec2 that specifies the direction in which the player moved, as a combination of X/Z values
 	// which are created using the WASD/controller stick state.
-	MoveVector mgl32.Vec2
-	// Pitch and Yaw hold the rotation that the player reports it has.
+	MoveVector         mgl32.Vec2
 	PlayerHeadRotation float32
 	// InputData is the set of input flags that together specify the way the player moved last tick. It holds the
 	// flags above.
@@ -29,28 +28,20 @@ type PlayerAuthInput struct {
 	InputMode protocol.InputMode
 	// PlayMode specifies the way that the player is playing. The values it holds, which are rather random, may be
 	// found above.
-	PlayMode protocol.ClientPlayMode
-	// InteractionModel is a constant representing the interaction model the player is using. It is one of the
-	// constants that may be found above.
+	PlayMode            protocol.ClientPlayMode
 	NewInteractionModel protocol.NewInteractionModel
 	InteractRotation    mgl32.Vec2
 	ClientTick          uint64
-	// Delta was the delta between the old and the new position. There isn't any practical use for this field as
-	// it can be calculated by the server itself.
-	PosDelta mgl32.Vec3
-	// ItemInteractionData is the transaction data if the InputData includes an item interaction.
-	ItemUseTransaction protocol.Optional[protocol.PackedItemUseLegacyInventoryTransaction]
+	PosDelta            mgl32.Vec3
+	ItemUseTransaction  protocol.Optional[protocol.PackedItemUseLegacyInventoryTransaction]
 	// ItemStackRequest is sent by the client to change an item in their inventory.
-	ItemStackRequest protocol.Optional[protocol.ItemStackRequestData]
-	// BlockActions is a slice of block actions that the client has interacted with.
+	ItemStackRequest   protocol.Optional[protocol.ItemStackRequestData]
 	PlayerBlockActions protocol.Optional[[]protocol.PlayerBlockActionData]
 	// VehicleRotation is the rotation of the vehicle that the player is in, if any.
 	VehicleRotation protocol.Optional[mgl32.Vec2]
 	// ClientPredictedVehicle is the unique ID of the vehicle that the client predicts the player to be in.
 	ClientPredictedVehicle protocol.Optional[int64]
-	// AnalogueMoveVector is a Vec2 that specifies the direction in which the player moved, as a combination of
-	// X/Z values which are created using an analogue input.
-	AnalogMoveVector mgl32.Vec2
+	AnalogMoveVector       mgl32.Vec2
 	// CameraOrientation is the vector that represents the camera's forward direction which can be used to
 	// transform movement to be camera relative.
 	CameraOrientation mgl32.Vec3

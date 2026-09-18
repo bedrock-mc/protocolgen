@@ -11,15 +11,9 @@ import (
 // only the Export structure block type, but in v1.13 the ones present in Java Edition will, according to the
 // wiki, be added too.
 type StructureBlockUpdate struct {
-	// Position is the position of the structure block that is updated.
 	BlockPosition protocol.BlockPos
-	// Settings is a struct of settings that should be used for exporting the structure. These settings are
-	// identical to the last sent in the StructureBlockUpdate packet by the client.
 	StructureData protocol.StructureEditorData
-	// ShouldTrigger specifies if the structure block should be triggered immediately after this packet reaches
-	// the server.
-	Trigger bool
-	// Waterlogged specifies if non-air blocks replace water or combine with water.
+	Trigger       bool
 	IsWaterlogged bool
 }
 

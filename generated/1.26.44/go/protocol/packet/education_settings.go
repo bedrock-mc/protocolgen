@@ -20,14 +20,11 @@ type EducationSettings struct {
 	// DisableLegacyTitleBar ...
 	DisableLegacyTitleBar bool
 	// PostProcessFilter ...
-	PostProcessFilter string
-	// ScreenshotBorderPath ...
+	PostProcessFilter            string
 	ScreenshotBorderResourcePath string
-	// CanModifyBlocks ...
-	AgentCapabilities protocol.Optional[bool]
-	LocalSettings     protocol.EducationLocalLevelSettings
-	// HasQuiz specifies if the world has a quiz connected to it.
-	DeprecatedAlwaysFalse bool
+	AgentCapabilities            protocol.Optional[bool]
+	LocalSettings                protocol.EducationLocalLevelSettings
+	DeprecatedAlwaysFalse        bool
 	// ExternalLinkSettings ...
 	ExternalLinkSettings protocol.Optional[protocol.ExternalLinkSettings]
 }

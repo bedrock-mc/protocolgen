@@ -12,9 +12,8 @@ import (
 // pack in the pack settings UI.
 type ServerboundPackSettingChange struct {
 	// PackID is the UUID of the pack.
-	PackID          uuid.UUID
-	PackSettingName string
-	// PackSetting is the new setting value applied to the pack.
+	PackID           uuid.UUID
+	PackSettingName  string
 	PackSettingValue protocol.ServerboundPackSettingChangePackSettingValue
 }
 

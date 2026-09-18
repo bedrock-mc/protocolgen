@@ -139,7 +139,6 @@ pub struct AttributeData {
     pub current_value: wire::F32LE,
     pub default_min_value: wire::F32LE,
     pub default_max_value: wire::F32LE,
-    /// FloatValue is the float value if Type is AttributeDataTypeFloat.
     pub default_value: wire::F32LE,
     pub name: String,
     pub modifiers: Vec<AttributeModifier>,
@@ -184,7 +183,6 @@ impl wire::Decode for AttributeData {
 #[derive(Clone, Debug, PartialEq)]
 pub enum AttributeLayerSyncData {
     UpdateAttributeLayersData {
-        /// EnvironmentAttributes is the list of environment attributes in this layer.
         attribute_layers: Vec<EASAttributeLayerData>,
     },
     UpdateAttributeLayerSettingsData {
@@ -193,9 +191,7 @@ pub enum AttributeLayerSyncData {
         attributes_layer_settings: EASAttributeLayerSettings,
     },
     UpdateEnvironmentAttributesData {
-        /// AttributeName is the name of the attribute.
         attribute_layer_name: String,
-        /// Attribute is the current attribute value.
         attribute_layer_dimension: DimensionType,
         attributes: Vec<EASEnvironmentAttributeData>,
     },
@@ -836,7 +832,6 @@ impl wire::Decode for BiomeDefinitionChunkGenData {
 /// custom biome.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct BiomeDefinitionData {
-    /// NameIndex represents the index of the biome name in the string list.
     pub id: wire::U16LE,
     /// `temperature` is the temperature of the biome, used for weather, biome behaviours and sky colour.
     pub temperature: wire::F32LE,
@@ -848,7 +843,6 @@ pub struct BiomeDefinitionData {
     pub depth: wire::F32LE,
     /// `scale` is the scale of the biome.
     pub scale: wire::F32LE,
-    /// BiomeID is the biome ID.
     pub map_water_color_argb: wire::I32LE,
     /// `rain` is true if the biome has rain, false if it is a dry biome.
     pub rain: bool,
@@ -856,9 +850,6 @@ pub struct BiomeDefinitionData {
     /// generation and other purposes.
     /// Wire presence: optional value is preceded by a presence marker.
     pub tags: Option<BiomeTagsData>,
-    /// ChunkGeneration is optional information to assist in client-side chunk generation. Almost all servers can
-    /// and should leave this empty to greatly reduce the size of this packet. Only BDS and servers which
-    /// *exactly* match the vanilla chunk generation can benefit from this.
     /// Wire presence: optional value is preceded by a presence marker.
     pub chunk_gen_data: Option<BiomeDefinitionChunkGenData>,
 }
@@ -2394,10 +2385,8 @@ impl wire::Decode for CameraInstructionFade {
 pub struct CameraInstructionFieldOfView {
     /// `field_of_view` is the field of view of the camera.
     pub field_of_view: wire::F32LE,
-    /// EaseTime is the time in seconds that the easing function should take.
     pub fov_ease_time: wire::F32LE,
     pub fov_ease_type: String,
-    /// Clear can be set to true to clear the current instruction.
     pub field_of_view_clear: bool,
 }
 
@@ -3079,9 +3068,7 @@ impl wire::Decode for CameraPresetList {
 /// CameraProgressOption represents a progress keyframe option for camera spline instructions.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CameraProgressOption {
-    /// Value is the progress value.
     pub key_frame_value: wire::F32LE,
-    /// Time is the time for this progress option.
     pub key_frame_time: wire::F32LE,
     pub key_frame_easing_func: String,
 }
@@ -3134,9 +3121,7 @@ impl wire::Decode for CameraRotation {
 /// CameraRotationOption represents a rotation option for camera spline instructions.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CameraRotationOption {
-    /// Value is the rotation value.
     pub key_frame_value: glam::Vec3,
-    /// Time is the time for this rotation option.
     pub key_frame_time: wire::F32LE,
     pub key_frame_easing_func: String,
 }
@@ -3243,7 +3228,6 @@ pub struct CameraSplineInstruction {
     pub curve: Vec<glam::Vec3>,
     /// `progress_key_frames` is a list of progress key frames for the spline.
     pub progress_key_frames: Vec<CameraProgressOption>,
-    /// RotationOptions is a list of rotation options for the spline.
     pub rotation_option: Vec<CameraRotationOption>,
     /// `spline_identifier` is an optional identifier for referencing the spline by name.
     pub spline_identifier: String,
@@ -3847,9 +3831,6 @@ pub struct CommandOriginData {
     /// is especially important for websocket servers and it seems that this field is only non-empty for these
     /// websocket servers.
     pub request_id: String,
-    /// Origin is one of the values above that specifies the origin of the command. The origin may change,
-    /// depending on what part of the client actually called the command. The command may be issued by a websocket
-    /// server, for example.
     pub player_id: wire::I64LE,
 }
 
@@ -3928,9 +3909,6 @@ impl wire::Decode for CommandOutputData {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CommandOutputMessage {
     pub message_id: String,
-    /// Success indicates if the output message was one of a successful command execution. If set to true, the
-    /// output message is by default coloured white, whereas if set to false, the message is by default coloured
-    /// red.
     pub successful: bool,
     /// `parameters` is a list of parameters that serve to supply the message sent with additional information,
     /// such as the position that a player was teleported to or the effect that was applied to an entity. These
@@ -4232,13 +4210,10 @@ pub struct EducationLevelSettings {
     pub disable_legacy_title_bar: bool,
     /// `post_process_filter` ...
     pub post_process_filter: String,
-    /// ScreenshotBorderPath ...
     pub screenshot_border_resource_path: String,
-    /// CanModifyBlocks ...
     /// Wire presence: optional value is preceded by a presence marker.
     pub agent_capabilities: Option<bool>,
     pub local_settings: EducationLocalLevelSettings,
-    /// HasQuiz specifies if the world has a quiz connected to it.
     pub deprecated_always_false: bool,
     /// `external_link_settings` ...
     /// Wire presence: optional value is preceded by a presence marker.
@@ -5840,13 +5815,8 @@ impl wire::Decode for SetScoreInfoItem {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct InventoryAction {
     pub source: InventorySource,
-    /// SourceType is the source type of the inventory action. It is one of the constants above.
     pub slot: wire::VarUInt,
-    /// OldItem is the item that was present in the slot before the inventory action. It should be checked by the
-    /// server to ensure the inventories were not out of sync.
     pub from_item: NetworkItemStackDescriptorSerializedData,
-    /// NewItem is the new item that was put in the InventorySlot that the OldItem was in. It must be checked in
-    /// combination with other inventory actions to ensure that the transaction is balanced.
     pub to_item: NetworkItemStackDescriptorSerializedData,
 }
 
@@ -6112,9 +6082,6 @@ impl wire::Decode for ItemEnchants {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ItemInstance {
     pub item_descriptor: ItemDescriptor,
-    /// StackNetworkID is the network ID of the item stack. If the stack is empty, 0 is always written for this
-    /// field. If not, the field should be set to 1 if the server authoritative inventories are disabled in the
-    /// StartGame packet, or to a unique stack ID if it is enabled.
     pub stack_size: wire::U16LE,
     pub block_runtime_id: wire::VarUInt,
     pub user_data_buffer: bytes::Bytes,
@@ -6221,22 +6188,16 @@ pub enum ItemDescriptor {
     },
     ItemNameDescriptorData {
         descriptor_type: ItemDescriptorType,
-        /// Name is the identifier of the item, such as minecraft:stone.
         full_name: String,
-        /// MetadataValue is the metadata value of the item. For some items, this is the damage value, whereas for
-        /// other items it is simply an identifier of a variant of the item.
         aux_value: wire::ZigZag32,
     },
     MolangItemDescriptorData {
         descriptor_type: ItemDescriptorType,
-        /// Expression represents the MoLang expression used to identify the item/it's associated tag.
         tag_expression: String,
-        /// Version represents the version of MoLang to use.
         molang_version: MoLangVersion,
     },
     ItemTagDescriptorData {
         descriptor_type: ItemDescriptorType,
-        /// Tag represents the tag that the item is part of.
         item_tag: String,
     },
 }
@@ -6347,7 +6308,6 @@ pub enum StackRequestAction {
         destination: StackRequestSlotInfo,
     },
     DropActionData {
-        /// Count is the count of the item in the source slot that was taken towards the destination slot.
         action_type: ItemStackRequestActionType,
         amount: wire::U8,
         /// `source` is the source slot from which items were dropped to the ground.
@@ -6357,7 +6317,6 @@ pub enum StackRequestAction {
         randomly: bool,
     },
     DestroyActionData {
-        /// Count is the count of the item in the source slot that was destroyed.
         action_type: ItemStackRequestActionType,
         amount: wire::U8,
         /// `source` is the source slot from which items came that were destroyed by moving them into the creative
@@ -6370,8 +6329,6 @@ pub enum StackRequestAction {
         source: StackRequestSlotInfo,
     },
     CreateActionData {
-        /// ResultsSlot is the slot in the inventory in which the results of the crafting ingredients are to be
-        /// placed.
         action_type: ItemStackRequestActionType,
         results_index: wire::U8,
     },
@@ -6379,61 +6336,38 @@ pub enum StackRequestAction {
         action_type: ItemStackRequestActionType,
     },
     BeaconPaymentActionData {
-        /// PrimaryEffect and SecondaryEffect are the effects that were selected from the beacon.
         action_type: ItemStackRequestActionType,
-        /// PrimaryEffect and SecondaryEffect are the effects that were selected from the beacon.
         primary_effect_id: wire::ZigZag32,
         secondary_effect_id: wire::ZigZag32,
     },
     MineBlockActionData {
-        /// HotbarSlot is the slot held by the player while mining a block.
         action_type: ItemStackRequestActionType,
-        /// StackNetworkID is the unique stack ID that the client assumes to be present at the time. The server must
-        /// check if these IDs match. If they do not match, servers should reject the stack request that the action
-        /// holding this info was in.
         slot: wire::ZigZag32,
         /// `predicted_durability` is the durability of the item that the client assumes to be present at the time.
         predicted_durability: wire::ZigZag32,
         net_id_variant: wire::I32LE,
     },
     CraftRecipeActionData {
-        /// RecipeNetworkID is the network ID of the recipe that is about to be crafted. This network ID matches one
-        /// of the recipes sent in the CraftingData packet, where each of the recipes have a RecipeNetworkID as of
-        /// 1.16.
         action_type: ItemStackRequestActionType,
         recipe_net_id: RecipeNetID,
-        /// NumberOfCrafts is how many times the recipe was crafted. This field appears to be boilerplate and has no
-        /// effect.
         number_of_requested_crafts: wire::U8,
     },
     CraftRecipeAutoActionData {
-        /// RecipeNetworkID is the network ID of the recipe that is about to be crafted. This network ID matches one
-        /// of the recipes sent in the CraftingData packet, where each of the recipes have a RecipeNetworkID as of
-        /// 1.16.
         action_type: ItemStackRequestActionType,
         recipe_net_id: RecipeNetID,
-        /// NumberOfCrafts is how many times the recipe was crafted.
         number_of_requested_crafts: wire::U8,
         /// `ingredients` is a slice of ItemDescriptorCount that contains the ingredients that were used to craft the
         /// recipe. It is not exactly clear what this is used for, but it is sent by the vanilla client.
         ingredients: Vec<RecipeIngredient>,
     },
     CraftCreativeActionData {
-        /// CreativeItemNetworkID is the network ID of the creative item that is being created. This is one of the
-        /// creative item network IDs sent in the CreativeContent packet.
         action_type: ItemStackRequestActionType,
-        /// NumberOfCrafts is how many times the recipe was crafted. This field appears to be boilerplate and has no
-        /// effect.
         creative_item_net_id: wire::VarUInt,
         number_of_requested_crafts: wire::U8,
     },
     CraftRecipeOptionalActionData {
-        /// RecipeNetworkID is the network ID of the multi-recipe that is about to be crafted. This network ID matches
-        /// one of the multi-recipes sent in the CraftingData packet, where each of the recipes have a RecipeNetworkID
-        /// as of 1.16.
         action_type: ItemStackRequestActionType,
         recipe_net_id: RecipeNetID,
-        /// FilterStringIndex is the index of a filter string sent in a ItemStackRequest.
         filtered_string_index: wire::I32LE,
     },
     CraftRepairAndDisenchantActionData {
@@ -6772,10 +6706,7 @@ pub struct ItemStackRequestData {
     /// `actions` is a list of actions performed by the client. The actual type of the actions depends on which ID
     /// was present, and is one of the concrete types below.
     pub actions: Vec<StackRequestAction>,
-    /// FilterStrings is a list of filter strings involved in the request. This is typically filled with one
-    /// string when an anvil or cartography is used.
     pub strings_to_filter: Vec<String>,
-    /// FilterCause represents the cause of any potential filtering. This is one of the constants above.
     pub strings_to_filter_origin: TextProcessingEventOrigin,
 }
 
@@ -6877,9 +6808,6 @@ impl wire::Decode for ItemStackResponseContainerInfo {
 /// ItemStackResponse is a response to an individual ItemStackRequest.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ItemStackResponseInfo {
-    /// Status specifies if the request with the RequestID below was successful. If this is the case, the
-    /// ContainerInfo below will have information on what slots ended up changing. If not, the container info will
-    /// be empty. A non-0 status means an error occurred and will result in the action being reverted.
     pub result: ItemStackNetResult,
     pub client_request_id: ItemStackRequestID,
     /// Wire presence: optional value is preceded by a presence marker.
@@ -8604,8 +8532,6 @@ pub struct MoveActorAbsoluteData {
     /// EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and
     /// entities are generally identified in packets using this runtime ID.
     pub actor_runtime_id: ActorRuntimeID,
-    /// Flags is a combination of flags that specify details of the movement. It is a combination of the flags
-    /// above.
     pub header: wire::U8,
     /// `position` is the position to spawn the entity on. If the entity is on a distance that the player cannot
     /// see it, the entity will still show up if the player moves closer.
@@ -8653,7 +8579,6 @@ pub struct MoveActorDeltaData {
     /// EntityRuntimeID is the runtime ID of the entity that is being moved. The packet works provided a
     /// non-player entity with this runtime ID is present.
     pub actor_runtime_id: ActorRuntimeID,
-    /// Position is the new position that the entity was moved to.
     /// Wire presence: optional value is preceded by a presence marker.
     pub new_position_x: Option<wire::F32LE>,
     /// Wire presence: optional value is preceded by a presence marker.
@@ -8668,7 +8593,6 @@ pub struct MoveActorDeltaData {
     pub rotation_y: Option<wire::I8>,
     /// Wire presence: optional value is preceded by a presence marker.
     pub rotation_y_head: Option<wire::I8>,
-    /// OnGround specifies whether the entity is on the ground after applying the update.
     pub is_on_ground: bool,
     /// `force_move` specifies whether the client should snap the entity to its new position without
     /// interpolation.
@@ -10650,8 +10574,6 @@ impl wire::Decode for PositionTrackingId {
 /// MultiRecipe serves as an 'enable' switch for multi-shape recipes.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct MultiRecipe {
-    /// UUID is a UUID identifying the recipe. Since the CraftingEvent packet no longer exists, this can always be
-    /// empty.
     pub multi_recipe_uuid: uuid::Uuid,
     pub net_id: RecipeNetID,
 }
@@ -10793,16 +10715,11 @@ pub struct ShapedRecipe {
     pub width: wire::ZigZag32,
     /// `height` is the height of the recipe's shape.
     pub height: wire::ZigZag32,
-    /// Input is a list of items that serve as the input of the shapeless recipe. These items are the items
-    /// required to craft the output. The amount of input items must be exactly equal to Width * Height.
     pub ingredients: Vec<RecipeIngredientSerializedData>,
-    /// Output is a list of items that are created as a result of crafting the recipe.
     pub results: Vec<NetworkItemInstanceDescriptorSerializedData>,
     /// `uuid` is a UUID identifying the recipe. Since the CraftingEvent packet no longer exists, this can always
     /// be empty.
     pub uuid: uuid::Uuid,
-    /// Block is the block name that is required to craft the output of the recipe. The block is not prefixed with
-    /// 'minecraft:', so it will look like 'crafting_table' as an example.
     pub tag: String,
     /// `priority` ...
     pub priority: wire::ZigZag32,
@@ -10878,17 +10795,11 @@ pub struct ShapelessRecipe {
     /// `recipe_id` is a unique ID of the recipe. This ID must be unique amongst all other types of recipes too,
     /// but its functionality is not exactly known.
     pub recipe_id: String,
-    /// Input is a list of items that serve as the input of the shapeless recipe. These items are the items
-    /// required to craft the output.
     pub ingredients: Vec<RecipeIngredientSerializedData>,
-    /// Output is a list of items that are created as a result of crafting the recipe.
     pub results: Vec<NetworkItemInstanceDescriptorSerializedData>,
     /// `uuid` is a UUID identifying the recipe. Since the CraftingEvent packet no longer exists, this can always
     /// be empty.
     pub uuid: uuid::Uuid,
-    /// Block is the block name that is required to craft the output of the recipe. The block is not prefixed with
-    /// 'minecraft:', so it will look like 'crafting_table' as an example. The available blocks are: -
-    /// crafting_table - cartography_table - stonecutter - furnace - blast_furnace - smoker - campfire
     pub tag: String,
     /// `priority` ...
     pub priority: wire::ZigZag32,
@@ -10952,16 +10863,11 @@ pub struct SmithingTransformRecipe {
     /// `recipe_id` is a unique ID of the recipe. This ID must be unique amongst all other types of recipes too,
     /// but its functionality is not exactly known.
     pub recipe_id: String,
-    /// Template is the item that is used to shape the Base item based on the Addition being applied.
     pub template_ingredient: RecipeIngredientSerializedData,
-    /// Base is the item that the Addition is being applied to in the smithing table.
     pub base_ingredient: RecipeIngredientSerializedData,
-    /// Addition is the item that is being added to the Base item to result in a modified item.
     pub addition_ingredient: RecipeIngredientSerializedData,
     /// `result` is the resulting item from the two items being added together.
     pub result: NetworkItemInstanceDescriptorSerializedData,
-    /// Block is the block name that is required to create the output of the recipe. The block is not prefixed
-    /// with 'minecraft:', so it will look like 'smithing_table' as an example.
     pub tag: String,
     pub net_id: RecipeNetID,
 }
@@ -11006,14 +10912,9 @@ pub struct SmithingTrimRecipe {
     /// `recipe_id` is a unique ID of the recipe. This ID must be unique amongst all other types of recipes too,
     /// but its functionality is not exactly known.
     pub recipe_id: String,
-    /// Template is the item that is used to shape the Base item based on the Addition being applied.
     pub template_ingredient: RecipeIngredientSerializedData,
-    /// Base is the item that the Addition is being applied to in the smithing table.
     pub base_ingredient: RecipeIngredientSerializedData,
-    /// Addition is the item that is being added to the Base item to result in a modified item.
     pub addition_ingredient: RecipeIngredientSerializedData,
-    /// Block is the block name that is required to create the output of the recipe. The block is not prefixed
-    /// with 'minecraft:', so it will look like 'smithing_table' as an example.
     pub tag: String,
     pub net_id: RecipeNetID,
 }
@@ -12272,14 +12173,8 @@ impl wire::Decode for WaypointGroupWaypointHandle {
 /// dimensions. These include the range (the height min/max), generator variant, and more.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct DimensionDefinition {
-    /// MinimumY is the lowest Y coordinate that exists in the dimension.
     pub height_maximum: wire::ZigZag32,
-    /// HeightRange is the number of blocks above MinimumY that exist in the dimension, so that the highest Y
-    /// coordinate in the dimension is MinimumY + HeightRange.
     pub height_minimum: wire::ZigZag32,
-    /// Generator is the variant of generator that exists in the provided dimension. These can be one of the
-    /// constants defined above. If this is set to GeneratorLegacy, the legacy horizontal world limits will be
-    /// enforced.
     pub generator_type: GeneratorType,
     /// `dimension_type` is the numeric identifier of the dimension. This cannot override a vanilla dimension
     /// (0-2), but custom dimensions should start from 1000 like vanilla.

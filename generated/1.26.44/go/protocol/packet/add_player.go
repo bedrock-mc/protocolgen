@@ -15,9 +15,7 @@ type AddPlayer struct {
 	// UUID is the UUID of the player. It is the same UUID that the client sent in the Login packet at the start
 	// of the session. A player with this UUID must exist in the player list (built up using the PlayerList
 	// packet), for it to show up in-game.
-	UUID uuid.UUID
-	// Username is the name of the player. This username is the username that will be set as the initial name tag
-	// of the player.
+	UUID            uuid.UUID
 	PlayerName      string
 	TargetRuntimeID uint64
 	// PlatformChatID is an identifier only set for particular platforms when chatting (presumably only for
@@ -29,27 +27,14 @@ type AddPlayer struct {
 	Position mgl32.Vec3
 	// Velocity is the initial velocity the player spawns with. This velocity will initiate client side movement
 	// of the player.
-	Velocity mgl32.Vec3
-	Rotation mgl32.Vec2
-	// Pitch is the vertical rotation of the player. Facing straight forward yields a pitch of 0. Pitch is
-	// measured in degrees.
-	YHeadRotation float32
-	// HeldItem is the item that the player is holding. The item is shown to the viewer as soon as the player
-	// itself shows up. Needless to say that this field is rather pointless, as additional packets still must be
-	// sent for armour to show up.
-	CarriedItem protocol.NetworkItemStackDescriptorSerializedData
-	// GameType is the game type of the player. If set to GameTypeSpectator, the player will not be shown to
-	// viewers.
-	PlayerGameType protocol.GameType
-	// EntityMetadata is a map of entity metadata, which includes flags and data properties that alter in
-	// particular the way the player looks. Flags include ones such as 'on fire' and 'sprinting'. The metadata
-	// values are indexed by their property key.
-	EntityData protocol.SynchedActorDataCopyableDataList
-	// EntityProperties is a list of properties that the entity inhibits. These properties define and alter
-	// specific attributes of the entity.
+	Velocity          mgl32.Vec3
+	Rotation          mgl32.Vec2
+	YHeadRotation     float32
+	CarriedItem       protocol.NetworkItemStackDescriptorSerializedData
+	PlayerGameType    protocol.GameType
+	EntityData        protocol.SynchedActorDataCopyableDataList
 	SynchedProperties protocol.PropertySyncData
-	// AbilityData represents various data about the abilities of a player, such as ability layers or permissions.
-	AbilitiesData protocol.SerializedAbilitiesData
+	AbilitiesData     protocol.SerializedAbilitiesData
 	// EntityLinks is a list of entity links that are currently active on the player. These links alter the way
 	// the player shows up when first spawned in terms of it shown as riding an entity. Setting these links is
 	// important for new viewers to see the player is riding another entity.

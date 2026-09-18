@@ -18,11 +18,9 @@ type GraphicsOverrideParameter struct {
 	// BiomeIdentifier is the identifier of the biome for which the parameters apply.
 	BiomeIdentifier string
 	// PlayerIdentifier is the optional identifier of the player for which the override parameter applies.
-	PlayerIdentifier protocol.Optional[string]
-	// ParameterType is the type of parameter being overridden.
+	PlayerIdentifier       protocol.Optional[string]
 	IdentifierForParameter protocol.GraphicsOverrideParameterType
-	// Reset indicates whether to reset the parameters.
-	ResetParameter bool
+	ResetParameter         bool
 }
 
 // ID ...

@@ -10,14 +10,11 @@ import (
 type AddVolumeEntity struct {
 	EntityNetworkID protocol.EntityNetID
 	Components      []byte
-	// EncodingIdentifier is the unique identifier for the volume. It must be of the form 'namespace:name', where
-	// namespace cannot be 'minecraft'.
-	JSONIdentifier string
-	// InstanceIdentifier is the identifier of a fog definition.
-	InstanceName  string
-	MinBounds     protocol.BlockPos
-	MaxBounds     protocol.BlockPos
-	DimensionType protocol.DimensionType
+	JSONIdentifier  string
+	InstanceName    string
+	MinBounds       protocol.BlockPos
+	MaxBounds       protocol.BlockPos
+	DimensionType   protocol.DimensionType
 	// EngineVersion is the engine version the entity is using, for example, '1.17.0'.
 	EngineVersion string
 }

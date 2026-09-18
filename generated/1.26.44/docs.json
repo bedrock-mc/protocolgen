@@ -13,12 +13,12 @@
     {
       "type_id": "ActorEventPacket",
       "field": "Data",
-      "doc": "EventType is the ID of the event to be called. It is one of the constants that can be found above."
+      "doc": "EventData is optional data associated with a particular event. The data has a different function for\ndifferent events, however most events don't use this field at all."
     },
     {
       "type_id": "ActorEventPacket",
       "field": "Event ID",
-      "doc": "EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and\nentities are generally identified in packets using this runtime ID."
+      "doc": "EventType is the ID of the event to be called. It is one of the constants that can be found above."
     },
     {
       "type_id": "ActorEventPacket",
@@ -89,11 +89,6 @@
     },
     {
       "type_id": "AddActorPacket",
-      "field": "Actor Data",
-      "doc": "EntityMetadata is a map of entity metadata, which includes flags and data properties that alter in\nparticular the way the entity looks. Flags include ones such as 'on fire' and 'sprinting'.\nThe metadata values are indexed by their property key."
-    },
-    {
-      "type_id": "AddActorPacket",
       "field": "Actor Links",
       "doc": "EntityLinks is a list of entity links that are currently active on the entity. These links alter the\nway the entity shows up when first spawned in terms of it shown as riding an entity. Setting these\nlinks is important for new viewers to see the entity is riding another entity."
     },
@@ -104,33 +99,13 @@
     },
     {
       "type_id": "AddActorPacket",
-      "field": "Attributes List",
-      "doc": "Attributes is a slice of attributes that the entity has. It includes attributes such as its health,\nmovement speed, etc."
-    },
-    {
-      "type_id": "AddActorPacket",
       "field": "Position",
       "doc": "Position is the position to spawn the entity on. If the entity is on a distance that the player cannot\nsee it, the entity will still show up if the player moves closer."
     },
     {
       "type_id": "AddActorPacket",
-      "field": "Synched Properties",
-      "doc": "EntityProperties is a list of properties that the entity inhibits. These properties define and alter specific\nattributes of the entity."
-    },
-    {
-      "type_id": "AddActorPacket",
       "field": "Velocity",
       "doc": "Velocity is the initial velocity the entity spawns with. This velocity will initiate client side\nmovement of the entity."
-    },
-    {
-      "type_id": "AddActorPacket",
-      "field": "Y Body Rotation",
-      "doc": "Yaw is the horizontal rotation of the entity. Yaw is also measured in degrees."
-    },
-    {
-      "type_id": "AddActorPacket",
-      "field": "Y Head Rotation",
-      "doc": "Pitch is the vertical rotation of the entity. Facing straight forward yields a pitch of 0. Pitch is\nmeasured in degrees."
     },
     {
       "type_id": "AddBehaviorTreePacket",
@@ -215,11 +190,6 @@
     },
     {
       "type_id": "AddPlayerPacket",
-      "field": "Abilities Data",
-      "doc": "AbilityData represents various data about the abilities of a player, such as ability layers or permissions."
-    },
-    {
-      "type_id": "AddPlayerPacket",
       "field": "Actor Links",
       "doc": "EntityLinks is a list of entity links that are currently active on the player. These links alter the\nway the player shows up when first spawned in terms of it shown as riding an entity. Setting these\nlinks is important for new viewers to see the player is riding another entity."
     },
@@ -230,18 +200,8 @@
     },
     {
       "type_id": "AddPlayerPacket",
-      "field": "Carried Item",
-      "doc": "HeldItem is the item that the player is holding. The item is shown to the viewer as soon as the player\nitself shows up. Needless to say that this field is rather pointless, as additional packets still must\nbe sent for armour to show up."
-    },
-    {
-      "type_id": "AddPlayerPacket",
       "field": "Device Id",
       "doc": "DeviceID is the device ID set in one of the files found in the storage of the device of the player. It\nmay be changed freely, so it should not be relied on for anything."
-    },
-    {
-      "type_id": "AddPlayerPacket",
-      "field": "Entity Data",
-      "doc": "EntityMetadata is a map of entity metadata, which includes flags and data properties that alter in\nparticular the way the player looks. Flags include ones such as 'on fire' and 'sprinting'.\nThe metadata values are indexed by their property key."
     },
     {
       "type_id": "AddPlayerPacket",
@@ -250,23 +210,8 @@
     },
     {
       "type_id": "AddPlayerPacket",
-      "field": "Player Game Type",
-      "doc": "GameType is the game type of the player. If set to GameTypeSpectator, the player will not be shown to viewers."
-    },
-    {
-      "type_id": "AddPlayerPacket",
-      "field": "Player Name",
-      "doc": "Username is the name of the player. This username is the username that will be set as the initial\nname tag of the player."
-    },
-    {
-      "type_id": "AddPlayerPacket",
       "field": "Position",
       "doc": "Position is the position to spawn the player on. If the player is on a distance that the viewer cannot\nsee it, the player will still show up if the viewer moves closer."
-    },
-    {
-      "type_id": "AddPlayerPacket",
-      "field": "Synched Properties",
-      "doc": "EntityProperties is a list of properties that the entity inhibits. These properties define and alter specific\nattributes of the entity."
     },
     {
       "type_id": "AddPlayerPacket",
@@ -279,11 +224,6 @@
       "doc": "Velocity is the initial velocity the player spawns with. This velocity will initiate client side\nmovement of the player."
     },
     {
-      "type_id": "AddPlayerPacket",
-      "field": "Y-Head Rotation",
-      "doc": "Pitch is the vertical rotation of the player. Facing straight forward yields a pitch of 0. Pitch is\nmeasured in degrees."
-    },
-    {
       "type_id": "AddVolumeEntityPacket",
       "doc": "AddVolumeEntity sends a volume entity's definition and metadata from server to client."
     },
@@ -291,16 +231,6 @@
       "type_id": "AddVolumeEntityPacket",
       "field": "Engine Version",
       "doc": "EngineVersion is the engine version the entity is using, for example, '1.17.0'."
-    },
-    {
-      "type_id": "AddVolumeEntityPacket",
-      "field": "Instance Name",
-      "doc": "InstanceIdentifier is the identifier of a fog definition."
-    },
-    {
-      "type_id": "AddVolumeEntityPacket",
-      "field": "JSON Identifier",
-      "doc": "EncodingIdentifier is the unique identifier for the volume. It must be of the form 'namespace:name', where\nnamespace cannot be 'minecraft'."
     },
     {
       "type_id": "AdventureSettings",
@@ -479,11 +409,6 @@
       "doc": "AttributeData represents a polymorphic attribute value."
     },
     {
-      "type_id": "AttributeData",
-      "field": "Default Value",
-      "doc": "FloatValue is the float value if Type is AttributeDataTypeFloat."
-    },
-    {
       "type_id": "AttributeLayerSyncPacketData::UpdateAttributeLayerSettingsData",
       "doc": "AttributeLayerSettings represents settings for an attribute layer."
     },
@@ -492,23 +417,8 @@
       "doc": "AttributeLayerData represents a complete attribute layer."
     },
     {
-      "type_id": "AttributeLayerSyncPacketData::UpdateAttributeLayersData",
-      "field": "Attribute Layers",
-      "doc": "EnvironmentAttributes is the list of environment attributes in this layer."
-    },
-    {
       "type_id": "AttributeLayerSyncPacketData::UpdateEnvironmentAttributesData",
       "doc": "EnvironmentAttributeData represents an environment attribute with optional transition data."
-    },
-    {
-      "type_id": "AttributeLayerSyncPacketData::UpdateEnvironmentAttributesData",
-      "field": "Attribute Layer Dimension",
-      "doc": "Attribute is the current attribute value."
-    },
-    {
-      "type_id": "AttributeLayerSyncPacketData::UpdateEnvironmentAttributesData",
-      "field": "Attribute Layer Name",
-      "doc": "AttributeName is the name of the attribute."
     },
     {
       "type_id": "AttributeModifier",
@@ -956,11 +866,6 @@
     },
     {
       "type_id": "BiomeDefinitionData",
-      "field": "chunk gen data",
-      "doc": "ChunkGeneration is optional information to assist in client-side chunk generation. Almost all servers\ncan and should leave this empty to greatly reduce the size of this packet. Only BDS and servers which\n*exactly* match the vanilla chunk generation can benefit from this."
-    },
-    {
-      "type_id": "BiomeDefinitionData",
       "field": "depth",
       "doc": "Depth is the depth of the biome."
     },
@@ -973,16 +878,6 @@
       "type_id": "BiomeDefinitionData",
       "field": "foliage snow",
       "doc": "FoliageSnow is the progression factor for foliage turning white due to snow."
-    },
-    {
-      "type_id": "BiomeDefinitionData",
-      "field": "id",
-      "doc": "NameIndex represents the index of the biome name in the string list."
-    },
-    {
-      "type_id": "BiomeDefinitionData",
-      "field": "map water color ARGB",
-      "doc": "BiomeID is the biome ID."
     },
     {
       "type_id": "BiomeDefinitionData",
@@ -1334,11 +1229,6 @@
       "doc": "BlockActorData is sent by the server to update data of a block entity client-side, for example the data of\na chest."
     },
     {
-      "type_id": "BlockActorDataPacket",
-      "field": "Block Position",
-      "doc": "Position is the position of the block that holds the block entity. If no block entity is at this\nposition, the packet is ignored by the client."
-    },
-    {
       "type_id": "BlockEventPacket",
       "doc": "BlockEvent is sent by the server to initiate a certain event that has something to do with blocks in\nspecific, for example opening a chest."
     },
@@ -1389,11 +1279,6 @@
       "doc": "BookEdit is sent by the client when it edits a book. It is sent each time a modification was made and the\nplayer stops its typing 'session', rather than simply after closing the book."
     },
     {
-      "type_id": "BookEditPacket",
-      "field": "Book Slot",
-      "doc": "InventorySlot is the slot in which the book that was edited may be found. Typically, the server should\ncheck if this slot matches the held item slot of the player."
-    },
-    {
       "type_id": "BossEventPacket",
       "doc": "BossEvent is sent by the server to make a specific 'boss event' occur in the\nworld. It includes features such as showing a boss bar to the player and\nturning the sky dark."
     },
@@ -1406,21 +1291,6 @@
       "type_id": "BossEventPacket",
       "field": "Event Type",
       "doc": "EventType is the type of the event. It is one of the BossEvent constants above."
-    },
-    {
-      "type_id": "BossEventPacket",
-      "field": "FilteredName",
-      "doc": "FilteredBossBarTitle is a filtered version of BossBarTitle with all the\nprofanity removed. The client will use this over BossBarTitle if this\nfield is not empty and they have the \"Filter Profanity\" setting enabled."
-    },
-    {
-      "type_id": "BossEventPacket",
-      "field": "Health Percent",
-      "doc": "HealthPercentage is the percentage of health that is shown in the boss\nbar (0.0-1.0). The HealthPercentage may be set to a specific value if the\nBossEntityUniqueID matches the client's entity unique ID."
-    },
-    {
-      "type_id": "BossEventPacket",
-      "field": "Name",
-      "doc": "BossBarTitle is the title shown above the boss bar. It may be set to set\na different title if the BossEntityUniqueID matches the client's entity\nunique ID."
     },
     {
       "type_id": "BossEventPacket",
@@ -1567,11 +1437,6 @@
       "doc": "CameraInstructionTarget represents a camera instruction that targets a specific entity."
     },
     {
-      "type_id": "CameraInstructionOptions::AttachToEntityInstruction",
-      "field": "Entity Actor ID",
-      "doc": "EntityUniqueID is the unique ID of the entity that the camera should target."
-    },
-    {
       "type_id": "CameraInstructionOptions::FadeInstruction",
       "doc": "CameraInstructionFade represents a camera instruction that fades the screen to a specified colour."
     },
@@ -1610,18 +1475,8 @@
     },
     {
       "type_id": "CameraInstructionOptions::FovInstruction",
-      "field": "FOV Ease Time",
-      "doc": "EaseTime is the time in seconds that the easing function should take."
-    },
-    {
-      "type_id": "CameraInstructionOptions::FovInstruction",
       "field": "Field of View",
       "doc": "FieldOfView is the field of view of the camera."
-    },
-    {
-      "type_id": "CameraInstructionOptions::FovInstruction",
-      "field": "Field of View Clear",
-      "doc": "Clear can be set to true to clear the current instruction."
     },
     {
       "type_id": "CameraInstructionOptions::SetInstruction",
@@ -1707,11 +1562,6 @@
     },
     {
       "type_id": "CameraInstructionOptions::SplineInstruction",
-      "field": "rotationOption",
-      "doc": "RotationOptions is a list of rotation options for the spline."
-    },
-    {
-      "type_id": "CameraInstructionOptions::SplineInstruction",
       "field": "splineIdentifier",
       "doc": "SplineIdentifier is an optional identifier for referencing the spline by name."
     },
@@ -1725,28 +1575,8 @@
       "doc": "CameraProgressOption represents a progress keyframe option for camera spline instructions."
     },
     {
-      "type_id": "CameraInstructionOptions::SplineInstruction::SplineProgressOption",
-      "field": "Key frame time",
-      "doc": "Time is the time for this progress option."
-    },
-    {
-      "type_id": "CameraInstructionOptions::SplineInstruction::SplineProgressOption",
-      "field": "Key frame value",
-      "doc": "Value is the progress value."
-    },
-    {
       "type_id": "CameraInstructionOptions::SplineInstruction::SplineRotationOption",
       "doc": "CameraRotationOption represents a rotation option for camera spline instructions."
-    },
-    {
-      "type_id": "CameraInstructionOptions::SplineInstruction::SplineRotationOption",
-      "field": "Key frame time",
-      "doc": "Time is the time for this rotation option."
-    },
-    {
-      "type_id": "CameraInstructionOptions::SplineInstruction::SplineRotationOption",
-      "field": "Key frame value",
-      "doc": "Value is the rotation value."
     },
     {
       "type_id": "CameraInstructionOptions::TargetInstruction",
@@ -1949,16 +1779,6 @@
     },
     {
       "type_id": "ClientMovementPredictionSyncPacket",
-      "field": "Actor Data Flag",
-      "doc": "ActorFlags is a bitset of all the flags that are currently set for the client."
-    },
-    {
-      "type_id": "ClientMovementPredictionSyncPacket",
-      "field": "Actor Flying State",
-      "doc": "Flying specifies if the client is currently flying."
-    },
-    {
-      "type_id": "ClientMovementPredictionSyncPacket",
       "field": "Actor Unique ID",
       "doc": "EntityUniqueID is the unique ID of the entity that the prediction data applies to."
     },
@@ -1969,11 +1789,6 @@
     {
       "type_id": "ClientboundAttributeLayerSyncPacket",
       "doc": "ClientBoundAttributeLayerSync is sent by the server to synchronise attribute layers with the client."
-    },
-    {
-      "type_id": "ClientboundAttributeLayerSyncPacket",
-      "field": "Data",
-      "doc": "Settings is set if PayloadType is AttributeLayerPayloadTypeUpdateSettings."
     },
     {
       "type_id": "ClientboundCloseFormPacket",
@@ -2224,27 +2039,12 @@
     },
     {
       "type_id": "CommandBlockUpdatePacket",
-      "field": "Target",
-      "doc": "Position is the position of the command block updated. It is only set if Block is set to true. Nothing\nhappens if no command block is set at this position."
-    },
-    {
-      "type_id": "CommandBlockUpdatePacket",
       "field": "Tick Delay",
       "doc": "TickDelay is the delay in ticks between executions of a command block, if it is a repeating command\nblock."
     },
     {
-      "type_id": "CommandBlockUpdatePacket",
-      "field": "Track Output",
-      "doc": "NeedsRedstone specifies if the command block needs to be powered by redstone to be activated. If false,\nthe command block is always active. The field is only set if Block is set to true."
-    },
-    {
       "type_id": "CommandOriginData.json#",
       "doc": "CommandOrigin holds data that identifies the origin of the requesting of a command. It holds several\nfields that may be used to get specific information.\nWhen sent in a CommandRequest packet, the same CommandOrigin should be sent in a CommandOutput packet."
-    },
-    {
-      "type_id": "CommandOriginData.json#",
-      "field": "PlayerId",
-      "doc": "Origin is one of the values above that specifies the origin of the command. The origin may change,\ndepending on what part of the client actually called the command. The command may be issued by a\nwebsocket server, for example."
     },
     {
       "type_id": "CommandOriginData.json#",
@@ -2266,18 +2066,8 @@
       "doc": "Parameters is a list of parameters that serve to supply the message sent with additional information,\nsuch as the position that a player was teleported to or the effect that was applied to an entity.\nThese parameters only apply for the Minecraft built-in command output."
     },
     {
-      "type_id": "CommandOutputMessage.json#",
-      "field": "Successful?",
-      "doc": "Success indicates if the output message was one of a successful command execution. If set to true, the\noutput message is by default coloured white, whereas if set to false, the message is by default\ncoloured red."
-    },
-    {
       "type_id": "CommandOutputPacket",
       "doc": "CommandOutput is sent by the server to the client to send text as output of a command. Most servers do not\nuse this packet and instead simply send Text packets, but there is reason to send it.\nIf the origin of a CommandRequest packet is not the player itself, but, for example, a websocket server,\nsending a Text packet will not do what is expected: The message should go to the websocket server, not to\nthe client's chat. The CommandOutput packet will make sure the messages are relayed to the correct origin\nof the command request."
-    },
-    {
-      "type_id": "CommandOutputPacket",
-      "field": "Origin Data",
-      "doc": "CommandOrigin is the data specifying the origin of the command. In other words, the source that the\ncommand request was from, such as the player itself or a websocket server. The client forwards the\nmessages in this packet to the right origin, depending on what is sent here."
     },
     {
       "type_id": "CommandRequestPacket",
@@ -2622,21 +2412,6 @@
     },
     {
       "type_id": "DimensionDefinitionGroup::DimensionDefinition",
-      "field": "Generator Type",
-      "doc": "Generator is the variant of generator that exists in the provided dimension. These can be one of the constants\ndefined above. If this is set to GeneratorLegacy, the legacy horizontal world limits will be enforced."
-    },
-    {
-      "type_id": "DimensionDefinitionGroup::DimensionDefinition",
-      "field": "Height Maximum",
-      "doc": "MinimumY is the lowest Y coordinate that exists in the dimension."
-    },
-    {
-      "type_id": "DimensionDefinitionGroup::DimensionDefinition",
-      "field": "Height Minimum",
-      "doc": "HeightRange is the number of blocks above MinimumY that exist in the dimension, so that the highest Y\ncoordinate in the dimension is MinimumY + HeightRange."
-    },
-    {
-      "type_id": "DimensionDefinitionGroup::DimensionDefinition",
       "field": "Pack Id",
       "doc": "PackID is the UUID of the behaviour pack which has added the dimension."
     },
@@ -2711,16 +2486,6 @@
     },
     {
       "type_id": "EducationLevelSettings",
-      "field": "(Deprecated) Always False",
-      "doc": "HasQuiz specifies if the world has a quiz connected to it."
-    },
-    {
-      "type_id": "EducationLevelSettings",
-      "field": "Agent Capabilities",
-      "doc": "CanModifyBlocks ..."
-    },
-    {
-      "type_id": "EducationLevelSettings",
       "field": "Can resize Code Builder",
       "doc": "CanResizeCodeBuilder specifies if clients connected to the world should be able to resize the code\nbuilder when it is opened."
     },
@@ -2748,11 +2513,6 @@
       "type_id": "EducationLevelSettings",
       "field": "Post Process Filter",
       "doc": "PostProcessFilter ..."
-    },
-    {
-      "type_id": "EducationLevelSettings",
-      "field": "Screenshot Border Resource Path",
-      "doc": "ScreenshotBorderPath ..."
     },
     {
       "type_id": "EducationSettingsPacket",
@@ -2899,18 +2659,8 @@
     },
     {
       "type_id": "GameTestRequestPacket",
-      "field": "RepeatCount",
-      "doc": "Repetitions represents the amount of times the test will be run."
-    },
-    {
-      "type_id": "GameTestRequestPacket",
       "field": "Rotation",
       "doc": "Rotation represents the rotation of the test. It is one of the constants above."
-    },
-    {
-      "type_id": "GameTestRequestPacket",
-      "field": "TestPos",
-      "doc": "Position is the position at which the test will be performed."
     },
     {
       "type_id": "GameTestRequestPacket",
@@ -2952,18 +2702,8 @@
     },
     {
       "type_id": "GraphicsOverrideParameterPacket",
-      "field": "Identifier for Parameter",
-      "doc": "ParameterType is the type of parameter being overridden."
-    },
-    {
-      "type_id": "GraphicsOverrideParameterPacket",
       "field": "Player Identifier",
       "doc": "PlayerIdentifier is the optional identifier of the player for which the override parameter applies."
-    },
-    {
-      "type_id": "GraphicsOverrideParameterPacket",
-      "field": "Reset Parameter",
-      "doc": "Reset indicates whether to reset the parameters."
     },
     {
       "type_id": "GraphicsOverrideParameterPacket",
@@ -3030,21 +2770,6 @@
     {
       "type_id": "InventoryAction",
       "doc": "InventoryAction represents a single action that took place during an inventory transaction. On itself, this\ninventory action is always unbalanced: It must be combined with other actions in an inventory transaction\nto form a balanced transaction."
-    },
-    {
-      "type_id": "InventoryAction",
-      "field": "From Item",
-      "doc": "OldItem is the item that was present in the slot before the inventory action. It should be checked by\nthe server to ensure the inventories were not out of sync."
-    },
-    {
-      "type_id": "InventoryAction",
-      "field": "Slot",
-      "doc": "SourceType is the source type of the inventory action. It is one of the constants above."
-    },
-    {
-      "type_id": "InventoryAction",
-      "field": "To Item",
-      "doc": "NewItem is the new item that was put in the InventorySlot that the OldItem was in. It must be checked\nin combination with other inventory actions to ensure that the transaction is balanced."
     },
     {
       "type_id": "InventoryContentPacket",
@@ -3164,32 +2889,12 @@
       "doc": "BeaconPaymentStackRequestAction is sent by the client when it submits an item to enable effects from a\nbeacon. These items will have been moved into the beacon item slot in advance."
     },
     {
-      "type_id": "ItemStackRequestCereal::BeaconPaymentActionData",
-      "field": "Action type",
-      "doc": "PrimaryEffect and SecondaryEffect are the effects that were selected from the beacon."
-    },
-    {
-      "type_id": "ItemStackRequestCereal::BeaconPaymentActionData",
-      "field": "Primary Effect Id",
-      "doc": "PrimaryEffect and SecondaryEffect are the effects that were selected from the beacon."
-    },
-    {
       "type_id": "ItemStackRequestCereal::ConsumeActionData",
       "doc": "ConsumeStackRequestAction is sent by the client when it uses an item to craft another item. The original\nitem is 'consumed'."
     },
     {
       "type_id": "ItemStackRequestCereal::CraftCreativeActionData",
       "doc": "CraftCreativeStackRequestAction is sent by the client when it takes an item out fo the creative inventory.\nThe item is thus not really crafted, but instantly created."
-    },
-    {
-      "type_id": "ItemStackRequestCereal::CraftCreativeActionData",
-      "field": "Action type",
-      "doc": "CreativeItemNetworkID is the network ID of the creative item that is being created. This is one of the\ncreative item network IDs sent in the CreativeContent packet."
-    },
-    {
-      "type_id": "ItemStackRequestCereal::CraftCreativeActionData",
-      "field": "Creative Item Net Id",
-      "doc": "NumberOfCrafts is how many times the recipe was crafted. This field appears to be boilerplate and\nhas no effect."
     },
     {
       "type_id": "ItemStackRequestCereal::CraftNonImplementedActionData",
@@ -3200,23 +2905,8 @@
       "doc": "CraftRecipeStackRequestAction is sent by the client the moment it begins crafting an item. This is the\nfirst action sent, before the Consume and Create item stack request actions.\nThis action is also sent when an item is enchanted. Enchanting should be treated mostly the same way as\ncrafting, where the old item is consumed."
     },
     {
-      "type_id": "ItemStackRequestCereal::CraftRecipeActionData",
-      "field": "Action type",
-      "doc": "RecipeNetworkID is the network ID of the recipe that is about to be crafted. This network ID matches\none of the recipes sent in the CraftingData packet, where each of the recipes have a RecipeNetworkID as\nof 1.16."
-    },
-    {
-      "type_id": "ItemStackRequestCereal::CraftRecipeActionData",
-      "field": "Number of requested crafts",
-      "doc": "NumberOfCrafts is how many times the recipe was crafted. This field appears to be boilerplate and\nhas no effect."
-    },
-    {
       "type_id": "ItemStackRequestCereal::CraftRecipeAutoActionData",
       "doc": "AutoCraftRecipeStackRequestAction is sent by the client similarly to the CraftRecipeStackRequestAction. The\nonly difference is that the recipe is automatically created and crafted by shift clicking the recipe book."
-    },
-    {
-      "type_id": "ItemStackRequestCereal::CraftRecipeAutoActionData",
-      "field": "Action type",
-      "doc": "RecipeNetworkID is the network ID of the recipe that is about to be crafted. This network ID matches\none of the recipes sent in the CraftingData packet, where each of the recipes have a RecipeNetworkID as\nof 1.16."
     },
     {
       "type_id": "ItemStackRequestCereal::CraftRecipeAutoActionData",
@@ -3224,23 +2914,8 @@
       "doc": "Ingredients is a slice of ItemDescriptorCount that contains the ingredients that were used to craft the recipe.\nIt is not exactly clear what this is used for, but it is sent by the vanilla client."
     },
     {
-      "type_id": "ItemStackRequestCereal::CraftRecipeAutoActionData",
-      "field": "Number of requested crafts",
-      "doc": "NumberOfCrafts is how many times the recipe was crafted."
-    },
-    {
       "type_id": "ItemStackRequestCereal::CraftRecipeOptionalActionData",
       "doc": "CraftRecipeOptionalStackRequestAction is sent when using an anvil. When this action is sent, the\nFilterStrings field in the respective stack request is non-empty and contains the name of the item created\nusing the anvil or cartography table."
-    },
-    {
-      "type_id": "ItemStackRequestCereal::CraftRecipeOptionalActionData",
-      "field": "Action type",
-      "doc": "RecipeNetworkID is the network ID of the multi-recipe that is about to be crafted. This network ID matches\none of the multi-recipes sent in the CraftingData packet, where each of the recipes have a RecipeNetworkID as\nof 1.16."
-    },
-    {
-      "type_id": "ItemStackRequestCereal::CraftRecipeOptionalActionData",
-      "field": "Filtered String Index",
-      "doc": "FilterStringIndex is the index of a filter string sent in a ItemStackRequest."
     },
     {
       "type_id": "ItemStackRequestCereal::CraftResultsActionData",
@@ -3251,18 +2926,8 @@
       "doc": "CreateStackRequestAction is sent by the client when an item is created through being used as part of a\nrecipe. For example, when milk is used to craft a cake, the buckets are leftover. The buckets are moved to\nthe slot sent by the client here.\nNote that before this is sent, an action for consuming all items in the crafting table/grid is sent. Items\nthat are not fully consumed when used for a recipe should not be destroyed there, but instead, should be\nturned into their respective resulting items."
     },
     {
-      "type_id": "ItemStackRequestCereal::CreateActionData",
-      "field": "Action type",
-      "doc": "ResultsSlot is the slot in the inventory in which the results of the crafting ingredients are to be\nplaced."
-    },
-    {
       "type_id": "ItemStackRequestCereal::DestroyActionData",
       "doc": "DestroyStackRequestAction is sent by the client when it destroys an item in creative mode by moving it\nback into the creative inventory."
-    },
-    {
-      "type_id": "ItemStackRequestCereal::DestroyActionData",
-      "field": "Action type",
-      "doc": "Count is the count of the item in the source slot that was destroyed."
     },
     {
       "type_id": "ItemStackRequestCereal::DestroyActionData",
@@ -3272,11 +2937,6 @@
     {
       "type_id": "ItemStackRequestCereal::DropActionData",
       "doc": "DropStackRequestAction is sent by the client when it drops an item out of the inventory when it has its\ninventory opened. This action is not sent when a player drops an item out of the hotbar using the Q button\n(or the equivalent on mobile). The InventoryTransaction packet is still used for that action, regardless of\nwhether the item stack network IDs are used or not."
-    },
-    {
-      "type_id": "ItemStackRequestCereal::DropActionData",
-      "field": "Action type",
-      "doc": "Count is the count of the item in the source slot that was taken towards the destination slot."
     },
     {
       "type_id": "ItemStackRequestCereal::DropActionData",
@@ -3297,23 +2957,8 @@
       "doc": "DefaultItemDescriptor represents an item descriptor for regular items. This is used for the significant majority of\nitems."
     },
     {
-      "type_id": "ItemStackRequestCereal::ItemNameDescriptorData",
-      "field": "Aux Value",
-      "doc": "MetadataValue is the metadata value of the item. For some items, this is the damage value, whereas for\nother items it is simply an identifier of a variant of the item."
-    },
-    {
-      "type_id": "ItemStackRequestCereal::ItemNameDescriptorData",
-      "field": "Full Name",
-      "doc": "Name is the identifier of the item, such as minecraft:stone."
-    },
-    {
       "type_id": "ItemStackRequestCereal::ItemTagDescriptorData",
       "doc": "ItemTagItemDescriptor represents an item descriptor that uses item tagging. This should be used to reduce duplicative\nentries for items that can be grouped under a single tag."
-    },
-    {
-      "type_id": "ItemStackRequestCereal::ItemTagDescriptorData",
-      "field": "Item Tag",
-      "doc": "Tag represents the tag that the item is part of."
     },
     {
       "type_id": "ItemStackRequestCereal::LabTableCombineActionData",
@@ -3325,41 +2970,16 @@
     },
     {
       "type_id": "ItemStackRequestCereal::MineBlockActionData",
-      "field": "Action type",
-      "doc": "HotbarSlot is the slot held by the player while mining a block."
-    },
-    {
-      "type_id": "ItemStackRequestCereal::MineBlockActionData",
       "field": "Predicted Durability",
       "doc": "PredictedDurability is the durability of the item that the client assumes to be present at the time."
-    },
-    {
-      "type_id": "ItemStackRequestCereal::MineBlockActionData",
-      "field": "Slot",
-      "doc": "StackNetworkID is the unique stack ID that the client assumes to be present at the time. The server\nmust check if these IDs match. If they do not match, servers should reject the stack request that the\naction holding this info was in."
     },
     {
       "type_id": "ItemStackRequestCereal::MolangItemDescriptorData",
       "doc": "MoLangItemDescriptor represents an item descriptor for items that use MoLang (e.g. behaviour packs)."
     },
     {
-      "type_id": "ItemStackRequestCereal::MolangItemDescriptorData",
-      "field": "Molang Version",
-      "doc": "Version represents the version of MoLang to use."
-    },
-    {
-      "type_id": "ItemStackRequestCereal::MolangItemDescriptorData",
-      "field": "Tag Expression",
-      "doc": "Expression represents the MoLang expression used to identify the item/it's associated tag."
-    },
-    {
       "type_id": "ItemStackRequestCereal::NetworkItemInstanceDescriptorData",
       "doc": "ItemInstance represents a unique instance of an item stack. These instances carry a specific network ID\nthat is persistent for the stack."
-    },
-    {
-      "type_id": "ItemStackRequestCereal::NetworkItemInstanceDescriptorData",
-      "field": "Stack size",
-      "doc": "StackNetworkID is the network ID of the item stack. If the stack is empty, 0 is always written for this\nfield. If not, the field should be set to 1 if the server authoritative inventories are disabled in the\nStartGame packet, or to a unique stack ID if it is enabled."
     },
     {
       "type_id": "ItemStackRequestCereal::PlaceActionData",
@@ -3373,16 +2993,6 @@
       "type_id": "ItemStackRequestCereal::RequestData",
       "field": "Actions",
       "doc": "Actions is a list of actions performed by the client. The actual type of the actions depends on which\nID was present, and is one of the concrete types below."
-    },
-    {
-      "type_id": "ItemStackRequestCereal::RequestData",
-      "field": "Strings To Filter",
-      "doc": "FilterStrings is a list of filter strings involved in the request. This is typically filled with one string\nwhen an anvil or cartography is used."
-    },
-    {
-      "type_id": "ItemStackRequestCereal::RequestData",
-      "field": "StringsToFilterOrigin",
-      "doc": "FilterCause represents the cause of any potential filtering. This is one of the constants above."
     },
     {
       "type_id": "ItemStackRequestCereal::SlotInfoData",
@@ -3433,11 +3043,6 @@
     {
       "type_id": "ItemStackResponseInfo",
       "doc": "ItemStackResponse is a response to an individual ItemStackRequest."
-    },
-    {
-      "type_id": "ItemStackResponseInfo",
-      "field": "Result",
-      "doc": "Status specifies if the request with the RequestID below was successful. If this is the case, the\nContainerInfo below will have information on what slots ended up changing. If not, the container info\nwill be empty.\nA non-0 status means an error occurred and will result in the action being reverted."
     },
     {
       "type_id": "ItemStackResponsePacket",
@@ -3510,7 +3115,7 @@
     },
     {
       "type_id": "LegacyTelemetryEventPacketPayload::ComposterUsed",
-      "doc": "ComposterInteractEvent is the event data sent when a composter is interacted with."
+      "doc": "CauldronInteractEvent is the event data sent when a composter is interacted with."
     },
     {
       "type_id": "LegacyTelemetryEventPacketPayload::ComposterUsed",
@@ -3528,7 +3133,7 @@
     },
     {
       "type_id": "LegacyTelemetryEventPacketPayload::POICauldronUsed",
-      "doc": "CauldronInteractEvent is the event data sent when a cauldron is interacted with."
+      "doc": "ComposterInteractEvent is the event data sent when a cauldron is interacted with."
     },
     {
       "type_id": "LegacyTelemetryEventPacketPayload::POICauldronUsed",
@@ -3560,11 +3165,6 @@
     },
     {
       "type_id": "LessonProgressPacket",
-      "field": "Activity Id",
-      "doc": "Identifier is the identifier of the lesson that is being progressed."
-    },
-    {
-      "type_id": "LessonProgressPacket",
       "field": "Score",
       "doc": "Score is the score the client should use when displaying the progress."
     },
@@ -3576,31 +3176,6 @@
       "type_id": "LevelChunkPacket",
       "field": "Cache Enabled",
       "doc": "CacheEnabled specifies if the client blob cache should be enabled. This system is based on hashes of\nblobs which are consistent and saved by the client in combination with that blob, so that the server\ndoes not have the same chunk multiple times. If the client does not yet have a blob with the hash sent,\nit will send a ClientCacheBlobStatus packet containing the hashes is does not have the data of."
-    },
-    {
-      "type_id": "LevelChunkPacket",
-      "field": "Cache Metadata",
-      "doc": "BlobHashes is a list of all blob hashes used in the chunk. It is composed of SubChunkCount + 1 hashes,\nwith the first SubChunkCount hashes being those of the sub-chunks and the last one that of the biome\nof the chunk.\nIf CacheEnabled is set to false, BlobHashes can be left empty."
-    },
-    {
-      "type_id": "LevelChunkPacket",
-      "field": "Chunk Position",
-      "doc": "Position contains the X and Z coordinates of the chunk sent. You can convert a block coordinate to a chunk\ncoordinate by right-shifting it four bits."
-    },
-    {
-      "type_id": "LevelChunkPacket",
-      "field": "Client Request SubChunk Limit",
-      "doc": "SubChunkLimit is the maximum amount of sub-chunks a client will request when in request mode. A value of -1\nmeans there is no limit."
-    },
-    {
-      "type_id": "LevelChunkPacket",
-      "field": "Serialized Chunk Data",
-      "doc": "RawPayload is a serialised string of chunk data. The data held depends on if CacheEnabled is set to\ntrue. If set to false, the payload is composed of multiple sub-chunks, each of which carry a version\nwhich indicates the way they are serialised, followed by biomes, border blocks and tile entities. If\nCacheEnabled is true, the payload consists out of the border blocks and tile entities only."
-    },
-    {
-      "type_id": "LevelChunkPacket",
-      "field": "Sub-chunks Count",
-      "doc": "Dimension is the ID of the dimension that the chunk belongs to. This must always be set otherwise the\nclient will always assume the chunk is part of the overworld dimension."
     },
     {
       "type_id": "LevelEventGenericPacket",
@@ -3861,7 +3436,7 @@
     {
       "type_id": "MobEffectPacket",
       "field": "Effect Amplifier",
-      "doc": "EffectType is the ID of the effect to be added, removed or modified. It is one of the constants that\nmay be found above."
+      "doc": "Amplifier is the amplifier of the effect. Take note that the amplifier is not the same as the effect's\nlevel. The level is usually one higher than the amplifier, and the amplifier can actually be negative\nto reverse the behaviour effect."
     },
     {
       "type_id": "MobEffectPacket",
@@ -3871,12 +3446,12 @@
     {
       "type_id": "MobEffectPacket",
       "field": "Effect ID",
-      "doc": "Operation is the operation of the packet. It is either MobEffectAdd, MobEffectModify or MobEffectRemove\nand specifies the result of the packet client-side."
+      "doc": "EffectType is the ID of the effect to be added, removed or modified. It is one of the constants that\nmay be found above."
     },
     {
       "type_id": "MobEffectPacket",
       "field": "Event ID",
-      "doc": "EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and\nentities are generally identified in packets using this runtime ID."
+      "doc": "Operation is the operation of the packet. It is either MobEffectAdd, MobEffectModify or MobEffectRemove\nand specifies the result of the packet client-side."
     },
     {
       "type_id": "MobEffectPacket",
@@ -3980,11 +3555,6 @@
     },
     {
       "type_id": "MoveActorAbsoluteData",
-      "field": "Header",
-      "doc": "Flags is a combination of flags that specify details of the movement. It is a combination of the flags\nabove."
-    },
-    {
-      "type_id": "MoveActorAbsoluteData",
       "field": "Position",
       "doc": "Position is the position to spawn the entity on. If the entity is on a distance that the player cannot\nsee it, the entity will still show up if the player moves closer."
     },
@@ -4018,16 +3588,6 @@
     },
     {
       "type_id": "MoveActorDeltaData",
-      "field": "Is On Ground",
-      "doc": "OnGround specifies whether the entity is on the ground after applying the update."
-    },
-    {
-      "type_id": "MoveActorDeltaData",
-      "field": "New Position X",
-      "doc": "Position is the new position that the entity was moved to."
-    },
-    {
-      "type_id": "MoveActorDeltaData",
       "field": "Rotation X",
       "doc": "Rotation is the new absolute rotation. Unlike the position, it is not actually a delta. If any of the\nvalues of this rotation are not sent, these values are 0 and no flag for them is present."
     },
@@ -4051,18 +3611,8 @@
     },
     {
       "type_id": "MovePlayerPacket",
-      "field": "Position Mode",
-      "doc": "Mode is the mode of the movement. It specifies the way the player's movement should be shown to other\nplayers. It is one of the constants above."
-    },
-    {
-      "type_id": "MovePlayerPacket",
       "field": "Tick",
       "doc": "Tick is the server tick at which the packet was sent. It is used in relation to CorrectPlayerMovePrediction."
-    },
-    {
-      "type_id": "MovePlayerPacket",
-      "field": "Y-Head Rotation",
-      "doc": "Pitch is the vertical rotation of the player. Facing straight forward yields a pitch of 0. Pitch is\nmeasured in degrees."
     },
     {
       "type_id": "MovementEffectPacket",
@@ -4071,12 +3621,12 @@
     {
       "type_id": "MovementEffectPacket",
       "field": "Effect Duration",
-      "doc": "Type is the type of movement effect being updated. It is one of the constants found above."
+      "doc": "Duration is the duration of the effect, measured in ticks."
     },
     {
       "type_id": "MovementEffectPacket",
       "field": "Effect ID",
-      "doc": "EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and\nentities are generally identified in packets using this runtime ID."
+      "doc": "Type is the type of movement effect being updated. It is one of the constants found above."
     },
     {
       "type_id": "MovementEffectPacket",
@@ -4091,11 +3641,6 @@
     {
       "type_id": "MultiRecipePayload",
       "doc": "MultiRecipe serves as an 'enable' switch for multi-shape recipes."
-    },
-    {
-      "type_id": "MultiRecipePayload",
-      "field": "Multi-Recipe UUID",
-      "doc": "UUID is a UUID identifying the recipe. Since the CraftingEvent packet no longer exists, this can always be empty."
     },
     {
       "type_id": "MultiplayerSettingsPacket",
@@ -4408,7 +3953,7 @@
     {
       "type_id": "PlayerActionPacket",
       "field": "Action",
-      "doc": "EntityRuntimeID is the runtime ID of the player. The runtime ID is unique for each world session, and\nentities are generally identified in packets using this runtime ID."
+      "doc": "ActionType is the ID of the action that was executed by the player. It is one of the constants that may\nbe found in protocol/player.go."
     },
     {
       "type_id": "PlayerActionPacket",
@@ -4445,11 +3990,6 @@
     },
     {
       "type_id": "PlayerAuthInputPacket",
-      "field": "Analog Move Vector",
-      "doc": "AnalogueMoveVector is a Vec2 that specifies the direction in which the player moved, as a combination\nof X/Z values which are created using an analogue input."
-    },
-    {
-      "type_id": "PlayerAuthInputPacket",
       "field": "Camera Orientation",
       "doc": "CameraOrientation is the vector that represents the camera's forward direction which can be used to\ntransform movement to be camera relative."
     },
@@ -4475,38 +4015,13 @@
     },
     {
       "type_id": "PlayerAuthInputPacket",
-      "field": "Item Use Transaction",
-      "doc": "ItemInteractionData is the transaction data if the InputData includes an item interaction."
-    },
-    {
-      "type_id": "PlayerAuthInputPacket",
       "field": "Move Vector",
       "doc": "MoveVector is a Vec2 that specifies the direction in which the player moved, as a combination of X/Z\nvalues which are created using the WASD/controller stick state."
     },
     {
       "type_id": "PlayerAuthInputPacket",
-      "field": "New Interaction Model",
-      "doc": "InteractionModel is a constant representing the interaction model the player is using. It is one of the\nconstants that may be found above."
-    },
-    {
-      "type_id": "PlayerAuthInputPacket",
       "field": "Play Mode",
       "doc": "PlayMode specifies the way that the player is playing. The values it holds, which are rather random,\nmay be found above."
-    },
-    {
-      "type_id": "PlayerAuthInputPacket",
-      "field": "Player Block Actions",
-      "doc": "BlockActions is a slice of block actions that the client has interacted with."
-    },
-    {
-      "type_id": "PlayerAuthInputPacket",
-      "field": "Player Head Rotation",
-      "doc": "Pitch and Yaw hold the rotation that the player reports it has."
-    },
-    {
-      "type_id": "PlayerAuthInputPacket",
-      "field": "Pos Delta",
-      "doc": "Delta was the delta between the old and the new position. There isn't any practical use for this field\nas it can be calculated by the server itself."
     },
     {
       "type_id": "PlayerAuthInputPacket",
@@ -4593,11 +4108,6 @@
       "doc": "PlayerLocation is sent by the server to the client to either update a player's position on the locator bar,\nor remove them completely. The client will determine how to render the player on the locator bar based on\ntheir own distance to Position."
     },
     {
-      "type_id": "PlayerLocationPacket",
-      "field": "Location",
-      "doc": "Position is the position of the player to be used on the locator bar. This is only set when the Type is\nPlayerLocationTypeCoordinates."
-    },
-    {
       "type_id": "PlayerSkinPacket",
       "doc": "PlayerSkin is sent by the client to the server when it updates its own skin using the in-game skin picker.\nIt is relayed by the server, or sent if the server changes the skin of a player on its own accord. Note\nthat the packet can only be sent for players that are in the player list at the time of sending."
     },
@@ -4673,18 +4183,8 @@
       "doc": "PositionTrackingDBClientRequest is a packet sent by the client to request the position and dimension of a\n'tracking ID'. These IDs are tracked in a database by the server. In 1.16, this is used for lodestones.\nThe client will send this request to find the position a lodestone compass needs to point to. If found, it\nwill point to the lodestone. If not, it will start spinning around.\nA PositionTrackingDBServerBroadcast packet should be sent in response to this packet."
     },
     {
-      "type_id": "PositionTrackingDBClientRequestPacket",
-      "field": "Action",
-      "doc": "RequestAction is the action that should be performed upon the receiving of the packet. It is one of the\nconstants found above."
-    },
-    {
       "type_id": "PositionTrackingDBServerBroadcastPacket",
       "doc": "PositionTrackingDBServerBroadcast is sent by the server in response to the\nPositionTrackingDBClientRequest packet. This packet is, as of 1.16, currently only used for lodestones. The\nserver maintains a database with tracking IDs and their position and dimension. The client will request\nthese tracking IDs, (NBT tag set on the lodestone compass with the tracking ID?) and the server will\nrespond with the status of those tracking IDs.\nWhat is actually done with the data sent depends on what the client chooses to do with it. For the\nlodestone compass, it is used to make the compass point towards lodestones and to make it spin if the\nlodestone at a position is no longer there."
-    },
-    {
-      "type_id": "PositionTrackingDBServerBroadcastPacket",
-      "field": "Action",
-      "doc": "BroadcastAction specifies the status of the position tracking DB response. It is one of the constants\nabove, specifying the result of the request with the ID below.\nThe Update action is sent for setting the position of a lodestone compass, the Destroy and NotFound to\nindicate that there is not (no longer) a lodestone at that position."
     },
     {
       "type_id": "PrimitiveShapeDataPayload",
@@ -4947,11 +4447,6 @@
     },
     {
       "type_id": "ResourcePackStackPacket",
-      "field": "Texture Pack List",
-      "doc": "TexturePacks is a list of texture packs that the client needs to download before joining the server.\nThe order of these texture packs specifies the order that they are applied in on the client side. The\nfirst in the list will be applied first."
-    },
-    {
-      "type_id": "ResourcePackStackPacket",
       "field": "Texture Pack Required",
       "doc": "TexturePackRequired specifies if the client must accept the texture packs the server has in order to\njoin the server. If set to true, the client gets the option to either download the resource packs and\njoin, or quit entirely. Behaviour packs never have to be downloaded."
     },
@@ -4966,28 +4461,8 @@
     },
     {
       "type_id": "ResourcePacksInfoPacket",
-      "field": "Has Addon Packs",
-      "doc": "HasAddons specifies if any of the resource packs contain addons in them. If set to true, only clients\nthat support addons will be able to download them."
-    },
-    {
-      "type_id": "ResourcePacksInfoPacket",
       "field": "Has Scripts",
       "doc": "HasScripts specifies if any of the resource packs contain scripts in them. If set to true, only clients\nthat support scripts will be able to download them."
-    },
-    {
-      "type_id": "ResourcePacksInfoPacket",
-      "field": "Resource Pack Required",
-      "doc": "TexturePackRequired specifies if the client must accept the texture packs the server has in order to\njoin the server. If set to true, the client gets the option to either download the resource packs and\njoin, or quit entirely. Behaviour packs never have to be downloaded."
-    },
-    {
-      "type_id": "ResourcePacksInfoPacket",
-      "field": "Resource Packs",
-      "doc": "TexturePacks is a list of texture packs that the client needs to download before joining the server.\nThe order of these texture packs is not relevant in this packet. It is however important in the\nResourcePackStack packet."
-    },
-    {
-      "type_id": "ResourcePacksInfoPacket",
-      "field": "World Template Id And Version",
-      "doc": "WorldTemplateUUID is the UUID of the template that has been used to generate the world. Templates can\nbe downloaded from the marketplace or installed via '.mctemplate' files. If the world was not generated\nfrom a template, this field is empty."
     },
     {
       "type_id": "ResourcePacksReadyForValidationPacket",
@@ -5403,11 +4878,6 @@
       "doc": "PackID is the UUID of the pack."
     },
     {
-      "type_id": "ServerboundPackSettingChangePacket",
-      "field": "PackSettingValue",
-      "doc": "PackSetting is the new setting value applied to the pack."
-    },
-    {
       "type_id": "SetActorDataPacket",
       "doc": "SetActorData is sent by the server to update the entity metadata of an entity. It includes flags such as\nif the entity is on fire, but also properties such as the air it has left until it starts drowning."
     },
@@ -5588,21 +5058,6 @@
       "doc": "SetSpawnPosition is sent by the server to update the spawn position of a player, for example when sleeping\nin a bed."
     },
     {
-      "type_id": "SetSpawnPositionPacket",
-      "field": "Block Position",
-      "doc": "Position is the new position of the spawn that was set. If SpawnType is SpawnTypeWorld, compasses will\npoint to this position. As of 1.16, Position is always the position of the player."
-    },
-    {
-      "type_id": "SetSpawnPositionPacket",
-      "field": "Spawn Block Pos",
-      "doc": "SpawnPosition is a new field added in 1.16. It holds the spawn position of the world. This spawn\nposition is {-2147483648, -2147483648, -2147483648} for a default spawn position."
-    },
-    {
-      "type_id": "SetSpawnPositionPacket",
-      "field": "Spawn Position Type",
-      "doc": "SpawnType is the type of spawn to set. It is either SpawnTypePlayer or SpawnTypeWorld, and specifies\nthe behaviour of the spawn set. If SpawnTypeWorld is set, the position to which compasses will point is\nalso changed."
-    },
-    {
       "type_id": "SetTimePacket",
       "doc": "SetTime is sent by the server to update the current time client-side. The client actually advances time\nclient-side by itself, so this packet does not need to be sent each tick. It is merely a means of\nsynchronising time between server and client."
     },
@@ -5685,11 +5140,6 @@
     },
     {
       "type_id": "ShapedRecipePayload",
-      "field": "Ingredients",
-      "doc": "Input is a list of items that serve as the input of the shapeless recipe. These items are the items\nrequired to craft the output. The amount of input items must be exactly equal to Width * Height."
-    },
-    {
-      "type_id": "ShapedRecipePayload",
       "field": "Priority",
       "doc": "Priority ..."
     },
@@ -5697,16 +5147,6 @@
       "type_id": "ShapedRecipePayload",
       "field": "Recipe Id",
       "doc": "RecipeID is a unique ID of the recipe. This ID must be unique amongst all other types of recipes too,\nbut its functionality is not exactly known."
-    },
-    {
-      "type_id": "ShapedRecipePayload",
-      "field": "Results",
-      "doc": "Output is a list of items that are created as a result of crafting the recipe."
-    },
-    {
-      "type_id": "ShapedRecipePayload",
-      "field": "Tag",
-      "doc": "Block is the block name that is required to craft the output of the recipe. The block is not prefixed\nwith 'minecraft:', so it will look like 'crafting_table' as an example."
     },
     {
       "type_id": "ShapedRecipePayload",
@@ -5724,11 +5164,6 @@
     },
     {
       "type_id": "ShapelessRecipePayload",
-      "field": "Ingredients",
-      "doc": "Input is a list of items that serve as the input of the shapeless recipe. These items are the items\nrequired to craft the output."
-    },
-    {
-      "type_id": "ShapelessRecipePayload",
       "field": "Priority",
       "doc": "Priority ..."
     },
@@ -5736,16 +5171,6 @@
       "type_id": "ShapelessRecipePayload",
       "field": "Recipe Id",
       "doc": "RecipeID is a unique ID of the recipe. This ID must be unique amongst all other types of recipes too,\nbut its functionality is not exactly known."
-    },
-    {
-      "type_id": "ShapelessRecipePayload",
-      "field": "Results",
-      "doc": "Output is a list of items that are created as a result of crafting the recipe."
-    },
-    {
-      "type_id": "ShapelessRecipePayload",
-      "field": "Tag",
-      "doc": "Block is the block name that is required to craft the output of the recipe. The block is not prefixed\nwith 'minecraft:', so it will look like 'crafting_table' as an example.\nThe available blocks are:\n- crafting_table\n- cartography_table\n- stonecutter\n- furnace\n- blast_furnace\n- smoker\n- campfire"
     },
     {
       "type_id": "ShapelessRecipePayload",
@@ -6056,16 +5481,6 @@
     },
     {
       "type_id": "SmithingTransformRecipePayload",
-      "field": "Addition Ingredient",
-      "doc": "Addition is the item that is being added to the Base item to result in a modified item."
-    },
-    {
-      "type_id": "SmithingTransformRecipePayload",
-      "field": "Base Ingredient",
-      "doc": "Base is the item that the Addition is being applied to in the smithing table."
-    },
-    {
-      "type_id": "SmithingTransformRecipePayload",
       "field": "Recipe Id",
       "doc": "RecipeID is a unique ID of the recipe. This ID must be unique amongst all other types of recipes too,\nbut its functionality is not exactly known."
     },
@@ -6075,43 +5490,13 @@
       "doc": "Result is the resulting item from the two items being added together."
     },
     {
-      "type_id": "SmithingTransformRecipePayload",
-      "field": "Tag",
-      "doc": "Block is the block name that is required to create the output of the recipe. The block is not prefixed with\n'minecraft:', so it will look like 'smithing_table' as an example."
-    },
-    {
-      "type_id": "SmithingTransformRecipePayload",
-      "field": "Template Ingredient",
-      "doc": "Template is the item that is used to shape the Base item based on the Addition being applied."
-    },
-    {
       "type_id": "SmithingTrimRecipePayload",
       "doc": "SmithingTrimRecipe is a recipe specifically used for applying armour trims to an armour piece inside a smithing table."
     },
     {
       "type_id": "SmithingTrimRecipePayload",
-      "field": "Addition Ingredient",
-      "doc": "Addition is the item that is being added to the Base item to result in a modified item."
-    },
-    {
-      "type_id": "SmithingTrimRecipePayload",
-      "field": "Base Ingredient",
-      "doc": "Base is the item that the Addition is being applied to in the smithing table."
-    },
-    {
-      "type_id": "SmithingTrimRecipePayload",
       "field": "Recipe Id",
       "doc": "RecipeID is a unique ID of the recipe. This ID must be unique amongst all other types of recipes too,\nbut its functionality is not exactly known."
-    },
-    {
-      "type_id": "SmithingTrimRecipePayload",
-      "field": "Tag",
-      "doc": "Block is the block name that is required to create the output of the recipe. The block is not prefixed with\n'minecraft:', so it will look like 'smithing_table' as an example."
-    },
-    {
-      "type_id": "SmithingTrimRecipePayload",
-      "field": "Template Ingredient",
-      "doc": "Template is the item that is used to shape the Base item based on the Addition being applied."
     },
     {
       "type_id": "SpawnExperienceOrbPacket",
@@ -6162,38 +5547,8 @@
     },
     {
       "type_id": "StartGamePacket",
-      "field": "Block Properties",
-      "doc": "Blocks is a list of all custom blocks registered on the server."
-    },
-    {
-      "type_id": "StartGamePacket",
-      "field": "BlockNetworkIds Are Hashes",
-      "doc": "DisablePlayerInteractions is true if the client should ignore other players when interacting with the world."
-    },
-    {
-      "type_id": "StartGamePacket",
-      "field": "Enable Item Stack Net Manager",
-      "doc": "ServerAuthoritativeInventory specifies if the server authoritative inventory system is enabled. This\nis a new system introduced in 1.16. Backwards compatibility with the inventory transactions has to\nsome extent been preserved, but will eventually be removed."
-    },
-    {
-      "type_id": "StartGamePacket",
       "field": "Enchantment Seed",
       "doc": "EnchantmentSeed is the seed used to seed the random used to produce enchantments in the enchantment\ntable. Note that the exact correct random implementation must be used to produce the correct results\nboth client- and server-side."
-    },
-    {
-      "type_id": "StartGamePacket",
-      "field": "Game Type",
-      "doc": "EntityUniqueID is the unique ID of the player. The unique ID is a value that remains consistent across\ndifferent sessions of the same world, but most servers simply fill the runtime ID of the entity out for\nthis field."
-    },
-    {
-      "type_id": "StartGamePacket",
-      "field": "Is Trial",
-      "doc": "Trial specifies if the world was a trial world, meaning features are limited and there is a time limit\non the world."
-    },
-    {
-      "type_id": "StartGamePacket",
-      "field": "Level Current Time",
-      "doc": "Time is the total time that has elapsed since the start of the world."
     },
     {
       "type_id": "StartGamePacket",
@@ -6202,53 +5557,8 @@
     },
     {
       "type_id": "StartGamePacket",
-      "field": "Level Name",
-      "doc": "WorldName is the name of the world that the player is joining. Note that this field shows up above the\nplayer list for the rest of the game session, and cannot be changed. Setting the server name to this\nfield is recommended."
-    },
-    {
-      "type_id": "StartGamePacket",
-      "field": "Movement Settings",
-      "doc": "PlayerMovementSettings ..."
-    },
-    {
-      "type_id": "StartGamePacket",
       "field": "Multiplayer Correlation Id",
       "doc": "MultiplayerCorrelationID is a unique ID specifying the multi-player session of the player. A random\nUUID should be filled out for this field."
-    },
-    {
-      "type_id": "StartGamePacket",
-      "field": "Position",
-      "doc": "PlayerPosition is the spawn position of the player in the world. In servers this is often the same as\nthe world's spawn position found below."
-    },
-    {
-      "type_id": "StartGamePacket",
-      "field": "Rotation",
-      "doc": "WorldSpawn is the block on which the world spawn of the world. This coordinate has no effect on the\nplace that the client spawns, but it does have an effect on the direction that a compass points."
-    },
-    {
-      "type_id": "StartGamePacket",
-      "field": "Server Block Type Registry Checksum",
-      "doc": "ServerBlockStateChecksum is a checksum to ensure block states between the server and client match.\nThis can simply be left empty, and the client will avoid trying to verify it."
-    },
-    {
-      "type_id": "StartGamePacket",
-      "field": "Server Configuration Join Info",
-      "doc": "ServerJoinInformation contains optional information about the server the player is joining."
-    },
-    {
-      "type_id": "StartGamePacket",
-      "field": "Server Enabled ClientSide Generation",
-      "doc": "ClientSideGeneration is true if the client should use the features registered in the FeatureRegistry packet to\ngenerate terrain client-side to save on bandwidth."
-    },
-    {
-      "type_id": "StartGamePacket",
-      "field": "Server Version",
-      "doc": "GameVersion is the version of the game the server is running. The exact function of this field isn't clear."
-    },
-    {
-      "type_id": "StartGamePacket",
-      "field": "Settings",
-      "doc": "EducationSharedResourceURI is an education edition feature that transmits education resource settings to clients."
     },
     {
       "type_id": "StartGamePacket",
@@ -6282,26 +5592,6 @@
     {
       "type_id": "StructureBlockUpdatePacket",
       "doc": "StructureBlockUpdate is sent by the client when it updates a structure block using the in-game UI. The\ndata it contains depends on the type of structure block that it is. In Minecraft Bedrock Edition v1.11,\nthere is only the Export structure block type, but in v1.13 the ones present in Java Edition will,\naccording to the wiki, be added too."
-    },
-    {
-      "type_id": "StructureBlockUpdatePacket",
-      "field": "Block Position",
-      "doc": "Position is the position of the structure block that is updated."
-    },
-    {
-      "type_id": "StructureBlockUpdatePacket",
-      "field": "IsWaterlogged",
-      "doc": "Waterlogged specifies if non-air blocks replace water or combine with water."
-    },
-    {
-      "type_id": "StructureBlockUpdatePacket",
-      "field": "Structure Data",
-      "doc": "Settings is a struct of settings that should be used for exporting the structure. These settings are\nidentical to the last sent in the StructureBlockUpdate packet by the client."
-    },
-    {
-      "type_id": "StructureBlockUpdatePacket",
-      "field": "Trigger?",
-      "doc": "ShouldTrigger specifies if the structure block should be triggered immediately after this packet\nreaches the server."
     },
     {
       "type_id": "StructureSettings",
@@ -6425,32 +5715,12 @@
       "doc": "CacheEnabled is whether the sub-chunk caching is enabled or not."
     },
     {
-      "type_id": "SubChunkPacket",
-      "field": "Center Pos",
-      "doc": "Position is an absolute sub-chunk center point that every SubChunkRequest uses as a reference."
-    },
-    {
-      "type_id": "SubChunkPacket",
-      "field": "SubChunk Data",
-      "doc": "SubChunkEntries contains sub-chunk entries relative to the center point."
-    },
-    {
       "type_id": "SubChunkPos",
       "doc": "SubChunkPos is the position of a sub-chunk. The X and Z coordinates are the coordinates of the chunk, and the Y\ncoordinate is the absolute sub-chunk index."
     },
     {
       "type_id": "SubChunkRequestPacket",
       "doc": "SubChunkRequest requests specific sub-chunks from the server using a center point."
-    },
-    {
-      "type_id": "SubChunkRequestPacket",
-      "field": "Center Pos",
-      "doc": "Position is an absolute sub-chunk center point used as a base point for all sub-chunks requested. The X and Z\ncoordinates represent the chunk coordinates, while the Y coordinate is the absolute sub-chunk index."
-    },
-    {
-      "type_id": "SubChunkRequestPacket",
-      "field": "SubChunk Position Offset List",
-      "doc": "Offsets contains all requested offsets around the center point."
     },
     {
       "type_id": "SubClientLoginPacket",
@@ -6563,21 +5833,6 @@
       "type_id": "TextPacket",
       "field": "Filtered Message",
       "doc": "FilteredMessage is a filtered version of Message with all the profanity removed. The client will use\nthis over Message if this field is not empty and they have the \"Filter Profanity\" setting enabled."
-    },
-    {
-      "type_id": "TextPacket",
-      "field": "Message Category",
-      "doc": "TextType is the type of the text sent. When a client sends this to the server, it should always be\nTextTypeChat. If the server sends it, it may be one of the other text types above."
-    },
-    {
-      "type_id": "TextPacket",
-      "field": "Platform Id",
-      "doc": "Message is the message of the packet. This field is set for each TextType and is the main component of\nthe packet."
-    },
-    {
-      "type_id": "TextPacket",
-      "field": "Sender's XUID",
-      "doc": "SourceName is the name of the source of the messages. This source is displayed in text types such as\nthe TextTypeChat and TextTypeWhisper, where typically the username is shown."
     },
     {
       "type_id": "TickingAreasLoadStatusPacket",
@@ -6830,11 +6085,6 @@
     },
     {
       "type_id": "UpdateEquipPacket",
-      "field": "Container Id",
-      "doc": "WindowID is the identifier associated with the window that the UpdateEquip packet concerns. It is the\nID sent for the horse inventory that was opened before this packet was sent."
-    },
-    {
-      "type_id": "UpdateEquipPacket",
       "field": "Entity Unique Id",
       "doc": "EntityUniqueID is the unique ID of the entity whose equipment was 'updated' to the player. It is\ntypically the horse entity that had its inventory opened."
     },
@@ -6842,11 +6092,6 @@
       "type_id": "UpdateEquipPacket",
       "field": "Size",
       "doc": "Size is the size of the horse inventory that should be opened. A bigger size does, in fact, change the\namount of slots displayed."
-    },
-    {
-      "type_id": "UpdateEquipPacket",
-      "field": "Type",
-      "doc": "WindowType is the type of the window that was opened. Generally, this is the type of a horse inventory,\nas the packet is specifically made for that."
     },
     {
       "type_id": "UpdatePlayerGameTypePacket",
@@ -6891,18 +6136,8 @@
       "doc": "UpdateSubChunkBlocks is essentially just UpdateBlock packet, however for a set of blocks in a sub-chunk."
     },
     {
-      "type_id": "UpdateSubChunkBlocksPacket",
-      "field": "Sub Chunk Block Position",
-      "doc": "Position is the block position of the sub-chunk being referred to."
-    },
-    {
       "type_id": "UpdateTradePacket",
       "doc": "UpdateTrade is sent by the server to update the trades offered by a villager to a player. It is sent at the\nmoment that a player interacts with a villager."
-    },
-    {
-      "type_id": "UpdateTradePacket",
-      "field": "Container Id",
-      "doc": "WindowID is the ID that identifies the trading window that the client currently has opened."
     },
     {
       "type_id": "UpdateTradePacket",
@@ -6918,26 +6153,6 @@
       "type_id": "UpdateTradePacket",
       "field": "Size",
       "doc": "Size is the amount of trading options that the villager has."
-    },
-    {
-      "type_id": "UpdateTradePacket",
-      "field": "Trader Tier",
-      "doc": "TradeTier is the tier of the villager that the player is trading with. The tier starts at 0 with a\nfirst two offers being available, after which two additional offers are unlocked each time the tier\nbecomes one higher."
-    },
-    {
-      "type_id": "UpdateTradePacket",
-      "field": "Type",
-      "doc": "WindowType is an identifier specifying the type of the window opened. In vanilla, it appears this is\nalways filled out with 15."
-    },
-    {
-      "type_id": "UpdateTradePacket",
-      "field": "Use New Trade Screen",
-      "doc": "NewTradeUI specifies if the villager should be using the new trade UI (The one added in 1.11.) rather\nthan the old one. This should usually be set to true."
-    },
-    {
-      "type_id": "UpdateTradePacket",
-      "field": "Using Economy Trade",
-      "doc": "DemandBasedPrices specifies if the prices of the villager's offers are modified by an increase in\ndemand for the item. (A mechanic added in 1.11.) Buying more of the same item will increase the price\nof that particular item."
     },
     {
       "type_id": "VoxelShapes::SerializableCells",

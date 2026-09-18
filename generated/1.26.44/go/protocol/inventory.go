@@ -6,15 +6,10 @@ package protocol
 // inventory action is always unbalanced: It must be combined with other actions in an inventory transaction
 // to form a balanced transaction.
 type InventoryAction struct {
-	Source InventorySource
-	// SourceType is the source type of the inventory action. It is one of the constants above.
-	Slot uint32
-	// OldItem is the item that was present in the slot before the inventory action. It should be checked by the
-	// server to ensure the inventories were not out of sync.
+	Source   InventorySource
+	Slot     uint32
 	FromItem NetworkItemStackDescriptorSerializedData
-	// NewItem is the new item that was put in the InventorySlot that the OldItem was in. It must be checked in
-	// combination with other inventory actions to ensure that the transaction is balanced.
-	ToItem NetworkItemStackDescriptorSerializedData
+	ToItem   NetworkItemStackDescriptorSerializedData
 }
 
 // Marshal reads or writes InventoryAction using its canonical wire layout.

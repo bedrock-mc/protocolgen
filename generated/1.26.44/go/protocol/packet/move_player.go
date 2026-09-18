@@ -14,14 +14,10 @@ type MovePlayer struct {
 	PlayerRuntimeID uint64
 	// Position is the position to spawn the player on. If the player is on a distance that the viewer cannot see
 	// it, the player will still show up if the viewer moves closer.
-	Position mgl32.Vec3
-	Rotation mgl32.Vec2
-	// Pitch is the vertical rotation of the player. Facing straight forward yields a pitch of 0. Pitch is
-	// measured in degrees.
+	Position      mgl32.Vec3
+	Rotation      mgl32.Vec2
 	YHeadRotation float32
-	// Mode is the mode of the movement. It specifies the way the player's movement should be shown to other
-	// players. It is one of the constants above.
-	PositionMode protocol.PlayerPositionModeComponentPositionMode
+	PositionMode  protocol.PlayerPositionModeComponentPositionMode
 	// OnGround specifies if the player is considered on the ground. Note that proxies or hacked clients could
 	// fake this to always be true, so it should not be taken for granted.
 	OnGround        bool

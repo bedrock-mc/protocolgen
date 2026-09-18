@@ -14,9 +14,7 @@ type MoveActorAbsolute struct {
 	// EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and
 	// entities are generally identified in packets using this runtime ID.
 	ActorRuntimeID uint64
-	// Flags is a combination of flags that specify details of the movement. It is a combination of the flags
-	// above.
-	Header uint8
+	Header         uint8
 	// Position is the position to spawn the entity on. If the entity is on a distance that the player cannot see
 	// it, the entity will still show up if the player moves closer.
 	Position      mgl32.Vec3

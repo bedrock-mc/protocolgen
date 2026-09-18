@@ -9,8 +9,6 @@ import (
 // CommandBlockUpdate is sent by the client to update a command block at a specific position. The command
 // block may be either a physical block or an entity.
 type CommandBlockUpdate struct {
-	// Position is the position of the command block updated. It is only set if Block is set to true. Nothing
-	// happens if no command block is set at this position.
 	Target protocol.CommandBlockUpdateData
 	// Command is the command currently entered in the command block. This is the command that is executed when
 	// the command block is activated.
@@ -24,9 +22,7 @@ type CommandBlockUpdate struct {
 	// FilteredName is a filtered version of Name with all the profanity removed. The client will use this over
 	// Name if this field is not empty and they have the "Filter Profanity" setting enabled.
 	FilteredName string
-	// NeedsRedstone specifies if the command block needs to be powered by redstone to be activated. If false, the
-	// command block is always active. The field is only set if Block is set to true.
-	TrackOutput bool
+	TrackOutput  bool
 	// TickDelay is the delay in ticks between executions of a command block, if it is a repeating command block.
 	TickDelay int32
 	// ExecuteOnFirstTick specifies if the command block should execute on the first tick, AKA as soon as the

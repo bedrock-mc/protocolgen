@@ -358,7 +358,13 @@ func parseFork(root string) (forkIndex, error) {
 					}
 					if len(group.Consts) > 0 {
 						group.prefix = commonPrefix(group.Consts)
-						result.groups = append(result.groups, group)
+						// The fork sometimes continues one enum in a second block in
+						// the same file (ActorEvent restarts at 57); treat those as one.
+						if last := len(result.groups) - 1; last >= 0 && result.groups[last].File == group.File && result.groups[last].Package == group.Package && result.groups[last].prefix != "" && result.groups[last].prefix == group.prefix {
+							result.groups[last].Consts = append(result.groups[last].Consts, group.Consts...)
+						} else {
+							result.groups = append(result.groups, group)
+						}
 					}
 				}
 			}

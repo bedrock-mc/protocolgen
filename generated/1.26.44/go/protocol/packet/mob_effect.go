@@ -12,14 +12,15 @@ type MobEffect struct {
 	// EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and
 	// entities are generally identified in packets using this runtime ID.
 	TargetRuntimeID uint64
-	// EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and
-	// entities are generally identified in packets using this runtime ID.
-	EventID protocol.MobEffectEvent
 	// Operation is the operation of the packet. It is either MobEffectAdd, MobEffectModify or MobEffectRemove and
 	// specifies the result of the packet client-side.
-	EffectID int32
+	EventID protocol.MobEffectEvent
 	// EffectType is the ID of the effect to be added, removed or modified. It is one of the constants that may be
 	// found above.
+	EffectID int32
+	// Amplifier is the amplifier of the effect. Take note that the amplifier is not the same as the effect's
+	// level. The level is usually one higher than the amplifier, and the amplifier can actually be negative to
+	// reverse the behaviour effect.
 	EffectAmplifier int32
 	// Particles specifies if viewers of the entity that gets the effect shows particles around it. If set to
 	// false, no particles are emitted around the entity.

@@ -8,7 +8,6 @@ import (
 
 // ClientBoundAttributeLayerSync is sent by the server to synchronise attribute layers with the client.
 type ClientboundAttributeLayerSync struct {
-	// Settings is set if PayloadType is AttributeLayerPayloadTypeUpdateSettings.
 	Data protocol.AttributeLayerSyncData
 }
 
