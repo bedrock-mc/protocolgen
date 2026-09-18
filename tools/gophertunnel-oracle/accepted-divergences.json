@@ -240,6 +240,27 @@
       "fingerprint": "sha256:8d3e0cbd9dbfcd8cc1abe11541736099e0f4a4034cfeb340b6d050f267d09ef1"
     },
     {
+      "id": 52,
+      "name": "CraftingDataPacket",
+      "reason": "Modeling limitation: the canonical shaped-recipe ingredient (Endstone cerealizer<RecipeIngredient>::SerializedData) is a var_u32-counted string-to-string map followed by zigzag aux value and count, while the pinned ItemDescriptorCount and CloudburstMC readIngredient write a var_u32 descriptor kind, a descriptor-name string, a payload chosen by that name, then the zigzag count. The map is byte-identical for the default and invalid descriptors and diverges for molang and item-tag descriptors. A descriptor discriminated by a string is not expressible in the claim format, so no correction is possible without a manifest schema extension.",
+      "what_would_settle_it": "A manifest node kind for string-discriminated unions, or evidence that only default descriptors occur in CraftingData at protocol 2168.",
+      "evidence": [
+        {
+          "locator": "https://github.com/bedrock-mc/protocolgen/blob/16c116fb1f11f3ef91dbf278382854a2771603b6/generated/1.26.40/manifest.json",
+          "summary": "The immutable canonical input contains the compared packet shape; this baseline acknowledges comparison debt, not wire correctness."
+        },
+        {
+          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/crafting_data.go",
+          "summary": "Pinned source operations were compared with the canonical packet as a wire language; the shortest diverging path is recorded in the oracle report."
+        },
+        {
+          "locator": "https://github.com/CloudburstMC/Protocol/blob/03d84626de7a22af2a48c61d1eebfd37526db0fa/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v2168/BedrockCodecHelper_v2168.java",
+          "summary": "readIngredient reads a var_u32 kind, then readItemDescriptor reads the descriptor-name string and dispatches on it, then a zigzag count."
+        }
+      ],
+      "fingerprint": "sha256:7a8ff51d0b939733ee27e5dc139f9d5830abf4cfb8f56577dd9b82bf3ccf1662"
+    },
+    {
       "id": 63,
       "name": "PlayerListPacket",
       "reason": "Extractor limitation: PlayerListEntry uses an early return for removal entries, but the extractor also includes the subsequent addition payload. Selector placement and skin-colour endianness require separate verification after early-return handling.",
@@ -327,6 +348,27 @@
         }
       ],
       "fingerprint": "sha256:e454a97527dd848c564b858f8f643711c709575bd2a2e4e33e53bf7f318da8b6"
+    },
+    {
+      "id": 144,
+      "name": "PlayerAuthInputPacket",
+      "reason": "Framing only, same class as 30: Endstone's constant-true bool before Item Use Transaction and inside InventoryTransaction are lowered as optionals, so the manifest lets the item-use payload be absent, while the pinned PlayerInventoryAction and CloudburstMC writeItemUseTransaction write both markers as always-true and continue with the action type. The bytes agree whenever the markers are true. Input Data itself (presence bool, var_u32-prefixed zigzag ids) agrees on all three sides.",
+      "what_would_settle_it": "Evidence that either constant marker can be false on the wire, or an ingest rule that lowers a constant-true bool as a fixed byte instead of an optional.",
+      "evidence": [
+        {
+          "locator": "https://github.com/bedrock-mc/protocolgen/blob/16c116fb1f11f3ef91dbf278382854a2771603b6/generated/1.26.40/manifest.json",
+          "summary": "The immutable canonical input contains the compared packet shape; this baseline acknowledges comparison debt, not wire correctness."
+        },
+        {
+          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/player_auth_input.go",
+          "summary": "Pinned source operations were compared with the canonical packet as a wire language; the shortest diverging path is recorded in the oracle report."
+        },
+        {
+          "locator": "https://github.com/CloudburstMC/Protocol/blob/03d84626de7a22af2a48c61d1eebfd37526db0fa/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v2168/serializer/PlayerAuthInputSerializer_v2168.java",
+          "summary": "writeItemUseTransaction writes buffer.writeBoolean(true) twice after the legacy slots and then the zigzag action type unconditionally."
+        }
+      ],
+      "fingerprint": "sha256:4740cadccc85fbe18a286f35a35b30e9b4a3747db48e43e2ee8e53948b21b631"
     },
     {
       "id": 145,
@@ -492,6 +534,31 @@
         }
       ],
       "fingerprint": "sha256:f9129b6645a061f57ac837e66588fda175bdf228254a013c2c74f7a41bf7c312"
+    },
+    {
+      "id": 348,
+      "name": "ClientboundUpdateSoundDataPacket",
+      "reason": "Open decision, not a guess: commit bbaa61a treats a defaulted Mojang property as always present and deliberately dropped the seven ClientboundUpdateSoundData optional-slot corrections, which is why the canonical slots are bare var_u32 unions. The pinned SoundDataUpdate (OptionalMarshaler, then var_u32 type and payload) and CloudburstMC (writeOptionalNull, then var_u32 and payload) both write a presence bool per slot. Either the defaulted-property rule needs a per-packet exception here or the pinned fork is wrong; the manifest was not changed by the oracle work.",
+      "what_would_settle_it": "A ClientboundUpdateSoundData capture at protocol 2168, or a writer trace, decides whether each slot carries a presence bool.",
+      "evidence": [
+        {
+          "locator": "https://github.com/bedrock-mc/protocolgen/blob/16c116fb1f11f3ef91dbf278382854a2771603b6/generated/1.26.40/manifest.json",
+          "summary": "The immutable canonical input contains the compared packet shape; this baseline acknowledges comparison debt, not wire correctness."
+        },
+        {
+          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/clientbound_update_sound_data.go",
+          "summary": "Pinned source operations were compared with the canonical packet as a wire language; the shortest diverging path is recorded in the oracle report."
+        },
+        {
+          "locator": "https://github.com/CloudburstMC/Protocol/blob/03d84626de7a22af2a48c61d1eebfd37526db0fa/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v2168/serializer/ClientboundUpdateSoundDataSerializer_v2168.java",
+          "summary": "Each slot is helper.writeOptionalNull(..., var_u32 then payload)."
+        },
+        {
+          "locator": "https://github.com/bedrock-mc/protocolgen/commit/bbaa61a",
+          "summary": "Removed the seven sound-slot optional corrections under the defaulted-property rule and recorded 348 moving from agreement to unresolved."
+        }
+      ],
+      "fingerprint": "sha256:9f3e8ad1396ac2a605494e094e2c3e1861203709151d4bc307c5485343d692a7"
     }
   ]
 }
