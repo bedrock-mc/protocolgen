@@ -2,7 +2,9 @@
 
 package protocol
 
-import "image/color"
+import (
+	"image/color"
+)
 
 // MapDecoration is a fixed decoration on a map: Its position or other properties do not change automatically
 // client-side.

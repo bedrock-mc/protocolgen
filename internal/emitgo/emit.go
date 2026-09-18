@@ -16,6 +16,7 @@ import (
 
 	"protocolgen/internal/docs"
 	"protocolgen/internal/domains"
+	"protocolgen/internal/flatten"
 	"protocolgen/internal/layout"
 	"protocolgen/internal/manifest"
 	"protocolgen/internal/naming"
@@ -69,7 +70,22 @@ type generator struct {
 	domains            domains.Overlay
 	docs               docs.Overlay
 	layout             layout.Overlay
+	usage              flatten.Usage
 	packetConstants    map[string][]string // packet file stem -> const blocks relocated there by the layout overlay
+}
+
+// isNative reports whether a node is emitted as an established Go type
+// rather than a generated struct.
+func (g *generator) isNative(node manifest.Node) bool {
+	_, matched, _ := g.nativeGoType(node)
+	return matched
+}
+
+// packetFields is a packet's effective field list: single-use payload structs
+// are inlined, so their fields belong to the packet as in the hand-written
+// packages.
+func (g *generator) packetFields(packet manifest.Packet) []flatten.Field {
+	return g.usage.PacketFields(packet, g.isNative)
 }
 
 //go:embed runtime/codec.go runtime/helpers.go runtime/reader.go runtime/types.go runtime/writer.go
@@ -145,6 +161,7 @@ func GenerateWithOptions(m manifest.Manifest, options Options) (map[string]strin
 		domains:            options.Domains,
 		docs:               options.Docs,
 		layout:             options.Layout,
+		usage:              flatten.Count(m),
 		packetConstants:    map[string][]string{},
 	}
 	packets := append([]manifest.Packet(nil), m.Packets...)
@@ -157,11 +174,12 @@ func GenerateWithOptions(m manifest.Manifest, options Options) (map[string]strin
 		}
 		g.usedNames[name] = true
 		packetNames[packet.ID] = name
-		for _, field := range packet.Fields {
+		for _, effective := range g.packetFields(packet) {
+			field := effective.Field
 			if err := ensureCodecSymmetric(field); err != nil {
 				return nil, fmt.Errorf("packet %s field %s: %w", packet.Name, field.Name, err)
 			}
-			if _, err := g.goType(field.Encode, name+g.fieldName(packet.Name, field.Name)); err != nil {
+			if _, err := g.goType(field.Encode, name+g.fieldName(effective.Owner, field.Name)); err != nil {
 				return nil, fmt.Errorf("packet %s field %s: %w", packet.Name, field.Name, err)
 			}
 		}
@@ -856,6 +874,7 @@ func enumConstants(definition typeDefinition, placement layout.Placement) (strin
 type packetField struct {
 	name     string
 	wireName string
+	owner    string // type ID of the struct declaring the field; the packet name for top-level fields
 	typ      string
 	node     manifest.Node
 }
@@ -864,9 +883,11 @@ func (g *generator) emitPacket(packet manifest.Packet, packetName string, consta
 	var b strings.Builder
 	b.WriteString("// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\npackage packet\n\n")
 	used := map[string]bool{}
-	fields := make([]packetField, 0, len(packet.Fields))
-	for _, field := range packet.Fields {
-		baseName := g.fieldName(packet.Name, field.Name)
+	effective := g.packetFields(packet)
+	fields := make([]packetField, 0, len(effective))
+	for _, item := range effective {
+		field := item.Field
+		baseName := g.fieldName(item.Owner, field.Name)
 		if g.emitPacketRuntime && baseName == "ID" {
 			// ID is reserved by the generated packet runtime method. Keep the
 			// wire field explicit without making the struct fail to compile.
@@ -874,7 +895,7 @@ func (g *generator) emitPacket(packet manifest.Packet, packetName string, consta
 		}
 		name := uniqueFieldName(baseName, used)
 		typ := mustGoType(g, field.Encode, packetName+name)
-		fields = append(fields, packetField{name: name, wireName: field.Name, typ: qualifyGoType(typ, g.definitions), node: field.Encode})
+		fields = append(fields, packetField{name: name, wireName: field.Name, owner: item.Owner, typ: qualifyGoType(typ, g.definitions), node: field.Encode})
 	}
 	imports := append([]string{g.protocolImportPath}, goImportsForFields(fields)...)
 	writeGoImports(&b, imports)
@@ -888,24 +909,24 @@ func (g *generator) emitPacket(packet manifest.Packet, packetName string, consta
 	}
 	fmt.Fprintf(&b, "type %s struct {\n", packetName)
 	for _, field := range fields {
-		for _, line := range docs.GoComments(g.docs.Field(packet.Name, field.wireName)) {
+		for _, line := range docs.GoComments(g.docs.Field(field.owner, field.wireName)) {
 			fmt.Fprintf(&b, "\t%s\n", line)
 		}
 		fmt.Fprintf(&b, "\t%s %s\n", field.name, field.typ)
 	}
 	b.WriteString("}\n\n")
+	if g.emitPacketRuntime {
+		fmt.Fprintf(&b, "// ID returns the protocol ID for %s.\nfunc (*%s) ID() uint32 { return ID%s }\n\n", packetName, packetName, packetName)
+	}
 	fmt.Fprintf(&b, "// Marshal reads or writes %s using its canonical wire layout.\n", packetName)
-	fmt.Fprintf(&b, "func (x *%s) Marshal(io protocol.IO) {\n", packetName)
+	fmt.Fprintf(&b, "func (pk *%s) Marshal(io protocol.IO) {\n", packetName)
 	emitter := marshalEmitter{g: g, qualifier: "protocol."}
 	for _, field := range fields {
-		if err := emitter.node(&b, field.node, "x."+field.name, packetName+field.name, "\t", addressStrategy{}); err != nil {
+		if err := emitter.node(&b, field.node, "pk."+field.name, packetName+field.name, "\t", addressStrategy{}); err != nil {
 			return "", fmt.Errorf("packet %s field %s marshal: %w", packet.Name, field.name, err)
 		}
 	}
 	b.WriteString("}\n")
-	if g.emitPacketRuntime {
-		fmt.Fprintf(&b, "\n// ID returns the protocol ID for %s.\nfunc (*%s) ID() uint32 { return ID%s }\n", packetName, packetName, packetName)
-	}
 	return formatGoSource(b.String())
 }
 
@@ -1683,10 +1704,6 @@ func writeGoImports(b *strings.Builder, imports []string) {
 		return
 	}
 	sort.Strings(imports)
-	if len(imports) == 1 {
-		fmt.Fprintf(b, "import %q\n\n", imports[0])
-		return
-	}
 	var standard, external []string
 	for _, path := range imports {
 		first := strings.SplitN(path, "/", 2)[0]

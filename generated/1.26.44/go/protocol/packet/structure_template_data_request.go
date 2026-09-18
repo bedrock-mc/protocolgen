@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.44/go/protocol"
+import (
+	"protocolgen/generated/1.26.44/go/protocol"
+)
 
 // StructureTemplateDataRequest is sent by the client to request data of a structure.
 type StructureTemplateDataRequest struct {
@@ -19,13 +21,13 @@ type StructureTemplateDataRequest struct {
 	RequestedOperation protocol.StructureTemplateRequestOperation
 }
 
-// Marshal reads or writes StructureTemplateDataRequest using its canonical wire layout.
-func (x *StructureTemplateDataRequest) Marshal(io protocol.IO) {
-	io.StringLimits(&x.StructureName, 0, 256)
-	x.StructurePosition.Marshal(io)
-	x.StructureSettings.Marshal(io)
-	x.RequestedOperation.Marshal(io)
-}
-
 // ID returns the protocol ID for StructureTemplateDataRequest.
 func (*StructureTemplateDataRequest) ID() uint32 { return IDStructureTemplateDataRequest }
+
+// Marshal reads or writes StructureTemplateDataRequest using its canonical wire layout.
+func (pk *StructureTemplateDataRequest) Marshal(io protocol.IO) {
+	io.StringLimits(&pk.StructureName, 0, 256)
+	pk.StructurePosition.Marshal(io)
+	pk.StructureSettings.Marshal(io)
+	pk.RequestedOperation.Marshal(io)
+}

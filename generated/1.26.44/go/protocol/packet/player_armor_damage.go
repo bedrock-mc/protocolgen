@@ -2,16 +2,21 @@
 
 package packet
 
-import "protocolgen/generated/1.26.44/go/protocol"
+import (
+	"protocolgen/generated/1.26.44/go/protocol"
+)
 
+// PlayerArmorDamage is sent by the server to damage the armour of a player. It is a very efficient packet,
+// but generally it's much easier to just send a slot update for the damaged armour.
 type PlayerArmorDamage struct {
+	// List is a list of armour entries indicating which pieces of armour should receive damage.
 	ArmorSlotAndDamagePairs []protocol.ArmorSlotAndDamagePair
-}
-
-// Marshal reads or writes PlayerArmorDamage using its canonical wire layout.
-func (x *PlayerArmorDamage) Marshal(io protocol.IO) {
-	protocol.SliceLimits(io, &x.ArmorSlotAndDamagePairs, 0, 5)
 }
 
 // ID returns the protocol ID for PlayerArmorDamage.
 func (*PlayerArmorDamage) ID() uint32 { return IDPlayerArmorDamage }
+
+// Marshal reads or writes PlayerArmorDamage using its canonical wire layout.
+func (pk *PlayerArmorDamage) Marshal(io protocol.IO) {
+	protocol.SliceLimits(io, &pk.ArmorSlotAndDamagePairs, 0, 5)
+}

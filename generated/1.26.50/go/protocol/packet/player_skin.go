@@ -20,13 +20,13 @@ type PlayerSkin struct {
 	LocalizedOldSkinName string
 }
 
-// Marshal reads or writes PlayerSkin using its canonical wire layout.
-func (x *PlayerSkin) Marshal(io protocol.IO) {
-	io.UUID(&x.UUID)
-	x.SerializedSkin.Marshal(io)
-	io.String(&x.LocalizedNewSkinName)
-	io.String(&x.LocalizedOldSkinName)
-}
-
 // ID returns the protocol ID for PlayerSkin.
 func (*PlayerSkin) ID() uint32 { return IDPlayerSkin }
+
+// Marshal reads or writes PlayerSkin using its canonical wire layout.
+func (pk *PlayerSkin) Marshal(io protocol.IO) {
+	io.UUID(&pk.UUID)
+	pk.SerializedSkin.Marshal(io)
+	io.String(&pk.LocalizedNewSkinName)
+	io.String(&pk.LocalizedOldSkinName)
+}

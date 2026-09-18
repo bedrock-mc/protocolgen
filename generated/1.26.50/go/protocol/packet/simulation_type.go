@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 // SimulationType is an in-progress packet. We currently do not know the use case.
 type SimulationType struct {
@@ -10,10 +12,10 @@ type SimulationType struct {
 	SimType protocol.SimulationTypeEnum
 }
 
-// Marshal reads or writes SimulationType using its canonical wire layout.
-func (x *SimulationType) Marshal(io protocol.IO) {
-	x.SimType.Marshal(io)
-}
-
 // ID returns the protocol ID for SimulationType.
 func (*SimulationType) ID() uint32 { return IDSimulationType }
+
+// Marshal reads or writes SimulationType using its canonical wire layout.
+func (pk *SimulationType) Marshal(io protocol.IO) {
+	pk.SimType.Marshal(io)
+}

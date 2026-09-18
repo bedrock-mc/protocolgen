@@ -50,30 +50,30 @@ type PlayerAuthInput struct {
 	RawMoveVector mgl32.Vec2
 }
 
-// Marshal reads or writes PlayerAuthInput using its canonical wire layout.
-func (x *PlayerAuthInput) Marshal(io protocol.IO) {
-	io.Vec2(&x.PlayerRotation)
-	io.Vec3(&x.Position)
-	io.Vec2(&x.MoveVector)
-	io.Float32(&x.PlayerHeadRotation)
-	protocol.Slice(io, &x.InputData)
-	x.InputMode.Marshal(io)
-	x.PlayMode.Marshal(io)
-	x.NewInteractionModel.Marshal(io)
-	io.Vec2(&x.InteractRotation)
-	io.PlayerInputTick(&x.ClientTick)
-	io.Vec3(&x.PosDelta)
-	protocol.OptionalMarshaler(io, &x.ItemUseTransaction)
-	protocol.OptionalMarshaler(io, &x.ItemStackRequest)
-	protocol.OptionalFunc(io, &x.PlayerBlockActions, func(value *[]protocol.PlayerBlockActionData) {
-		protocol.SliceLimits(io, value, 0, 100)
-	})
-	protocol.OptionalFunc(io, &x.VehicleRotation, io.Vec2)
-	protocol.OptionalFunc(io, &x.ClientPredictedVehicle, io.ActorUniqueID)
-	io.Vec2(&x.AnalogMoveVector)
-	io.Vec3(&x.CameraOrientation)
-	io.Vec2(&x.RawMoveVector)
-}
-
 // ID returns the protocol ID for PlayerAuthInput.
 func (*PlayerAuthInput) ID() uint32 { return IDPlayerAuthInput }
+
+// Marshal reads or writes PlayerAuthInput using its canonical wire layout.
+func (pk *PlayerAuthInput) Marshal(io protocol.IO) {
+	io.Vec2(&pk.PlayerRotation)
+	io.Vec3(&pk.Position)
+	io.Vec2(&pk.MoveVector)
+	io.Float32(&pk.PlayerHeadRotation)
+	protocol.Slice(io, &pk.InputData)
+	pk.InputMode.Marshal(io)
+	pk.PlayMode.Marshal(io)
+	pk.NewInteractionModel.Marshal(io)
+	io.Vec2(&pk.InteractRotation)
+	io.PlayerInputTick(&pk.ClientTick)
+	io.Vec3(&pk.PosDelta)
+	protocol.OptionalMarshaler(io, &pk.ItemUseTransaction)
+	protocol.OptionalMarshaler(io, &pk.ItemStackRequest)
+	protocol.OptionalFunc(io, &pk.PlayerBlockActions, func(value *[]protocol.PlayerBlockActionData) {
+		protocol.SliceLimits(io, value, 0, 100)
+	})
+	protocol.OptionalFunc(io, &pk.VehicleRotation, io.Vec2)
+	protocol.OptionalFunc(io, &pk.ClientPredictedVehicle, io.ActorUniqueID)
+	io.Vec2(&pk.AnalogMoveVector)
+	io.Vec3(&pk.CameraOrientation)
+	io.Vec2(&pk.RawMoveVector)
+}

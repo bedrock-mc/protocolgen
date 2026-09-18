@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 // PacketViolationWarning is sent by the client when it receives an invalid packet from the server. It holds
 // some information on the error that occurred. noinspection GoNameStartsWithPackageName
@@ -14,13 +16,13 @@ type PacketViolationWarning struct {
 	ViolationContext string
 }
 
-// Marshal reads or writes PacketViolationWarning using its canonical wire layout.
-func (x *PacketViolationWarning) Marshal(io protocol.IO) {
-	x.ViolationType.Marshal(io)
-	x.ViolationSeverity.Marshal(io)
-	io.Varint32(&x.ViolationPacketID)
-	io.String(&x.ViolationContext)
-}
-
 // ID returns the protocol ID for PacketViolationWarning.
 func (*PacketViolationWarning) ID() uint32 { return IDPacketViolationWarning }
+
+// Marshal reads or writes PacketViolationWarning using its canonical wire layout.
+func (pk *PacketViolationWarning) Marshal(io protocol.IO) {
+	pk.ViolationType.Marshal(io)
+	pk.ViolationSeverity.Marshal(io)
+	io.Varint32(&pk.ViolationPacketID)
+	io.String(&pk.ViolationContext)
+}

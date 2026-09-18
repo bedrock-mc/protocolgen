@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
 // ItemRegistry is sent by the server to send the client a list of available items and attach client-side
 // components to a custom item. This packet was formerly known as the ItemComponent packet before 1.21.60,
@@ -14,10 +16,10 @@ type ItemRegistry struct {
 	ItemData []protocol.ItemData
 }
 
-// Marshal reads or writes ItemRegistry using its canonical wire layout.
-func (x *ItemRegistry) Marshal(io protocol.IO) {
-	protocol.Slice(io, &x.ItemData)
-}
-
 // ID returns the protocol ID for ItemRegistry.
 func (*ItemRegistry) ID() uint32 { return IDItemRegistry }
+
+// Marshal reads or writes ItemRegistry using its canonical wire layout.
+func (pk *ItemRegistry) Marshal(io protocol.IO) {
+	protocol.Slice(io, &pk.ItemData)
+}

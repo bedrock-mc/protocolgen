@@ -24,14 +24,14 @@ type SpawnParticleEffect struct {
 	MoLangVariables protocol.Optional[string]
 }
 
-// Marshal reads or writes SpawnParticleEffect using its canonical wire layout.
-func (x *SpawnParticleEffect) Marshal(io protocol.IO) {
-	io.Uint8(&x.DimensionID)
-	io.ActorUniqueID(&x.ActorID)
-	io.Vec3(&x.Position)
-	io.String(&x.EffectName)
-	protocol.OptionalFunc(io, &x.MoLangVariables, io.String)
-}
-
 // ID returns the protocol ID for SpawnParticleEffect.
 func (*SpawnParticleEffect) ID() uint32 { return IDSpawnParticleEffect }
+
+// Marshal reads or writes SpawnParticleEffect using its canonical wire layout.
+func (pk *SpawnParticleEffect) Marshal(io protocol.IO) {
+	io.Uint8(&pk.DimensionID)
+	io.ActorUniqueID(&pk.ActorID)
+	io.Vec3(&pk.Position)
+	io.String(&pk.EffectName)
+	protocol.OptionalFunc(io, &pk.MoLangVariables, io.String)
+}

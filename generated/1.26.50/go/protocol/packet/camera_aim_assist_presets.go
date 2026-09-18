@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 // CameraAimAssistPresets is sent by the server to the client to provide a list of categories and presets that
 // can be used when sending a CameraAimAssist packet or a CameraInstruction including aim assist.
@@ -15,12 +17,12 @@ type CameraAimAssistPresets struct {
 	Operation protocol.CameraAimAssistPresetOperation
 }
 
-// Marshal reads or writes CameraAimAssistPresets using its canonical wire layout.
-func (x *CameraAimAssistPresets) Marshal(io protocol.IO) {
-	protocol.Slice(io, &x.CameraAimAssistPresets)
-	protocol.Slice(io, &x.CameraAimAssistCategories)
-	x.Operation.Marshal(io)
-}
-
 // ID returns the protocol ID for CameraAimAssistPresets.
 func (*CameraAimAssistPresets) ID() uint32 { return IDCameraAimAssistPresets }
+
+// Marshal reads or writes CameraAimAssistPresets using its canonical wire layout.
+func (pk *CameraAimAssistPresets) Marshal(io protocol.IO) {
+	protocol.Slice(io, &pk.CameraAimAssistPresets)
+	protocol.Slice(io, &pk.CameraAimAssistCategories)
+	pk.Operation.Marshal(io)
+}

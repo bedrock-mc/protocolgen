@@ -8,6 +8,9 @@ use crate::wire;
 /// information specific to the player.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct Login {
+    /// ClientProtocol is the protocol version of the player. The player is disconnected if the protocol is
+    /// incompatible with the protocol of the server. It has been superseded by the protocol version sent in the
+    /// RequestNetworkSettings packet, so this should no longer be used by the server.
     pub client_network_version: wire::I32BE,
     /// `connection_request` is a string containing information about the player and JWTs that may be used to
     /// verify if the player is connected to XBOX Live. The connection request also contains the necessary client
@@ -756,8 +759,10 @@ impl wire::Decode for AddItemActor {
     }
 }
 
+/// ServerPlayerPostMovePosition is sent by the server with the player's position after movement processing.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ServerPlayerPostMovePosition {
+    /// Position is the player's position after the server has processed movement.
     pub pos: glam::Vec3,
 }
 
@@ -1335,6 +1340,8 @@ impl wire::Decode for MobEquipment {
     }
 }
 
+/// MobArmorEquipment is sent by the server to the client to update the armour an entity is wearing. It is
+/// sent for both players and other entities, such as zombies.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct MobArmorEquipment {
     pub target_runtime_id: ActorRuntimeID,
@@ -1342,6 +1349,7 @@ pub struct MobArmorEquipment {
     pub torso: NetworkItemStackDescriptorSerializedData,
     pub legs: NetworkItemStackDescriptorSerializedData,
     pub feet: NetworkItemStackDescriptorSerializedData,
+    /// `body` is the item worn on the body of the entity. Items not wearable on the body will not be rendered.
     pub body: NetworkItemStackDescriptorSerializedData,
 }
 
@@ -1434,7 +1442,10 @@ pub struct BlockPickRequest {
     /// `position` is the position at which the client requested to pick the block. The block at that position
     /// should have its item put in HotBarSlot if it is empty.
     pub position: BlockPos,
+    /// AddBlockNBT specifies if the item should get all NBT tags from the block, meaning the item places a block
+    /// practically always equal to the one picked.
     pub with_data: bool,
+    /// HotBarSlot is the slot that was held at the time of picking a block.
     pub max_slots: wire::U8,
 }
 
@@ -1467,7 +1478,11 @@ impl wire::Decode for BlockPickRequest {
 /// can spawn that entity.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ActorPickRequest {
+    /// EntityUniqueID is the unique ID of the entity that was attempted to be picked. The server must find the
+    /// type of that entity and provide the correct spawn egg to the player.
     pub actor_id: wire::I64LE,
+    /// HotBarSlot is the held hot bar slot of the player at the time of trying to pick the entity. If empty, the
+    /// resulting spawn egg should be put into this slot.
     pub max_slots: wire::U8,
     /// `with_data` is true if the pick request requests the entity metadata.
     pub with_data: bool,
@@ -1541,10 +1556,18 @@ impl wire::Decode for PlayerAction {
     }
 }
 
+/// HurtArmor is sent by the server to damage the player's armour after being hit. The packet should never be
+/// used by servers as it hands the responsibility over to the player completely, while the server can easily
+/// reliably update the armour damage of players itself.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct HurtArmor {
+    /// `cause` is the cause of the damage dealt to the armour.
     pub cause: wire::ZigZag32,
+    /// `damage` is the amount of damage points that was dealt to the player. The damage to the armour will be
+    /// calculated by the client based upon this damage, and will also be based upon any enchantments like thorns
+    /// that the armour may have.
     pub damage: wire::ZigZag32,
+    /// ArmourSlots is a bitset of all armour slots affected.
     pub armor_slots: wire::VarULong,
 }
 
@@ -1878,10 +1901,14 @@ impl wire::Decode for ContainerOpen {
 /// container, such as the crafting grid.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ContainerClose {
+    /// WindowID is the ID representing the window of the container that should be closed. It must be equal to the
+    /// one sent in the ContainerOpen packet to close the designated window.
     pub container_id: wire::U8,
     /// `container_type` is the type of container that the server is trying to close. This is used to validate on
     /// the client side whether or not the server's close request is valid.
     pub container_type: wire::U8,
+    /// ServerSide determines whether or not the container was force-closed by the server. If this value is not
+    /// set correctly, the client may ignore the packet and respond with a PacketViolationWarning.
     pub server_initiated_close: bool,
 }
 
@@ -1911,10 +1938,17 @@ impl wire::Decode for ContainerClose {
     }
 }
 
+/// PlayerHotbar is sent by the server to the client. It used to be used to link hot bar slots of the player
+/// to actual slots in the inventory, but as of 1.2, this was changed and hot bar slots are no longer a free
+/// floating part of the inventory. Since 1.2, the packet has been re-purposed, but its new functionality is
+/// not clear.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PlayerHotbar {
+    /// SelectedHotBarSlot ...
     pub selected_slot: wire::VarUInt,
+    /// WindowID ...
     pub container_id: wire::U8,
+    /// SelectHotBarSlot ...
     pub should_select_slot: bool,
 }
 
@@ -2078,7 +2112,11 @@ impl wire::Decode for InventorySlot {
 /// client-side.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ContainerSetData {
+    /// WindowID is the ID of the window that should have its data set. The player must have a window open with
+    /// the window ID passed, or nothing will happen.
     pub container_id: wire::U8,
+    /// Key is the key of the property. It is one of the constants that can be found above. Multiple properties
+    /// share the same key, but the functionality depends on the type of the container that the data is set to.
     pub id: wire::ZigZag32,
     /// `value` is the value of the property. Its use differs per property.
     pub value: wire::ZigZag32,
@@ -2187,10 +2225,17 @@ impl wire::Decode for CraftingData {
     }
 }
 
+/// GuiDataPickItem is sent by the server to make the client 'select' a hot bar slot. It currently appears to
+/// be broken however, and does not actually set the selected slot to the hot bar slot set in the packet.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct GuiDataPickItem {
+    /// `item_name` is the name of the item that shows up in the top part of the popup that shows up when
+    /// selecting an item. It is shown as if an item was selected by the player itself.
     pub item_name: String,
+    /// ItemEffects is the line under the ItemName, where the effects of the item are usually situated.
     pub item_effect_name: String,
+    /// HotBarSlot is the hot bar slot to be selected/picked. This does not currently work, so it does not matter
+    /// what number this is.
     pub slot: wire::I32LE,
 }
 
@@ -2433,6 +2478,9 @@ impl wire::Decode for ChangeDimension {
 /// mode, of a player.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SetPlayerGameType {
+    /// GameType is the new game type of the player. It is one of the constants that can be found above. Some of
+    /// these game types require additional flags to be set in an AdventureSettings packet for the game mode to
+    /// obtain its full functionality.
     pub player_game_type: GameType,
 }
 
@@ -2489,6 +2537,7 @@ impl wire::Decode for PlayerList {
 /// server and a SetCommandsEnabled is sent back when enabling commands.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SimpleEvent {
+    /// EventType is the type of the event to be called. It is one of the constants that may be found above.
     pub type_: Subtype,
 }
 
@@ -2580,28 +2629,44 @@ impl wire::Decode for SpawnExperienceOrb {
     }
 }
 
+/// ClientboundMapItemData is sent by the server to the client to update the data of a map shown to the
+/// client. It is sent with a combination of flags that specify what data is updated. The
+/// ClientBoundMapItemData packet may be used to update specific parts of the map only. It is not required to
+/// send the entire map each time when updating one part.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ClientboundMapItemData {
+    /// `map_id` is the unique identifier that represents the map that is updated over network. It remains
+    /// consistent across sessions.
     pub map_id: ActorUniqueID,
+    /// `dimension` is the dimension of the map that should be updated, for example the overworld (0), the nether
+    /// (1) or the end (2).
     pub dimension: wire::U8,
     pub is_locked: bool,
     pub map_origin: BlockPos,
     /// Wire presence: optional value is preceded by a presence marker.
     pub creation_map_ids: Option<Vec<ActorUniqueID>>,
+    /// `scale` is the scale of the map as it is shown in-game.
     /// Wire presence: optional value is preceded by a presence marker.
     pub scale: Option<wire::I8>,
     /// Wire presence: optional value is preceded by a presence marker.
     pub tracked_actor_ids: Option<Vec<MapItemTrackedActorUniqueId>>,
+    /// `decorations` is a list of fixed decorations located on the map. The decorations will not change
+    /// client-side, unless the server updates them.
     /// Wire presence: optional value is preceded by a presence marker.
     pub decorations: Option<Vec<MapDecoration>>,
+    /// `width` is the width of the texture area that was updated. The width may be a subset of the total width of
+    /// the map.
     /// Wire presence: optional value is preceded by a presence marker.
     pub width: Option<wire::ZigZag32>,
+    /// `height` is the height of the texture area that was updated. The height may be a subset of the total
+    /// height of the map.
     /// Wire presence: optional value is preceded by a presence marker.
     pub height: Option<wire::ZigZag32>,
     /// Wire presence: optional value is preceded by a presence marker.
     pub start_x: Option<wire::ZigZag32>,
     /// Wire presence: optional value is preceded by a presence marker.
     pub start_y: Option<wire::ZigZag32>,
+    /// `pixels` is a list of pixel colours for the new texture of the map. It is indexed as Pixels[y*height + x].
     /// Wire presence: optional value is preceded by a presence marker.
     pub pixels: Option<Vec<wire::U32LE>>,
 }
@@ -2927,6 +2992,8 @@ pub struct BossEvent {
     pub name: String,
     pub filtered_name: String,
     pub health_percent: wire::F32LE,
+    /// Colour is the colour of the boss bar that is shown when a player is subscribed. It is one of the
+    /// BossEventColour constants listed above.
     pub color: BossBarColor,
     /// `overlay` is the overlay of the boss bar that is shown on top of the boss bar when a player is subscribed.
     /// It is one of the BossEventOverlay constants listed above.
@@ -2979,6 +3046,8 @@ pub struct ShowCredits {
     /// `player_runtime_id` is the entity runtime ID of the player to show the credits to. It's not clear why this
     /// field is actually here in the first place.
     pub player_runtime_id: ActorRuntimeID,
+    /// StatusType is the status type of the credits. It is one of the constants above, and either starts or stops
+    /// the credits.
     pub credits_state: wire::ZigZag32,
 }
 
@@ -3340,11 +3409,23 @@ impl wire::Decode for UpdateEquip {
 /// one of the resource packs that are about to be sent.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ResourcePackDataInfo {
+    /// UUID is the unique ID of the resource pack that the info concerns.
     pub resource_name: String,
+    /// DataChunkSize is the maximum size in bytes of the chunks in which the total size of the resource pack to
+    /// be sent will be divided. A size of 1MB (1024*1024) means that a resource pack of 15.5MB will be split into
+    /// 16 data chunks.
     pub chunk_size: wire::U32LE,
+    /// ChunkCount is the total amount of data chunks that the sent resource pack will exist out of. It is the
+    /// total size of the resource pack divided by the DataChunkSize field. The client doesn't actually seem to
+    /// use this field. Rather, it divides the size by the chunk size to calculate it itself.
     pub number_of_chunks: wire::U32LE,
+    /// Size is the total size in bytes that the resource pack occupies. This is the size of the compressed
+    /// archive (zip) of the resource pack.
     pub file_size: wire::U64LE,
+    /// Hash is a SHA256 hash of the content of the resource pack.
     pub file_hash: bytes::Bytes,
+    /// Premium specifies if the resource pack was a premium resource pack, meaning it was bought from the
+    /// Minecraft store.
     pub is_premium_pack: bool,
     /// `pack_type` is the type of the resource pack. It is one of the resource pack types that may be found in
     /// the constants above.
@@ -3639,16 +3720,28 @@ impl wire::Decode for StopSound {
 /// fields that allow setting the duration of the titles.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SetTitle {
+    /// ActionType is the type of the action that should be executed upon the title of a player. It is one of the
+    /// constants above and specifies the response of the client to the packet.
     pub title_type: TitleType,
+    /// Text is the text of the title, which has a different meaning depending on the ActionType that the packet
+    /// has. The text is the text of a title, subtitle or action bar, depending on the type set.
     pub title_text: String,
+    /// FadeInDuration is the duration that the title takes to fade in on the screen of the player. It is measured
+    /// in 20ths of a second (AKA in ticks).
     pub fade_in_time: wire::ZigZag32,
+    /// RemainDuration is the duration that the title remains on the screen of the player. It is measured in 20ths
+    /// of a second (AKA in ticks).
     pub stay_time: wire::ZigZag32,
+    /// FadeOutDuration is the duration that the title takes to fade out of the screen of the player. It is
+    /// measured in 20ths of a second (AKA in ticks).
     pub fade_out_time: wire::ZigZag32,
     /// `xuid` is the XBOX Live user ID of the player, which will remain consistent as long as the player is
     /// logged in with the XBOX Live account. It is empty if the user is not logged into its XBL account.
     pub xuid: String,
     /// `platform_online_id` is either a uint64 or an empty string.
     pub platform_online_id: String,
+    /// FilteredMessage is a filtered version of Message with all the profanity removed. The client will use this
+    /// over Message if this field is not empty and they have the "Filter Profanity" setting enabled.
     pub filtered_title_message: String,
 }
 
@@ -3691,8 +3784,11 @@ impl wire::Decode for SetTitle {
     }
 }
 
+/// AddBehaviorTree is sent by the server to the client. The packet is currently unused by both client and
+/// server.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct AddBehaviorTree {
+    /// BehaviourTree is an unused string.
     pub behavior_tree_structure_json: String,
 }
 
@@ -3762,6 +3858,8 @@ impl wire::Decode for StructureBlockUpdate {
 pub struct ShowStoreOffer {
     /// `offer_id` is a UUID that identifies the offer for which a window should be opened.
     pub offer_id: uuid::Uuid,
+    /// Type is the type of the store offer that is being shown to the player. It is one of the constants that may
+    /// be found above.
     pub redirect_type: ShowStoreOfferRedirectType,
 }
 
@@ -3821,8 +3919,12 @@ pub struct PlayerSkin {
     /// `uuid` is the UUID of the player as sent in the Login packet when the client joined the server. It must
     /// match this UUID exactly for the skin to show up on the player.
     pub uuid: uuid::Uuid,
+    /// Skin is the new skin to be applied on the player with the UUID in the field above. The skin, including its
+    /// animations, will be shown after sending it.
     pub serialized_skin: SerializedSkinRef,
+    /// NewSkinName no longer has a function: The field can be left empty at all times.
     pub localized_new_skin_name: String,
+    /// OldSkinName no longer has a function: The field can be left empty at all times.
     pub localized_old_skin_name: String,
 }
 
@@ -3859,6 +3961,10 @@ impl wire::Decode for PlayerSkin {
 /// connects sends a SubClientLogin to request their own login.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SubClientLogin {
+    /// ConnectionRequest is a string containing information about the player and JWTs that may be used to verify
+    /// if the player is connected to XBOX Live. The connection request also contains the necessary client public
+    /// key to initiate encryption. The ConnectionRequest in this packet is identical to the one found in the
+    /// Login packet.
     pub sub_client_connection_request: bytes::Bytes,
 }
 
@@ -3911,6 +4017,7 @@ impl wire::Decode for AutomationClientConnect {
 /// is sent or not.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SetLastHurtBy {
+    /// EntityType is the numerical type of the entity that the player was last hurt by.
     pub last_hurt_by: ActorType,
 }
 
@@ -3961,12 +4068,19 @@ impl wire::Decode for BookEdit {
     }
 }
 
+/// NpcRequest is sent by the client when it interacts with an NPC. The packet is specifically made for
+/// Education Edition, where NPCs are available to use.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct NpcRequest {
     pub npc_runtime_id: ActorRuntimeID,
+    /// `request_type` is the type of the request, which depends on the permission that the player has. It will be
+    /// either a type that indicates that the NPC should show its dialog, or that it should open the editing
+    /// window.
     pub request_type: RequestType,
     pub actions: String,
     pub action_index: wire::U8,
+    /// `scene_name` is the name of the scene. This can be left empty to specify the last scene that the player
+    /// was sent.
     pub scene_name: String,
 }
 
@@ -4252,6 +4366,8 @@ impl wire::Decode for ShowProfile {
 /// in the settings UI.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SetDefaultGameType {
+    /// GameType is the new game type that is set. When sent by the client, this is the requested new default game
+    /// type.
     pub default_game_type: GameType,
 }
 
@@ -4614,7 +4730,11 @@ impl wire::Decode for UpdateSoftEnum {
 /// other packet.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct NetworkStackLatency {
+    /// Timestamp is the timestamp of the network stack latency packet. The client will, if NeedsResponse is set
+    /// to true, send a NetworkStackLatency packet with this same timestamp packet in response.
     pub creation_time: wire::U64LE,
+    /// NeedsResponse specifies if the sending side of this packet wants a response to the packet, meaning that
+    /// the other side should send a NetworkStackLatency packet back.
     pub is_from_server: bool,
 }
 
@@ -4925,8 +5045,12 @@ impl wire::Decode for LevelEventGeneric {
 /// or if the book should be removed from it.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct LecternUpdate {
+    /// Page is the page number in the book that was opened by the player on the lectern.
     pub new_page_to_show: wire::U8,
+    /// PageCount is the number of pages that the book opened in the lectern has.
     pub total_pages: wire::U8,
+    /// Position is the position of the lectern that was updated. If no lectern is at the block position, the
+    /// packet should be ignored.
     pub position_of_lectern_to_update: BlockPos,
 }
 
@@ -5266,8 +5390,13 @@ impl wire::Decode for Emote {
     }
 }
 
+/// MultiplayerSettings is sent by the client to update multi-player related settings server-side and sent
+/// back to online players by the server. The MultiPlayerSettings packet is a Minecraft: Education Edition
+/// packet. It has no functionality for the base game.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct MultiplayerSettings {
+    /// ActionType is the action that should be done when this packet is sent. It is one of the constants that may
+    /// be found above.
     pub packet_type: MultiplayerSettingsType,
 }
 
@@ -5391,6 +5520,8 @@ pub struct NetworkSettings {
     pub compression_threshold: wire::U16LE,
     /// `compression_algorithm` is the algorithm that is used to compress packets.
     pub compression_algorithm: PacketCompressionAlgorithm,
+    /// ClientThrottle regulates whether the client should throttle players when exceeding of the threshold.
+    /// Players outside threshold will not be ticked, improving performance on low-end devices.
     pub client_throttle_enabled: bool,
     /// `client_throttle_threshold` is the threshold for client throttling. If the number of players exceeds this
     /// value, the client will throttle players.
@@ -5767,8 +5898,11 @@ impl wire::Decode for ItemStackResponse {
     }
 }
 
+/// PlayerArmorDamage is sent by the server to damage the armour of a player. It is a very efficient packet,
+/// but generally it's much easier to just send a slot update for the damaged armour.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PlayerArmorDamage {
+    /// List is a list of armour entries indicating which pieces of armour should receive damage.
     pub armor_slot_and_damage_pairs: Vec<ArmorSlotAndDamagePair>,
 }
 
@@ -5993,8 +6127,12 @@ impl wire::Decode for DebugInfo {
 /// some information on the error that occurred. noinspection GoNameStartsWithPackageName
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PacketViolationWarning {
+    /// Type is the type of violation. It is one of the constants above.
     pub violation_type: PacketViolationType,
+    /// Severity specifies the severity of the packet violation. The action the client takes after this violation
+    /// depends on the severity sent.
     pub violation_severity: PacketViolationSeverity,
+    /// PacketID is the ID of the invalid packet that was received.
     pub violation_packet_id: wire::ZigZag32,
     /// `violation_context` holds a description on the violation of the packet.
     pub violation_context: String,
@@ -6130,8 +6268,13 @@ pub struct CameraShake {
     /// `intensity` is the intensity of the shaking. The client limits this value to 4, so anything higher may not
     /// work.
     pub intensity: wire::F32LE,
+    /// Duration is the number of seconds the camera will shake for.
     pub seconds: wire::F32LE,
+    /// Type is the type of shake, and is one of the constants listed above. The different type affects how the
+    /// shake looks in game.
     pub shake_type: CameraShakeType,
+    /// Action is the action to be performed, and is one of the constants listed above. Currently the different
+    /// actions will either add or stop shaking the client.
     pub shake_action: CameraShakeAction,
 }
 
@@ -6196,7 +6339,10 @@ impl wire::Decode for PlayerFog {
 pub struct CorrectPlayerMovePrediction {
     /// `prediction_type` is the type of prediction that was corrected. It is one of the constants above.
     pub prediction_type: RewindType,
+    /// Position is the position that the player is supposed to be at the tick written in the field below. The
+    /// client will change its current position based on movement after that tick starting from the Position.
     pub pos: glam::Vec3,
+    /// Delta is the change in position compared to what the client sent as its position at that specific tick.
     pub pos_delta: glam::Vec3,
     /// `rotation` is the rotation of the player at the tick written in the field below.
     pub rotation: glam::Vec2,
@@ -6286,8 +6432,10 @@ impl wire::Decode for ItemRegistry {
     }
 }
 
+/// ClientboundDebugRenderer is sent by the server to spawn an outlined cube on client-side.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ClientboundDebugRenderer {
+    /// `type_` is the type of action. It is one of the constants above.
     pub type_: String,
     /// Wire presence: optional value is preceded by a presence marker.
     pub debug_marker_data: Option<DebugMarkerData>,
@@ -6457,13 +6605,21 @@ impl wire::Decode for SimulationType {
     }
 }
 
+/// NpcDialogue is a packet that allows the client to display dialog boxes for interacting with NPCs.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct NpcDialogue {
+    /// EntityUniqueID is the unique ID of the NPC being requested.
     pub npc_id_raw_id: wire::U64LE,
+    /// ActionType is the type of action for the packet.
     pub npc_dialogue_action_type: NpcDialogueActionType,
+    /// `dialogue` is the text that the client should see.
     pub dialogue: String,
+    /// `scene_name` is the identifier of the scene. If this is left empty, the client will use the last scene
+    /// sent to it. https://docs.microsoft.com/en-us/minecraft/creator/documents/npcdialogue.
     pub scene_name: String,
+    /// NPCName is the name of the NPC to be displayed to the client.
     pub npc_name: String,
+    /// `action_json` is the JSON string of the buttons/actions the server can perform.
     pub action_json: String,
 }
 
@@ -6528,9 +6684,11 @@ impl wire::Decode for EduUriResource {
 /// inventory. This packet only works on the Education Edition version of Minecraft.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CreatePhoto {
+    /// EntityUniqueID is the unique ID of the entity.
     pub raw_id: wire::U64LE,
     /// `photo_name` is the name of the photo.
     pub photo_name: String,
+    /// ItemName is the name of the photo as an item.
     pub photo_item_name: String,
 }
 
@@ -6688,7 +6846,9 @@ impl wire::Decode for PlayerStartItemCooldown {
 /// likely instead for the GameTest framework.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ScriptMessage {
+    /// Identifier is the identifier of the message, used by either party to identify the message data sent.
     pub message_id: String,
+    /// Data contains the data of the message.
     pub message_value: bytes::Bytes,
 }
 
@@ -6804,10 +6964,15 @@ impl wire::Decode for DimensionData {
     }
 }
 
+/// AgentActionEvent is an Education Edition packet sent from the server to the client to return a response to
+/// a previously requested action.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct AgentActionEvent {
+    /// Identifier is a JSON identifier referenced in the initial action.
     pub request_id: String,
+    /// `action` represents the action type that was requested. It is one of the constants defined above.
     pub action: AgentActionType,
+    /// `response` is a JSON string containing the response to the action.
     pub response: String,
 }
 
@@ -7370,7 +7535,10 @@ impl wire::Decode for CameraPresets {
 /// appear in the recipe book.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct UnlockedRecipes {
+    /// UnlockType is the type of unlock that the packet represents, and can either be adding or removing a list
+    /// of recipes. It is one of the constants listed above.
     pub packet_type: PacketType,
+    /// Recipes is a list of recipe names that have been unlocked.
     pub unlocked_recipes_list: Vec<String>,
 }
 
@@ -7546,7 +7714,9 @@ pub struct PlayerToggleCrafterSlotRequest {
     pub pos_y: wire::I32LE,
     /// `pos_z` is the Z position of the Crafter that is being modified.
     pub pos_z: wire::I32LE,
+    /// Slot is the index of the slot that was toggled. This should be a value between 0 and 8.
     pub slot_index: wire::U8,
+    /// Disabled is the new state of the slot. If true, the slot is disabled, if false, the slot is enabled.
     pub is_disabled: bool,
 }
 
@@ -7609,7 +7779,11 @@ impl wire::Decode for SetPlayerInventoryOptions {
 /// SetHud is sent by the server to set the visibility of individual HUD elements on the client.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SetHud {
+    /// Elements is a list of HUD elements that are being modified. The values can be any of the HudElement
+    /// constants above.
     pub hud_element: Vec<HudElement>,
+    /// Visibility represents the new visibility of the specified Elements. It can be any of the HudVisibility
+    /// constants above.
     pub hud_visible: HudVisibility,
 }
 
@@ -7660,6 +7834,8 @@ impl wire::Decode for AwardAchievement {
     }
 }
 
+/// ClientboundCloseForm is sent by the server to clear the entire form stack of the client. This means that
+/// all forms that are currently open will be closed. This does not affect inventories and other containers.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ClientboundCloseForm {
 }
@@ -7681,9 +7857,14 @@ impl wire::Decode for ClientboundCloseForm {
     }
 }
 
+/// ServerboundLoadingScreen is sent by the client to tell the server about the state of the loading screen
+/// that the client is currently displaying.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ServerboundLoadingScreen {
+    /// Type is the type of the loading screen event. It is one of the constants that may be found above.
     pub loading_screen_packet_type: ServerboundLoadingScreenType,
+    /// `loading_screen_id` is the ID of the screen that was previously sent by the server in the ChangeDimension
+    /// packet. The server should validate that the ID matches the last one it sent.
     /// Wire presence: optional value is preceded by a presence marker.
     pub loading_screen_id: Option<wire::U32LE>,
 }
@@ -7772,21 +7953,42 @@ impl wire::Decode for CurrentStructureFeature {
     }
 }
 
+/// ServerboundDiagnostics is sent by the client to tell the server about the performance diagnostics of the
+/// client. It is sent by the client roughly every 500ms or 10 in-game ticks when the "Creator > Enable Client
+/// Diagnostics" setting is enabled.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ServerboundDiagnostics {
+    /// AverageFramesPerSecond is the average amount of frames per second that the client has been running at.
     pub avg_fps: wire::F32LE,
+    /// AverageServerSimTickTime is the average time that the server spends simulating a single tick in
+    /// milliseconds.
     pub avg_server_sim_tick_time_ms: wire::F32LE,
+    /// AverageClientSimTickTime is the average time that the client spends simulating a single tick in
+    /// milliseconds.
     pub avg_client_sim_tick_time_ms: wire::F32LE,
+    /// AverageBeginFrameTime is the average time that the client spends beginning a frame in milliseconds.
     pub avg_begin_frame_time_ms: wire::F32LE,
+    /// AverageInputTime is the average time that the client spends processing input in milliseconds.
     pub avg_input_time_ms: wire::F32LE,
+    /// AverageRenderTime is the average time that the client spends rendering in milliseconds.
     pub avg_render_time_ms: wire::F32LE,
+    /// AverageEndFrameTime is the average time that the client spends ending a frame in milliseconds.
     pub avg_end_frame_time_ms: wire::F32LE,
+    /// AverageRemainderTimePercent is the average percentage of time that the client spends on tasks that are not
+    /// accounted for.
     pub avg_remainder_time_percent: wire::F32LE,
+    /// AverageUnaccountedTimePercent is the average percentage of time that the client spends on unaccounted
+    /// tasks.
     pub avg_unaccounted_time_percent: wire::F32LE,
+    /// `memory_category_values` is a list of memory category counters sent by the client.
     pub memory_category_values: Vec<MemoryCategoryCounter>,
+    /// `entity_diagnostics` is a list of entity timing entries sent by the client.
     pub entity_diagnostics: Vec<ECSProfilingDiagnosticsEntityDiagnosticTimingInfo>,
+    /// `system_diagnostics` is a list of system timing entries sent by the client.
     pub system_diagnostics: Vec<ECSProfilingDiagnosticsSystemDiagnosticTimingInfo>,
+    /// `system_categories` maps diagnostics category names to system indices.
     pub system_categories: Vec<ECSProfilingDiagnosticsSystemCategory>,
+    /// `whisker_scopes` is a list of whisker profiler scope diagnostic summaries sent by the client.
     pub whisker_scopes: Vec<BedrockProfileWhiskerDiagnosticsScopeDataSummary>,
 }
 
@@ -8234,8 +8436,19 @@ impl wire::Decode for PlayerLocation {
     }
 }
 
+/// ClientboundControlSchemeSet is sent by the server upon the client's request or the usage of the vanilla
+/// /controlscheme command. It is used to set the control scheme of the client, often used in combination with
+/// custom cameras.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ClientboundControlSchemeSet {
+    /// `control_scheme` is the control scheme that the client should use. It is one of the following: -
+    /// ControlSchemeLockedPlayerRelativeStrafe is the default behaviour, this cannot be set when the client is in
+    /// a custom camera. - ControlSchemeCameraRelative makes movement relative to the camera's transform, with the
+    /// client's rotation being relative to the client's movement. - ControlSchemeCameraRelativeStrafe makes
+    /// movement relative to the camera's transform, with the client's rotation being locked. -
+    /// ControlSchemePlayerRelative makes movement relative to the player's transform, meaning holding left/right
+    /// will make the player turn in a circle. - ControlSchemePlayerRelativeStrafe makes movement the same as the
+    /// default behaviour, but can be used in a custom camera.
     pub control_scheme: ControlScheme,
 }
 
@@ -8284,8 +8497,11 @@ impl wire::Decode for PrimitiveShapes {
     }
 }
 
+/// ServerboundPackSettingChange is sent by the client to the server when it changes a setting for a specific
+/// pack in the pack settings UI.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ServerboundPackSettingChange {
+    /// `pack_id` is the UUID of the pack.
     pub pack_id: uuid::Uuid,
     pub pack_setting_name: String,
     pub pack_setting_value: ServerboundPackSettingChangePackSettingValue,
@@ -8315,8 +8531,10 @@ impl wire::Decode for ServerboundPackSettingChange {
     }
 }
 
+/// ClientboundDataStore is sent by the server to update, change or remove data store entries on the client.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ClientboundDataStore {
+    /// `updates` is an array of data store changes. Each entry has its own change type discriminator.
     pub updates: Vec<BedrockDDUI>,
 }
 
@@ -8429,8 +8647,10 @@ impl wire::Decode for GraphicsOverrideParameter {
     }
 }
 
+/// ServerboundDataStore is sent by the client to update a data store property on the server.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ServerboundDataStore {
+    /// `update` contains the data store update.
     pub update: BedrockDDUIDataStoreUpdate,
 }
 
@@ -8452,10 +8672,14 @@ impl wire::Decode for ServerboundDataStore {
     }
 }
 
+/// ClientboundDataDrivenUIShowScreen is sent by the server to show a data-driven UI screen on the client.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ClientboundDataDrivenUIShowScreen {
+    /// `screen_id` is the identifier of the screen to show.
     pub screen_id: String,
+    /// `form_id` is a unique instance ID for the form, used for scripting to identify specific screen instances.
     pub form_id: wire::U32LE,
+    /// `data_instance_id` is an optional data ID associated with the screen.
     /// Wire presence: optional value is preceded by a presence marker.
     pub data_instance_id: Option<wire::U32LE>,
 }
@@ -8497,8 +8721,11 @@ impl wire::Decode for ClientboundDataDrivenUIShowScreen {
     }
 }
 
+/// ClientboundDataDrivenUICloseScreen is sent by the server to close a data-driven UI screen on the client.
+/// If FormID is not set, all data-driven UI screens are closed.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ClientboundDataDrivenUICloseScreen {
+    /// `form_id` is the optional unique instance ID of the form to close. If not set, all forms are closed.
     /// Wire presence: optional value is preceded by a presence marker.
     pub form_id: Option<wire::U32LE>,
 }
@@ -8533,6 +8760,7 @@ impl wire::Decode for ClientboundDataDrivenUICloseScreen {
     }
 }
 
+/// ClientboundDataDrivenUIReload is sent by the server to reload the data-driven UI on the client.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ClientboundDataDrivenUIReload {
 }
@@ -8554,15 +8782,24 @@ impl wire::Decode for ClientboundDataDrivenUIReload {
     }
 }
 
+/// ClientboundTextureShift is sent by the server to control texture shift animations on the client.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ClientboundTextureShift {
+    /// `action_id` is the texture shift action to perform. It is one of the constants above.
     pub action_id: ClientboundTextureShiftAction,
+    /// `collection_name` is the name of the texture shift collection.
     pub collection_name: String,
+    /// `from_step` is the step to shift from.
     pub from_step: String,
+    /// `to_step` is the step to shift to.
     pub to_step: String,
+    /// `all_steps` is a list of all steps in the texture shift.
     pub all_steps: Vec<String>,
+    /// CurrentLengthTicks is the current length of the shift in ticks.
     pub current_length_in_ticks: wire::VarULong,
+    /// TotalLengthTicks is the total length of the shift in ticks.
     pub total_length_in_ticks: wire::VarULong,
+    /// `enabled` specifies if the texture shift is enabled.
     pub enabled: bool,
 }
 
@@ -8778,9 +9015,13 @@ impl wire::Decode for PartyChanged {
     }
 }
 
+/// ServerboundDataDrivenScreenClosed is sent by the client when a data-driven UI screen is closed.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ServerboundDataDrivenScreenClosed {
+    /// `form_id` is the unique instance ID of the form that was closed.
     pub form_id: wire::U32LE,
+    /// `close_reason` is the reason the screen was closed. It is one of the DataDrivenScreenCloseReason
+    /// constants.
     pub close_reason: String,
 }
 
@@ -8830,6 +9071,7 @@ impl wire::Decode for SyncWorldClocks {
     }
 }
 
+/// ClientboundAttributeLayerSync is sent by the server to synchronise attribute layers with the client.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ClientboundAttributeLayerSync {
     pub data: AttributeLayerSyncData,

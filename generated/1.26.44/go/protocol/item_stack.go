@@ -498,9 +498,13 @@ func (x *PlaceStackRequestAction) Marshal(io IO) {
 
 // StackRequestSlotInfo holds information on a specific slot client-side.
 type StackRequestSlotInfo struct {
+	// Container is the FullContainerName that describes the container that the slot is in.
 	FullContainerName FullContainerName
 	// Slot is the index of the slot within the container with the ContainerID above.
-	Slot         uint8
+	Slot uint8
+	// StackNetworkID is the unique stack ID that the client assumes to be present in this slot. The server must
+	// check if these IDs match. If they do not match, servers should reject the stack request that the action
+	// holding this info was in.
 	NetIDVariant int32
 }
 

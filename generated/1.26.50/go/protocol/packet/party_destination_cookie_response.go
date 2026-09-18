@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 // PartyDestinationCookieResponse is sent by the client to the server in response to a
 // SendPartyDestinationCookie packet.
@@ -13,11 +15,11 @@ type PartyDestinationCookieResponse struct {
 	Accepted bool
 }
 
-// Marshal reads or writes PartyDestinationCookieResponse using its canonical wire layout.
-func (x *PartyDestinationCookieResponse) Marshal(io protocol.IO) {
-	io.StringLimits(&x.Cookie, 0, 2048)
-	io.Bool(&x.Accepted)
-}
-
 // ID returns the protocol ID for PartyDestinationCookieResponse.
 func (*PartyDestinationCookieResponse) ID() uint32 { return IDPartyDestinationCookieResponse }
+
+// Marshal reads or writes PartyDestinationCookieResponse using its canonical wire layout.
+func (pk *PartyDestinationCookieResponse) Marshal(io protocol.IO) {
+	io.StringLimits(&pk.Cookie, 0, 2048)
+	io.Bool(&pk.Accepted)
+}

@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.44/go/protocol"
+import (
+	"protocolgen/generated/1.26.44/go/protocol"
+)
 
 // UpdateSoftEnum is sent by the server to update a soft enum, also known as a dynamic enum, previously sent
 // in the AvailableCommands packet. It is sent whenever the enum should get new options or when some of its
@@ -21,12 +23,12 @@ type UpdateSoftEnum struct {
 	UpdateType protocol.SoftEnumUpdateType
 }
 
-// Marshal reads or writes UpdateSoftEnum using its canonical wire layout.
-func (x *UpdateSoftEnum) Marshal(io protocol.IO) {
-	io.String(&x.EnumName)
-	protocol.FuncSlice(io, &x.Values, io.Varuint32, io.String)
-	x.UpdateType.Marshal(io)
-}
-
 // ID returns the protocol ID for UpdateSoftEnum.
 func (*UpdateSoftEnum) ID() uint32 { return IDUpdateSoftEnum }
+
+// Marshal reads or writes UpdateSoftEnum using its canonical wire layout.
+func (pk *UpdateSoftEnum) Marshal(io protocol.IO) {
+	io.String(&pk.EnumName)
+	protocol.FuncSlice(io, &pk.Values, io.Varuint32, io.String)
+	pk.UpdateType.Marshal(io)
+}

@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
 // Login is sent when the client initially tries to join the server. It is the first packet sent and contains
 // information specific to the player.
@@ -14,11 +16,11 @@ type Login struct {
 	ConnectionRequest []byte
 }
 
-// Marshal reads or writes Login using its canonical wire layout.
-func (x *Login) Marshal(io protocol.IO) {
-	io.BEInt32(&x.ClientNetworkVersion)
-	io.Bytes(&x.ConnectionRequest)
-}
-
 // ID returns the protocol ID for Login.
 func (*Login) ID() uint32 { return IDLogin }
+
+// Marshal reads or writes Login using its canonical wire layout.
+func (pk *Login) Marshal(io protocol.IO) {
+	io.BEInt32(&pk.ClientNetworkVersion)
+	io.Bytes(&pk.ConnectionRequest)
+}

@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.44/go/protocol"
+import (
+	"protocolgen/generated/1.26.44/go/protocol"
+)
 
 // PlayerList is sent by the server to update the client-side player list in the in-game menu screen. It shows
 // the icon of each player if the correct XUID is written in the packet. Sending the PlayerList packet is
@@ -15,12 +17,12 @@ type PlayerList struct {
 	Entries []protocol.PlayerListData
 }
 
+// ID returns the protocol ID for PlayerList.
+func (*PlayerList) ID() uint32 { return IDPlayerList }
+
 // Marshal reads or writes PlayerList using its canonical wire layout.
-func (x *PlayerList) Marshal(io protocol.IO) {
-	protocol.FuncSliceLimits(io, &x.Entries, io.Varuint32, 0, 1000, func(value *protocol.PlayerListData) {
+func (pk *PlayerList) Marshal(io protocol.IO) {
+	protocol.FuncSliceLimits(io, &pk.Entries, io.Varuint32, 0, 1000, func(value *protocol.PlayerListData) {
 		protocol.MarshalPlayerListData(io, value)
 	})
 }
-
-// ID returns the protocol ID for PlayerList.
-func (*PlayerList) ID() uint32 { return IDPlayerList }

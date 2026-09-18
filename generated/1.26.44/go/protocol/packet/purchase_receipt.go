@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.44/go/protocol"
+import (
+	"protocolgen/generated/1.26.44/go/protocol"
+)
 
 // PurchaseReceipt is sent by the client to the server to notify the server it purchased an item from the
 // Marketplace store that was offered by the server. The packet is only used for partnered servers.
@@ -12,10 +14,10 @@ type PurchaseReceipt struct {
 	PurchaseReceipts []string
 }
 
-// Marshal reads or writes PurchaseReceipt using its canonical wire layout.
-func (x *PurchaseReceipt) Marshal(io protocol.IO) {
-	protocol.FuncSliceLimits(io, &x.PurchaseReceipts, io.Varuint32, 0, 10000, io.String)
-}
-
 // ID returns the protocol ID for PurchaseReceipt.
 func (*PurchaseReceipt) ID() uint32 { return IDPurchaseReceipt }
+
+// Marshal reads or writes PurchaseReceipt using its canonical wire layout.
+func (pk *PurchaseReceipt) Marshal(io protocol.IO) {
+	protocol.FuncSliceLimits(io, &pk.PurchaseReceipts, io.Varuint32, 0, 10000, io.String)
+}

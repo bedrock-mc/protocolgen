@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
 // MapCreateLockedCopy is sent by the client to create a locked copy of one map into another map. In vanilla,
 // it is used in the cartography table to create a map that is locked and cannot be modified.
@@ -15,11 +17,11 @@ type MapCreateLockedCopy struct {
 	NewMapID int64
 }
 
-// Marshal reads or writes MapCreateLockedCopy using its canonical wire layout.
-func (x *MapCreateLockedCopy) Marshal(io protocol.IO) {
-	io.ActorUniqueID(&x.OriginalMapID)
-	io.ActorUniqueID(&x.NewMapID)
-}
-
 // ID returns the protocol ID for MapCreateLockedCopy.
 func (*MapCreateLockedCopy) ID() uint32 { return IDMapCreateLockedCopy }
+
+// Marshal reads or writes MapCreateLockedCopy using its canonical wire layout.
+func (pk *MapCreateLockedCopy) Marshal(io protocol.IO) {
+	io.ActorUniqueID(&pk.OriginalMapID)
+	io.ActorUniqueID(&pk.NewMapID)
+}

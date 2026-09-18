@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 // SetScoreboardIdentity is sent by the server to change the identity type of one of the entries on a
 // scoreboard. This is used to change, for example, an entry pointing to a player, to a fake player when it
@@ -18,11 +20,11 @@ type SetScoreboardIdentity struct {
 	ScoreboardIdentityInfo []protocol.ScoreboardIdentityPacketInfo
 }
 
-// Marshal reads or writes SetScoreboardIdentity using its canonical wire layout.
-func (x *SetScoreboardIdentity) Marshal(io protocol.IO) {
-	x.ScoreboardIdentityPacketType.Marshal(io)
-	protocol.Slice(io, &x.ScoreboardIdentityInfo)
-}
-
 // ID returns the protocol ID for SetScoreboardIdentity.
 func (*SetScoreboardIdentity) ID() uint32 { return IDSetScoreboardIdentity }
+
+// Marshal reads or writes SetScoreboardIdentity using its canonical wire layout.
+func (pk *SetScoreboardIdentity) Marshal(io protocol.IO) {
+	pk.ScoreboardIdentityPacketType.Marshal(io)
+	protocol.Slice(io, &pk.ScoreboardIdentityInfo)
+}

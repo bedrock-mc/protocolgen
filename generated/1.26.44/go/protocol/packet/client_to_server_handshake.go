@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.44/go/protocol"
+import (
+	"protocolgen/generated/1.26.44/go/protocol"
+)
 
 // ClientToServerHandshake is sent by the client in response to a ServerToClientHandshake packet sent by the
 // server. It is the first encrypted packet in the login handshake and serves as a confirmation that
@@ -10,9 +12,9 @@ import "protocolgen/generated/1.26.44/go/protocol"
 type ClientToServerHandshake struct {
 }
 
-// Marshal reads or writes ClientToServerHandshake using its canonical wire layout.
-func (x *ClientToServerHandshake) Marshal(io protocol.IO) {
-}
-
 // ID returns the protocol ID for ClientToServerHandshake.
 func (*ClientToServerHandshake) ID() uint32 { return IDClientToServerHandshake }
+
+// Marshal reads or writes ClientToServerHandshake using its canonical wire layout.
+func (pk *ClientToServerHandshake) Marshal(io protocol.IO) {
+}

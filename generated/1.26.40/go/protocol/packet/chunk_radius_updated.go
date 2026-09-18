@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
 // ChunkRadiusUpdated is sent by the server in response to a RequestChunkRadius packet. It defines the chunk
 // radius that the server allows the client to have. This may be lower than the chunk radius requested by the
@@ -13,10 +15,10 @@ type ChunkRadiusUpdated struct {
 	ChunkRadius int32
 }
 
-// Marshal reads or writes ChunkRadiusUpdated using its canonical wire layout.
-func (x *ChunkRadiusUpdated) Marshal(io protocol.IO) {
-	io.Varint32(&x.ChunkRadius)
-}
-
 // ID returns the protocol ID for ChunkRadiusUpdated.
 func (*ChunkRadiusUpdated) ID() uint32 { return IDChunkRadiusUpdated }
+
+// Marshal reads or writes ChunkRadiusUpdated using its canonical wire layout.
+func (pk *ChunkRadiusUpdated) Marshal(io protocol.IO) {
+	io.Varint32(&pk.ChunkRadius)
+}

@@ -2,18 +2,38 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 // EducationSettings is a packet sent by the server to update Minecraft: Education Edition related settings.
 // It is unused by the normal base game.
 type EducationSettings struct {
-	EducationLevelSettings protocol.EducationLevelSettings
-}
-
-// Marshal reads or writes EducationSettings using its canonical wire layout.
-func (x *EducationSettings) Marshal(io protocol.IO) {
-	x.EducationLevelSettings.Marshal(io)
+	CodeBuilderDefaultURI        string
+	CodeBuilderTitle             string
+	CanResizeCodeBuilder         bool
+	DisableLegacyTitleBar        bool
+	PostProcessFilter            string
+	ScreenshotBorderResourcePath string
+	AgentCapabilities            protocol.Optional[bool]
+	LocalSettings                protocol.EducationLocalLevelSettings
+	DeprecatedAlwaysFalse        bool
+	ExternalLinkSettings         protocol.Optional[protocol.ExternalLinkSettings]
 }
 
 // ID returns the protocol ID for EducationSettings.
 func (*EducationSettings) ID() uint32 { return IDEducationSettings }
+
+// Marshal reads or writes EducationSettings using its canonical wire layout.
+func (pk *EducationSettings) Marshal(io protocol.IO) {
+	io.String(&pk.CodeBuilderDefaultURI)
+	io.String(&pk.CodeBuilderTitle)
+	io.Bool(&pk.CanResizeCodeBuilder)
+	io.Bool(&pk.DisableLegacyTitleBar)
+	io.String(&pk.PostProcessFilter)
+	io.String(&pk.ScreenshotBorderResourcePath)
+	protocol.OptionalFunc(io, &pk.AgentCapabilities, io.Bool)
+	pk.LocalSettings.Marshal(io)
+	io.Bool(&pk.DeprecatedAlwaysFalse)
+	protocol.OptionalMarshaler(io, &pk.ExternalLinkSettings)
+}

@@ -28,18 +28,18 @@ type MovePlayer struct {
 	Tick uint64
 }
 
-// Marshal reads or writes MovePlayer using its canonical wire layout.
-func (x *MovePlayer) Marshal(io protocol.IO) {
-	io.ActorRuntimeID(&x.PlayerRuntimeID)
-	io.Vec3(&x.Position)
-	io.Vec2(&x.Rotation)
-	io.Float32(&x.YHeadRotation)
-	x.PositionMode.Marshal(io)
-	io.Bool(&x.OnGround)
-	io.ActorRuntimeID(&x.RidingRuntimeID)
-	protocol.OptionalMarshaler(io, &x.TeleportData)
-	io.PlayerInputTick(&x.Tick)
-}
-
 // ID returns the protocol ID for MovePlayer.
 func (*MovePlayer) ID() uint32 { return IDMovePlayer }
+
+// Marshal reads or writes MovePlayer using its canonical wire layout.
+func (pk *MovePlayer) Marshal(io protocol.IO) {
+	io.ActorRuntimeID(&pk.PlayerRuntimeID)
+	io.Vec3(&pk.Position)
+	io.Vec2(&pk.Rotation)
+	io.Float32(&pk.YHeadRotation)
+	pk.PositionMode.Marshal(io)
+	io.Bool(&pk.OnGround)
+	io.ActorRuntimeID(&pk.RidingRuntimeID)
+	protocol.OptionalMarshaler(io, &pk.TeleportData)
+	io.PlayerInputTick(&pk.Tick)
+}

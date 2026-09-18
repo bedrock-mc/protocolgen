@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
 // BossEvent is sent by the server to make a specific 'boss event' occur in the world. It includes features
 // such as showing a boss bar to the player and turning the sky dark.
@@ -20,17 +22,17 @@ type BossEvent struct {
 	Overlay protocol.BossBarOverlay
 }
 
-// Marshal reads or writes BossEvent using its canonical wire layout.
-func (x *BossEvent) Marshal(io protocol.IO) {
-	io.ActorUniqueID(&x.TargetActorID)
-	io.ActorUniqueID(&x.PlayerID)
-	x.EventType.Marshal(io)
-	io.StringLimits(&x.Name, 0, 256)
-	io.StringLimits(&x.FilteredName, 0, 256)
-	io.Float32(&x.HealthPercent)
-	x.Color.Marshal(io)
-	x.Overlay.Marshal(io)
-}
-
 // ID returns the protocol ID for BossEvent.
 func (*BossEvent) ID() uint32 { return IDBossEvent }
+
+// Marshal reads or writes BossEvent using its canonical wire layout.
+func (pk *BossEvent) Marshal(io protocol.IO) {
+	io.ActorUniqueID(&pk.TargetActorID)
+	io.ActorUniqueID(&pk.PlayerID)
+	pk.EventType.Marshal(io)
+	io.StringLimits(&pk.Name, 0, 256)
+	io.StringLimits(&pk.FilteredName, 0, 256)
+	io.Float32(&pk.HealthPercent)
+	pk.Color.Marshal(io)
+	pk.Overlay.Marshal(io)
+}

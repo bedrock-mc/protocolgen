@@ -2,48 +2,66 @@
 
 package packet
 
-import "protocolgen/generated/1.26.44/go/protocol"
+import (
+	"protocolgen/generated/1.26.44/go/protocol"
+)
 
+// ClientboundMapItemData is sent by the server to the client to update the data of a map shown to the client.
+// It is sent with a combination of flags that specify what data is updated. The ClientBoundMapItemData packet
+// may be used to update specific parts of the map only. It is not required to send the entire map each time
+// when updating one part.
 type ClientboundMapItemData struct {
-	MapID           int64
-	Dimension       uint8
-	IsLocked        bool
-	MapOrigin       protocol.BlockPos
-	CreationMapIDs  protocol.Optional[[]int64]
+	// MapID is the unique identifier that represents the map that is updated over network. It remains consistent
+	// across sessions.
+	MapID int64
+	// Dimension is the dimension of the map that should be updated, for example the overworld (0), the nether (1)
+	// or the end (2).
+	Dimension      uint8
+	IsLocked       bool
+	MapOrigin      protocol.BlockPos
+	CreationMapIDs protocol.Optional[[]int64]
+	// Scale is the scale of the map as it is shown in-game.
 	Scale           protocol.Optional[int8]
 	TrackedActorIDs protocol.Optional[[]protocol.MapItemTrackedActorUniqueID]
-	Decorations     protocol.Optional[[]protocol.MapDecoration]
-	Width           protocol.Optional[int32]
-	Height          protocol.Optional[int32]
-	StartX          protocol.Optional[int32]
-	StartY          protocol.Optional[int32]
-	Pixels          protocol.Optional[[]uint32]
-}
-
-// Marshal reads or writes ClientboundMapItemData using its canonical wire layout.
-func (x *ClientboundMapItemData) Marshal(io protocol.IO) {
-	io.ActorUniqueID(&x.MapID)
-	io.Uint8(&x.Dimension)
-	io.Bool(&x.IsLocked)
-	x.MapOrigin.Marshal(io)
-	protocol.OptionalFunc(io, &x.CreationMapIDs, func(value *[]int64) {
-		protocol.FuncSliceLimits(io, value, io.Varuint32, 0, 65535, io.ActorUniqueID)
-	})
-	protocol.OptionalFunc(io, &x.Scale, io.Int8)
-	protocol.OptionalFunc(io, &x.TrackedActorIDs, func(value *[]protocol.MapItemTrackedActorUniqueID) {
-		protocol.SliceLimits(io, value, 0, 65535)
-	})
-	protocol.OptionalFunc(io, &x.Decorations, func(value *[]protocol.MapDecoration) {
-		protocol.SliceLimits(io, value, 0, 65535)
-	})
-	protocol.OptionalFunc(io, &x.Width, io.Varint32)
-	protocol.OptionalFunc(io, &x.Height, io.Varint32)
-	protocol.OptionalFunc(io, &x.StartX, io.Varint32)
-	protocol.OptionalFunc(io, &x.StartY, io.Varint32)
-	protocol.OptionalFunc(io, &x.Pixels, func(value *[]uint32) {
-		protocol.FuncSliceLimits(io, value, io.Varuint32, 0, 16384, io.Uint32)
-	})
+	// Decorations is a list of fixed decorations located on the map. The decorations will not change client-side,
+	// unless the server updates them.
+	Decorations protocol.Optional[[]protocol.MapDecoration]
+	// Width is the width of the texture area that was updated. The width may be a subset of the total width of
+	// the map.
+	Width protocol.Optional[int32]
+	// Height is the height of the texture area that was updated. The height may be a subset of the total height
+	// of the map.
+	Height protocol.Optional[int32]
+	StartX protocol.Optional[int32]
+	StartY protocol.Optional[int32]
+	// Pixels is a list of pixel colours for the new texture of the map. It is indexed as Pixels[y*height + x].
+	Pixels protocol.Optional[[]uint32]
 }
 
 // ID returns the protocol ID for ClientboundMapItemData.
 func (*ClientboundMapItemData) ID() uint32 { return IDClientboundMapItemData }
+
+// Marshal reads or writes ClientboundMapItemData using its canonical wire layout.
+func (pk *ClientboundMapItemData) Marshal(io protocol.IO) {
+	io.ActorUniqueID(&pk.MapID)
+	io.Uint8(&pk.Dimension)
+	io.Bool(&pk.IsLocked)
+	pk.MapOrigin.Marshal(io)
+	protocol.OptionalFunc(io, &pk.CreationMapIDs, func(value *[]int64) {
+		protocol.FuncSliceLimits(io, value, io.Varuint32, 0, 65535, io.ActorUniqueID)
+	})
+	protocol.OptionalFunc(io, &pk.Scale, io.Int8)
+	protocol.OptionalFunc(io, &pk.TrackedActorIDs, func(value *[]protocol.MapItemTrackedActorUniqueID) {
+		protocol.SliceLimits(io, value, 0, 65535)
+	})
+	protocol.OptionalFunc(io, &pk.Decorations, func(value *[]protocol.MapDecoration) {
+		protocol.SliceLimits(io, value, 0, 65535)
+	})
+	protocol.OptionalFunc(io, &pk.Width, io.Varint32)
+	protocol.OptionalFunc(io, &pk.Height, io.Varint32)
+	protocol.OptionalFunc(io, &pk.StartX, io.Varint32)
+	protocol.OptionalFunc(io, &pk.StartY, io.Varint32)
+	protocol.OptionalFunc(io, &pk.Pixels, func(value *[]uint32) {
+		protocol.FuncSliceLimits(io, value, io.Varuint32, 0, 16384, io.Uint32)
+	})
+}

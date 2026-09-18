@@ -2,20 +2,30 @@
 
 package packet
 
-import "protocolgen/generated/1.26.44/go/protocol"
+import (
+	"protocolgen/generated/1.26.44/go/protocol"
+)
 
+// HurtArmor is sent by the server to damage the player's armour after being hit. The packet should never be
+// used by servers as it hands the responsibility over to the player completely, while the server can easily
+// reliably update the armour damage of players itself.
 type HurtArmor struct {
-	Cause      int32
-	Damage     int32
+	// Cause is the cause of the damage dealt to the armour.
+	Cause int32
+	// Damage is the amount of damage points that was dealt to the player. The damage to the armour will be
+	// calculated by the client based upon this damage, and will also be based upon any enchantments like thorns
+	// that the armour may have.
+	Damage int32
+	// ArmourSlots is a bitset of all armour slots affected.
 	ArmorSlots uint64
-}
-
-// Marshal reads or writes HurtArmor using its canonical wire layout.
-func (x *HurtArmor) Marshal(io protocol.IO) {
-	io.Varint32(&x.Cause)
-	io.Varint32(&x.Damage)
-	io.Varuint64(&x.ArmorSlots)
 }
 
 // ID returns the protocol ID for HurtArmor.
 func (*HurtArmor) ID() uint32 { return IDHurtArmor }
+
+// Marshal reads or writes HurtArmor using its canonical wire layout.
+func (pk *HurtArmor) Marshal(io protocol.IO) {
+	io.Varint32(&pk.Cause)
+	io.Varint32(&pk.Damage)
+	io.Varuint64(&pk.ArmorSlots)
+}

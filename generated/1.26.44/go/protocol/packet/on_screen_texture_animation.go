@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.44/go/protocol"
+import (
+	"protocolgen/generated/1.26.44/go/protocol"
+)
 
 // OnScreenTextureAnimation is sent by the server to show a certain animation on the screen of the player. The
 // packet is used, as an example, for when a raid is triggered and when a raid is defeated.
@@ -12,10 +14,10 @@ type OnScreenTextureAnimation struct {
 	EffectID uint32
 }
 
-// Marshal reads or writes OnScreenTextureAnimation using its canonical wire layout.
-func (x *OnScreenTextureAnimation) Marshal(io protocol.IO) {
-	io.Uint32(&x.EffectID)
-}
-
 // ID returns the protocol ID for OnScreenTextureAnimation.
 func (*OnScreenTextureAnimation) ID() uint32 { return IDOnScreenTextureAnimation }
+
+// Marshal reads or writes OnScreenTextureAnimation using its canonical wire layout.
+func (pk *OnScreenTextureAnimation) Marshal(io protocol.IO) {
+	io.Uint32(&pk.EffectID)
+}

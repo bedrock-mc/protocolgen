@@ -26,16 +26,16 @@ type CorrectPlayerMovePrediction struct {
 	Tick uint64
 }
 
-// Marshal reads or writes CorrectPlayerMovePrediction using its canonical wire layout.
-func (x *CorrectPlayerMovePrediction) Marshal(io protocol.IO) {
-	x.PredictionType.Marshal(io)
-	io.Vec3(&x.Pos)
-	io.Vec3(&x.PosDelta)
-	io.Vec2(&x.Rotation)
-	protocol.OptionalFunc(io, &x.VehicleAngularVelocity, io.Float32)
-	io.Bool(&x.OnGround)
-	io.PlayerInputTick(&x.Tick)
-}
-
 // ID returns the protocol ID for CorrectPlayerMovePrediction.
 func (*CorrectPlayerMovePrediction) ID() uint32 { return IDCorrectPlayerMovePrediction }
+
+// Marshal reads or writes CorrectPlayerMovePrediction using its canonical wire layout.
+func (pk *CorrectPlayerMovePrediction) Marshal(io protocol.IO) {
+	pk.PredictionType.Marshal(io)
+	io.Vec3(&pk.Pos)
+	io.Vec3(&pk.PosDelta)
+	io.Vec2(&pk.Rotation)
+	protocol.OptionalFunc(io, &pk.VehicleAngularVelocity, io.Float32)
+	io.Bool(&pk.OnGround)
+	io.PlayerInputTick(&pk.Tick)
+}

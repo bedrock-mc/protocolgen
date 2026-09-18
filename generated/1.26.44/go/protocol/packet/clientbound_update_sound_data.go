@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.44/go/protocol"
+import (
+	"protocolgen/generated/1.26.44/go/protocol"
+)
 
 // ClientboundUpdateSoundData is sent by the server to update a sound that is currently playing, identified by
 // the handle that the server sent in the PlaySound packet that started it. Each optional field is a Cereal
@@ -19,17 +21,17 @@ type ClientboundUpdateSoundData struct {
 	Resume            protocol.SoundDataEvent
 }
 
-// Marshal reads or writes ClientboundUpdateSoundData using its canonical wire layout.
-func (x *ClientboundUpdateSoundData) Marshal(io protocol.IO) {
-	x.ServerSoundHandle.Marshal(io)
-	protocol.MarshalSoundDataEvent(io, &x.Stop)
-	protocol.MarshalSoundDataEvent(io, &x.SetVolume)
-	protocol.MarshalSoundDataEvent(io, &x.SetPitch)
-	protocol.MarshalSoundDataEvent(io, &x.Fade)
-	protocol.MarshalSoundDataEvent(io, &x.SeekTo)
-	protocol.MarshalSoundDataEvent(io, &x.Pause)
-	protocol.MarshalSoundDataEvent(io, &x.Resume)
-}
-
 // ID returns the protocol ID for ClientboundUpdateSoundData.
 func (*ClientboundUpdateSoundData) ID() uint32 { return IDClientboundUpdateSoundData }
+
+// Marshal reads or writes ClientboundUpdateSoundData using its canonical wire layout.
+func (pk *ClientboundUpdateSoundData) Marshal(io protocol.IO) {
+	pk.ServerSoundHandle.Marshal(io)
+	protocol.MarshalSoundDataEvent(io, &pk.Stop)
+	protocol.MarshalSoundDataEvent(io, &pk.SetVolume)
+	protocol.MarshalSoundDataEvent(io, &pk.SetPitch)
+	protocol.MarshalSoundDataEvent(io, &pk.Fade)
+	protocol.MarshalSoundDataEvent(io, &pk.SeekTo)
+	protocol.MarshalSoundDataEvent(io, &pk.Pause)
+	protocol.MarshalSoundDataEvent(io, &pk.Resume)
+}

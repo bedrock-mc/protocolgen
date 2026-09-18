@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 // CommandBlockUpdate is sent by the client to update a command block at a specific position. The command
 // block may be either a physical block or an entity.
@@ -28,17 +30,17 @@ type CommandBlockUpdate struct {
 	ExecuteOnFirstTick bool
 }
 
-// Marshal reads or writes CommandBlockUpdate using its canonical wire layout.
-func (x *CommandBlockUpdate) Marshal(io protocol.IO) {
-	protocol.MarshalCommandBlockUpdateData(io, &x.Target)
-	io.String(&x.Command)
-	io.String(&x.LastOutput)
-	io.String(&x.Name)
-	io.String(&x.FilteredName)
-	io.Bool(&x.TrackOutput)
-	io.Int32(&x.TickDelay)
-	io.Bool(&x.ExecuteOnFirstTick)
-}
-
 // ID returns the protocol ID for CommandBlockUpdate.
 func (*CommandBlockUpdate) ID() uint32 { return IDCommandBlockUpdate }
+
+// Marshal reads or writes CommandBlockUpdate using its canonical wire layout.
+func (pk *CommandBlockUpdate) Marshal(io protocol.IO) {
+	protocol.MarshalCommandBlockUpdateData(io, &pk.Target)
+	io.String(&pk.Command)
+	io.String(&pk.LastOutput)
+	io.String(&pk.Name)
+	io.String(&pk.FilteredName)
+	io.Bool(&pk.TrackOutput)
+	io.Int32(&pk.TickDelay)
+	io.Bool(&pk.ExecuteOnFirstTick)
+}

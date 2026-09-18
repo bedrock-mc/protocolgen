@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
 // OpenSign is sent by the server to open a sign for editing. As of 1.19.80, the player can interact with a
 // sign to edit the text on both sides instead of just the front.
@@ -15,11 +17,11 @@ type OpenSign struct {
 	IsFrontSide bool
 }
 
-// Marshal reads or writes OpenSign using its canonical wire layout.
-func (x *OpenSign) Marshal(io protocol.IO) {
-	x.Pos.Marshal(io)
-	io.Bool(&x.IsFrontSide)
-}
-
 // ID returns the protocol ID for OpenSign.
 func (*OpenSign) ID() uint32 { return IDOpenSign }
+
+// Marshal reads or writes OpenSign using its canonical wire layout.
+func (pk *OpenSign) Marshal(io protocol.IO) {
+	pk.Pos.Marshal(io)
+	io.Bool(&pk.IsFrontSide)
+}

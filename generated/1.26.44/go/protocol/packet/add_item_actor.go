@@ -26,16 +26,16 @@ type AddItemActor struct {
 	IsFromFishing bool
 }
 
-// Marshal reads or writes AddItemActor using its canonical wire layout.
-func (x *AddItemActor) Marshal(io protocol.IO) {
-	io.ActorUniqueID(&x.TargetActorID)
-	io.ActorRuntimeID(&x.TargetRuntimeID)
-	x.Item.Marshal(io)
-	io.Vec3(&x.Position)
-	io.Vec3(&x.Velocity)
-	x.EntityData.Marshal(io)
-	io.Bool(&x.IsFromFishing)
-}
-
 // ID returns the protocol ID for AddItemActor.
 func (*AddItemActor) ID() uint32 { return IDAddItemActor }
+
+// Marshal reads or writes AddItemActor using its canonical wire layout.
+func (pk *AddItemActor) Marshal(io protocol.IO) {
+	io.ActorUniqueID(&pk.TargetActorID)
+	io.ActorRuntimeID(&pk.TargetRuntimeID)
+	pk.Item.Marshal(io)
+	io.Vec3(&pk.Position)
+	io.Vec3(&pk.Velocity)
+	pk.EntityData.Marshal(io)
+	io.Bool(&pk.IsFromFishing)
+}

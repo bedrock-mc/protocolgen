@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
 // InventorySlot is sent by the server to update a single slot in one of the inventory windows that the client
 // currently has opened. Usually this is the main inventory, but it may also be the off hand or, for example,
@@ -24,14 +26,14 @@ type InventorySlot struct {
 	Item protocol.NetworkItemStackDescriptorSerializedData
 }
 
-// Marshal reads or writes InventorySlot using its canonical wire layout.
-func (x *InventorySlot) Marshal(io protocol.IO) {
-	io.Uint8(&x.ContainerID)
-	io.Varuint32(&x.Slot)
-	protocol.OptionalMarshaler(io, &x.FullContainerName)
-	protocol.OptionalMarshaler(io, &x.StorageItem)
-	x.Item.Marshal(io)
-}
-
 // ID returns the protocol ID for InventorySlot.
 func (*InventorySlot) ID() uint32 { return IDInventorySlot }
+
+// Marshal reads or writes InventorySlot using its canonical wire layout.
+func (pk *InventorySlot) Marshal(io protocol.IO) {
+	io.Uint8(&pk.ContainerID)
+	io.Varuint32(&pk.Slot)
+	protocol.OptionalMarshaler(io, &pk.FullContainerName)
+	protocol.OptionalMarshaler(io, &pk.StorageItem)
+	pk.Item.Marshal(io)
+}

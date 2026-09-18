@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
 // AnimateEntity is sent by the server to animate an entity client-side. It may be used to play a single
 // animation, or to activate a controller which can start a sequence of animations based on different
@@ -28,16 +30,16 @@ type AnimateEntity struct {
 	MRuntimeIds []uint64
 }
 
-// Marshal reads or writes AnimateEntity using its canonical wire layout.
-func (x *AnimateEntity) Marshal(io protocol.IO) {
-	io.String(&x.MAnimation)
-	io.String(&x.MNextState)
-	io.String(&x.MStopExpression)
-	io.Int32(&x.MStopExpressionVersion)
-	io.String(&x.MController)
-	io.Float32(&x.MBlendOutTime)
-	protocol.FuncSlice(io, &x.MRuntimeIds, io.Varuint32, io.ActorRuntimeID)
-}
-
 // ID returns the protocol ID for AnimateEntity.
 func (*AnimateEntity) ID() uint32 { return IDAnimateEntity }
+
+// Marshal reads or writes AnimateEntity using its canonical wire layout.
+func (pk *AnimateEntity) Marshal(io protocol.IO) {
+	io.String(&pk.MAnimation)
+	io.String(&pk.MNextState)
+	io.String(&pk.MStopExpression)
+	io.Int32(&pk.MStopExpressionVersion)
+	io.String(&pk.MController)
+	io.Float32(&pk.MBlendOutTime)
+	protocol.FuncSlice(io, &pk.MRuntimeIds, io.Varuint32, io.ActorRuntimeID)
+}

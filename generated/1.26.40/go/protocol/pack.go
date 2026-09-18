@@ -2,7 +2,9 @@
 
 package protocol
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+)
 
 type PackIDVersion struct {
 	PackUUID    uuid.UUID

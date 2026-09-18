@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
 // PositionTrackingDBClientRequest is a packet sent by the client to request the position and dimension of a
 // 'tracking ID'. These IDs are tracked in a database by the server. In 1.16, this is used for lodestones. The
@@ -14,11 +16,11 @@ type PositionTrackingDBClientRequest struct {
 	IDValue protocol.PositionTrackingID
 }
 
-// Marshal reads or writes PositionTrackingDBClientRequest using its canonical wire layout.
-func (x *PositionTrackingDBClientRequest) Marshal(io protocol.IO) {
-	x.Action.Marshal(io)
-	x.IDValue.Marshal(io)
-}
-
 // ID returns the protocol ID for PositionTrackingDBClientRequest.
 func (*PositionTrackingDBClientRequest) ID() uint32 { return IDPositionTrackingDBClientRequest }
+
+// Marshal reads or writes PositionTrackingDBClientRequest using its canonical wire layout.
+func (pk *PositionTrackingDBClientRequest) Marshal(io protocol.IO) {
+	pk.Action.Marshal(io)
+	pk.IDValue.Marshal(io)
+}

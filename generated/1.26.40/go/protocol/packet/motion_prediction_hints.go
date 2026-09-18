@@ -18,12 +18,12 @@ type MotionPredictionHints struct {
 	MOnGround  bool
 }
 
-// Marshal reads or writes MotionPredictionHints using its canonical wire layout.
-func (x *MotionPredictionHints) Marshal(io protocol.IO) {
-	io.ActorRuntimeID(&x.MRuntimeID)
-	io.Vec3(&x.MMotion)
-	io.Bool(&x.MOnGround)
-}
-
 // ID returns the protocol ID for MotionPredictionHints.
 func (*MotionPredictionHints) ID() uint32 { return IDMotionPredictionHints }
+
+// Marshal reads or writes MotionPredictionHints using its canonical wire layout.
+func (pk *MotionPredictionHints) Marshal(io protocol.IO) {
+	io.ActorRuntimeID(&pk.MRuntimeID)
+	io.Vec3(&pk.MMotion)
+	io.Bool(&pk.MOnGround)
+}

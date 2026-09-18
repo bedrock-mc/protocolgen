@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 // CommandOutput is sent by the server to the client to send text as output of a command. Most servers do not
 // use this packet and instead simply send Text packets, but there is reason to send it. If the origin of a
@@ -14,11 +16,11 @@ type CommandOutput struct {
 	Output     protocol.CommandOutputData
 }
 
-// Marshal reads or writes CommandOutput using its canonical wire layout.
-func (x *CommandOutput) Marshal(io protocol.IO) {
-	x.OriginData.Marshal(io)
-	x.Output.Marshal(io)
-}
-
 // ID returns the protocol ID for CommandOutput.
 func (*CommandOutput) ID() uint32 { return IDCommandOutput }
+
+// Marshal reads or writes CommandOutput using its canonical wire layout.
+func (pk *CommandOutput) Marshal(io protocol.IO) {
+	pk.OriginData.Marshal(io)
+	pk.Output.Marshal(io)
+}

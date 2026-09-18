@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
 // PlayerVideoCapture packet is sent by the server to start or stop video recording for a player. This packet
 // only works on development builds and has no effect on retail builds. When recording, the client will save
@@ -12,10 +14,10 @@ type PlayerVideoCapture struct {
 	Action protocol.PlayerVideoCaptureData
 }
 
-// Marshal reads or writes PlayerVideoCapture using its canonical wire layout.
-func (x *PlayerVideoCapture) Marshal(io protocol.IO) {
-	protocol.MarshalPlayerVideoCaptureData(io, &x.Action)
-}
-
 // ID returns the protocol ID for PlayerVideoCapture.
 func (*PlayerVideoCapture) ID() uint32 { return IDPlayerVideoCapture }
+
+// Marshal reads or writes PlayerVideoCapture using its canonical wire layout.
+func (pk *PlayerVideoCapture) Marshal(io protocol.IO) {
+	protocol.MarshalPlayerVideoCaptureData(io, &pk.Action)
+}

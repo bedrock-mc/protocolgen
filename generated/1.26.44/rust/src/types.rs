@@ -285,12 +285,18 @@ impl wire::Decode for AttributeLayerSyncData {
 
 // Domain: bedrock_profile
 
+/// BedrockProfileWhiskerDiagnosticsScopeDataSummary represents a whisker profiler scope diagnostic summary.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct BedrockProfileWhiskerDiagnosticsScopeDataSummary {
+    /// `label` is the label of the whisker scope.
     pub label: String,
+    /// `indentation` is the indentation string of the whisker scope within the profiler hierarchy.
     pub indentation: String,
+    /// `total_high_cost_ns` is the total time, in nanoseconds, spent in the high-cost portion of the scope.
     pub total_high_cost_ns: wire::U64LE,
+    /// `total_mid_cost_ns` is the total time, in nanoseconds, spent in the mid-cost portion of the scope.
     pub total_mid_cost_ns: wire::U64LE,
+    /// `total_low_cost_ns` is the total time, in nanoseconds, spent in the low-cost portion of the scope.
     pub total_low_cost_ns: wire::U64LE,
 }
 
@@ -473,9 +479,12 @@ impl wire::Decode for BiomeClimateData {
 /// BiomeConditionalTransformation is the legacy method of transforming biomes.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct BiomeConditionalTransformationData {
+    /// WeightedBiomes is a list of biomes and their weights.
     pub transforms_into: Vec<BiomeWeightedData>,
     /// `condition_json` is an index of the condition JSON data in the string list.
     pub condition_json: wire::U16LE,
+    /// MinPassingNeighbours is the minimum number of neighbours that must pass the condition for the
+    /// transformation to be applied.
     pub min_passing_neighbors: wire::U32LE,
 }
 
@@ -511,6 +520,7 @@ pub struct BiomeConsolidatedFeatureData {
     pub identifier: wire::U16LE,
     /// `pass` is the index of the feature's pass in the string list.
     pub pass: wire::U16LE,
+    /// CanUseInternal is true if the feature can use internal features.
     pub can_use_internal_feature: bool,
 }
 
@@ -913,6 +923,7 @@ impl wire::Decode for BiomeDefinitionData {
 /// BiomeElementData are set rules to adjust the surface materials of the biome.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct BiomeElementData {
+    /// NoiseFrequencyScale is the frequency scale of the noise used to adjust the surface materials.
     pub noise_freq_scale: wire::F32LE,
     /// `noise_lower_bound` is the minimum noise value required to be selected.
     pub noise_lower_bound: wire::F32LE,
@@ -1025,13 +1036,20 @@ impl wire::Decode for BiomeMesaSurfaceData {
     }
 }
 
+/// BiomeMountainParamsData specifies the parameters for a mountain biome.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct BiomeMountainParamsData {
+    /// `steep_block` is the runtime ID of the block to use for steep slopes.
     pub steep_block: wire::U32LE,
+    /// `north_slopes` is true if the biome has north slopes.
     pub north_slopes: bool,
+    /// `south_slopes` is true if the biome has south slopes.
     pub south_slopes: bool,
+    /// `west_slopes` is true if the biome has west slopes.
     pub west_slopes: bool,
+    /// `east_slopes` is true if the biome has east slopes.
     pub east_slopes: bool,
+    /// `top_slide_enabled` is true if the biome has top slide enabled.
     pub top_slide_enabled: bool,
 }
 
@@ -1065,12 +1083,19 @@ impl wire::Decode for BiomeMountainParamsData {
     }
 }
 
+/// BiomeMultinoiseGenRulesData specifies the rules for multi-noise biomes, which are biomes that are defined
+/// by multiple noise parameters instead of just temperature and humidity.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct BiomeMultinoiseGenRulesData {
+    /// `temperature` is the temperature level of the biome.
     pub temperature: wire::F32LE,
+    /// `humidity` is the humidity level of the biome.
     pub humidity: wire::F32LE,
+    /// `altitude` is the altitude level of the biome.
     pub altitude: wire::F32LE,
+    /// `weirdness` is the weirdness level of the biome.
     pub weirdness: wire::F32LE,
+    /// `weight` is the weight of the biome, with a higher weight being more likely to be selected.
     pub weight: wire::F32LE,
 }
 
@@ -1180,6 +1205,7 @@ impl wire::Decode for BiomeOverworldGenRulesData {
 /// BiomeReplacementData represents data for biome replacements.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct BiomeReplacementData {
+    /// Biome is the biome ID to replace.
     pub replacement_biome: wire::U16LE,
     /// `dimension` is the dimension ID where the replacement applies.
     pub dimension: wire::U16LE,
@@ -1245,13 +1271,24 @@ impl wire::Decode for BiomeReplacementsData {
 
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct BiomeScatterParamData {
+    /// `coordinates` is a list of coordinate rules to scatter the feature within.
     pub coordinates: Vec<BiomeCoordinateData>,
+    /// EvaluationOrder is the order in which the coordinates are evaluated, and is one of the
+    /// CoordinateEvaluationOrder constants above.
     pub eval_order: CoordinateEvaluationOrder,
+    /// `chance_percent_type` is the type of expression operation to use for the chance percent, and is one of the
+    /// BiomeExpressionOp constants above.
     pub chance_percent_type: wire::ZigZag32,
+    /// ChangePercent is the index of the chance expression in the string list.
     pub chance_percent: wire::U16LE,
+    /// `chance_numerator` is the numerator of the chance expression.
     pub chance_numerator: wire::I32LE,
+    /// `chance_denominator` is the denominator of the chance expression.
     pub chance_denominator: wire::I32LE,
+    /// `iterations_type` is the type of expression operation to use for the iterations, and is one of the
+    /// BiomeExpressionOp constants above.
     pub iterations_type: wire::ZigZag32,
+    /// `iterations` is the index of the iterations expression in the string list.
     pub iterations: wire::U16LE,
 }
 
@@ -1531,9 +1568,12 @@ impl wire::Decode for BiomeWeightedData {
     }
 }
 
+/// BiomeWeightedTemperatureData defines the weight for a temperature, used for weighted randomness.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct BiomeWeightedTemperatureData {
+    /// `temperature` is the temperature that can be selected.
     pub temperature: wire::ZigZag32,
+    /// `weight` is the weight of the temperature, with a higher weight being more likely to be selected.
     pub weight: wire::U32LE,
 }
 
@@ -1685,9 +1725,14 @@ impl wire::Decode for CameraAimAssistActorPriorityData {
     }
 }
 
+/// CameraAimAssistCategoryDefinition is an aim assist category that defines priorities for specific blocks
+/// and entities.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CameraAimAssistCategoryDefinition {
+    /// `name` is the name of the category which can be used by a CameraAimAssistPreset.
     pub name: String,
+    /// `priorities` represents the block and entity specific priorities as well as the default priorities for
+    /// this category.
     pub priorities: CameraAimAssistCategoryPriorities,
 }
 
@@ -1709,14 +1754,22 @@ impl wire::Decode for CameraAimAssistCategoryDefinition {
     }
 }
 
+/// CameraAimAssistCategoryPriorities represents the block and entity specific priorities for targetting. The
+/// aim assist will select the block or entity with the highest priority within the specified thresholds.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CameraAimAssistCategoryPriorities {
+    /// `entities` is a list of priorities for specific entity identifiers.
     pub entities: Vec<(String, wire::I32LE)>,
+    /// `blocks` is a list of priorities for specific block identifiers.
     pub blocks: Vec<(String, wire::I32LE)>,
+    /// `block_tags` is a list of priorities for specific block tags.
     pub block_tags: Vec<(String, wire::I32LE)>,
+    /// `entity_type_families` is a list of priorities for specific entity type families.
     pub entity_type_families: Vec<(String, wire::I32LE)>,
+    /// `entity_default` is the default priority for entities.
     /// Wire presence: optional value is preceded by a presence marker.
     pub entity_default: Option<wire::I32LE>,
+    /// `block_default` is the default priority for blocks.
     /// Wire presence: optional value is preceded by a presence marker.
     pub block_default: Option<wire::I32LE>,
 }
@@ -2094,24 +2147,34 @@ impl wire::Decode for CameraFadeTimeData {
     }
 }
 
+/// CameraInstruction gives a custom camera specific instructions to operate.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CameraInstructionData {
+    /// `set` is a camera instruction that sets the camera to a specified preset.
     /// Wire presence: optional value is preceded by a presence marker.
     pub set: Option<CameraInstructionSet>,
+    /// `clear` can be set to true to clear all the current camera instructions.
     /// Wire presence: optional value is preceded by a presence marker.
     pub clear: Option<bool>,
+    /// `fade` is a camera instruction that fades the screen to a specified colour.
     /// Wire presence: optional value is preceded by a presence marker.
     pub fade: Option<CameraInstructionFade>,
+    /// `target` is a camera instruction that targets a specific entity.
     /// Wire presence: optional value is preceded by a presence marker.
     pub target: Option<CameraInstructionTargetData>,
+    /// `remove_target` can be set to true to remove the current aim assist target.
     /// Wire presence: optional value is preceded by a presence marker.
     pub remove_target: Option<bool>,
+    /// `field_of_view` is a camera instruction that updates the field of view for the camera.
     /// Wire presence: optional value is preceded by a presence marker.
     pub field_of_view: Option<CameraInstructionFieldOfView>,
+    /// `spline` is a camera instruction that creates a spline path for the camera to follow.
     /// Wire presence: optional value is preceded by a presence marker.
     pub spline: Option<CameraSplineInstruction>,
+    /// `attach_to_entity` is the entity ID to attach the camera to.
     /// Wire presence: optional value is preceded by a presence marker.
     pub attach_to_entity: Option<CameraInstructionTarget>,
+    /// `detach_from_entity` can be set to true to detach the camera from the current entity.
     /// Wire presence: optional value is preceded by a presence marker.
     pub detach_from_entity: Option<bool>,
 }
@@ -2979,8 +3042,11 @@ impl wire::Decode for CameraPreset {
     }
 }
 
+/// CameraPresets gives the client a list of custom camera presets.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CameraPresetList {
+    /// `presets` is a list of camera presets that can be used by other cameras. The order of this list is
+    /// important because the index of presets is used as a pointer in the CameraInstruction packet.
     pub presets: Vec<CameraPreset>,
 }
 
@@ -3570,7 +3636,11 @@ pub struct Command {
     /// field no longer seems to serve a purpose, as the client does not handle the execution of commands anymore:
     /// The permissions should be checked server-side.
     pub permission_level: String,
+    /// AliasesOffset is the offset to a CommandEnum that holds the values that should be used as aliases for this
+    /// command.
     pub alias_enum: wire::I32LE,
+    /// ChainedSubcommandOffsets is a slice of offsets that all point to a different ChainedSubcommand from the
+    /// ChainedSubcommands slice in the AvailableCommands packet.
     pub command_data_chained_subcommand_indexes: Vec<wire::U32LE>,
     /// `overloads` is a list of command overloads that specify the ways in which a command may be executed. The
     /// overloads may be completely different.
@@ -3905,7 +3975,14 @@ pub struct CommandParameter {
     /// exception of enum types, which show up simply as a list of options if the list is short enough and Options
     /// is set to false.
     pub name: String,
+    /// Type is a rather odd combination of type(flag)s that result in a certain parameter type to show up
+    /// client-side. It is a combination of the flags above. The basic types must be combined with the
+    /// ArgumentTypeFlagBasic flag (and integers with a suffix ArgumentTypeFlagSuffixed), whereas enums are
+    /// combined with the ArgumentTypeFlagEnum flag.
     pub parse_symbol: wire::U32LE,
+    /// Optional specifies if the command parameter is optional to enter. Note that no non-optional parameter
+    /// should ever be present in a command overload after an optional parameter. When optional, the parameter
+    /// shows up like so: [$Name: $Type], whereas when mandatory, it shows up like so: <$Name: $Type>.
     pub is_optional: bool,
     /// `options` holds a combinations of options that additionally apply to the command parameter. The list of
     /// options can be found above.
@@ -4117,18 +4194,28 @@ impl wire::Decode for CreativeItemNetID {
 
 // Domain: education
 
+/// EducationSettings is a packet sent by the server to update Minecraft: Education Edition related settings.
+/// It is unused by the normal base game.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct EducationLevelSettings {
+    /// `code_builder_default_uri` is the default URI that the code builder is ran on. Using this, a Code Builder
+    /// program can make code directly affect the server.
     pub code_builder_default_uri: String,
+    /// `code_builder_title` is the title of the code builder shown when connected to the CodeBuilderDefaultURI.
     pub code_builder_title: String,
+    /// `can_resize_code_builder` specifies if clients connected to the world should be able to resize the code
+    /// builder when it is opened.
     pub can_resize_code_builder: bool,
+    /// `disable_legacy_title_bar` ...
     pub disable_legacy_title_bar: bool,
+    /// `post_process_filter` ...
     pub post_process_filter: String,
     pub screenshot_border_resource_path: String,
     /// Wire presence: optional value is preceded by a presence marker.
     pub agent_capabilities: Option<bool>,
     pub local_settings: EducationLocalLevelSettings,
     pub deprecated_always_false: bool,
+    /// `external_link_settings` ...
     /// Wire presence: optional value is preceded by a presence marker.
     pub external_link_settings: Option<ExternalLinkSettings>,
 }
@@ -4383,11 +4470,15 @@ pub enum EventData {
         born_baby_color: wire::U8,
     },
     PoiCauldronUsed {
+        /// `block_interaction_type` ...
         block_interaction_type: MinecraftEventingPOIBlockInteractionType,
+        /// `item_id` ...
         item_id: wire::ZigZag32,
     },
     ComposterUsed {
+        /// `block_interaction_type` ...
         block_interaction_type: MinecraftEventingPOIBlockInteractionType,
+        /// `item_id` ...
         item_id: wire::ZigZag32,
     },
     BellUsed {
@@ -4405,7 +4496,9 @@ pub enum EventData {
         redstone_level: wire::ZigZag32,
     },
     PiglinBarter {
+        /// `item_id` ...
         item_id: wire::ZigZag32,
+        /// `was_targeting_bartering_player` ...
         was_targeting_bartering_player: bool,
     },
     PlayerWaxedOrUnwaxedCopper {
@@ -4415,7 +4508,9 @@ pub enum EventData {
         code_builder_runtime_action: String,
     },
     CodeBuilderScoreboard {
+        /// `objective_name` ...
         objective_name: String,
+        /// `score` ...
         score: wire::ZigZag32,
     },
     ItemUsed {
@@ -4699,9 +4794,13 @@ impl wire::Decode for EventData {
 
 // Domain: experiment
 
+/// ExperimentToggle holds data on an experiment that is either enabled or disabled.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ExperimentToggle {
+    /// `name` is the name of the experiment.
     pub name: String,
+    /// `enabled` specifies if the experiment is enabled. Vanilla typically always sets this to true for any
+    /// experiments sent.
     pub enabled: bool,
 }
 
@@ -4836,6 +4935,7 @@ impl wire::Decode for Bitset131 {
 #[derive(Clone, Debug, PartialEq)]
 pub enum DataItemEntryValue {
     DataItemByte {
+        /// `value` is the value that the noise is aligned against, the meaning of which depends on Type.
         value: wire::I8,
     },
     DataItemShort {
@@ -5218,12 +5318,16 @@ pub enum PrimitiveShapeExtraShapeData {
     #[default]
     Empty,
     ArrowData {
+        /// `arrow_end_location` is the arrow end location of the shape.
         /// Wire presence: optional value is preceded by a presence marker.
         arrow_end_location: Option<glam::Vec3>,
+        /// `arrow_head_length` is the arrow head length of the shape.
         /// Wire presence: optional value is preceded by a presence marker.
         arrow_head_length: Option<wire::F32LE>,
+        /// `arrow_head_radius` is the arrow head radius of the shape.
         /// Wire presence: optional value is preceded by a presence marker.
         arrow_head_radius: Option<wire::F32LE>,
+        /// Segments is the segments that used for the debug arrow's head.
         /// Wire presence: optional value is preceded by a presence marker.
         num_segments: Option<wire::U8>,
     },
@@ -5258,9 +5362,13 @@ pub enum PrimitiveShapeExtraShapeData {
         num_segments: wire::U8,
     },
     CylinderData {
+        /// `radius_x` is the radius of the cylinder along the X axis.
         radius_x: glam::Vec2,
+        /// `radius_z` is the radius of the cylinder along the Z axis.
         radius_z: glam::Vec2,
+        /// `height` is the height of the cylinder.
         height: wire::F32LE,
+        /// `num_segments` is the number of segments used for the cylinder.
         num_segments: wire::U8,
     },
     PyramidData {
@@ -5270,12 +5378,17 @@ pub enum PrimitiveShapeExtraShapeData {
         height: wire::F32LE,
     },
     EllipsoidData {
+        /// `radii` are the radii of the ellipsoid along the X, Y and Z axes.
         radii: glam::Vec3,
+        /// `segments_per_axis` is the number of segments used per axis for the ellipsoid.
         segments_per_axis: wire::U8,
     },
     ConeData {
+        /// `radii` are the radii along the X/Z axes of the cone base.
         radii: glam::Vec2,
+        /// `height` is the height of the cone.
         height: wire::F32LE,
+        /// `num_segments` is the number of segments used for the cone.
         num_segments: wire::U8,
     },
 }
@@ -5725,12 +5838,21 @@ impl wire::Decode for InventoryAction {
     }
 }
 
+/// SetPlayerInventoryOptions is a bidirectional packet that can be used to update the inventory options of a
+/// player.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct InventoryOptions {
+    /// `left_inventory_tab` is the tab that is selected on the left side of the inventory. This is usually for
+    /// the creative inventory. It is one of the InventoryLeftTab constants above.
     pub left_inventory_tab: InventoryLeftTabIndex,
+    /// `right_inventory_tab` is the tab that is selected on the right side of the inventory. This is usually for
+    /// the player's own inventory. It is one of the InventoryRightTab constants above.
     pub right_inventory_tab: InventoryRightTabIndex,
+    /// `filtering` is whether the player has enabled the filtering between recipes they have unlocked or not.
     pub filtering: bool,
+    /// InventoryLayout is the layout of the inventory. It is one of the InventoryLayout constants above.
     pub layout_inv: InventoryLayout,
+    /// CraftingLayout is the layout of the crafting inventory. It is one of the InventoryLayout constants above.
     pub layout_craft: InventoryLayout,
 }
 
@@ -6778,9 +6900,13 @@ impl wire::Decode for ItemStackResponseSlotInfo {
 /// StackRequestSlotInfo holds information on a specific slot client-side.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct StackRequestSlotInfo {
+    /// Container is the FullContainerName that describes the container that the slot is in.
     pub full_container_name: FullContainerName,
     /// `slot` is the index of the slot within the container with the ContainerID above.
     pub slot: wire::U8,
+    /// StackNetworkID is the unique stack ID that the client assumes to be present in this slot. The server must
+    /// check if these IDs match. If they do not match, servers should reject the stack request that the action
+    /// holding this info was in.
     pub net_id_variant: wire::I32LE,
 }
 
@@ -6812,6 +6938,8 @@ impl wire::Decode for StackRequestSlotInfo {
 /// client-side.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct MapDecoration {
+    /// Type is the type of the map decoration. The type specifies the shape (and sometimes the colour) that the
+    /// map decoration gets. It is one of the MapDecorationType constants above.
     pub image_type: MapDecorationType,
     /// `rotation` is the rotation of the map decoration. It is byte due to the 16 fixed directions that the map
     /// decoration may face.
@@ -6822,6 +6950,8 @@ pub struct MapDecoration {
     pub y: wire::U8,
     /// `label` is the name of the map decoration. This name may be of any value.
     pub label: String,
+    /// Colour is the colour of the map decoration. Some map decoration types have a specific colour set
+    /// automatically, whereas others may be changed.
     pub color: MceColor,
 }
 
@@ -6858,11 +6988,16 @@ impl wire::Decode for MapDecoration {
     }
 }
 
+/// MapItemTrackedActorUniqueID is an object on a map that is 'tracked' by the client, such as an entity or a
+/// block. This object may move, which is handled client-side.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct MapItemTrackedActorUniqueId {
+    /// `type_` is the type of the tracked object. It is either MapObjectTypeEntity or MapObjectTypeBlock.
     pub type_: MapItemTrackedActorType,
+    /// EntityUniqueID is the optional unique ID of the tracked entity.
     /// Wire presence: optional value is preceded by a presence marker.
     pub entity_id: Option<ActorUniqueID>,
+    /// `block_position` is the optional position of the tracked block.
     /// Wire presence: optional value is preceded by a presence marker.
     pub block_position: Option<BlockPos>,
 }
@@ -6944,6 +7079,7 @@ impl wire::Decode for PixelRequest {
 pub struct MemoryCategoryCounter {
     /// `category` is the memory category. It is one of the MemoryCategory constants above.
     pub category: MemoryCategory,
+    /// Bytes is the number of bytes used by this category.
     pub current_bytes: wire::U64LE,
 }
 
@@ -6968,12 +7104,21 @@ impl wire::Decode for MemoryCategoryCounter {
 
 // Domain: misc
 
+/// UpdateAdventureSettings is a packet sent from the server to the client to update the adventure settings of
+/// the player. It, along with the UpdateAbilities packet, are replacements of the AdventureSettings packet
+/// since v1.19.10.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct AdventureSettings {
+    /// `no_pvm` is a boolean indicating whether the player is allowed to fight mobs or not.
     pub no_pvm: bool,
+    /// `no_mvp` is a boolean indicating whether mobs are allowed to fight the player or not. It is unclear why
+    /// this is sent to the client.
     pub no_mvp: bool,
+    /// `immutable_world` is a boolean indicating whether the player is allowed to modify the world or not.
     pub immutable_world: bool,
+    /// `show_name_tags` is a boolean indicating whether player name tags are shown or not.
     pub show_name_tags: bool,
+    /// `auto_jump` is a boolean indicating whether the player is allowed to jump automatically or not.
     pub auto_jump: bool,
 }
 
@@ -7036,9 +7181,12 @@ impl wire::Decode for AnimatedImageData {
     }
 }
 
+/// ArmorSlotAndDamagePair represents an entry for a single piece of armour that should be damaged.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ArmorSlotAndDamagePair {
+    /// ArmourSlot is the index of the armour slot to damage.
     pub armor_slot: LegacyArmorSlot,
+    /// `damage` is the amount of damage to apply to the armour in the specified slot.
     pub damage: wire::I16LE,
 }
 
@@ -7064,9 +7212,13 @@ impl wire::Decode for ArmorSlotAndDamagePair {
 pub enum BedrockDDUI {
     DataStoreUpdate(BedrockDDUIDataStoreUpdate),
     DataStoreChange {
+        /// `data_store_name` is the name of the data store.
         data_store_name: String,
+        /// `property` is the property that changed.
         property: String,
+        /// `update_count` is the update count.
         update_count: wire::U32LE,
+        /// NewValue is the new property value.
         the_new_property_value: DynamicValue,
     },
     DataStoreRemoval {
@@ -7775,6 +7927,7 @@ impl wire::Decode for ECSProfilingDiagnosticsEntityDiagnosticTimingInfo {
     }
 }
 
+/// ECSProfilingDiagnosticsSystemCategory maps a diagnostics category name to a system index.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ECSProfilingDiagnosticsSystemCategory {
     pub category_name: String,
@@ -7799,11 +7952,16 @@ impl wire::Decode for ECSProfilingDiagnosticsSystemCategory {
     }
 }
 
+/// ECSProfilingDiagnosticsSystemDiagnosticTimingInfo represents diagnostics for a specific system index.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ECSProfilingDiagnosticsSystemDiagnosticTimingInfo {
+    /// `display_name` is the name to display for this timing entry.
     pub display_name: String,
+    /// `system_index` is the index of the system that is being timed.
     pub system_index: wire::U64LE,
+    /// DurationNanos is whole long the timing entry has lasted, in nanoseconds.
     pub time_in_ns: wire::U64LE,
+    /// `percent_of_total` is the percentage of time that this timing entry has used compared to others.
     pub percent_of_total: wire::U8,
 }
 
@@ -7831,9 +7989,13 @@ impl wire::Decode for ECSProfilingDiagnosticsSystemDiagnosticTimingInfo {
     }
 }
 
+/// EduSharedURIResource is an education edition feature that is used for transmitting education resource
+/// settings to clients. It contains a button name and a link URL.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct EduSharedUriResource {
+    /// `button_name` is the button name of the resource URI.
     pub button_name: String,
+    /// `link_uri` is the link URI for the resource URI.
     pub link_uri: String,
 }
 
@@ -7879,9 +8041,12 @@ impl wire::Decode for Experiments {
     }
 }
 
+/// ExternalLinkSettings ...
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ExternalLinkSettings {
+    /// `url` is the external link URL.
     pub url: String,
+    /// `display_name` is the display name in game.
     pub display_name: String,
 }
 
@@ -8354,10 +8519,14 @@ impl wire::Decode for MissingBlobData {
     }
 }
 
+/// MoveActorAbsolute is sent by the server to move an entity to an absolute position. It is typically used
+/// for movements where high accuracy isn't needed, such as for long range teleporting.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct MoveActorAbsoluteData {
     pub actor_runtime_id: ActorRuntimeID,
     pub header: wire::U8,
+    /// `position` is the position to spawn the entity on. If the entity is on a distance that the player cannot
+    /// see it, the entity will still show up if the player moves closer.
     pub position: glam::Vec3,
     pub rotation_x: wire::U8,
     pub rotation_y: wire::U8,
@@ -8394,6 +8563,9 @@ impl wire::Decode for MoveActorAbsoluteData {
     }
 }
 
+/// MoveActorDelta is sent by the server to move an entity. The packet is specifically optimised to save as
+/// much space as possible, by only writing non-zero fields. As of 1.16.100, this packet no longer actually
+/// contains any deltas.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct MoveActorDeltaData {
     pub actor_runtime_id: ActorRuntimeID,
@@ -8403,6 +8575,8 @@ pub struct MoveActorDeltaData {
     pub new_position_y: Option<wire::F32LE>,
     /// Wire presence: optional value is preceded by a presence marker.
     pub new_position_z: Option<wire::F32LE>,
+    /// Rotation is the new absolute rotation. Unlike the position, it is not actually a delta. If any of the
+    /// values of this rotation are not sent, these values are 0 and no flag for them is present.
     /// Wire presence: optional value is preceded by a presence marker.
     pub rotation_x: Option<wire::I8>,
     /// Wire presence: optional value is preceded by a presence marker.
@@ -8410,8 +8584,13 @@ pub struct MoveActorDeltaData {
     /// Wire presence: optional value is preceded by a presence marker.
     pub rotation_y_head: Option<wire::I8>,
     pub is_on_ground: bool,
+    /// `force_move` specifies whether the client should snap the entity to its new position without
+    /// interpolation.
     pub force_move: bool,
+    /// `force_move_local_entity` specifies whether the client should also snap an entity it owns locally.
     pub force_move_local_entity: bool,
+    /// `force_completion` specifies whether the client should complete any in-progress local movement before
+    /// applying the update.
     pub force_completion: bool,
 }
 
@@ -8877,11 +9056,20 @@ impl wire::Decode for SemVersionData {
     }
 }
 
+/// SerializedAbilitiesData represents various data about the abilities of a player, such as ability layers or
+/// permissions.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SerializedAbilitiesData {
+    /// EntityUniqueID is a unique identifier of the player. It appears it is not required to fill this field out
+    /// with a correct value. Simply writing 0 seems to work.
     pub target_player_raw_id: wire::I64LE,
+    /// `player_permissions` is the permission level of the player as it shows up in the player list built up
+    /// using the PlayerList packet.
     pub player_permissions: PlayerPermissionLevel,
+    /// `command_permissions` is a set of permissions that specify what commands a player is allowed to execute.
     pub command_permissions: CommandPermissionLevel,
+    /// `layers` contains all ability layers and their potential values. This should at least have one entry,
+    /// being the base layer.
     pub layers: Vec<SerializedAbilitiesDataSerializedLayer>,
 }
 
@@ -8949,11 +9137,17 @@ impl wire::Decode for SerializedAbilitiesDataSerializedLayer {
     }
 }
 
+/// SerializedNoiseBlockSpecifier specifies a block placed by the gradient noise based on a threshold and
+/// range.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SerializedNoiseBlockSpecifier {
+    /// `noise` is the noise name.
     pub noise: String,
+    /// `threshold` is the noise threshold above which the block is placed.
     pub threshold: wire::F32LE,
+    /// `range` is the noise range within which the block is placed.
     pub range: FloatRange,
+    /// `block` is the block runtime ID placed by this specifier.
     pub block: wire::U32LE,
 }
 
@@ -8981,12 +9175,20 @@ impl wire::Decode for SerializedNoiseBlockSpecifier {
     }
 }
 
+/// SerializedPersonaPieceHandle represents a piece of a persona skin. All pieces are sent separately.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SerializedPersonaPieceHandle {
+    /// PieceId is a UUID that identifies the piece itself, which is unique for each separate piece.
     pub piece_id: String,
+    /// `piece_type` holds the type of the piece. This is one of the PieceType constants above.
     pub piece_type: PersonaPieceType,
+    /// `pack_id` is a UUID that identifies the pack that the persona piece belongs to.
     pub pack_id: uuid::Uuid,
+    /// Default specifies if the piece is one of the default pieces. This is true when the piece is one of those
+    /// that a Steve or Alex skin have.
     pub is_default_piece: bool,
+    /// `product_id` is a UUID that identifies the piece when it comes to purchases. It is empty for pieces that
+    /// have the 'Default' field set to true.
     pub product_id: String,
 }
 
@@ -9145,9 +9347,12 @@ impl wire::Decode for ServerBlockProperty {
     }
 }
 
+/// ServerConfigurationClientStoreEntryPointConfiguration contains information about the store entry point.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ServerConfigurationClientStoreEntryPointConfiguration {
+    /// `store_id` is the store identifier.
     pub store_id: String,
+    /// `store_name` is the store name.
     pub store_name: String,
 }
 
@@ -9169,19 +9374,29 @@ impl wire::Decode for ServerConfigurationClientStoreEntryPointConfiguration {
     }
 }
 
+/// ServerConfigurationGatheringsConfigurationJoinInfo contains information about the gathering (experience)
+/// the player is joining.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ServerConfigurationGatheringsConfigurationJoinInfo {
+    /// `experience_id` is the UUID of the experience.
     pub experience_id: uuid::Uuid,
+    /// `experience_name` is the name of the experience.
     pub experience_name: String,
+    /// ExperienceWorldID is the UUID of the experience world.
     /// Wire presence: optional value is preceded by a presence marker.
     pub world_id: Option<uuid::Uuid>,
+    /// ExperienceWorldName is the world name of the experience.
     /// Wire presence: optional value is preceded by a presence marker.
     pub world_name: Option<String>,
+    /// `creator_id` is the ID of the creator.
     pub creator_id: String,
+    /// `target_id` is the session ID of the experience.
     /// Wire presence: optional value is preceded by a presence marker.
     pub target_id: Option<uuid::Uuid>,
+    /// `scenario_id` is the scenario ID of experience.
     /// Wire presence: optional value is preceded by a presence marker.
     pub scenario_id: Option<String>,
+    /// `server_id` is the server identifier.
     /// Wire presence: optional value is preceded by a presence marker.
     pub server_id: Option<String>,
 }
@@ -9397,21 +9612,30 @@ impl wire::Decode for ServerSoundHandle {
     }
 }
 
+/// ServerWaypoint holds optional data for a locator bar waypoint.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ServerWaypoint {
+    /// `update_flag` is a bitmask indicating which optional fields are set.
     pub update_flag: wire::U32LE,
+    /// Visible determines whether the waypoint is shown.
     /// Wire presence: optional value is preceded by a presence marker.
     pub is_visible: Option<bool>,
+    /// `world_position` is the position and dimension of the waypoint.
     /// Wire presence: optional value is preceded by a presence marker.
     pub world_position: Option<WorldPosition>,
+    /// `texture_path` is the resource path for the waypoint icon texture.
     /// Wire presence: optional value is preceded by a presence marker.
     pub texture_path: Option<String>,
+    /// `icon_size` is the size of the waypoint icon.
     /// Wire presence: optional value is preceded by a presence marker.
     pub icon_size: Option<glam::Vec2>,
+    /// Colour is the RGB colour used to tint the waypoint icon.
     /// Wire presence: optional value is preceded by a presence marker.
     pub color: Option<MceColor>,
+    /// `client_position_authority` determines whether the client has authority over the waypoint position.
     /// Wire presence: optional value is preceded by a presence marker.
     pub client_position_authority: Option<bool>,
+    /// `actor_unique_id` is the unique ID of the entity the waypoint tracks.
     /// Wire presence: optional value is preceded by a presence marker.
     pub actor_unique_id: Option<ActorUniqueID>,
 }
@@ -9628,9 +9852,14 @@ impl wire::Decode for SyncedAttribute {
     }
 }
 
+/// SyncedPlayerMovementSettings represents the different server authoritative movement settings. These
+/// control how the client will provide input to the server.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SyncedPlayerMovementSettings {
+    /// `rewind_history_size` is the amount of history to keep at maximum.
     pub rewind_history_size: wire::ZigZag32,
+    /// `server_authoritative_block_breaking` specifies if block breaking should be sent through
+    /// packet.PlayerAuthInput or not.
     pub server_authoritative_block_breaking: bool,
 }
 
@@ -9754,8 +9983,13 @@ impl wire::Decode for UpdateSubChunkNetworkBlockInfo {
     }
 }
 
+/// AutomationClientConnect is used to make the client connect to a websocket server. This websocket server
+/// has the ability to execute commands on the behalf of the client and it can listen for certain events fired
+/// by the client.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct WebSocketData {
+    /// ServerURI is the URI to make the client connect to. It can be, for example, 'localhost:8000/ws' to connect
+    /// to a websocket server on the localhost at port 8000.
     pub websocket_server_uri: String,
 }
 
@@ -9876,10 +10110,18 @@ impl wire::Decode for PackInfoData {
     }
 }
 
+/// PackInstanceID represents a resource pack sent on the stack of the client. When sent, the client will
+/// apply them in the order of the stack sent.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PackInstanceId {
+    /// UUID is the UUID of the resource pack. Each resource pack downloaded must have a different UUID in order
+    /// for the client to be able to handle them properly.
     pub pack_id: String,
+    /// `version` is the version of the resource pack. The client will cache resource packs sent by the server as
+    /// long as they carry the same version. Sending a resource pack with a different version than previously will
+    /// force the client to re-download it.
     pub version: String,
+    /// `sub_pack_name` ...
     pub sub_pack_name: String,
 }
 
@@ -9909,8 +10151,11 @@ impl wire::Decode for PackInstanceId {
 /// PlayerBlockAction ...
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PlayerBlockActionData {
+    /// Action is the action to be performed, and is one of the constants listed above.
     pub player_action_type: PlayerActionType,
+    /// BlockPos is the position of the block that was interacted with.
     pub position: BlockPos,
+    /// Face is the face of the block that was interacted with.
     pub facing: wire::ZigZag32,
 }
 
@@ -11036,9 +11281,12 @@ impl wire::Decode for PrimitiveShape {
 
 // Domain: skin
 
+/// SkinImage represents a pyramid debug shape.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SkinImage {
+    /// `width` is the width along the X axis of the pyramid base.
     pub width: wire::U32LE,
+    /// `height` is the height of the pyramid.
     pub height: wire::U32LE,
     pub image_bytes: Vec<wire::U8>,
 }
@@ -11760,11 +12008,16 @@ impl wire::Decode for VoxelShapesRegistryHandle {
     }
 }
 
+/// VoxelShapesSerializableCells represents a 3D grid of voxel cell data.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct VoxelShapesSerializableCells {
+    /// `x_size` is the size of the grid along the X axis.
     pub x_size: wire::U8,
+    /// `y_size` is the size of the grid along the Y axis.
     pub y_size: wire::U8,
+    /// `z_size` is the size of the grid along the Z axis.
     pub z_size: wire::U8,
+    /// `storage` is the raw cell data stored in the grid.
     pub storage: Vec<wire::U8>,
 }
 
@@ -11795,11 +12048,16 @@ impl wire::Decode for VoxelShapesSerializableCells {
     }
 }
 
+/// VoxelShapesSerializableVoxelShape represents a voxel shape with cells and coordinate axes.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct VoxelShapesSerializableVoxelShape {
+    /// `cells` is the grid of cells representing solid and empty regions.
     pub cells: VoxelShapesSerializableCells,
+    /// `x_coordinates` is a list of X axis coordinates for the shape.
     pub x_coordinates: Vec<wire::F32LE>,
+    /// `y_coordinates` is a list of Y axis coordinates for the shape.
     pub y_coordinates: Vec<wire::F32LE>,
+    /// `z_coordinates` is a list of Z axis coordinates for the shape.
     pub z_coordinates: Vec<wire::F32LE>,
 }
 
@@ -11834,7 +12092,9 @@ impl wire::Decode for VoxelShapesSerializableVoxelShape {
 pub struct LocatorBarWaypoint {
     /// `group_handle` is the UUID handle for the waypoint group.
     pub group_handle: WaypointGroupWaypointHandle,
+    /// Waypoint contains the waypoint data.
     pub server_waypoint_payload: ServerWaypoint,
+    /// Action determines the action for this waypoint. It is one of the WaypointAction constants.
     pub action_flag: ServerWaypointGroupAction,
 }
 

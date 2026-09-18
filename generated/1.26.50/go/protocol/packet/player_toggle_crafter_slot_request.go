@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 // PlayerToggleCrafterSlotRequest is sent by the client when it tries to toggle the state of a slot within a
 // Crafter.
@@ -17,14 +19,14 @@ type PlayerToggleCrafterSlotRequest struct {
 	IsDisabled bool
 }
 
-// Marshal reads or writes PlayerToggleCrafterSlotRequest using its canonical wire layout.
-func (x *PlayerToggleCrafterSlotRequest) Marshal(io protocol.IO) {
-	io.Int32(&x.PosX)
-	io.Int32(&x.PosY)
-	io.Int32(&x.PosZ)
-	io.Uint8(&x.SlotIndex)
-	io.Bool(&x.IsDisabled)
-}
-
 // ID returns the protocol ID for PlayerToggleCrafterSlotRequest.
 func (*PlayerToggleCrafterSlotRequest) ID() uint32 { return IDPlayerToggleCrafterSlotRequest }
+
+// Marshal reads or writes PlayerToggleCrafterSlotRequest using its canonical wire layout.
+func (pk *PlayerToggleCrafterSlotRequest) Marshal(io protocol.IO) {
+	io.Int32(&pk.PosX)
+	io.Int32(&pk.PosY)
+	io.Int32(&pk.PosZ)
+	io.Uint8(&pk.SlotIndex)
+	io.Bool(&pk.IsDisabled)
+}

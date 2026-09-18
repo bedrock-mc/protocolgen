@@ -59,7 +59,7 @@ func TestGenerateConsumesOnlyCanonicalManifest(t *testing.T) {
 	if !strings.Contains(packet, "type Vocabulary struct") || !strings.Contains(packet, "Maybe protocol.Optional[string]") || !strings.Contains(files["protocol/packet/ids.go"], "IDVocabulary uint32 = 1") {
 		t.Fatalf("generated output omitted packet definition or ID:\n%s\n%s", packet, files["protocol/packet/ids.go"])
 	}
-	for _, want := range []string{"func (x *Vocabulary) Marshal(io protocol.IO)", "io.Uint8(&x.Value)", "protocol.OptionalFunc(io, &x.Maybe, io.String)"} {
+	for _, want := range []string{"func (pk *Vocabulary) Marshal(io protocol.IO)", "io.Uint8(&pk.Value)", "protocol.OptionalFunc(io, &pk.Maybe, io.String)"} {
 		if !strings.Contains(packet, want) {
 			t.Fatalf("generated packet marshal omits %q:\n%s", want, packet)
 		}
@@ -87,11 +87,11 @@ func TestGenerateEmitsSchemaConstraintChecks(t *testing.T) {
 	}
 	packet := files["protocol/packet/limits.go"]
 	for _, want := range []string{
-		"io.StringLimits(&x.Text, 1, 65536)",
-		`protocol.Pattern(io, &x.Text, "^[a-z]+$")`,
-		"protocol.FuncSliceLimits(io, &x.Values, io.Varuint32, 0, 4, io.Uint8)",
-		"protocol.Minimum(io, &x.Number, -1)",
-		"protocol.Maximum(io, &x.Number, 64)",
+		"io.StringLimits(&pk.Text, 1, 65536)",
+		`protocol.Pattern(io, &pk.Text, "^[a-z]+$")`,
+		"protocol.FuncSliceLimits(io, &pk.Values, io.Varuint32, 0, 4, io.Uint8)",
+		"protocol.Minimum(io, &pk.Number, -1)",
+		"protocol.Maximum(io, &pk.Number, 64)",
 	} {
 		if !strings.Contains(packet, want) {
 			t.Fatalf("generated packet omits %q:\n%s", want, packet)
@@ -109,6 +109,9 @@ func TestGenerateGroupsSharedDefinitionsByReviewedDomain(t *testing.T) {
 		Target:        manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 1},
 		Sources:       []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "1", Digest: "fixture", MinecraftVersion: "fixture", ProtocolVersion: 1}},
 		Packets: []manifest.Packet{{ID: 1, Name: "FixturePacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{
+			{Ordinal: 0, Name: "Beta", Encode: beta, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+			{Ordinal: 1, Name: "Alpha", Encode: alpha, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		}}, {ID: 2, Name: "OtherPacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{
 			{Ordinal: 0, Name: "Beta", Encode: beta, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
 			{Ordinal: 1, Name: "Alpha", Encode: alpha, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
 		}}},
@@ -144,7 +147,10 @@ func TestGenerateEmitsReviewedGoDocs(t *testing.T) {
 		SchemaVersion: 2,
 		Target:        manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 1},
 		Sources:       []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "1", Digest: "fixture", MinecraftVersion: "fixture", ProtocolVersion: 1}},
-		Packets:       []manifest.Packet{{ID: 1, Name: "FixturePacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{Name: "Shared Value", Encode: shared, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}},
+		Packets: []manifest.Packet{
+			{ID: 1, Name: "FixturePacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{Name: "Shared Value", Encode: shared, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}},
+			{ID: 2, Name: "OtherPacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{{Name: "Shared Value", Encode: shared, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}},
+		},
 	}
 	files, err := GenerateWithOptions(m, Options{ProtocolImportPath: "fixture", NativeTypes: false, Docs: docs.Overlay{
 		Types:  map[string]string{"Shared": "Shared docs.", "FixturePacket": "Packet docs."},
@@ -188,10 +194,10 @@ func TestGenerateUsesRuntimeHelpersForEnumsAndOptionals(t *testing.T) {
 	}
 	source := files["protocol/packet/helper.go"]
 	for _, want := range []string{
-		"x.Kind.Marshal(io)",
-		"protocol.OptionalFunc(io, &x.Maybe, io.Int32)",
-		"protocol.Slice(io, &x.Kinds)",
-		"protocol.Slice(io, &x.Entries)",
+		"pk.Kind.Marshal(io)",
+		"protocol.OptionalFunc(io, &pk.Maybe, io.Int32)",
+		"protocol.Slice(io, &pk.Kinds)",
+		"protocol.Slice(io, &pk.Entries)",
 	} {
 		if !strings.Contains(source, want) {
 			t.Fatalf("generated packet omitted runtime helper %q:\n%s", want, source)
@@ -206,7 +212,7 @@ func TestGenerateUsesRuntimeHelpersForEnumsAndOptionals(t *testing.T) {
 	if !strings.Contains(source, "protocol.Slice(io, value)") {
 		t.Fatalf("nested collection callback did not retain the supplied slice pointer:\n%s", source)
 	}
-	if strings.Contains(source, "FuncSlice(io, &x.") || strings.Contains(source, "IntegerFunc") {
+	if strings.Contains(source, "FuncSlice(io, &pk.") || strings.Contains(source, "IntegerFunc") {
 		t.Fatalf("self-marshaling values still emit an escaping callback:\n%s", source)
 	}
 	if !strings.Contains(generatedSource(files), "Marshal(io IO) { io.Uint8((*uint8)(x)) }") {
@@ -392,7 +398,7 @@ func TestGenerateSplitsPacketsAndSharedDefinitions(t *testing.T) {
 			t.Fatalf("generated files omit %s: %v", name, files)
 		}
 	}
-	if !strings.Contains(files["protocol/types.go"], "package protocol") || !strings.Contains(files["protocol/packet/login.go"], "package packet") || !strings.Contains(files["protocol/packet/login.go"], `import "wiregen"`) {
+	if !strings.Contains(files["protocol/types.go"], "package protocol") || !strings.Contains(files["protocol/packet/login.go"], "package packet") || !strings.Contains(files["protocol/packet/login.go"], "import (\n\t\"wiregen\"\n)") {
 		t.Fatalf("generated packages were not separated or wired together:\n%s", files["protocol/packet/login.go"])
 	}
 	if _, ok := files["protocol/marshal.go"]; ok {
@@ -501,7 +507,7 @@ func TestGenerateMapsCanonicalSemanticsToNativeGoTypes(t *testing.T) {
 	if strings.Contains(files["protocol/types.go"], "type Vec3 struct") || strings.Contains(files["protocol/types.go"], "type MceColor struct") {
 		t.Fatalf("native Go types were redundantly regenerated:\n%s", files["protocol/types.go"])
 	}
-	if !strings.Contains(source, "io.ActorRuntimeID(&x.Runtime)") || !strings.Contains(source, "io.ActorUniqueID(&x.Unique)") {
+	if !strings.Contains(source, "io.ActorRuntimeID(&pk.Runtime)") || !strings.Contains(source, "io.ActorUniqueID(&pk.Unique)") {
 		t.Fatalf("semantic ID IO methods were not used:\n%s", source)
 	}
 }
@@ -635,7 +641,7 @@ func TestGenerateWithoutNativeTypesUsesFixedUUIDBytes(t *testing.T) {
 			break
 		}
 	}
-	if !strings.Contains(packet, "UUID [16]byte") || !strings.Contains(packet, "io.UUIDBytes(&x.UUID)") {
+	if !strings.Contains(packet, "UUID [16]byte") || !strings.Contains(packet, "io.UUIDBytes(&pk.UUID)") {
 		t.Fatalf("disabled native profile did not emit fixed UUID bytes:\n%s", packet)
 	}
 }
@@ -655,7 +661,7 @@ func TestGenerateGoPreservesNBTEncodingOnIOCalls(t *testing.T) {
 		t.Fatal(err)
 	}
 	packet := files["protocol/packet/nbt.go"]
-	for _, want := range []string{"io.NBT(&x.Network, protocol.NBTNetwork)", "io.NBT(&x.Persistent, protocol.NBTPersistent)"} {
+	for _, want := range []string{"io.NBT(&pk.Network, protocol.NBTNetwork)", "io.NBT(&pk.Persistent, protocol.NBTPersistent)"} {
 		if !strings.Contains(packet, want) {
 			t.Fatalf("packet omitted %q:\n%s", want, packet)
 		}
@@ -723,7 +729,7 @@ func TestGenerateAppliesLayoutOverlay(t *testing.T) {
 	packet := files["protocol/packet/set_player_game_type.go"]
 	for _, want := range []string{
 		"PlayerGameMode protocol.GameType",
-		"x.PlayerGameMode.Marshal(io)",
+		"pk.PlayerGameMode.Marshal(io)",
 		"[]protocol.SetPlayerGameTypeRowsItemStruct",
 		"GameTypeCreative protocol.GameType = 1",
 		"GameTypeSurvival protocol.GameType = 0",
@@ -753,4 +759,49 @@ func sortedKeys(files map[string]string) []string {
 	}
 	sort.Strings(keys)
 	return keys
+}
+
+// A packet whose only field is a single-use payload struct takes that struct's
+// fields, with docs and reviewed names keyed by the declaring struct; a
+// sub-struct of a multi-field packet keeps its name.
+func TestGenerateInlinesSingleUsePayloadStructs(t *testing.T) {
+	payload := manifest.Node{Kind: manifest.KindStruct, TypeID: "MoveActorAbsoluteData", Fields: []manifest.Field{
+		{Ordinal: 0, Name: "Actor Runtime ID", Encode: manifest.Primitive("var_u64"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		{Ordinal: 1, Name: "Flags", Encode: manifest.Primitive("u8"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+	}}
+	shared := manifest.Node{Kind: manifest.KindStruct, TypeID: "Shared", Fields: []manifest.Field{{Ordinal: 0, Name: "Value", Encode: manifest.Primitive("u8"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}}}}
+	m := manifest.Manifest{
+		SchemaVersion: 2,
+		Target:        manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 1},
+		Sources:       []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "1", Digest: "fixture", MinecraftVersion: "fixture", ProtocolVersion: 1}},
+		Packets: []manifest.Packet{
+			{ID: 1, Name: "MoveActorAbsolutePacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{
+				{Ordinal: 0, Name: "Move Data", Encode: payload, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+			}},
+			{ID: 2, Name: "OtherPacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{
+				{Ordinal: 0, Name: "Extra", Encode: shared, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+				{Ordinal: 1, Name: "Count", Encode: manifest.Primitive("u8"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+			}},
+		},
+	}
+	files, err := GenerateWithOptions(m, Options{ProtocolImportPath: "wiregen", NativeTypes: false, EmitPacketRuntime: true, EmitPacketPools: true,
+		Docs:   docs.Overlay{Fields: map[string]string{docs.FieldKey("MoveActorAbsoluteData", "Flags"): "Flags docs."}},
+		Layout: layout.Overlay{Fields: map[string]string{layout.FieldKey("MoveActorAbsoluteData", "Actor Runtime ID"): "EntityRuntimeID"}},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	packet := files["protocol/packet/move_actor_absolute.go"]
+	for _, want := range []string{"EntityRuntimeID uint64", "// Flags docs.", "Flags uint8", "io.Varuint64(&pk.EntityRuntimeID)"} {
+		if !strings.Contains(packet, want) {
+			t.Fatalf("inlined packet omits %q:\n%s", want, packet)
+		}
+	}
+	if strings.Contains(generatedSource(files), "type MoveActorAbsoluteData struct") || strings.Contains(packet, "MoveData") {
+		t.Fatalf("single-use payload struct was still emitted:\n%s", packet)
+	}
+	other := files["protocol/packet/other.go"]
+	if !strings.Contains(other, "Extra protocol.Shared") || !strings.Contains(generatedSource(files), "type Shared struct") {
+		t.Fatalf("sub-struct of a multi-field packet was inlined:\n%s", other)
+	}
 }

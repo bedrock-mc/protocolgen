@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 // PlayerUpdateEntityOverrides is sent by the server to modify an entity's properties individually.
 type PlayerUpdateEntityOverrides struct {
@@ -12,12 +14,12 @@ type PlayerUpdateEntityOverrides struct {
 	Update        protocol.PlayerUpdateEntityOverridesData
 }
 
-// Marshal reads or writes PlayerUpdateEntityOverrides using its canonical wire layout.
-func (x *PlayerUpdateEntityOverrides) Marshal(io protocol.IO) {
-	io.ActorUniqueID(&x.TargetID)
-	io.Varuint32(&x.PropertyIndex)
-	protocol.MarshalPlayerUpdateEntityOverridesData(io, &x.Update)
-}
-
 // ID returns the protocol ID for PlayerUpdateEntityOverrides.
 func (*PlayerUpdateEntityOverrides) ID() uint32 { return IDPlayerUpdateEntityOverrides }
+
+// Marshal reads or writes PlayerUpdateEntityOverrides using its canonical wire layout.
+func (pk *PlayerUpdateEntityOverrides) Marshal(io protocol.IO) {
+	io.ActorUniqueID(&pk.TargetID)
+	io.Varuint32(&pk.PropertyIndex)
+	protocol.MarshalPlayerUpdateEntityOverridesData(io, &pk.Update)
+}

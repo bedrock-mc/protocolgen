@@ -2,16 +2,29 @@
 
 package packet
 
-import "protocolgen/generated/1.26.44/go/protocol"
+import (
+	"protocolgen/generated/1.26.44/go/protocol"
+)
 
+// ClientboundControlSchemeSet is sent by the server upon the client's request or the usage of the vanilla
+// /controlscheme command. It is used to set the control scheme of the client, often used in combination with
+// custom cameras.
 type ClientboundControlSchemeSet struct {
+	// ControlScheme is the control scheme that the client should use. It is one of the following: -
+	// ControlSchemeLockedPlayerRelativeStrafe is the default behaviour, this cannot be set when the client is in
+	// a custom camera. - ControlSchemeCameraRelative makes movement relative to the camera's transform, with the
+	// client's rotation being relative to the client's movement. - ControlSchemeCameraRelativeStrafe makes
+	// movement relative to the camera's transform, with the client's rotation being locked. -
+	// ControlSchemePlayerRelative makes movement relative to the player's transform, meaning holding left/right
+	// will make the player turn in a circle. - ControlSchemePlayerRelativeStrafe makes movement the same as the
+	// default behaviour, but can be used in a custom camera.
 	ControlScheme protocol.ControlScheme
-}
-
-// Marshal reads or writes ClientboundControlSchemeSet using its canonical wire layout.
-func (x *ClientboundControlSchemeSet) Marshal(io protocol.IO) {
-	x.ControlScheme.Marshal(io)
 }
 
 // ID returns the protocol ID for ClientboundControlSchemeSet.
 func (*ClientboundControlSchemeSet) ID() uint32 { return IDClientboundControlSchemeSet }
+
+// Marshal reads or writes ClientboundControlSchemeSet using its canonical wire layout.
+func (pk *ClientboundControlSchemeSet) Marshal(io protocol.IO) {
+	pk.ControlScheme.Marshal(io)
+}

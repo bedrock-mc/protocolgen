@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 // ShowCredits is sent by the server to show the Minecraft credits screen to the client. It is typically sent
 // when the player beats the ender dragon and leaves the End.
@@ -13,11 +15,11 @@ type ShowCredits struct {
 	CreditsState    int32
 }
 
-// Marshal reads or writes ShowCredits using its canonical wire layout.
-func (x *ShowCredits) Marshal(io protocol.IO) {
-	io.ActorRuntimeID(&x.PlayerRuntimeID)
-	io.Varint32(&x.CreditsState)
-}
-
 // ID returns the protocol ID for ShowCredits.
 func (*ShowCredits) ID() uint32 { return IDShowCredits }
+
+// Marshal reads or writes ShowCredits using its canonical wire layout.
+func (pk *ShowCredits) Marshal(io protocol.IO) {
+	io.ActorRuntimeID(&pk.PlayerRuntimeID)
+	io.Varint32(&pk.CreditsState)
+}

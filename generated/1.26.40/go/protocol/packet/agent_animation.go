@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
 // AgentAnimation is an Education Edition packet sent from the server to the client to make an agent perform
 // an animation.
@@ -11,11 +13,11 @@ type AgentAnimation struct {
 	RuntimeID      uint64
 }
 
-// Marshal reads or writes AgentAnimation using its canonical wire layout.
-func (x *AgentAnimation) Marshal(io protocol.IO) {
-	x.AgentAnimation.Marshal(io)
-	io.ActorRuntimeID(&x.RuntimeID)
-}
-
 // ID returns the protocol ID for AgentAnimation.
 func (*AgentAnimation) ID() uint32 { return IDAgentAnimation }
+
+// Marshal reads or writes AgentAnimation using its canonical wire layout.
+func (pk *AgentAnimation) Marshal(io protocol.IO) {
+	pk.AgentAnimation.Marshal(io)
+	io.ActorRuntimeID(&pk.RuntimeID)
+}

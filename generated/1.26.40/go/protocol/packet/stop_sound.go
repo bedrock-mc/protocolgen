@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
 // StopSound is sent by the server to stop a sound playing to the player, such as a playing music disk track
 // or other long-lasting sounds.
@@ -17,12 +19,12 @@ type StopSound struct {
 	StopMusicLegacy bool
 }
 
-// Marshal reads or writes StopSound using its canonical wire layout.
-func (x *StopSound) Marshal(io protocol.IO) {
-	io.String(&x.SoundName)
-	io.Bool(&x.StopAllSounds)
-	io.Bool(&x.StopMusicLegacy)
-}
-
 // ID returns the protocol ID for StopSound.
 func (*StopSound) ID() uint32 { return IDStopSound }
+
+// Marshal reads or writes StopSound using its canonical wire layout.
+func (pk *StopSound) Marshal(io protocol.IO) {
+	io.String(&pk.SoundName)
+	io.Bool(&pk.StopAllSounds)
+	io.Bool(&pk.StopMusicLegacy)
+}

@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
 // CreativeContent is a packet sent by the server to set the creative inventory's content for a player.
 // Introduced in 1.16, this packet replaces the previous method - sending an InventoryContent packet with
@@ -30,11 +32,11 @@ type CreativeContent struct {
 	Entries []protocol.CreativeItemEntry
 }
 
-// Marshal reads or writes CreativeContent using its canonical wire layout.
-func (x *CreativeContent) Marshal(io protocol.IO) {
-	protocol.Slice(io, &x.Groups)
-	protocol.Slice(io, &x.Entries)
-}
-
 // ID returns the protocol ID for CreativeContent.
 func (*CreativeContent) ID() uint32 { return IDCreativeContent }
+
+// Marshal reads or writes CreativeContent using its canonical wire layout.
+func (pk *CreativeContent) Marshal(io protocol.IO) {
+	protocol.Slice(io, &pk.Groups)
+	protocol.Slice(io, &pk.Entries)
+}

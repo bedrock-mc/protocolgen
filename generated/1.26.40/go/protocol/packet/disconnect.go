@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
 // Disconnect may be sent by the server to disconnect the client using an optional message to send as the
 // disconnect screen.
@@ -13,11 +15,11 @@ type Disconnect struct {
 	Messages protocol.DisconnectMessages
 }
 
-// Marshal reads or writes Disconnect using its canonical wire layout.
-func (x *Disconnect) Marshal(io protocol.IO) {
-	x.Reason.Marshal(io)
-	protocol.MarshalDisconnectMessages(io, &x.Messages)
-}
-
 // ID returns the protocol ID for Disconnect.
 func (*Disconnect) ID() uint32 { return IDDisconnect }
+
+// Marshal reads or writes Disconnect using its canonical wire layout.
+func (pk *Disconnect) Marshal(io protocol.IO) {
+	pk.Reason.Marshal(io)
+	protocol.MarshalDisconnectMessages(io, &pk.Messages)
+}

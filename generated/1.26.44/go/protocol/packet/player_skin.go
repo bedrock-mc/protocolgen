@@ -14,19 +14,23 @@ import (
 type PlayerSkin struct {
 	// UUID is the UUID of the player as sent in the Login packet when the client joined the server. It must match
 	// this UUID exactly for the skin to show up on the player.
-	UUID                 uuid.UUID
-	SerializedSkin       protocol.SerializedSkinRef
+	UUID uuid.UUID
+	// Skin is the new skin to be applied on the player with the UUID in the field above. The skin, including its
+	// animations, will be shown after sending it.
+	SerializedSkin protocol.SerializedSkinRef
+	// NewSkinName no longer has a function: The field can be left empty at all times.
 	LocalizedNewSkinName string
+	// OldSkinName no longer has a function: The field can be left empty at all times.
 	LocalizedOldSkinName string
-}
-
-// Marshal reads or writes PlayerSkin using its canonical wire layout.
-func (x *PlayerSkin) Marshal(io protocol.IO) {
-	io.UUID(&x.UUID)
-	x.SerializedSkin.Marshal(io)
-	io.String(&x.LocalizedNewSkinName)
-	io.String(&x.LocalizedOldSkinName)
 }
 
 // ID returns the protocol ID for PlayerSkin.
 func (*PlayerSkin) ID() uint32 { return IDPlayerSkin }
+
+// Marshal reads or writes PlayerSkin using its canonical wire layout.
+func (pk *PlayerSkin) Marshal(io protocol.IO) {
+	io.UUID(&pk.UUID)
+	pk.SerializedSkin.Marshal(io)
+	io.String(&pk.LocalizedNewSkinName)
+	io.String(&pk.LocalizedOldSkinName)
+}

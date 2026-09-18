@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.44/go/protocol"
+import (
+	"protocolgen/generated/1.26.44/go/protocol"
+)
 
 // UpdateBlock is sent by the server to update a block client-side, without resending the entire chunk that
 // the block is located in. It is particularly useful for small modifications like block breaking/placing.
@@ -20,13 +22,13 @@ type UpdateBlock struct {
 	Layer uint32
 }
 
-// Marshal reads or writes UpdateBlock using its canonical wire layout.
-func (x *UpdateBlock) Marshal(io protocol.IO) {
-	x.BlockPosition.Marshal(io)
-	io.Varuint32(&x.BlockRuntimeID)
-	io.Varuint32(&x.Flags)
-	io.Varuint32(&x.Layer)
-}
-
 // ID returns the protocol ID for UpdateBlock.
 func (*UpdateBlock) ID() uint32 { return IDUpdateBlock }
+
+// Marshal reads or writes UpdateBlock using its canonical wire layout.
+func (pk *UpdateBlock) Marshal(io protocol.IO) {
+	pk.BlockPosition.Marshal(io)
+	io.Varuint32(&pk.BlockRuntimeID)
+	io.Varuint32(&pk.Flags)
+	io.Varuint32(&pk.Layer)
+}

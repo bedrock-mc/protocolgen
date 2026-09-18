@@ -53,9 +53,12 @@ func (x *PlayerActionType) Marshal(io IO) { io.Varint32((*int32)(x)) }
 
 // PlayerBlockAction ...
 type PlayerBlockActionData struct {
+	// Action is the action to be performed, and is one of the constants listed above.
 	PlayerActionType PlayerActionType
-	Position         BlockPos
-	Facing           int32
+	// BlockPos is the position of the block that was interacted with.
+	Position BlockPos
+	// Face is the face of the block that was interacted with.
+	Facing int32
 }
 
 // Marshal reads or writes PlayerBlockActionData using its canonical wire layout.

@@ -2,7 +2,9 @@
 
 package protocol
 
-import "github.com/go-gl/mathgl/mgl32"
+import (
+	"github.com/go-gl/mathgl/mgl32"
+)
 
 type ItemData struct {
 	ItemName          string
@@ -207,6 +209,7 @@ const (
 // Marshal reads or writes ItemUseOnActorInventoryTransactionActionType through its int32 wire encoding.
 func (x *ItemUseOnActorInventoryTransactionActionType) Marshal(io IO) { io.Varint32((*int32)(x)) }
 
+// ItemUsed is when a player right clicks a item.
 type ItemUsed struct {
 	ItemID    int16
 	ItemAux   int32

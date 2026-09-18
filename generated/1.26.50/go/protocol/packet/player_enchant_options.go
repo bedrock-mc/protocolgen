@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 // PlayerEnchantOptions is sent by the server to update the enchantment options displayed when the user opens
 // the enchantment table and puts an item in. This packet was added in 1.16 and allows the server to decide on
@@ -15,10 +17,10 @@ type PlayerEnchantOptions struct {
 	Options []protocol.ItemEnchantOption
 }
 
-// Marshal reads or writes PlayerEnchantOptions using its canonical wire layout.
-func (x *PlayerEnchantOptions) Marshal(io protocol.IO) {
-	protocol.SliceLimits(io, &x.Options, 0, 3)
-}
-
 // ID returns the protocol ID for PlayerEnchantOptions.
 func (*PlayerEnchantOptions) ID() uint32 { return IDPlayerEnchantOptions }
+
+// Marshal reads or writes PlayerEnchantOptions using its canonical wire layout.
+func (pk *PlayerEnchantOptions) Marshal(io protocol.IO) {
+	protocol.SliceLimits(io, &pk.Options, 0, 3)
+}

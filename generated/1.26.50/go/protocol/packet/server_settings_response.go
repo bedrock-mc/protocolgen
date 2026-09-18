@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 // ServerSettingsResponse is optionally sent by the server in response to a ServerSettingsRequest from the
 // client. It is structured the same as a ModalFormRequest packet, and if filled out correctly, will show a
@@ -16,11 +18,11 @@ type ServerSettingsResponse struct {
 	FormUIJSON string
 }
 
-// Marshal reads or writes ServerSettingsResponse using its canonical wire layout.
-func (x *ServerSettingsResponse) Marshal(io protocol.IO) {
-	io.Varuint32(&x.FormID)
-	io.String(&x.FormUIJSON)
-}
-
 // ID returns the protocol ID for ServerSettingsResponse.
 func (*ServerSettingsResponse) ID() uint32 { return IDServerSettingsResponse }
+
+// Marshal reads or writes ServerSettingsResponse using its canonical wire layout.
+func (pk *ServerSettingsResponse) Marshal(io protocol.IO) {
+	io.Varuint32(&pk.FormID)
+	io.String(&pk.FormUIJSON)
+}

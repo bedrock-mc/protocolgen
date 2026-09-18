@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.44/go/protocol"
+import (
+	"protocolgen/generated/1.26.44/go/protocol"
+)
 
 // InventoryTransaction is a packet sent by the client. It essentially exists out of multiple sub-packets,
 // each of which have something to do with the inventory in one way or another. Some of these sub-packets
@@ -22,16 +24,16 @@ type InventoryTransaction struct {
 	Transaction        protocol.Optional[protocol.InventoryTransactionValue]
 }
 
+// ID returns the protocol ID for InventoryTransaction.
+func (*InventoryTransaction) ID() uint32 { return IDInventoryTransaction }
+
 // Marshal reads or writes InventoryTransaction using its canonical wire layout.
-func (x *InventoryTransaction) Marshal(io protocol.IO) {
-	x.LegacyRequestID.Marshal(io)
-	protocol.OptionalFunc(io, &x.LegacySetItemSlots, func(value *[]protocol.LegacySetSlot) {
+func (pk *InventoryTransaction) Marshal(io protocol.IO) {
+	pk.LegacyRequestID.Marshal(io)
+	protocol.OptionalFunc(io, &pk.LegacySetItemSlots, func(value *[]protocol.LegacySetSlot) {
 		protocol.Slice(io, value)
 	})
-	protocol.OptionalFunc(io, &x.Transaction, func(value *protocol.InventoryTransactionValue) {
+	protocol.OptionalFunc(io, &pk.Transaction, func(value *protocol.InventoryTransactionValue) {
 		protocol.MarshalInventoryTransactionValue(io, value)
 	})
 }
-
-// ID returns the protocol ID for InventoryTransaction.
-func (*InventoryTransaction) ID() uint32 { return IDInventoryTransaction }

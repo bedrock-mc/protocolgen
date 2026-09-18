@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.44/go/protocol"
+import (
+	"protocolgen/generated/1.26.44/go/protocol"
+)
 
 // AvailableCommands is sent by the server to send a list of all commands that the player is able to use on
 // the server. This packet holds all the arguments of each commands as well, making it possible for the client
@@ -36,17 +38,17 @@ type AvailableCommands struct {
 	Constraints []protocol.CommandEnumConstraint
 }
 
-// Marshal reads or writes AvailableCommands using its canonical wire layout.
-func (x *AvailableCommands) Marshal(io protocol.IO) {
-	protocol.FuncSlice(io, &x.EnumValues, io.Varuint32, io.String)
-	protocol.FuncSlice(io, &x.ChainedSubcommandValues, io.Varuint32, io.String)
-	protocol.FuncSlice(io, &x.PostFixes, io.Varuint32, io.String)
-	protocol.Slice(io, &x.EnumData)
-	protocol.SliceLimits(io, &x.ChainedSubcommandData, 0, 16)
-	protocol.Slice(io, &x.Commands)
-	protocol.Slice(io, &x.SoftEnums)
-	protocol.Slice(io, &x.Constraints)
-}
-
 // ID returns the protocol ID for AvailableCommands.
 func (*AvailableCommands) ID() uint32 { return IDAvailableCommands }
+
+// Marshal reads or writes AvailableCommands using its canonical wire layout.
+func (pk *AvailableCommands) Marshal(io protocol.IO) {
+	protocol.FuncSlice(io, &pk.EnumValues, io.Varuint32, io.String)
+	protocol.FuncSlice(io, &pk.ChainedSubcommandValues, io.Varuint32, io.String)
+	protocol.FuncSlice(io, &pk.PostFixes, io.Varuint32, io.String)
+	protocol.Slice(io, &pk.EnumData)
+	protocol.SliceLimits(io, &pk.ChainedSubcommandData, 0, 16)
+	protocol.Slice(io, &pk.Commands)
+	protocol.Slice(io, &pk.SoftEnums)
+	protocol.Slice(io, &pk.Constraints)
+}

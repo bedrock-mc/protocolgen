@@ -20,11 +20,11 @@ type SpawnExperienceOrb struct {
 	XPValue int32
 }
 
-// Marshal reads or writes SpawnExperienceOrb using its canonical wire layout.
-func (x *SpawnExperienceOrb) Marshal(io protocol.IO) {
-	io.Vec3(&x.Position)
-	io.Varint32(&x.XPValue)
-}
-
 // ID returns the protocol ID for SpawnExperienceOrb.
 func (*SpawnExperienceOrb) ID() uint32 { return IDSpawnExperienceOrb }
+
+// Marshal reads or writes SpawnExperienceOrb using its canonical wire layout.
+func (pk *SpawnExperienceOrb) Marshal(io protocol.IO) {
+	io.Vec3(&pk.Position)
+	io.Varint32(&pk.XPValue)
+}

@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
 // ModalFormResponse is sent by the client in response to a ModalFormRequest, after the player has submitted
 // the form sent. It contains the options/properties selected by the player, or a JSON encoded 'null' if the
@@ -19,12 +21,12 @@ type ModalFormResponse struct {
 	FormCancelReason protocol.Optional[protocol.ModalFormCancelReason]
 }
 
-// Marshal reads or writes ModalFormResponse using its canonical wire layout.
-func (x *ModalFormResponse) Marshal(io protocol.IO) {
-	io.Varuint32(&x.FormID)
-	protocol.OptionalFunc(io, &x.JSONResponse, io.String)
-	protocol.OptionalMarshaler(io, &x.FormCancelReason)
-}
-
 // ID returns the protocol ID for ModalFormResponse.
 func (*ModalFormResponse) ID() uint32 { return IDModalFormResponse }
+
+// Marshal reads or writes ModalFormResponse using its canonical wire layout.
+func (pk *ModalFormResponse) Marshal(io protocol.IO) {
+	io.Varuint32(&pk.FormID)
+	protocol.OptionalFunc(io, &pk.JSONResponse, io.String)
+	protocol.OptionalMarshaler(io, &pk.FormCancelReason)
+}

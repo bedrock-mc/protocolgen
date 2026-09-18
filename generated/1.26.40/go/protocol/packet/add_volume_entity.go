@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
 // AddVolumeEntity sends a volume entity's definition and metadata from server to client.
 type AddVolumeEntity struct {
@@ -17,17 +19,17 @@ type AddVolumeEntity struct {
 	EngineVersion string
 }
 
-// Marshal reads or writes AddVolumeEntity using its canonical wire layout.
-func (x *AddVolumeEntity) Marshal(io protocol.IO) {
-	x.EntityNetworkID.Marshal(io)
-	io.NBT(&x.Components, protocol.NBTNetwork)
-	io.StringLimits(&x.JSONIdentifier, 1, 18446744073709551615)
-	io.StringLimits(&x.InstanceName, 1, 18446744073709551615)
-	x.MinBounds.Marshal(io)
-	x.MaxBounds.Marshal(io)
-	x.DimensionType.Marshal(io)
-	io.String(&x.EngineVersion)
-}
-
 // ID returns the protocol ID for AddVolumeEntity.
 func (*AddVolumeEntity) ID() uint32 { return IDAddVolumeEntity }
+
+// Marshal reads or writes AddVolumeEntity using its canonical wire layout.
+func (pk *AddVolumeEntity) Marshal(io protocol.IO) {
+	pk.EntityNetworkID.Marshal(io)
+	io.NBT(&pk.Components, protocol.NBTNetwork)
+	io.StringLimits(&pk.JSONIdentifier, 1, 18446744073709551615)
+	io.StringLimits(&pk.InstanceName, 1, 18446744073709551615)
+	pk.MinBounds.Marshal(io)
+	pk.MaxBounds.Marshal(io)
+	pk.DimensionType.Marshal(io)
+	io.String(&pk.EngineVersion)
+}

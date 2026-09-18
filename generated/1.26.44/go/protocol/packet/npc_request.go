@@ -2,24 +2,33 @@
 
 package packet
 
-import "protocolgen/generated/1.26.44/go/protocol"
+import (
+	"protocolgen/generated/1.26.44/go/protocol"
+)
 
+// NpcRequest is sent by the client when it interacts with an NPC. The packet is specifically made for
+// Education Edition, where NPCs are available to use.
 type NpcRequest struct {
 	NPCRuntimeID uint64
-	RequestType  protocol.RequestType
-	Actions      string
-	ActionIndex  uint8
-	SceneName    string
-}
-
-// Marshal reads or writes NpcRequest using its canonical wire layout.
-func (x *NpcRequest) Marshal(io protocol.IO) {
-	io.ActorRuntimeID(&x.NPCRuntimeID)
-	x.RequestType.Marshal(io)
-	io.String(&x.Actions)
-	io.Uint8(&x.ActionIndex)
-	io.String(&x.SceneName)
+	// RequestType is the type of the request, which depends on the permission that the player has. It will be
+	// either a type that indicates that the NPC should show its dialog, or that it should open the editing
+	// window.
+	RequestType protocol.RequestType
+	Actions     string
+	ActionIndex uint8
+	// SceneName is the name of the scene. This can be left empty to specify the last scene that the player was
+	// sent.
+	SceneName string
 }
 
 // ID returns the protocol ID for NpcRequest.
 func (*NpcRequest) ID() uint32 { return IDNpcRequest }
+
+// Marshal reads or writes NpcRequest using its canonical wire layout.
+func (pk *NpcRequest) Marshal(io protocol.IO) {
+	io.ActorRuntimeID(&pk.NPCRuntimeID)
+	pk.RequestType.Marshal(io)
+	io.String(&pk.Actions)
+	io.Uint8(&pk.ActionIndex)
+	io.String(&pk.SceneName)
+}

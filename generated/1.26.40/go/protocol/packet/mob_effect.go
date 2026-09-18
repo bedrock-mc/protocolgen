@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
 // MobEffect is sent by the server to apply an effect to the player, for example an effect like poison. It may
 // also be used to modify existing effects, or removing them completely.
@@ -20,17 +22,17 @@ type MobEffect struct {
 	Ambient bool
 }
 
-// Marshal reads or writes MobEffect using its canonical wire layout.
-func (x *MobEffect) Marshal(io protocol.IO) {
-	io.ActorRuntimeID(&x.TargetRuntimeID)
-	x.EventID.Marshal(io)
-	io.Varint32(&x.EffectID)
-	io.Varint32(&x.EffectAmplifier)
-	io.Bool(&x.ShowParticles)
-	io.Varint32(&x.EffectDurationTicks)
-	io.PlayerInputTick(&x.Tick)
-	io.Bool(&x.Ambient)
-}
-
 // ID returns the protocol ID for MobEffect.
 func (*MobEffect) ID() uint32 { return IDMobEffect }
+
+// Marshal reads or writes MobEffect using its canonical wire layout.
+func (pk *MobEffect) Marshal(io protocol.IO) {
+	io.ActorRuntimeID(&pk.TargetRuntimeID)
+	pk.EventID.Marshal(io)
+	io.Varint32(&pk.EffectID)
+	io.Varint32(&pk.EffectAmplifier)
+	io.Bool(&pk.ShowParticles)
+	io.Varint32(&pk.EffectDurationTicks)
+	io.PlayerInputTick(&pk.Tick)
+	io.Bool(&pk.Ambient)
+}

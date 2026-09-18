@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.44/go/protocol"
+import (
+	"protocolgen/generated/1.26.44/go/protocol"
+)
 
 // NetworkChunkPublisherUpdate is sent by the server to change the point around which chunks are and remain
 // loaded. This is useful for mini-game servers, where only one area is ever loaded, in which case the
@@ -22,14 +24,14 @@ type NetworkChunkPublisherUpdate struct {
 	ServerBuiltChunksList []protocol.ChunkPos
 }
 
+// ID returns the protocol ID for NetworkChunkPublisherUpdate.
+func (*NetworkChunkPublisherUpdate) ID() uint32 { return IDNetworkChunkPublisherUpdate }
+
 // Marshal reads or writes NetworkChunkPublisherUpdate using its canonical wire layout.
-func (x *NetworkChunkPublisherUpdate) Marshal(io protocol.IO) {
-	x.NewPositionForView.Marshal(io)
-	io.Varuint32(&x.NewRadiusForView)
-	protocol.FuncSliceLimits(io, &x.ServerBuiltChunksList, io.Uint32, 0, 9216, func(value *protocol.ChunkPos) {
+func (pk *NetworkChunkPublisherUpdate) Marshal(io protocol.IO) {
+	pk.NewPositionForView.Marshal(io)
+	io.Varuint32(&pk.NewRadiusForView)
+	protocol.FuncSliceLimits(io, &pk.ServerBuiltChunksList, io.Uint32, 0, 9216, func(value *protocol.ChunkPos) {
 		value.Marshal(io)
 	})
 }
-
-// ID returns the protocol ID for NetworkChunkPublisherUpdate.
-func (*NetworkChunkPublisherUpdate) ID() uint32 { return IDNetworkChunkPublisherUpdate }

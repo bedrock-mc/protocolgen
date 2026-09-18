@@ -2,7 +2,9 @@
 
 package protocol
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+)
 
 // ChainedSubcommand represents a subcommand that can have chained commands, such as /execute which allows you
 // to run another command as another entity or at a different position etc.

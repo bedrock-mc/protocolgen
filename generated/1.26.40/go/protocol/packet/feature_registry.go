@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
 // FeatureRegistry is a packet used to notify the client about the world generation features the server is
 // currently using. This is used in combination with the client-side world generation system introduced in
@@ -13,10 +15,10 @@ type FeatureRegistry struct {
 	FeaturesDataList []protocol.FeatureRegistryFeatureBinaryJSONFormat
 }
 
-// Marshal reads or writes FeatureRegistry using its canonical wire layout.
-func (x *FeatureRegistry) Marshal(io protocol.IO) {
-	protocol.Slice(io, &x.FeaturesDataList)
-}
-
 // ID returns the protocol ID for FeatureRegistry.
 func (*FeatureRegistry) ID() uint32 { return IDFeatureRegistry }
+
+// Marshal reads or writes FeatureRegistry using its canonical wire layout.
+func (pk *FeatureRegistry) Marshal(io protocol.IO) {
+	protocol.Slice(io, &pk.FeaturesDataList)
+}

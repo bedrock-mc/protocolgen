@@ -29,21 +29,21 @@ type AddActor struct {
 	ActorLinks        []protocol.EntityLink
 }
 
-// Marshal reads or writes AddActor using its canonical wire layout.
-func (x *AddActor) Marshal(io protocol.IO) {
-	io.ActorUniqueID(&x.TargetActorID)
-	io.ActorRuntimeID(&x.TargetRuntimeID)
-	io.String(&x.ActorType)
-	io.Vec3(&x.Position)
-	io.Vec3(&x.Velocity)
-	io.Vec2(&x.Rotation)
-	io.Float32(&x.YHeadRotation)
-	io.Float32(&x.YBodyRotation)
-	protocol.Slice(io, &x.AttributesList)
-	x.ActorData.Marshal(io)
-	x.SynchedProperties.Marshal(io)
-	protocol.Slice(io, &x.ActorLinks)
-}
-
 // ID returns the protocol ID for AddActor.
 func (*AddActor) ID() uint32 { return IDAddActor }
+
+// Marshal reads or writes AddActor using its canonical wire layout.
+func (pk *AddActor) Marshal(io protocol.IO) {
+	io.ActorUniqueID(&pk.TargetActorID)
+	io.ActorRuntimeID(&pk.TargetRuntimeID)
+	io.String(&pk.ActorType)
+	io.Vec3(&pk.Position)
+	io.Vec3(&pk.Velocity)
+	io.Vec2(&pk.Rotation)
+	io.Float32(&pk.YHeadRotation)
+	io.Float32(&pk.YBodyRotation)
+	protocol.Slice(io, &pk.AttributesList)
+	pk.ActorData.Marshal(io)
+	pk.SynchedProperties.Marshal(io)
+	protocol.Slice(io, &pk.ActorLinks)
+}

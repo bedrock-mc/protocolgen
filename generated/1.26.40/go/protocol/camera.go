@@ -2,7 +2,9 @@
 
 package protocol
 
-import "github.com/go-gl/mathgl/mgl32"
+import (
+	"github.com/go-gl/mathgl/mgl32"
+)
 
 type CameraAimAssistAction uint8
 
@@ -223,31 +225,6 @@ func (x *CameraFadeTimeData) Marshal(io IO) {
 	io.Float32(&x.FadeOutTime)
 }
 
-type CameraInstructionData struct {
-	Set              Optional[CameraInstructionSet]
-	Clear            Optional[bool]
-	Fade             Optional[CameraInstructionFade]
-	Target           Optional[CameraInstructionTargetData]
-	RemoveTarget     Optional[bool]
-	FieldOfView      Optional[CameraInstructionFieldOfView]
-	Spline           Optional[CameraSplineInstruction]
-	AttachToEntity   Optional[CameraInstructionTarget]
-	DetachFromEntity Optional[bool]
-}
-
-// Marshal reads or writes CameraInstructionData using its canonical wire layout.
-func (x *CameraInstructionData) Marshal(io IO) {
-	OptionalMarshaler(io, &x.Set)
-	OptionalFunc(io, &x.Clear, io.Bool)
-	OptionalMarshaler(io, &x.Fade)
-	OptionalMarshaler(io, &x.Target)
-	OptionalFunc(io, &x.RemoveTarget, io.Bool)
-	OptionalMarshaler(io, &x.FieldOfView)
-	OptionalMarshaler(io, &x.Spline)
-	OptionalMarshaler(io, &x.AttachToEntity)
-	OptionalFunc(io, &x.DetachFromEntity, io.Bool)
-}
-
 // CameraInstructionFade represents a camera instruction that fades the screen to a specified colour.
 type CameraInstructionFade struct {
 	// Time is the time data for the fade, which includes the fade in duration, wait duration and fade out
@@ -443,15 +420,6 @@ const (
 
 // Marshal reads or writes CameraPresetAudioListener through its uint8 wire encoding.
 func (x *CameraPresetAudioListener) Marshal(io IO) { io.Uint8((*uint8)(x)) }
-
-type CameraPresetList struct {
-	Presets []CameraPreset
-}
-
-// Marshal reads or writes CameraPresetList using its canonical wire layout.
-func (x *CameraPresetList) Marshal(io IO) {
-	Slice(io, &x.Presets)
-}
 
 // CameraProgressOption represents a progress keyframe option for camera spline instructions.
 type CameraProgressOption struct {

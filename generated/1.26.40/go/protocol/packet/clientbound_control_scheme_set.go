@@ -2,16 +2,18 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
 type ClientboundControlSchemeSet struct {
 	ControlScheme protocol.ControlScheme
 }
 
-// Marshal reads or writes ClientboundControlSchemeSet using its canonical wire layout.
-func (x *ClientboundControlSchemeSet) Marshal(io protocol.IO) {
-	x.ControlScheme.Marshal(io)
-}
-
 // ID returns the protocol ID for ClientboundControlSchemeSet.
 func (*ClientboundControlSchemeSet) ID() uint32 { return IDClientboundControlSchemeSet }
+
+// Marshal reads or writes ClientboundControlSchemeSet using its canonical wire layout.
+func (pk *ClientboundControlSchemeSet) Marshal(io protocol.IO) {
+	pk.ControlScheme.Marshal(io)
+}

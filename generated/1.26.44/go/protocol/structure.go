@@ -2,7 +2,9 @@
 
 package protocol
 
-import "github.com/go-gl/mathgl/mgl32"
+import (
+	"github.com/go-gl/mathgl/mgl32"
+)
 
 type StructureBlockType int32
 

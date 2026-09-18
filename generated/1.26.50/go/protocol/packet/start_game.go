@@ -50,34 +50,34 @@ type StartGame struct {
 	ServerTelemetryData               protocol.SocialEventsServerTelemetryData
 }
 
-// Marshal reads or writes StartGame using its canonical wire layout.
-func (x *StartGame) Marshal(io protocol.IO) {
-	io.ActorUniqueID(&x.EntityID)
-	io.ActorRuntimeID(&x.RuntimeID)
-	x.GameType.Marshal(io)
-	io.Vec3(&x.Position)
-	io.Vec2(&x.Rotation)
-	x.Settings.Marshal(io)
-	io.String(&x.LevelID)
-	io.String(&x.LevelName)
-	io.String(&x.TemplateContentIdentity)
-	io.Bool(&x.IsTrial)
-	x.MovementSettings.Marshal(io)
-	io.Uint64(&x.LevelCurrentTime)
-	io.Varint32(&x.EnchantmentSeed)
-	protocol.Slice(io, &x.BlockProperties)
-	io.String(&x.MultiplayerCorrelationID)
-	io.Bool(&x.EnableItemStackNetManager)
-	io.String(&x.ServerVersion)
-	io.NBT(&x.PlayerPropertyData, protocol.NBTNetwork)
-	io.Uint64(&x.ServerBlockTypeRegistryChecksum)
-	io.UUID(&x.WorldTemplateID)
-	io.Bool(&x.ServerEnabledClientSideGeneration)
-	io.Bool(&x.BlockNetworkIdsAreHashes)
-	x.NetworkPermissions.Marshal(io)
-	protocol.OptionalMarshaler(io, &x.ServerConfigurationJoinInfo)
-	x.ServerTelemetryData.Marshal(io)
-}
-
 // ID returns the protocol ID for StartGame.
 func (*StartGame) ID() uint32 { return IDStartGame }
+
+// Marshal reads or writes StartGame using its canonical wire layout.
+func (pk *StartGame) Marshal(io protocol.IO) {
+	io.ActorUniqueID(&pk.EntityID)
+	io.ActorRuntimeID(&pk.RuntimeID)
+	pk.GameType.Marshal(io)
+	io.Vec3(&pk.Position)
+	io.Vec2(&pk.Rotation)
+	pk.Settings.Marshal(io)
+	io.String(&pk.LevelID)
+	io.String(&pk.LevelName)
+	io.String(&pk.TemplateContentIdentity)
+	io.Bool(&pk.IsTrial)
+	pk.MovementSettings.Marshal(io)
+	io.Uint64(&pk.LevelCurrentTime)
+	io.Varint32(&pk.EnchantmentSeed)
+	protocol.Slice(io, &pk.BlockProperties)
+	io.String(&pk.MultiplayerCorrelationID)
+	io.Bool(&pk.EnableItemStackNetManager)
+	io.String(&pk.ServerVersion)
+	io.NBT(&pk.PlayerPropertyData, protocol.NBTNetwork)
+	io.Uint64(&pk.ServerBlockTypeRegistryChecksum)
+	io.UUID(&pk.WorldTemplateID)
+	io.Bool(&pk.ServerEnabledClientSideGeneration)
+	io.Bool(&pk.BlockNetworkIdsAreHashes)
+	pk.NetworkPermissions.Marshal(io)
+	protocol.OptionalMarshaler(io, &pk.ServerConfigurationJoinInfo)
+	pk.ServerTelemetryData.Marshal(io)
+}

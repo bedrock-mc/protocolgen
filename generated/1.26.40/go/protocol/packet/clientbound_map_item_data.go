@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
 type ClientboundMapItemData struct {
 	MapID           int64
@@ -20,30 +22,30 @@ type ClientboundMapItemData struct {
 	Pixels          protocol.Optional[[]uint32]
 }
 
+// ID returns the protocol ID for ClientboundMapItemData.
+func (*ClientboundMapItemData) ID() uint32 { return IDClientboundMapItemData }
+
 // Marshal reads or writes ClientboundMapItemData using its canonical wire layout.
-func (x *ClientboundMapItemData) Marshal(io protocol.IO) {
-	io.ActorUniqueID(&x.MapID)
-	io.Uint8(&x.Dimension)
-	io.Bool(&x.IsLocked)
-	x.MapOrigin.Marshal(io)
-	protocol.OptionalFunc(io, &x.CreationMapIDs, func(value *[]int64) {
+func (pk *ClientboundMapItemData) Marshal(io protocol.IO) {
+	io.ActorUniqueID(&pk.MapID)
+	io.Uint8(&pk.Dimension)
+	io.Bool(&pk.IsLocked)
+	pk.MapOrigin.Marshal(io)
+	protocol.OptionalFunc(io, &pk.CreationMapIDs, func(value *[]int64) {
 		protocol.FuncSliceLimits(io, value, io.Varuint32, 0, 65535, io.ActorUniqueID)
 	})
-	protocol.OptionalFunc(io, &x.Scale, io.Int8)
-	protocol.OptionalFunc(io, &x.TrackedActorIDs, func(value *[]protocol.MapItemTrackedActorUniqueID) {
+	protocol.OptionalFunc(io, &pk.Scale, io.Int8)
+	protocol.OptionalFunc(io, &pk.TrackedActorIDs, func(value *[]protocol.MapItemTrackedActorUniqueID) {
 		protocol.SliceLimits(io, value, 0, 65535)
 	})
-	protocol.OptionalFunc(io, &x.Decorations, func(value *[]protocol.MapDecoration) {
+	protocol.OptionalFunc(io, &pk.Decorations, func(value *[]protocol.MapDecoration) {
 		protocol.SliceLimits(io, value, 0, 65535)
 	})
-	protocol.OptionalFunc(io, &x.Width, io.Varint32)
-	protocol.OptionalFunc(io, &x.Height, io.Varint32)
-	protocol.OptionalFunc(io, &x.StartX, io.Varint32)
-	protocol.OptionalFunc(io, &x.StartY, io.Varint32)
-	protocol.OptionalFunc(io, &x.Pixels, func(value *[]uint32) {
+	protocol.OptionalFunc(io, &pk.Width, io.Varint32)
+	protocol.OptionalFunc(io, &pk.Height, io.Varint32)
+	protocol.OptionalFunc(io, &pk.StartX, io.Varint32)
+	protocol.OptionalFunc(io, &pk.StartY, io.Varint32)
+	protocol.OptionalFunc(io, &pk.Pixels, func(value *[]uint32) {
 		protocol.FuncSliceLimits(io, value, io.Varuint32, 0, 16384, io.Uint32)
 	})
 }
-
-// ID returns the protocol ID for ClientboundMapItemData.
-func (*ClientboundMapItemData) ID() uint32 { return IDClientboundMapItemData }

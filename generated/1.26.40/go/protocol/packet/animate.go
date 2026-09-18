@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
 // Animate is sent by the server to send a player animation from one player to all viewers of that player. It
 // is used for a couple of actions, such as arm swimming and critical hits.
@@ -16,13 +18,13 @@ type Animate struct {
 	SwingSource protocol.Optional[string]
 }
 
-// Marshal reads or writes Animate using its canonical wire layout.
-func (x *Animate) Marshal(io protocol.IO) {
-	x.Action.Marshal(io)
-	io.ActorRuntimeID(&x.TargetActorRuntimeID)
-	io.Float32(&x.Data)
-	protocol.OptionalFunc(io, &x.SwingSource, io.String)
-}
-
 // ID returns the protocol ID for Animate.
 func (*Animate) ID() uint32 { return IDAnimate }
+
+// Marshal reads or writes Animate using its canonical wire layout.
+func (pk *Animate) Marshal(io protocol.IO) {
+	pk.Action.Marshal(io)
+	io.ActorRuntimeID(&pk.TargetActorRuntimeID)
+	io.Float32(&pk.Data)
+	protocol.OptionalFunc(io, &pk.SwingSource, io.String)
+}

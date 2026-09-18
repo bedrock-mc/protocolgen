@@ -23,18 +23,18 @@ type GraphicsOverrideParameter struct {
 	ResetParameter         bool
 }
 
-// Marshal reads or writes GraphicsOverrideParameter using its canonical wire layout.
-func (x *GraphicsOverrideParameter) Marshal(io protocol.IO) {
-	protocol.OrderedMapLimits(io, &x.ParameterKeyframeValues, io.Varuint32, 0, 255, io.Float32, io.Vec3)
-	protocol.OptionalFunc(io, &x.FloatValue, io.Float32)
-	protocol.OptionalFunc(io, &x.Vec3Value, io.Vec3)
-	io.StringLimits(&x.BiomeIdentifier, 0, 255)
-	protocol.OptionalFunc(io, &x.PlayerIdentifier, func(value *string) {
-		io.StringLimits(value, 0, 255)
-	})
-	x.IdentifierForParameter.Marshal(io)
-	io.Bool(&x.ResetParameter)
-}
-
 // ID returns the protocol ID for GraphicsOverrideParameter.
 func (*GraphicsOverrideParameter) ID() uint32 { return IDGraphicsOverrideParameter }
+
+// Marshal reads or writes GraphicsOverrideParameter using its canonical wire layout.
+func (pk *GraphicsOverrideParameter) Marshal(io protocol.IO) {
+	protocol.OrderedMapLimits(io, &pk.ParameterKeyframeValues, io.Varuint32, 0, 255, io.Float32, io.Vec3)
+	protocol.OptionalFunc(io, &pk.FloatValue, io.Float32)
+	protocol.OptionalFunc(io, &pk.Vec3Value, io.Vec3)
+	io.StringLimits(&pk.BiomeIdentifier, 0, 255)
+	protocol.OptionalFunc(io, &pk.PlayerIdentifier, func(value *string) {
+		io.StringLimits(value, 0, 255)
+	})
+	pk.IdentifierForParameter.Marshal(io)
+	io.Bool(&pk.ResetParameter)
+}

@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 // CompletedUsingItem is sent by the server to tell the client that it should be done using the item it is
 // currently using.
@@ -15,11 +17,11 @@ type CompletedUsingItem struct {
 	ItemUseMethod int32
 }
 
-// Marshal reads or writes CompletedUsingItem using its canonical wire layout.
-func (x *CompletedUsingItem) Marshal(io protocol.IO) {
-	io.Int16(&x.ItemID)
-	io.Int32(&x.ItemUseMethod)
-}
-
 // ID returns the protocol ID for CompletedUsingItem.
 func (*CompletedUsingItem) ID() uint32 { return IDCompletedUsingItem }
+
+// Marshal reads or writes CompletedUsingItem using its canonical wire layout.
+func (pk *CompletedUsingItem) Marshal(io protocol.IO) {
+	io.Int16(&pk.ItemID)
+	io.Int32(&pk.ItemUseMethod)
+}

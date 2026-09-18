@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 // NetworkSettings is sent by the server to update a variety of network settings. These settings modify the
 // way packets are sent over the network stack.
@@ -21,14 +23,14 @@ type NetworkSettings struct {
 	ClientThrottleScalar float32
 }
 
-// Marshal reads or writes NetworkSettings using its canonical wire layout.
-func (x *NetworkSettings) Marshal(io protocol.IO) {
-	io.Uint16(&x.CompressionThreshold)
-	x.CompressionAlgorithm.Marshal(io)
-	io.Bool(&x.ClientThrottleEnabled)
-	io.Uint8(&x.ClientThrottleThreshold)
-	io.Float32(&x.ClientThrottleScalar)
-}
-
 // ID returns the protocol ID for NetworkSettings.
 func (*NetworkSettings) ID() uint32 { return IDNetworkSettings }
+
+// Marshal reads or writes NetworkSettings using its canonical wire layout.
+func (pk *NetworkSettings) Marshal(io protocol.IO) {
+	io.Uint16(&pk.CompressionThreshold)
+	pk.CompressionAlgorithm.Marshal(io)
+	io.Bool(&pk.ClientThrottleEnabled)
+	io.Uint8(&pk.ClientThrottleThreshold)
+	io.Float32(&pk.ClientThrottleScalar)
+}

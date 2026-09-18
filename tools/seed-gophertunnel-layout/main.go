@@ -19,6 +19,8 @@ import (
 	"strings"
 	"unicode"
 
+	"protocolgen/internal/docs"
+	"protocolgen/internal/flatten"
 	"protocolgen/internal/layout"
 	"protocolgen/internal/manifest"
 	"protocolgen/internal/naming"
@@ -30,6 +32,7 @@ func main() {
 	gopherPath := flag.String("gophertunnel", "", "gophertunnel checkout")
 	outPath := flag.String("out", "", "layout overlay output")
 	reportPath := flag.String("report", "", "gap report output (Markdown)")
+	docsPath := flag.String("docs", "", "reviewed docs overlay to extend with fork comments for matched types and fields (optional)")
 	flag.Parse()
 	if *manifestPath == "" || *namingPath == "" || *gopherPath == "" || *outPath == "" || *reportPath == "" {
 		fail("-manifest, -naming, -gophertunnel, -out and -report are required")
@@ -50,8 +53,21 @@ func main() {
 	if err != nil {
 		fail("%v", err)
 	}
-	document, report := seed(m, index, fork)
+	var docOverlay docs.Overlay
+	if *docsPath != "" {
+		docOverlay, err = docs.LoadOverlay(*docsPath, m)
+		if err != nil {
+			fail("%v", err)
+		}
+	}
+	document, report := seed(m, index, fork, docOverlay)
 	document.Target = m.Target
+	if *docsPath != "" {
+		if err := writeJSON(*docsPath, docs.Document{SchemaVersion: 1, Target: m.Target, Entries: docs.SortedEntries(docOverlay)}); err != nil {
+			fail("%v", err)
+		}
+		fmt.Printf("docs: %d fork comments ported -> %s\n", report.portedDocs, *docsPath)
+	}
 	if err := layout.ValidateOverlay(m, document); err != nil {
 		fail("seeded overlay is invalid: %v", err)
 	}
@@ -171,8 +187,19 @@ func buildIndex(m manifest.Manifest, overlay naming.Overlay) (index, error) {
 		}
 		return nil
 	}
+	usage := flatten.Count(m)
 	for _, packet := range m.Packets {
-		result.owners = append(result.owners, ownerInfo{TypeID: packet.Name, Name: naming.GoExportName(naming.PacketTypeName(packet.Name)), Fields: packet.Fields, Packet: true})
+		// The emitter inlines a sole single-use payload struct, so the packet's
+		// effective fields and their owning type ID must match what it keys
+		// docs and layout names by.
+		effective := usage.PacketFields(packet, func(node manifest.Node) bool { return nativeTypeIDs[node.TypeID] })
+		owner := packet.Name
+		fields := make([]manifest.Field, 0, len(effective))
+		for _, item := range effective {
+			owner = item.Owner
+			fields = append(fields, item.Field)
+		}
+		result.owners = append(result.owners, ownerInfo{TypeID: owner, Name: naming.GoExportName(naming.PacketTypeName(packet.Name)), Fields: fields, Packet: true})
 		for _, field := range packet.Fields {
 			if err := walk(field.Encode); err != nil {
 				return index{}, err
@@ -187,12 +214,14 @@ func buildIndex(m manifest.Manifest, overlay naming.Overlay) (index, error) {
 type forkField struct {
 	Name string
 	Type string
+	Doc  string
 }
 
 type forkType struct {
 	Name     string
 	Package  string
 	File     string
+	Doc      string
 	Fields   []forkField
 	Struct   bool
 	Marshals bool // has a Marshal method, so it is a wire type rather than runtime plumbing
@@ -239,7 +268,7 @@ func parseFork(root string) (forkIndex, error) {
 			if strings.HasSuffix(path, "_test.go") {
 				continue
 			}
-			file, err := parser.ParseFile(fset, path, nil, 0)
+			file, err := parser.ParseFile(fset, path, nil, parser.ParseComments)
 			if err != nil {
 				return forkIndex{}, fmt.Errorf("parse %s: %w", path, err)
 			}
@@ -270,14 +299,21 @@ func parseFork(root string) (forkIndex, error) {
 				case token.TYPE:
 					for _, spec := range gen.Specs {
 						typeSpec := spec.(*ast.TypeSpec)
-						item := forkType{Name: typeSpec.Name.Name, Package: pkg, File: stems[file]}
+						item := forkType{Name: typeSpec.Name.Name, Package: pkg, File: stems[file], Doc: commentText(typeSpec.Doc)}
+						if item.Doc == "" {
+							item.Doc = commentText(gen.Doc)
+						}
 						if structure, ok := typeSpec.Type.(*ast.StructType); ok {
 							item.Struct = true
 							for _, field := range structure.Fields.List {
 								var typ strings.Builder
 								_ = format.Node(&typ, fset, field.Type)
+								doc := commentText(field.Doc)
+								if doc == "" {
+									doc = commentText(field.Comment)
+								}
 								for _, name := range field.Names {
-									item.Fields = append(item.Fields, forkField{Name: name.Name, Type: typ.String()})
+									item.Fields = append(item.Fields, forkField{Name: name.Name, Type: typ.String(), Doc: doc})
 								}
 							}
 						}
@@ -432,6 +468,13 @@ func (e *constEvaluator) eval(expr ast.Expr, iota int, depth int) (int64, bool) 
 	return 0, false
 }
 
+func commentText(group *ast.CommentGroup) string {
+	if group == nil {
+		return ""
+	}
+	return strings.TrimSpace(group.Text())
+}
+
 func commonPrefix(consts []forkConst) string {
 	if len(consts) == 0 {
 		return ""
@@ -463,6 +506,7 @@ func commonPrefix(consts []forkConst) string {
 
 type gapReport struct {
 	namedVariants      int
+	portedDocs         int
 	placements         []placementNote
 	unmatchedEnums     []enumInfo
 	unmatchedGroups    []forkGroup
@@ -490,7 +534,7 @@ type fieldGap struct {
 	Renamed      int
 }
 
-func seed(m manifest.Manifest, idx index, fork forkIndex) (layout.Document, *gapReport) {
+func seed(m manifest.Manifest, idx index, fork forkIndex, docOverlay docs.Overlay) (layout.Document, *gapReport) {
 	document := layout.Document{SchemaVersion: 1}
 	report := &gapReport{}
 	usedGroups := map[int]bool{}
@@ -542,8 +586,12 @@ func seed(m manifest.Manifest, idx index, fork forkIndex) (layout.Document, *gap
 	pair := func(owner ownerInfo, source forkType) {
 		matchedFork[source.Package+"."+source.Name] = true
 		document.Files = append(document.Files, layout.FileEntry{TypeID: owner.TypeID, Package: source.Package, File: source.File, Rationale: fmt.Sprintf("gophertunnel keeps %s in %s/%s.go.", source.Name, source.Package, source.File)})
+		if docOverlay.Types != nil && source.Doc != "" && docOverlay.Types[owner.TypeID] == "" {
+			docOverlay.Types[owner.TypeID] = docs.LeadWith(source.Doc, source.Name, owner.Name)
+			report.portedDocs++
+		}
 		gap := fieldGap{Owner: owner, Fork: source}
-		entries := matchFields(owner, source, &gap)
+		entries := matchFields(owner, source, &gap, docOverlay, report)
 		document.Fields = append(document.Fields, entries...)
 		gap.Renamed = len(entries)
 		if len(gap.OnlyManifest)+len(gap.OnlyFork)+len(gap.TypeMismatch) > 0 || gap.Renamed > 0 {
@@ -567,6 +615,7 @@ func seed(m manifest.Manifest, idx index, fork forkIndex) (layout.Document, *gap
 			pair(owner, source)
 		} else {
 			report.generatedOnlyTypes = append(report.generatedOnlyTypes, owner)
+			document.Fields = append(document.Fields, conventionEntries(owner, nil)...)
 		}
 	}
 	for key, item := range fork.types {
@@ -714,7 +763,33 @@ func forkTypeFor(name, pkg string, fork forkIndex) (forkType, bool) {
 // need a fork struct.
 var nativeTypeIDs = map[string]bool{"Vec2": true, "Vec3": true, "BlockPos": true, "ActorUniqueID": true, "ActorRuntimeID": true, "PlayerInputTick": true, "mce::Color": true, "mce::UUID": true}
 
-func matchFields(owner ownerInfo, source forkType, gap *fieldGap) []layout.FieldEntry {
+// forkSpelling applies the fork's naming conventions to a generated field
+// name: entities rather than actors, and British spellings.
+func forkSpelling(name string) string {
+	for _, pair := range [][2]string{{"Actor", "Entity"}, {"Armor", "Armour"}, {"Color", "Colour"}, {"Behavior", "Behaviour"}} {
+		name = strings.ReplaceAll(name, pair[0], pair[1])
+	}
+	return name
+}
+
+// conventionEntries renames fields the fork does not name so they still read
+// like the fork's; matched is the set of wire names that already have a fork
+// name.
+func conventionEntries(owner ownerInfo, matched map[string]bool) []layout.FieldEntry {
+	var entries []layout.FieldEntry
+	for _, field := range owner.Fields {
+		if matched[field.Name] {
+			continue
+		}
+		generated := naming.GoExportName(field.Name)
+		if styled := forkSpelling(generated); styled != generated {
+			entries = append(entries, layout.FieldEntry{TypeID: owner.TypeID, Field: field.Name, Name: styled, Rationale: "gophertunnel spelling convention for a field it does not name."})
+		}
+	}
+	return entries
+}
+
+func matchFields(owner ownerInfo, source forkType, gap *fieldGap, docOverlay docs.Overlay, report *gapReport) []layout.FieldEntry {
 	var entries []layout.FieldEntry
 	usedFork := map[int]bool{}
 	matched := map[int]int{} // manifest index -> fork index
@@ -749,6 +824,7 @@ func matchFields(owner ownerInfo, source forkType, gap *fieldGap) []layout.Field
 			gap.Positional = true
 		}
 	}
+	named := map[string]bool{}
 	for i, field := range owner.Fields {
 		j, ok := matched[i]
 		if !ok {
@@ -759,10 +835,21 @@ func matchFields(owner ownerInfo, source forkType, gap *fieldGap) []layout.Field
 		if typeCategory(field.Encode) != forkCategory(forkField.Type) {
 			gap.TypeMismatch = append(gap.TypeMismatch, fmt.Sprintf("%s (%s vs %s)", forkField.Name, describe(field.Encode), forkField.Type))
 		}
-		if naming.GoExportName(field.Name) != forkField.Name && naming.IsExportedGoIdentifier(forkField.Name) {
+		goName := naming.GoExportName(field.Name)
+		if goName != forkField.Name && naming.IsExportedGoIdentifier(forkField.Name) {
 			entries = append(entries, layout.FieldEntry{TypeID: owner.TypeID, Field: field.Name, Name: forkField.Name, Rationale: fmt.Sprintf("gophertunnel %s.%s field name.", source.Name, forkField.Name)})
+			goName = forkField.Name
+		}
+		named[field.Name] = true
+		if docOverlay.Fields != nil && forkField.Doc != "" {
+			key := docs.FieldKey(owner.TypeID, field.Name)
+			if docOverlay.Fields[key] == "" {
+				docOverlay.Fields[key] = docs.LeadWith(forkField.Doc, forkField.Name, goName)
+				report.portedDocs++
+			}
 		}
 	}
+	entries = append(entries, conventionEntries(owner, named)...)
 	for j, forkField := range source.Fields {
 		if !usedFork[j] {
 			gap.OnlyFork = append(gap.OnlyFork, forkField.Name+" "+forkField.Type)

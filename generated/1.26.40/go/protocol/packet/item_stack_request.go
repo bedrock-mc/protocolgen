@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
 // ItemStackRequest is sent by the client to change item stacks in an inventory. It is essentially a
 // replacement of the InventoryTransaction packet added in 1.16 for inventory specific actions, such as moving
@@ -14,10 +16,10 @@ type ItemStackRequest struct {
 	Requests []protocol.ItemStackRequestPacketData
 }
 
-// Marshal reads or writes ItemStackRequest using its canonical wire layout.
-func (x *ItemStackRequest) Marshal(io protocol.IO) {
-	protocol.SliceLimits(io, &x.Requests, 0, 100)
-}
-
 // ID returns the protocol ID for ItemStackRequest.
 func (*ItemStackRequest) ID() uint32 { return IDItemStackRequest }
+
+// Marshal reads or writes ItemStackRequest using its canonical wire layout.
+func (pk *ItemStackRequest) Marshal(io protocol.IO) {
+	protocol.SliceLimits(io, &pk.Requests, 0, 100)
+}

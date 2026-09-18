@@ -2,16 +2,18 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 type ServerboundDataStore struct {
 	Update protocol.BedrockDDUIDataStoreUpdate
 }
 
-// Marshal reads or writes ServerboundDataStore using its canonical wire layout.
-func (x *ServerboundDataStore) Marshal(io protocol.IO) {
-	x.Update.Marshal(io)
-}
-
 // ID returns the protocol ID for ServerboundDataStore.
 func (*ServerboundDataStore) ID() uint32 { return IDServerboundDataStore }
+
+// Marshal reads or writes ServerboundDataStore using its canonical wire layout.
+func (pk *ServerboundDataStore) Marshal(io protocol.IO) {
+	pk.Update.Marshal(io)
+}

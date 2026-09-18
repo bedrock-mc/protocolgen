@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 // ResourcePackStack is sent by the server to send the order in which resource packs and behaviour packs
 // should be applied (and downloaded) by the client.
@@ -22,14 +24,14 @@ type ResourcePackStack struct {
 	IncludeEditorPacks bool
 }
 
-// Marshal reads or writes ResourcePackStack using its canonical wire layout.
-func (x *ResourcePackStack) Marshal(io protocol.IO) {
-	io.Bool(&x.TexturePackRequired)
-	protocol.SliceLimits(io, &x.TexturePackList, 0, 65535)
-	io.String(&x.BaseGameVersion)
-	x.Experiments.Marshal(io)
-	io.Bool(&x.IncludeEditorPacks)
-}
-
 // ID returns the protocol ID for ResourcePackStack.
 func (*ResourcePackStack) ID() uint32 { return IDResourcePackStack }
+
+// Marshal reads or writes ResourcePackStack using its canonical wire layout.
+func (pk *ResourcePackStack) Marshal(io protocol.IO) {
+	io.Bool(&pk.TexturePackRequired)
+	protocol.SliceLimits(io, &pk.TexturePackList, 0, 65535)
+	io.String(&pk.BaseGameVersion)
+	pk.Experiments.Marshal(io)
+	io.Bool(&pk.IncludeEditorPacks)
+}

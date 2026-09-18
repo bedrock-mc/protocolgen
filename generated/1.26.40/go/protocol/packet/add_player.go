@@ -44,25 +44,25 @@ type AddPlayer struct {
 	BuildPlatform protocol.BuildPlatform
 }
 
-// Marshal reads or writes AddPlayer using its canonical wire layout.
-func (x *AddPlayer) Marshal(io protocol.IO) {
-	io.UUID(&x.UUID)
-	io.String(&x.PlayerName)
-	io.ActorRuntimeID(&x.TargetRuntimeID)
-	io.String(&x.PlatformChatID)
-	io.Vec3(&x.Position)
-	io.Vec3(&x.Velocity)
-	io.Vec2(&x.Rotation)
-	io.Float32(&x.YHeadRotation)
-	x.CarriedItem.Marshal(io)
-	x.PlayerGameType.Marshal(io)
-	x.EntityData.Marshal(io)
-	x.SynchedProperties.Marshal(io)
-	x.AbilitiesData.Marshal(io)
-	protocol.Slice(io, &x.ActorLinks)
-	io.String(&x.DeviceID)
-	x.BuildPlatform.Marshal(io)
-}
-
 // ID returns the protocol ID for AddPlayer.
 func (*AddPlayer) ID() uint32 { return IDAddPlayer }
+
+// Marshal reads or writes AddPlayer using its canonical wire layout.
+func (pk *AddPlayer) Marshal(io protocol.IO) {
+	io.UUID(&pk.UUID)
+	io.String(&pk.PlayerName)
+	io.ActorRuntimeID(&pk.TargetRuntimeID)
+	io.String(&pk.PlatformChatID)
+	io.Vec3(&pk.Position)
+	io.Vec3(&pk.Velocity)
+	io.Vec2(&pk.Rotation)
+	io.Float32(&pk.YHeadRotation)
+	pk.CarriedItem.Marshal(io)
+	pk.PlayerGameType.Marshal(io)
+	pk.EntityData.Marshal(io)
+	pk.SynchedProperties.Marshal(io)
+	pk.AbilitiesData.Marshal(io)
+	protocol.Slice(io, &pk.ActorLinks)
+	io.String(&pk.DeviceID)
+	pk.BuildPlatform.Marshal(io)
+}

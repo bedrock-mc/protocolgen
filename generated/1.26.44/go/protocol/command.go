@@ -2,7 +2,9 @@
 
 package protocol
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+)
 
 // ChainedSubcommand represents a subcommand that can have chained commands, such as /execute which allows you
 // to run another command as another entity or at a different position etc.
@@ -50,8 +52,12 @@ type Command struct {
 	// PermissionLevel is the command permission level that the player required to execute this command. The field
 	// no longer seems to serve a purpose, as the client does not handle the execution of commands anymore: The
 	// permissions should be checked server-side.
-	PermissionLevel                     string
-	AliasEnum                           int32
+	PermissionLevel string
+	// AliasesOffset is the offset to a CommandEnum that holds the values that should be used as aliases for this
+	// command.
+	AliasEnum int32
+	// ChainedSubcommandOffsets is a slice of offsets that all point to a different ChainedSubcommand from the
+	// ChainedSubcommands slice in the AvailableCommands packet.
 	CommandDataChainedSubcommandIndexes []uint32
 	// Overloads is a list of command overloads that specify the ways in which a command may be executed. The
 	// overloads may be completely different.
@@ -203,9 +209,16 @@ type CommandParameter struct {
 	// Name is the name of the command parameter. It shows up in the usage like <$Name: $Type>, with the exception
 	// of enum types, which show up simply as a list of options if the list is short enough and Options is set to
 	// false.
-	Name        string
+	Name string
+	// Type is a rather odd combination of type(flag)s that result in a certain parameter type to show up
+	// client-side. It is a combination of the flags above. The basic types must be combined with the
+	// ArgumentTypeFlagBasic flag (and integers with a suffix ArgumentTypeFlagSuffixed), whereas enums are
+	// combined with the ArgumentTypeFlagEnum flag.
 	ParseSymbol uint32
-	IsOptional  bool
+	// Optional specifies if the command parameter is optional to enter. Note that no non-optional parameter
+	// should ever be present in a command overload after an optional parameter. When optional, the parameter
+	// shows up like so: [$Name: $Type], whereas when mandatory, it shows up like so: <$Name: $Type>.
+	IsOptional bool
 	// Options holds a combinations of options that additionally apply to the command parameter. The list of
 	// options can be found above.
 	Options uint8

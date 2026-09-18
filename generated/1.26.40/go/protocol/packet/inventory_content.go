@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
 // InventoryContent is sent by the server to update the full content of a particular inventory. It is usually
 // sent for the main inventory of the player, but also works for other inventories that are currently opened
@@ -22,13 +24,13 @@ type InventoryContent struct {
 	StorageItem protocol.NetworkItemStackDescriptorSerializedData
 }
 
-// Marshal reads or writes InventoryContent using its canonical wire layout.
-func (x *InventoryContent) Marshal(io protocol.IO) {
-	io.Varuint32(&x.ContainerID)
-	protocol.Slice(io, &x.Slots)
-	x.FullContainerName.Marshal(io)
-	x.StorageItem.Marshal(io)
-}
-
 // ID returns the protocol ID for InventoryContent.
 func (*InventoryContent) ID() uint32 { return IDInventoryContent }
+
+// Marshal reads or writes InventoryContent using its canonical wire layout.
+func (pk *InventoryContent) Marshal(io protocol.IO) {
+	io.Varuint32(&pk.ContainerID)
+	protocol.Slice(io, &pk.Slots)
+	pk.FullContainerName.Marshal(io)
+	pk.StorageItem.Marshal(io)
+}

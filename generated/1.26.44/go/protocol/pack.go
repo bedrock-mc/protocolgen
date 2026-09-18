@@ -2,7 +2,9 @@
 
 package protocol
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+)
 
 type PackIDVersion struct {
 	PackUUID    uuid.UUID
@@ -51,9 +53,17 @@ func (x *PackInfoData) Marshal(io IO) {
 	io.String(&x.CDNURL)
 }
 
+// PackInstanceID represents a resource pack sent on the stack of the client. When sent, the client will apply
+// them in the order of the stack sent.
 type PackInstanceID struct {
-	PackID      string
-	Version     string
+	// UUID is the UUID of the resource pack. Each resource pack downloaded must have a different UUID in order
+	// for the client to be able to handle them properly.
+	PackID string
+	// Version is the version of the resource pack. The client will cache resource packs sent by the server as
+	// long as they carry the same version. Sending a resource pack with a different version than previously will
+	// force the client to re-download it.
+	Version string
+	// SubPackName ...
 	SubPackName string
 }
 

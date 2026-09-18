@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
 // UpdatePlayerGameType is sent by the server to change the game mode of a player. It is functionally
 // identical to the SetPlayerGameType packet.
@@ -14,12 +16,12 @@ type UpdatePlayerGameType struct {
 	Tick uint64
 }
 
-// Marshal reads or writes UpdatePlayerGameType using its canonical wire layout.
-func (x *UpdatePlayerGameType) Marshal(io protocol.IO) {
-	x.PlayerGameType.Marshal(io)
-	io.ActorUniqueID(&x.TargetPlayer)
-	io.PlayerInputTick(&x.Tick)
-}
-
 // ID returns the protocol ID for UpdatePlayerGameType.
 func (*UpdatePlayerGameType) ID() uint32 { return IDUpdatePlayerGameType }
+
+// Marshal reads or writes UpdatePlayerGameType using its canonical wire layout.
+func (pk *UpdatePlayerGameType) Marshal(io protocol.IO) {
+	pk.PlayerGameType.Marshal(io)
+	io.ActorUniqueID(&pk.TargetPlayer)
+	io.PlayerInputTick(&pk.Tick)
+}

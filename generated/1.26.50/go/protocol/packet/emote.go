@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 // Emote is sent by both the server and the client. When the client sends an emote, it sends this packet to
 // the server, after which the server will broadcast the packet to other players online.
@@ -23,15 +25,15 @@ type Emote struct {
 	Flags uint8
 }
 
-// Marshal reads or writes Emote using its canonical wire layout.
-func (x *Emote) Marshal(io protocol.IO) {
-	io.ActorRuntimeID(&x.ActorRuntimeID)
-	io.String(&x.EmoteID)
-	io.Varuint32(&x.EmoteLengthTicks)
-	io.String(&x.Xuid)
-	io.String(&x.PlatformID)
-	io.Uint8(&x.Flags)
-}
-
 // ID returns the protocol ID for Emote.
 func (*Emote) ID() uint32 { return IDEmote }
+
+// Marshal reads or writes Emote using its canonical wire layout.
+func (pk *Emote) Marshal(io protocol.IO) {
+	io.ActorRuntimeID(&pk.ActorRuntimeID)
+	io.String(&pk.EmoteID)
+	io.Varuint32(&pk.EmoteLengthTicks)
+	io.String(&pk.Xuid)
+	io.String(&pk.PlatformID)
+	io.Uint8(&pk.Flags)
+}

@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 // ContainerClose is sent by the server to close a container the player currently has opened, which was opened
 // using the ContainerOpen packet, or by the client to tell the server it closed a particular container, such
@@ -15,12 +17,12 @@ type ContainerClose struct {
 	ServerInitiatedClose bool
 }
 
-// Marshal reads or writes ContainerClose using its canonical wire layout.
-func (x *ContainerClose) Marshal(io protocol.IO) {
-	io.Uint8(&x.ContainerID)
-	io.Uint8(&x.ContainerType)
-	io.Bool(&x.ServerInitiatedClose)
-}
-
 // ID returns the protocol ID for ContainerClose.
 func (*ContainerClose) ID() uint32 { return IDContainerClose }
+
+// Marshal reads or writes ContainerClose using its canonical wire layout.
+func (pk *ContainerClose) Marshal(io protocol.IO) {
+	io.Uint8(&pk.ContainerID)
+	io.Uint8(&pk.ContainerType)
+	io.Bool(&pk.ServerInitiatedClose)
+}

@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.44/go/protocol"
+import (
+	"protocolgen/generated/1.26.44/go/protocol"
+)
 
 // AwardAchievement is sent by the server to award an achievement to a player.
 type AwardAchievement struct {
@@ -11,10 +13,10 @@ type AwardAchievement struct {
 	AchievementID int32
 }
 
-// Marshal reads or writes AwardAchievement using its canonical wire layout.
-func (x *AwardAchievement) Marshal(io protocol.IO) {
-	io.Int32(&x.AchievementID)
-}
-
 // ID returns the protocol ID for AwardAchievement.
 func (*AwardAchievement) ID() uint32 { return IDAwardAchievement }
+
+// Marshal reads or writes AwardAchievement using its canonical wire layout.
+func (pk *AwardAchievement) Marshal(io protocol.IO) {
+	io.Int32(&pk.AchievementID)
+}

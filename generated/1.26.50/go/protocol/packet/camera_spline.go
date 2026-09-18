@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 // CameraSpline is sent by the server to define camera spline paths.
 type CameraSpline struct {
@@ -10,10 +12,10 @@ type CameraSpline struct {
 	CameraDataSplines []protocol.CameraSplineDefinition
 }
 
-// Marshal reads or writes CameraSpline using its canonical wire layout.
-func (x *CameraSpline) Marshal(io protocol.IO) {
-	protocol.Slice(io, &x.CameraDataSplines)
-}
-
 // ID returns the protocol ID for CameraSpline.
 func (*CameraSpline) ID() uint32 { return IDCameraSpline }
+
+// Marshal reads or writes CameraSpline using its canonical wire layout.
+func (pk *CameraSpline) Marshal(io protocol.IO) {
+	protocol.Slice(io, &pk.CameraDataSplines)
+}

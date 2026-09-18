@@ -2,8 +2,12 @@
 
 package protocol
 
+// ExperimentToggle holds data on an experiment that is either enabled or disabled.
 type ExperimentToggle struct {
-	Name    string
+	// Name is the name of the experiment.
+	Name string
+	// Enabled specifies if the experiment is enabled. Vanilla typically always sets this to true for any
+	// experiments sent.
 	Enabled bool
 }
 

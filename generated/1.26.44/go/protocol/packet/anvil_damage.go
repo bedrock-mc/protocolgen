@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.44/go/protocol"
+import (
+	"protocolgen/generated/1.26.44/go/protocol"
+)
 
 // AnvilDamage is sent by the client to request the dealing damage to an anvil. This packet is completely
 // pointless and the server should never listen to it.
@@ -11,10 +13,10 @@ type AnvilDamage struct {
 	BlockPosition protocol.BlockPos
 }
 
-// Marshal reads or writes AnvilDamage using its canonical wire layout.
-func (x *AnvilDamage) Marshal(io protocol.IO) {
-	x.BlockPosition.Marshal(io)
-}
-
 // ID returns the protocol ID for AnvilDamage.
 func (*AnvilDamage) ID() uint32 { return IDAnvilDamage }
+
+// Marshal reads or writes AnvilDamage using its canonical wire layout.
+func (pk *AnvilDamage) Marshal(io protocol.IO) {
+	pk.BlockPosition.Marshal(io)
+}

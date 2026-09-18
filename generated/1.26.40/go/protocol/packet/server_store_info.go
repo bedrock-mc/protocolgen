@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.40/go/protocol"
+import (
+	"protocolgen/generated/1.26.40/go/protocol"
+)
 
 // ServerStoreInfo is sent by the server to provide the client with a store entry point. Like the
 // ShowStoreOffer packet, this only has an effect on partnered servers.
@@ -11,10 +13,10 @@ type ServerStoreInfo struct {
 	ClientStoreEntryPointConfiguration protocol.Optional[protocol.ServerConfigurationClientStoreEntryPointConfiguration]
 }
 
-// Marshal reads or writes ServerStoreInfo using its canonical wire layout.
-func (x *ServerStoreInfo) Marshal(io protocol.IO) {
-	protocol.OptionalMarshaler(io, &x.ClientStoreEntryPointConfiguration)
-}
-
 // ID returns the protocol ID for ServerStoreInfo.
 func (*ServerStoreInfo) ID() uint32 { return IDServerStoreInfo }
+
+// Marshal reads or writes ServerStoreInfo using its canonical wire layout.
+func (pk *ServerStoreInfo) Marshal(io protocol.IO) {
+	protocol.OptionalMarshaler(io, &pk.ClientStoreEntryPointConfiguration)
+}

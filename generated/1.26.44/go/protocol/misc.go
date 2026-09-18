@@ -66,23 +66,6 @@ func (x *AddTimeMarkerData) Marshal(io IO) {
 	SliceLimits(io, &x.TimeMarkers, 0, 256)
 }
 
-type AdventureSettings struct {
-	NoPvM          bool
-	NoMvP          bool
-	ImmutableWorld bool
-	ShowNameTags   bool
-	AutoJump       bool
-}
-
-// Marshal reads or writes AdventureSettings using its canonical wire layout.
-func (x *AdventureSettings) Marshal(io IO) {
-	io.Bool(&x.NoPvM)
-	io.Bool(&x.NoMvP)
-	io.Bool(&x.ImmutableWorld)
-	io.Bool(&x.ShowNameTags)
-	io.Bool(&x.AutoJump)
-}
-
 type AgentActionType int32
 
 const (
@@ -158,9 +141,12 @@ const (
 // Marshal reads or writes AnimationMode through its uint8 wire encoding.
 func (x *AnimationMode) Marshal(io IO) { io.Uint8((*uint8)(x)) }
 
+// ArmorSlotAndDamagePair represents an entry for a single piece of armour that should be damaged.
 type ArmorSlotAndDamagePair struct {
+	// ArmourSlot is the index of the armour slot to damage.
 	ArmorSlot LegacyArmorSlot
-	Damage    int16
+	// Damage is the amount of damage to apply to the armour in the specified slot.
+	Damage int16
 }
 
 // Marshal reads or writes ArmorSlotAndDamagePair using its canonical wire layout.
@@ -169,11 +155,16 @@ func (x *ArmorSlotAndDamagePair) Marshal(io IO) {
 	io.Int16(&x.Damage)
 }
 
+// ArrowData represents an arrow debug shape.
 type ArrowData struct {
+	// ArrowEndLocation is the arrow end location of the shape.
 	ArrowEndLocation Optional[mgl32.Vec3]
-	ArrowHeadLength  Optional[float32]
-	ArrowHeadRadius  Optional[float32]
-	NumSegments      Optional[uint8]
+	// ArrowHeadLength is the arrow head length of the shape.
+	ArrowHeadLength Optional[float32]
+	// ArrowHeadRadius is the arrow head radius of the shape.
+	ArrowHeadRadius Optional[float32]
+	// Segments is the segments that used for the debug arrow's head.
+	NumSegments Optional[uint8]
 }
 
 func (*ArrowData) tagPrimitiveShapeExtraShapeData() uint32 { return 1 }
@@ -219,10 +210,15 @@ func MarshalBedrockDDUI(io IO, x *BedrockDDUI) {
 	})
 }
 
+// BedrockDDUIDataStoreChange represents a change to a data store property value.
 type BedrockDDUIDataStoreChange struct {
-	DataStoreName       string
-	Property            string
-	UpdateCount         uint32
+	// DataStoreName is the name of the data store.
+	DataStoreName string
+	// Property is the property that changed.
+	Property string
+	// UpdateCount is the update count.
+	UpdateCount uint32
+	// NewValue is the new property value.
 	TheNewPropertyValue DynamicValue
 }
 
@@ -641,9 +637,12 @@ func (x *CodeBuilderRuntimeAction) Marshal(io IO) {
 	io.StringLimits(&x.CodeBuilderRuntimeAction, 0, 16)
 }
 
+// CodeBuilderScoreboard is an event sent by the server when a code builder scoreboard is updated.
 type CodeBuilderScoreboard struct {
+	// ObjectiveName ...
 	ObjectiveName string
-	Score         int32
+	// Score ...
+	Score int32
 }
 
 func (*CodeBuilderScoreboard) tagEventData() uint32 { return 19 }
@@ -677,9 +676,12 @@ const (
 // Marshal reads or writes CodeBuilderStorageQueryOptionsOperation through its uint8 wire encoding.
 func (x *CodeBuilderStorageQueryOptionsOperation) Marshal(io IO) { io.Uint8((*uint8)(x)) }
 
+// ComposterUsed is the event data sent when a composter is interacted with.
 type ComposterUsed struct {
+	// BlockInteractionType ...
 	BlockInteractionType MinecraftEventingPOIBlockInteractionType
-	ItemID               int32
+	// ItemID ...
+	ItemID int32
 }
 
 func (*ComposterUsed) tagEventData() uint32 { return 11 }
@@ -690,9 +692,13 @@ func (x *ComposterUsed) Marshal(io IO) {
 	io.Varint32(&x.ItemID)
 }
 
+// ConeData represents a cone debug shape.
 type ConeData struct {
-	Radii       mgl32.Vec2
-	Height      float32
+	// Radii are the radii along the X/Z axes of the cone base.
+	Radii mgl32.Vec2
+	// Height is the height of the cone.
+	Height float32
+	// NumSegments is the number of segments used for the cone.
 	NumSegments uint8
 }
 
@@ -945,10 +951,15 @@ func (x *CraftRepairAndDisenchantStackRequestAction) Marshal(io IO) {
 	Minimum(io, &x.RepairCost, 0)
 }
 
+// CylinderData represents a cylinder debug shape.
 type CylinderData struct {
-	RadiusX     mgl32.Vec2
-	RadiusZ     mgl32.Vec2
-	Height      float32
+	// RadiusX is the radius of the cylinder along the X axis.
+	RadiusX mgl32.Vec2
+	// RadiusZ is the radius of the cylinder along the Z axis.
+	RadiusZ mgl32.Vec2
+	// Height is the height of the cylinder.
+	Height float32
+	// NumSegments is the number of segments used for the cylinder.
 	NumSegments uint8
 }
 
@@ -962,8 +973,11 @@ func (x *CylinderData) Marshal(io IO) {
 	io.Uint8(&x.NumSegments)
 }
 
+// DataItemByte represents the way the noise of an environment attribute transition is aligned.
 type DataItemByte struct {
-	Type  DataItemType
+	// Type is the type of the alignment. It is one of the NoiseAlignmentType constants above.
+	Type DataItemType
+	// Value is the value that the noise is aligned against, the meaning of which depends on Type.
 	Value int8
 }
 
@@ -1339,6 +1353,7 @@ func (x *ECSProfilingDiagnosticsEntityDiagnosticTimingInfo) Marshal(io IO) {
 	io.Uint8(&x.PercentOfTotal)
 }
 
+// ECSProfilingDiagnosticsSystemCategory maps a diagnostics category name to a system index.
 type ECSProfilingDiagnosticsSystemCategory struct {
 	CategoryName string
 	SystemIndex  uint64
@@ -1350,10 +1365,15 @@ func (x *ECSProfilingDiagnosticsSystemCategory) Marshal(io IO) {
 	io.Uint64(&x.SystemIndex)
 }
 
+// ECSProfilingDiagnosticsSystemDiagnosticTimingInfo represents diagnostics for a specific system index.
 type ECSProfilingDiagnosticsSystemDiagnosticTimingInfo struct {
-	DisplayName    string
-	SystemIndex    uint64
-	TimeInNS       uint64
+	// DisplayName is the name to display for this timing entry.
+	DisplayName string
+	// SystemIndex is the index of the system that is being timed.
+	SystemIndex uint64
+	// DurationNanos is whole long the timing entry has lasted, in nanoseconds.
+	TimeInNS uint64
+	// PercentOfTotal is the percentage of time that this timing entry has used compared to others.
 	PercentOfTotal uint8
 }
 
@@ -1377,9 +1397,13 @@ const (
 // Marshal reads or writes EditorWorldType through its int32 wire encoding.
 func (x *EditorWorldType) Marshal(io IO) { io.Varint32((*int32)(x)) }
 
+// EduSharedURIResource is an education edition feature that is used for transmitting education resource
+// settings to clients. It contains a button name and a link URL.
 type EduSharedURIResource struct {
+	// ButtonName is the button name of the resource URI.
 	ButtonName string
-	LinkURI    string
+	// LinkURI is the link URI for the resource URI.
+	LinkURI string
 }
 
 // Marshal reads or writes EduSharedURIResource using its canonical wire layout.
@@ -1388,8 +1412,11 @@ func (x *EduSharedURIResource) Marshal(io IO) {
 	io.String(&x.LinkURI)
 }
 
+// EllipsoidData represents an ellipsoid debug shape.
 type EllipsoidData struct {
-	Radii           mgl32.Vec3
+	// Radii are the radii of the ellipsoid along the X, Y and Z axes.
+	Radii mgl32.Vec3
+	// SegmentsPerAxis is the number of segments used per axis for the ellipsoid.
 	SegmentsPerAxis uint8
 }
 
@@ -1423,8 +1450,11 @@ func (x *Experiments) Marshal(io IO) {
 	io.Bool(&x.ExperimentsEverToggled)
 }
 
+// ExternalLinkSettings ...
 type ExternalLinkSettings struct {
-	URL         string
+	// URL is the external link URL.
+	URL string
+	// DisplayName is the display name in game.
 	DisplayName string
 }
 
@@ -2281,54 +2311,6 @@ const (
 // Marshal reads or writes ModalFormCancelReason through its uint8 wire encoding.
 func (x *ModalFormCancelReason) Marshal(io IO) { io.Uint8((*uint8)(x)) }
 
-type MoveActorAbsoluteData struct {
-	ActorRuntimeID uint64
-	Header         uint8
-	Position       mgl32.Vec3
-	RotationX      uint8
-	RotationY      uint8
-	RotationYHead  uint8
-}
-
-// Marshal reads or writes MoveActorAbsoluteData using its canonical wire layout.
-func (x *MoveActorAbsoluteData) Marshal(io IO) {
-	io.ActorRuntimeID(&x.ActorRuntimeID)
-	io.Uint8(&x.Header)
-	io.Vec3(&x.Position)
-	io.Uint8(&x.RotationX)
-	io.Uint8(&x.RotationY)
-	io.Uint8(&x.RotationYHead)
-}
-
-type MoveActorDeltaData struct {
-	ActorRuntimeID       uint64
-	NewPositionX         Optional[float32]
-	NewPositionY         Optional[float32]
-	NewPositionZ         Optional[float32]
-	RotationX            Optional[int8]
-	RotationY            Optional[int8]
-	RotationYHead        Optional[int8]
-	IsOnGround           bool
-	ForceMove            bool
-	ForceMoveLocalEntity bool
-	ForceCompletion      bool
-}
-
-// Marshal reads or writes MoveActorDeltaData using its canonical wire layout.
-func (x *MoveActorDeltaData) Marshal(io IO) {
-	io.ActorRuntimeID(&x.ActorRuntimeID)
-	OptionalFunc(io, &x.NewPositionX, io.Float32)
-	OptionalFunc(io, &x.NewPositionY, io.Float32)
-	OptionalFunc(io, &x.NewPositionZ, io.Float32)
-	OptionalFunc(io, &x.RotationX, io.Int8)
-	OptionalFunc(io, &x.RotationY, io.Int8)
-	OptionalFunc(io, &x.RotationYHead, io.Int8)
-	io.Bool(&x.IsOnGround)
-	io.Bool(&x.ForceMove)
-	io.Bool(&x.ForceMoveLocalEntity)
-	io.Bool(&x.ForceCompletion)
-}
-
 type MovePlayerTeleportData struct {
 	TeleportationCause int32
 	SourceActorType    int32
@@ -2425,9 +2407,12 @@ const (
 // Marshal reads or writes NewInteractionModel through its int32 wire encoding.
 func (x *NewInteractionModel) Marshal(io IO) { io.Varint32((*int32)(x)) }
 
+// POICauldronUsed is the event data sent when a cauldron is interacted with.
 type POICauldronUsed struct {
+	// BlockInteractionType ...
 	BlockInteractionType MinecraftEventingPOIBlockInteractionType
-	ItemID               int32
+	// ItemID ...
+	ItemID int32
 }
 
 func (*POICauldronUsed) tagEventData() uint32 { return 10 }
@@ -2541,8 +2526,11 @@ const (
 // Marshal reads or writes PhotoType through its uint8 wire encoding.
 func (x *PhotoType) Marshal(io IO) { io.Uint8((*uint8)(x)) }
 
+// PiglinBarter is called when a player drops gold ingots to a piglin to initiate a trade for an item.
 type PiglinBarter struct {
-	ItemID                      int32
+	// ItemID ...
+	ItemID int32
+	// WasTargetingBarteringPlayer ...
 	WasTargetingBarteringPlayer bool
 }
 
@@ -2848,11 +2836,20 @@ func (x *SemVersionData) Marshal(io IO) {
 	io.String(&x.Version)
 }
 
+// SerializedAbilitiesData represents various data about the abilities of a player, such as ability layers or
+// permissions.
 type SerializedAbilitiesData struct {
-	TargetPlayerRawID  int64
-	PlayerPermissions  PlayerPermissionLevel
+	// EntityUniqueID is a unique identifier of the player. It appears it is not required to fill this field out
+	// with a correct value. Simply writing 0 seems to work.
+	TargetPlayerRawID int64
+	// PlayerPermissions is the permission level of the player as it shows up in the player list built up using
+	// the PlayerList packet.
+	PlayerPermissions PlayerPermissionLevel
+	// CommandPermissions is a set of permissions that specify what commands a player is allowed to execute.
 	CommandPermissions CommandPermissionLevel
-	Layers             []SerializedAbilitiesDataSerializedLayer
+	// Layers contains all ability layers and their potential values. This should at least have one entry, being
+	// the base layer.
+	Layers []SerializedAbilitiesDataSerializedLayer
 }
 
 // Marshal reads or writes SerializedAbilitiesData using its canonical wire layout.
@@ -2882,11 +2879,17 @@ func (x *SerializedAbilitiesDataSerializedLayer) Marshal(io IO) {
 	io.Float32(&x.WalkSpeed)
 }
 
+// SerializedNoiseBlockSpecifier specifies a block placed by the gradient noise based on a threshold and
+// range.
 type SerializedNoiseBlockSpecifier struct {
-	Noise     string
+	// Noise is the noise name.
+	Noise string
+	// Threshold is the noise threshold above which the block is placed.
 	Threshold float32
-	Range     FloatRange
-	Block     uint32
+	// Range is the noise range within which the block is placed.
+	Range FloatRange
+	// Block is the block runtime ID placed by this specifier.
+	Block uint32
 }
 
 // Marshal reads or writes SerializedNoiseBlockSpecifier using its canonical wire layout.
@@ -2897,12 +2900,20 @@ func (x *SerializedNoiseBlockSpecifier) Marshal(io IO) {
 	io.Uint32(&x.Block)
 }
 
+// SerializedPersonaPieceHandle represents a piece of a persona skin. All pieces are sent separately.
 type SerializedPersonaPieceHandle struct {
-	PieceID        string
-	PieceType      PersonaPieceType
-	PackID         uuid.UUID
+	// PieceId is a UUID that identifies the piece itself, which is unique for each separate piece.
+	PieceID string
+	// PieceType holds the type of the piece. This is one of the PieceType constants above.
+	PieceType PersonaPieceType
+	// PackID is a UUID that identifies the pack that the persona piece belongs to.
+	PackID uuid.UUID
+	// Default specifies if the piece is one of the default pieces. This is true when the piece is one of those
+	// that a Steve or Alex skin have.
 	IsDefaultPiece bool
-	ProductID      string
+	// ProductID is a UUID that identifies the piece when it comes to purchases. It is empty for pieces that have
+	// the 'Default' field set to true.
+	ProductID string
 }
 
 // Marshal reads or writes SerializedPersonaPieceHandle using its canonical wire layout.
@@ -2978,8 +2989,11 @@ func (x *ServerBlockProperty) Marshal(io IO) {
 	io.NBT(&x.BlockDefinition, NBTNetwork)
 }
 
+// ServerConfigurationClientStoreEntryPointConfiguration contains information about the store entry point.
 type ServerConfigurationClientStoreEntryPointConfiguration struct {
-	StoreID   string
+	// StoreID is the store identifier.
+	StoreID string
+	// StoreName is the store name.
 	StoreName string
 }
 
@@ -2989,15 +3003,25 @@ func (x *ServerConfigurationClientStoreEntryPointConfiguration) Marshal(io IO) {
 	io.String(&x.StoreName)
 }
 
+// ServerConfigurationGatheringsConfigurationJoinInfo contains information about the gathering (experience)
+// the player is joining.
 type ServerConfigurationGatheringsConfigurationJoinInfo struct {
-	ExperienceID   uuid.UUID
+	// ExperienceID is the UUID of the experience.
+	ExperienceID uuid.UUID
+	// ExperienceName is the name of the experience.
 	ExperienceName string
-	WorldID        Optional[uuid.UUID]
-	WorldName      Optional[string]
-	CreatorID      string
-	TargetID       Optional[uuid.UUID]
-	ScenarioID     Optional[string]
-	ServerID       Optional[string]
+	// ExperienceWorldID is the UUID of the experience world.
+	WorldID Optional[uuid.UUID]
+	// ExperienceWorldName is the world name of the experience.
+	WorldName Optional[string]
+	// CreatorID is the ID of the creator.
+	CreatorID string
+	// TargetID is the session ID of the experience.
+	TargetID Optional[uuid.UUID]
+	// ScenarioID is the scenario ID of experience.
+	ScenarioID Optional[string]
+	// ServerID is the server identifier.
+	ServerID Optional[string]
 }
 
 // Marshal reads or writes ServerConfigurationGatheringsConfigurationJoinInfo using its canonical wire layout.
@@ -3063,15 +3087,24 @@ func (x *ServerSoundHandle) Marshal(io IO) {
 	io.Uint64(&x.ServerSoundHandle)
 }
 
+// ServerWaypoint holds optional data for a locator bar waypoint.
 type ServerWaypoint struct {
-	UpdateFlag              uint32
-	IsVisible               Optional[bool]
-	WorldPosition           Optional[WorldPosition]
-	TexturePath             Optional[string]
-	IconSize                Optional[mgl32.Vec2]
-	Color                   Optional[color.RGBA]
+	// UpdateFlag is a bitmask indicating which optional fields are set.
+	UpdateFlag uint32
+	// Visible determines whether the waypoint is shown.
+	IsVisible Optional[bool]
+	// WorldPosition is the position and dimension of the waypoint.
+	WorldPosition Optional[WorldPosition]
+	// TexturePath is the resource path for the waypoint icon texture.
+	TexturePath Optional[string]
+	// IconSize is the size of the waypoint icon.
+	IconSize Optional[mgl32.Vec2]
+	// Colour is the RGB colour used to tint the waypoint icon.
+	Color Optional[color.RGBA]
+	// ClientPositionAuthority determines whether the client has authority over the waypoint position.
 	ClientPositionAuthority Optional[bool]
-	ActorUniqueID           Optional[int64]
+	// ActorUniqueID is the unique ID of the entity the waypoint tracks.
+	ActorUniqueID Optional[int64]
 }
 
 // Marshal reads or writes ServerWaypoint using its canonical wire layout.
@@ -3291,8 +3324,13 @@ func (x *SyncedAttribute) Marshal(io IO) {
 	io.Float32(&x.MaxValue)
 }
 
+// SyncedPlayerMovementSettings represents the different server authoritative movement settings. These control
+// how the client will provide input to the server.
 type SyncedPlayerMovementSettings struct {
-	RewindHistorySize                int32
+	// RewindHistorySize is the amount of history to keep at maximum.
+	RewindHistorySize int32
+	// ServerAuthoritativeBlockBreaking specifies if block breaking should be sent through packet.PlayerAuthInput
+	// or not.
 	ServerAuthoritativeBlockBreaking bool
 }
 
@@ -3499,12 +3537,3 @@ const (
 
 // Marshal reads or writes VillageType through its uint8 wire encoding.
 func (x *VillageType) Marshal(io IO) { io.Uint8((*uint8)(x)) }
-
-type WebSocketData struct {
-	WebsocketServerURI string
-}
-
-// Marshal reads or writes WebSocketData using its canonical wire layout.
-func (x *WebSocketData) Marshal(io IO) {
-	io.String(&x.WebsocketServerURI)
-}

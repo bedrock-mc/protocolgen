@@ -2,14 +2,18 @@
 
 package protocol
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+)
 
 // LocatorBarWaypoint represents a waypoint entry in the locator bar packet.
 type LocatorBarWaypoint struct {
 	// GroupHandle is the UUID handle for the waypoint group.
-	GroupHandle           WaypointGroupWaypointHandle
+	GroupHandle WaypointGroupWaypointHandle
+	// Waypoint contains the waypoint data.
 	ServerWaypointPayload ServerWaypoint
-	ActionFlag            ServerWaypointGroupAction
+	// Action determines the action for this waypoint. It is one of the WaypointAction constants.
+	ActionFlag ServerWaypointGroupAction
 }
 
 // Marshal reads or writes LocatorBarWaypoint using its canonical wire layout.

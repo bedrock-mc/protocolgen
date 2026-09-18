@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.44/go/protocol"
+import (
+	"protocolgen/generated/1.26.44/go/protocol"
+)
 
 // ShowProfile is sent by the server to show the XBOX Live profile of one player to another.
 type ShowProfile struct {
@@ -11,10 +13,10 @@ type ShowProfile struct {
 	PlayerXUID string
 }
 
-// Marshal reads or writes ShowProfile using its canonical wire layout.
-func (x *ShowProfile) Marshal(io protocol.IO) {
-	io.String(&x.PlayerXUID)
-}
-
 // ID returns the protocol ID for ShowProfile.
 func (*ShowProfile) ID() uint32 { return IDShowProfile }
+
+// Marshal reads or writes ShowProfile using its canonical wire layout.
+func (pk *ShowProfile) Marshal(io protocol.IO) {
+	io.String(&pk.PlayerXUID)
+}

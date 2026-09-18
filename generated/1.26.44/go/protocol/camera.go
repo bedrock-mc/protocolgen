@@ -2,7 +2,9 @@
 
 package protocol
 
-import "github.com/go-gl/mathgl/mgl32"
+import (
+	"github.com/go-gl/mathgl/mgl32"
+)
 
 type CameraAimAssistAction uint8
 
@@ -34,8 +36,13 @@ func (x *CameraAimAssistActorPriorityData) Marshal(io IO) {
 	io.Int32(&x.PriorityValue)
 }
 
+// CameraAimAssistCategoryDefinition is an aim assist category that defines priorities for specific blocks and
+// entities.
 type CameraAimAssistCategoryDefinition struct {
-	Name       string
+	// Name is the name of the category which can be used by a CameraAimAssistPreset.
+	Name string
+	// Priorities represents the block and entity specific priorities as well as the default priorities for this
+	// category.
 	Priorities CameraAimAssistCategoryPriorities
 }
 
@@ -45,13 +52,21 @@ func (x *CameraAimAssistCategoryDefinition) Marshal(io IO) {
 	x.Priorities.Marshal(io)
 }
 
+// CameraAimAssistCategoryPriorities represents the block and entity specific priorities for targetting. The
+// aim assist will select the block or entity with the highest priority within the specified thresholds.
 type CameraAimAssistCategoryPriorities struct {
-	Entities           []OrderedEntry[string, int32]
-	Blocks             []OrderedEntry[string, int32]
-	BlockTags          []OrderedEntry[string, int32]
+	// Entities is a list of priorities for specific entity identifiers.
+	Entities []OrderedEntry[string, int32]
+	// Blocks is a list of priorities for specific block identifiers.
+	Blocks []OrderedEntry[string, int32]
+	// BlockTags is a list of priorities for specific block tags.
+	BlockTags []OrderedEntry[string, int32]
+	// EntityTypeFamilies is a list of priorities for specific entity type families.
 	EntityTypeFamilies []OrderedEntry[string, int32]
-	EntityDefault      Optional[int32]
-	BlockDefault       Optional[int32]
+	// EntityDefault is the default priority for entities.
+	EntityDefault Optional[int32]
+	// BlockDefault is the default priority for blocks.
+	BlockDefault Optional[int32]
 }
 
 // Marshal reads or writes CameraAimAssistCategoryPriorities using its canonical wire layout.
@@ -221,31 +236,6 @@ func (x *CameraFadeTimeData) Marshal(io IO) {
 	io.Float32(&x.FadeInTime)
 	io.Float32(&x.HoldTime)
 	io.Float32(&x.FadeOutTime)
-}
-
-type CameraInstructionData struct {
-	Set              Optional[CameraInstructionSet]
-	Clear            Optional[bool]
-	Fade             Optional[CameraInstructionFade]
-	Target           Optional[CameraInstructionTargetData]
-	RemoveTarget     Optional[bool]
-	FieldOfView      Optional[CameraInstructionFieldOfView]
-	Spline           Optional[CameraSplineInstruction]
-	AttachToEntity   Optional[CameraInstructionTarget]
-	DetachFromEntity Optional[bool]
-}
-
-// Marshal reads or writes CameraInstructionData using its canonical wire layout.
-func (x *CameraInstructionData) Marshal(io IO) {
-	OptionalMarshaler(io, &x.Set)
-	OptionalFunc(io, &x.Clear, io.Bool)
-	OptionalMarshaler(io, &x.Fade)
-	OptionalMarshaler(io, &x.Target)
-	OptionalFunc(io, &x.RemoveTarget, io.Bool)
-	OptionalMarshaler(io, &x.FieldOfView)
-	OptionalMarshaler(io, &x.Spline)
-	OptionalMarshaler(io, &x.AttachToEntity)
-	OptionalFunc(io, &x.DetachFromEntity, io.Bool)
 }
 
 // CameraInstructionFade represents a camera instruction that fades the screen to a specified colour.
@@ -443,15 +433,6 @@ const (
 
 // Marshal reads or writes CameraPresetAudioListener through its uint8 wire encoding.
 func (x *CameraPresetAudioListener) Marshal(io IO) { io.Uint8((*uint8)(x)) }
-
-type CameraPresetList struct {
-	Presets []CameraPreset
-}
-
-// Marshal reads or writes CameraPresetList using its canonical wire layout.
-func (x *CameraPresetList) Marshal(io IO) {
-	Slice(io, &x.Presets)
-}
 
 // CameraProgressOption represents a progress keyframe option for camera spline instructions.
 type CameraProgressOption struct {

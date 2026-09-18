@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 // ContainerRegistryCleanup is sent by the server to trigger a client-side cleanup of the dynamic container
 // registry.
@@ -12,10 +14,10 @@ type ContainerRegistryCleanup struct {
 	RemovedContainers []protocol.FullContainerName
 }
 
-// Marshal reads or writes ContainerRegistryCleanup using its canonical wire layout.
-func (x *ContainerRegistryCleanup) Marshal(io protocol.IO) {
-	protocol.Slice(io, &x.RemovedContainers)
-}
-
 // ID returns the protocol ID for ContainerRegistryCleanup.
 func (*ContainerRegistryCleanup) ID() uint32 { return IDContainerRegistryCleanup }
+
+// Marshal reads or writes ContainerRegistryCleanup using its canonical wire layout.
+func (pk *ContainerRegistryCleanup) Marshal(io protocol.IO) {
+	protocol.Slice(io, &pk.RemovedContainers)
+}

@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 // ResourcePackChunkRequest is sent by the client to request a chunk of data from a particular resource pack,
 // that it has obtained information about in a ResourcePackDataInfo packet.
@@ -14,13 +16,13 @@ type ResourcePackChunkRequest struct {
 	Chunk int32
 }
 
-// Marshal reads or writes ResourcePackChunkRequest using its canonical wire layout.
-func (x *ResourcePackChunkRequest) Marshal(io protocol.IO) {
-	io.String(&x.ResourceName)
-	protocol.Pattern(io, &x.ResourceName, "A string in the format of <uuid>_<semver>, where <uuid> is a valid UUID and <semver> is a valid semantic version")
-	io.Int32(&x.Chunk)
-	protocol.Minimum(io, &x.Chunk, 0)
-}
-
 // ID returns the protocol ID for ResourcePackChunkRequest.
 func (*ResourcePackChunkRequest) ID() uint32 { return IDResourcePackChunkRequest }
+
+// Marshal reads or writes ResourcePackChunkRequest using its canonical wire layout.
+func (pk *ResourcePackChunkRequest) Marshal(io protocol.IO) {
+	io.String(&pk.ResourceName)
+	protocol.Pattern(io, &pk.ResourceName, "A string in the format of <uuid>_<semver>, where <uuid> is a valid UUID and <semver> is a valid semantic version")
+	io.Int32(&pk.Chunk)
+	protocol.Minimum(io, &pk.Chunk, 0)
+}

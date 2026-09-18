@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 // SettingsCommand is sent by the client when it changes a setting in the settings that results in the issuing
 // of a command to the server, such as when Show Coordinates is enabled.
@@ -16,11 +18,11 @@ type SettingsCommand struct {
 	SuppressOutput bool
 }
 
-// Marshal reads or writes SettingsCommand using its canonical wire layout.
-func (x *SettingsCommand) Marshal(io protocol.IO) {
-	io.String(&x.Command)
-	io.Bool(&x.SuppressOutput)
-}
-
 // ID returns the protocol ID for SettingsCommand.
 func (*SettingsCommand) ID() uint32 { return IDSettingsCommand }
+
+// Marshal reads or writes SettingsCommand using its canonical wire layout.
+func (pk *SettingsCommand) Marshal(io protocol.IO) {
+	io.String(&pk.Command)
+	io.Bool(&pk.SuppressOutput)
+}

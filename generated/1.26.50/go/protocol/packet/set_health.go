@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 // SetHealth is sent by the server. It sets the health of the player it is sent to. The SetHealth packet
 // should no longer be used. Instead, the health attribute should be used so that the health and maximum
@@ -12,10 +14,10 @@ type SetHealth struct {
 	Health int32
 }
 
-// Marshal reads or writes SetHealth using its canonical wire layout.
-func (x *SetHealth) Marshal(io protocol.IO) {
-	io.Varint32(&x.Health)
-}
-
 // ID returns the protocol ID for SetHealth.
 func (*SetHealth) ID() uint32 { return IDSetHealth }
+
+// Marshal reads or writes SetHealth using its canonical wire layout.
+func (pk *SetHealth) Marshal(io protocol.IO) {
+	io.Varint32(&pk.Health)
+}

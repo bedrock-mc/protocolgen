@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.44/go/protocol"
+import (
+	"protocolgen/generated/1.26.44/go/protocol"
+)
 
 // ServerPresenceInfo is sent by the server to provide the client with presence info.
 type ServerPresenceInfo struct {
@@ -10,10 +12,10 @@ type ServerPresenceInfo struct {
 	PresenceConfiguration protocol.Optional[protocol.ServerConfigurationPresenceConfiguration]
 }
 
-// Marshal reads or writes ServerPresenceInfo using its canonical wire layout.
-func (x *ServerPresenceInfo) Marshal(io protocol.IO) {
-	protocol.OptionalMarshaler(io, &x.PresenceConfiguration)
-}
-
 // ID returns the protocol ID for ServerPresenceInfo.
 func (*ServerPresenceInfo) ID() uint32 { return IDServerPresenceInfo }
+
+// Marshal reads or writes ServerPresenceInfo using its canonical wire layout.
+func (pk *ServerPresenceInfo) Marshal(io protocol.IO) {
+	protocol.OptionalMarshaler(io, &pk.PresenceConfiguration)
+}

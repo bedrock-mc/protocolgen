@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.44/go/protocol"
+import (
+	"protocolgen/generated/1.26.44/go/protocol"
+)
 
 // CodeBuilderSource is an Education Edition packet sent by the client to the server to run an operation with
 // a code builder.
@@ -16,12 +18,12 @@ type CodeBuilderSource struct {
 	CodeStatus protocol.CodeBuilderExecutionStateCodeStatus
 }
 
-// Marshal reads or writes CodeBuilderSource using its canonical wire layout.
-func (x *CodeBuilderSource) Marshal(io protocol.IO) {
-	x.Operation.Marshal(io)
-	x.Category.Marshal(io)
-	x.CodeStatus.Marshal(io)
-}
-
 // ID returns the protocol ID for CodeBuilderSource.
 func (*CodeBuilderSource) ID() uint32 { return IDCodeBuilderSource }
+
+// Marshal reads or writes CodeBuilderSource using its canonical wire layout.
+func (pk *CodeBuilderSource) Marshal(io protocol.IO) {
+	pk.Operation.Marshal(io)
+	pk.Category.Marshal(io)
+	pk.CodeStatus.Marshal(io)
+}

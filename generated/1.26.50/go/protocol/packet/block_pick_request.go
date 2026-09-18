@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 // BlockPickRequest is sent by the client when it requests to pick a block in the world and place its item in
 // their inventory.
@@ -14,12 +16,12 @@ type BlockPickRequest struct {
 	MaxSlots uint8
 }
 
-// Marshal reads or writes BlockPickRequest using its canonical wire layout.
-func (x *BlockPickRequest) Marshal(io protocol.IO) {
-	x.Position.Marshal(io)
-	io.Bool(&x.WithData)
-	io.Uint8(&x.MaxSlots)
-}
-
 // ID returns the protocol ID for BlockPickRequest.
 func (*BlockPickRequest) ID() uint32 { return IDBlockPickRequest }
+
+// Marshal reads or writes BlockPickRequest using its canonical wire layout.
+func (pk *BlockPickRequest) Marshal(io protocol.IO) {
+	pk.Position.Marshal(io)
+	io.Bool(&pk.WithData)
+	io.Uint8(&pk.MaxSlots)
+}

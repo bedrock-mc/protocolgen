@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.44/go/protocol"
+import (
+	"protocolgen/generated/1.26.44/go/protocol"
+)
 
 // UpdateClientOptions is sent by the client when some of the client's options are updated, such as the
 // graphics mode.
@@ -13,11 +15,11 @@ type UpdateClientOptions struct {
 	FilterProfanityChange protocol.Optional[bool]
 }
 
-// Marshal reads or writes UpdateClientOptions using its canonical wire layout.
-func (x *UpdateClientOptions) Marshal(io protocol.IO) {
-	protocol.OptionalMarshaler(io, &x.GraphicsModeChange)
-	protocol.OptionalFunc(io, &x.FilterProfanityChange, io.Bool)
-}
-
 // ID returns the protocol ID for UpdateClientOptions.
 func (*UpdateClientOptions) ID() uint32 { return IDUpdateClientOptions }
+
+// Marshal reads or writes UpdateClientOptions using its canonical wire layout.
+func (pk *UpdateClientOptions) Marshal(io protocol.IO) {
+	protocol.OptionalMarshaler(io, &pk.GraphicsModeChange)
+	protocol.OptionalFunc(io, &pk.FilterProfanityChange, io.Bool)
+}

@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 // PlaySound is sent by the server to play a sound to the client. Some of the sounds may only be started using
 // this packet and must be stopped using the StopSound packet.
@@ -28,17 +30,17 @@ type PlaySound struct {
 	PlaybackPositionSeconds protocol.Optional[float32]
 }
 
-// Marshal reads or writes PlaySound using its canonical wire layout.
-func (x *PlaySound) Marshal(io protocol.IO) {
-	io.String(&x.Name)
-	x.Position.Marshal(io)
-	io.Float32(&x.Volume)
-	io.Float32(&x.Pitch)
-	io.Varint32(&x.LoopCount)
-	io.Bool(&x.BypassListenerRangeCheck)
-	protocol.OptionalMarshaler(io, &x.ServerSoundHandle)
-	protocol.OptionalFunc(io, &x.PlaybackPositionSeconds, io.Float32)
-}
-
 // ID returns the protocol ID for PlaySound.
 func (*PlaySound) ID() uint32 { return IDPlaySound }
+
+// Marshal reads or writes PlaySound using its canonical wire layout.
+func (pk *PlaySound) Marshal(io protocol.IO) {
+	io.String(&pk.Name)
+	pk.Position.Marshal(io)
+	io.Float32(&pk.Volume)
+	io.Float32(&pk.Pitch)
+	io.Varint32(&pk.LoopCount)
+	io.Bool(&pk.BypassListenerRangeCheck)
+	protocol.OptionalMarshaler(io, &pk.ServerSoundHandle)
+	protocol.OptionalFunc(io, &pk.PlaybackPositionSeconds, io.Float32)
+}

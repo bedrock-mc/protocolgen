@@ -50,36 +50,36 @@ type PlayerAuthInput struct {
 	RawMoveVector mgl32.Vec2
 }
 
-// Marshal reads or writes PlayerAuthInput using its canonical wire layout.
-func (x *PlayerAuthInput) Marshal(io protocol.IO) {
-	io.Vec2(&x.PlayerRotation)
-	io.Vec3(&x.Position)
-	io.Vec2(&x.MoveVector)
-	io.Float32(&x.PlayerHeadRotation)
-	protocol.OptionalFunc(io, &x.InputData, func(value *[]protocol.InputData) {
-		protocol.Slice(io, value)
-	})
-	x.InputMode.Marshal(io)
-	x.PlayMode.Marshal(io)
-	x.NewInteractionModel.Marshal(io)
-	io.Vec2(&x.InteractRotation)
-	io.PlayerInputTick(&x.ClientTick)
-	io.Vec3(&x.PosDelta)
-	protocol.DoubleOptionalFunc(io, &x.ItemUseTransaction, func(value *protocol.PackedItemUseLegacyInventoryTransaction) {
-		value.Marshal(io)
-	})
-	protocol.DoubleOptionalFunc(io, &x.ItemStackRequest, func(value *protocol.ItemStackRequestData) {
-		value.Marshal(io)
-	})
-	protocol.DoubleOptionalFunc(io, &x.PlayerBlockActions, func(value *[]protocol.PlayerBlockActionData) {
-		protocol.SliceLimits(io, value, 0, 100)
-	})
-	protocol.DoubleOptionalFunc(io, &x.VehicleRotation, io.Vec2)
-	protocol.DoubleOptionalFunc(io, &x.ClientPredictedVehicle, io.ActorUniqueID)
-	io.Vec2(&x.AnalogMoveVector)
-	io.Vec3(&x.CameraOrientation)
-	io.Vec2(&x.RawMoveVector)
-}
-
 // ID returns the protocol ID for PlayerAuthInput.
 func (*PlayerAuthInput) ID() uint32 { return IDPlayerAuthInput }
+
+// Marshal reads or writes PlayerAuthInput using its canonical wire layout.
+func (pk *PlayerAuthInput) Marshal(io protocol.IO) {
+	io.Vec2(&pk.PlayerRotation)
+	io.Vec3(&pk.Position)
+	io.Vec2(&pk.MoveVector)
+	io.Float32(&pk.PlayerHeadRotation)
+	protocol.OptionalFunc(io, &pk.InputData, func(value *[]protocol.InputData) {
+		protocol.Slice(io, value)
+	})
+	pk.InputMode.Marshal(io)
+	pk.PlayMode.Marshal(io)
+	pk.NewInteractionModel.Marshal(io)
+	io.Vec2(&pk.InteractRotation)
+	io.PlayerInputTick(&pk.ClientTick)
+	io.Vec3(&pk.PosDelta)
+	protocol.DoubleOptionalFunc(io, &pk.ItemUseTransaction, func(value *protocol.PackedItemUseLegacyInventoryTransaction) {
+		value.Marshal(io)
+	})
+	protocol.DoubleOptionalFunc(io, &pk.ItemStackRequest, func(value *protocol.ItemStackRequestData) {
+		value.Marshal(io)
+	})
+	protocol.DoubleOptionalFunc(io, &pk.PlayerBlockActions, func(value *[]protocol.PlayerBlockActionData) {
+		protocol.SliceLimits(io, value, 0, 100)
+	})
+	protocol.DoubleOptionalFunc(io, &pk.VehicleRotation, io.Vec2)
+	protocol.DoubleOptionalFunc(io, &pk.ClientPredictedVehicle, io.ActorUniqueID)
+	io.Vec2(&pk.AnalogMoveVector)
+	io.Vec3(&pk.CameraOrientation)
+	io.Vec2(&pk.RawMoveVector)
+}

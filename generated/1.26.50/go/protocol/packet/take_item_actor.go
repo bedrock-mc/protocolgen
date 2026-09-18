@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 // TakeItemActor is sent by the server when a player picks up an item entity. It makes the item entity
 // disappear to viewers and shows the pick-up animation.
@@ -11,11 +13,11 @@ type TakeItemActor struct {
 	ActorRuntimeID uint64
 }
 
-// Marshal reads or writes TakeItemActor using its canonical wire layout.
-func (x *TakeItemActor) Marshal(io protocol.IO) {
-	io.ActorRuntimeID(&x.ItemRuntimeID)
-	io.ActorRuntimeID(&x.ActorRuntimeID)
-}
-
 // ID returns the protocol ID for TakeItemActor.
 func (*TakeItemActor) ID() uint32 { return IDTakeItemActor }
+
+// Marshal reads or writes TakeItemActor using its canonical wire layout.
+func (pk *TakeItemActor) Marshal(io protocol.IO) {
+	io.ActorRuntimeID(&pk.ItemRuntimeID)
+	io.ActorRuntimeID(&pk.ActorRuntimeID)
+}

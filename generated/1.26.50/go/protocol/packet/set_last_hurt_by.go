@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 // SetLastHurtBy is sent by the server to let the client know what entity type it was last hurt by. At this
 // moment, the packet is useless and should not be used. There is no behaviour that depends on if this packet
@@ -11,10 +13,10 @@ type SetLastHurtBy struct {
 	LastHurtBy protocol.ActorType
 }
 
-// Marshal reads or writes SetLastHurtBy using its canonical wire layout.
-func (x *SetLastHurtBy) Marshal(io protocol.IO) {
-	x.LastHurtBy.Marshal(io)
-}
-
 // ID returns the protocol ID for SetLastHurtBy.
 func (*SetLastHurtBy) ID() uint32 { return IDSetLastHurtBy }
+
+// Marshal reads or writes SetLastHurtBy using its canonical wire layout.
+func (pk *SetLastHurtBy) Marshal(io protocol.IO) {
+	pk.LastHurtBy.Marshal(io)
+}

@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 // CommandRequest is sent by the client to request the execution of a server-side command. Although some
 // servers support sending commands using the Text packet, this packet is guaranteed to have the correct
@@ -22,13 +24,13 @@ type CommandRequest struct {
 	Version string
 }
 
-// Marshal reads or writes CommandRequest using its canonical wire layout.
-func (x *CommandRequest) Marshal(io protocol.IO) {
-	io.StringLimits(&x.Command, 0, 1000)
-	x.Origin.Marshal(io)
-	io.Bool(&x.IsInternal)
-	io.String(&x.Version)
-}
-
 // ID returns the protocol ID for CommandRequest.
 func (*CommandRequest) ID() uint32 { return IDCommandRequest }
+
+// Marshal reads or writes CommandRequest using its canonical wire layout.
+func (pk *CommandRequest) Marshal(io protocol.IO) {
+	io.StringLimits(&pk.Command, 0, 1000)
+	pk.Origin.Marshal(io)
+	io.Bool(&pk.IsInternal)
+	io.String(&pk.Version)
+}

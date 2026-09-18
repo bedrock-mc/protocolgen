@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.44/go/protocol"
+import (
+	"protocolgen/generated/1.26.44/go/protocol"
+)
 
 // CodeBuilder is an Education Edition packet sent by the server to the client to open the URL to a Code
 // Builder (websocket) server.
@@ -15,11 +17,11 @@ type CodeBuilder struct {
 	ShouldOpenCodeBuilder bool
 }
 
-// Marshal reads or writes CodeBuilder using its canonical wire layout.
-func (x *CodeBuilder) Marshal(io protocol.IO) {
-	io.String(&x.URL)
-	io.Bool(&x.ShouldOpenCodeBuilder)
-}
-
 // ID returns the protocol ID for CodeBuilder.
 func (*CodeBuilder) ID() uint32 { return IDCodeBuilder }
+
+// Marshal reads or writes CodeBuilder using its canonical wire layout.
+func (pk *CodeBuilder) Marshal(io protocol.IO) {
+	io.String(&pk.URL)
+	io.Bool(&pk.ShouldOpenCodeBuilder)
+}

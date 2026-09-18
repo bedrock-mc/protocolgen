@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.50/go/protocol"
+import (
+	"protocolgen/generated/1.26.50/go/protocol"
+)
 
 // SetTitle is sent by the server to make a title, subtitle or action bar shown to a player. It has several
 // fields that allow setting the duration of the titles.
@@ -20,17 +22,17 @@ type SetTitle struct {
 	FilteredTitleMessage string
 }
 
-// Marshal reads or writes SetTitle using its canonical wire layout.
-func (x *SetTitle) Marshal(io protocol.IO) {
-	x.TitleType.Marshal(io)
-	io.String(&x.TitleText)
-	io.Varint32(&x.FadeInTime)
-	io.Varint32(&x.StayTime)
-	io.Varint32(&x.FadeOutTime)
-	io.String(&x.Xuid)
-	io.String(&x.PlatformOnlineID)
-	io.String(&x.FilteredTitleMessage)
-}
-
 // ID returns the protocol ID for SetTitle.
 func (*SetTitle) ID() uint32 { return IDSetTitle }
+
+// Marshal reads or writes SetTitle using its canonical wire layout.
+func (pk *SetTitle) Marshal(io protocol.IO) {
+	pk.TitleType.Marshal(io)
+	io.String(&pk.TitleText)
+	io.Varint32(&pk.FadeInTime)
+	io.Varint32(&pk.StayTime)
+	io.Varint32(&pk.FadeOutTime)
+	io.String(&pk.Xuid)
+	io.String(&pk.PlatformOnlineID)
+	io.String(&pk.FilteredTitleMessage)
+}

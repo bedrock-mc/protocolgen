@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.44/go/protocol"
+import (
+	"protocolgen/generated/1.26.44/go/protocol"
+)
 
 // GameTestResults is a packet sent in response to the GameTestRequest packet, with a boolean indicating
 // whether the test was successful or not, and an error string if the test failed.
@@ -14,12 +16,12 @@ type GameTestResults struct {
 	TestName string
 }
 
-// Marshal reads or writes GameTestResults using its canonical wire layout.
-func (x *GameTestResults) Marshal(io protocol.IO) {
-	io.Bool(&x.Succeeded)
-	io.String(&x.Error)
-	io.String(&x.TestName)
-}
-
 // ID returns the protocol ID for GameTestResults.
 func (*GameTestResults) ID() uint32 { return IDGameTestResults }
+
+// Marshal reads or writes GameTestResults using its canonical wire layout.
+func (pk *GameTestResults) Marshal(io protocol.IO) {
+	io.Bool(&pk.Succeeded)
+	io.String(&pk.Error)
+	io.String(&pk.TestName)
+}

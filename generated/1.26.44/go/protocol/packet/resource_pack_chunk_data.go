@@ -2,7 +2,9 @@
 
 package packet
 
-import "protocolgen/generated/1.26.44/go/protocol"
+import (
+	"protocolgen/generated/1.26.44/go/protocol"
+)
 
 // ResourcePackChunkData is sent to the client so that the client can download the resource pack. Each packet
 // holds a chunk of the compressed resource pack, of which the size is defined in the ResourcePackDataInfo
@@ -21,13 +23,13 @@ type ResourcePackChunkData struct {
 	ChunkData []byte
 }
 
-// Marshal reads or writes ResourcePackChunkData using its canonical wire layout.
-func (x *ResourcePackChunkData) Marshal(io protocol.IO) {
-	io.String(&x.ResourceName)
-	io.Uint32(&x.ChunkID)
-	io.Uint64(&x.ByteOffset)
-	io.Bytes(&x.ChunkData)
-}
-
 // ID returns the protocol ID for ResourcePackChunkData.
 func (*ResourcePackChunkData) ID() uint32 { return IDResourcePackChunkData }
+
+// Marshal reads or writes ResourcePackChunkData using its canonical wire layout.
+func (pk *ResourcePackChunkData) Marshal(io protocol.IO) {
+	io.String(&pk.ResourceName)
+	io.Uint32(&pk.ChunkID)
+	io.Uint64(&pk.ByteOffset)
+	io.Bytes(&pk.ChunkData)
+}

@@ -49,9 +49,12 @@ func (x *BiomeClimateData) Marshal(io IO) {
 
 // BiomeConditionalTransformation is the legacy method of transforming biomes.
 type BiomeConditionalTransformationData struct {
+	// WeightedBiomes is a list of biomes and their weights.
 	TransformsInto []BiomeWeightedData
 	// ConditionJSON is an index of the condition JSON data in the string list.
-	ConditionJSON       uint16
+	ConditionJSON uint16
+	// MinPassingNeighbours is the minimum number of neighbours that must pass the condition for the
+	// transformation to be applied.
 	MinPassingNeighbors uint32
 }
 
@@ -71,7 +74,8 @@ type BiomeConsolidatedFeatureData struct {
 	// Identifier is the index of the feature's identifier in the string list.
 	Identifier uint16
 	// Pass is the index of the feature's pass in the string list.
-	Pass                  uint16
+	Pass uint16
+	// CanUseInternal is true if the feature can use internal features.
 	CanUseInternalFeature bool
 }
 
@@ -192,6 +196,7 @@ func (x *BiomeDefinitionData) Marshal(io IO) {
 
 // BiomeElementData are set rules to adjust the surface materials of the biome.
 type BiomeElementData struct {
+	// NoiseFrequencyScale is the frequency scale of the noise used to adjust the surface materials.
 	NoiseFreqScale float32
 	// NoiseLowerBound is the minimum noise value required to be selected.
 	NoiseLowerBound float32
@@ -252,12 +257,19 @@ func (x *BiomeMesaSurfaceData) Marshal(io IO) {
 	io.Bool(&x.HasForest)
 }
 
+// BiomeMountainParamsData specifies the parameters for a mountain biome.
 type BiomeMountainParamsData struct {
-	SteepBlock      uint32
-	NorthSlopes     bool
-	SouthSlopes     bool
-	WestSlopes      bool
-	EastSlopes      bool
+	// SteepBlock is the runtime ID of the block to use for steep slopes.
+	SteepBlock uint32
+	// NorthSlopes is true if the biome has north slopes.
+	NorthSlopes bool
+	// SouthSlopes is true if the biome has south slopes.
+	SouthSlopes bool
+	// WestSlopes is true if the biome has west slopes.
+	WestSlopes bool
+	// EastSlopes is true if the biome has east slopes.
+	EastSlopes bool
+	// TopSlideEnabled is true if the biome has top slide enabled.
 	TopSlideEnabled bool
 }
 
@@ -271,12 +283,19 @@ func (x *BiomeMountainParamsData) Marshal(io IO) {
 	io.Bool(&x.TopSlideEnabled)
 }
 
+// BiomeMultinoiseGenRulesData specifies the rules for multi-noise biomes, which are biomes that are defined
+// by multiple noise parameters instead of just temperature and humidity.
 type BiomeMultinoiseGenRulesData struct {
+	// Temperature is the temperature level of the biome.
 	Temperature float32
-	Humidity    float32
-	Altitude    float32
-	Weirdness   float32
-	Weight      float32
+	// Humidity is the humidity level of the biome.
+	Humidity float32
+	// Altitude is the altitude level of the biome.
+	Altitude float32
+	// Weirdness is the weirdness level of the biome.
+	Weirdness float32
+	// Weight is the weight of the biome, with a higher weight being more likely to be selected.
+	Weight float32
 }
 
 // Marshal reads or writes BiomeMultinoiseGenRulesData using its canonical wire layout.
@@ -328,6 +347,7 @@ func (x *BiomeOverworldGenRulesData) Marshal(io IO) {
 
 // BiomeReplacementData represents data for biome replacements.
 type BiomeReplacementData struct {
+	// Biome is the biome ID to replace.
 	ReplacementBiome uint16
 	// Dimension is the dimension ID where the replacement applies.
 	Dimension uint16
@@ -361,14 +381,25 @@ func (x *BiomeReplacementsData) Marshal(io IO) {
 }
 
 type BiomeScatterParamData struct {
-	Coordinates       []BiomeCoordinateData
-	EvalOrder         CoordinateEvaluationOrder
+	// Coordinates is a list of coordinate rules to scatter the feature within.
+	Coordinates []BiomeCoordinateData
+	// EvaluationOrder is the order in which the coordinates are evaluated, and is one of the
+	// CoordinateEvaluationOrder constants above.
+	EvalOrder CoordinateEvaluationOrder
+	// ChancePercentType is the type of expression operation to use for the chance percent, and is one of the
+	// BiomeExpressionOp constants above.
 	ChancePercentType int32
-	ChancePercent     uint16
-	ChanceNumerator   int32
+	// ChangePercent is the index of the chance expression in the string list.
+	ChancePercent uint16
+	// ChanceNumerator is the numerator of the chance expression.
+	ChanceNumerator int32
+	// ChanceDenominator is the denominator of the chance expression.
 	ChanceDenominator int32
-	IterationsType    int32
-	Iterations        uint16
+	// IterationsType is the type of expression operation to use for the iterations, and is one of the
+	// BiomeExpressionOp constants above.
+	IterationsType int32
+	// Iterations is the index of the iterations expression in the string list.
+	Iterations uint16
 }
 
 // Marshal reads or writes BiomeScatterParamData using its canonical wire layout.
@@ -479,9 +510,12 @@ func (x *BiomeWeightedData) Marshal(io IO) {
 	io.Uint32(&x.Weight)
 }
 
+// BiomeWeightedTemperatureData defines the weight for a temperature, used for weighted randomness.
 type BiomeWeightedTemperatureData struct {
+	// Temperature is the temperature that can be selected.
 	Temperature int32
-	Weight      uint32
+	// Weight is the weight of the temperature, with a higher weight being more likely to be selected.
+	Weight uint32
 }
 
 // Marshal reads or writes BiomeWeightedTemperatureData using its canonical wire layout.
