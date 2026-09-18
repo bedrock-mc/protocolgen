@@ -11,8 +11,10 @@ type SubChunk struct {
 	// CacheEnabled is whether the sub-chunk caching is enabled or not.
 	CacheEnabled  bool
 	DimensionType protocol.DimensionType
-	CenterPos     protocol.SubChunkPos
-	SubChunkData  []protocol.SubChunkData
+	// Position is an absolute sub-chunk center point that every SubChunkRequest uses as a reference.
+	CenterPos protocol.SubChunkPos
+	// SubChunkEntries contains sub-chunk entries relative to the center point.
+	SubChunkData []protocol.SubChunkData
 }
 
 // ID ...

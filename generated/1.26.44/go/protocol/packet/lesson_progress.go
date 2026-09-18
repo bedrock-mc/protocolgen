@@ -11,7 +11,8 @@ import (
 type LessonProgress struct {
 	LessonAction int32
 	// Score is the score the client should use when displaying the progress.
-	Score      int32
+	Score int32
+	// Identifier is the identifier of the lesson that is being progressed.
 	ActivityID string
 }
 

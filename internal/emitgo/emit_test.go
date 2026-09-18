@@ -3,6 +3,7 @@ package emitgo
 import (
 	"go/format"
 	"os"
+	"regexp"
 	"sort"
 	"strings"
 	"testing"
@@ -11,6 +12,7 @@ import (
 	"protocolgen/internal/domains"
 	"protocolgen/internal/layout"
 	"protocolgen/internal/manifest"
+	"protocolgen/internal/semantics"
 )
 
 func TestMarshalEmitterUsesOneAddressParameterizedWalk(t *testing.T) {
@@ -807,5 +809,34 @@ func TestGenerateInlinesSingleUsePayloadStructs(t *testing.T) {
 	other := files["protocol/packet/other.go"]
 	if !strings.Contains(other, "Extra protocol.Shared") || !strings.Contains(generatedSource(files), "type Shared struct") {
 		t.Fatalf("sub-struct of a multi-field packet was inlined:\n%s", other)
+	}
+}
+
+// A plain integer marked as an actor identifier uses the identifier IO
+// operation of its wire width and keeps its Go type.
+func TestGenerateAppliesSemanticsOverlay(t *testing.T) {
+	m := manifest.Manifest{
+		SchemaVersion: 2,
+		Target:        manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 1},
+		Sources:       []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "1", Digest: "fixture", MinecraftVersion: "fixture", ProtocolVersion: 1}},
+		Packets: []manifest.Packet{{ID: 1, Name: "ActorPickRequestPacket", Direction: manifest.DirectionServerbound, Fields: []manifest.Field{
+			{Ordinal: 0, Name: "Actor ID", Encode: manifest.Primitive("i64le"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+			{Ordinal: 1, Name: "Target", Encode: manifest.Primitive("var_u64"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+			{Ordinal: 2, Name: "Slot", Encode: manifest.Primitive("u8"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		}}},
+	}
+	overlay := semantics.Overlay{Fields: map[string]string{
+		semantics.FieldKey("ActorPickRequestPacket", "Actor ID"): semantics.ActorUniqueID,
+		semantics.FieldKey("ActorPickRequestPacket", "Target"):   semantics.ActorRuntimeID,
+	}}
+	files, err := GenerateWithOptions(m, Options{ProtocolImportPath: "wiregen", NativeTypes: true, EmitPacketRuntime: true, EmitPacketPools: true, Semantics: overlay})
+	if err != nil {
+		t.Fatal(err)
+	}
+	packet := files["protocol/packet/actor_pick_request.go"]
+	for _, want := range []string{`ActorID\s+int64`, `Target\s+uint64`, `io\.ActorUniqueIDInt64\(&pk\.ActorID\)`, `io\.ActorRuntimeID\(&pk\.Target\)`, `io\.Uint8\(&pk\.Slot\)`} {
+		if !regexp.MustCompile(want).MatchString(packet) {
+			t.Fatalf("semantics output omits %q:\n%s", want, packet)
+		}
 	}
 }

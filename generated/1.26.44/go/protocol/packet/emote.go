@@ -13,7 +13,8 @@ type Emote struct {
 	// as its own entity runtime ID.
 	ActorRuntimeID uint64
 	// EmoteID is the ID of the emote to send.
-	EmoteID          string
+	EmoteID string
+	// EmoteLength is the number of ticks that the emote lasts for.
 	EmoteLengthTicks uint32
 	// Xuid is the Xbox User ID of the player that sent the emote. It is only set when the emote is used by a
 	// player that is authenticated with Xbox Live.

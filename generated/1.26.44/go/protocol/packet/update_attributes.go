@@ -10,7 +10,10 @@ import (
 // attributes include ones such as the health or the movement speed of the entity.
 type UpdateAttributes struct {
 	TargetRuntimeID uint64
-	AttributeList   []protocol.AttributeData
+	// Attributes is a slice of new attributes that the entity gets. It includes attributes such as its health,
+	// movement speed, etc. Note that only changed attributes have to be sent in this packet. It is not required
+	// to send attributes that did not have their values changed.
+	AttributeList []protocol.AttributeData
 	// Tick is the server tick at which the packet was sent. It is used in relation to
 	// CorrectPlayerMovePrediction.
 	Tick uint64

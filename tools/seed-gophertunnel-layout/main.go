@@ -14,6 +14,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -24,6 +25,7 @@ import (
 	"protocolgen/internal/layout"
 	"protocolgen/internal/manifest"
 	"protocolgen/internal/naming"
+	"protocolgen/internal/semantics"
 )
 
 func main() {
@@ -33,6 +35,7 @@ func main() {
 	outPath := flag.String("out", "", "layout overlay output")
 	reportPath := flag.String("report", "", "gap report output (Markdown)")
 	docsPath := flag.String("docs", "", "reviewed docs overlay to extend with fork comments for matched types and fields (optional)")
+	semanticsPath := flag.String("semantics-out", "", "semantics overlay output marking actor identifier fields (optional)")
 	flag.Parse()
 	if *manifestPath == "" || *namingPath == "" || *gopherPath == "" || *outPath == "" || *reportPath == "" {
 		fail("-manifest, -naming, -gophertunnel, -out and -report are required")
@@ -67,6 +70,16 @@ func main() {
 			fail("%v", err)
 		}
 		fmt.Printf("docs: %d fork comments ported -> %s\n", report.portedDocs, *docsPath)
+	}
+	if *semanticsPath != "" {
+		semantic := semantics.SortedDocument(semantics.Document{SchemaVersion: 1, Target: m.Target, Entries: report.semantics})
+		if err := semantics.ValidateOverlay(m, semantic); err != nil {
+			fail("seeded semantics are invalid: %v", err)
+		}
+		if err := writeJSON(*semanticsPath, semantic); err != nil {
+			fail("%v", err)
+		}
+		fmt.Printf("semantics: %d actor identifier fields (%d by name only) -> %s\n", len(semantic.Entries), report.heuristicSemantics, *semanticsPath)
 	}
 	if err := layout.ValidateOverlay(m, document); err != nil {
 		fail("seeded overlay is invalid: %v", err)
@@ -223,9 +236,10 @@ func buildIndex(m manifest.Manifest, overlay naming.Overlay) (index, error) {
 // --- fork side --------------------------------------------------------------
 
 type forkField struct {
-	Name string
-	Type string
-	Doc  string
+	Name     string
+	Type     string
+	Doc      string
+	Semantic string // ActorUniqueID or ActorRuntimeID when the fork marshals the field with an identifier operation
 }
 
 type forkType struct {
@@ -259,6 +273,7 @@ type forkIndex struct {
 func parseFork(root string) (forkIndex, error) {
 	result := forkIndex{types: map[string]forkType{}}
 	marshals := map[string]bool{}
+	fieldSemantics := map[string]string{} // pkg.Type.Field -> semantic
 	if out, err := exec.Command("git", "-C", root, "rev-parse", "HEAD").Output(); err == nil {
 		result.commit = strings.TrimSpace(string(out))
 	}
@@ -299,6 +314,9 @@ func parseFork(root string) (forkIndex, error) {
 					}
 					if ident, ok := receiver.(*ast.Ident); ok {
 						marshals[pkg+"."+ident.Name] = true
+						for field, semantic := range identifierFields(fn) {
+							fieldSemantics[pkg+"."+ident.Name+"."+field] = semantic
+						}
 					}
 					continue
 				}
@@ -348,9 +366,38 @@ func parseFork(root string) (forkIndex, error) {
 	}
 	for key, item := range result.types {
 		item.Marshals = marshals[key]
+		for index := range item.Fields {
+			item.Fields[index].Semantic = fieldSemantics[key+"."+item.Fields[index].Name]
+		}
 		result.types[key] = item
 	}
 	return result, nil
+}
+
+var identifierCall = regexp.MustCompile(`\b(ActorUniqueID|ActorRuntimeID)\w*\b[^\n]*?&\w+\.(\w+)`)
+
+// identifierFields finds the receiver fields a Marshal body passes to an
+// actor identifier IO operation, including as an optional's callback.
+func identifierFields(fn *ast.FuncDecl) map[string]string {
+	result := map[string]string{}
+	if fn.Body == nil {
+		return result
+	}
+	var body strings.Builder
+	_ = format.Node(&body, token.NewFileSet(), fn.Body)
+	for _, line := range strings.Split(body.String(), "\n") {
+		if match := identifierCall.FindStringSubmatch(line); match != nil {
+			result[match[2]] = match[1]
+			continue
+		}
+		// OptionalFunc(io, &pk.Field, io.ActorUniqueID) names the field first.
+		if strings.Contains(line, "ActorUniqueID") || strings.Contains(line, "ActorRuntimeID") {
+			if match := regexp.MustCompile(`&\w+\.(\w+)[^\n]*\b(ActorUniqueID|ActorRuntimeID)`).FindStringSubmatch(line); match != nil {
+				result[match[1]] = match[2]
+			}
+		}
+	}
+	return result
 }
 
 // constEvaluator resolves integer constant blocks, including iota, shifts,
@@ -518,6 +565,8 @@ func commonPrefix(consts []forkConst) string {
 type gapReport struct {
 	namedVariants      int
 	portedDocs         int
+	heuristicSemantics int
+	semantics          []semantics.Entry
 	skippedTypeNames   []string
 	placements         []placementNote
 	unmatchedEnums     []enumInfo
@@ -650,6 +699,7 @@ func seed(m manifest.Manifest, idx index, fork forkIndex, docOverlay docs.Overla
 		} else {
 			report.generatedOnlyTypes = append(report.generatedOnlyTypes, owner)
 			document.Fields = append(document.Fields, conventionEntries(owner, nil)...)
+			report.semanticsByName(owner, nil)
 		}
 	}
 	for key, item := range fork.types {
@@ -838,23 +888,22 @@ func matchFields(owner ownerInfo, source forkType, gap *fieldGap, docOverlay doc
 			}
 		}
 	}
-	if len(matched) < len(owner.Fields) && len(owner.Fields) == len(source.Fields) {
-		positional := true
+	// Leftover fields are aligned in wire order where their categories agree,
+	// so a renamed field still takes the fork's name and comment.
+	if len(matched) < len(owner.Fields) {
+		var left, right []int
 		for i := range owner.Fields {
-			if _, ok := matched[i]; ok {
-				continue
-			}
-			if usedFork[i] || typeCategory(owner.Fields[i].Encode) != forkCategory(source.Fields[i].Type) {
-				positional = false
-				break
+			if _, ok := matched[i]; !ok {
+				left = append(left, i)
 			}
 		}
-		if positional {
-			for i := range owner.Fields {
-				if _, ok := matched[i]; !ok {
-					matched[i], usedFork[i] = i, true
-				}
+		for j := range source.Fields {
+			if !usedFork[j] {
+				right = append(right, j)
 			}
+		}
+		for _, pairIndex := range alignByCategory(owner.Fields, source.Fields, left, right) {
+			matched[pairIndex[0]], usedFork[pairIndex[1]] = pairIndex[1], true
 			gap.Positional = true
 		}
 	}
@@ -875,6 +924,9 @@ func matchFields(owner ownerInfo, source forkType, gap *fieldGap, docOverlay doc
 			goName = forkField.Name
 		}
 		named[field.Name] = true
+		if forkField.Semantic != "" {
+			report.semantic(owner, field, forkField.Semantic, fmt.Sprintf("gophertunnel marshals %s.%s with an %s operation.", source.Name, forkField.Name, forkField.Semantic))
+		}
 		if docOverlay.Fields != nil && forkField.Doc != "" {
 			key := docs.FieldKey(owner.TypeID, field.Name)
 			if docOverlay.Fields[key] == "" {
@@ -884,12 +936,95 @@ func matchFields(owner ownerInfo, source forkType, gap *fieldGap, docOverlay doc
 		}
 	}
 	entries = append(entries, conventionEntries(owner, named)...)
+	report.semanticsByName(owner, named)
 	for j, forkField := range source.Fields {
 		if !usedFork[j] {
 			gap.OnlyFork = append(gap.OnlyFork, forkField.Name+" "+forkField.Type)
 		}
 	}
 	return entries
+}
+
+// alignByCategory pairs leftover manifest and fork fields by longest common
+// subsequence over their type categories, preserving wire order.
+func alignByCategory(fields []manifest.Field, source []forkField, left, right []int) [][2]int {
+	n, m := len(left), len(right)
+	if n == 0 || m == 0 {
+		return nil
+	}
+	lcs := make([][]int, n+1)
+	for i := range lcs {
+		lcs[i] = make([]int, m+1)
+	}
+	for i := n - 1; i >= 0; i-- {
+		for j := m - 1; j >= 0; j-- {
+			if typeCategory(fields[left[i]].Encode) == forkCategory(source[right[j]].Type) {
+				lcs[i][j] = lcs[i+1][j+1] + 1
+			} else if lcs[i+1][j] >= lcs[i][j+1] {
+				lcs[i][j] = lcs[i+1][j]
+			} else {
+				lcs[i][j] = lcs[i][j+1]
+			}
+		}
+	}
+	var pairs [][2]int
+	for i, j := 0, 0; i < n && j < m; {
+		switch {
+		case typeCategory(fields[left[i]].Encode) == forkCategory(source[right[j]].Type) && lcs[i][j] == lcs[i+1][j+1]+1:
+			pairs = append(pairs, [2]int{left[i], right[j]})
+			i++
+			j++
+		case lcs[i+1][j] >= lcs[i][j+1]:
+			i++
+		default:
+			j++
+		}
+	}
+	return pairs
+}
+
+// semantic records an actor identifier field when its wire encoding is a
+// plain integer the identifier operations can carry.
+func (r *gapReport) semantic(owner ownerInfo, field manifest.Field, semantic, rationale string) {
+	node := field.Encode
+	if node.Kind != manifest.KindPrimitive || node.Primitive == nil || !semantics.Carries(semantic, node.Primitive.Code) {
+		return
+	}
+	for _, entry := range r.semantics {
+		if entry.TypeID == owner.TypeID && entry.Field == field.Name {
+			return
+		}
+	}
+	r.semantics = append(r.semantics, semantics.Entry{TypeID: owner.TypeID, Field: field.Name, Semantic: semantic, Rationale: rationale})
+}
+
+// semanticsByName marks unmatched fields whose wire name says they are actor
+// identifiers; block, item, and pack IDs are excluded.
+func (r *gapReport) semanticsByName(owner ownerInfo, matched map[string]bool) {
+	for _, field := range owner.Fields {
+		if matched[field.Name] || field.Encode.Kind != manifest.KindPrimitive {
+			continue
+		}
+		name := normalize(field.Name)
+		if strings.Contains(name, "block") || strings.Contains(name, "item") || strings.Contains(name, "recipe") || strings.Contains(name, "pack") || strings.Contains(name, "biome") {
+			continue
+		}
+		semantic := ""
+		switch {
+		case strings.HasSuffix(name, "uniqueid"):
+			semantic = semantics.ActorUniqueID
+		case strings.HasSuffix(name, "runtimeid"):
+			semantic = semantics.ActorRuntimeID
+		}
+		if semantic == "" {
+			continue
+		}
+		before := len(r.semantics)
+		r.semantic(owner, field, semantic, "Wire field name names an actor identifier; not confirmed by the fork.")
+		if len(r.semantics) > before {
+			r.heuristicSemantics++
+		}
+	}
 }
 
 func typeCategory(node manifest.Node) string {
@@ -905,7 +1040,7 @@ func typeCategory(node manifest.Node) string {
 			return "float32"
 		case "f64le", "f64be":
 			return "float64"
-		case "uuid":
+		case "uuid", "nbt_le":
 			return "named"
 		default:
 			return "integer"

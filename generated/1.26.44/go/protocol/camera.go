@@ -255,9 +255,11 @@ func (x *CameraInstructionFade) Marshal(io IO) {
 // CameraInstructionFieldOfView represents a camera instruction that updates the field of view.
 type CameraInstructionFieldOfView struct {
 	// FieldOfView is the field of view of the camera.
-	FieldOfView      float32
-	FOVEaseTime      float32
-	FOVEaseType      string
+	FieldOfView float32
+	// EaseTime is the time in seconds that the easing function should take.
+	FOVEaseTime float32
+	FOVEaseType string
+	// Clear can be set to true to clear the current instruction.
 	FieldOfViewClear bool
 }
 
@@ -308,12 +310,13 @@ func (x *CameraInstructionSet) Marshal(io IO) {
 
 // CameraInstructionTarget represents a camera instruction that targets a specific entity.
 type CameraInstructionTarget struct {
+	// EntityUniqueID is the unique ID of the entity that the camera should target.
 	EntityActorID int64
 }
 
 // Marshal reads or writes CameraInstructionTarget using its canonical wire layout.
 func (x *CameraInstructionTarget) Marshal(io IO) {
-	io.Int64(&x.EntityActorID)
+	io.ActorUniqueIDInt64(&x.EntityActorID)
 }
 
 // CameraInstructionTarget represents a camera instruction that targets a specific entity.
@@ -327,7 +330,7 @@ type CameraInstructionTargetData struct {
 // Marshal reads or writes CameraInstructionTargetData using its canonical wire layout.
 func (x *CameraInstructionTargetData) Marshal(io IO) {
 	OptionalFunc(io, &x.TargetCenterOffset, io.Vec3)
-	io.Int64(&x.TargetActorID)
+	io.ActorUniqueIDInt64(&x.TargetActorID)
 }
 
 type CameraPosition struct {
@@ -435,7 +438,9 @@ func (x *CameraPresetAudioListener) Marshal(io IO) { io.Uint8((*uint8)(x)) }
 
 // CameraProgressOption represents a progress keyframe option for camera spline instructions.
 type CameraProgressOption struct {
-	KeyFrameValue      float32
+	// Value is the progress value.
+	KeyFrameValue float32
+	// Time is the time for this progress option.
 	KeyFrameTime       float32
 	KeyFrameEasingFunc string
 }
@@ -460,7 +465,9 @@ func (x *CameraRotation) Marshal(io IO) {
 
 // CameraRotationOption represents a rotation option for camera spline instructions.
 type CameraRotationOption struct {
-	KeyFrameValue      mgl32.Vec3
+	// Value is the rotation value.
+	KeyFrameValue mgl32.Vec3
+	// Time is the time for this rotation option.
 	KeyFrameTime       float32
 	KeyFrameEasingFunc string
 }
@@ -540,7 +547,8 @@ type CameraSplineInstruction struct {
 	Curve []mgl32.Vec3
 	// ProgressKeyFrames is a list of progress key frames for the spline.
 	ProgressKeyFrames []CameraProgressOption
-	RotationOption    []CameraRotationOption
+	// RotationOptions is a list of rotation options for the spline.
+	RotationOption []CameraRotationOption
 	// SplineIdentifier is an optional identifier for referencing the spline by name.
 	SplineIdentifier string
 	// LoadFromJSON optionally determines whether the spline should be loaded from a JSON definition.

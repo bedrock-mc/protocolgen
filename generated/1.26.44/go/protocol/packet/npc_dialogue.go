@@ -29,7 +29,7 @@ func (*NpcDialogue) ID() uint32 {
 }
 
 func (pk *NpcDialogue) Marshal(io protocol.IO) {
-	io.Uint64(&pk.NpcIDRawID)
+	io.ActorUniqueIDUint64(&pk.NpcIDRawID)
 	pk.NpcDialogueActionType.Marshal(io)
 	io.String(&pk.Dialogue)
 	io.String(&pk.SceneName)

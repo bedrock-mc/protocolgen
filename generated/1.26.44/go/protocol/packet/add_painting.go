@@ -18,7 +18,9 @@ type AddPainting struct {
 	Position mgl32.Vec3
 	// Direction is the facing direction of the painting.
 	Direction int32
-	Motif     string
+	// Title is the title of the painting. It specifies the motive of the painting. The title of the painting must
+	// be valid.
+	Motif string
 }
 
 // ID ...

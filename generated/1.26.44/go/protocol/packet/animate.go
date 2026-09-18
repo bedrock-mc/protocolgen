@@ -9,6 +9,8 @@ import (
 // Animate is sent by the server to send a player animation from one player to all viewers of that player. It
 // is used for a couple of actions, such as arm swimming and critical hits.
 type Animate struct {
+	// ActionType is the ID of the animation action to execute. It is one of the action type constants that may be
+	// found above.
 	Action               protocol.AnimateAction
 	TargetActorRuntimeID uint64
 	// Data ...

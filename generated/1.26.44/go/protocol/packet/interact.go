@@ -11,6 +11,8 @@ import (
 // Interact is sent by the client when it interacts with another entity in some way. It used to be used for
 // normal entity and block interaction, but this is no longer the case now.
 type Interact struct {
+	// Action type is the ID of the action that was executed by the player. It is one of the constants that may be
+	// found above.
 	Action          protocol.InteractAction
 	TargetRuntimeID uint64
 	// Position associated with the ActionType above. For the InteractActionMouseOverEntity, this is the position

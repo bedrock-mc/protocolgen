@@ -324,17 +324,15 @@ Hand-written decoding or a name the overlay does not map yet.
 - only in manifest: `Messages`
 - only in fork: `HideDisconnectionScreen bool`, `Message string`, `FilteredMessage string`
 
-### `ResourcePacksInfo` vs fork `packet.ResourcePacksInfo`
+### `ResourcePacksInfo` vs fork `packet.ResourcePacksInfo` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Resource Pack Required`, `Has Addon Packs`, `World Template Id And Version`, `Resource Packs`
-- only in fork: `TexturePackRequired bool`, `HasAddons bool`, `WorldTemplateUUID uuid.UUID`, `WorldTemplateVersion string`, `TexturePacks []protocol.TexturePackInfo`
+- renamed to fork names: 4
+- only in fork: `WorldTemplateVersion string`
 
-### `ResourcePackStack` vs fork `packet.ResourcePackStack`
+### `ResourcePackStack` vs fork `packet.ResourcePackStack` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Texture Pack List`
-- only in fork: `TexturePacks []protocol.StackResourcePack`, `ExperimentsPreviouslyToggled bool`
+- renamed to fork names: 1
+- only in fork: `ExperimentsPreviouslyToggled bool`
 - type category differs: `Experiments (Experiments vs []protocol.ExperimentData)`
 
 ### `ResourcePackClientResponse` vs fork `packet.ResourcePackClientResponse`
@@ -343,39 +341,39 @@ Hand-written decoding or a name the overlay does not map yet.
 - only in fork: `PacksToDownload []string`
 - type category differs: `Response (union vs uint32)`
 
-### `Text` vs fork `packet.Text`
+### `Text` vs fork `packet.Text` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Localize?`, `Message Category`, `Body`, `Sender's XUID`, `Platform Id`
-- only in fork: `TextType byte`, `NeedsTranslation bool`, `SourceName string`, `Message string`, `Parameters []string`, `XUID string`, `PlatformChatID string`
+- renamed to fork names: 3
+- only in manifest: `Localize?`, `Body`
+- only in fork: `NeedsTranslation bool`, `Parameters []string`, `XUID string`, `PlatformChatID string`
 
-### `StartGame` vs fork `packet.StartGame`
+### `StartGame` vs fork `packet.StartGame` (some fields matched by position)
 
-- renamed to fork names: 1
-- only in manifest: `Entity ID`, `Runtime ID`, `Game Type`, `Position`, `Rotation`, `Settings`, `Level Name`, `Is Trial`, `Movement Settings`, `Level Current Time`, `Block Properties`, `Enable Item Stack Net Manager`, `Server Version`, `Player Property Data`, `Server Block Type Registry Checksum`, `Server Enabled ClientSide Generation`, `BlockNetworkIds Are Hashes`, `NetworkPermissions`, `Server Configuration Join Info`, `Server Telemetry Data`
-- only in fork: `EntityUniqueID int64`, `EntityRuntimeID uint64`, `PlayerGameMode int32`, `PlayerPosition mgl32.Vec3`, `Pitch float32`, `Yaw float32`, `WorldSeed int64`, `SpawnBiomeType int16`, `UserDefinedBiomeName string`, `Dimension int32`, `Generator int32`, `WorldGameMode int32`, `Hardcore bool`, `Difficulty int32`, `WorldSpawn protocol.BlockPos`, `AchievementsDisabled bool`, `EditorWorldType int32`, `CreatedInEditor bool`, `ExportedFromEditor bool`, `ServerEditorConnectionPolicy int32`, `AllowAnonymousBlockDropsInEditorWorlds bool`, `DayCycleLockTime int32`, `EducationEditionOffer uint32`, `EducationFeaturesEnabled bool`, `EducationProductID string`, `RainLevel float32`, `LightningLevel float32`, `ConfirmedPlatformLockedContent bool`, `MultiPlayerGame bool`, `LANBroadcastEnabled bool`, `XBLBroadcastMode int32`, `PlatformBroadcastMode int32`, `CommandsEnabled bool`, `TexturePackRequired bool`, `GameRules []protocol.GameRule`, `Experiments []protocol.ExperimentData`, `ExperimentsPreviouslyToggled bool`, `BonusChestEnabled bool`, `StartWithMapEnabled bool`, `PlayerPermissions byte`, `ServerChunkTickRadius int32`, `HasLockedBehaviourPack bool`, `HasLockedTexturePack bool`, `FromLockedWorldTemplate bool`, `MSAGamerTagsOnly bool`, `FromWorldTemplate bool`, `WorldTemplateSettingsLocked bool`, `OnlySpawnV1Villagers bool`, `PersonaDisabled bool`, `CustomSkinsDisabled bool`, `EmoteChatMuted bool`, `BaseGameVersion string`, `LimitedWorldWidth int32`, `LimitedWorldDepth int32`, `NewNether bool`, `EducationSharedResourceURI protocol.EducationSharedResourceURI`, `ForceExperimentalGameplay protocol.Optional[bool]`, `WorldName string`, `Trial bool`, `PlayerMovementSettings protocol.PlayerMovementSettings`, `Time int64`, `Blocks []protocol.BlockEntry`, `ServerAuthoritativeInventory bool`, `GameVersion string`, `PropertyData map[string]any`, `ServerBlockStateChecksum uint64`, `ClientSideGeneration bool`, `ChatRestrictionLevel uint8`, `DisablePlayerInteractions bool`, `UseBlockNetworkIDHashes bool`, `ServerAuthoritativeSound bool`, `ServerJoinInformation protocol.Optional[protocol.ServerJoinInformation]`, `ServerID string`, `ScenarioID string`, `WorldID string`, `OwnerID string`
+- renamed to fork names: 16
+- only in manifest: `Entity ID`, `Runtime ID`, `Player Property Data`, `NetworkPermissions`, `Server Telemetry Data`
+- only in fork: `EntityRuntimeID uint64`, `PlayerGameMode int32`, `Pitch float32`, `Yaw float32`, `WorldSeed int64`, `SpawnBiomeType int16`, `UserDefinedBiomeName string`, `Dimension int32`, `Generator int32`, `WorldGameMode int32`, `Hardcore bool`, `Difficulty int32`, `AchievementsDisabled bool`, `EditorWorldType int32`, `CreatedInEditor bool`, `ExportedFromEditor bool`, `ServerEditorConnectionPolicy int32`, `AllowAnonymousBlockDropsInEditorWorlds bool`, `DayCycleLockTime int32`, `EducationEditionOffer uint32`, `EducationFeaturesEnabled bool`, `EducationProductID string`, `RainLevel float32`, `LightningLevel float32`, `ConfirmedPlatformLockedContent bool`, `MultiPlayerGame bool`, `LANBroadcastEnabled bool`, `XBLBroadcastMode int32`, `PlatformBroadcastMode int32`, `CommandsEnabled bool`, `TexturePackRequired bool`, `GameRules []protocol.GameRule`, `Experiments []protocol.ExperimentData`, `ExperimentsPreviouslyToggled bool`, `BonusChestEnabled bool`, `StartWithMapEnabled bool`, `PlayerPermissions byte`, `ServerChunkTickRadius int32`, `HasLockedBehaviourPack bool`, `HasLockedTexturePack bool`, `FromLockedWorldTemplate bool`, `MSAGamerTagsOnly bool`, `FromWorldTemplate bool`, `WorldTemplateSettingsLocked bool`, `OnlySpawnV1Villagers bool`, `PersonaDisabled bool`, `CustomSkinsDisabled bool`, `EmoteChatMuted bool`, `BaseGameVersion string`, `LimitedWorldWidth int32`, `LimitedWorldDepth int32`, `NewNether bool`, `ForceExperimentalGameplay protocol.Optional[bool]`, `PropertyData map[string]any`, `ChatRestrictionLevel uint8`, `UseBlockNetworkIDHashes bool`, `ServerAuthoritativeSound bool`, `ServerID string`, `ScenarioID string`, `WorldID string`, `OwnerID string`
 
 ### `GameRule` vs fork `protocol.GameRule` (some fields matched by position)
 
 - renamed to fork names: 3
 
-### `AddPlayer` vs fork `packet.AddPlayer`
+### `AddPlayer` vs fork `packet.AddPlayer` (some fields matched by position)
+
+- renamed to fork names: 8
+- only in manifest: `Target Runtime ID`, `Rotation`
+- only in fork: `EntityRuntimeID uint64`, `Yaw float32`, `HeadYaw float32`
+
+### `EntityLink` vs fork `protocol.EntityLink` (some fields matched by position)
 
 - renamed to fork names: 1
-- only in manifest: `Player Name`, `Target Runtime ID`, `Rotation`, `Y-Head Rotation`, `Carried Item`, `Player Game Type`, `Entity Data`, `Synched Properties`, `Abilities Data`
-- only in fork: `Username string`, `EntityRuntimeID uint64`, `Pitch float32`, `Yaw float32`, `HeadYaw float32`, `HeldItem protocol.ItemInstance`, `GameType int32`, `EntityMetadata protocol.EntityMetadata`, `EntityProperties protocol.EntityProperties`, `AbilityData protocol.AbilityData`
+- only in manifest: `Target A`, `Target B`
+- only in fork: `RiddenEntityUniqueID int64`, `RiderEntityUniqueID int64`
 
-### `EntityLink` vs fork `protocol.EntityLink`
+### `AddActor` vs fork `packet.AddActor` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Target A`, `Target B`, `Passenger Initiated`
-- only in fork: `RiddenEntityUniqueID int64`, `RiderEntityUniqueID int64`, `RiderInitiated bool`
-
-### `AddActor` vs fork `packet.AddActor`
-
-- renamed to fork names: 4
-- only in manifest: `Target Actor ID`, `Target Runtime ID`, `Rotation`, `Y Head Rotation`, `Y Body Rotation`, `Attributes List`, `Actor Data`, `Synched Properties`
-- only in fork: `EntityUniqueID int64`, `EntityRuntimeID uint64`, `Pitch float32`, `Yaw float32`, `HeadYaw float32`, `BodyYaw float32`, `Attributes []protocol.AttributeValue`, `EntityMetadata protocol.EntityMetadata`, `EntityProperties protocol.EntityProperties`
+- renamed to fork names: 8
+- only in manifest: `Target Actor ID`, `Target Runtime ID`, `Rotation`
+- only in fork: `EntityUniqueID int64`, `EntityRuntimeID uint64`, `HeadYaw float32`, `BodyYaw float32`
 
 ### `RemoveActor` vs fork `packet.RemoveActor`
 
@@ -383,11 +381,11 @@ Hand-written decoding or a name the overlay does not map yet.
 - only in manifest: `Target Actor ID`
 - only in fork: `EntityUniqueID int64`
 
-### `AddItemActor` vs fork `packet.AddItemActor`
+### `AddItemActor` vs fork `packet.AddItemActor` (some fields matched by position)
 
-- renamed to fork names: 1
-- only in manifest: `Target Actor ID`, `Target Runtime ID`, `Entity Data`, `Is From Fishing`
-- only in fork: `EntityUniqueID int64`, `EntityRuntimeID uint64`, `EntityMetadata protocol.EntityMetadata`, `FromFishing bool`
+- renamed to fork names: 3
+- only in manifest: `Target Actor ID`, `Target Runtime ID`
+- only in fork: `EntityUniqueID int64`, `EntityRuntimeID uint64`
 
 ### `ServerPlayerPostMovePosition` vs fork `packet.ServerPlayerPostMovePosition` (some fields matched by position)
 
@@ -399,29 +397,29 @@ Hand-written decoding or a name the overlay does not map yet.
 - only in manifest: `Item Runtime ID`, `Actor Runtime ID`
 - only in fork: `ItemEntityRuntimeID uint64`, `TakerEntityRuntimeID uint64`
 
-### `MoveActorAbsolute` vs fork `packet.MoveActorAbsolute`
+### `MoveActorAbsolute` vs fork `packet.MoveActorAbsolute` (some fields matched by position)
 
-- renamed to fork names: 1
-- only in manifest: `Header`, `Rotation X`, `Rotation Y`, `Rotation Y Head`
-- only in fork: `Flags byte`, `Rotation mgl32.Vec3`
+- renamed to fork names: 2
+- only in manifest: `Rotation X`, `Rotation Y`, `Rotation Y Head`
+- only in fork: `Rotation mgl32.Vec3`
 - type category differs: `EntityRuntimeID (ActorRuntimeID vs uint64)`
 
-### `MovePlayer` vs fork `packet.MovePlayer`
+### `MovePlayer` vs fork `packet.MovePlayer` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Player Runtime ID`, `Rotation`, `Y-Head Rotation`, `Position Mode`, `Riding Runtime ID`
-- only in fork: `EntityRuntimeID uint64`, `Pitch float32`, `Yaw float32`, `HeadYaw float32`, `Mode byte`, `RiddenEntityRuntimeID uint64`
+- renamed to fork names: 2
+- only in manifest: `Player Runtime ID`, `Rotation`, `Riding Runtime ID`
+- only in fork: `EntityRuntimeID uint64`, `Yaw float32`, `HeadYaw float32`, `RiddenEntityRuntimeID uint64`
 - type category differs: `Tick (PlayerInputTick vs uint64)`
 
 ### `UpdateBlock` vs fork `packet.UpdateBlock` (some fields matched by position)
 
 - renamed to fork names: 2
 
-### `AddPainting` vs fork `packet.AddPainting`
+### `AddPainting` vs fork `packet.AddPainting` (some fields matched by position)
 
-- renamed to fork names: 1
-- only in manifest: `Target Actor ID`, `Target Runtime ID`, `Motif`
-- only in fork: `EntityUniqueID int64`, `EntityRuntimeID uint64`, `Title string`
+- renamed to fork names: 2
+- only in manifest: `Target Actor ID`, `Target Runtime ID`
+- only in fork: `EntityUniqueID int64`, `EntityRuntimeID uint64`
 
 ### `LevelEvent` vs fork `packet.LevelEvent` (some fields matched by position)
 
@@ -431,31 +429,31 @@ Hand-written decoding or a name the overlay does not map yet.
 
 - renamed to fork names: 2
 
-### `ActorEvent` vs fork `packet.ActorEvent`
+### `ActorEvent` vs fork `packet.ActorEvent` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Target Runtime ID`, `Event ID`, `Data`
-- only in fork: `EntityRuntimeID uint64`, `EventType byte`, `EventData int32`
+- renamed to fork names: 2
+- only in manifest: `Target Runtime ID`
+- only in fork: `EventData int32`
 
-### `MobEffect` vs fork `packet.MobEffect`
+### `MobEffect` vs fork `packet.MobEffect` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Target Runtime ID`, `Event ID`, `Effect ID`, `Effect Amplifier`, `Show Particles`, `Effect Duration Ticks`
-- only in fork: `EntityRuntimeID uint64`, `Operation byte`, `EffectType int32`, `Amplifier int32`, `Particles bool`, `Duration int32`
+- renamed to fork names: 5
+- only in manifest: `Target Runtime ID`
+- only in fork: `Amplifier int32`
 - type category differs: `Tick (PlayerInputTick vs uint64)`
 
-### `UpdateAttributes` vs fork `packet.UpdateAttributes`
+### `UpdateAttributes` vs fork `packet.UpdateAttributes` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Target Runtime ID`, `Attribute List`
-- only in fork: `EntityRuntimeID uint64`, `Attributes []protocol.Attribute`
+- renamed to fork names: 1
+- only in manifest: `Target Runtime ID`
+- only in fork: `EntityRuntimeID uint64`
 - type category differs: `Tick (PlayerInputTick vs uint64)`
 
-### `AttributeData` vs fork `protocol.AttributeData`
+### `AttributeData` vs fork `protocol.AttributeData` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Min Value`, `Max Value`, `Current Value`, `Default Min Value`, `Default Max Value`, `Default Value`, `Name`, `Modifiers`
-- only in fork: `Type uint32`, `BoolValue bool`, `BoolOperation Optional[int32]`, `FloatValue float32`, `FloatOperation Optional[int32]`, `FloatConstraintMin Optional[float32]`, `FloatConstraintMax Optional[float32]`, `ColourValue int32`, `ColourOperation Optional[int32]`
+- renamed to fork names: 1
+- only in manifest: `Min Value`, `Max Value`, `Current Value`, `Default Min Value`, `Default Max Value`, `Name`, `Modifiers`
+- only in fork: `Type uint32`, `BoolValue bool`, `BoolOperation Optional[int32]`, `FloatOperation Optional[int32]`, `FloatConstraintMin Optional[float32]`, `FloatConstraintMax Optional[float32]`, `ColourValue int32`, `ColourOperation Optional[int32]`
 
 ### `AttributeModifier` vs fork `protocol.AttributeModifier` (some fields matched by position)
 
@@ -473,29 +471,29 @@ Hand-written decoding or a name the overlay does not map yet.
 - renamed to fork names: 0
 - only in manifest: `Actions`
 
-### `InventoryAction` vs fork `protocol.InventoryAction`
+### `InventoryAction` vs fork `protocol.InventoryAction` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Source`, `Slot`, `From Item`, `To Item`
-- only in fork: `SourceType uint32`, `WindowID Optional[int8]`, `SourceFlags Optional[uint32]`, `InventorySlot uint32`, `OldItem ItemInstance`, `NewItem ItemInstance`
+- renamed to fork names: 3
+- only in manifest: `Source`
+- only in fork: `WindowID Optional[int8]`, `SourceFlags Optional[uint32]`, `InventorySlot uint32`
 
-### `MobEquipment` vs fork `packet.MobEquipment`
+### `MobEquipment` vs fork `packet.MobEquipment` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Target Runtime ID`, `Item`, `Slot`, `Selected Slot`, `Container ID`
-- only in fork: `EntityRuntimeID uint64`, `NewItem protocol.ItemInstance`, `InventorySlot byte`, `HotBarSlot byte`, `WindowID byte`
+- renamed to fork names: 4
+- only in manifest: `Target Runtime ID`
+- only in fork: `EntityRuntimeID uint64`
 
-### `MobArmorEquipment` vs fork `packet.MobArmourEquipment`
+### `MobArmorEquipment` vs fork `packet.MobArmourEquipment` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Target Runtime ID`, `Head`, `Torso`, `Legs`, `Feet`
-- only in fork: `EntityRuntimeID uint64`, `Helmet protocol.ItemInstance`, `Chestplate protocol.ItemInstance`, `Leggings protocol.ItemInstance`, `Boots protocol.ItemInstance`
+- renamed to fork names: 4
+- only in manifest: `Target Runtime ID`
+- only in fork: `EntityRuntimeID uint64`
 
-### `Interact` vs fork `packet.Interact`
+### `Interact` vs fork `packet.Interact` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Action`, `Target Runtime ID`
-- only in fork: `ActionType byte`, `TargetEntityRuntimeID uint64`
+- renamed to fork names: 1
+- only in manifest: `Target Runtime ID`
+- only in fork: `TargetEntityRuntimeID uint64`
 
 ### `BlockPickRequest` vs fork `packet.BlockPickRequest` (some fields matched by position)
 
@@ -505,45 +503,45 @@ Hand-written decoding or a name the overlay does not map yet.
 
 - renamed to fork names: 2
 
-### `PlayerAction` vs fork `packet.PlayerAction`
+### `PlayerAction` vs fork `packet.PlayerAction` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Player Runtime ID`, `Action`, `Result Pos`, `Face`
-- only in fork: `EntityRuntimeID uint64`, `ActionType int32`, `ResultPosition protocol.BlockPos`, `BlockFace int32`
+- renamed to fork names: 3
+- only in manifest: `Player Runtime ID`
+- only in fork: `ActionType int32`
 
 ### `HurtArmor` vs fork `packet.HurtArmour`
 
 - renamed to fork names: 1
 
-### `SetActorData` vs fork `packet.SetActorData`
+### `SetActorData` vs fork `packet.SetActorData` (some fields matched by position)
 
-- renamed to fork names: 1
-- only in manifest: `Target Runtime ID`, `Actor Data`, `Synched Properties`
-- only in fork: `EntityRuntimeID uint64`, `EntityMetadata protocol.EntityMetadata`, `EntityProperties protocol.EntityProperties`
+- renamed to fork names: 2
+- only in manifest: `Target Runtime ID`
+- only in fork: `EntityRuntimeID uint64`
 - type category differs: `Tick (PlayerInputTick vs uint64)`
 
-### `SetActorMotion` vs fork `packet.SetActorMotion`
+### `SetActorMotion` vs fork `packet.SetActorMotion` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Target Runtime ID`, `Motion`
-- only in fork: `EntityRuntimeID uint64`, `Velocity mgl32.Vec3`
+- renamed to fork names: 1
+- only in manifest: `Target Runtime ID`
+- only in fork: `EntityRuntimeID uint64`
 - type category differs: `Tick (PlayerInputTick vs uint64)`
 
 ### `SetActorLink` vs fork `packet.SetActorLink` (some fields matched by position)
 
 - renamed to fork names: 1
 
-### `SetSpawnPosition` vs fork `packet.SetSpawnPosition`
+### `SetSpawnPosition` vs fork `packet.SetSpawnPosition` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Spawn Position Type`, `Block Position`, `Dimension type`, `Spawn Block Pos`
-- only in fork: `SpawnType int32`, `Position protocol.BlockPos`, `Dimension int32`, `SpawnPosition protocol.BlockPos`
+- renamed to fork names: 3
+- only in manifest: `Dimension type`
+- only in fork: `Dimension int32`
 
-### `Animate` vs fork `packet.Animate`
+### `Animate` vs fork `packet.Animate` (some fields matched by position)
 
-- renamed to fork names: 1
-- only in manifest: `Action`, `Target Actor Runtime ID`
-- only in fork: `ActionType uint8`, `EntityRuntimeID uint64`
+- renamed to fork names: 2
+- only in manifest: `Target Actor Runtime ID`
+- only in fork: `EntityRuntimeID uint64`
 - type category differs: `SwingSource (optional string vs uint8)`
 
 ### `Respawn` vs fork `packet.Respawn`
@@ -552,11 +550,11 @@ Hand-written decoding or a name the overlay does not map yet.
 - only in manifest: `Player Runtime Id`
 - only in fork: `EntityRuntimeID uint64`
 
-### `ContainerOpen` vs fork `packet.ContainerOpen`
+### `ContainerOpen` vs fork `packet.ContainerOpen` (some fields matched by position)
 
-- renamed to fork names: 1
-- only in manifest: `Container Id`, `Position`, `Target Actor ID`
-- only in fork: `WindowID byte`, `ContainerPosition protocol.BlockPos`, `ContainerEntityUniqueID int64`
+- renamed to fork names: 3
+- only in manifest: `Target Actor ID`
+- only in fork: `ContainerEntityUniqueID int64`
 
 ### `ContainerClose` vs fork `packet.ContainerClose` (some fields matched by position)
 
@@ -586,51 +584,50 @@ Hand-written decoding or a name the overlay does not map yet.
 
 - renamed to fork names: 2
 
-### `ShapedRecipe` vs fork `protocol.ShapedRecipe`
+### `ShapedRecipe` vs fork `protocol.ShapedRecipe` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Ingredients`, `Results`, `Tag`, `Unlocking Requirement`, `Net Id`
-- only in fork: `Input []ItemDescriptorCount`, `Output []ItemStack`, `Block string`, `UnlockRequirement Optional[RecipeUnlockRequirement]`, `RecipeNetworkID uint32`
+- renamed to fork names: 4
+- only in manifest: `Net Id`
+- only in fork: `RecipeNetworkID uint32`
 
-### `ShapelessRecipe` vs fork `protocol.ShapelessRecipe`
+### `ShapelessRecipe` vs fork `protocol.ShapelessRecipe` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Ingredients`, `Results`, `Tag`, `Unlocking Requirement`, `Net Id`
-- only in fork: `Input []ItemDescriptorCount`, `Output []ItemStack`, `Block string`, `UnlockRequirement Optional[RecipeUnlockRequirement]`, `RecipeNetworkID uint32`
+- renamed to fork names: 4
+- only in manifest: `Net Id`
+- only in fork: `RecipeNetworkID uint32`
 
-### `MultiRecipe` vs fork `protocol.MultiRecipe`
+### `MultiRecipe` vs fork `protocol.MultiRecipe` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Multi-Recipe UUID`, `Net Id`
-- only in fork: `UUID uuid.UUID`, `RecipeNetworkID uint32`
+- renamed to fork names: 1
+- only in manifest: `Net Id`
+- only in fork: `RecipeNetworkID uint32`
 
-### `SmithingTransformRecipe` vs fork `protocol.SmithingTransformRecipe`
+### `SmithingTransformRecipe` vs fork `protocol.SmithingTransformRecipe` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Template Ingredient`, `Base Ingredient`, `Addition Ingredient`, `Tag`, `Net Id`
-- only in fork: `RecipeNetworkID uint32`, `Template ItemDescriptorCount`, `Base ItemDescriptorCount`, `Addition ItemDescriptorCount`, `Block string`
+- renamed to fork names: 4
+- only in manifest: `Net Id`
+- only in fork: `RecipeNetworkID uint32`
 
-### `SmithingTrimRecipe` vs fork `protocol.SmithingTrimRecipe`
+### `SmithingTrimRecipe` vs fork `protocol.SmithingTrimRecipe` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Template Ingredient`, `Base Ingredient`, `Addition Ingredient`, `Tag`, `Net Id`
-- only in fork: `RecipeNetworkID uint32`, `Template ItemDescriptorCount`, `Base ItemDescriptorCount`, `Addition ItemDescriptorCount`, `Block string`
+- renamed to fork names: 4
+- only in manifest: `Net Id`
+- only in fork: `RecipeNetworkID uint32`
 
 ### `GuiDataPickItem` vs fork `packet.GUIDataPickItem` (some fields matched by position)
 
 - renamed to fork names: 2
 
-### `BlockActorData` vs fork `packet.BlockActorData`
+### `BlockActorData` vs fork `packet.BlockActorData` (some fields matched by position)
 
 - renamed to fork names: 1
-- only in manifest: `Block Position`, `Actor Data Tags`
-- only in fork: `Position protocol.BlockPos`, `NBTData map[string]any`, `decodeNBTLazily bool`, `rawNBTData nbt.RawMessage`
+- only in fork: `NBTData map[string]any`, `decodeNBTLazily bool`
 
-### `LevelChunk` vs fork `packet.LevelChunk`
+### `LevelChunk` vs fork `packet.LevelChunk` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Chunk Position`, `Dimension Id`, `Sub-chunks Count`, `Client Request SubChunk Limit`, `Cache Metadata`, `Serialized Chunk Data`
-- only in fork: `Position protocol.ChunkPos`, `Dimension int32`, `SubChunkCount uint32`, `SubChunkLimit protocol.Optional[int32]`, `BlobHashes []uint64`, `RawPayload []byte`
+- renamed to fork names: 5
+- only in manifest: `Dimension Id`
+- only in fork: `SubChunkCount uint32`
 
 ### `SetCommandsEnabled` vs fork `packet.SetCommandsEnabled` (some fields matched by position)
 
@@ -654,22 +651,20 @@ Hand-written decoding or a name the overlay does not map yet.
 
 - renamed to fork names: 1
 
-### `ClientboundMapItemData` vs fork `packet.ClientBoundMapItemData`
+### `ClientboundMapItemData` vs fork `packet.ClientBoundMapItemData` (some fields matched by position)
 
-- renamed to fork names: 1
-- only in manifest: `Is Locked`, `Map Origin`, `Creation Map IDs`, `Tracked Actor IDs`, `Start X`, `Start Y`
-- only in fork: `LockedMap bool`, `Origin protocol.BlockPos`, `MapsIncludedIn protocol.Optional[[]int64]`, `TrackedObjects protocol.Optional[[]protocol.MapTrackedObject]`, `XOffset protocol.Optional[int32]`, `YOffset protocol.Optional[int32]`
+- renamed to fork names: 6
 - type category differs: `MapID (ActorUniqueID vs int64)`
 
 ### `MapDecoration` vs fork `protocol.MapDecoration` (some fields matched by position)
 
 - renamed to fork names: 2
 
-### `MapInfoRequest` vs fork `packet.MapInfoRequest`
+### `MapInfoRequest` vs fork `packet.MapInfoRequest` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Map Unique ID`, `Client Pixels List`
-- only in fork: `MapID int64`, `ClientPixels []protocol.PixelRequest`
+- renamed to fork names: 1
+- only in manifest: `Map Unique ID`
+- only in fork: `MapID int64`
 
 ### `PixelRequest` vs fork `protocol.PixelRequest`
 
@@ -689,11 +684,11 @@ Hand-written decoding or a name the overlay does not map yet.
 - only in manifest: `Camera ID`, `Target Player ID`
 - only in fork: `CameraEntityUniqueID int64`, `TargetPlayerUniqueID int64`
 
-### `BossEvent` vs fork `packet.BossEvent`
+### `BossEvent` vs fork `packet.BossEvent` (some fields matched by position)
 
-- renamed to fork names: 2
-- only in manifest: `Target Actor ID`, `Player ID`, `Name`, `FilteredName`, `Health Percent`
-- only in fork: `BossEntityUniqueID int64`, `BossBarTitle string`, `FilteredBossBarTitle string`, `HealthPercentage float32`
+- renamed to fork names: 5
+- only in manifest: `Target Actor ID`, `Player ID`
+- only in fork: `BossEntityUniqueID int64`
 
 ### `ShowCredits` vs fork `packet.ShowCredits` (some fields matched by position)
 
@@ -741,42 +736,41 @@ Hand-written decoding or a name the overlay does not map yet.
 
 - renamed to fork names: 3
 
-### `CommandOriginData` vs fork `protocol.CommandOrigin`
+### `CommandOriginData` vs fork `protocol.CommandOrigin` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Type`, `PlayerId`
-- only in fork: `Origin uint32`, `PlayerUniqueID int64`
+- renamed to fork names: 1
+- only in manifest: `Type`
+- only in fork: `PlayerUniqueID int64`
 
-### `CommandBlockUpdate` vs fork `packet.CommandBlockUpdate`
+### `CommandBlockUpdate` vs fork `packet.CommandBlockUpdate` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Target`, `Track Output`
-- only in fork: `Block bool`, `Position protocol.BlockPos`, `Mode uint32`, `NeedsRedstone bool`, `Conditional bool`, `MinecartEntityRuntimeID uint64`, `ShouldTrackOutput bool`
+- renamed to fork names: 2
+- only in fork: `Block bool`, `Mode uint32`, `Conditional bool`, `MinecartEntityRuntimeID uint64`, `ShouldTrackOutput bool`
 
-### `CommandOutput` vs fork `packet.CommandOutput`
+### `CommandOutput` vs fork `packet.CommandOutput` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Origin Data`, `Output`
-- only in fork: `CommandOrigin protocol.CommandOrigin`, `OutputType byte`, `SuccessCount uint32`, `OutputMessages []protocol.CommandOutputMessage`, `DataSet protocol.Optional[string]`
+- renamed to fork names: 1
+- only in manifest: `Output`
+- only in fork: `OutputType byte`, `SuccessCount uint32`, `OutputMessages []protocol.CommandOutputMessage`, `DataSet protocol.Optional[string]`
 
-### `CommandOutputMessage` vs fork `protocol.CommandOutputMessage`
+### `CommandOutputMessage` vs fork `protocol.CommandOutputMessage` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Message ID`, `Successful?`
-- only in fork: `Success bool`, `Message string`
+- renamed to fork names: 1
+- only in manifest: `Message ID`
+- only in fork: `Message string`
 
-### `UpdateTrade` vs fork `packet.UpdateTrade`
+### `UpdateTrade` vs fork `packet.UpdateTrade` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Container Id`, `Type`, `Trader Tier`, `Last Trading Player`, `Use New Trade Screen`, `Using Economy Trade`, `Data`
-- only in fork: `WindowID byte`, `WindowType byte`, `TradeTier int32`, `VillagerUniqueID int64`, `NewTradeUI bool`, `DemandBasedPrices bool`, `SerialisedOffers []byte`
+- renamed to fork names: 5
+- only in manifest: `Last Trading Player`, `Data`
+- only in fork: `VillagerUniqueID int64`, `SerialisedOffers []byte`
 - type category differs: `EntityUniqueID (ActorUniqueID vs int64)`
 
-### `UpdateEquip` vs fork `packet.UpdateEquip`
+### `UpdateEquip` vs fork `packet.UpdateEquip` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Container Id`, `Type`, `Data`
-- only in fork: `WindowID byte`, `WindowType byte`, `SerialisedInventoryData []byte`
+- renamed to fork names: 2
+- only in manifest: `Data`
+- only in fork: `SerialisedInventoryData []byte`
 - type category differs: `EntityUniqueID (ActorUniqueID vs int64)`
 
 ### `ResourcePackDataInfo` vs fork `packet.ResourcePackDataInfo` (some fields matched by position)
@@ -795,11 +789,10 @@ Hand-written decoding or a name the overlay does not map yet.
 
 - renamed to fork names: 3
 
-### `PlaySound` vs fork `packet.PlaySound`
+### `PlaySound` vs fork `packet.PlaySound` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Name`, `Server Sound Handle`
-- only in fork: `SoundName string`, `BypassListenerRangeCheck bool`, `Handle protocol.Optional[uint64]`, `PlaybackPositionSeconds protocol.Optional[float32]`
+- renamed to fork names: 2
+- only in fork: `BypassListenerRangeCheck bool`, `PlaybackPositionSeconds protocol.Optional[float32]`
 
 ### `StopSound` vs fork `packet.StopSound` (some fields matched by position)
 
@@ -813,17 +806,16 @@ Hand-written decoding or a name the overlay does not map yet.
 
 - renamed to fork names: 1
 
-### `StructureBlockUpdate` vs fork `packet.StructureBlockUpdate`
+### `StructureBlockUpdate` vs fork `packet.StructureBlockUpdate` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Block Position`, `Structure Data`, `Trigger?`, `IsWaterlogged`
-- only in fork: `Position protocol.BlockPos`, `StructureName string`, `FilteredStructureName string`, `DataField string`, `IncludePlayers bool`, `ShowBoundingBox bool`, `StructureBlockType int32`, `Settings protocol.StructureSettings`, `RedstoneSaveMode uint8`, `ShouldTrigger bool`, `Waterlogged bool`
+- renamed to fork names: 4
+- only in fork: `StructureName string`, `FilteredStructureName string`, `DataField string`, `IncludePlayers bool`, `ShowBoundingBox bool`, `StructureBlockType int32`, `RedstoneSaveMode uint8`
 
-### `StructureSettings` vs fork `protocol.StructureSettings`
+### `StructureSettings` vs fork `protocol.StructureSettings` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Structure Palette Name`, `Should ignore entities?`, `Should ignore blocks?`, `Should Allow Non Ticking Player and Ticking Area Chunks`, `Structure Size`, `Structure Offset`, `Last Edit Player`, `Animation Seconds`, `Integrity Value`, `Integrity Seed`, `Rotation Pivot`
-- only in fork: `PaletteName string`, `IgnoreEntities bool`, `IgnoreBlocks bool`, `AllowNonTickingChunks bool`, `Size BlockPos`, `Offset BlockPos`, `LastEditingPlayerUniqueID int64`, `AnimationDuration float32`, `Integrity float32`, `Seed uint32`, `Pivot mgl32.Vec3`
+- renamed to fork names: 10
+- only in manifest: `Last Edit Player`
+- only in fork: `LastEditingPlayerUniqueID int64`
 
 ### `ShowStoreOffer` vs fork `packet.ShowStoreOffer` (some fields matched by position)
 
@@ -849,17 +841,17 @@ Hand-written decoding or a name the overlay does not map yet.
 
 - renamed to fork names: 1
 
-### `BookEdit` vs fork `packet.BookEdit`
+### `BookEdit` vs fork `packet.BookEdit` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Book Slot`, `Operation`
-- only in fork: `InventorySlot int32`, `ActionType uint32`, `PageNumber int32`, `SecondaryPageNumber int32`, `Text string`, `PhotoName string`, `Title string`, `Author string`, `XUID string`
+- renamed to fork names: 1
+- only in manifest: `Operation`
+- only in fork: `ActionType uint32`, `PageNumber int32`, `SecondaryPageNumber int32`, `Text string`, `PhotoName string`, `Title string`, `Author string`, `XUID string`
 
-### `NpcRequest` vs fork `packet.NPCRequest`
+### `NpcRequest` vs fork `packet.NPCRequest` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `NPC Runtime ID`, `Actions`, `Action Index`
-- only in fork: `EntityRuntimeID uint64`, `CommandString string`, `ActionType byte`
+- renamed to fork names: 2
+- only in manifest: `NPC Runtime ID`
+- only in fork: `EntityRuntimeID uint64`
 
 ### `PhotoTransfer` vs fork `packet.PhotoTransfer` (some fields matched by position)
 
@@ -905,11 +897,10 @@ Hand-written decoding or a name the overlay does not map yet.
 
 - renamed to fork names: 4
 
-### `MoveActorDelta` vs fork `packet.MoveActorDelta`
+### `MoveActorDelta` vs fork `packet.MoveActorDelta` (some fields matched by position)
 
-- renamed to fork names: 1
-- only in manifest: `New Position X`, `New Position Y`, `New Position Z`, `Is On Ground`
-- only in fork: `PositionX protocol.Optional[float32]`, `PositionY protocol.Optional[float32]`, `PositionZ protocol.Optional[float32]`, `OnGround bool`, `Ticks uint64`
+- renamed to fork names: 5
+- only in fork: `Ticks uint64`
 - type category differs: `EntityRuntimeID (ActorRuntimeID vs uint64)`
 
 ### `SetScoreboardIdentity` vs fork `packet.SetScoreboardIdentity` (some fields matched by position)
@@ -924,11 +915,11 @@ Hand-written decoding or a name the overlay does not map yet.
 
 - renamed to fork names: 2
 
-### `SpawnParticleEffect` vs fork `packet.SpawnParticleEffect`
+### `SpawnParticleEffect` vs fork `packet.SpawnParticleEffect` (some fields matched by position)
 
-- renamed to fork names: 1
-- only in manifest: `Dimension Id`, `Actor Id`, `Effect Name`
-- only in fork: `Dimension byte`, `EntityUniqueID int64`, `ParticleName string`
+- renamed to fork names: 3
+- only in manifest: `Actor Id`
+- only in fork: `EntityUniqueID int64`
 
 ### `AvailableActorIdentifiers` vs fork `packet.AvailableActorIdentifiers`
 
@@ -947,11 +938,10 @@ Hand-written decoding or a name the overlay does not map yet.
 - only in fork: `BiomeDefinitions []protocol.BiomeDefinition`
 - type category differs: `StringList (BiomeStringList vs []string)`
 
-### `BiomeDefinitionData` vs fork `protocol.BiomeDefinition`
+### `BiomeDefinitionData` vs fork `protocol.BiomeDefinition` (some fields matched by position)
 
-- renamed to fork names: 1
-- only in manifest: `id`, `map water color ARGB`, `chunk gen data`
-- only in fork: `NameIndex int16`, `BiomeID int16`, `MapWaterColour int32`, `ChunkGeneration Optional[BiomeChunkGeneration]`
+- renamed to fork names: 3
+- only in fork: `MapWaterColour int32`
 
 ### `BiomeConsolidatedFeatureData` vs fork `protocol.BiomeConsolidatedFeature` (some fields matched by position)
 
@@ -1018,17 +1008,15 @@ Hand-written decoding or a name the overlay does not map yet.
 
 - renamed to fork names: 1
 
-### `EducationSettings` vs fork `packet.EducationSettings`
+### `EducationSettings` vs fork `packet.EducationSettings` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Screenshot Border Resource Path`, `Agent Capabilities`, `Local Settings`, `(Deprecated) Always False`
-- only in fork: `ScreenshotBorderPath string`, `CanModifyBlocks protocol.Optional[bool]`, `OverrideURI protocol.Optional[string]`, `HasQuiz bool`
+- renamed to fork names: 3
+- only in manifest: `Local Settings`
+- only in fork: `OverrideURI protocol.Optional[string]`
 
-### `Emote` vs fork `packet.Emote`
+### `Emote` vs fork `packet.Emote` (some fields matched by position)
 
-- renamed to fork names: 2
-- only in manifest: `Emote Length Ticks`
-- only in fork: `EmoteLength uint32`
+- renamed to fork names: 3
 - type category differs: `EntityRuntimeID (ActorRuntimeID vs uint64)`
 
 ### `MultiplayerSettings` vs fork `packet.MultiPlayerSettings` (some fields matched by position)
@@ -1051,18 +1039,18 @@ Hand-written decoding or a name the overlay does not map yet.
 
 - renamed to fork names: 1
 
-### `PlayerAuthInput` vs fork `packet.PlayerAuthInput`
+### `PlayerAuthInput` vs fork `packet.PlayerAuthInput` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Player Rotation`, `Player Head Rotation`, `New Interaction Model`, `Interact Rotation`, `Client Tick`, `Pos Delta`, `Item Use Transaction`, `Player Block Actions`, `Analog Move Vector`
-- only in fork: `Pitch float32`, `Yaw float32`, `HeadYaw float32`, `InteractionModel int32`, `InteractPitch float32`, `InteractYaw float32`, `Tick uint64`, `Delta mgl32.Vec3`, `ItemInteractionData protocol.Optional[protocol.UseItemTransactionData]`, `BlockActions protocol.Optional[[]protocol.PlayerBlockAction]`, `AnalogueMoveVector mgl32.Vec2`
+- renamed to fork names: 6
+- only in manifest: `Player Rotation`, `Interact Rotation`, `Client Tick`
+- only in fork: `Yaw float32`, `HeadYaw float32`, `InteractPitch float32`, `InteractYaw float32`, `Tick uint64`
 - type category differs: `InputData (optional []enum zigzag_i32 vs protocol.InputFlags)`
 
-### `ItemStackRequestData` vs fork `protocol.ItemStackRequest`
+### `ItemStackRequestData` vs fork `protocol.ItemStackRequest` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Client Request Id`, `Strings To Filter`, `StringsToFilterOrigin`
-- only in fork: `RequestID int32`, `FilterStrings []string`, `FilterCause int32`
+- renamed to fork names: 2
+- only in manifest: `Client Request Id`
+- only in fork: `RequestID int32`
 
 ### `TakeStackRequestAction` vs fork `protocol.TakeStackRequestAction`
 
@@ -1083,109 +1071,96 @@ Hand-written decoding or a name the overlay does not map yet.
 - renamed to fork names: 0
 - only in manifest: `Action type`
 
-### `DropStackRequestAction` vs fork `protocol.DropStackRequestAction`
+### `DropStackRequestAction` vs fork `protocol.DropStackRequestAction` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Action type`, `Amount`
-- only in fork: `Count byte`
+- renamed to fork names: 1
+- only in manifest: `Amount`
 
-### `DestroyStackRequestAction` vs fork `protocol.DestroyStackRequestAction`
+### `DestroyStackRequestAction` vs fork `protocol.DestroyStackRequestAction` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Action type`, `Amount`
-- only in fork: `Count byte`
+- renamed to fork names: 1
+- only in manifest: `Amount`
 
 ### `ConsumeStackRequestAction` vs fork `protocol.ConsumeStackRequestAction`
 
 - renamed to fork names: 0
 - only in manifest: `Action type`, `Amount`, `Source`
 
-### `CreateStackRequestAction` vs fork `protocol.CreateStackRequestAction`
+### `CreateStackRequestAction` vs fork `protocol.CreateStackRequestAction` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Action type`, `Results Index`
-- only in fork: `ResultsSlot byte`
+- renamed to fork names: 1
+- only in manifest: `Results Index`
 
 ### `LabTableCombineStackRequestAction` vs fork `protocol.LabTableCombineStackRequestAction`
 
 - renamed to fork names: 0
 - only in manifest: `Action type`
 
-### `BeaconPaymentStackRequestAction` vs fork `protocol.BeaconPaymentStackRequestAction`
+### `BeaconPaymentStackRequestAction` vs fork `protocol.BeaconPaymentStackRequestAction` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Action type`, `Primary Effect Id`, `Secondary Effect Id`
-- only in fork: `PrimaryEffect int32`, `SecondaryEffect int32`
+- renamed to fork names: 2
+- only in manifest: `Secondary Effect Id`
 
-### `MineBlockStackRequestAction` vs fork `protocol.MineBlockStackRequestAction`
+### `MineBlockStackRequestAction` vs fork `protocol.MineBlockStackRequestAction` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Action type`, `Slot`, `Net Id Variant`
-- only in fork: `HotbarSlot int32`, `StackNetworkID int32`
+- renamed to fork names: 2
+- only in manifest: `Net Id Variant`
 
-### `CraftRecipeStackRequestAction` vs fork `protocol.CraftRecipeStackRequestAction`
+### `CraftRecipeStackRequestAction` vs fork `protocol.CraftRecipeStackRequestAction` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Action type`, `Recipe Net Id`, `Number of requested crafts`
-- only in fork: `RecipeNetworkID uint32`, `NumberOfCrafts byte`
+- renamed to fork names: 2
+- only in manifest: `Recipe Net Id`
 
-### `AutoCraftRecipeStackRequestAction` vs fork `protocol.AutoCraftRecipeStackRequestAction`
+### `AutoCraftRecipeStackRequestAction` vs fork `protocol.AutoCraftRecipeStackRequestAction` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Action type`, `Recipe Net Id`, `Number of requested crafts`
-- only in fork: `RecipeNetworkID uint32`, `NumberOfCrafts byte`
+- renamed to fork names: 2
+- only in manifest: `Recipe Net Id`
 
 ### `InvalidItemDescriptor` vs fork `protocol.InvalidItemDescriptor`
 
 - renamed to fork names: 0
 - only in manifest: `Descriptor Type`
 
-### `DefaultItemDescriptor` vs fork `protocol.DefaultItemDescriptor`
+### `DefaultItemDescriptor` vs fork `protocol.DefaultItemDescriptor` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Descriptor Type`, `Full Name`, `Aux Value`
-- only in fork: `Name string`, `MetadataValue int32`
+- renamed to fork names: 2
+- only in manifest: `Descriptor Type`
 
-### `MoLangItemDescriptor` vs fork `protocol.MoLangItemDescriptor`
+### `MoLangItemDescriptor` vs fork `protocol.MoLangItemDescriptor` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Descriptor Type`, `Tag Expression`, `Molang Version`
-- only in fork: `Expression string`, `Version int16`
+- renamed to fork names: 2
+- only in manifest: `Descriptor Type`
 
-### `ItemTagItemDescriptor` vs fork `protocol.ItemTagItemDescriptor`
+### `ItemTagItemDescriptor` vs fork `protocol.ItemTagItemDescriptor` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Descriptor Type`, `Item Tag`
-- only in fork: `Tag string`
+- renamed to fork names: 1
+- only in manifest: `Descriptor Type`
 
-### `CraftCreativeStackRequestAction` vs fork `protocol.CraftCreativeStackRequestAction`
+### `CraftCreativeStackRequestAction` vs fork `protocol.CraftCreativeStackRequestAction` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Action type`, `Creative Item Net Id`, `Number of requested crafts`
-- only in fork: `CreativeItemNetworkID uint32`, `NumberOfCrafts byte`
+- renamed to fork names: 2
+- only in manifest: `Number of requested crafts`
 
-### `CraftRecipeOptionalStackRequestAction` vs fork `protocol.CraftRecipeOptionalStackRequestAction`
+### `CraftRecipeOptionalStackRequestAction` vs fork `protocol.CraftRecipeOptionalStackRequestAction` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Action type`, `Recipe Net Id`, `Filtered String Index`
-- only in fork: `RecipeNetworkID uint32`, `FilterStringIndex int32`
+- renamed to fork names: 2
+- only in manifest: `Recipe Net Id`
 
 ### `CraftNonImplementedStackRequestAction` vs fork `protocol.CraftNonImplementedStackRequestAction`
 
 - renamed to fork names: 0
 - only in manifest: `Action type`
 
-### `CraftResultsDeprecatedStackRequestAction` vs fork `protocol.CraftResultsDeprecatedStackRequestAction`
+### `CraftResultsDeprecatedStackRequestAction` vs fork `protocol.CraftResultsDeprecatedStackRequestAction` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Action type`, `Craft Results`, `Num Crafts`
-- only in fork: `ResultItems []StackRequestItem`, `TimesCrafted byte`
+- renamed to fork names: 2
+- only in manifest: `Action type`
 
-### `ItemInstance` vs fork `protocol.ItemInstance`
+### `ItemInstance` vs fork `protocol.ItemInstance` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Item Descriptor`, `Stack size`, `Block Runtime Id`, `User Data Buffer`
-- only in fork: `StackNetworkID int32`, `Stack ItemStack`
+- renamed to fork names: 1
+- only in manifest: `Item Descriptor`, `Block Runtime Id`, `User Data Buffer`
+- only in fork: `Stack ItemStack`
 
 ### `PlayerBlockActionData` vs fork `protocol.PlayerBlockAction` (some fields matched by position)
 
@@ -1203,40 +1178,40 @@ Hand-written decoding or a name the overlay does not map yet.
 
 - renamed to fork names: 2
 
-### `ItemStackResponseInfo` vs fork `protocol.ItemStackResponse`
+### `ItemStackResponseInfo` vs fork `protocol.ItemStackResponse` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Result`, `Client Request Id`, `Containers`
-- only in fork: `Status uint8`, `RequestID int32`, `ContainerInfo []StackResponseContainerInfo`
+- renamed to fork names: 1
+- only in manifest: `Client Request Id`, `Containers`
+- only in fork: `RequestID int32`, `ContainerInfo []StackResponseContainerInfo`
 
 ### `PlayerArmorDamage` vs fork `packet.PlayerArmourDamage` (some fields matched by position)
 
 - renamed to fork names: 1
 
-### `UpdatePlayerGameType` vs fork `packet.UpdatePlayerGameType`
+### `UpdatePlayerGameType` vs fork `packet.UpdatePlayerGameType` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Player Game Type`, `Target player`
-- only in fork: `GameType int32`, `PlayerUniqueID int64`
+- renamed to fork names: 1
+- only in manifest: `Target player`
+- only in fork: `PlayerUniqueID int64`
 - type category differs: `Tick (PlayerInputTick vs uint64)`
 
-### `EmoteList` vs fork `packet.EmoteList`
+### `EmoteList` vs fork `packet.EmoteList` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Runtime id`, `Emote piece ids`
-- only in fork: `PlayerRuntimeID uint64`, `EmotePieces []uuid.UUID`
+- renamed to fork names: 1
+- only in manifest: `Runtime id`
+- only in fork: `PlayerRuntimeID uint64`
 
-### `PositionTrackingDBServerBroadcast` vs fork `packet.PositionTrackingDBServerBroadcast`
+### `PositionTrackingDBServerBroadcast` vs fork `packet.PositionTrackingDBServerBroadcast` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Action`, `Id`, `Position tracking data`
-- only in fork: `BroadcastAction byte`, `TrackingID int32`, `Payload map[string]any`
+- renamed to fork names: 1
+- only in manifest: `Id`, `Position tracking data`
+- only in fork: `TrackingID int32`, `Payload map[string]any`
 
-### `PositionTrackingDBClientRequest` vs fork `packet.PositionTrackingDBClientRequest`
+### `PositionTrackingDBClientRequest` vs fork `packet.PositionTrackingDBClientRequest` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Action`, `Id`
-- only in fork: `RequestAction byte`, `TrackingID int32`
+- renamed to fork names: 1
+- only in manifest: `Id`
+- only in fork: `TrackingID int32`
 
 ### `DebugInfo` vs fork `packet.DebugInfo`
 
@@ -1248,11 +1223,11 @@ Hand-written decoding or a name the overlay does not map yet.
 
 - renamed to fork names: 3
 
-### `MotionPredictionHints` vs fork `packet.MotionPredictionHints`
+### `MotionPredictionHints` vs fork `packet.MotionPredictionHints` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `mRuntimeId`, `mMotion`, `mOnGround`
-- only in fork: `EntityRuntimeID uint64`, `Velocity mgl32.Vec3`, `OnGround bool`
+- renamed to fork names: 2
+- only in manifest: `mRuntimeId`
+- only in fork: `EntityRuntimeID uint64`
 
 ### `AnimateEntity` vs fork `packet.AnimateEntity` (some fields matched by position)
 
@@ -1287,11 +1262,11 @@ Hand-written decoding or a name the overlay does not map yet.
 - renamed to fork names: 0
 - type category differs: `PropertyData (nbt_le vs map[string]any)`
 
-### `AddVolumeEntity` vs fork `packet.AddVolumeEntity`
+### `AddVolumeEntity` vs fork `packet.AddVolumeEntity` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Entity Network Id`, `Components`, `JSON Identifier`, `Instance Name`, `Min Bounds`, `Max Bounds`, `Dimension Type`
-- only in fork: `EntityRuntimeID uint32`, `EntityMetadata map[string]any`, `EncodingIdentifier string`, `InstanceIdentifier string`, `Bounds [2]protocol.BlockPos`, `Dimension int32`
+- renamed to fork names: 2
+- only in manifest: `Entity Network Id`, `Components`, `Min Bounds`, `Max Bounds`, `Dimension Type`
+- only in fork: `EntityRuntimeID uint32`, `EntityMetadata map[string]any`, `Bounds [2]protocol.BlockPos`, `Dimension int32`
 
 ### `RemoveVolumeEntity` vs fork `packet.RemoveVolumeEntity`
 
@@ -1311,23 +1286,23 @@ Hand-written decoding or a name the overlay does not map yet.
 
 - renamed to fork names: 2
 
-### `UpdateSubChunkBlocks` vs fork `packet.UpdateSubChunkBlocks`
+### `UpdateSubChunkBlocks` vs fork `packet.UpdateSubChunkBlocks` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Sub Chunk Block Position`, `Blocks Changed`
-- only in fork: `Position protocol.BlockPos`, `Blocks []protocol.BlockChangeEntry`, `Extra []protocol.BlockChangeEntry`
+- renamed to fork names: 1
+- only in manifest: `Blocks Changed`
+- only in fork: `Blocks []protocol.BlockChangeEntry`, `Extra []protocol.BlockChangeEntry`
 
-### `SubChunk` vs fork `packet.SubChunk`
+### `SubChunk` vs fork `packet.SubChunk` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Dimension Type`, `Center Pos`, `SubChunk Data`
-- only in fork: `Dimension int32`, `Position protocol.SubChunkPos`, `SubChunkEntries []protocol.SubChunkEntry`
+- renamed to fork names: 2
+- only in manifest: `Dimension Type`
+- only in fork: `Dimension int32`
 
-### `SubChunkRequest` vs fork `packet.SubChunkRequest`
+### `SubChunkRequest` vs fork `packet.SubChunkRequest` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Dimension Type`, `SubChunk Position Offset List`, `Center Pos`
-- only in fork: `Dimension int32`, `Offsets []protocol.SubChunkOffset`, `Position protocol.SubChunkPos`
+- renamed to fork names: 2
+- only in manifest: `Dimension Type`
+- only in fork: `Dimension int32`
 
 ### `ScriptMessage` vs fork `packet.ScriptMessage` (some fields matched by position)
 
@@ -1342,24 +1317,23 @@ Hand-written decoding or a name the overlay does not map yet.
 - renamed to fork names: 0
 - type category differs: `Definitions (map vs []protocol.DimensionDefinition)`
 
-### `DimensionDefinition` vs fork `protocol.DimensionDefinition`
+### `DimensionDefinition` vs fork `protocol.DimensionDefinition` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Height Maximum`, `Height Minimum`, `Generator Type`
-- only in fork: `Name string`, `MinimumY int32`, `HeightRange int32`, `Generator int32`, `DefaultBiome string`
+- renamed to fork names: 3
+- only in fork: `Name string`, `DefaultBiome string`
 - type category differs: `DimensionType (DimensionType vs int32)`
 
-### `ChangeMobProperty` vs fork `packet.ChangeMobProperty`
+### `ChangeMobProperty` vs fork `packet.ChangeMobProperty` (some fields matched by position)
+
+- renamed to fork names: 6
+- only in manifest: `Actor Id`
+- only in fork: `EntityUniqueID int64`
+
+### `LessonProgress` vs fork `packet.LessonProgress` (some fields matched by position)
 
 - renamed to fork names: 1
-- only in manifest: `Actor Id`, `Property Name`, `BoolComponent Value`, `StringComponent Value`, `IntComponent Value`, `FloatComponent Value`
-- only in fork: `EntityUniqueID int64`, `Property string`, `BoolValue bool`, `StringValue string`, `IntValue int32`, `FloatValue float32`
-
-### `LessonProgress` vs fork `packet.LessonProgress`
-
-- renamed to fork names: 0
-- only in manifest: `Lesson Action`, `Activity Id`
-- only in fork: `Identifier string`, `Action int32`
+- only in manifest: `Lesson Action`
+- only in fork: `Action int32`
 
 ### `RequestAbility` vs fork `packet.RequestAbility`
 
@@ -1396,27 +1370,24 @@ Hand-written decoding or a name the overlay does not map yet.
 
 - renamed to fork names: 1
 
-### `GameTestRequest` vs fork `packet.GameTestRequest`
+### `GameTestRequest` vs fork `packet.GameTestRequest` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `RepeatCount`, `StopOnFailure`, `TestPos`, `TestName`
-- only in fork: `Name string`, `Repetitions int32`, `Position protocol.BlockPos`, `StopOnError bool`
+- renamed to fork names: 2
+- only in manifest: `StopOnFailure`, `TestName`
+- only in fork: `Name string`, `StopOnError bool`
 
-### `GameTestResults` vs fork `packet.GameTestResults`
+### `GameTestResults` vs fork `packet.GameTestResults` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `TestName`
-- only in fork: `Name string`
+- renamed to fork names: 1
 
 ### `UpdateClientInputLocks` vs fork `packet.UpdateClientInputLocks` (some fields matched by position)
 
 - renamed to fork names: 1
 
-### `CameraPreset` vs fork `protocol.CameraPreset`
+### `CameraPreset` vs fork `protocol.CameraPreset` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Inherit From`, `Block Listening Radius`, `Yaw Limit Min`, `Yaw Limit Max`, `Listener`
-- only in fork: `Parent string`, `TrackingRadius Optional[float32]`, `MinYawLimit Optional[float32]`, `MaxYawLimit Optional[float32]`, `AudioListener Optional[byte]`, `ApplyInheritedStartingRotation bool`, `StartingRotation Optional[mgl32.Vec2]`
+- renamed to fork names: 5
+- only in fork: `ApplyInheritedStartingRotation bool`, `StartingRotation Optional[mgl32.Vec2]`
 
 ### `UnlockedRecipes` vs fork `packet.UnlockedRecipes` (some fields matched by position)
 
@@ -1442,36 +1413,35 @@ Hand-written decoding or a name the overlay does not map yet.
 
 - renamed to fork names: 2
 
-### `CameraInstructionFieldOfView` vs fork `protocol.CameraInstructionFieldOfView`
+### `CameraInstructionFieldOfView` vs fork `protocol.CameraInstructionFieldOfView` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `FOV Ease Time`, `FOV Ease Type`, `Field of View Clear`
-- only in fork: `EaseTime float32`, `EaseType int32`, `Clear bool`
+- renamed to fork names: 2
+- only in manifest: `FOV Ease Type`
+- only in fork: `EaseType int32`
 
-### `CameraSplineInstruction` vs fork `protocol.CameraSplineInstruction`
+### `CameraSplineInstruction` vs fork `protocol.CameraSplineInstruction` (some fields matched by position)
 
-- renamed to fork names: 1
-- only in manifest: `type`, `rotationOption`
-- only in fork: `SplineType Optional[uint8]`, `RotationOptions []CameraRotationOption`
+- renamed to fork names: 2
+- only in manifest: `type`
+- only in fork: `SplineType Optional[uint8]`
 - type category differs: `SplineIdentifier (string vs Optional[string])`, `LoadFromJson (bool vs Optional[bool])`
 
-### `CameraProgressOption` vs fork `protocol.CameraProgressOption`
+### `CameraProgressOption` vs fork `protocol.CameraProgressOption` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Key frame value`, `Key frame time`, `Key frame easing func`
-- only in fork: `Value float32`, `Time float32`, `EaseType int32`
+- renamed to fork names: 2
+- only in manifest: `Key frame easing func`
+- only in fork: `EaseType int32`
 
-### `CameraRotationOption` vs fork `protocol.CameraRotationOption`
+### `CameraRotationOption` vs fork `protocol.CameraRotationOption` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Key frame value`, `Key frame time`, `Key frame easing func`
-- only in fork: `Value mgl32.Vec3`, `Time float32`, `EaseType int32`
+- renamed to fork names: 2
+- only in manifest: `Key frame easing func`
+- only in fork: `EaseType int32`
 
-### `CameraInstructionTarget` vs fork `protocol.CameraInstructionTarget`
+### `CameraInstructionTarget` vs fork `protocol.CameraInstructionTarget` (some fields matched by position)
 
 - renamed to fork names: 1
-- only in manifest: `Entity Actor ID`
-- only in fork: `CenterOffset Optional[mgl32.Vec3]`, `EntityUniqueID int64`
+- only in fork: `CenterOffset Optional[mgl32.Vec3]`
 
 ### `TrimData` vs fork `packet.TrimData` (some fields matched by position)
 
@@ -1485,11 +1455,11 @@ Hand-written decoding or a name the overlay does not map yet.
 
 - renamed to fork names: 2
 
-### `AgentAnimation` vs fork `packet.AgentAnimation`
+### `AgentAnimation` vs fork `packet.AgentAnimation` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Agent Animation`, `Runtime Id`
-- only in fork: `Animation byte`, `EntityRuntimeID uint64`
+- renamed to fork names: 1
+- only in manifest: `Runtime Id`
+- only in fork: `EntityRuntimeID uint64`
 
 ### `PlayerToggleCrafterSlotRequest` vs fork `packet.PlayerToggleCrafterSlotRequest` (some fields matched by position)
 
@@ -1529,11 +1499,11 @@ Hand-written decoding or a name the overlay does not map yet.
 
 - renamed to fork names: 2
 
-### `MovementEffect` vs fork `packet.MovementEffect`
+### `MovementEffect` vs fork `packet.MovementEffect` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Target Runtime ID`, `Effect ID`, `Effect Duration`
-- only in fork: `EntityRuntimeID uint64`, `Type int32`, `Duration int32`
+- renamed to fork names: 2
+- only in manifest: `Target Runtime ID`
+- only in fork: `Duration int32`
 - type category differs: `Tick (PlayerInputTick vs uint64)`
 
 ### `CameraAimAssistPresets` vs fork `packet.CameraAimAssistPresets` (some fields matched by position)
@@ -1544,11 +1514,11 @@ Hand-written decoding or a name the overlay does not map yet.
 
 - renamed to fork names: 1
 
-### `ClientMovementPredictionSync` vs fork `packet.ClientMovementPredictionSync`
+### `ClientMovementPredictionSync` vs fork `packet.ClientMovementPredictionSync` (some fields matched by position)
 
 - renamed to fork names: 4
-- only in manifest: `Actor Data Flag`, `Actor Bounding Box`, `Movement Attributes`, `Actor Flying State`
-- only in fork: `ActorFlags protocol.Bitset`, `BoundingBoxScale float32`, `BoundingBoxWidth float32`, `BoundingBoxHeight float32`, `MovementSpeed float32`, `UnderwaterMovementSpeed float32`, `LavaMovementSpeed float32`, `JumpStrength float32`, `Health float32`, `Hunger float32`, `FrictionModifier float32`, `Bounciness float32`, `AirDragModifier float32`, `Flying bool`
+- only in manifest: `Actor Bounding Box`, `Movement Attributes`
+- only in fork: `BoundingBoxScale float32`, `BoundingBoxWidth float32`, `BoundingBoxHeight float32`, `MovementSpeed float32`, `UnderwaterMovementSpeed float32`, `LavaMovementSpeed float32`, `JumpStrength float32`, `Health float32`, `Hunger float32`, `FrictionModifier float32`, `Bounciness float32`, `AirDragModifier float32`
 - type category differs: `EntityUniqueID (ActorUniqueID vs int64)`
 
 ### `UpdateClientOptions` vs fork `packet.UpdateClientOptions` (some fields matched by position)
@@ -1567,39 +1537,35 @@ Hand-written decoding or a name the overlay does not map yet.
 - only in manifest: `Target ID`, `Update`
 - only in fork: `EntityUniqueID int64`, `Type uint32`, `IntValue int32`, `FloatValue float32`
 
-### `PlayerLocation` vs fork `packet.PlayerLocation`
+### `PlayerLocation` vs fork `packet.PlayerLocation` (some fields matched by position)
 
-- renamed to fork names: 1
-- only in manifest: `Target Actor ID`, `Location`
-- only in fork: `Type int32`, `EntityUniqueID int64`, `Position mgl32.Vec3`
+- renamed to fork names: 2
+- only in manifest: `Target Actor ID`
+- only in fork: `Type int32`, `EntityUniqueID int64`
 
 ### `PrimitiveShapes` vs fork `packet.PrimitiveShapes` (some fields matched by position)
 
 - renamed to fork names: 1
 
-### `PrimitiveShape` vs fork `protocol.PrimitiveShape`
+### `PrimitiveShape` vs fork `protocol.PrimitiveShape` (some fields matched by position)
+
+- renamed to fork names: 3
+
+### `TextShape` vs fork `protocol.TextShape` (some fields matched by position)
+
+- renamed to fork names: 2
+- only in fork: `LineGapHeight float32`
+
+### `ServerboundPackSettingChange` vs fork `packet.ServerBoundPackSettingChange` (some fields matched by position)
 
 - renamed to fork names: 1
-- only in manifest: `Shape Type`, `Maximum Render Distance`
-- only in fork: `Type Optional[uint8]`, `MaxRenderDistance Optional[float32]`
+- only in manifest: `PackSettingName`
 
-### `TextShape` vs fork `protocol.TextShape`
+### `GraphicsOverrideParameter` vs fork `packet.GraphicsOverrideParameter` (some fields matched by position)
 
-- renamed to fork names: 1
-- only in manifest: `ShowTextBackface`
-- only in fork: `LineGapHeight float32`, `ShowBackfaceText bool`
-
-### `ServerboundPackSettingChange` vs fork `packet.ServerBoundPackSettingChange`
-
-- renamed to fork names: 0
-- only in manifest: `PackSettingName`, `PackSettingValue`
-- only in fork: `PackSetting protocol.PackSetting`
-
-### `GraphicsOverrideParameter` vs fork `packet.GraphicsOverrideParameter`
-
-- renamed to fork names: 0
-- only in manifest: `Parameter Keyframe Values`, `Identifier for Parameter`, `Reset Parameter`
-- only in fork: `Values []protocol.ParameterKeyframeValue`, `ParameterType uint8`, `Reset bool`
+- renamed to fork names: 2
+- only in manifest: `Parameter Keyframe Values`
+- only in fork: `Values []protocol.ParameterKeyframeValue`
 
 ### `ClientboundTextureShift` vs fork `packet.ClientBoundTextureShift` (some fields matched by position)
 
@@ -1645,17 +1611,15 @@ Hand-written decoding or a name the overlay does not map yet.
 
 - renamed to fork names: 1
 
-### `ClientboundAttributeLayerSync` vs fork `packet.ClientBoundAttributeLayerSync`
+### `ClientboundAttributeLayerSync` vs fork `packet.ClientBoundAttributeLayerSync` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Data`
-- only in fork: `PayloadType uint32`, `Layers []protocol.AttributeLayerData`, `LayerName string`, `DimensionID int32`, `Settings protocol.AttributeLayerSettings`, `EnvironmentAttributes []protocol.EnvironmentAttributeData`, `RemoveAttributeNames []string`
+- renamed to fork names: 1
+- only in fork: `PayloadType uint32`, `Layers []protocol.AttributeLayerData`, `LayerName string`, `DimensionID int32`, `EnvironmentAttributes []protocol.EnvironmentAttributeData`, `RemoveAttributeNames []string`
 
-### `AttributeLayerData` vs fork `protocol.AttributeLayerData`
+### `AttributeLayerData` vs fork `protocol.AttributeLayerData` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Attribute Layers`
-- only in fork: `Name string`, `NoiseName Optional[string]`, `DimensionID int32`, `Settings AttributeLayerSettings`, `EnvironmentAttributes []EnvironmentAttributeData`
+- renamed to fork names: 1
+- only in fork: `Name string`, `NoiseName Optional[string]`, `DimensionID int32`, `Settings AttributeLayerSettings`
 
 ### `AttributeLayerSettings` vs fork `protocol.AttributeLayerSettings`
 
@@ -1663,11 +1627,11 @@ Hand-written decoding or a name the overlay does not map yet.
 - only in manifest: `Attribute Layer Name`, `Attribute Layer Dimension`, `Attributes Layer Settings`
 - only in fork: `Priority int32`, `FloatWeight float32`, `Enabled bool`, `TransitionsPaused bool`
 
-### `EnvironmentAttributeData` vs fork `protocol.EnvironmentAttributeData`
+### `EnvironmentAttributeData` vs fork `protocol.EnvironmentAttributeData` (some fields matched by position)
 
-- renamed to fork names: 0
-- only in manifest: `Attribute Layer Name`, `Attribute Layer Dimension`, `Attributes`
-- only in fork: `AttributeName string`, `FromAttribute Optional[AttributeData]`, `Attribute AttributeData`, `ToAttribute Optional[AttributeData]`, `CurrentTransitionTicks uint32`, `TotalTransitionTicks uint32`, `EaseType int32`, `LocalTransitionTicks uint32`, `NoiseTransition bool`, `NoiseAlignment NoiseAlignment`
+- renamed to fork names: 2
+- only in manifest: `Attributes`
+- only in fork: `FromAttribute Optional[AttributeData]`, `ToAttribute Optional[AttributeData]`, `CurrentTransitionTicks uint32`, `TotalTransitionTicks uint32`, `EaseType int32`, `LocalTransitionTicks uint32`, `NoiseTransition bool`, `NoiseAlignment NoiseAlignment`
 
 ### `ServerStoreInfo` vs fork `packet.ServerStoreInfo` (some fields matched by position)
 

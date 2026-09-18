@@ -10,10 +10,16 @@ import (
 // sent for both players and other entities, such as zombies.
 type MobArmorEquipment struct {
 	TargetRuntimeID uint64
-	Head            protocol.NetworkItemStackDescriptorSerializedData
-	Torso           protocol.NetworkItemStackDescriptorSerializedData
-	Legs            protocol.NetworkItemStackDescriptorSerializedData
-	Feet            protocol.NetworkItemStackDescriptorSerializedData
+	// Helmet is the equipped helmet of the entity. Items that are not wearable on the head will not be rendered
+	// by the client. Unlike in Java Edition, blocks cannot be worn.
+	Head protocol.NetworkItemStackDescriptorSerializedData
+	// Chestplate is the chestplate of the entity. Items that are not wearable as chestplate will not be rendered.
+	Torso protocol.NetworkItemStackDescriptorSerializedData
+	// Leggings is the item worn as leggings by the entity. Items not wearable as leggings will not be rendered
+	// client-side.
+	Legs protocol.NetworkItemStackDescriptorSerializedData
+	// Boots is the item worn as boots by the entity. Items not wearable as boots will not be rendered.
+	Feet protocol.NetworkItemStackDescriptorSerializedData
 	// Body is the item worn on the body of the entity. Items not wearable on the body will not be rendered.
 	Body protocol.NetworkItemStackDescriptorSerializedData
 }

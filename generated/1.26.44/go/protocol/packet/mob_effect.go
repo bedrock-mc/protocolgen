@@ -9,11 +9,21 @@ import (
 // MobEffect is sent by the server to apply an effect to the player, for example an effect like poison. It may
 // also be used to modify existing effects, or removing them completely.
 type MobEffect struct {
-	TargetRuntimeID     uint64
-	EventID             protocol.MobEffectEvent
-	EffectID            int32
-	EffectAmplifier     int32
-	ShowParticles       bool
+	TargetRuntimeID uint64
+	// EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and
+	// entities are generally identified in packets using this runtime ID.
+	EventID protocol.MobEffectEvent
+	// Operation is the operation of the packet. It is either MobEffectAdd, MobEffectModify or MobEffectRemove and
+	// specifies the result of the packet client-side.
+	EffectID int32
+	// EffectType is the ID of the effect to be added, removed or modified. It is one of the constants that may be
+	// found above.
+	EffectAmplifier int32
+	// Particles specifies if viewers of the entity that gets the effect shows particles around it. If set to
+	// false, no particles are emitted around the entity.
+	ShowParticles bool
+	// Duration is the duration of the effect in ticks (20 per second). After the duration has elapsed, the effect
+	// will be removed automatically client-side. A negative duration means the effect never expires.
 	EffectDurationTicks int32
 	// Tick is the server tick at which the packet was sent. It is used in relation to
 	// CorrectPlayerMovePrediction.

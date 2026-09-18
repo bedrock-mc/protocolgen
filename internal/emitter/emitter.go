@@ -15,14 +15,16 @@ import (
 	"protocolgen/internal/layout"
 	"protocolgen/internal/manifest"
 	"protocolgen/internal/naming"
+	"protocolgen/internal/semantics"
 )
 
 type Input struct {
-	Manifest manifest.Manifest
-	Naming   naming.Overlay
-	Domains  domains.Overlay
-	Docs     docs.Overlay
-	Layout   layout.Overlay // only when Config.LayoutPath is set; never defaulted from the manifest directory
+	Manifest  manifest.Manifest
+	Naming    naming.Overlay
+	Domains   domains.Overlay
+	Docs      docs.Overlay
+	Layout    layout.Overlay // only when Config.LayoutPath is set; never defaulted from the manifest directory
+	Semantics semantics.Overlay
 }
 
 type Backend interface {
@@ -34,12 +36,13 @@ type Func func(Input) (map[string]string, error)
 func (f Func) Generate(input Input) (map[string]string, error) { return f(input) }
 
 type Config struct {
-	ManifestPath string
-	NamingPath   string
-	DomainsPath  string
-	DocsPath     string
-	LayoutPath   string
-	OutputDir    string
+	ManifestPath  string
+	NamingPath    string
+	DomainsPath   string
+	DocsPath      string
+	LayoutPath    string
+	SemanticsPath string
+	OutputDir     string
 }
 
 type Result struct {
@@ -78,6 +81,12 @@ func Run(config Config, backend Backend) (Result, error) {
 	if err != nil {
 		return Result{}, err
 	}
+	semanticOverlay, err := loadOptionalOverlay(config.ManifestPath, config.SemanticsPath, "semantics.json", "semantics", func(path string) (semantics.Overlay, error) {
+		return semantics.LoadOverlay(path, m)
+	})
+	if err != nil {
+		return Result{}, err
+	}
 	var layoutOverlay layout.Overlay
 	if config.LayoutPath != "" {
 		layoutOverlay, err = layout.LoadOverlay(config.LayoutPath, m)
@@ -85,7 +94,7 @@ func Run(config Config, backend Backend) (Result, error) {
 			return Result{}, err
 		}
 	}
-	files, err := backend.Generate(Input{Manifest: m, Naming: namingOverlay, Domains: domainOverlay, Docs: docOverlay, Layout: layoutOverlay})
+	files, err := backend.Generate(Input{Manifest: m, Naming: namingOverlay, Domains: domainOverlay, Docs: docOverlay, Layout: layoutOverlay, Semantics: semanticOverlay})
 	if err != nil {
 		return Result{}, err
 	}

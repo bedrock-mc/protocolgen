@@ -55,6 +55,9 @@ func (x *ItemEnchants) Marshal(io IO) {
 // that is persistent for the stack.
 type ItemInstance struct {
 	ItemDescriptor ItemDescriptor
+	// StackNetworkID is the network ID of the item stack. If the stack is empty, 0 is always written for this
+	// field. If not, the field should be set to 1 if the server authoritative inventories are disabled in the
+	// StartGame packet, or to a unique stack ID if it is enabled.
 	StackSize      uint16
 	BlockRuntimeID uint32
 	UserDataBuffer []byte

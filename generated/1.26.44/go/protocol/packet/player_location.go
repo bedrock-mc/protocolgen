@@ -11,7 +11,9 @@ import (
 // their own distance to Position.
 type PlayerLocation struct {
 	TargetActorID int64
-	Location      protocol.PlayerLocationData
+	// Position is the position of the player to be used on the locator bar. This is only set when the Type is
+	// PlayerLocationTypeCoordinates.
+	Location protocol.PlayerLocationData
 }
 
 // ID ...

@@ -715,6 +715,7 @@ func runEmitGo(args []string) error {
 	docsPath := fs.String("docs", "", "reviewed documentation overlay JSON; defaults to docs.json beside the manifest")
 	protocolImport := fs.String("protocol-import", "", "import path of the generated protocol package")
 	layoutPath := fs.String("layout", "", "reviewed layout overlay JSON that places constants and names fields like a gophertunnel checkout; never defaulted")
+	semanticsPath := fs.String("semantics", "", "reviewed semantics overlay JSON marking actor identifier fields; defaults to semantics.json beside the manifest")
 	nativeTypes := fs.Bool("native-types", true, "map canonical semantic shapes to established Go types such as uuid.UUID and mgl32 vectors")
 	packetRuntime := fs.Bool("packet-runtime", true, "emit the packet interface and ID methods")
 	packetPools := fs.Bool("packet-pools", true, "emit packet factory pools")
@@ -728,12 +729,13 @@ func runEmitGo(args []string) error {
 		return fmt.Errorf("-protocol-import is required")
 	}
 	result, err := emitter.Run(emitter.Config{
-		ManifestPath: *manifestPath,
-		NamingPath:   *namingPath,
-		DomainsPath:  *domainsPath,
-		DocsPath:     *docsPath,
-		LayoutPath:   *layoutPath,
-		OutputDir:    *out,
+		ManifestPath:  *manifestPath,
+		NamingPath:    *namingPath,
+		DomainsPath:   *domainsPath,
+		DocsPath:      *docsPath,
+		LayoutPath:    *layoutPath,
+		SemanticsPath: *semanticsPath,
+		OutputDir:     *out,
 	}, emitter.Func(func(input emitter.Input) (map[string]string, error) {
 		return emitgo.GenerateWithOptions(input.Manifest, emitgo.Options{
 			ProtocolImportPath: *protocolImport,
@@ -741,6 +743,7 @@ func runEmitGo(args []string) error {
 			Domains:            input.Domains,
 			Docs:               input.Docs,
 			Layout:             input.Layout,
+			Semantics:          input.Semantics,
 			NativeTypes:        *nativeTypes,
 			EmitPacketRuntime:  *packetRuntime,
 			EmitPacketPools:    *packetPools,

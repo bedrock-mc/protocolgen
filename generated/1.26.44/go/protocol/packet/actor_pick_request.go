@@ -25,7 +25,7 @@ func (*ActorPickRequest) ID() uint32 {
 }
 
 func (pk *ActorPickRequest) Marshal(io protocol.IO) {
-	io.Int64(&pk.ActorID)
+	io.ActorUniqueIDInt64(&pk.ActorID)
 	io.Uint8(&pk.MaxSlots)
 	io.Bool(&pk.WithData)
 }

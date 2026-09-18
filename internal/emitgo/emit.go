@@ -20,6 +20,7 @@ import (
 	"protocolgen/internal/layout"
 	"protocolgen/internal/manifest"
 	"protocolgen/internal/naming"
+	"protocolgen/internal/semantics"
 )
 
 type typeDefinition struct {
@@ -70,6 +71,7 @@ type generator struct {
 	domains            domains.Overlay
 	docs               docs.Overlay
 	layout             layout.Overlay
+	semantics          semantics.Overlay
 	usage              flatten.Usage
 	packetConstants    map[string][]string // packet file stem -> const blocks relocated there by the layout overlay
 }
@@ -114,6 +116,7 @@ type Options struct {
 	Domains            domains.Overlay
 	Docs               docs.Overlay
 	Layout             layout.Overlay
+	Semantics          semantics.Overlay
 	NativeTypes        bool
 	EmitPacketRuntime  bool
 	EmitPacketPools    bool
@@ -173,6 +176,7 @@ func GenerateWithOptions(m manifest.Manifest, options Options) (map[string]strin
 		domains:            options.Domains,
 		docs:               options.Docs,
 		layout:             options.Layout,
+		semantics:          options.Semantics,
 		usage:              flatten.Count(m),
 		packetConstants:    map[string][]string{},
 	}
@@ -195,7 +199,7 @@ func GenerateWithOptions(m manifest.Manifest, options Options) (map[string]strin
 			if err := ensureCodecSymmetric(field); err != nil {
 				return nil, fmt.Errorf("packet %s field %s: %w", packet.Name, field.Name, err)
 			}
-			if _, err := g.goType(field.Encode, name+g.fieldName(effective.Owner, field.Name)); err != nil {
+			if _, err := g.goType(g.semantics.Apply(effective.Owner, field), name+g.fieldName(effective.Owner, field.Name)); err != nil {
 				return nil, fmt.Errorf("packet %s field %s: %w", packet.Name, field.Name, err)
 			}
 		}
@@ -579,11 +583,12 @@ func (g *generator) registerStruct(node manifest.Node, hint string) (string, err
 	var fields []typedField
 	for _, field := range node.Fields {
 		fieldName := uniqueFieldName(g.fieldName(nodeTypeID(node), field.Name), used)
-		fieldType, err := g.goType(field.Encode, name+fieldName)
+		encode := g.semantics.Apply(nodeTypeID(node), field)
+		fieldType, err := g.goType(encode, name+fieldName)
 		if err != nil {
 			return "", err
 		}
-		fields = append(fields, typedField{Name: fieldName, WireName: field.Name, Type: fieldType, Node: field.Encode})
+		fields = append(fields, typedField{Name: fieldName, WireName: field.Name, Type: fieldType, Node: encode})
 	}
 	definition := g.definitions[name]
 	definition.Fields = fields
@@ -910,8 +915,9 @@ func (g *generator) emitPacket(packet manifest.Packet, packetName string, consta
 			baseName = "IDValue"
 		}
 		name := uniqueFieldName(baseName, used)
-		typ := mustGoType(g, field.Encode, packetName+name)
-		fields = append(fields, packetField{name: name, wireName: field.Name, owner: item.Owner, typ: qualifyGoType(typ, g.definitions), node: field.Encode})
+		encode := g.semantics.Apply(item.Owner, field)
+		typ := mustGoType(g, encode, packetName+name)
+		fields = append(fields, packetField{name: name, wireName: field.Name, owner: item.Owner, typ: qualifyGoType(typ, g.definitions), node: encode})
 	}
 	imports := append([]string{g.protocolImportPath}, goImportsForFields(fields)...)
 	writeGoImports(&b, imports)

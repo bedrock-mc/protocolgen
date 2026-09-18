@@ -12,7 +12,9 @@ import (
 // combination with server-side movement calculation.
 type SetActorMotion struct {
 	TargetRuntimeID uint64
-	Motion          mgl32.Vec3
+	// Velocity is the new velocity the entity gets. This velocity will initiate the client-side movement of the
+	// entity.
+	Motion mgl32.Vec3
 	// Tick is the server tick at which the packet was sent. It is used in relation to
 	// CorrectPlayerMovePrediction.
 	Tick uint64

@@ -9,7 +9,9 @@ import (
 // MapInfoRequest is sent by the client to request the server to deliver information of a certain map in the
 // inventory of the player. The server should respond with a ClientBoundMapItemData packet.
 type MapInfoRequest struct {
-	MapUniqueID      int64
+	MapUniqueID int64
+	// ClientPixels is a slice of pixels sent from the client to notify the server about the pixels that it isn't
+	// aware of.
 	ClientPixelsList []protocol.PixelRequest
 }
 

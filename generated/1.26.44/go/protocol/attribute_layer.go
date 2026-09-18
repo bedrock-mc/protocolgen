@@ -9,9 +9,10 @@ type AttributeData struct {
 	CurrentValue    float32
 	DefaultMinValue float32
 	DefaultMaxValue float32
-	DefaultValue    float32
-	Name            string
-	Modifiers       []AttributeModifier
+	// FloatValue is the float value if Type is AttributeDataTypeFloat.
+	DefaultValue float32
+	Name         string
+	Modifiers    []AttributeModifier
 }
 
 // Marshal reads or writes AttributeData using its canonical wire layout.
@@ -28,6 +29,7 @@ func (x *AttributeData) Marshal(io IO) {
 
 // AttributeLayerData represents a complete attribute layer.
 type AttributeLayerData struct {
+	// EnvironmentAttributes is the list of environment attributes in this layer.
 	AttributeLayers []EASAttributeLayerData
 }
 
@@ -78,7 +80,9 @@ func MarshalAttributeLayerSyncData(io IO, x *AttributeLayerSyncData) {
 
 // EnvironmentAttributeData represents an environment attribute with optional transition data.
 type EnvironmentAttributeData struct {
-	AttributeLayerName      string
+	// AttributeName is the name of the attribute.
+	AttributeLayerName string
+	// Attribute is the current attribute value.
 	AttributeLayerDimension DimensionType
 	Attributes              []EASEnvironmentAttributeData
 }

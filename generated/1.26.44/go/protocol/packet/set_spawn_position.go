@@ -9,10 +9,17 @@ import (
 // SetSpawnPosition is sent by the server to update the spawn position of a player, for example when sleeping
 // in a bed.
 type SetSpawnPosition struct {
+	// SpawnType is the type of spawn to set. It is either SpawnTypePlayer or SpawnTypeWorld, and specifies the
+	// behaviour of the spawn set. If SpawnTypeWorld is set, the position to which compasses will point is also
+	// changed.
 	SpawnPositionType protocol.SpawnPositionType
-	BlockPosition     protocol.BlockPos
-	DimensionType     protocol.DimensionType
-	SpawnBlockPos     protocol.BlockPos
+	// Position is the new position of the spawn that was set. If SpawnType is SpawnTypeWorld, compasses will
+	// point to this position. As of 1.16, Position is always the position of the player.
+	BlockPosition protocol.BlockPos
+	DimensionType protocol.DimensionType
+	// SpawnPosition is a new field added in 1.16. It holds the spawn position of the world. This spawn position
+	// is {-2147483648, -2147483648, -2147483648} for a default spawn position.
+	SpawnBlockPos protocol.BlockPos
 }
 
 // ID ...

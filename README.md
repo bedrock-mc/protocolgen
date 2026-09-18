@@ -217,7 +217,10 @@ beside the packet that uses them under the fork's names and with the fork's
 field names, so `diff -r` against the checkout shows real shape gaps rather
 than naming. The reviewed mapping is `generated/1.26.44/gophertunnel-layout.json`
 (seeded by `tools/seed-gophertunnel-layout`, hand-editable) and the remaining
-gaps are listed in `docs/gophertunnel-gap-1.26.44.md`. The overlay is only
+gaps are listed in `docs/gophertunnel-gap-1.26.44.md`. The same run seeds
+`generated/1.26.44/semantics.json`, the reviewed list of plain integer fields
+that carry an actor identifier; `emit-go` applies it by default so every such
+field uses the `ActorUniqueID*` / `ActorRuntimeID*` IO operations. The overlay is only
 applied when `emit-go -layout` is given; the checked-in generated tree never
 uses it.
 

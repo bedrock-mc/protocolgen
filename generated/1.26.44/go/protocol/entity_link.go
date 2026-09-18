@@ -10,7 +10,9 @@ type EntityLink struct {
 	Type ActorLinkType
 	// Immediate is set to immediately dismount an entity from another. This should be set when the mount of an
 	// entity is killed.
-	Immediate          bool
+	Immediate bool
+	// RiderInitiated specifies if the link was created by the rider, for example the player starting to ride a
+	// horse by itself. This is generally true in vanilla environment for players.
 	PassengerInitiated bool
 	// VehicleAngularVelocity is the angular velocity of the vehicle that the rider is riding.
 	VehicleAngularVelocity float32

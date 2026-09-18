@@ -13,7 +13,8 @@ import (
 // this packet is not sent. Under certain circumstances, this packet is also sent from the server to the
 // client, but I was unable to find when this is done.
 type EmoteList struct {
-	RuntimeID     uint64
+	RuntimeID uint64
+	// EmotePieces is a list of emote pieces that the player with the runtime ID above has.
 	EmotePieceIds []uuid.UUID
 }
 

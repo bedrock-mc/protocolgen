@@ -11,8 +11,11 @@ import (
 // client the exact duration of the boost.
 type MovementEffect struct {
 	TargetRuntimeID uint64
-	EffectID        protocol.MovementEffectType
-	EffectDuration  int32
+	// EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and
+	// entities are generally identified in packets using this runtime ID.
+	EffectID protocol.MovementEffectType
+	// Type is the type of movement effect being updated. It is one of the constants found above.
+	EffectDuration int32
 	// Tick is the server tick at which the packet was sent. It is used in relation to
 	// CorrectPlayerMovePrediction.
 	Tick uint64

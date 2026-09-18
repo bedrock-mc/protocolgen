@@ -8,6 +8,8 @@ import (
 
 // MultiRecipe serves as an 'enable' switch for multi-shape recipes.
 type MultiRecipe struct {
+	// UUID is a UUID identifying the recipe. Since the CraftingEvent packet no longer exists, this can always be
+	// empty.
 	MultiRecipeUUID uuid.UUID
 	NetID           RecipeNetID
 }
@@ -91,13 +93,18 @@ type ShapedRecipe struct {
 	// Width is the width of the recipe's shape.
 	Width int32
 	// Height is the height of the recipe's shape.
-	Height      int32
+	Height int32
+	// Input is a list of items that serve as the input of the shapeless recipe. These items are the items
+	// required to craft the output. The amount of input items must be exactly equal to Width * Height.
 	Ingredients []RecipeIngredientSerializedData
-	Results     []NetworkItemInstanceDescriptorSerializedData
+	// Output is a list of items that are created as a result of crafting the recipe.
+	Results []NetworkItemInstanceDescriptorSerializedData
 	// UUID is a UUID identifying the recipe. Since the CraftingEvent packet no longer exists, this can always be
 	// empty.
 	UUID uuid.UUID
-	Tag  string
+	// Block is the block name that is required to craft the output of the recipe. The block is not prefixed with
+	// 'minecraft:', so it will look like 'crafting_table' as an example.
+	Tag string
 	// Priority ...
 	Priority int32
 	// AssumeSymmetry specifies if the recipe is symmetrical. If this is set to true, the recipe will be mirrored
@@ -127,13 +134,19 @@ func (x *ShapedRecipe) Marshal(io IO) {
 type ShapelessRecipe struct {
 	// RecipeID is a unique ID of the recipe. This ID must be unique amongst all other types of recipes too, but
 	// its functionality is not exactly known.
-	RecipeID    string
+	RecipeID string
+	// Input is a list of items that serve as the input of the shapeless recipe. These items are the items
+	// required to craft the output.
 	Ingredients []RecipeIngredientSerializedData
-	Results     []NetworkItemInstanceDescriptorSerializedData
+	// Output is a list of items that are created as a result of crafting the recipe.
+	Results []NetworkItemInstanceDescriptorSerializedData
 	// UUID is a UUID identifying the recipe. Since the CraftingEvent packet no longer exists, this can always be
 	// empty.
 	UUID uuid.UUID
-	Tag  string
+	// Block is the block name that is required to craft the output of the recipe. The block is not prefixed with
+	// 'minecraft:', so it will look like 'crafting_table' as an example. The available blocks are: -
+	// crafting_table - cartography_table - stonecutter - furnace - blast_furnace - smoker - campfire
+	Tag string
 	// Priority ...
 	Priority             int32
 	UnlockingRequirement Optional[RecipeUnlockRequirementSerializedData]
@@ -157,14 +170,19 @@ func (x *ShapelessRecipe) Marshal(io IO) {
 type SmithingTransformRecipe struct {
 	// RecipeID is a unique ID of the recipe. This ID must be unique amongst all other types of recipes too, but
 	// its functionality is not exactly known.
-	RecipeID           string
+	RecipeID string
+	// Template is the item that is used to shape the Base item based on the Addition being applied.
 	TemplateIngredient RecipeIngredientSerializedData
-	BaseIngredient     RecipeIngredientSerializedData
+	// Base is the item that the Addition is being applied to in the smithing table.
+	BaseIngredient RecipeIngredientSerializedData
+	// Addition is the item that is being added to the Base item to result in a modified item.
 	AdditionIngredient RecipeIngredientSerializedData
 	// Result is the resulting item from the two items being added together.
 	Result NetworkItemInstanceDescriptorSerializedData
-	Tag    string
-	NetID  RecipeNetID
+	// Block is the block name that is required to create the output of the recipe. The block is not prefixed with
+	// 'minecraft:', so it will look like 'smithing_table' as an example.
+	Tag   string
+	NetID RecipeNetID
 }
 
 // Marshal reads or writes SmithingTransformRecipe using its canonical wire layout.
@@ -183,12 +201,17 @@ func (x *SmithingTransformRecipe) Marshal(io IO) {
 type SmithingTrimRecipe struct {
 	// RecipeID is a unique ID of the recipe. This ID must be unique amongst all other types of recipes too, but
 	// its functionality is not exactly known.
-	RecipeID           string
+	RecipeID string
+	// Template is the item that is used to shape the Base item based on the Addition being applied.
 	TemplateIngredient RecipeIngredientSerializedData
-	BaseIngredient     RecipeIngredientSerializedData
+	// Base is the item that the Addition is being applied to in the smithing table.
+	BaseIngredient RecipeIngredientSerializedData
+	// Addition is the item that is being added to the Base item to result in a modified item.
 	AdditionIngredient RecipeIngredientSerializedData
-	Tag                string
-	NetID              RecipeNetID
+	// Block is the block name that is required to create the output of the recipe. The block is not prefixed with
+	// 'minecraft:', so it will look like 'smithing_table' as an example.
+	Tag   string
+	NetID RecipeNetID
 }
 
 // Marshal reads or writes SmithingTrimRecipe using its canonical wire layout.

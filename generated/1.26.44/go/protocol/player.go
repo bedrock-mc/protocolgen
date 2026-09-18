@@ -191,7 +191,7 @@ type PlayerScoreboardID struct {
 
 // Marshal reads or writes PlayerScoreboardID using its canonical wire layout.
 func (x *PlayerScoreboardID) Marshal(io IO) {
-	io.Varint64(&x.PlayerUniqueID)
+	io.ActorUniqueID(&x.PlayerUniqueID)
 }
 
 type PlayerUpdateEntityOverridesData interface {
