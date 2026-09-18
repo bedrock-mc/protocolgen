@@ -1782,6 +1782,14 @@ Variants the fork block does not name keep their generated name; fork constants 
 - `RequestAbilityType` -> `protocol.resource_pack` block `PackSettingType*` (score 4); foreign: PackSettingTypeStringList=3
 - `ServerboundLoadingScreenType` -> `packet.server_bound_loading_screen` block `LoadingScreenType*` (score 2); foreign: LoadingScreenTypeUnknown=0
 
+## Fork type names that could not be taken
+
+The name is already carried by another generated type or packet.
+
+- ItemStackRequestData -> ItemStackRequest (name held by ItemStackRequestPacket)
+- ItemStackResponseInfo -> ItemStackResponse (name held by ItemStackResponsePacket)
+- CameraInstructionTargetData -> CameraInstructionTarget (name held by CameraInstructionOptions::AttachToEntityInstruction)
+
 ## Enums with no fork const block
 
 - `LegacyDifficulty` (enums/SharedTypes::Legacy::Difficulty, 6 variants)
