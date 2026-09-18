@@ -721,6 +721,7 @@ func TestGenerateAppliesLayoutOverlay(t *testing.T) {
 		Constants: map[string]layout.Placement{"enums/GameType": {Package: "packet", File: "set_player_game_type", Names: map[string]string{"Creative": "GameTypeCreative"}}},
 		Fields:    map[string]string{layout.FieldKey("SetPlayerGameTypePacket", "Game Type"): "PlayerGameMode", layout.FieldKey("SetPlayerGameTypePacket", "Entries"): "Rows"},
 		Files:     map[string]string{"SetPlayerGameTypePacket": "set_player_game_type", "enums/GameType": "game_mode"},
+		Types:     map[string]string{"SetPlayerGameTypePacket": "SetPlayerGameMode"},
 	}
 	files, err := GenerateWithOptions(m, Options{ProtocolImportPath: "wiregen", NativeTypes: true, EmitPacketRuntime: true, EmitPacketPools: true, Layout: overlay})
 	if err != nil {
@@ -728,9 +729,12 @@ func TestGenerateAppliesLayoutOverlay(t *testing.T) {
 	}
 	packet := files["protocol/packet/set_player_game_type.go"]
 	for _, want := range []string{
+		"type SetPlayerGameMode struct",
+		"func (*SetPlayerGameMode) ID() uint32",
+		"IDSetPlayerGameMode",
 		"PlayerGameMode protocol.GameType",
 		"pk.PlayerGameMode.Marshal(io)",
-		"[]protocol.SetPlayerGameTypeRowsItemStruct",
+		"[]protocol.SetPlayerGameModeRowsItemStruct",
 		"GameTypeCreative protocol.GameType = 1",
 		"GameTypeSurvival protocol.GameType = 0",
 	} {
@@ -744,7 +748,7 @@ func TestGenerateAppliesLayoutOverlay(t *testing.T) {
 	if strings.Contains(packet, "GameTypeGameTypeCreative") {
 		t.Fatal("reviewed constant name was prefixed with the enum name")
 	}
-	if strings.Index(packet, "const (") > strings.Index(packet, "type SetPlayerGameType struct") {
+	if strings.Index(packet, "const (") > strings.Index(packet, "type SetPlayerGameMode struct") {
 		t.Fatalf("relocated constants are not above the packet:\n%s", packet)
 	}
 	if !strings.Contains(files["protocol/game_mode.go"], "type GameType uint8") {

@@ -518,6 +518,7 @@ func commonPrefix(consts []forkConst) string {
 type gapReport struct {
 	namedVariants      int
 	portedDocs         int
+	skippedTypeNames   []string
 	placements         []placementNote
 	unmatchedEnums     []enumInfo
 	unmatchedGroups    []forkGroup
@@ -594,8 +595,22 @@ func seed(m manifest.Manifest, idx index, fork forkIndex, docOverlay docs.Overla
 
 	matchedFork := map[string]bool{}
 	var unmatchedOwners []ownerInfo
+	// Generated names are unique across both packages, so a fork name that
+	// another type or packet already carries cannot be taken.
+	taken := map[string]string{}
+	for _, owner := range idx.owners {
+		taken[owner.Name] = owner.FileKey
+	}
 	pair := func(owner ownerInfo, source forkType) {
 		matchedFork[source.Package+"."+source.Name] = true
+		if source.Name != owner.Name {
+			if holder, exists := taken[source.Name]; exists && holder != owner.FileKey {
+				report.skippedTypeNames = append(report.skippedTypeNames, fmt.Sprintf("%s -> %s (name held by %s)", owner.Name, source.Name, holder))
+			} else {
+				taken[source.Name] = owner.FileKey
+				document.Types = append(document.Types, layout.TypeEntry{TypeID: owner.FileKey, Name: source.Name, Rationale: fmt.Sprintf("gophertunnel names this %s.", source.Name)})
+			}
+		}
 		document.Files = append(document.Files, layout.FileEntry{TypeID: owner.FileKey, Package: source.Package, File: source.File, Rationale: fmt.Sprintf("gophertunnel keeps %s in %s/%s.go.", source.Name, source.Package, source.File)})
 		if docOverlay.Types != nil && source.Doc != "" && docOverlay.Types[owner.FileKey] == "" {
 			docOverlay.Types[owner.FileKey] = docs.LeadWith(source.Doc, source.Name, owner.Name)
@@ -1044,6 +1059,10 @@ func (r *gapReport) render(m manifest.Manifest, fork forkIndex) string {
 			fmt.Fprintf(&b, "; foreign: %s", strings.Join(names, ", "))
 		}
 		b.WriteString("\n")
+	}
+	b.WriteString("\n## Fork type names that could not be taken\n\nThe name is already carried by another generated type or packet.\n\n")
+	for _, note := range r.skippedTypeNames {
+		fmt.Fprintf(&b, "- %s\n", note)
 	}
 	b.WriteString("\n## Enums with no fork const block\n\n")
 	for _, enum := range r.unmatchedEnums {

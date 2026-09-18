@@ -5,6 +5,378 @@
     "protocol_version": 2168,
     "build": "hotfix4"
   },
+  "types": [
+    {
+      "type_id": "AddBehaviorTreePacket",
+      "name": "AddBehaviourTree",
+      "rationale": "gophertunnel names this AddBehaviourTree."
+    },
+    {
+      "type_id": "AgentActionEventPacket",
+      "name": "AgentAction",
+      "rationale": "gophertunnel names this AgentAction."
+    },
+    {
+      "type_id": "ArmorSlotAndDamagePair",
+      "name": "PlayerArmourDamageEntry",
+      "rationale": "gophertunnel names this PlayerArmourDamageEntry."
+    },
+    {
+      "type_id": "ArrowDataPayload",
+      "name": "ArrowShape",
+      "rationale": "gophertunnel names this ArrowShape."
+    },
+    {
+      "type_id": "Bedrock::DDUI::DataStoreChange",
+      "name": "DataStoreChange",
+      "rationale": "gophertunnel names this DataStoreChange."
+    },
+    {
+      "type_id": "Bedrock::Profile::Whisker::Diagnostics::ScopeDataSummary",
+      "name": "WhiskerScopeDataSummary",
+      "rationale": "gophertunnel names this WhiskerScopeDataSummary."
+    },
+    {
+      "type_id": "BiomeCappedSurfaceData",
+      "name": "BiomeCappedSurface",
+      "rationale": "gophertunnel names this BiomeCappedSurface."
+    },
+    {
+      "type_id": "BiomeClimateData",
+      "name": "BiomeClimate",
+      "rationale": "gophertunnel names this BiomeClimate."
+    },
+    {
+      "type_id": "BiomeConditionalTransformationData",
+      "name": "BiomeConditionalTransformation",
+      "rationale": "gophertunnel names this BiomeConditionalTransformation."
+    },
+    {
+      "type_id": "BiomeConsolidatedFeatureData",
+      "name": "BiomeConsolidatedFeature",
+      "rationale": "gophertunnel names this BiomeConsolidatedFeature."
+    },
+    {
+      "type_id": "BiomeCoordinateData",
+      "name": "BiomeCoordinate",
+      "rationale": "gophertunnel names this BiomeCoordinate."
+    },
+    {
+      "type_id": "BiomeDefinitionData",
+      "name": "BiomeDefinition",
+      "rationale": "gophertunnel names this BiomeDefinition."
+    },
+    {
+      "type_id": "BiomeMesaSurfaceData",
+      "name": "BiomeMesaSurface",
+      "rationale": "gophertunnel names this BiomeMesaSurface."
+    },
+    {
+      "type_id": "BiomeMountainParamsData",
+      "name": "BiomeMountainParameters",
+      "rationale": "gophertunnel names this BiomeMountainParameters."
+    },
+    {
+      "type_id": "BiomeMultinoiseGenRulesData",
+      "name": "BiomeMultiNoiseRules",
+      "rationale": "gophertunnel names this BiomeMultiNoiseRules."
+    },
+    {
+      "type_id": "BiomeNoiseGradientSurfaceData",
+      "name": "BiomeNoiseGradientSurface",
+      "rationale": "gophertunnel names this BiomeNoiseGradientSurface."
+    },
+    {
+      "type_id": "BiomeScatterParamData",
+      "name": "BiomeScatterParameter",
+      "rationale": "gophertunnel names this BiomeScatterParameter."
+    },
+    {
+      "type_id": "BiomeSurfaceBuilderData",
+      "name": "BiomeSurfaceBuilder",
+      "rationale": "gophertunnel names this BiomeSurfaceBuilder."
+    },
+    {
+      "type_id": "BiomeSurfaceMaterialData",
+      "name": "BiomeSurfaceMaterial",
+      "rationale": "gophertunnel names this BiomeSurfaceMaterial."
+    },
+    {
+      "type_id": "BiomeWeightedTemperatureData",
+      "name": "BiomeTemperatureWeight",
+      "rationale": "gophertunnel names this BiomeTemperatureWeight."
+    },
+    {
+      "type_id": "ClientboundAttributeLayerSyncPacket",
+      "name": "ClientBoundAttributeLayerSync",
+      "rationale": "gophertunnel names this ClientBoundAttributeLayerSync."
+    },
+    {
+      "type_id": "ClientboundCloseFormPacket",
+      "name": "ClientBoundCloseForm",
+      "rationale": "gophertunnel names this ClientBoundCloseForm."
+    },
+    {
+      "type_id": "ClientboundControlSchemeSetPacket",
+      "name": "ClientBoundControlSchemeSet",
+      "rationale": "gophertunnel names this ClientBoundControlSchemeSet."
+    },
+    {
+      "type_id": "ClientboundDataDrivenUICloseScreenPacket",
+      "name": "ClientBoundDataDrivenUICloseScreen",
+      "rationale": "gophertunnel names this ClientBoundDataDrivenUICloseScreen."
+    },
+    {
+      "type_id": "ClientboundDataDrivenUIReloadPacket",
+      "name": "ClientBoundDataDrivenUIReload",
+      "rationale": "gophertunnel names this ClientBoundDataDrivenUIReload."
+    },
+    {
+      "type_id": "ClientboundDataDrivenUIShowScreenPacket",
+      "name": "ClientBoundDataDrivenUIShowScreen",
+      "rationale": "gophertunnel names this ClientBoundDataDrivenUIShowScreen."
+    },
+    {
+      "type_id": "ClientboundDataStorePacket",
+      "name": "ClientBoundDataStore",
+      "rationale": "gophertunnel names this ClientBoundDataStore."
+    },
+    {
+      "type_id": "ClientboundDebugRendererPacket",
+      "name": "ClientBoundDebugRenderer",
+      "rationale": "gophertunnel names this ClientBoundDebugRenderer."
+    },
+    {
+      "type_id": "ClientboundMapItemDataPacket",
+      "name": "ClientBoundMapItemData",
+      "rationale": "gophertunnel names this ClientBoundMapItemData."
+    },
+    {
+      "type_id": "ClientboundTextureShiftPacket",
+      "name": "ClientBoundTextureShift",
+      "rationale": "gophertunnel names this ClientBoundTextureShift."
+    },
+    {
+      "type_id": "CommandOriginData.json#",
+      "name": "CommandOrigin",
+      "rationale": "gophertunnel names this CommandOrigin."
+    },
+    {
+      "type_id": "ConeDataPayload",
+      "name": "ConeShape",
+      "rationale": "gophertunnel names this ConeShape."
+    },
+    {
+      "type_id": "CreativeGroupInfoPayload",
+      "name": "CreativeGroup",
+      "rationale": "gophertunnel names this CreativeGroup."
+    },
+    {
+      "type_id": "CylinderDataPayload",
+      "name": "CylinderShape",
+      "rationale": "gophertunnel names this CylinderShape."
+    },
+    {
+      "type_id": "DataItemBytePayload",
+      "name": "NoiseAlignment",
+      "rationale": "gophertunnel names this NoiseAlignment."
+    },
+    {
+      "type_id": "ECS::Profiling::Diagnostics::SystemCategory",
+      "name": "SystemCategory",
+      "rationale": "gophertunnel names this SystemCategory."
+    },
+    {
+      "type_id": "ECS::Profiling::Diagnostics::SystemDiagnosticTimingInfo",
+      "name": "SystemDiagnosticTimingInfo",
+      "rationale": "gophertunnel names this SystemDiagnosticTimingInfo."
+    },
+    {
+      "type_id": "EduSharedUriResource",
+      "name": "EducationSharedResourceURI",
+      "rationale": "gophertunnel names this EducationSharedResourceURI."
+    },
+    {
+      "type_id": "EllipsoidDataPayload",
+      "name": "EllipsoidShape",
+      "rationale": "gophertunnel names this EllipsoidShape."
+    },
+    {
+      "type_id": "ExternalLinkSettings",
+      "name": "EducationExternalLinkSettings",
+      "rationale": "gophertunnel names this EducationExternalLinkSettings."
+    },
+    {
+      "type_id": "GuiDataPickItemPacket",
+      "name": "GUIDataPickItem",
+      "rationale": "gophertunnel names this GUIDataPickItem."
+    },
+    {
+      "type_id": "HurtArmorPacket",
+      "name": "HurtArmour",
+      "rationale": "gophertunnel names this HurtArmour."
+    },
+    {
+      "type_id": "LegacyTelemetryEventPacketPayload::CodeBuilderScoreboard",
+      "name": "CodeBuilderScoreboardEvent",
+      "rationale": "gophertunnel names this CodeBuilderScoreboardEvent."
+    },
+    {
+      "type_id": "LegacyTelemetryEventPacketPayload::ComposterUsed",
+      "name": "ComposterInteractEvent",
+      "rationale": "gophertunnel names this ComposterInteractEvent."
+    },
+    {
+      "type_id": "LegacyTelemetryEventPacketPayload::ItemUsed",
+      "name": "ItemUsedEvent",
+      "rationale": "gophertunnel names this ItemUsedEvent."
+    },
+    {
+      "type_id": "LegacyTelemetryEventPacketPayload::POICauldronUsed",
+      "name": "CauldronInteractEvent",
+      "rationale": "gophertunnel names this CauldronInteractEvent."
+    },
+    {
+      "type_id": "LegacyTelemetryEventPacketPayload::PiglinBarter",
+      "name": "PiglinBarterEvent",
+      "rationale": "gophertunnel names this PiglinBarterEvent."
+    },
+    {
+      "type_id": "MapItemTrackedActor::UniqueId",
+      "name": "MapTrackedObject",
+      "rationale": "gophertunnel names this MapTrackedObject."
+    },
+    {
+      "type_id": "MobArmorEquipmentPacket",
+      "name": "MobArmourEquipment",
+      "rationale": "gophertunnel names this MobArmourEquipment."
+    },
+    {
+      "type_id": "MultiplayerSettingsPacket",
+      "name": "MultiPlayerSettings",
+      "rationale": "gophertunnel names this MultiPlayerSettings."
+    },
+    {
+      "type_id": "NpcDialoguePacket",
+      "name": "NPCDialogue",
+      "rationale": "gophertunnel names this NPCDialogue."
+    },
+    {
+      "type_id": "NpcRequestPacket",
+      "name": "NPCRequest",
+      "rationale": "gophertunnel names this NPCRequest."
+    },
+    {
+      "type_id": "PackInstanceId",
+      "name": "StackResourcePack",
+      "rationale": "gophertunnel names this StackResourcePack."
+    },
+    {
+      "type_id": "PlayerArmorDamagePacket",
+      "name": "PlayerArmourDamage",
+      "rationale": "gophertunnel names this PlayerArmourDamage."
+    },
+    {
+      "type_id": "PlayerBlockActionData",
+      "name": "PlayerBlockAction",
+      "rationale": "gophertunnel names this PlayerBlockAction."
+    },
+    {
+      "type_id": "PlayerHotbarPacket",
+      "name": "PlayerHotBar",
+      "rationale": "gophertunnel names this PlayerHotBar."
+    },
+    {
+      "type_id": "SerializedAbilitiesData",
+      "name": "AbilityData",
+      "rationale": "gophertunnel names this AbilityData."
+    },
+    {
+      "type_id": "SerializedNoiseBlockSpecifier",
+      "name": "NoiseBlockSpecifier",
+      "rationale": "gophertunnel names this NoiseBlockSpecifier."
+    },
+    {
+      "type_id": "SerializedPersonaPieceHandle",
+      "name": "PersonaPiece",
+      "rationale": "gophertunnel names this PersonaPiece."
+    },
+    {
+      "type_id": "ServerConfiguration::ClientStoreEntryPointConfiguration",
+      "name": "StoreEntryPointInfo",
+      "rationale": "gophertunnel names this StoreEntryPointInfo."
+    },
+    {
+      "type_id": "ServerConfiguration::GatheringsConfigurationJoinInfo",
+      "name": "GatheringJoinInfo",
+      "rationale": "gophertunnel names this GatheringJoinInfo."
+    },
+    {
+      "type_id": "ServerWaypoint::Payload",
+      "name": "Waypoint",
+      "rationale": "gophertunnel names this Waypoint."
+    },
+    {
+      "type_id": "ServerboundDataDrivenScreenClosedPacket",
+      "name": "ServerBoundDataDrivenScreenClosed",
+      "rationale": "gophertunnel names this ServerBoundDataDrivenScreenClosed."
+    },
+    {
+      "type_id": "ServerboundDataStorePacket",
+      "name": "ServerBoundDataStore",
+      "rationale": "gophertunnel names this ServerBoundDataStore."
+    },
+    {
+      "type_id": "ServerboundDiagnosticsPacket",
+      "name": "ServerBoundDiagnostics",
+      "rationale": "gophertunnel names this ServerBoundDiagnostics."
+    },
+    {
+      "type_id": "ServerboundLoadingScreenPacket",
+      "name": "ServerBoundLoadingScreen",
+      "rationale": "gophertunnel names this ServerBoundLoadingScreen."
+    },
+    {
+      "type_id": "ServerboundPackSettingChangePacket",
+      "name": "ServerBoundPackSettingChange",
+      "rationale": "gophertunnel names this ServerBoundPackSettingChange."
+    },
+    {
+      "type_id": "SharedTypes::v1_21_50::CameraAimAssistCategoryDefinition",
+      "name": "CameraAimAssistCategory",
+      "rationale": "gophertunnel names this CameraAimAssistCategory."
+    },
+    {
+      "type_id": "SharedTypes::v1_21_50::CameraAimAssistCategoryPriorities",
+      "name": "CameraAimAssistPriorities",
+      "rationale": "gophertunnel names this CameraAimAssistPriorities."
+    },
+    {
+      "type_id": "SkinImage",
+      "name": "PyramidShape",
+      "rationale": "gophertunnel names this PyramidShape."
+    },
+    {
+      "type_id": "SyncedPlayerMovementSettings",
+      "name": "PlayerMovementSettings",
+      "rationale": "gophertunnel names this PlayerMovementSettings."
+    },
+    {
+      "type_id": "VoxelShapes::SerializableCells",
+      "name": "VoxelCells",
+      "rationale": "gophertunnel names this VoxelCells."
+    },
+    {
+      "type_id": "VoxelShapes::SerializableVoxelShape",
+      "name": "VoxelShape",
+      "rationale": "gophertunnel names this VoxelShape."
+    },
+    {
+      "type_id": "cerealizer_ExperimentsAnon::ExperimentToggle",
+      "name": "ExperimentData",
+      "rationale": "gophertunnel names this ExperimentData."
+    }
+  ],
   "constants": [
     {
       "type_id": "enums/ActorEvent",
@@ -5009,7 +5381,7 @@
       "type_id": "LegacyTelemetryEventPacketPayload::ComposterUsed",
       "package": "protocol",
       "file": "events",
-      "rationale": "gophertunnel keeps CauldronInteractEvent in protocol/events.go."
+      "rationale": "gophertunnel keeps ComposterInteractEvent in protocol/events.go."
     },
     {
       "type_id": "LegacyTelemetryEventPacketPayload::ItemUsed",
@@ -5021,7 +5393,7 @@
       "type_id": "LegacyTelemetryEventPacketPayload::POICauldronUsed",
       "package": "protocol",
       "file": "events",
-      "rationale": "gophertunnel keeps ComposterInteractEvent in protocol/events.go."
+      "rationale": "gophertunnel keeps CauldronInteractEvent in protocol/events.go."
     },
     {
       "type_id": "LegacyTelemetryEventPacketPayload::PiglinBarter",

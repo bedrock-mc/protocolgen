@@ -149,6 +149,18 @@ func GenerateWithOptions(m manifest.Manifest, options Options) (map[string]strin
 	if options.ProtocolImportPath == "" || strings.ContainsAny(options.ProtocolImportPath, " \t\r\n") {
 		return nil, fmt.Errorf("invalid protocol import path %q", options.ProtocolImportPath)
 	}
+	// Layout type names override the naming overlay for shared types; packets
+	// are named directly below.
+	if len(options.Layout.Types) > 0 {
+		names := make(map[string]string, len(options.Naming.Names)+len(options.Layout.Types))
+		for typeID, name := range options.Naming.Names {
+			names[typeID] = name
+		}
+		for typeID, name := range options.Layout.Types {
+			names[typeID] = name
+		}
+		options.Naming = naming.Overlay{Names: names}
+	}
 	g := &generator{
 		definitions:        map[string]typeDefinition{},
 		identity:           map[string]string{},
@@ -168,8 +180,12 @@ func GenerateWithOptions(m manifest.Manifest, options Options) (map[string]strin
 	sort.Slice(packets, func(i, j int) bool { return packets[i].ID < packets[j].ID })
 	packetNames := map[uint32]string{}
 	for _, packet := range packets {
-		name := packetTypeName(packet.Name)
-		if err := g.resolver.Reserve(packet.Name, naming.PacketTypeName(packet.Name), exportName); err != nil {
+		neutral := naming.PacketTypeName(packet.Name)
+		if reviewed := g.layout.TypeName(packet.Name); reviewed != "" {
+			neutral = reviewed
+		}
+		name := exportName(neutral)
+		if err := g.resolver.Reserve(packet.Name, neutral, exportName); err != nil {
 			return nil, fmt.Errorf("packet %s: %w", packet.Name, err)
 		}
 		g.usedNames[name] = true
@@ -1826,10 +1842,6 @@ func normalizeEnumInitialisms(value string) string {
 
 var enumInitialisms = map[string]string{
 	"ANIM": "Animation", "FISHPOS": "FishPosition", "HOOKTIME": "HookTime", "ID": "ID", "NBT": "NBT", "OSX": "OSX", "RGBA": "RGBA", "RGB": "RGB", "TNT": "TNT", "TNTCART": "TNTCart", "UWP": "UWP", "URL": "URL", "URI": "URI", "UUID": "UUID", "X": "X", "Y": "Y", "Z": "Z",
-}
-
-func packetTypeName(value string) string {
-	return exportName(naming.PacketTypeName(value))
 }
 
 func publicTypeName(value string) string {
