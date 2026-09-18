@@ -6,8 +6,8 @@ import (
 	"protocolgen/generated/1.26.44/go/protocol"
 )
 
-// MobArmorEquipment is sent by the server to the client to update the armour an entity is wearing. It is sent
-// for both players and other entities, such as zombies.
+// MobArmourEquipment is sent by the server to the client to update the armour an entity is wearing. It is
+// sent for both players and other entities, such as zombies.
 type MobArmorEquipment struct {
 	TargetRuntimeID uint64
 	Head            protocol.NetworkItemStackDescriptorSerializedData

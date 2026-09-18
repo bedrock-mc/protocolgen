@@ -603,18 +603,26 @@ func seed(m manifest.Manifest, idx index, fork forkIndex, docOverlay docs.Overla
 	}
 	pair := func(owner ownerInfo, source forkType) {
 		matchedFork[source.Package+"."+source.Name] = true
+		finalName := owner.Name
 		if source.Name != owner.Name {
 			if holder, exists := taken[source.Name]; exists && holder != owner.FileKey {
 				report.skippedTypeNames = append(report.skippedTypeNames, fmt.Sprintf("%s -> %s (name held by %s)", owner.Name, source.Name, holder))
 			} else {
 				taken[source.Name] = owner.FileKey
+				finalName = source.Name
 				document.Types = append(document.Types, layout.TypeEntry{TypeID: owner.FileKey, Name: source.Name, Rationale: fmt.Sprintf("gophertunnel names this %s.", source.Name)})
 			}
 		}
 		document.Files = append(document.Files, layout.FileEntry{TypeID: owner.FileKey, Package: source.Package, File: source.File, Rationale: fmt.Sprintf("gophertunnel keeps %s in %s/%s.go.", source.Name, source.Package, source.File)})
-		if docOverlay.Types != nil && source.Doc != "" && docOverlay.Types[owner.FileKey] == "" {
-			docOverlay.Types[owner.FileKey] = docs.LeadWith(source.Doc, source.Name, owner.Name)
-			report.portedDocs++
+		if docOverlay.Types != nil && source.Doc != "" {
+			// The doc leads with the type's final name; an earlier port under the
+			// generated name is re-led rather than duplicated.
+			if existing := docOverlay.Types[owner.FileKey]; existing == "" {
+				docOverlay.Types[owner.FileKey] = docs.LeadWith(source.Doc, source.Name, finalName)
+				report.portedDocs++
+			} else if led := docs.LeadWith(existing, owner.Name, finalName); led != existing {
+				docOverlay.Types[owner.FileKey] = led
+			}
 		}
 		gap := fieldGap{Owner: owner, Fork: source}
 		entries := matchFields(owner, source, &gap, docOverlay, report)

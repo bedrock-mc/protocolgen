@@ -11,7 +11,7 @@ func (x *VoxelShapesRegistryHandle) Marshal(io IO) {
 	io.Uint16(&x.Value)
 }
 
-// VoxelShapesSerializableCells represents a 3D grid of voxel cell data.
+// VoxelCells represents a 3D grid of voxel cell data.
 type VoxelShapesSerializableCells struct {
 	// XSize is the size of the grid along the X axis.
 	XSize uint8
@@ -34,7 +34,7 @@ func (x *VoxelShapesSerializableCells) Marshal(io IO) {
 	FuncSliceLimits(io, &x.Storage, io.Varuint32, 0, 256048, io.Uint8)
 }
 
-// VoxelShapesSerializableVoxelShape represents a voxel shape with cells and coordinate axes.
+// VoxelShape represents a voxel shape with cells and coordinate axes.
 type VoxelShapesSerializableVoxelShape struct {
 	// Cells is the grid of cells representing solid and empty regions.
 	Cells VoxelShapesSerializableCells

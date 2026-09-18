@@ -6,7 +6,7 @@ import (
 	"protocolgen/generated/1.26.44/go/protocol"
 )
 
-// NpcDialogue is a packet that allows the client to display dialog boxes for interacting with NPCs.
+// NPCDialogue is a packet that allows the client to display dialog boxes for interacting with NPCs.
 type NpcDialogue struct {
 	// EntityUniqueID is the unique ID of the NPC being requested.
 	NpcIDRawID uint64

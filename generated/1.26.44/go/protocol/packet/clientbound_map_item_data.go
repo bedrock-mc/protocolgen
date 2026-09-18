@@ -6,7 +6,7 @@ import (
 	"protocolgen/generated/1.26.44/go/protocol"
 )
 
-// ClientboundMapItemData is sent by the server to the client to update the data of a map shown to the client.
+// ClientBoundMapItemData is sent by the server to the client to update the data of a map shown to the client.
 // It is sent with a combination of flags that specify what data is updated. The ClientBoundMapItemData packet
 // may be used to update specific parts of the map only. It is not required to send the entire map each time
 // when updating one part.

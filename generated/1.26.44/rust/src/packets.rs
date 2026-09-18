@@ -1348,7 +1348,7 @@ impl wire::Decode for MobEquipment {
     }
 }
 
-/// MobArmorEquipment is sent by the server to the client to update the armour an entity is wearing. It is
+/// MobArmourEquipment is sent by the server to the client to update the armour an entity is wearing. It is
 /// sent for both players and other entities, such as zombies.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct MobArmorEquipment {
@@ -1564,7 +1564,7 @@ impl wire::Decode for PlayerAction {
     }
 }
 
-/// HurtArmor is sent by the server to damage the player's armour after being hit. The packet should never be
+/// HurtArmour is sent by the server to damage the player's armour after being hit. The packet should never be
 /// used by servers as it hands the responsibility over to the player completely, while the server can easily
 /// reliably update the armour damage of players itself.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -1946,7 +1946,7 @@ impl wire::Decode for ContainerClose {
     }
 }
 
-/// PlayerHotbar is sent by the server to the client. It used to be used to link hot bar slots of the player
+/// PlayerHotBar is sent by the server to the client. It used to be used to link hot bar slots of the player
 /// to actual slots in the inventory, but as of 1.2, this was changed and hot bar slots are no longer a free
 /// floating part of the inventory. Since 1.2, the packet has been re-purposed, but its new functionality is
 /// not clear.
@@ -2233,7 +2233,7 @@ impl wire::Decode for CraftingData {
     }
 }
 
-/// GuiDataPickItem is sent by the server to make the client 'select' a hot bar slot. It currently appears to
+/// GUIDataPickItem is sent by the server to make the client 'select' a hot bar slot. It currently appears to
 /// be broken however, and does not actually set the selected slot to the hot bar slot set in the packet.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct GuiDataPickItem {
@@ -2637,7 +2637,7 @@ impl wire::Decode for SpawnExperienceOrb {
     }
 }
 
-/// ClientboundMapItemData is sent by the server to the client to update the data of a map shown to the
+/// ClientBoundMapItemData is sent by the server to the client to update the data of a map shown to the
 /// client. It is sent with a combination of flags that specify what data is updated. The
 /// ClientBoundMapItemData packet may be used to update specific parts of the map only. It is not required to
 /// send the entire map each time when updating one part.
@@ -3792,7 +3792,7 @@ impl wire::Decode for SetTitle {
     }
 }
 
-/// AddBehaviorTree is sent by the server to the client. The packet is currently unused by both client and
+/// AddBehaviourTree is sent by the server to the client. The packet is currently unused by both client and
 /// server.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct AddBehaviorTree {
@@ -4076,7 +4076,7 @@ impl wire::Decode for BookEdit {
     }
 }
 
-/// NpcRequest is sent by the client when it interacts with an NPC. The packet is specifically made for
+/// NPCRequest is sent by the client when it interacts with an NPC. The packet is specifically made for
 /// Education Edition, where NPCs are available to use.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct NpcRequest {
@@ -5400,7 +5400,7 @@ impl wire::Decode for Emote {
     }
 }
 
-/// MultiplayerSettings is sent by the client to update multi-player related settings server-side and sent
+/// MultiPlayerSettings is sent by the client to update multi-player related settings server-side and sent
 /// back to online players by the server. The MultiPlayerSettings packet is a Minecraft: Education Edition
 /// packet. It has no functionality for the base game.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -5908,7 +5908,7 @@ impl wire::Decode for ItemStackResponse {
     }
 }
 
-/// PlayerArmorDamage is sent by the server to damage the armour of a player. It is a very efficient packet,
+/// PlayerArmourDamage is sent by the server to damage the armour of a player. It is a very efficient packet,
 /// but generally it's much easier to just send a slot update for the damaged armour.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PlayerArmorDamage {
@@ -6442,7 +6442,7 @@ impl wire::Decode for ItemRegistry {
     }
 }
 
-/// ClientboundDebugRenderer is sent by the server to spawn an outlined cube on client-side.
+/// ClientBoundDebugRenderer is sent by the server to spawn an outlined cube on client-side.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ClientboundDebugRenderer {
     /// `type_` is the type of action. It is one of the constants above.
@@ -6615,7 +6615,7 @@ impl wire::Decode for SimulationType {
     }
 }
 
-/// NpcDialogue is a packet that allows the client to display dialog boxes for interacting with NPCs.
+/// NPCDialogue is a packet that allows the client to display dialog boxes for interacting with NPCs.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct NpcDialogue {
     /// EntityUniqueID is the unique ID of the NPC being requested.
@@ -6974,8 +6974,8 @@ impl wire::Decode for DimensionData {
     }
 }
 
-/// AgentActionEvent is an Education Edition packet sent from the server to the client to return a response to
-/// a previously requested action.
+/// AgentAction is an Education Edition packet sent from the server to the client to return a response to a
+/// previously requested action.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct AgentActionEvent {
     /// Identifier is a JSON identifier referenced in the initial action.
@@ -7844,7 +7844,7 @@ impl wire::Decode for AwardAchievement {
     }
 }
 
-/// ClientboundCloseForm is sent by the server to clear the entire form stack of the client. This means that
+/// ClientBoundCloseForm is sent by the server to clear the entire form stack of the client. This means that
 /// all forms that are currently open will be closed. This does not affect inventories and other containers.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ClientboundCloseForm {
@@ -7867,7 +7867,7 @@ impl wire::Decode for ClientboundCloseForm {
     }
 }
 
-/// ServerboundLoadingScreen is sent by the client to tell the server about the state of the loading screen
+/// ServerBoundLoadingScreen is sent by the client to tell the server about the state of the loading screen
 /// that the client is currently displaying.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ServerboundLoadingScreen {
@@ -7963,7 +7963,7 @@ impl wire::Decode for CurrentStructureFeature {
     }
 }
 
-/// ServerboundDiagnostics is sent by the client to tell the server about the performance diagnostics of the
+/// ServerBoundDiagnostics is sent by the client to tell the server about the performance diagnostics of the
 /// client. It is sent by the client roughly every 500ms or 10 in-game ticks when the "Creator > Enable Client
 /// Diagnostics" setting is enabled.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -8447,7 +8447,7 @@ impl wire::Decode for PlayerLocation {
     }
 }
 
-/// ClientboundControlSchemeSet is sent by the server upon the client's request or the usage of the vanilla
+/// ClientBoundControlSchemeSet is sent by the server upon the client's request or the usage of the vanilla
 /// /controlscheme command. It is used to set the control scheme of the client, often used in combination with
 /// custom cameras.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -8508,7 +8508,7 @@ impl wire::Decode for PrimitiveShapes {
     }
 }
 
-/// ServerboundPackSettingChange is sent by the client to the server when it changes a setting for a specific
+/// ServerBoundPackSettingChange is sent by the client to the server when it changes a setting for a specific
 /// pack in the pack settings UI.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ServerboundPackSettingChange {
@@ -8542,7 +8542,7 @@ impl wire::Decode for ServerboundPackSettingChange {
     }
 }
 
-/// ClientboundDataStore is sent by the server to update, change or remove data store entries on the client.
+/// ClientBoundDataStore is sent by the server to update, change or remove data store entries on the client.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ClientboundDataStore {
     /// `updates` is an array of data store changes. Each entry has its own change type discriminator.
@@ -8658,7 +8658,7 @@ impl wire::Decode for GraphicsOverrideParameter {
     }
 }
 
-/// ServerboundDataStore is sent by the client to update a data store property on the server.
+/// ServerBoundDataStore is sent by the client to update a data store property on the server.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ServerboundDataStore {
     /// `update` contains the data store update.
@@ -8683,7 +8683,7 @@ impl wire::Decode for ServerboundDataStore {
     }
 }
 
-/// ClientboundDataDrivenUIShowScreen is sent by the server to show a data-driven UI screen on the client.
+/// ClientBoundDataDrivenUIShowScreen is sent by the server to show a data-driven UI screen on the client.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ClientboundDataDrivenUIShowScreen {
     /// `screen_id` is the identifier of the screen to show.
@@ -8732,7 +8732,7 @@ impl wire::Decode for ClientboundDataDrivenUIShowScreen {
     }
 }
 
-/// ClientboundDataDrivenUICloseScreen is sent by the server to close a data-driven UI screen on the client.
+/// ClientBoundDataDrivenUICloseScreen is sent by the server to close a data-driven UI screen on the client.
 /// If FormID is not set, all data-driven UI screens are closed.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ClientboundDataDrivenUICloseScreen {
@@ -8771,7 +8771,7 @@ impl wire::Decode for ClientboundDataDrivenUICloseScreen {
     }
 }
 
-/// ClientboundDataDrivenUIReload is sent by the server to reload the data-driven UI on the client.
+/// ClientBoundDataDrivenUIReload is sent by the server to reload the data-driven UI on the client.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ClientboundDataDrivenUIReload {
 }
@@ -8793,7 +8793,7 @@ impl wire::Decode for ClientboundDataDrivenUIReload {
     }
 }
 
-/// ClientboundTextureShift is sent by the server to control texture shift animations on the client.
+/// ClientBoundTextureShift is sent by the server to control texture shift animations on the client.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ClientboundTextureShift {
     /// `action_id` is the texture shift action to perform. It is one of the constants above.
@@ -9026,7 +9026,7 @@ impl wire::Decode for PartyChanged {
     }
 }
 
-/// ServerboundDataDrivenScreenClosed is sent by the client when a data-driven UI screen is closed.
+/// ServerBoundDataDrivenScreenClosed is sent by the client when a data-driven UI screen is closed.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ServerboundDataDrivenScreenClosed {
     /// `form_id` is the unique instance ID of the form that was closed.
@@ -9082,7 +9082,7 @@ impl wire::Decode for SyncWorldClocks {
     }
 }
 
-/// ClientboundAttributeLayerSync is sent by the server to synchronise attribute layers with the client.
+/// ClientBoundAttributeLayerSync is sent by the server to synchronise attribute layers with the client.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ClientboundAttributeLayerSync {
     pub data: AttributeLayerSyncData,

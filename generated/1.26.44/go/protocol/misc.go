@@ -141,7 +141,7 @@ const (
 // Marshal reads or writes AnimationMode through its uint8 wire encoding.
 func (x *AnimationMode) Marshal(io IO) { io.Uint8((*uint8)(x)) }
 
-// ArmorSlotAndDamagePair represents an entry for a single piece of armour that should be damaged.
+// PlayerArmourDamageEntry represents an entry for a single piece of armour that should be damaged.
 type ArmorSlotAndDamagePair struct {
 	// ArmourSlot is the index of the armour slot to damage.
 	ArmorSlot LegacyArmorSlot
@@ -155,7 +155,7 @@ func (x *ArmorSlotAndDamagePair) Marshal(io IO) {
 	io.Int16(&x.Damage)
 }
 
-// ArrowData represents an arrow debug shape.
+// ArrowShape represents an arrow debug shape.
 type ArrowData struct {
 	// ArrowEndLocation is the arrow end location of the shape.
 	ArrowEndLocation Optional[mgl32.Vec3]
@@ -210,7 +210,7 @@ func MarshalBedrockDDUI(io IO, x *BedrockDDUI) {
 	})
 }
 
-// BedrockDDUIDataStoreChange represents a change to a data store property value.
+// DataStoreChange represents a change to a data store property value.
 type BedrockDDUIDataStoreChange struct {
 	// DataStoreName is the name of the data store.
 	DataStoreName string
@@ -637,7 +637,7 @@ func (x *CodeBuilderRuntimeAction) Marshal(io IO) {
 	io.StringLimits(&x.CodeBuilderRuntimeAction, 0, 16)
 }
 
-// CodeBuilderScoreboard is an event sent by the server when a code builder scoreboard is updated.
+// CodeBuilderScoreboardEvent is an event sent by the server when a code builder scoreboard is updated.
 type CodeBuilderScoreboard struct {
 	// ObjectiveName ...
 	ObjectiveName string
@@ -676,7 +676,7 @@ const (
 // Marshal reads or writes CodeBuilderStorageQueryOptionsOperation through its uint8 wire encoding.
 func (x *CodeBuilderStorageQueryOptionsOperation) Marshal(io IO) { io.Uint8((*uint8)(x)) }
 
-// ComposterUsed is the event data sent when a composter is interacted with.
+// ComposterInteractEvent is the event data sent when a composter is interacted with.
 type ComposterUsed struct {
 	// BlockInteractionType ...
 	BlockInteractionType MinecraftEventingPOIBlockInteractionType
@@ -692,7 +692,7 @@ func (x *ComposterUsed) Marshal(io IO) {
 	io.Varint32(&x.ItemID)
 }
 
-// ConeData represents a cone debug shape.
+// ConeShape represents a cone debug shape.
 type ConeData struct {
 	// Radii are the radii along the X/Z axes of the cone base.
 	Radii mgl32.Vec2
@@ -951,7 +951,7 @@ func (x *CraftRepairAndDisenchantStackRequestAction) Marshal(io IO) {
 	Minimum(io, &x.RepairCost, 0)
 }
 
-// CylinderData represents a cylinder debug shape.
+// CylinderShape represents a cylinder debug shape.
 type CylinderData struct {
 	// RadiusX is the radius of the cylinder along the X axis.
 	RadiusX mgl32.Vec2
@@ -973,7 +973,7 @@ func (x *CylinderData) Marshal(io IO) {
 	io.Uint8(&x.NumSegments)
 }
 
-// DataItemByte represents the way the noise of an environment attribute transition is aligned.
+// NoiseAlignment represents the way the noise of an environment attribute transition is aligned.
 type DataItemByte struct {
 	// Type is the type of the alignment. It is one of the NoiseAlignmentType constants above.
 	Type DataItemType
@@ -1353,7 +1353,7 @@ func (x *ECSProfilingDiagnosticsEntityDiagnosticTimingInfo) Marshal(io IO) {
 	io.Uint8(&x.PercentOfTotal)
 }
 
-// ECSProfilingDiagnosticsSystemCategory maps a diagnostics category name to a system index.
+// SystemCategory maps a diagnostics category name to a system index.
 type ECSProfilingDiagnosticsSystemCategory struct {
 	CategoryName string
 	SystemIndex  uint64
@@ -1365,7 +1365,7 @@ func (x *ECSProfilingDiagnosticsSystemCategory) Marshal(io IO) {
 	io.Uint64(&x.SystemIndex)
 }
 
-// ECSProfilingDiagnosticsSystemDiagnosticTimingInfo represents diagnostics for a specific system index.
+// SystemDiagnosticTimingInfo represents diagnostics for a specific system index.
 type ECSProfilingDiagnosticsSystemDiagnosticTimingInfo struct {
 	// DisplayName is the name to display for this timing entry.
 	DisplayName string
@@ -1397,7 +1397,7 @@ const (
 // Marshal reads or writes EditorWorldType through its int32 wire encoding.
 func (x *EditorWorldType) Marshal(io IO) { io.Varint32((*int32)(x)) }
 
-// EduSharedURIResource is an education edition feature that is used for transmitting education resource
+// EducationSharedResourceURI is an education edition feature that is used for transmitting education resource
 // settings to clients. It contains a button name and a link URL.
 type EduSharedURIResource struct {
 	// ButtonName is the button name of the resource URI.
@@ -1412,7 +1412,7 @@ func (x *EduSharedURIResource) Marshal(io IO) {
 	io.String(&x.LinkURI)
 }
 
-// EllipsoidData represents an ellipsoid debug shape.
+// EllipsoidShape represents an ellipsoid debug shape.
 type EllipsoidData struct {
 	// Radii are the radii of the ellipsoid along the X, Y and Z axes.
 	Radii mgl32.Vec3
@@ -1450,7 +1450,7 @@ func (x *Experiments) Marshal(io IO) {
 	io.Bool(&x.ExperimentsEverToggled)
 }
 
-// ExternalLinkSettings ...
+// EducationExternalLinkSettings ...
 type ExternalLinkSettings struct {
 	// URL is the external link URL.
 	URL string
@@ -2407,7 +2407,7 @@ const (
 // Marshal reads or writes NewInteractionModel through its int32 wire encoding.
 func (x *NewInteractionModel) Marshal(io IO) { io.Varint32((*int32)(x)) }
 
-// POICauldronUsed is the event data sent when a cauldron is interacted with.
+// CauldronInteractEvent is the event data sent when a cauldron is interacted with.
 type POICauldronUsed struct {
 	// BlockInteractionType ...
 	BlockInteractionType MinecraftEventingPOIBlockInteractionType
@@ -2526,7 +2526,7 @@ const (
 // Marshal reads or writes PhotoType through its uint8 wire encoding.
 func (x *PhotoType) Marshal(io IO) { io.Uint8((*uint8)(x)) }
 
-// PiglinBarter is called when a player drops gold ingots to a piglin to initiate a trade for an item.
+// PiglinBarterEvent is called when a player drops gold ingots to a piglin to initiate a trade for an item.
 type PiglinBarter struct {
 	// ItemID ...
 	ItemID int32
@@ -2836,8 +2836,7 @@ func (x *SemVersionData) Marshal(io IO) {
 	io.String(&x.Version)
 }
 
-// SerializedAbilitiesData represents various data about the abilities of a player, such as ability layers or
-// permissions.
+// AbilityData represents various data about the abilities of a player, such as ability layers or permissions.
 type SerializedAbilitiesData struct {
 	// EntityUniqueID is a unique identifier of the player. It appears it is not required to fill this field out
 	// with a correct value. Simply writing 0 seems to work.
@@ -2879,8 +2878,7 @@ func (x *SerializedAbilitiesDataSerializedLayer) Marshal(io IO) {
 	io.Float32(&x.WalkSpeed)
 }
 
-// SerializedNoiseBlockSpecifier specifies a block placed by the gradient noise based on a threshold and
-// range.
+// NoiseBlockSpecifier specifies a block placed by the gradient noise based on a threshold and range.
 type SerializedNoiseBlockSpecifier struct {
 	// Noise is the noise name.
 	Noise string
@@ -2900,7 +2898,7 @@ func (x *SerializedNoiseBlockSpecifier) Marshal(io IO) {
 	io.Uint32(&x.Block)
 }
 
-// SerializedPersonaPieceHandle represents a piece of a persona skin. All pieces are sent separately.
+// PersonaPiece represents a piece of a persona skin. All pieces are sent separately.
 type SerializedPersonaPieceHandle struct {
 	// PieceId is a UUID that identifies the piece itself, which is unique for each separate piece.
 	PieceID string
@@ -2989,7 +2987,7 @@ func (x *ServerBlockProperty) Marshal(io IO) {
 	io.NBT(&x.BlockDefinition, NBTNetwork)
 }
 
-// ServerConfigurationClientStoreEntryPointConfiguration contains information about the store entry point.
+// StoreEntryPointInfo contains information about the store entry point.
 type ServerConfigurationClientStoreEntryPointConfiguration struct {
 	// StoreID is the store identifier.
 	StoreID string
@@ -3003,8 +3001,7 @@ func (x *ServerConfigurationClientStoreEntryPointConfiguration) Marshal(io IO) {
 	io.String(&x.StoreName)
 }
 
-// ServerConfigurationGatheringsConfigurationJoinInfo contains information about the gathering (experience)
-// the player is joining.
+// GatheringJoinInfo contains information about the gathering (experience) the player is joining.
 type ServerConfigurationGatheringsConfigurationJoinInfo struct {
 	// ExperienceID is the UUID of the experience.
 	ExperienceID uuid.UUID
@@ -3087,7 +3084,7 @@ func (x *ServerSoundHandle) Marshal(io IO) {
 	io.Uint64(&x.ServerSoundHandle)
 }
 
-// ServerWaypoint holds optional data for a locator bar waypoint.
+// Waypoint holds optional data for a locator bar waypoint.
 type ServerWaypoint struct {
 	// UpdateFlag is a bitmask indicating which optional fields are set.
 	UpdateFlag uint32
@@ -3324,8 +3321,8 @@ func (x *SyncedAttribute) Marshal(io IO) {
 	io.Float32(&x.MaxValue)
 }
 
-// SyncedPlayerMovementSettings represents the different server authoritative movement settings. These control
-// how the client will provide input to the server.
+// PlayerMovementSettings represents the different server authoritative movement settings. These control how
+// the client will provide input to the server.
 type SyncedPlayerMovementSettings struct {
 	// RewindHistorySize is the amount of history to keep at maximum.
 	RewindHistorySize int32

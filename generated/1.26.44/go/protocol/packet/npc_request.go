@@ -6,7 +6,7 @@ import (
 	"protocolgen/generated/1.26.44/go/protocol"
 )
 
-// NpcRequest is sent by the client when it interacts with an NPC. The packet is specifically made for
+// NPCRequest is sent by the client when it interacts with an NPC. The packet is specifically made for
 // Education Edition, where NPCs are available to use.
 type NpcRequest struct {
 	NPCRuntimeID uint64
