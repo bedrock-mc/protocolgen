@@ -8523,6 +8523,8 @@ impl wire::Decode for MissingBlobData {
 /// for movements where high accuracy isn't needed, such as for long range teleporting.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct MoveActorAbsoluteData {
+    /// EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and
+    /// entities are generally identified in packets using this runtime ID.
     pub actor_runtime_id: ActorRuntimeID,
     pub header: wire::U8,
     /// `position` is the position to spawn the entity on. If the entity is on a distance that the player cannot
@@ -8568,6 +8570,8 @@ impl wire::Decode for MoveActorAbsoluteData {
 /// contains any deltas.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct MoveActorDeltaData {
+    /// EntityRuntimeID is the runtime ID of the entity that is being moved. The packet works provided a
+    /// non-player entity with this runtime ID is present.
     pub actor_runtime_id: ActorRuntimeID,
     /// Wire presence: optional value is preceded by a presence marker.
     pub new_position_x: Option<wire::F32LE>,

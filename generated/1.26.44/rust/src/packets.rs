@@ -534,6 +534,9 @@ pub struct AddPlayer {
     pub entity_data: SynchedActorDataCopyableDataList,
     pub synched_properties: PropertySyncData,
     pub abilities_data: SerializedAbilitiesData,
+    /// EntityLinks is a list of entity links that are currently active on the player. These links alter the way
+    /// the player shows up when first spawned in terms of it shown as riding an entity. Setting these links is
+    /// important for new viewers to see the player is riding another entity.
     pub actor_links: Vec<EntityLink>,
     /// `device_id` is the device ID set in one of the files found in the storage of the device of the player. It
     /// may be changed freely, so it should not be relied on for anything.
@@ -612,6 +615,8 @@ impl wire::Decode for AddPlayer {
 pub struct AddActor {
     pub target_actor_id: ActorUniqueID,
     pub target_runtime_id: ActorRuntimeID,
+    /// EntityType is the string entity type of the entity, for example 'minecraft:skeleton'. A list of these
+    /// entities may be found online.
     pub actor_type: String,
     /// `position` is the position to spawn the entity on. If the entity is on a distance that the player cannot
     /// see it, the entity will still show up if the player moves closer.
@@ -625,6 +630,9 @@ pub struct AddActor {
     pub attributes_list: Vec<SyncedAttribute>,
     pub actor_data: SynchedActorDataCopyableDataList,
     pub synched_properties: PropertySyncData,
+    /// EntityLinks is a list of entity links that are currently active on the entity. These links alter the way
+    /// the entity shows up when first spawned in terms of it shown as riding an entity. Setting these links is
+    /// important for new viewers to see the entity is riding another entity.
     pub actor_links: Vec<EntityLink>,
 }
 
@@ -5339,6 +5347,8 @@ impl wire::Decode for EducationSettings {
 /// the server, after which the server will broadcast the packet to other players online.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct Emote {
+    /// EntityRuntimeID is the entity that sent the emote. When a player sends this packet, it has this field set
+    /// as its own entity runtime ID.
     pub actor_runtime_id: ActorRuntimeID,
     /// `emote_id` is the ID of the emote to send.
     pub emote_id: String,
@@ -8251,6 +8261,7 @@ pub struct ClientMovementPredictionSync {
     pub actor_data_flag: ActorDataFlagComponent,
     pub actor_bounding_box: ActorDataBoundingBoxComponent,
     pub movement_attributes: [wire::F32LE; 9],
+    /// EntityUniqueID is the unique ID of the entity that the prediction data applies to.
     pub actor_unique_id: ActorUniqueID,
     pub actor_flying_state: bool,
 }
