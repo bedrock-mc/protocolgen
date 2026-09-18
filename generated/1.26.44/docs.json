@@ -79,7 +79,7 @@
     },
     {
       "type_id": "AddBehaviorTreePacket",
-      "doc": "AddBehaviorTree is sent by the server to the client. The packet is currently unused by both client and\nserver."
+      "doc": "AddBehaviourTree is sent by the server to the client. The packet is currently unused by both client and\nserver."
     },
     {
       "type_id": "AddBehaviorTreePacket",
@@ -198,7 +198,7 @@
     },
     {
       "type_id": "AgentActionEventPacket",
-      "doc": "AgentActionEvent is an Education Edition packet sent from the server to the client to return a response to a\npreviously requested action."
+      "doc": "AgentAction is an Education Edition packet sent from the server to the client to return a response to a\npreviously requested action."
     },
     {
       "type_id": "AgentActionEventPacket",
@@ -283,7 +283,7 @@
     },
     {
       "type_id": "ArmorSlotAndDamagePair",
-      "doc": "ArmorSlotAndDamagePair represents an entry for a single piece of armour that should be damaged."
+      "doc": "PlayerArmourDamageEntry represents an entry for a single piece of armour that should be damaged."
     },
     {
       "type_id": "ArmorSlotAndDamagePair",
@@ -297,7 +297,7 @@
     },
     {
       "type_id": "ArrowDataPayload",
-      "doc": "ArrowData represents an arrow debug shape."
+      "doc": "ArrowShape represents an arrow debug shape."
     },
     {
       "type_id": "ArrowDataPayload",
@@ -584,7 +584,7 @@
     },
     {
       "type_id": "Bedrock::DDUI::DataStoreChange",
-      "doc": "BedrockDDUIDataStoreChange represents a change to a data store property value."
+      "doc": "DataStoreChange represents a change to a data store property value."
     },
     {
       "type_id": "Bedrock::DDUI::DataStoreChange",
@@ -608,7 +608,7 @@
     },
     {
       "type_id": "Bedrock::Profile::Whisker::Diagnostics::ScopeDataSummary",
-      "doc": "BedrockProfileWhiskerDiagnosticsScopeDataSummary represents a whisker profiler scope diagnostic summary."
+      "doc": "WhiskerScopeDataSummary represents a whisker profiler scope diagnostic summary."
     },
     {
       "type_id": "Bedrock::Profile::Whisker::Diagnostics::ScopeDataSummary",
@@ -893,7 +893,7 @@
     },
     {
       "type_id": "BiomeMountainParamsData",
-      "doc": "BiomeMountainParamsData specifies the parameters for a mountain biome."
+      "doc": "BiomeMountainParameters specifies the parameters for a mountain biome."
     },
     {
       "type_id": "BiomeMountainParamsData",
@@ -927,7 +927,7 @@
     },
     {
       "type_id": "BiomeMultinoiseGenRulesData",
-      "doc": "BiomeMultinoiseGenRulesData specifies the rules for multi-noise biomes, which are biomes that are defined by\nmultiple noise parameters instead of just temperature and humidity."
+      "doc": "BiomeMultiNoiseRules specifies the rules for multi-noise biomes, which are biomes that are defined by\nmultiple noise parameters instead of just temperature and humidity."
     },
     {
       "type_id": "BiomeMultinoiseGenRulesData",
@@ -1127,7 +1127,7 @@
     },
     {
       "type_id": "BiomeWeightedTemperatureData",
-      "doc": "BiomeWeightedTemperatureData defines the weight for a temperature, used for weighted randomness."
+      "doc": "BiomeTemperatureWeight defines the weight for a temperature, used for weighted randomness."
     },
     {
       "type_id": "BiomeWeightedTemperatureData",
@@ -1663,15 +1663,15 @@
     },
     {
       "type_id": "ClientboundAttributeLayerSyncPacket",
-      "doc": "ClientboundAttributeLayerSync is sent by the server to synchronise attribute layers with the client."
+      "doc": "ClientBoundAttributeLayerSync is sent by the server to synchronise attribute layers with the client."
     },
     {
       "type_id": "ClientboundCloseFormPacket",
-      "doc": "ClientboundCloseForm is sent by the server to clear the entire form stack of the client. This means that all\nforms that are currently open will be closed. This does not affect inventories and other containers."
+      "doc": "ClientBoundCloseForm is sent by the server to clear the entire form stack of the client. This means that all\nforms that are currently open will be closed. This does not affect inventories and other containers."
     },
     {
       "type_id": "ClientboundControlSchemeSetPacket",
-      "doc": "ClientboundControlSchemeSet is sent by the server upon the client's request or the usage of the vanilla\n/controlscheme command. It is used to set the control scheme of the client, often used in combination with\ncustom cameras."
+      "doc": "ClientBoundControlSchemeSet is sent by the server upon the client's request or the usage of the vanilla\n/controlscheme command. It is used to set the control scheme of the client, often used in combination with\ncustom cameras."
     },
     {
       "type_id": "ClientboundControlSchemeSetPacket",
@@ -1680,7 +1680,7 @@
     },
     {
       "type_id": "ClientboundDataDrivenUICloseScreenPacket",
-      "doc": "ClientboundDataDrivenUICloseScreen is sent by the server to close a data-driven UI screen on the client.\nIf FormID is not set, all data-driven UI screens are closed."
+      "doc": "ClientBoundDataDrivenUICloseScreen is sent by the server to close a data-driven UI screen on the client.\nIf FormID is not set, all data-driven UI screens are closed."
     },
     {
       "type_id": "ClientboundDataDrivenUICloseScreenPacket",
@@ -1689,11 +1689,11 @@
     },
     {
       "type_id": "ClientboundDataDrivenUIReloadPacket",
-      "doc": "ClientboundDataDrivenUIReload is sent by the server to reload the data-driven UI on the client."
+      "doc": "ClientBoundDataDrivenUIReload is sent by the server to reload the data-driven UI on the client."
     },
     {
       "type_id": "ClientboundDataDrivenUIShowScreenPacket",
-      "doc": "ClientboundDataDrivenUIShowScreen is sent by the server to show a data-driven UI screen on the client."
+      "doc": "ClientBoundDataDrivenUIShowScreen is sent by the server to show a data-driven UI screen on the client."
     },
     {
       "type_id": "ClientboundDataDrivenUIShowScreenPacket",
@@ -1712,7 +1712,7 @@
     },
     {
       "type_id": "ClientboundDataStorePacket",
-      "doc": "ClientboundDataStore is sent by the server to update, change or remove data store entries on the client."
+      "doc": "ClientBoundDataStore is sent by the server to update, change or remove data store entries on the client."
     },
     {
       "type_id": "ClientboundDataStorePacket",
@@ -1721,7 +1721,7 @@
     },
     {
       "type_id": "ClientboundDebugRendererPacket",
-      "doc": "ClientboundDebugRenderer is sent by the server to spawn an outlined cube on client-side."
+      "doc": "ClientBoundDebugRenderer is sent by the server to spawn an outlined cube on client-side."
     },
     {
       "type_id": "ClientboundDebugRendererPacket",
@@ -1730,7 +1730,7 @@
     },
     {
       "type_id": "ClientboundMapItemDataPacket",
-      "doc": "ClientboundMapItemData is sent by the server to the client to update the data of a map shown to the client.\nIt is sent with a combination of flags that specify what data is updated.\nThe ClientBoundMapItemData packet may be used to update specific parts of the map only. It is not required\nto send the entire map each time when updating one part."
+      "doc": "ClientBoundMapItemData is sent by the server to the client to update the data of a map shown to the client.\nIt is sent with a combination of flags that specify what data is updated.\nThe ClientBoundMapItemData packet may be used to update specific parts of the map only. It is not required\nto send the entire map each time when updating one part."
     },
     {
       "type_id": "ClientboundMapItemDataPacket",
@@ -1769,7 +1769,7 @@
     },
     {
       "type_id": "ClientboundTextureShiftPacket",
-      "doc": "ClientboundTextureShift is sent by the server to control texture shift animations on the client."
+      "doc": "ClientBoundTextureShift is sent by the server to control texture shift animations on the client."
     },
     {
       "type_id": "ClientboundTextureShiftPacket",
@@ -1954,7 +1954,7 @@
     },
     {
       "type_id": "ConeDataPayload",
-      "doc": "ConeData represents a cone debug shape."
+      "doc": "ConeShape represents a cone debug shape."
     },
     {
       "type_id": "ConeDataPayload",
@@ -2158,7 +2158,7 @@
     },
     {
       "type_id": "CylinderDataPayload",
-      "doc": "CylinderData represents a cylinder debug shape."
+      "doc": "CylinderShape represents a cylinder debug shape."
     },
     {
       "type_id": "CylinderDataPayload",
@@ -2182,7 +2182,7 @@
     },
     {
       "type_id": "DataItemBytePayload",
-      "doc": "DataItemByte represents the way the noise of an environment attribute transition is aligned."
+      "doc": "NoiseAlignment represents the way the noise of an environment attribute transition is aligned."
     },
     {
       "type_id": "DataItemBytePayload",
@@ -2251,11 +2251,11 @@
     },
     {
       "type_id": "ECS::Profiling::Diagnostics::SystemCategory",
-      "doc": "ECSProfilingDiagnosticsSystemCategory maps a diagnostics category name to a system index."
+      "doc": "SystemCategory maps a diagnostics category name to a system index."
     },
     {
       "type_id": "ECS::Profiling::Diagnostics::SystemDiagnosticTimingInfo",
-      "doc": "ECSProfilingDiagnosticsSystemDiagnosticTimingInfo represents diagnostics for a specific system index."
+      "doc": "SystemDiagnosticTimingInfo represents diagnostics for a specific system index."
     },
     {
       "type_id": "ECS::Profiling::Diagnostics::SystemDiagnosticTimingInfo",
@@ -2293,7 +2293,7 @@
     },
     {
       "type_id": "EduSharedUriResource",
-      "doc": "EduSharedURIResource is an education edition feature that is used for transmitting\neducation resource settings to clients. It contains a button name and a link URL."
+      "doc": "EducationSharedResourceURI is an education edition feature that is used for transmitting\neducation resource settings to clients. It contains a button name and a link URL."
     },
     {
       "type_id": "EduSharedUriResource",
@@ -2345,7 +2345,7 @@
     },
     {
       "type_id": "EllipsoidDataPayload",
-      "doc": "EllipsoidData represents an ellipsoid debug shape."
+      "doc": "EllipsoidShape represents an ellipsoid debug shape."
     },
     {
       "type_id": "EllipsoidDataPayload",
@@ -2396,7 +2396,7 @@
     },
     {
       "type_id": "ExternalLinkSettings",
-      "doc": "ExternalLinkSettings ..."
+      "doc": "EducationExternalLinkSettings ..."
     },
     {
       "type_id": "ExternalLinkSettings",
@@ -2517,7 +2517,7 @@
     },
     {
       "type_id": "GuiDataPickItemPacket",
-      "doc": "GuiDataPickItem is sent by the server to make the client 'select' a hot bar slot. It currently appears to\nbe broken however, and does not actually set the selected slot to the hot bar slot set in the packet."
+      "doc": "GUIDataPickItem is sent by the server to make the client 'select' a hot bar slot. It currently appears to\nbe broken however, and does not actually set the selected slot to the hot bar slot set in the packet."
     },
     {
       "type_id": "GuiDataPickItemPacket",
@@ -2536,7 +2536,7 @@
     },
     {
       "type_id": "HurtArmorPacket",
-      "doc": "HurtArmor is sent by the server to damage the player's armour after being hit. The packet should never be\nused by servers as it hands the responsibility over to the player completely, while the server can easily\nreliably update the armour damage of players itself."
+      "doc": "HurtArmour is sent by the server to damage the player's armour after being hit. The packet should never be\nused by servers as it hands the responsibility over to the player completely, while the server can easily\nreliably update the armour damage of players itself."
     },
     {
       "type_id": "HurtArmorPacket",
@@ -2896,7 +2896,7 @@
     },
     {
       "type_id": "LegacyTelemetryEventPacketPayload::CodeBuilderScoreboard",
-      "doc": "CodeBuilderScoreboard is an event sent by the server when a code builder scoreboard is updated."
+      "doc": "CodeBuilderScoreboardEvent is an event sent by the server when a code builder scoreboard is updated."
     },
     {
       "type_id": "LegacyTelemetryEventPacketPayload::CodeBuilderScoreboard",
@@ -2910,7 +2910,7 @@
     },
     {
       "type_id": "LegacyTelemetryEventPacketPayload::ComposterUsed",
-      "doc": "ComposterUsed is the event data sent when a composter is interacted with."
+      "doc": "ComposterInteractEvent is the event data sent when a composter is interacted with."
     },
     {
       "type_id": "LegacyTelemetryEventPacketPayload::ComposterUsed",
@@ -2924,11 +2924,11 @@
     },
     {
       "type_id": "LegacyTelemetryEventPacketPayload::ItemUsed",
-      "doc": "ItemUsed is when a player right clicks a item."
+      "doc": "ItemUsedEvent is when a player right clicks a item."
     },
     {
       "type_id": "LegacyTelemetryEventPacketPayload::POICauldronUsed",
-      "doc": "POICauldronUsed is the event data sent when a cauldron is interacted with."
+      "doc": "CauldronInteractEvent is the event data sent when a cauldron is interacted with."
     },
     {
       "type_id": "LegacyTelemetryEventPacketPayload::POICauldronUsed",
@@ -2942,7 +2942,7 @@
     },
     {
       "type_id": "LegacyTelemetryEventPacketPayload::PiglinBarter",
-      "doc": "PiglinBarter is called when a player drops gold ingots to a piglin to initiate a trade for an item."
+      "doc": "PiglinBarterEvent is called when a player drops gold ingots to a piglin to initiate a trade for an item."
     },
     {
       "type_id": "LegacyTelemetryEventPacketPayload::PiglinBarter",
@@ -3144,7 +3144,7 @@
     },
     {
       "type_id": "MapItemTrackedActor::UniqueId",
-      "doc": "MapItemTrackedActorUniqueID is an object on a map that is 'tracked' by the client, such as an entity or a block. This\nobject may move, which is handled client-side."
+      "doc": "MapTrackedObject is an object on a map that is 'tracked' by the client, such as an entity or a block. This\nobject may move, which is handled client-side."
     },
     {
       "type_id": "MapItemTrackedActor::UniqueId",
@@ -3177,7 +3177,7 @@
     },
     {
       "type_id": "MobArmorEquipmentPacket",
-      "doc": "MobArmorEquipment is sent by the server to the client to update the armour an entity is wearing. It is\nsent for both players and other entities, such as zombies."
+      "doc": "MobArmourEquipment is sent by the server to the client to update the armour an entity is wearing. It is\nsent for both players and other entities, such as zombies."
     },
     {
       "type_id": "MobArmorEquipmentPacket",
@@ -3319,7 +3319,7 @@
     },
     {
       "type_id": "MultiplayerSettingsPacket",
-      "doc": "MultiplayerSettings is sent by the client to update multi-player related settings server-side and sent back\nto online players by the server.\nThe MultiPlayerSettings packet is a Minecraft: Education Edition packet. It has no functionality for the\nbase game."
+      "doc": "MultiPlayerSettings is sent by the client to update multi-player related settings server-side and sent back\nto online players by the server.\nThe MultiPlayerSettings packet is a Minecraft: Education Edition packet. It has no functionality for the\nbase game."
     },
     {
       "type_id": "MultiplayerSettingsPacket",
@@ -3394,7 +3394,7 @@
     },
     {
       "type_id": "NpcDialoguePacket",
-      "doc": "NpcDialogue is a packet that allows the client to display dialog boxes for interacting with NPCs."
+      "doc": "NPCDialogue is a packet that allows the client to display dialog boxes for interacting with NPCs."
     },
     {
       "type_id": "NpcDialoguePacket",
@@ -3428,7 +3428,7 @@
     },
     {
       "type_id": "NpcRequestPacket",
-      "doc": "NpcRequest is sent by the client when it interacts with an NPC.\nThe packet is specifically made for Education Edition, where NPCs are available to use."
+      "doc": "NPCRequest is sent by the client when it interacts with an NPC.\nThe packet is specifically made for Education Edition, where NPCs are available to use."
     },
     {
       "type_id": "NpcRequestPacket",
@@ -3465,7 +3465,7 @@
     },
     {
       "type_id": "PackInstanceId",
-      "doc": "PackInstanceID represents a resource pack sent on the stack of the client. When sent, the client will\napply them in the order of the stack sent."
+      "doc": "StackResourcePack represents a resource pack sent on the stack of the client. When sent, the client will\napply them in the order of the stack sent."
     },
     {
       "type_id": "PackInstanceId",
@@ -3617,7 +3617,7 @@
     },
     {
       "type_id": "PlayerArmorDamagePacket",
-      "doc": "PlayerArmorDamage is sent by the server to damage the armour of a player. It is a very efficient packet,\nbut generally it's much easier to just send a slot update for the damaged armour."
+      "doc": "PlayerArmourDamage is sent by the server to damage the armour of a player. It is a very efficient packet,\nbut generally it's much easier to just send a slot update for the damaged armour."
     },
     {
       "type_id": "PlayerArmorDamagePacket",
@@ -3717,7 +3717,7 @@
     },
     {
       "type_id": "PlayerHotbarPacket",
-      "doc": "PlayerHotbar is sent by the server to the client. It used to be used to link hot bar slots of the player to\nactual slots in the inventory, but as of 1.2, this was changed and hot bar slots are no longer a free\nfloating part of the inventory.\nSince 1.2, the packet has been re-purposed, but its new functionality is not clear."
+      "doc": "PlayerHotBar is sent by the server to the client. It used to be used to link hot bar slots of the player to\nactual slots in the inventory, but as of 1.2, this was changed and hot bar slots are no longer a free\nfloating part of the inventory.\nSince 1.2, the packet has been re-purposed, but its new functionality is not clear."
     },
     {
       "type_id": "PlayerHotbarPacket",
@@ -4152,7 +4152,7 @@
     },
     {
       "type_id": "SerializedAbilitiesData",
-      "doc": "SerializedAbilitiesData represents various data about the abilities of a player, such as ability layers or permissions."
+      "doc": "AbilityData represents various data about the abilities of a player, such as ability layers or permissions."
     },
     {
       "type_id": "SerializedAbilitiesData",
@@ -4176,7 +4176,7 @@
     },
     {
       "type_id": "SerializedNoiseBlockSpecifier",
-      "doc": "SerializedNoiseBlockSpecifier specifies a block placed by the gradient noise based on a threshold and\nrange."
+      "doc": "NoiseBlockSpecifier specifies a block placed by the gradient noise based on a threshold and\nrange."
     },
     {
       "type_id": "SerializedNoiseBlockSpecifier",
@@ -4200,7 +4200,7 @@
     },
     {
       "type_id": "SerializedPersonaPieceHandle",
-      "doc": "SerializedPersonaPieceHandle represents a piece of a persona skin. All pieces are sent separately."
+      "doc": "PersonaPiece represents a piece of a persona skin. All pieces are sent separately."
     },
     {
       "type_id": "SerializedPersonaPieceHandle",
@@ -4229,7 +4229,7 @@
     },
     {
       "type_id": "ServerConfiguration::ClientStoreEntryPointConfiguration",
-      "doc": "ServerConfigurationClientStoreEntryPointConfiguration contains information about the store entry point."
+      "doc": "StoreEntryPointInfo contains information about the store entry point."
     },
     {
       "type_id": "ServerConfiguration::ClientStoreEntryPointConfiguration",
@@ -4243,7 +4243,7 @@
     },
     {
       "type_id": "ServerConfiguration::GatheringsConfigurationJoinInfo",
-      "doc": "ServerConfigurationGatheringsConfigurationJoinInfo contains information about the gathering (experience) the player is joining."
+      "doc": "GatheringJoinInfo contains information about the gathering (experience) the player is joining."
     },
     {
       "type_id": "ServerConfiguration::GatheringsConfigurationJoinInfo",
@@ -4345,7 +4345,7 @@
     },
     {
       "type_id": "ServerWaypoint::Payload",
-      "doc": "ServerWaypoint holds optional data for a locator bar waypoint."
+      "doc": "Waypoint holds optional data for a locator bar waypoint."
     },
     {
       "type_id": "ServerWaypoint::Payload",
@@ -4389,7 +4389,7 @@
     },
     {
       "type_id": "ServerboundDataDrivenScreenClosedPacket",
-      "doc": "ServerboundDataDrivenScreenClosed is sent by the client when a data-driven UI screen is closed."
+      "doc": "ServerBoundDataDrivenScreenClosed is sent by the client when a data-driven UI screen is closed."
     },
     {
       "type_id": "ServerboundDataDrivenScreenClosedPacket",
@@ -4403,7 +4403,7 @@
     },
     {
       "type_id": "ServerboundDataStorePacket",
-      "doc": "ServerboundDataStore is sent by the client to update a data store property on the server."
+      "doc": "ServerBoundDataStore is sent by the client to update a data store property on the server."
     },
     {
       "type_id": "ServerboundDataStorePacket",
@@ -4412,7 +4412,7 @@
     },
     {
       "type_id": "ServerboundDiagnosticsPacket",
-      "doc": "ServerboundDiagnostics is sent by the client to tell the server about the performance diagnostics\nof the client. It is sent by the client roughly every 500ms or 10 in-game ticks when the\n\"Creator \u003e Enable Client Diagnostics\" setting is enabled."
+      "doc": "ServerBoundDiagnostics is sent by the client to tell the server about the performance diagnostics\nof the client. It is sent by the client roughly every 500ms or 10 in-game ticks when the\n\"Creator \u003e Enable Client Diagnostics\" setting is enabled."
     },
     {
       "type_id": "ServerboundDiagnosticsPacket",
@@ -4486,7 +4486,7 @@
     },
     {
       "type_id": "ServerboundLoadingScreenPacket",
-      "doc": "ServerboundLoadingScreen is sent by the client to tell the server about the state of the loading\nscreen that the client is currently displaying."
+      "doc": "ServerBoundLoadingScreen is sent by the client to tell the server about the state of the loading\nscreen that the client is currently displaying."
     },
     {
       "type_id": "ServerboundLoadingScreenPacket",
@@ -4500,7 +4500,7 @@
     },
     {
       "type_id": "ServerboundPackSettingChangePacket",
-      "doc": "ServerboundPackSettingChange is sent by the client to the server when it changes a setting\nfor a specific pack in the pack settings UI."
+      "doc": "ServerBoundPackSettingChange is sent by the client to the server when it changes a setting\nfor a specific pack in the pack settings UI."
     },
     {
       "type_id": "ServerboundPackSettingChangePacket",
@@ -4798,7 +4798,7 @@
     },
     {
       "type_id": "SharedTypes::v1_21_50::CameraAimAssistCategoryDefinition",
-      "doc": "CameraAimAssistCategoryDefinition is an aim assist category that defines priorities for specific blocks and entities."
+      "doc": "CameraAimAssistCategory is an aim assist category that defines priorities for specific blocks and entities."
     },
     {
       "type_id": "SharedTypes::v1_21_50::CameraAimAssistCategoryDefinition",
@@ -4812,7 +4812,7 @@
     },
     {
       "type_id": "SharedTypes::v1_21_50::CameraAimAssistCategoryPriorities",
-      "doc": "CameraAimAssistCategoryPriorities represents the block and entity specific priorities for targetting. The aim\nassist will select the block or entity with the highest priority within the specified thresholds."
+      "doc": "CameraAimAssistPriorities represents the block and entity specific priorities for targetting. The aim\nassist will select the block or entity with the highest priority within the specified thresholds."
     },
     {
       "type_id": "SharedTypes::v1_21_50::CameraAimAssistCategoryPriorities",
@@ -5068,7 +5068,7 @@
     },
     {
       "type_id": "SkinImage",
-      "doc": "SkinImage represents a pyramid debug shape."
+      "doc": "PyramidShape represents a pyramid debug shape."
     },
     {
       "type_id": "SkinImage",
@@ -5300,7 +5300,7 @@
     },
     {
       "type_id": "SyncedPlayerMovementSettings",
-      "doc": "SyncedPlayerMovementSettings represents the different server authoritative movement settings. These control how\nthe client will provide input to the server."
+      "doc": "PlayerMovementSettings represents the different server authoritative movement settings. These control how\nthe client will provide input to the server."
     },
     {
       "type_id": "SyncedPlayerMovementSettings",
@@ -5661,7 +5661,7 @@
     },
     {
       "type_id": "VoxelShapes::SerializableCells",
-      "doc": "VoxelShapesSerializableCells represents a 3D grid of voxel cell data."
+      "doc": "VoxelCells represents a 3D grid of voxel cell data."
     },
     {
       "type_id": "VoxelShapes::SerializableCells",
@@ -5685,7 +5685,7 @@
     },
     {
       "type_id": "VoxelShapes::SerializableVoxelShape",
-      "doc": "VoxelShapesSerializableVoxelShape represents a voxel shape with cells and coordinate axes."
+      "doc": "VoxelShape represents a voxel shape with cells and coordinate axes."
     },
     {
       "type_id": "VoxelShapes::SerializableVoxelShape",
@@ -5766,7 +5766,7 @@
     },
     {
       "type_id": "cerealizer_ExperimentsAnon::ExperimentToggle",
-      "doc": "ExperimentToggle holds data on an experiment that is either enabled or disabled."
+      "doc": "ExperimentData holds data on an experiment that is either enabled or disabled."
     },
     {
       "type_id": "cerealizer_ExperimentsAnon::ExperimentToggle",

@@ -6,7 +6,7 @@ import (
 	"protocolgen/generated/1.26.44/go/protocol"
 )
 
-// ServerboundDataDrivenScreenClosed is sent by the client when a data-driven UI screen is closed.
+// ServerBoundDataDrivenScreenClosed is sent by the client when a data-driven UI screen is closed.
 type ServerboundDataDrivenScreenClosed struct {
 	// FormID is the unique instance ID of the form that was closed.
 	FormID uint32

@@ -6,7 +6,7 @@ import (
 	"protocolgen/generated/1.26.44/go/protocol"
 )
 
-// ClientboundTextureShift is sent by the server to control texture shift animations on the client.
+// ClientBoundTextureShift is sent by the server to control texture shift animations on the client.
 type ClientboundTextureShift struct {
 	// ActionID is the texture shift action to perform. It is one of the constants above.
 	ActionID protocol.ClientboundTextureShiftAction

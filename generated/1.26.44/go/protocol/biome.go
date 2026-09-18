@@ -257,7 +257,7 @@ func (x *BiomeMesaSurfaceData) Marshal(io IO) {
 	io.Bool(&x.HasForest)
 }
 
-// BiomeMountainParamsData specifies the parameters for a mountain biome.
+// BiomeMountainParameters specifies the parameters for a mountain biome.
 type BiomeMountainParamsData struct {
 	// SteepBlock is the runtime ID of the block to use for steep slopes.
 	SteepBlock uint32
@@ -283,8 +283,8 @@ func (x *BiomeMountainParamsData) Marshal(io IO) {
 	io.Bool(&x.TopSlideEnabled)
 }
 
-// BiomeMultinoiseGenRulesData specifies the rules for multi-noise biomes, which are biomes that are defined
-// by multiple noise parameters instead of just temperature and humidity.
+// BiomeMultiNoiseRules specifies the rules for multi-noise biomes, which are biomes that are defined by
+// multiple noise parameters instead of just temperature and humidity.
 type BiomeMultinoiseGenRulesData struct {
 	// Temperature is the temperature level of the biome.
 	Temperature float32
@@ -510,7 +510,7 @@ func (x *BiomeWeightedData) Marshal(io IO) {
 	io.Uint32(&x.Weight)
 }
 
-// BiomeWeightedTemperatureData defines the weight for a temperature, used for weighted randomness.
+// BiomeTemperatureWeight defines the weight for a temperature, used for weighted randomness.
 type BiomeWeightedTemperatureData struct {
 	// Temperature is the temperature that can be selected.
 	Temperature int32

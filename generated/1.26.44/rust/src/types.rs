@@ -285,7 +285,7 @@ impl wire::Decode for AttributeLayerSyncData {
 
 // Domain: bedrock_profile
 
-/// BedrockProfileWhiskerDiagnosticsScopeDataSummary represents a whisker profiler scope diagnostic summary.
+/// WhiskerScopeDataSummary represents a whisker profiler scope diagnostic summary.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct BedrockProfileWhiskerDiagnosticsScopeDataSummary {
     /// `label` is the label of the whisker scope.
@@ -1036,7 +1036,7 @@ impl wire::Decode for BiomeMesaSurfaceData {
     }
 }
 
-/// BiomeMountainParamsData specifies the parameters for a mountain biome.
+/// BiomeMountainParameters specifies the parameters for a mountain biome.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct BiomeMountainParamsData {
     /// `steep_block` is the runtime ID of the block to use for steep slopes.
@@ -1083,8 +1083,8 @@ impl wire::Decode for BiomeMountainParamsData {
     }
 }
 
-/// BiomeMultinoiseGenRulesData specifies the rules for multi-noise biomes, which are biomes that are defined
-/// by multiple noise parameters instead of just temperature and humidity.
+/// BiomeMultiNoiseRules specifies the rules for multi-noise biomes, which are biomes that are defined by
+/// multiple noise parameters instead of just temperature and humidity.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct BiomeMultinoiseGenRulesData {
     /// `temperature` is the temperature level of the biome.
@@ -1568,7 +1568,7 @@ impl wire::Decode for BiomeWeightedData {
     }
 }
 
-/// BiomeWeightedTemperatureData defines the weight for a temperature, used for weighted randomness.
+/// BiomeTemperatureWeight defines the weight for a temperature, used for weighted randomness.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct BiomeWeightedTemperatureData {
     /// `temperature` is the temperature that can be selected.
@@ -1725,8 +1725,8 @@ impl wire::Decode for CameraAimAssistActorPriorityData {
     }
 }
 
-/// CameraAimAssistCategoryDefinition is an aim assist category that defines priorities for specific blocks
-/// and entities.
+/// CameraAimAssistCategory is an aim assist category that defines priorities for specific blocks and
+/// entities.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CameraAimAssistCategoryDefinition {
     /// `name` is the name of the category which can be used by a CameraAimAssistPreset.
@@ -1754,8 +1754,8 @@ impl wire::Decode for CameraAimAssistCategoryDefinition {
     }
 }
 
-/// CameraAimAssistCategoryPriorities represents the block and entity specific priorities for targetting. The
-/// aim assist will select the block or entity with the highest priority within the specified thresholds.
+/// CameraAimAssistPriorities represents the block and entity specific priorities for targetting. The aim
+/// assist will select the block or entity with the highest priority within the specified thresholds.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CameraAimAssistCategoryPriorities {
     /// `entities` is a list of priorities for specific entity identifiers.
@@ -4794,7 +4794,7 @@ impl wire::Decode for EventData {
 
 // Domain: experiment
 
-/// ExperimentToggle holds data on an experiment that is either enabled or disabled.
+/// ExperimentData holds data on an experiment that is either enabled or disabled.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ExperimentToggle {
     /// `name` is the name of the experiment.
@@ -6988,8 +6988,8 @@ impl wire::Decode for MapDecoration {
     }
 }
 
-/// MapItemTrackedActorUniqueID is an object on a map that is 'tracked' by the client, such as an entity or a
-/// block. This object may move, which is handled client-side.
+/// MapTrackedObject is an object on a map that is 'tracked' by the client, such as an entity or a block. This
+/// object may move, which is handled client-side.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct MapItemTrackedActorUniqueId {
     /// `type_` is the type of the tracked object. It is either MapObjectTypeEntity or MapObjectTypeBlock.
@@ -7181,7 +7181,7 @@ impl wire::Decode for AnimatedImageData {
     }
 }
 
-/// ArmorSlotAndDamagePair represents an entry for a single piece of armour that should be damaged.
+/// PlayerArmourDamageEntry represents an entry for a single piece of armour that should be damaged.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ArmorSlotAndDamagePair {
     /// ArmourSlot is the index of the armour slot to damage.
@@ -7927,7 +7927,7 @@ impl wire::Decode for ECSProfilingDiagnosticsEntityDiagnosticTimingInfo {
     }
 }
 
-/// ECSProfilingDiagnosticsSystemCategory maps a diagnostics category name to a system index.
+/// SystemCategory maps a diagnostics category name to a system index.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ECSProfilingDiagnosticsSystemCategory {
     pub category_name: String,
@@ -7952,7 +7952,7 @@ impl wire::Decode for ECSProfilingDiagnosticsSystemCategory {
     }
 }
 
-/// ECSProfilingDiagnosticsSystemDiagnosticTimingInfo represents diagnostics for a specific system index.
+/// SystemDiagnosticTimingInfo represents diagnostics for a specific system index.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ECSProfilingDiagnosticsSystemDiagnosticTimingInfo {
     /// `display_name` is the name to display for this timing entry.
@@ -7989,8 +7989,8 @@ impl wire::Decode for ECSProfilingDiagnosticsSystemDiagnosticTimingInfo {
     }
 }
 
-/// EduSharedURIResource is an education edition feature that is used for transmitting education resource
-/// settings to clients. It contains a button name and a link URL.
+/// EducationSharedResourceURI is an education edition feature that is used for transmitting education
+/// resource settings to clients. It contains a button name and a link URL.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct EduSharedUriResource {
     /// `button_name` is the button name of the resource URI.
@@ -8041,7 +8041,7 @@ impl wire::Decode for Experiments {
     }
 }
 
-/// ExternalLinkSettings ...
+/// EducationExternalLinkSettings ...
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ExternalLinkSettings {
     /// `url` is the external link URL.
@@ -9060,7 +9060,7 @@ impl wire::Decode for SemVersionData {
     }
 }
 
-/// SerializedAbilitiesData represents various data about the abilities of a player, such as ability layers or
+/// AbilityData represents various data about the abilities of a player, such as ability layers or
 /// permissions.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SerializedAbilitiesData {
@@ -9141,8 +9141,7 @@ impl wire::Decode for SerializedAbilitiesDataSerializedLayer {
     }
 }
 
-/// SerializedNoiseBlockSpecifier specifies a block placed by the gradient noise based on a threshold and
-/// range.
+/// NoiseBlockSpecifier specifies a block placed by the gradient noise based on a threshold and range.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SerializedNoiseBlockSpecifier {
     /// `noise` is the noise name.
@@ -9179,7 +9178,7 @@ impl wire::Decode for SerializedNoiseBlockSpecifier {
     }
 }
 
-/// SerializedPersonaPieceHandle represents a piece of a persona skin. All pieces are sent separately.
+/// PersonaPiece represents a piece of a persona skin. All pieces are sent separately.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SerializedPersonaPieceHandle {
     /// PieceId is a UUID that identifies the piece itself, which is unique for each separate piece.
@@ -9351,7 +9350,7 @@ impl wire::Decode for ServerBlockProperty {
     }
 }
 
-/// ServerConfigurationClientStoreEntryPointConfiguration contains information about the store entry point.
+/// StoreEntryPointInfo contains information about the store entry point.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ServerConfigurationClientStoreEntryPointConfiguration {
     /// `store_id` is the store identifier.
@@ -9378,8 +9377,7 @@ impl wire::Decode for ServerConfigurationClientStoreEntryPointConfiguration {
     }
 }
 
-/// ServerConfigurationGatheringsConfigurationJoinInfo contains information about the gathering (experience)
-/// the player is joining.
+/// GatheringJoinInfo contains information about the gathering (experience) the player is joining.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ServerConfigurationGatheringsConfigurationJoinInfo {
     /// `experience_id` is the UUID of the experience.
@@ -9616,7 +9614,7 @@ impl wire::Decode for ServerSoundHandle {
     }
 }
 
-/// ServerWaypoint holds optional data for a locator bar waypoint.
+/// Waypoint holds optional data for a locator bar waypoint.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ServerWaypoint {
     /// `update_flag` is a bitmask indicating which optional fields are set.
@@ -9856,8 +9854,8 @@ impl wire::Decode for SyncedAttribute {
     }
 }
 
-/// SyncedPlayerMovementSettings represents the different server authoritative movement settings. These
-/// control how the client will provide input to the server.
+/// PlayerMovementSettings represents the different server authoritative movement settings. These control how
+/// the client will provide input to the server.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SyncedPlayerMovementSettings {
     /// `rewind_history_size` is the amount of history to keep at maximum.
@@ -10114,7 +10112,7 @@ impl wire::Decode for PackInfoData {
     }
 }
 
-/// PackInstanceID represents a resource pack sent on the stack of the client. When sent, the client will
+/// StackResourcePack represents a resource pack sent on the stack of the client. When sent, the client will
 /// apply them in the order of the stack sent.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PackInstanceId {
@@ -11285,7 +11283,7 @@ impl wire::Decode for PrimitiveShape {
 
 // Domain: skin
 
-/// SkinImage represents a pyramid debug shape.
+/// PyramidShape represents a pyramid debug shape.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SkinImage {
     /// `width` is the width along the X axis of the pyramid base.
@@ -12012,7 +12010,7 @@ impl wire::Decode for VoxelShapesRegistryHandle {
     }
 }
 
-/// VoxelShapesSerializableCells represents a 3D grid of voxel cell data.
+/// VoxelCells represents a 3D grid of voxel cell data.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct VoxelShapesSerializableCells {
     /// `x_size` is the size of the grid along the X axis.
@@ -12052,7 +12050,7 @@ impl wire::Decode for VoxelShapesSerializableCells {
     }
 }
 
-/// VoxelShapesSerializableVoxelShape represents a voxel shape with cells and coordinate axes.
+/// VoxelShape represents a voxel shape with cells and coordinate axes.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct VoxelShapesSerializableVoxelShape {
     /// `cells` is the grid of cells representing solid and empty regions.

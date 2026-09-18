@@ -2,7 +2,7 @@
 
 package protocol
 
-// BedrockProfileWhiskerDiagnosticsScopeDataSummary represents a whisker profiler scope diagnostic summary.
+// WhiskerScopeDataSummary represents a whisker profiler scope diagnostic summary.
 type BedrockProfileWhiskerDiagnosticsScopeDataSummary struct {
 	// Label is the label of the whisker scope.
 	Label string

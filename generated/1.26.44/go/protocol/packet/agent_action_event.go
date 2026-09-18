@@ -6,8 +6,8 @@ import (
 	"protocolgen/generated/1.26.44/go/protocol"
 )
 
-// AgentActionEvent is an Education Edition packet sent from the server to the client to return a response to
-// a previously requested action.
+// AgentAction is an Education Edition packet sent from the server to the client to return a response to a
+// previously requested action.
 type AgentActionEvent struct {
 	// Identifier is a JSON identifier referenced in the initial action.
 	RequestID string

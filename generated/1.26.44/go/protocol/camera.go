@@ -36,8 +36,7 @@ func (x *CameraAimAssistActorPriorityData) Marshal(io IO) {
 	io.Int32(&x.PriorityValue)
 }
 
-// CameraAimAssistCategoryDefinition is an aim assist category that defines priorities for specific blocks and
-// entities.
+// CameraAimAssistCategory is an aim assist category that defines priorities for specific blocks and entities.
 type CameraAimAssistCategoryDefinition struct {
 	// Name is the name of the category which can be used by a CameraAimAssistPreset.
 	Name string
@@ -52,8 +51,8 @@ func (x *CameraAimAssistCategoryDefinition) Marshal(io IO) {
 	x.Priorities.Marshal(io)
 }
 
-// CameraAimAssistCategoryPriorities represents the block and entity specific priorities for targetting. The
-// aim assist will select the block or entity with the highest priority within the specified thresholds.
+// CameraAimAssistPriorities represents the block and entity specific priorities for targetting. The aim
+// assist will select the block or entity with the highest priority within the specified thresholds.
 type CameraAimAssistCategoryPriorities struct {
 	// Entities is a list of priorities for specific entity identifiers.
 	Entities []OrderedEntry[string, int32]
