@@ -4,8 +4,8 @@ package packet
 
 import "protocolgen/generated/1.26.50/go/protocol"
 
-// CreatePhoto is a packet that allows players to export photos from their portfolios into items in
-// their inventory. This packet only works on the Education Edition version of Minecraft.
+// CreatePhoto is a packet that allows players to export photos from their portfolios into items in their
+// inventory. This packet only works on the Education Edition version of Minecraft.
 type CreatePhoto struct {
 	RawID uint64
 	// PhotoName is the name of the photo.

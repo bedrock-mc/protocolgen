@@ -4,14 +4,14 @@ package packet
 
 import "protocolgen/generated/1.26.44/go/protocol"
 
-// StopSound is sent by the server to stop a sound playing to the player, such as a playing music
-// disk track or other long-lasting sounds.
+// StopSound is sent by the server to stop a sound playing to the player, such as a playing music disk track
+// or other long-lasting sounds.
 type StopSound struct {
-	// SoundName is the name of the sound that should be stopped from playing. If no sound with this
-	// name is currently active, the packet is ignored.
+	// SoundName is the name of the sound that should be stopped from playing. If no sound with this name is
+	// currently active, the packet is ignored.
 	SoundName string
-	// StopAllSounds specifies if all sounds currently playing to the player should be stopped. If set
-	// to true, the SoundName field may be left empty.
+	// StopAllSounds specifies if all sounds currently playing to the player should be stopped. If set to true,
+	// the SoundName field may be left empty.
 	StopAllSounds bool
 	// StopMusicLegacy is currently unknown.
 	StopMusicLegacy bool

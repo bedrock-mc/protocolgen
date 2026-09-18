@@ -4,9 +4,8 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
-// EditorNetwork is a packet sent from the server to the client and vise-versa to communicate
-// editor-mode related information. It carries a single compound tag containing the relevant
-// information.
+// EditorNetwork is a packet sent from the server to the client and vise-versa to communicate editor-mode
+// related information. It carries a single compound tag containing the relevant information.
 type EditorNetwork struct {
 	// RouteToManager ...
 	RouteToManager bool

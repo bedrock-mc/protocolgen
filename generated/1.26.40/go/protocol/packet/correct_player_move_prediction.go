@@ -8,9 +8,9 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 )
 
-// CorrectPlayerMovePrediction is sent by the server if and only if
-// StartGame.ServerAuthoritativeMovementMode is set to AuthoritativeMovementModeServerWithRewind.
-// The packet is used to correct movement at a specific point in time.
+// CorrectPlayerMovePrediction is sent by the server if and only if StartGame.ServerAuthoritativeMovementMode
+// is set to AuthoritativeMovementModeServerWithRewind. The packet is used to correct movement at a specific
+// point in time.
 type CorrectPlayerMovePrediction struct {
 	// PredictionType is the type of prediction that was corrected. It is one of the constants above.
 	PredictionType protocol.RewindType

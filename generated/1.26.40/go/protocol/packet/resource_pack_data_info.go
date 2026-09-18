@@ -4,8 +4,8 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
-// ResourcePackDataInfo is sent by the server to the client to inform the client about the data
-// contained in one of the resource packs that are about to be sent.
+// ResourcePackDataInfo is sent by the server to the client to inform the client about the data contained in
+// one of the resource packs that are about to be sent.
 type ResourcePackDataInfo struct {
 	ResourceName   string
 	ChunkSize      uint32
@@ -13,8 +13,8 @@ type ResourcePackDataInfo struct {
 	FileSize       uint64
 	FileHash       []byte
 	IsPremiumPack  bool
-	// PackType is the type of the resource pack. It is one of the resource pack types that may be found
-	// in the constants above.
+	// PackType is the type of the resource pack. It is one of the resource pack types that may be found in the
+	// constants above.
 	PackType uint8
 }
 

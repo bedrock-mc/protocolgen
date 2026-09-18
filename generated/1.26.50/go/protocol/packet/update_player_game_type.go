@@ -4,8 +4,8 @@ package packet
 
 import "protocolgen/generated/1.26.50/go/protocol"
 
-// UpdatePlayerGameType is sent by the server to change the game mode of a player. It is
-// functionally identical to the SetPlayerGameType packet.
+// UpdatePlayerGameType is sent by the server to change the game mode of a player. It is functionally
+// identical to the SetPlayerGameType packet.
 type UpdatePlayerGameType struct {
 	PlayerGameType protocol.GameType
 	TargetPlayer   int64

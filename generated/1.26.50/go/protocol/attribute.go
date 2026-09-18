@@ -2,8 +2,8 @@
 
 package protocol
 
-// AttributeModifier temporarily buffs/debuffs a given attribute until the modifier is used. In
-// vanilla, these are mainly used for effects.
+// AttributeModifier temporarily buffs/debuffs a given attribute until the modifier is used. In vanilla, these
+// are mainly used for effects.
 type AttributeModifier struct {
 	// ID is the unique ID of the modifier. It is used to identify the modifier in the packet.
 	ID string
@@ -11,8 +11,8 @@ type AttributeModifier struct {
 	Name string
 	// Amount is the amount of difference between the current value of the attribute and the new value.
 	Amount float32
-	// Operation is the operation that is performed on the attribute. It can be addition, multiply base,
-	// multiply total or cap.
+	// Operation is the operation that is performed on the attribute. It can be addition, multiply base, multiply
+	// total or cap.
 	Operation int32
 	// Operand ... TODO: Figure out what this field is used for.
 	Operand int32

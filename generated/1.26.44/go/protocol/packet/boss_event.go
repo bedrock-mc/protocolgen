@@ -4,8 +4,8 @@ package packet
 
 import "protocolgen/generated/1.26.44/go/protocol"
 
-// BossEvent is sent by the server to make a specific 'boss event' occur in the world. It includes
-// features such as showing a boss bar to the player and turning the sky dark.
+// BossEvent is sent by the server to make a specific 'boss event' occur in the world. It includes features
+// such as showing a boss bar to the player and turning the sky dark.
 type BossEvent struct {
 	TargetActorID int64
 	PlayerID      int64
@@ -15,8 +15,8 @@ type BossEvent struct {
 	FilteredName  string
 	HealthPercent float32
 	Color         protocol.BossBarColor
-	// Overlay is the overlay of the boss bar that is shown on top of the boss bar when a player is
-	// subscribed. It is one of the BossEventOverlay constants listed above.
+	// Overlay is the overlay of the boss bar that is shown on top of the boss bar when a player is subscribed. It
+	// is one of the BossEventOverlay constants listed above.
 	Overlay protocol.BossBarOverlay
 }
 

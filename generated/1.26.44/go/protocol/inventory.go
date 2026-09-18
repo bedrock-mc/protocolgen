@@ -2,9 +2,9 @@
 
 package protocol
 
-// InventoryAction represents a single action that took place during an inventory transaction. On
-// itself, this inventory action is always unbalanced: It must be combined with other actions in an
-// inventory transaction to form a balanced transaction.
+// InventoryAction represents a single action that took place during an inventory transaction. On itself, this
+// inventory action is always unbalanced: It must be combined with other actions in an inventory transaction
+// to form a balanced transaction.
 type InventoryAction struct {
 	Source   InventorySource
 	Slot     uint32
@@ -125,8 +125,8 @@ const (
 // Marshal reads or writes InventorySourceType through its uint32 wire encoding.
 func (x *InventorySourceType) Marshal(io IO) { io.Varuint32((*uint32)(x)) }
 
-// InventoryTransactionData represents an object that holds data specific to an inventory
-// transaction type. The data it holds depends on the type.
+// InventoryTransactionData represents an object that holds data specific to an inventory transaction type.
+// The data it holds depends on the type.
 type InventoryTransactionData struct {
 	Actions Optional[[]InventoryAction]
 }
@@ -138,8 +138,8 @@ func (x *InventoryTransactionData) Marshal(io IO) {
 	})
 }
 
-// NormalTransactionData represents an inventory transaction data object for normal transactions,
-// such as crafting. It has no content.
+// NormalTransactionData represents an inventory transaction data object for normal transactions, such as
+// crafting. It has no content.
 type NormalTransactionData struct {
 	Actions InventoryTransactionData
 }

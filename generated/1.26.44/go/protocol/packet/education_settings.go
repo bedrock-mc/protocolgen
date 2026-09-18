@@ -4,8 +4,8 @@ package packet
 
 import "protocolgen/generated/1.26.44/go/protocol"
 
-// EducationSettings is a packet sent by the server to update Minecraft: Education Edition related
-// settings. It is unused by the normal base game.
+// EducationSettings is a packet sent by the server to update Minecraft: Education Edition related settings.
+// It is unused by the normal base game.
 type EducationSettings struct {
 	EducationLevelSettings protocol.EducationLevelSettings
 }

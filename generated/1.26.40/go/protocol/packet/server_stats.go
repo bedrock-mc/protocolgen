@@ -4,8 +4,8 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
-// ServerStats is a packet sent from the server to the client to update the client on server
-// statistics. It is purely used for telemetry.
+// ServerStats is a packet sent from the server to the client to update the client on server statistics. It is
+// purely used for telemetry.
 type ServerStats struct {
 	// ServerTime ...
 	ServerTime float32

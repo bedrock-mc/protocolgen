@@ -4,8 +4,7 @@ package packet
 
 import "protocolgen/generated/1.26.44/go/protocol"
 
-// PartyChanged is sent by the client to the server to indicate that the player's party ID has
-// changed.
+// PartyChanged is sent by the client to the server to indicate that the player's party ID has changed.
 type PartyChanged struct {
 	PartyInfo protocol.Optional[protocol.PlayerPartyInfo]
 }

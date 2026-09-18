@@ -2100,6 +2100,18 @@
       "rationale": "gophertunnel AvailableCommands.DynamicEnums field name."
     },
     {
+      "type_id": "AvailableCommandsPacketCommandData.json#",
+      "field": "Alias Enum",
+      "name": "AliasesOffset",
+      "rationale": "gophertunnel Command.AliasesOffset field name."
+    },
+    {
+      "type_id": "AvailableCommandsPacketCommandData.json#",
+      "field": "CommandData Chained Subcommand Indexes",
+      "name": "ChainedSubcommandOffsets",
+      "rationale": "gophertunnel Command.ChainedSubcommandOffsets field name."
+    },
+    {
       "type_id": "AvailableCommandsPacketPayload::ChainedSubcommandData",
       "field": "SubCommand values",
       "name": "Values",
@@ -2212,6 +2224,18 @@
       "field": "noise freq scale",
       "name": "NoiseFrequencyScale",
       "rationale": "gophertunnel BiomeElementData.NoiseFrequencyScale field name."
+    },
+    {
+      "type_id": "BiomeReplacementData",
+      "field": "replacement biome",
+      "name": "Biome",
+      "rationale": "gophertunnel BiomeReplacementData.Biome field name."
+    },
+    {
+      "type_id": "BiomeScatterParamData",
+      "field": "eval order",
+      "name": "EvaluationOrder",
+      "rationale": "gophertunnel BiomeScatterParameter.EvaluationOrder field name."
     },
     {
       "type_id": "BiomeSurfaceBuilderData",
@@ -2358,6 +2382,24 @@
       "rationale": "gophertunnel CameraInstructionTarget.CenterOffset field name."
     },
     {
+      "type_id": "CameraShakePacket",
+      "field": "Seconds",
+      "name": "Duration",
+      "rationale": "gophertunnel CameraShake.Duration field name."
+    },
+    {
+      "type_id": "CameraShakePacket",
+      "field": "Shake Action",
+      "name": "Action",
+      "rationale": "gophertunnel CameraShake.Action field name."
+    },
+    {
+      "type_id": "CameraShakePacket",
+      "field": "Shake Type",
+      "name": "Type",
+      "rationale": "gophertunnel CameraShake.Type field name."
+    },
+    {
       "type_id": "CameraSplinePacket",
       "field": "Camera Data Splines",
       "name": "Splines",
@@ -2484,10 +2526,34 @@
       "rationale": "gophertunnel CraftingData.PotionRecipes field name."
     },
     {
+      "type_id": "CreatePhotoPacket",
+      "field": "Photo Item Name",
+      "name": "ItemName",
+      "rationale": "gophertunnel CreatePhoto.ItemName field name."
+    },
+    {
+      "type_id": "CreatePhotoPacket",
+      "field": "Raw ID",
+      "name": "EntityUniqueID",
+      "rationale": "gophertunnel CreatePhoto.EntityUniqueID field name."
+    },
+    {
       "type_id": "CreativeContentPacket",
       "field": "Entries",
       "name": "Items",
       "rationale": "gophertunnel CreativeContent.Items field name."
+    },
+    {
+      "type_id": "CreativeGroupInfoPayload",
+      "field": "Creative Category",
+      "name": "Category",
+      "rationale": "gophertunnel CreativeGroup.Category field name."
+    },
+    {
+      "type_id": "CreativeGroupInfoPayload",
+      "field": "Group Icon Item",
+      "name": "Icon",
+      "rationale": "gophertunnel CreativeGroup.Icon field name."
     },
     {
       "type_id": "CurrentStructureFeaturePacket",
@@ -2520,10 +2586,34 @@
       "rationale": "gophertunnel Emote.XUID field name."
     },
     {
+      "type_id": "EnchantmentInstance",
+      "field": "Enchant Level",
+      "name": "Level",
+      "rationale": "gophertunnel EnchantmentInstance.Level field name."
+    },
+    {
+      "type_id": "EnchantmentInstance",
+      "field": "Enchant Type",
+      "name": "Type",
+      "rationale": "gophertunnel EnchantmentInstance.Type field name."
+    },
+    {
       "type_id": "FeatureRegistryPacket",
       "field": "FeaturesDataList",
       "name": "Features",
       "rationale": "gophertunnel FeatureRegistry.Features field name."
+    },
+    {
+      "type_id": "FullContainerName",
+      "field": "Container Name",
+      "name": "ContainerID",
+      "rationale": "gophertunnel FullContainerName.ContainerID field name."
+    },
+    {
+      "type_id": "FullContainerName",
+      "field": "Dynamic ID",
+      "name": "DynamicContainerID",
+      "rationale": "gophertunnel FullContainerName.DynamicContainerID field name."
     },
     {
       "type_id": "GameRule",
@@ -2616,6 +2706,18 @@
       "rationale": "gophertunnel StackRequestSlotInfo.StackNetworkID field name."
     },
     {
+      "type_id": "LabTablePacket",
+      "field": "Reaction",
+      "name": "ReactionType",
+      "rationale": "gophertunnel LabTable.ReactionType field name."
+    },
+    {
+      "type_id": "LabTablePacket",
+      "field": "Type",
+      "name": "ActionType",
+      "rationale": "gophertunnel LabTable.ActionType field name."
+    },
+    {
       "type_id": "LecternUpdatePacket",
       "field": "New page to show",
       "name": "Page",
@@ -2688,6 +2790,18 @@
       "rationale": "gophertunnel LevelSoundEvent.SoundType field name."
     },
     {
+      "type_id": "LocatorBarWaypointPayload",
+      "field": "ActionFlag",
+      "name": "Action",
+      "rationale": "gophertunnel LocatorBarWaypoint.Action field name."
+    },
+    {
+      "type_id": "LocatorBarWaypointPayload",
+      "field": "ServerWaypointPayload",
+      "name": "Waypoint",
+      "rationale": "gophertunnel LocatorBarWaypoint.Waypoint field name."
+    },
+    {
       "type_id": "LoginPacket",
       "field": "Client Network Version",
       "name": "ClientProtocol",
@@ -2698,6 +2812,12 @@
       "field": "Color",
       "name": "Colour",
       "rationale": "gophertunnel MapDecoration.Colour field name."
+    },
+    {
+      "type_id": "MapDecoration",
+      "field": "Image Type",
+      "name": "Type",
+      "rationale": "gophertunnel MapDecoration.Type field name."
     },
     {
       "type_id": "MapItemTrackedActor::UniqueId",
@@ -2724,6 +2844,12 @@
       "rationale": "gophertunnel ModalFormResponse.ResponseData field name."
     },
     {
+      "type_id": "MultiplayerSettingsPacket",
+      "field": "PacketType",
+      "name": "ActionType",
+      "rationale": "gophertunnel MultiPlayerSettings.ActionType field name."
+    },
+    {
       "type_id": "NetworkChunkPublisherUpdatePacket",
       "field": "New position for view",
       "name": "Position",
@@ -2746,6 +2872,30 @@
       "field": "Client Throttle Enabled",
       "name": "ClientThrottle",
       "rationale": "gophertunnel NetworkSettings.ClientThrottle field name."
+    },
+    {
+      "type_id": "NetworkStackLatencyPacket",
+      "field": "Creation Time",
+      "name": "Timestamp",
+      "rationale": "gophertunnel NetworkStackLatency.Timestamp field name."
+    },
+    {
+      "type_id": "NetworkStackLatencyPacket",
+      "field": "Is From Server",
+      "name": "NeedsResponse",
+      "rationale": "gophertunnel NetworkStackLatency.NeedsResponse field name."
+    },
+    {
+      "type_id": "NpcDialoguePacket",
+      "field": "Npc Dialogue Action Type",
+      "name": "ActionType",
+      "rationale": "gophertunnel NPCDialogue.ActionType field name."
+    },
+    {
+      "type_id": "NpcDialoguePacket",
+      "field": "Npc Id Raw Id",
+      "name": "EntityUniqueID",
+      "rationale": "gophertunnel NPCDialogue.EntityUniqueID field name."
     },
     {
       "type_id": "NpcDialoguePacket",
@@ -2778,10 +2928,58 @@
       "rationale": "gophertunnel StackResourcePack.UUID field name."
     },
     {
+      "type_id": "PacketViolationWarningPacket",
+      "field": "Violation PacketId",
+      "name": "PacketID",
+      "rationale": "gophertunnel PacketViolationWarning.PacketID field name."
+    },
+    {
+      "type_id": "PacketViolationWarningPacket",
+      "field": "Violation Severity",
+      "name": "Severity",
+      "rationale": "gophertunnel PacketViolationWarning.Severity field name."
+    },
+    {
+      "type_id": "PacketViolationWarningPacket",
+      "field": "Violation Type",
+      "name": "Type",
+      "rationale": "gophertunnel PacketViolationWarning.Type field name."
+    },
+    {
+      "type_id": "PhotoTransferPacket",
+      "field": "Owner ID",
+      "name": "OwnerEntityUniqueID",
+      "rationale": "gophertunnel PhotoTransfer.OwnerEntityUniqueID field name."
+    },
+    {
+      "type_id": "PhotoTransferPacket",
+      "field": "Type",
+      "name": "PhotoType",
+      "rationale": "gophertunnel PhotoTransfer.PhotoType field name."
+    },
+    {
       "type_id": "PlayerArmorDamagePacket",
       "field": "Armor Slot and Damage Pairs",
       "name": "List",
       "rationale": "gophertunnel PlayerArmourDamage.List field name."
+    },
+    {
+      "type_id": "PlayerBlockActionData",
+      "field": "Facing",
+      "name": "Face",
+      "rationale": "gophertunnel PlayerBlockAction.Face field name."
+    },
+    {
+      "type_id": "PlayerBlockActionData",
+      "field": "Player Action Type",
+      "name": "Action",
+      "rationale": "gophertunnel PlayerBlockAction.Action field name."
+    },
+    {
+      "type_id": "PlayerBlockActionData",
+      "field": "Position",
+      "name": "BlockPos",
+      "rationale": "gophertunnel PlayerBlockAction.BlockPos field name."
     },
     {
       "type_id": "PlayerFogPacket",
@@ -3072,6 +3270,12 @@
       "rationale": "gophertunnel ServerBoundDiagnostics.AverageUnaccountedTimePercent field name."
     },
     {
+      "type_id": "ServerboundLoadingScreenPacket",
+      "field": "Loading Screen Packet Type",
+      "name": "Type",
+      "rationale": "gophertunnel ServerBoundLoadingScreen.Type field name."
+    },
+    {
       "type_id": "SetActorLinkPacket",
       "field": "Link",
       "name": "EntityLink",
@@ -3082,6 +3286,12 @@
       "field": "Commands Enabled",
       "name": "Enabled",
       "rationale": "gophertunnel SetCommandsEnabled.Enabled field name."
+    },
+    {
+      "type_id": "SetDefaultGameTypePacket",
+      "field": "Default Game Type",
+      "name": "GameType",
+      "rationale": "gophertunnel SetDefaultGameType.GameType field name."
     },
     {
       "type_id": "SetDisplayObjectivePacket",
@@ -3096,10 +3306,82 @@
       "rationale": "gophertunnel SetDisplayObjective.DisplayName field name."
     },
     {
+      "type_id": "SetHudPacket",
+      "field": "Hud Element",
+      "name": "Elements",
+      "rationale": "gophertunnel SetHud.Elements field name."
+    },
+    {
+      "type_id": "SetHudPacket",
+      "field": "Hud Visible",
+      "name": "Visibility",
+      "rationale": "gophertunnel SetHud.Visibility field name."
+    },
+    {
+      "type_id": "SetLastHurtByPacket",
+      "field": "LastHurtBy",
+      "name": "EntityType",
+      "rationale": "gophertunnel SetLastHurtBy.EntityType field name."
+    },
+    {
+      "type_id": "SetPlayerGameTypePacket",
+      "field": "Player Game Type",
+      "name": "GameType",
+      "rationale": "gophertunnel SetPlayerGameType.GameType field name."
+    },
+    {
       "type_id": "SetScorePacket",
       "field": "Score Info",
       "name": "Entries",
       "rationale": "gophertunnel SetScore.Entries field name."
+    },
+    {
+      "type_id": "SetScoreboardIdentityPacket",
+      "field": "Scoreboard Identity Info",
+      "name": "Entries",
+      "rationale": "gophertunnel SetScoreboardIdentity.Entries field name."
+    },
+    {
+      "type_id": "SetScoreboardIdentityPacket",
+      "field": "Scoreboard Identity Packet Type",
+      "name": "ActionType",
+      "rationale": "gophertunnel SetScoreboardIdentity.ActionType field name."
+    },
+    {
+      "type_id": "SetTitlePacket",
+      "field": "Fade In Time",
+      "name": "FadeInDuration",
+      "rationale": "gophertunnel SetTitle.FadeInDuration field name."
+    },
+    {
+      "type_id": "SetTitlePacket",
+      "field": "Fade Out Time",
+      "name": "FadeOutDuration",
+      "rationale": "gophertunnel SetTitle.FadeOutDuration field name."
+    },
+    {
+      "type_id": "SetTitlePacket",
+      "field": "Filtered Title Message",
+      "name": "FilteredMessage",
+      "rationale": "gophertunnel SetTitle.FilteredMessage field name."
+    },
+    {
+      "type_id": "SetTitlePacket",
+      "field": "Stay Time",
+      "name": "RemainDuration",
+      "rationale": "gophertunnel SetTitle.RemainDuration field name."
+    },
+    {
+      "type_id": "SetTitlePacket",
+      "field": "Title Text",
+      "name": "Text",
+      "rationale": "gophertunnel SetTitle.Text field name."
+    },
+    {
+      "type_id": "SetTitlePacket",
+      "field": "Title Type",
+      "name": "ActionType",
+      "rationale": "gophertunnel SetTitle.ActionType field name."
     },
     {
       "type_id": "SetTitlePacket",
@@ -3126,6 +3408,24 @@
       "rationale": "gophertunnel ShowProfile.XUID field name."
     },
     {
+      "type_id": "ShowStoreOfferPacket",
+      "field": "Redirect Type",
+      "name": "Type",
+      "rationale": "gophertunnel ShowStoreOffer.Type field name."
+    },
+    {
+      "type_id": "SimpleEventPacket",
+      "field": "Type",
+      "name": "EventType",
+      "rationale": "gophertunnel SimpleEvent.EventType field name."
+    },
+    {
+      "type_id": "SimulationTypePacket",
+      "field": "Sim Type",
+      "name": "SimulationType",
+      "rationale": "gophertunnel SimulationType.SimulationType field name."
+    },
+    {
       "type_id": "SpawnExperienceOrbPacket",
       "field": "XP Value",
       "name": "ExperienceAmount",
@@ -3142,6 +3442,24 @@
       "field": "Stop All Sounds?",
       "name": "StopAll",
       "rationale": "gophertunnel StopSound.StopAll field name."
+    },
+    {
+      "type_id": "StructureTemplateDataRequestPacket",
+      "field": "Requested Operation",
+      "name": "RequestType",
+      "rationale": "gophertunnel StructureTemplateDataRequest.RequestType field name."
+    },
+    {
+      "type_id": "StructureTemplateDataRequestPacket",
+      "field": "Structure Position",
+      "name": "Position",
+      "rationale": "gophertunnel StructureTemplateDataRequest.Position field name."
+    },
+    {
+      "type_id": "StructureTemplateDataRequestPacket",
+      "field": "Structure Settings",
+      "name": "Settings",
+      "rationale": "gophertunnel StructureTemplateDataRequest.Settings field name."
     },
     {
       "type_id": "SubClientLoginPacket",
@@ -3210,6 +3528,18 @@
       "rationale": "gophertunnel TrimMaterial.Colour field name."
     },
     {
+      "type_id": "UnlockedRecipesPacket",
+      "field": "Packet Type",
+      "name": "UnlockType",
+      "rationale": "gophertunnel UnlockedRecipes.UnlockType field name."
+    },
+    {
+      "type_id": "UnlockedRecipesPacket",
+      "field": "Unlocked Recipes List",
+      "name": "Recipes",
+      "rationale": "gophertunnel UnlockedRecipes.Recipes field name."
+    },
+    {
       "type_id": "UpdateAbilitiesPacket",
       "field": "Data",
       "name": "AbilityData",
@@ -3268,6 +3598,24 @@
       "field": "Graphics Mode Change",
       "name": "GraphicsMode",
       "rationale": "gophertunnel UpdateClientOptions.GraphicsMode field name."
+    },
+    {
+      "type_id": "UpdateSoftEnumPacket",
+      "field": "Enum Name",
+      "name": "EnumType",
+      "rationale": "gophertunnel UpdateSoftEnum.EnumType field name."
+    },
+    {
+      "type_id": "UpdateSoftEnumPacket",
+      "field": "Update Type",
+      "name": "ActionType",
+      "rationale": "gophertunnel UpdateSoftEnum.ActionType field name."
+    },
+    {
+      "type_id": "UpdateSoftEnumPacket",
+      "field": "Values",
+      "name": "Options",
+      "rationale": "gophertunnel UpdateSoftEnum.Options field name."
     },
     {
       "type_id": "WorldClockData",

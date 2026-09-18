@@ -4,8 +4,8 @@ package packet
 
 import "protocolgen/generated/1.26.44/go/protocol"
 
-// MobEffect is sent by the server to apply an effect to the player, for example an effect like
-// poison. It may also be used to modify existing effects, or removing them completely.
+// MobEffect is sent by the server to apply an effect to the player, for example an effect like poison. It may
+// also be used to modify existing effects, or removing them completely.
 type MobEffect struct {
 	TargetRuntimeID     uint64
 	EventID             protocol.MobEffectEvent
@@ -16,8 +16,7 @@ type MobEffect struct {
 	// Tick is the server tick at which the packet was sent. It is used in relation to
 	// CorrectPlayerMovePrediction.
 	Tick uint64
-	// Ambient specifies if the effect is ambient. If set to false, it will not get treated as an
-	// ambient effect.
+	// Ambient specifies if the effect is ambient. If set to false, it will not get treated as an ambient effect.
 	Ambient bool
 }
 

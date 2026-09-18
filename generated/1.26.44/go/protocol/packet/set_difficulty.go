@@ -4,9 +4,8 @@ package packet
 
 import "protocolgen/generated/1.26.44/go/protocol"
 
-// SetDifficulty is sent by the server to update the client-side difficulty of the client. The
-// actual effect of this packet on the client isn't very significant, as the difficulty is handled
-// server-side.
+// SetDifficulty is sent by the server to update the client-side difficulty of the client. The actual effect
+// of this packet on the client isn't very significant, as the difficulty is handled server-side.
 type SetDifficulty struct {
 	// Difficulty is the new difficulty that the world has.
 	Difficulty uint32

@@ -4,11 +4,11 @@ package packet
 
 import "protocolgen/generated/1.26.50/go/protocol"
 
-// RequestNetworkSettings is sent by the client to request network settings, such as compression,
-// from the server.
+// RequestNetworkSettings is sent by the client to request network settings, such as compression, from the
+// server.
 type RequestNetworkSettings struct {
-	// ClientNetworkVersion is the protocol version of the player. The player is disconnected if the
-	// protocol is incompatible with the protocol of the server.
+	// ClientNetworkVersion is the protocol version of the player. The player is disconnected if the protocol is
+	// incompatible with the protocol of the server.
 	ClientNetworkVersion int32
 }
 

@@ -4,8 +4,8 @@ package packet
 
 import "protocolgen/generated/1.26.50/go/protocol"
 
-// ServerSettingsRequest is sent by the client to request the settings specific to the server. These
-// settings are shown in a separate tab client-side, and have the same structure as a custom form.
+// ServerSettingsRequest is sent by the client to request the settings specific to the server. These settings
+// are shown in a separate tab client-side, and have the same structure as a custom form.
 type ServerSettingsRequest struct {
 }
 

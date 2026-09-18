@@ -2,8 +2,8 @@
 
 package protocol
 
-// CreativeGroup represents a group of items in the creative inventory. Each group has a category,
-// name and an icon that represents the group.
+// CreativeGroup represents a group of items in the creative inventory. Each group has a category, name and an
+// icon that represents the group.
 type CreativeGroupInfo struct {
 	// CreativeCategory is the category the group falls under. It is one of the constants above.
 	CreativeCategory CreativeItemCategory

@@ -6,11 +6,10 @@ package protocol
 type GameRule struct {
 	// RuleName is the name of the game rule.
 	RuleName string
-	// RuleCanBeModified specifies if the game rule can be modified by the player through the in-game
-	// UI.
+	// RuleCanBeModified specifies if the game rule can be modified by the player through the in-game UI.
 	RuleCanBeModified bool
-	// RuleValue is the new value of the game rule. This is either a bool, uint32 or float32, or nil for
-	// the null variant, which carries no value at all.
+	// RuleValue is the new value of the game rule. This is either a bool, uint32 or float32, or nil for the null
+	// variant, which carries no value at all.
 	RuleValue GameRuleValue
 }
 

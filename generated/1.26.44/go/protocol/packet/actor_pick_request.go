@@ -4,8 +4,8 @@ package packet
 
 import "protocolgen/generated/1.26.44/go/protocol"
 
-// ActorPickRequest is sent by the client when it tries to pick an entity, so that it gets a spawn
-// egg which can spawn that entity.
+// ActorPickRequest is sent by the client when it tries to pick an entity, so that it gets a spawn egg which
+// can spawn that entity.
 type ActorPickRequest struct {
 	ActorID  int64
 	MaxSlots uint8

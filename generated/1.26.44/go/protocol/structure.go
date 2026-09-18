@@ -49,8 +49,8 @@ const (
 // Marshal reads or writes StructureRedstoneSaveMode through its uint8 wire encoding.
 func (x *StructureRedstoneSaveMode) Marshal(io IO) { io.Uint8((*uint8)(x)) }
 
-// StructureSettings is a struct holding settings of a structure block. Its fields may be changed
-// using the in-game UI on the client-side.
+// StructureSettings is a struct holding settings of a structure block. Its fields may be changed using the
+// in-game UI on the client-side.
 type StructureSettings struct {
 	StructurePaletteName                            string
 	ShouldIgnoreEntities                            bool
@@ -59,11 +59,11 @@ type StructureSettings struct {
 	StructureSize                                   BlockPos
 	StructureOffset                                 BlockPos
 	LastEditPlayer                                  int64
-	// Rotation is the rotation that the structure block should obtain. See the constants above for
-	// available options.
+	// Rotation is the rotation that the structure block should obtain. See the constants above for available
+	// options.
 	Rotation Rotation
-	// Mirror specifies the way the structure should be mirrored. It is either no mirror at all, mirror
-	// on the x/z axis or both.
+	// Mirror specifies the way the structure should be mirrored. It is either no mirror at all, mirror on the x/z
+	// axis or both.
 	Mirror Mirror
 	// AnimationMode ...
 	AnimationMode    AnimationMode

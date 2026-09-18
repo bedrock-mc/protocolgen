@@ -4,8 +4,8 @@ package packet
 
 import "protocolgen/generated/1.26.50/go/protocol"
 
-// SetSpawnPosition is sent by the server to update the spawn position of a player, for example when
-// sleeping in a bed.
+// SetSpawnPosition is sent by the server to update the spawn position of a player, for example when sleeping
+// in a bed.
 type SetSpawnPosition struct {
 	SpawnPositionType protocol.SpawnPositionType
 	BlockPosition     protocol.BlockPos

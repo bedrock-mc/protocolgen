@@ -248,11 +248,10 @@ func (x *CameraInstructionData) Marshal(io IO) {
 	OptionalFunc(io, &x.DetachFromEntity, io.Bool)
 }
 
-// CameraInstructionFade represents a camera instruction that fades the screen to a specified
-// colour.
+// CameraInstructionFade represents a camera instruction that fades the screen to a specified colour.
 type CameraInstructionFade struct {
-	// Time is the time data for the fade, which includes the fade in duration, wait duration and fade
-	// out duration.
+	// Time is the time data for the fade, which includes the fade in duration, wait duration and fade out
+	// duration.
 	Time Optional[CameraFadeTimeData]
 	// Color is the colour of the screen to fade to. This only uses the red, green and blue components.
 	Color Optional[CameraFadeColor]
@@ -281,8 +280,8 @@ func (x *CameraInstructionFieldOfView) Marshal(io IO) {
 	io.Bool(&x.FieldOfViewClear)
 }
 
-// CameraInstructionSet represents a camera instruction that sets the camera to a specified preset
-// and can be extended with easing functions and translations to the camera's position and rotation.
+// CameraInstructionSet represents a camera instruction that sets the camera to a specified preset and can be
+// extended with easing functions and translations to the camera's position and rotation.
 type CameraInstructionSet struct {
 	// Preset is the index of the preset in the CameraPresets packet sent to the player.
 	Preset uint32
@@ -292,11 +291,10 @@ type CameraInstructionSet struct {
 	Pos Optional[CameraPosition]
 	// Rot represents the rotation of the camera.
 	Rot Optional[CameraRotation]
-	// Facing is a vector that the camera will always face towards during the duration of the
-	// instruction.
+	// Facing is a vector that the camera will always face towards during the duration of the instruction.
 	Facing Optional[CameraFacing]
-	// ViewOffset is an offset based on a pivot point to the player, causing the camera to be shifted in
-	// a certain direction.
+	// ViewOffset is an offset based on a pivot point to the player, causing the camera to be shifted in a certain
+	// direction.
 	ViewOffset Optional[CameraViewOffset]
 	// EntityOffset is an offset from the entity that the camera should be rendered at.
 	EntityOffset Optional[CameraEntityOffset]
@@ -523,8 +521,8 @@ func (x *CameraSplineDefinition) Marshal(io IO) {
 	Slice(io, &x.RotationKeyFrames)
 }
 
-// CameraSplineInstruction represents a camera instruction that creates a spline path for the camera
-// to follow.
+// CameraSplineInstruction represents a camera instruction that creates a spline path for the camera to
+// follow.
 type CameraSplineInstruction struct {
 	// TotalTime is the total time for the spline animation.
 	TotalTime float32

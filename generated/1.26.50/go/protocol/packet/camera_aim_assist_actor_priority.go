@@ -4,8 +4,7 @@ package packet
 
 import "protocolgen/generated/1.26.50/go/protocol"
 
-// CameraAimAssistActorPriority is sent by the server to define actor-specific aim assist
-// priorities.
+// CameraAimAssistActorPriority is sent by the server to define actor-specific aim assist priorities.
 type CameraAimAssistActorPriority struct {
 	// CameraAimAssistActorPriorityList is a list of aim assist actor priority entries.
 	CameraAimAssistActorPriorityList []protocol.CameraAimAssistActorPriorityData

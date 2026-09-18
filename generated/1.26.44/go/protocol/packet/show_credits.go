@@ -4,11 +4,11 @@ package packet
 
 import "protocolgen/generated/1.26.44/go/protocol"
 
-// ShowCredits is sent by the server to show the Minecraft credits screen to the client. It is
-// typically sent when the player beats the ender dragon and leaves the End.
+// ShowCredits is sent by the server to show the Minecraft credits screen to the client. It is typically sent
+// when the player beats the ender dragon and leaves the End.
 type ShowCredits struct {
-	// PlayerRuntimeID is the entity runtime ID of the player to show the credits to. It's not clear why
-	// this field is actually here in the first place.
+	// PlayerRuntimeID is the entity runtime ID of the player to show the credits to. It's not clear why this
+	// field is actually here in the first place.
 	PlayerRuntimeID uint64
 	CreditsState    int32
 }

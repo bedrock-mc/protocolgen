@@ -4,8 +4,7 @@ package packet
 
 import "protocolgen/generated/1.26.40/go/protocol"
 
-// RefreshEntitlements is sent by the client to the server to refresh the entitlements of the
-// player.
+// RefreshEntitlements is sent by the client to the server to refresh the entitlements of the player.
 type RefreshEntitlements struct {
 }
 

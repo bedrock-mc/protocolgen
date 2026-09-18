@@ -2265,8 +2265,8 @@ impl wire::Decode for ItemVersion {
 
 // Domain: item_descriptor
 
-/// ItemDescriptor represents a type of item descriptor. This is one of the concrete types below. It
-/// is an alias of Marshaler.
+/// ItemDescriptor represents a type of item descriptor. This is one of the concrete types below. It is an
+/// alias of Marshaler.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum ItemDescriptorType {
     #[default]
@@ -2667,8 +2667,8 @@ impl wire::Decode for ItemStackRequestActionType {
 
 // Domain: map
 
-/// MapDecoration is a fixed decoration on a map: Its position or other properties do not change
-/// automatically client-side.
+/// MapDecoration is a fixed decoration on a map: Its position or other properties do not change automatically
+/// client-side.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum MapDecorationType {
     #[default]

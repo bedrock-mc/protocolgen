@@ -145,7 +145,9 @@ func LeadWith(text, from, to string) string {
 }
 
 func comments(text, prefix string) []string {
-	const width = 100
+	// gophertunnel wraps its doc comments at 110 columns; matching it keeps
+	// ported docs byte-identical.
+	const width = 110
 	text = strings.ReplaceAll(text, "\r\n", "\n")
 	text = strings.TrimSpace(text)
 	if text == "" {

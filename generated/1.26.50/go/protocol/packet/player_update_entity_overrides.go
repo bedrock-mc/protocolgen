@@ -7,8 +7,7 @@ import "protocolgen/generated/1.26.50/go/protocol"
 // PlayerUpdateEntityOverrides is sent by the server to modify an entity's properties individually.
 type PlayerUpdateEntityOverrides struct {
 	TargetID int64
-	// PropertyIndex is the index of the property to modify. The index is unique for each property of an
-	// entity.
+	// PropertyIndex is the index of the property to modify. The index is unique for each property of an entity.
 	PropertyIndex uint32
 	Update        protocol.PlayerUpdateEntityOverridesData
 }

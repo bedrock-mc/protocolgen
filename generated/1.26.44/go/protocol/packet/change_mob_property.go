@@ -4,8 +4,8 @@ package packet
 
 import "protocolgen/generated/1.26.44/go/protocol"
 
-// ChangeMobProperty is a packet sent from the server to the client to change one of the properties
-// of a mob client-side.
+// ChangeMobProperty is a packet sent from the server to the client to change one of the properties of a mob
+// client-side.
 type ChangeMobProperty struct {
 	ActorID              int64
 	PropertyName         string

@@ -165,19 +165,18 @@ impl wire::Decode for PlayerUpdateEntityOverridesData {
 
 // Domain: attribute
 
-/// AttributeModifier temporarily buffs/debuffs a given attribute until the modifier is used. In
-/// vanilla, these are mainly used for effects.
+/// AttributeModifier temporarily buffs/debuffs a given attribute until the modifier is used. In vanilla,
+/// these are mainly used for effects.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct AttributeModifier {
     /// `id` is the unique ID of the modifier. It is used to identify the modifier in the packet.
     pub id: String,
     /// `name` is the name of the attribute that is modified.
     pub name: String,
-    /// `amount` is the amount of difference between the current value of the attribute and the new
-    /// value.
+    /// `amount` is the amount of difference between the current value of the attribute and the new value.
     pub amount: wire::F32LE,
-    /// `operation` is the operation that is performed on the attribute. It can be addition, multiply
-    /// base, multiply total or cap.
+    /// `operation` is the operation that is performed on the attribute. It can be addition, multiply base,
+    /// multiply total or cap.
     pub operation: wire::I32LE,
     /// `operand` ... TODO: Figure out what this field is used for.
     pub operand: wire::I32LE,
@@ -622,8 +621,8 @@ impl wire::Decode for BedrockSafetyRedactableString {
 
 // Domain: biome
 
-/// BiomeCappedSurface specifies the materials to use for the capped surface of a biome, such as in
-/// the Nether.
+/// BiomeCappedSurface specifies the materials to use for the capped surface of a biome, such as in the
+/// Nether.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct BiomeCappedSurfaceData {
     /// `floor_blocks` is a list of runtime IDs to use for the floor blocks.
@@ -704,20 +703,18 @@ impl wire::Decode for BiomeCappedSurfaceData {
     }
 }
 
-/// BiomeClimate represents the climate of a biome, mainly for ambience but also defines certain
-/// behaviours.
+/// BiomeClimate represents the climate of a biome, mainly for ambience but also defines certain behaviours.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct BiomeClimateData {
-    /// `temperature` is the temperature of the biome, used for weather, biome behaviours and sky
-    /// colour.
+    /// `temperature` is the temperature of the biome, used for weather, biome behaviours and sky colour.
     pub temperature: wire::F32LE,
     /// `downfall` is the amount that precipitation affects colours and block changes.
     pub downfall: wire::F32LE,
-    /// `snow_accumulation_min` is the minimum amount of snow that can accumulate in the biome, every
-    /// 0.125 is another layer of snow.
+    /// `snow_accumulation_min` is the minimum amount of snow that can accumulate in the biome, every 0.125 is
+    /// another layer of snow.
     pub snow_accumulation_min: wire::F32LE,
-    /// `snow_accumulation_max` is the maximum amount of snow that can accumulate in the biome, every
-    /// 0.125 is another layer of snow.
+    /// `snow_accumulation_max` is the maximum amount of snow that can accumulate in the biome, every 0.125 is
+    /// another layer of snow.
     pub snow_accumulation_max: wire::F32LE,
 }
 
@@ -775,8 +772,7 @@ impl wire::Decode for BiomeConditionalTransformationData {
     }
 }
 
-/// BiomeConsolidatedFeature represents a feature that is consolidated into a single feature for the
-/// biome.
+/// BiomeConsolidatedFeature represents a feature that is consolidated into a single feature for the biome.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct BiomeConsolidatedFeatureData {
     /// `scatter` defines how the feature is scattered in the biome.
@@ -838,20 +834,18 @@ impl wire::Decode for BiomeConsolidatedFeaturesData {
 /// BiomeCoordinate specifies coordinate rules for where features can be scattered in the biome.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct BiomeCoordinateData {
-    /// `min_value_type` is the type of expression operation to use for the minimum value, and is one of
-    /// the BiomeExpressionOp constants above.
+    /// `min_value_type` is the type of expression operation to use for the minimum value, and is one of the
+    /// BiomeExpressionOp constants above.
     pub min_value_type: wire::ZigZag32,
     /// `min_value` is the index of the minimum value expression in the string list.
     pub min_value: wire::U16LE,
-    /// `max_value_type` is the type of expression operation to use for the maximum value, and is one of
-    /// the
+    /// `max_value_type` is the type of expression operation to use for the maximum value, and is one of the
     pub max_value_type: wire::ZigZag32,
     /// `max_value` is the index of the maximum value expression in the string list.
     pub max_value: wire::U16LE,
     /// `grid_offset` is the offset of the grid, used for fixed grid and jittered grid distributions.
     pub grid_offset: wire::U32LE,
-    /// `grid_step_size` is the step size of the grid, used for fixed grid and jittered grid
-    /// distributions.
+    /// `grid_step_size` is the step size of the grid, used for fixed grid and jittered grid distributions.
     pub grid_step_size: wire::U32LE,
     /// `distribution` is the type of distribution to use for the coordinate, and is one of the
     /// BiomeRandomDistributionType constants above.
@@ -1102,13 +1096,12 @@ impl wire::Decode for BiomeDefinitionChunkGenData {
     }
 }
 
-/// BiomeDefinition represents a biome definition in the game. This can be a vanilla biome or a
-/// completely custom biome.
+/// BiomeDefinition represents a biome definition in the game. This can be a vanilla biome or a completely
+/// custom biome.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct BiomeDefinitionData {
     pub id: wire::U16LE,
-    /// `temperature` is the temperature of the biome, used for weather, biome behaviours and sky
-    /// colour.
+    /// `temperature` is the temperature of the biome, used for weather, biome behaviours and sky colour.
     pub temperature: wire::F32LE,
     /// `downfall` is the amount that precipitation affects colours and block changes.
     pub downfall: wire::F32LE,
@@ -1121,8 +1114,8 @@ pub struct BiomeDefinitionData {
     pub map_water_color_argb: wire::I32LE,
     /// `rain` is true if the biome has rain, false if it is a dry biome.
     pub rain: bool,
-    /// `tags` are a list of indices of tags in the string list. These are used to group biomes together
-    /// for biome generation and other purposes.
+    /// `tags` are a list of indices of tags in the string list. These are used to group biomes together for biome
+    /// generation and other purposes.
     /// Wire presence: optional value is preceded by a presence marker.
     pub tags: Option<BiomeTagsData>,
     /// Wire presence: optional value is preceded by a presence marker.
@@ -1205,13 +1198,13 @@ pub struct BiomeElementData {
     pub noise_lower_bound: wire::F32LE,
     /// `noise_upper_bound` is the maximum noise value required to be selected.
     pub noise_upper_bound: wire::F32LE,
-    /// `height_min_type` is the type of expression operation to use for the minimum height, and is one
-    /// of the BiomeExpressionOp constants above.
+    /// `height_min_type` is the type of expression operation to use for the minimum height, and is one of the
+    /// BiomeExpressionOp constants above.
     pub height_min_type: wire::ZigZag32,
     /// `height_min` is the index of the minimum height expression in the string list.
     pub height_min: wire::U16LE,
-    /// `height_max_type` is the type of expression operation to use for the maximum height, and is one
-    /// of the BiomeExpressionOp constants above.
+    /// `height_max_type` is the type of expression operation to use for the maximum height, and is one of the
+    /// BiomeExpressionOp constants above.
     pub height_max_type: wire::ZigZag32,
     /// `height_max` is the index of the maximum height expression in the string list.
     pub height_max: wire::U16LE,
@@ -1597,8 +1590,7 @@ impl wire::Decode for BiomeStringList {
     }
 }
 
-/// BiomeSurfaceBuilder specifies the materials and special surface rules to use for a biome
-/// surface.
+/// BiomeSurfaceBuilder specifies the materials and special surface rules to use for a biome surface.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct BiomeSurfaceBuilderData {
     /// `surface_materials` is a set of materials to use for the surface layers of the biome.
@@ -1615,8 +1607,7 @@ pub struct BiomeSurfaceBuilderData {
     /// `mesa_surface` is optional information to specify the biome's mesa surface.
     /// Wire presence: optional value is preceded by a presence marker.
     pub mesa_surface: Option<BiomeMesaSurfaceData>,
-    /// `capped_surface` is optional information to specify the biome's capped surface, i.e. in the
-    /// Nether.
+    /// `capped_surface` is optional information to specify the biome's capped surface, i.e. in the Nether.
     /// Wire presence: optional value is preceded by a presence marker.
     pub capped_surface: Option<BiomeCappedSurfaceData>,
     /// `noise_gradient_surface` is optional information to specify noise-gradient surface data.
@@ -1872,8 +1863,7 @@ pub struct NoiseDescriptor {
     pub name: String,
     /// `first_octave` is the first octave used by the noise.
     pub first_octave: wire::I32LE,
-    /// `amplitudes` is a list of amplitude values used by the noise. It must contain between 1 and 100
-    /// entries.
+    /// `amplitudes` is a list of amplitude values used by the noise. It must contain between 1 and 100 entries.
     pub amplitudes: Vec<wire::F32LE>,
 }
 
@@ -1900,8 +1890,8 @@ impl wire::Decode for NoiseDescriptor {
 
 // Domain: block_pos
 
-/// BlockPos is the position of a block. It is composed of three integers, and is typically written
-/// as either 3 varint32s or a varint32, varuint32 and varint32.
+/// BlockPos is the position of a block. It is composed of three integers, and is typically written as either
+/// 3 varint32s or a varint32, varuint32 and varint32.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct BlockPos {
     pub x: wire::ZigZag32,
@@ -2695,16 +2685,14 @@ impl wire::Decode for CameraInstructionData {
     }
 }
 
-/// CameraInstructionFade represents a camera instruction that fades the screen to a specified
-/// colour.
+/// CameraInstructionFade represents a camera instruction that fades the screen to a specified colour.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CameraInstructionFade {
-    /// `time` is the time data for the fade, which includes the fade in duration, wait duration and
-    /// fade out duration.
+    /// `time` is the time data for the fade, which includes the fade in duration, wait duration and fade out
+    /// duration.
     /// Wire presence: optional value is preceded by a presence marker.
     pub time: Option<CameraFadeTimeData>,
-    /// `color` is the colour of the screen to fade to. This only uses the red, green and blue
-    /// components.
+    /// `color` is the colour of the screen to fade to. This only uses the red, green and blue components.
     /// Wire presence: optional value is preceded by a presence marker.
     pub color: Option<CameraFadeColor>,
 }
@@ -2782,9 +2770,8 @@ impl wire::Decode for CameraInstructionFieldOfView {
     }
 }
 
-/// CameraInstructionSet represents a camera instruction that sets the camera to a specified preset
-/// and can be extended with easing functions and translations to the camera's position and
-/// rotation.
+/// CameraInstructionSet represents a camera instruction that sets the camera to a specified preset and can be
+/// extended with easing functions and translations to the camera's position and rotation.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CameraInstructionSet {
     /// `preset` is the index of the preset in the CameraPresets packet sent to the player.
@@ -2798,12 +2785,11 @@ pub struct CameraInstructionSet {
     /// `rot` represents the rotation of the camera.
     /// Wire presence: optional value is preceded by a presence marker.
     pub rot: Option<CameraRotation>,
-    /// `facing` is a vector that the camera will always face towards during the duration of the
-    /// instruction.
+    /// `facing` is a vector that the camera will always face towards during the duration of the instruction.
     /// Wire presence: optional value is preceded by a presence marker.
     pub facing: Option<CameraFacing>,
-    /// `view_offset` is an offset based on a pivot point to the player, causing the camera to be
-    /// shifted in a certain direction.
+    /// `view_offset` is an offset based on a pivot point to the player, causing the camera to be shifted in a
+    /// certain direction.
     /// Wire presence: optional value is preceded by a presence marker.
     pub view_offset: Option<CameraViewOffset>,
     /// `entity_offset` is an offset from the entity that the camera should be rendered at.
@@ -2958,8 +2944,7 @@ impl wire::Decode for CameraInstructionTarget {
 /// CameraInstructionTarget represents a camera instruction that targets a specific entity.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CameraInstructionTargetData {
-    /// `target_center_offset` is the offset from the center of the entity that the camera should
-    /// target.
+    /// `target_center_offset` is the offset from the center of the entity that the camera should target.
     /// Wire presence: optional value is preceded by a presence marker.
     pub target_center_offset: Option<glam::Vec3>,
     /// `target_actor_id` is the unique ID of the entity that the camera should target.
@@ -3578,8 +3563,8 @@ impl wire::Decode for CameraSplineDefinition {
     }
 }
 
-/// CameraSplineInstruction represents a camera instruction that creates a spline path for the
-/// camera to follow.
+/// CameraSplineInstruction represents a camera instruction that creates a spline path for the camera to
+/// follow.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CameraSplineInstruction {
     /// `total_time` is the total time for the spline animation.
@@ -3592,8 +3577,7 @@ pub struct CameraSplineInstruction {
     pub rotation_option: Vec<CameraRotationOption>,
     /// `spline_identifier` is an optional identifier for referencing the spline by name.
     pub spline_identifier: String,
-    /// `load_from_json` optionally determines whether the spline should be loaded from a JSON
-    /// definition.
+    /// `load_from_json` optionally determines whether the spline should be loaded from a JSON definition.
     pub load_from_json: bool,
 }
 
@@ -3750,8 +3734,7 @@ impl wire::Decode for CameraViewOffset {
 
 // Domain: chunk_pos
 
-/// ChunkPos is the position of a chunk. It is composed of two integers and is written as two
-/// varint32s.
+/// ChunkPos is the position of a chunk. It is composed of two integers and is written as two varint32s.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ChunkPos {
     pub x: wire::ZigZag32,
@@ -3773,8 +3756,8 @@ impl wire::Decode for ChunkPos {
     }
 }
 
-/// SubChunkPos is the position of a sub-chunk. The X and Z coordinates are the coordinates of the
-/// chunk, and the Y coordinate is the absolute sub-chunk index.
+/// SubChunkPos is the position of a sub-chunk. The X and Z coordinates are the coordinates of the chunk, and
+/// the Y coordinate is the absolute sub-chunk index.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SubChunkPos {
     pub subchunk_position_x: wire::I32LE,
@@ -4038,12 +4021,11 @@ impl wire::Decode for WorldClockData {
 
 // Domain: command
 
-/// ChainedSubcommand represents a subcommand that can have chained commands, such as /execute which
-/// allows you to run another command as another entity or at a different position etc.
+/// ChainedSubcommand represents a subcommand that can have chained commands, such as /execute which allows
+/// you to run another command as another entity or at a different position etc.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ChainedSubcommand {
-    /// `name` is the name of the chained subcommand and shows up in the list as a regular subcommand
-    /// enum.
+    /// `name` is the name of the chained subcommand and shows up in the list as a regular subcommand enum.
     pub name: String,
     /// `sub_command_values` contains the index and parameter type of the chained subcommand.
     pub sub_command_values: Vec<ChainedSubcommandValue>,
@@ -4071,13 +4053,12 @@ impl wire::Decode for ChainedSubcommand {
 /// ChainedSubcommandValue represents the value for a chained subcommand argument.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ChainedSubcommandValue {
-    /// `sub_command_first_value` is the index of the argument in the ChainedSubcommandValues slice from
-    /// the AvailableCommands packet. This is then used to set the type specified by the Value field
-    /// below.
+    /// `sub_command_first_value` is the index of the argument in the ChainedSubcommandValues slice from the
+    /// AvailableCommands packet. This is then used to set the type specified by the Value field below.
     pub sub_command_first_value: wire::VarUInt,
-    /// `sub_command_second_value` is a combination of the flags above and specified the type of
-    /// argument. Unlike regular parameter types, this should NOT contain any of the special flags
-    /// (valid, enum, suffixed or soft enum) but only the basic types.
+    /// `sub_command_second_value` is a combination of the flags above and specified the type of argument. Unlike
+    /// regular parameter types, this should NOT contain any of the special flags (valid, enum, suffixed or soft
+    /// enum) but only the basic types.
     pub sub_command_second_value: wire::VarUInt,
 }
 
@@ -4099,28 +4080,26 @@ impl wire::Decode for ChainedSubcommandValue {
     }
 }
 
-/// Command holds the data that a command requires to be shown to a player client-side. The command
-/// is shown in the /help command and auto-completed using this data.
+/// Command holds the data that a command requires to be shown to a player client-side. The command is shown
+/// in the /help command and auto-completed using this data.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct Command {
-    /// `name` is the name of the command. The command may be executed using this name, and will be
-    /// shown in the /help list with it. It currently seems that the client crashes if the Name contains
-    /// uppercase letters.
+    /// `name` is the name of the command. The command may be executed using this name, and will be shown in the
+    /// /help list with it. It currently seems that the client crashes if the Name contains uppercase letters.
     pub name: String,
-    /// `description` is the description of the command. It is shown in the /help list and when starting
-    /// to write a command.
+    /// `description` is the description of the command. It is shown in the /help list and when starting to write
+    /// a command.
     pub description: String,
-    /// `flags` is a combination of flags not currently known. Leaving the Flags field empty appears to
-    /// work.
+    /// `flags` is a combination of flags not currently known. Leaving the Flags field empty appears to work.
     pub flags: wire::U16LE,
-    /// `permission_level` is the command permission level that the player required to execute this
-    /// command. The field no longer seems to serve a purpose, as the client does not handle the
-    /// execution of commands anymore: The permissions should be checked server-side.
+    /// `permission_level` is the command permission level that the player required to execute this command. The
+    /// field no longer seems to serve a purpose, as the client does not handle the execution of commands anymore:
+    /// The permissions should be checked server-side.
     pub permission_level: String,
     pub alias_enum: wire::I32LE,
     pub command_data_chained_subcommand_indexes: Vec<wire::U32LE>,
-    /// `overloads` is a list of command overloads that specify the ways in which a command may be
-    /// executed. The overloads may be completely different.
+    /// `overloads` is a list of command overloads that specify the ways in which a command may be executed. The
+    /// overloads may be completely different.
     pub overloads: Vec<CommandOverload>,
 }
 
@@ -4250,17 +4229,16 @@ impl wire::Decode for CommandBlockUpdateData {
     }
 }
 
-/// CommandEnum represents an enum in a command usage. The enum typically has a type and a set of
-/// options that are valid. A value that is not one of the options results in a failure during
-/// execution.
+/// CommandEnum represents an enum in a command usage. The enum typically has a type and a set of options that
+/// are valid. A value that is not one of the options results in a failure during execution.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CommandEnum {
-    /// `name` is the type of the command enum. The type will show up in the command usage as the type
-    /// of the argument if it has a certain amount of arguments, or when Options is set to true in the
-    /// command holding the enum.
+    /// `name` is the type of the command enum. The type will show up in the command usage as the type of the
+    /// argument if it has a certain amount of arguments, or when Options is set to true in the command holding
+    /// the enum.
     pub name: String,
-    /// `values` holds a list of indices that point to the EnumValues slice in the
-    /// AvailableCommandsPacket. These represent the options of the enum.
+    /// `values` holds a list of indices that point to the EnumValues slice in the AvailableCommandsPacket. These
+    /// represent the options of the enum.
     pub values: Vec<wire::U32LE>,
 }
 
@@ -4279,15 +4257,14 @@ impl wire::Decode for CommandEnum {
     }
 }
 
-/// CommandEnumConstraint is sent in the AvailableCommands packet to limit what values of an enum
-/// may be used taking in account things such as whether cheats are enabled.
+/// CommandEnumConstraint is sent in the AvailableCommands packet to limit what values of an enum may be used
+/// taking in account things such as whether cheats are enabled.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CommandEnumConstraint {
-    /// `enum_value_symbol` points to an enum value in the AvailableCommands packet that this constraint
-    /// should apply to.
-    pub enum_value_symbol: wire::U32LE,
-    /// `enum_symbol` points to an enum in the AvailableCommands packet to which this constraint should
+    /// `enum_value_symbol` points to an enum value in the AvailableCommands packet that this constraint should
     /// apply to.
+    pub enum_value_symbol: wire::U32LE,
+    /// `enum_symbol` points to an enum in the AvailableCommands packet to which this constraint should apply to.
     pub enum_symbol: wire::U32LE,
     /// `constraint_indices` holds a slice of constraints as present in the constants above.
     pub constraint_indices: Vec<wire::U8>,
@@ -4314,18 +4291,18 @@ impl wire::Decode for CommandEnumConstraint {
     }
 }
 
-/// CommandOrigin holds data that identifies the origin of the requesting of a command. It holds
-/// several fields that may be used to get specific information. When sent in a CommandRequest
-/// packet, the same CommandOrigin should be sent in a CommandOutput packet.
+/// CommandOrigin holds data that identifies the origin of the requesting of a command. It holds several
+/// fields that may be used to get specific information. When sent in a CommandRequest packet, the same
+/// CommandOrigin should be sent in a CommandOutput packet.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CommandOriginData {
     pub type_: String,
     /// `uuid` is a unique identifier for every instantiation of a command.
     pub uuid: uuid::Uuid,
-    /// `request_id` is an ID that identifies the request of the client. The server should send a
-    /// CommandOrigin with the same request ID to ensure it can be matched with the request by the
-    /// caller of the command. This is especially important for websocket servers and it seems that this
-    /// field is only non-empty for these websocket servers.
+    /// `request_id` is an ID that identifies the request of the client. The server should send a CommandOrigin
+    /// with the same request ID to ensure it can be matched with the request by the caller of the command. This
+    /// is especially important for websocket servers and it seems that this field is only non-empty for these
+    /// websocket servers.
     pub request_id: String,
     pub player_id: wire::I64LE,
 }
@@ -4404,15 +4381,15 @@ impl wire::Decode for CommandOutputData {
     }
 }
 
-/// CommandOutputMessage represents a message sent by a command that holds the output of one of the
-/// commands executed.
+/// CommandOutputMessage represents a message sent by a command that holds the output of one of the commands
+/// executed.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CommandOutputMessage {
     pub message_id: String,
     pub successful: bool,
-    /// `parameters` is a list of parameters that serve to supply the message sent with additional
-    /// information, such as the position that a player was teleported to or the effect that was applied
-    /// to an entity. These parameters only apply for the Minecraft built-in command output.
+    /// `parameters` is a list of parameters that serve to supply the message sent with additional information,
+    /// such as the position that a player was teleported to or the effect that was applied to an entity. These
+    /// parameters only apply for the Minecraft built-in command output.
     pub parameters: Vec<String>,
 }
 
@@ -4437,15 +4414,15 @@ impl wire::Decode for CommandOutputMessage {
     }
 }
 
-/// CommandOverload represents an overload of a command. This overload can be compared to function
-/// overloading in languages such as java. It represents a single usage of the command. A command
-/// may have multiple different overloads, which are handled differently.
+/// CommandOverload represents an overload of a command. This overload can be compared to function overloading
+/// in languages such as java. It represents a single usage of the command. A command may have multiple
+/// different overloads, which are handled differently.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CommandOverload {
     /// `is_chaining` determines if the parameters use chained subcommands or not.
     pub is_chaining: bool,
-    /// `parameter_data` is a list of command parameters that are part of the overload. These parameters
-    /// specify the usage of the command when this overload is applied.
+    /// `parameter_data` is a list of command parameters that are part of the overload. These parameters specify
+    /// the usage of the command when this overload is applied.
     pub parameter_data: Vec<CommandParameter>,
 }
 
@@ -4467,19 +4444,18 @@ impl wire::Decode for CommandOverload {
     }
 }
 
-/// CommandParameter represents a single parameter of a command overload, which accepts a certain
-/// type of input values. It has a name and a type which show up client-side when a player is
-/// entering the command.
+/// CommandParameter represents a single parameter of a command overload, which accepts a certain type of
+/// input values. It has a name and a type which show up client-side when a player is entering the command.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CommandParameter {
-    /// `name` is the name of the command parameter. It shows up in the usage like <$Name: $Type>, with
-    /// the exception of enum types, which show up simply as a list of options if the list is short
-    /// enough and Options is set to false.
+    /// `name` is the name of the command parameter. It shows up in the usage like <$Name: $Type>, with the
+    /// exception of enum types, which show up simply as a list of options if the list is short enough and Options
+    /// is set to false.
     pub name: String,
     pub parse_symbol: wire::U32LE,
     pub is_optional: bool,
-    /// `options` holds a combinations of options that additionally apply to the command parameter. The
-    /// list of options can be found above.
+    /// `options` holds a combinations of options that additionally apply to the command parameter. The list of
+    /// options can be found above.
     pub options: wire::U8,
 }
 
@@ -4507,13 +4483,13 @@ impl wire::Decode for CommandParameter {
     }
 }
 
-/// DynamicEnum is an enum variant that can have its options changed during runtime, without sending
-/// a new AvailableCommands packet.
+/// DynamicEnum is an enum variant that can have its options changed during runtime, without sending a new
+/// AvailableCommands packet.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct DynamicEnum {
-    /// `enum_name` is the type of the command enum. The type will show up in the command usage as the
-    /// type of the argument if it has a certain amount of arguments, or when Options is set to true in
-    /// the command holding the enum.
+    /// `enum_name` is the type of the command enum. The type will show up in the command usage as the type of the
+    /// argument if it has a certain amount of arguments, or when Options is set to true in the command holding
+    /// the enum.
     pub enum_name: String,
     /// `enum_options` is a slice of possible options for the enum.
     pub enum_options: Vec<String>,
@@ -4567,14 +4543,13 @@ impl wire::Decode for ContainerMixDataEntry {
     }
 }
 
-/// FullContainerName contains information required to identify a container in a
-/// StackRequestSlotInfo.
+/// FullContainerName contains information required to identify a container in a StackRequestSlotInfo.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct FullContainerName {
     /// `container_name` is the ID of the container that the slot was in.
     pub container_name: ContainerEnumName,
-    /// `dynamic_id` is the ID of the container if it is dynamic. If the container is not dynamic, this
-    /// field should be left empty. A non-optional value of 0 is assumed to be non-empty.
+    /// `dynamic_id` is the ID of the container if it is dynamic. If the container is not dynamic, this field
+    /// should be left empty. A non-optional value of 0 is assumed to be non-empty.
     /// Wire presence: optional value is preceded by a presence marker.
     pub dynamic_id: Option<wire::U32LE>,
 }
@@ -4611,8 +4586,8 @@ impl wire::Decode for FullContainerName {
 
 // Domain: creative
 
-/// CreativeGroup represents a group of items in the creative inventory. Each group has a category,
-/// name and an icon that represents the group.
+/// CreativeGroup represents a group of items in the creative inventory. Each group has a category, name and
+/// an icon that represents the group.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CreativeGroupInfo {
     /// `creative_category` is the category the group falls under. It is one of the constants above.
@@ -4808,8 +4783,8 @@ impl wire::Decode for EducationLocalLevelSettings {
 
 // Domain: enchant
 
-/// EnchantmentInstance represents a single enchantment instance with the type of the enchantment
-/// and its level.
+/// EnchantmentInstance represents a single enchantment instance with the type of the enchantment and its
+/// level.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct EnchantmentInstance {
     pub enchant_type: EnchantType,
@@ -4865,8 +4840,8 @@ pub struct EntityLink {
     pub target_b: ActorUniqueID,
     /// `type_` is one of the types above. It specifies the way the entity is linked to another entity.
     pub type_: ActorLinkType,
-    /// `immediate` is set to immediately dismount an entity from another. This should be set when the
-    /// mount of an entity is killed.
+    /// `immediate` is set to immediately dismount an entity from another. This should be set when the mount of an
+    /// entity is killed.
     pub immediate: bool,
     pub passenger_initiated: bool,
     /// `vehicle_angular_velocity` is the angular velocity of the vehicle that the rider is riding.
@@ -5465,11 +5440,10 @@ impl wire::Decode for FurnaceOptions {
 pub struct GameRule {
     /// `rule_name` is the name of the game rule.
     pub rule_name: String,
-    /// `rule_can_be_modified` specifies if the game rule can be modified by the player through the
-    /// in-game UI.
+    /// `rule_can_be_modified` specifies if the game rule can be modified by the player through the in-game UI.
     pub rule_can_be_modified: bool,
-    /// `rule_value` is the new value of the game rule. This is either a bool, uint32 or float32, or nil
-    /// for the null variant, which carries no value at all.
+    /// `rule_value` is the new value of the game rule. This is either a bool, uint32 or float32, or nil for the
+    /// null variant, which carries no value at all.
     pub rule_value: GameRuleValue,
 }
 
@@ -5988,23 +5962,23 @@ pub enum PrimitiveShapeExtraShapeData {
     TextData {
         /// `text` is the text of the debug text shape.
         text: String,
-        /// `use_rotation` is if the text should use the provided rotation, meaning it will be static and
-        /// does not follow the camera. Use false for default behaviour.
+        /// `use_rotation` is if the text should use the provided rotation, meaning it will be static and does not
+        /// follow the camera. Use false for default behaviour.
         use_rotation: bool,
-        /// `background_color` is the RGBA colour to use for the text background. This is a translucent
-        /// black colour by default.
+        /// `background_color` is the RGBA colour to use for the text background. This is a translucent black colour
+        /// by default.
         /// Wire presence: optional value is preceded by a presence marker.
         background_color: Option<MceColor>,
         line_gap_height: wire::F32LE,
         /// `depth_test` is whether the text should show through walls. Use true for default behaviour.
         depth_test: bool,
-        /// `show_backface` is if the background should render on the back side of the shape. This only has
-        /// a visible effect when UseRotation is true since you cannot see the back side of the text
-        /// otherwise. Use true for default behaviour.
+        /// `show_backface` is if the background should render on the back side of the shape. This only has a visible
+        /// effect when UseRotation is true since you cannot see the back side of the text otherwise. Use true for
+        /// default behaviour.
         show_backface: bool,
-        /// `show_text_backface` is if the text should render on the back side of the shape. This only has a
-        /// visible effect when UseRotation is true since you cannot see the back side of the text
-        /// otherwise. Use true for default behaviour.
+        /// `show_text_backface` is if the text should render on the back side of the shape. This only has a visible
+        /// effect when UseRotation is true since you cannot see the back side of the text otherwise. Use true for
+        /// default behaviour.
         show_text_backface: bool,
     },
     BoxData {
@@ -6558,9 +6532,9 @@ impl wire::Decode for SetScoreInfoItem {
 
 // Domain: inventory
 
-/// InventoryAction represents a single action that took place during an inventory transaction. On
-/// itself, this inventory action is always unbalanced: It must be combined with other actions in an
-/// inventory transaction to form a balanced transaction.
+/// InventoryAction represents a single action that took place during an inventory transaction. On itself,
+/// this inventory action is always unbalanced: It must be combined with other actions in an inventory
+/// transaction to form a balanced transaction.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct InventoryAction {
     pub source: InventorySource,
@@ -6688,8 +6662,8 @@ impl wire::Decode for InventorySource {
     }
 }
 
-/// InventoryTransactionData represents an object that holds data specific to an inventory
-/// transaction type. The data it holds depends on the type.
+/// InventoryTransactionData represents an object that holds data specific to an inventory transaction type.
+/// The data it holds depends on the type.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct InventoryTransactionData {
     pub actions: Vec<InventoryAction>,
@@ -6813,8 +6787,8 @@ impl wire::Decode for ItemEnchants {
     }
 }
 
-/// ItemInstance represents a unique instance of an item stack. These instances carry a specific
-/// network ID that is persistent for the stack.
+/// ItemInstance represents a unique instance of an item stack. These instances carry a specific network ID
+/// that is persistent for the stack.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ItemInstance {
     pub item_descriptor: ItemDescriptor,
@@ -7088,14 +7062,14 @@ impl wire::Decode for ItemStackNetID {
     }
 }
 
-/// ItemStackRequest represents a single request present in an ItemStackRequest packet sent by the
-/// client to change an item in an inventory. Item stack requests are either approved or rejected by
-/// the server using the ItemStackResponse packet.
+/// ItemStackRequest represents a single request present in an ItemStackRequest packet sent by the client to
+/// change an item in an inventory. Item stack requests are either approved or rejected by the server using
+/// the ItemStackResponse packet.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ItemStackRequestData {
     pub client_request_id: ItemStackRequestID,
-    /// `actions` is a list of actions performed by the client. The actual type of the actions depends
-    /// on which ID was present, and is one of the concrete types below.
+    /// `actions` is a list of actions performed by the client. The actual type of the actions depends on which ID
+    /// was present, and is one of the concrete types below.
     pub actions: Vec<StackRequestAction>,
     pub strings_to_filter: Vec<String>,
     pub strings_to_filter_origin: TextProcessingEventOrigin,
@@ -7314,11 +7288,11 @@ pub enum StackRequestAction {
     },
     SwapActionData {
         action_type: ItemStackRequestActionType,
-        /// `source` and Destination point to the source slot from which Count of the item stack were taken
-        /// and the destination slot to which this item was moved.
+        /// `source` and Destination point to the source slot from which Count of the item stack were taken and the
+        /// destination slot to which this item was moved.
         source: StackRequestSlotInfo,
-        /// Source and Destination point to the source slot from which Count of the item stack were taken
-        /// and the destination slot to which this item was moved.
+        /// Source and Destination point to the source slot from which Count of the item stack were taken and the
+        /// destination slot to which this item was moved.
         destination: StackRequestSlotInfo,
     },
     DropActionData {
@@ -7326,15 +7300,15 @@ pub enum StackRequestAction {
         amount: wire::U8,
         /// `source` is the source slot from which items were dropped to the ground.
         source: StackRequestSlotInfo,
-        /// `randomly` seems to be set to false in most cases. I'm not entirely sure what this does, but
-        /// this is what vanilla calls this field.
+        /// `randomly` seems to be set to false in most cases. I'm not entirely sure what this does, but this is what
+        /// vanilla calls this field.
         randomly: bool,
     },
     DestroyActionData {
         action_type: ItemStackRequestActionType,
         amount: wire::U8,
-        /// `source` is the source slot from which items came that were destroyed by moving them into the
-        /// creative inventory.
+        /// `source` is the source slot from which items came that were destroyed by moving them into the creative
+        /// inventory.
         source: StackRequestSlotInfo,
     },
     ConsumeActionData {
@@ -7357,8 +7331,7 @@ pub enum StackRequestAction {
     MineBlockActionData {
         action_type: ItemStackRequestActionType,
         slot: wire::ZigZag32,
-        /// `predicted_durability` is the durability of the item that the client assumes to be present at
-        /// the time.
+        /// `predicted_durability` is the durability of the item that the client assumes to be present at the time.
         predicted_durability: wire::ZigZag32,
         net_id_variant: wire::I32LE,
     },
@@ -7371,9 +7344,8 @@ pub enum StackRequestAction {
         action_type: ItemStackRequestActionType,
         recipe_net_id: RecipeNetID,
         number_of_requested_crafts: wire::U8,
-        /// `ingredients` is a slice of ItemDescriptorCount that contains the ingredients that were used to
-        /// craft the recipe. It is not exactly clear what this is used for, but it is sent by the vanilla
-        /// client.
+        /// `ingredients` is a slice of ItemDescriptorCount that contains the ingredients that were used to craft the
+        /// recipe. It is not exactly clear what this is used for, but it is sent by the vanilla client.
         ingredients: Vec<RecipeIngredient>,
     },
     CraftCreativeActionData {
@@ -7920,13 +7892,13 @@ impl wire::Decode for StackRequestSlotInfo {
 
 // Domain: map
 
-/// MapDecoration is a fixed decoration on a map: Its position or other properties do not change
-/// automatically client-side.
+/// MapDecoration is a fixed decoration on a map: Its position or other properties do not change automatically
+/// client-side.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct MapDecoration {
     pub image_type: MapDecorationType,
-    /// `rotation` is the rotation of the map decoration. It is byte due to the 16 fixed directions that
-    /// the map decoration may face.
+    /// `rotation` is the rotation of the map decoration. It is byte due to the 16 fixed directions that the map
+    /// decoration may face.
     pub rotation: wire::U8,
     /// `x` is the offset on the X axis in pixels of the decoration.
     pub x: wire::U8,
@@ -11964,13 +11936,13 @@ impl wire::Decode for RecipeUnlockRequirementSerializedData {
     }
 }
 
-/// ShapedRecipe is a recipe that has a specific shape that must be used to craft the output of the
-/// recipe. Trying to craft the item in any other shape will not work. The ShapedRecipe is of the
-/// same structure as the ShapedChemistryRecipe.
+/// ShapedRecipe is a recipe that has a specific shape that must be used to craft the output of the recipe.
+/// Trying to craft the item in any other shape will not work. The ShapedRecipe is of the same structure as
+/// the ShapedChemistryRecipe.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ShapedRecipe {
-    /// `recipe_id` is a unique ID of the recipe. This ID must be unique amongst all other types of
-    /// recipes too, but its functionality is not exactly known.
+    /// `recipe_id` is a unique ID of the recipe. This ID must be unique amongst all other types of recipes too,
+    /// but its functionality is not exactly known.
     pub recipe_id: String,
     /// `width` is the width of the recipe's shape.
     pub width: wire::ZigZag32,
@@ -11978,15 +11950,14 @@ pub struct ShapedRecipe {
     pub height: wire::ZigZag32,
     pub ingredients: Vec<RecipeIngredientSerializedData>,
     pub results: Vec<NetworkItemInstanceDescriptorSerializedData>,
-    /// `uuid` is a UUID identifying the recipe. Since the CraftingEvent packet no longer exists, this
-    /// can always be empty.
+    /// `uuid` is a UUID identifying the recipe. Since the CraftingEvent packet no longer exists, this can always
+    /// be empty.
     pub uuid: uuid::Uuid,
     pub tag: String,
     /// `priority` ...
     pub priority: wire::ZigZag32,
-    /// `assume_symmetry` specifies if the recipe is symmetrical. If this is set to true, the recipe
-    /// will be mirrored along the diagonal axis. This means that the recipe will be the same if rotated
-    /// 180 degrees.
+    /// `assume_symmetry` specifies if the recipe is symmetrical. If this is set to true, the recipe will be
+    /// mirrored along the diagonal axis. This means that the recipe will be the same if rotated 180 degrees.
     pub assume_symmetry: bool,
     /// Wire presence: optional value is preceded by a presence marker.
     pub unlocking_requirement: Option<RecipeUnlockRequirementSerializedData>,
@@ -12056,13 +12027,13 @@ impl wire::Decode for ShapedRecipe {
 /// RecipeShulkerBox and RecipeShapelessChemistry types.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ShapelessRecipe {
-    /// `recipe_id` is a unique ID of the recipe. This ID must be unique amongst all other types of
-    /// recipes too, but its functionality is not exactly known.
+    /// `recipe_id` is a unique ID of the recipe. This ID must be unique amongst all other types of recipes too,
+    /// but its functionality is not exactly known.
     pub recipe_id: String,
     pub ingredients: Vec<RecipeIngredientSerializedData>,
     pub results: Vec<NetworkItemInstanceDescriptorSerializedData>,
-    /// `uuid` is a UUID identifying the recipe. Since the CraftingEvent packet no longer exists, this
-    /// can always be empty.
+    /// `uuid` is a UUID identifying the recipe. Since the CraftingEvent packet no longer exists, this can always
+    /// be empty.
     pub uuid: uuid::Uuid,
     pub tag: String,
     /// `priority` ...
@@ -12122,12 +12093,12 @@ impl wire::Decode for ShapelessRecipe {
     }
 }
 
-/// SmithingTransformRecipe is a recipe specifically used for smithing tables. It has three input
-/// items and adds them together, resulting in a new item.
+/// SmithingTransformRecipe is a recipe specifically used for smithing tables. It has three input items and
+/// adds them together, resulting in a new item.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SmithingTransformRecipe {
-    /// `recipe_id` is a unique ID of the recipe. This ID must be unique amongst all other types of
-    /// recipes too, but its functionality is not exactly known.
+    /// `recipe_id` is a unique ID of the recipe. This ID must be unique amongst all other types of recipes too,
+    /// but its functionality is not exactly known.
     pub recipe_id: String,
     pub template_ingredient: RecipeIngredientSerializedData,
     pub base_ingredient: RecipeIngredientSerializedData,
@@ -12171,12 +12142,12 @@ impl wire::Decode for SmithingTransformRecipe {
     }
 }
 
-/// SmithingTrimRecipe is a recipe specifically used for applying armour trims to an armour piece
-/// inside a smithing table.
+/// SmithingTrimRecipe is a recipe specifically used for applying armour trims to an armour piece inside a
+/// smithing table.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SmithingTrimRecipe {
-    /// `recipe_id` is a unique ID of the recipe. This ID must be unique amongst all other types of
-    /// recipes too, but its functionality is not exactly known.
+    /// `recipe_id` is a unique ID of the recipe. This ID must be unique amongst all other types of recipes too,
+    /// but its functionality is not exactly known.
     pub recipe_id: String,
     pub template_ingredient: RecipeIngredientSerializedData,
     pub base_ingredient: RecipeIngredientSerializedData,
@@ -12368,8 +12339,8 @@ impl wire::Decode for ScoreboardIdentityPacketInfo {
 
 // Domain: shape
 
-/// PrimitiveShape defines a single shape to be rendered on the client. Each shape has a unique
-/// NetworkID and a set of optional parameters depending on its type.
+/// PrimitiveShape defines a single shape to be rendered on the client. Each shape has a unique NetworkID and
+/// a set of optional parameters depending on its type.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PrimitiveShape {
     /// `network_id` is the network ID of the shape.
@@ -12401,8 +12372,7 @@ pub struct PrimitiveShape {
     /// `attached_to_entity_id` is the optional runtime ID of the entity the shape is attached to.
     /// Wire presence: optional value is preceded by a presence marker.
     pub attached_to_entity_id: Option<ActorRuntimeID>,
-    /// `extra_shape_data` holding data specific to the type of shape (such as text string for the text
-    /// shape).
+    /// `extra_shape_data` holding data specific to the type of shape (such as text string for the text shape).
     pub extra_shape_data: PrimitiveShapeExtraShapeData,
 }
 
@@ -12750,8 +12720,8 @@ impl wire::Decode for StructureEditorData {
     }
 }
 
-/// StructureSettings is a struct holding settings of a structure block. Its fields may be changed
-/// using the in-game UI on the client-side.
+/// StructureSettings is a struct holding settings of a structure block. Its fields may be changed using the
+/// in-game UI on the client-side.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct StructureSettings {
     pub structure_palette_name: String,
@@ -12761,11 +12731,11 @@ pub struct StructureSettings {
     pub structure_size: BlockPos,
     pub structure_offset: BlockPos,
     pub last_edit_player: ActorUniqueID,
-    /// `rotation` is the rotation that the structure block should obtain. See the constants above for
-    /// available options.
+    /// `rotation` is the rotation that the structure block should obtain. See the constants above for available
+    /// options.
     pub rotation: Rotation,
-    /// `mirror` specifies the way the structure should be mirrored. It is either no mirror at all,
-    /// mirror on the x/z axis or both.
+    /// `mirror` specifies the way the structure should be mirrored. It is either no mirror at all, mirror on the
+    /// x/z axis or both.
     pub mirror: Mirror,
     /// `animation_mode` ...
     pub animation_mode: AnimationMode,
@@ -13379,16 +13349,15 @@ impl wire::Decode for WaypointGroupWaypointHandle {
 
 // Domain: world
 
-/// DimensionDefinition contains information specifying dimension-specific properties, used for
-/// data-driven dimensions. These include the range (the height min/max), generator variant, and
-/// more.
+/// DimensionDefinition contains information specifying dimension-specific properties, used for data-driven
+/// dimensions. These include the range (the height min/max), generator variant, and more.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct DimensionDefinition {
     pub minimum_y: wire::ZigZag32,
     pub height_range: wire::ZigZag32,
     pub generator_type: GeneratorType,
-    /// `dimension_type` is the numeric identifier of the dimension. This cannot override a vanilla
-    /// dimension (0-2), but custom dimensions should start from 1000 like vanilla.
+    /// `dimension_type` is the numeric identifier of the dimension. This cannot override a vanilla dimension
+    /// (0-2), but custom dimensions should start from 1000 like vanilla.
     pub dimension_type: DimensionType,
     /// `pack_id` is the UUID of the behaviour pack which has added the dimension.
     pub pack_id: uuid::Uuid,

@@ -786,13 +786,12 @@ func typeCategory(node manifest.Node) string {
 			return "float64"
 		case "uuid":
 			return "named"
-		case "i8", "i16le", "i16be", "i32le", "i32be", "i64le", "i64be", "var_i32", "var_i64", "zigzag_i32", "zigzag_i64":
-			return "signed"
 		default:
-			return "unsigned"
+			return "integer"
 		}
 	case manifest.KindEnum:
-		return "enum"
+		// gophertunnel keeps enums as plain integers.
+		return "integer"
 	case manifest.KindString:
 		return "string"
 	case manifest.KindBytes, manifest.KindArray:
@@ -827,10 +826,8 @@ func forkCategory(value string) string {
 		return "float32"
 	case "float64":
 		return "float64"
-	case "int8", "int16", "int32", "int64", "int":
-		return "signed"
-	case "uint8", "uint16", "uint32", "uint64", "uint", "byte":
-		return "unsigned"
+	case "int8", "int16", "int32", "int64", "int", "uint8", "uint16", "uint32", "uint64", "uint", "byte":
+		return "integer"
 	case "string":
 		return "string"
 	default:

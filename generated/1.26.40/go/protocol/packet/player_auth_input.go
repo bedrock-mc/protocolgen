@@ -8,26 +8,26 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 )
 
-// PlayerAuthInput is sent by the client to allow for server authoritative movement. It is used to
-// synchronise the player input with the position server-side. The client sends this packet when the
-// ServerAuthoritativeMovementMode field in the StartGame packet is set to true, instead of the
-// MovePlayer packet. The client will send this packet once every tick.
+// PlayerAuthInput is sent by the client to allow for server authoritative movement. It is used to synchronise
+// the player input with the position server-side. The client sends this packet when the
+// ServerAuthoritativeMovementMode field in the StartGame packet is set to true, instead of the MovePlayer
+// packet. The client will send this packet once every tick.
 type PlayerAuthInput struct {
 	PlayerRotation mgl32.Vec2
 	// Position holds the position that the player reports it has.
 	Position mgl32.Vec3
-	// MoveVector is a Vec2 that specifies the direction in which the player moved, as a combination of
-	// X/Z values which are created using the WASD/controller stick state.
+	// MoveVector is a Vec2 that specifies the direction in which the player moved, as a combination of X/Z values
+	// which are created using the WASD/controller stick state.
 	MoveVector         mgl32.Vec2
 	PlayerHeadRotation float32
-	// InputData is the set of input flags that together specify the way the player moved last tick. It
-	// holds the flags above.
+	// InputData is the set of input flags that together specify the way the player moved last tick. It holds the
+	// flags above.
 	InputData protocol.Optional[[]protocol.InputData]
-	// InputMode specifies the way that the client inputs data to the screen. It is one of the constants
-	// that may be found above.
+	// InputMode specifies the way that the client inputs data to the screen. It is one of the constants that may
+	// be found above.
 	InputMode protocol.InputMode
-	// PlayMode specifies the way that the player is playing. The values it holds, which are rather
-	// random, may be found above.
+	// PlayMode specifies the way that the player is playing. The values it holds, which are rather random, may be
+	// found above.
 	PlayMode            protocol.ClientPlayMode
 	NewInteractionModel protocol.NewInteractionModel
 	InteractRotation    mgl32.Vec2
@@ -39,15 +39,14 @@ type PlayerAuthInput struct {
 	PlayerBlockActions protocol.Optional[[]protocol.PlayerBlockActionData]
 	// VehicleRotation is the rotation of the vehicle that the player is in, if any.
 	VehicleRotation protocol.Optional[mgl32.Vec2]
-	// ClientPredictedVehicle is the unique ID of the vehicle that the client predicts the player to be
-	// in.
+	// ClientPredictedVehicle is the unique ID of the vehicle that the client predicts the player to be in.
 	ClientPredictedVehicle protocol.Optional[int64]
 	AnalogMoveVector       mgl32.Vec2
-	// CameraOrientation is the vector that represents the camera's forward direction which can be used
-	// to transform movement to be camera relative.
+	// CameraOrientation is the vector that represents the camera's forward direction which can be used to
+	// transform movement to be camera relative.
 	CameraOrientation mgl32.Vec3
-	// RawMoveVector is the value of MoveVector before it is affected by input permissions, sneaking/fly
-	// speeds and isn't normalised for analogue inputs.
+	// RawMoveVector is the value of MoveVector before it is affected by input permissions, sneaking/fly speeds
+	// and isn't normalised for analogue inputs.
 	RawMoveVector mgl32.Vec2
 }
 
