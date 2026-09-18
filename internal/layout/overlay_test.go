@@ -30,6 +30,8 @@ func TestValidateRejectsUnknownTargets(t *testing.T) {
 		"unknown field":   {SchemaVersion: 1, Target: m.Target, Fields: []FieldEntry{{TypeID: "SetGameTypePacket", Field: "Mode", Name: "Mode"}}},
 		"duplicate field": {SchemaVersion: 1, Target: m.Target, Fields: []FieldEntry{{TypeID: "SetGameTypePacket", Field: "Game Type", Name: "A"}, {TypeID: "SetGameTypePacket", Field: "Game Type", Name: "B"}}},
 		"wrong target":    {SchemaVersion: 1, Target: manifest.Target{MinecraftVersion: "other", ProtocolVersion: 1}},
+		"file not packet": {SchemaVersion: 1, Target: m.Target, Files: []FileEntry{{TypeID: "enums/GameType", Package: "packet", File: "x"}}},
+		"file unknown":    {SchemaVersion: 1, Target: m.Target, Files: []FileEntry{{TypeID: "Nope", Package: "protocol", File: "x"}}},
 		"unknown schema":  {SchemaVersion: 2, Target: m.Target},
 	} {
 		if err := ValidateOverlay(m, document); err == nil {
@@ -41,7 +43,8 @@ func TestValidateRejectsUnknownTargets(t *testing.T) {
 	}
 	valid := Document{SchemaVersion: 1, Target: m.Target,
 		Constants: []ConstantEntry{{TypeID: "enums/GameType", Package: "packet", File: "set_game_type", Names: map[string]string{"Creative": "GameTypeCreative"}}},
-		Fields:    []FieldEntry{{TypeID: "SetGameTypePacket", Field: "Game Type", Name: "PlayerGameMode"}}}
+		Fields:    []FieldEntry{{TypeID: "SetGameTypePacket", Field: "Game Type", Name: "PlayerGameMode"}},
+		Files:     []FileEntry{{TypeID: "SetGameTypePacket", Package: "packet", File: "set_game_type"}, {TypeID: "enums/GameType", Package: "protocol", File: "game_type"}}}
 	if err := ValidateOverlay(m, valid); err != nil {
 		t.Fatal(err)
 	}

@@ -516,6 +516,9 @@ func seed(m manifest.Manifest, idx index, fork forkIndex) (layout.Document, *gap
 		}
 		usedGroups[best] = true
 		group := fork.groups[best]
+		if group.Package == "protocol" {
+			document.Files = append(document.Files, layout.FileEntry{TypeID: enum.TypeID, Package: "protocol", File: group.File, Rationale: fmt.Sprintf("gophertunnel keeps the %s constants in protocol/%s.go.", group.prefix, group.File)})
+		}
 		names, note := variantNames(enum, group)
 		note.Score = bestScore
 		report.placements = append(report.placements, note)
@@ -538,6 +541,7 @@ func seed(m manifest.Manifest, idx index, fork forkIndex) (layout.Document, *gap
 	var unmatchedOwners []ownerInfo
 	pair := func(owner ownerInfo, source forkType) {
 		matchedFork[source.Package+"."+source.Name] = true
+		document.Files = append(document.Files, layout.FileEntry{TypeID: owner.TypeID, Package: source.Package, File: source.File, Rationale: fmt.Sprintf("gophertunnel keeps %s in %s/%s.go.", source.Name, source.Package, source.File)})
 		gap := fieldGap{Owner: owner, Fork: source}
 		entries := matchFields(owner, source, &gap)
 		document.Fields = append(document.Fields, entries...)

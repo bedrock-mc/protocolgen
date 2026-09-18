@@ -32,11 +32,22 @@ type FieldEntry struct {
 	Rationale string `json:"rationale"`
 }
 
+// FileEntry places one type or packet in a file (a stem without .go) of its
+// package, so generated code lands where the fork keeps the hand-written
+// counterpart. TypeID is the type ID or packet name.
+type FileEntry struct {
+	TypeID    string `json:"type_id"`
+	Package   string `json:"package"`
+	File      string `json:"file"`
+	Rationale string `json:"rationale"`
+}
+
 type Document struct {
 	SchemaVersion uint32          `json:"schema_version"`
 	Target        manifest.Target `json:"target"`
 	Constants     []ConstantEntry `json:"constants"`
 	Fields        []FieldEntry    `json:"fields"`
+	Files         []FileEntry     `json:"files"`
 }
 
 // Placement is where an enum's constants are emitted.
@@ -49,6 +60,15 @@ type Placement struct {
 type Overlay struct {
 	Constants map[string]Placement
 	Fields    map[string]string // FieldKey -> Go name
+	Files     map[string]string // type ID or packet name -> file stem
+}
+
+// File returns the reviewed file stem for a type or packet, or "".
+func (o Overlay) File(typeID string) string {
+	if o.Files == nil {
+		return ""
+	}
+	return o.Files[typeID]
 }
 
 func FieldKey(typeID, field string) string { return typeID + "\x00" + field }
@@ -74,12 +94,15 @@ func LoadOverlay(path string, m manifest.Manifest) (Overlay, error) {
 	if err := ValidateOverlay(m, document); err != nil {
 		return Overlay{}, err
 	}
-	overlay := Overlay{Constants: map[string]Placement{}, Fields: map[string]string{}}
+	overlay := Overlay{Constants: map[string]Placement{}, Fields: map[string]string{}, Files: map[string]string{}}
 	for _, entry := range document.Constants {
 		overlay.Constants[entry.TypeID] = Placement{Package: entry.Package, File: entry.File, Names: entry.Names}
 	}
 	for _, entry := range document.Fields {
 		overlay.Fields[FieldKey(entry.TypeID, entry.Field)] = entry.Name
+	}
+	for _, entry := range document.Files {
+		overlay.Files[entry.TypeID] = entry.File
 	}
 	return overlay, nil
 }
@@ -94,6 +117,39 @@ func ValidateOverlay(m manifest.Manifest, document Document) error {
 		return fmt.Errorf("layout overlay target does not match manifest target")
 	}
 	enums, fields := knownEnumsAndFields(m)
+	packets := map[string]bool{}
+	for _, packet := range m.Packets {
+		packets[packet.Name] = true
+	}
+	known := naming.TypeIDs(m)
+	for typeID := range enums {
+		known[typeID] = true
+	}
+	for typeID := range fields {
+		known[typeID] = true
+	}
+	seenFile := map[string]bool{}
+	for _, entry := range document.Files {
+		if seenFile[entry.TypeID] {
+			return fmt.Errorf("layout overlay repeats file placement for %q", entry.TypeID)
+		}
+		seenFile[entry.TypeID] = true
+		if entry.File == "" {
+			return fmt.Errorf("layout overlay file placement for %q has no file", entry.TypeID)
+		}
+		switch entry.Package {
+		case "packet":
+			if !packets[entry.TypeID] {
+				return fmt.Errorf("layout overlay file placement %q is not a packet", entry.TypeID)
+			}
+		case "protocol":
+			if !known[entry.TypeID] || packets[entry.TypeID] {
+				return fmt.Errorf("layout overlay file placement %q is not a manifest type", entry.TypeID)
+			}
+		default:
+			return fmt.Errorf("layout overlay file placement %q has package %q; want protocol or packet", entry.TypeID, entry.Package)
+		}
+	}
 	seen := map[string]bool{}
 	for _, entry := range document.Constants {
 		if seen[entry.TypeID] {
@@ -210,6 +266,7 @@ func knownEnumsAndFields(m manifest.Manifest) (map[string]map[string]bool, map[s
 // SortedDocument orders entries so a regenerated overlay diffs cleanly.
 func SortedDocument(document Document) Document {
 	sort.Slice(document.Constants, func(i, j int) bool { return document.Constants[i].TypeID < document.Constants[j].TypeID })
+	sort.Slice(document.Files, func(i, j int) bool { return document.Files[i].TypeID < document.Files[j].TypeID })
 	sort.Slice(document.Fields, func(i, j int) bool {
 		if document.Fields[i].TypeID != document.Fields[j].TypeID {
 			return document.Fields[i].TypeID < document.Fields[j].TypeID

@@ -3275,5 +3275,2407 @@
       "name": "Paused",
       "rationale": "gophertunnel WorldClockData.Paused field name."
     }
+  ],
+  "files": [
+    {
+      "type_id": "ActorEventPacket",
+      "package": "packet",
+      "file": "actor_event",
+      "rationale": "gophertunnel keeps ActorEvent in packet/actor_event.go."
+    },
+    {
+      "type_id": "ActorLink",
+      "package": "protocol",
+      "file": "entity_link",
+      "rationale": "gophertunnel keeps EntityLink in protocol/entity_link.go."
+    },
+    {
+      "type_id": "ActorPickRequestPacket",
+      "package": "packet",
+      "file": "actor_pick_request",
+      "rationale": "gophertunnel keeps ActorPickRequest in packet/actor_pick_request.go."
+    },
+    {
+      "type_id": "AddActorPacket",
+      "package": "packet",
+      "file": "add_actor",
+      "rationale": "gophertunnel keeps AddActor in packet/add_actor.go."
+    },
+    {
+      "type_id": "AddBehaviorTreePacket",
+      "package": "packet",
+      "file": "add_behaviour_tree",
+      "rationale": "gophertunnel keeps AddBehaviourTree in packet/add_behaviour_tree.go."
+    },
+    {
+      "type_id": "AddItemActorPacket",
+      "package": "packet",
+      "file": "add_item_actor",
+      "rationale": "gophertunnel keeps AddItemActor in packet/add_item_actor.go."
+    },
+    {
+      "type_id": "AddPaintingPacket",
+      "package": "packet",
+      "file": "add_painting",
+      "rationale": "gophertunnel keeps AddPainting in packet/add_painting.go."
+    },
+    {
+      "type_id": "AddPlayerPacket",
+      "package": "packet",
+      "file": "add_player",
+      "rationale": "gophertunnel keeps AddPlayer in packet/add_player.go."
+    },
+    {
+      "type_id": "AddVolumeEntityPacket",
+      "package": "packet",
+      "file": "add_volume_entity",
+      "rationale": "gophertunnel keeps AddVolumeEntity in packet/add_volume_entity.go."
+    },
+    {
+      "type_id": "AgentActionEventPacket",
+      "package": "packet",
+      "file": "agent_action",
+      "rationale": "gophertunnel keeps AgentAction in packet/agent_action.go."
+    },
+    {
+      "type_id": "AgentAnimationPacket",
+      "package": "packet",
+      "file": "agent_animation",
+      "rationale": "gophertunnel keeps AgentAnimation in packet/agent_animation.go."
+    },
+    {
+      "type_id": "AnimateEntityPacket",
+      "package": "packet",
+      "file": "animate_entity",
+      "rationale": "gophertunnel keeps AnimateEntity in packet/animate_entity.go."
+    },
+    {
+      "type_id": "AnimatePacket",
+      "package": "packet",
+      "file": "animate",
+      "rationale": "gophertunnel keeps Animate in packet/animate.go."
+    },
+    {
+      "type_id": "AnvilDamagePacket",
+      "package": "packet",
+      "file": "anvil_damage",
+      "rationale": "gophertunnel keeps AnvilDamage in packet/anvil_damage.go."
+    },
+    {
+      "type_id": "ArmorSlotAndDamagePair",
+      "package": "protocol",
+      "file": "player",
+      "rationale": "gophertunnel keeps PlayerArmourDamageEntry in protocol/player.go."
+    },
+    {
+      "type_id": "ArrowDataPayload",
+      "package": "protocol",
+      "file": "shape",
+      "rationale": "gophertunnel keeps ArrowShape in protocol/shape.go."
+    },
+    {
+      "type_id": "AttributeData",
+      "package": "protocol",
+      "file": "attribute_layer",
+      "rationale": "gophertunnel keeps AttributeData in protocol/attribute_layer.go."
+    },
+    {
+      "type_id": "AttributeLayerSyncPacketData::UpdateAttributeLayerSettingsData",
+      "package": "protocol",
+      "file": "attribute_layer",
+      "rationale": "gophertunnel keeps AttributeLayerSettings in protocol/attribute_layer.go."
+    },
+    {
+      "type_id": "AttributeLayerSyncPacketData::UpdateAttributeLayersData",
+      "package": "protocol",
+      "file": "attribute_layer",
+      "rationale": "gophertunnel keeps AttributeLayerData in protocol/attribute_layer.go."
+    },
+    {
+      "type_id": "AttributeLayerSyncPacketData::UpdateEnvironmentAttributesData",
+      "package": "protocol",
+      "file": "attribute_layer",
+      "rationale": "gophertunnel keeps EnvironmentAttributeData in protocol/attribute_layer.go."
+    },
+    {
+      "type_id": "AttributeModifier",
+      "package": "protocol",
+      "file": "attribute",
+      "rationale": "gophertunnel keeps AttributeModifier in protocol/attribute.go."
+    },
+    {
+      "type_id": "AutomationClientConnectPacket",
+      "package": "packet",
+      "file": "automation_client_connect",
+      "rationale": "gophertunnel keeps AutomationClientConnect in packet/automation_client_connect.go."
+    },
+    {
+      "type_id": "AvailableActorIdentifiersPacket",
+      "package": "packet",
+      "file": "available_actor_identifiers",
+      "rationale": "gophertunnel keeps AvailableActorIdentifiers in packet/available_actor_identifiers.go."
+    },
+    {
+      "type_id": "AvailableCommandsPacket",
+      "package": "packet",
+      "file": "available_commands",
+      "rationale": "gophertunnel keeps AvailableCommands in packet/available_commands.go."
+    },
+    {
+      "type_id": "AvailableCommandsPacketCommandData.json#",
+      "package": "protocol",
+      "file": "command",
+      "rationale": "gophertunnel keeps Command in protocol/command.go."
+    },
+    {
+      "type_id": "AvailableCommandsPacketPayload::ChainedSubcommandData",
+      "package": "protocol",
+      "file": "command",
+      "rationale": "gophertunnel keeps ChainedSubcommand in protocol/command.go."
+    },
+    {
+      "type_id": "AvailableCommandsPacketPayload::ChainedSubcommandRelationship",
+      "package": "protocol",
+      "file": "command",
+      "rationale": "gophertunnel keeps ChainedSubcommandValue in protocol/command.go."
+    },
+    {
+      "type_id": "AvailableCommandsPacketPayload::ConstrainedValueData",
+      "package": "protocol",
+      "file": "command",
+      "rationale": "gophertunnel keeps CommandEnumConstraint in protocol/command.go."
+    },
+    {
+      "type_id": "AvailableCommandsPacketPayload::EnumData",
+      "package": "protocol",
+      "file": "command",
+      "rationale": "gophertunnel keeps CommandEnum in protocol/command.go."
+    },
+    {
+      "type_id": "AvailableCommandsPacketPayload::OverloadData",
+      "package": "protocol",
+      "file": "command",
+      "rationale": "gophertunnel keeps CommandOverload in protocol/command.go."
+    },
+    {
+      "type_id": "AvailableCommandsPacketPayload::ParamData",
+      "package": "protocol",
+      "file": "command",
+      "rationale": "gophertunnel keeps CommandParameter in protocol/command.go."
+    },
+    {
+      "type_id": "AvailableCommandsPacketPayload::SoftEnumData",
+      "package": "protocol",
+      "file": "command",
+      "rationale": "gophertunnel keeps DynamicEnum in protocol/command.go."
+    },
+    {
+      "type_id": "AwardAchievementPacket",
+      "package": "packet",
+      "file": "award_achievement",
+      "rationale": "gophertunnel keeps AwardAchievement in packet/award_achievement.go."
+    },
+    {
+      "type_id": "Bedrock::DDUI::DataStoreChange",
+      "package": "protocol",
+      "file": "data_store",
+      "rationale": "gophertunnel keeps DataStoreChange in protocol/data_store.go."
+    },
+    {
+      "type_id": "Bedrock::Profile::Whisker::Diagnostics::ScopeDataSummary",
+      "package": "protocol",
+      "file": "memory_category",
+      "rationale": "gophertunnel keeps WhiskerScopeDataSummary in protocol/memory_category.go."
+    },
+    {
+      "type_id": "BiomeCappedSurfaceData",
+      "package": "protocol",
+      "file": "biome",
+      "rationale": "gophertunnel keeps BiomeCappedSurface in protocol/biome.go."
+    },
+    {
+      "type_id": "BiomeClimateData",
+      "package": "protocol",
+      "file": "biome",
+      "rationale": "gophertunnel keeps BiomeClimate in protocol/biome.go."
+    },
+    {
+      "type_id": "BiomeConditionalTransformationData",
+      "package": "protocol",
+      "file": "biome",
+      "rationale": "gophertunnel keeps BiomeConditionalTransformation in protocol/biome.go."
+    },
+    {
+      "type_id": "BiomeConsolidatedFeatureData",
+      "package": "protocol",
+      "file": "biome",
+      "rationale": "gophertunnel keeps BiomeConsolidatedFeature in protocol/biome.go."
+    },
+    {
+      "type_id": "BiomeCoordinateData",
+      "package": "protocol",
+      "file": "biome",
+      "rationale": "gophertunnel keeps BiomeCoordinate in protocol/biome.go."
+    },
+    {
+      "type_id": "BiomeDefinitionData",
+      "package": "protocol",
+      "file": "biome",
+      "rationale": "gophertunnel keeps BiomeDefinition in protocol/biome.go."
+    },
+    {
+      "type_id": "BiomeDefinitionListPacket",
+      "package": "packet",
+      "file": "biome_definition_list",
+      "rationale": "gophertunnel keeps BiomeDefinitionList in packet/biome_definition_list.go."
+    },
+    {
+      "type_id": "BiomeElementData",
+      "package": "protocol",
+      "file": "biome",
+      "rationale": "gophertunnel keeps BiomeElementData in protocol/biome.go."
+    },
+    {
+      "type_id": "BiomeMesaSurfaceData",
+      "package": "protocol",
+      "file": "biome",
+      "rationale": "gophertunnel keeps BiomeMesaSurface in protocol/biome.go."
+    },
+    {
+      "type_id": "BiomeMountainParamsData",
+      "package": "protocol",
+      "file": "biome",
+      "rationale": "gophertunnel keeps BiomeMountainParameters in protocol/biome.go."
+    },
+    {
+      "type_id": "BiomeMultinoiseGenRulesData",
+      "package": "protocol",
+      "file": "biome",
+      "rationale": "gophertunnel keeps BiomeMultiNoiseRules in protocol/biome.go."
+    },
+    {
+      "type_id": "BiomeNoiseGradientSurfaceData",
+      "package": "protocol",
+      "file": "biome",
+      "rationale": "gophertunnel keeps BiomeNoiseGradientSurface in protocol/biome.go."
+    },
+    {
+      "type_id": "BiomeReplacementData",
+      "package": "protocol",
+      "file": "biome",
+      "rationale": "gophertunnel keeps BiomeReplacementData in protocol/biome.go."
+    },
+    {
+      "type_id": "BiomeScatterParamData",
+      "package": "protocol",
+      "file": "biome",
+      "rationale": "gophertunnel keeps BiomeScatterParameter in protocol/biome.go."
+    },
+    {
+      "type_id": "BiomeSurfaceBuilderData",
+      "package": "protocol",
+      "file": "biome",
+      "rationale": "gophertunnel keeps BiomeSurfaceBuilder in protocol/biome.go."
+    },
+    {
+      "type_id": "BiomeSurfaceMaterialData",
+      "package": "protocol",
+      "file": "biome",
+      "rationale": "gophertunnel keeps BiomeSurfaceMaterial in protocol/biome.go."
+    },
+    {
+      "type_id": "BiomeWeightedTemperatureData",
+      "package": "protocol",
+      "file": "biome",
+      "rationale": "gophertunnel keeps BiomeTemperatureWeight in protocol/biome.go."
+    },
+    {
+      "type_id": "BlockActorDataPacket",
+      "package": "packet",
+      "file": "block_actor_data",
+      "rationale": "gophertunnel keeps BlockActorData in packet/block_actor_data.go."
+    },
+    {
+      "type_id": "BlockEventPacket",
+      "package": "packet",
+      "file": "block_event",
+      "rationale": "gophertunnel keeps BlockEvent in packet/block_event.go."
+    },
+    {
+      "type_id": "BlockPickRequestPacket",
+      "package": "packet",
+      "file": "block_pick_request",
+      "rationale": "gophertunnel keeps BlockPickRequest in packet/block_pick_request.go."
+    },
+    {
+      "type_id": "BookEditPacket",
+      "package": "packet",
+      "file": "book_edit",
+      "rationale": "gophertunnel keeps BookEdit in packet/book_edit.go."
+    },
+    {
+      "type_id": "BossEventPacket",
+      "package": "packet",
+      "file": "boss_event",
+      "rationale": "gophertunnel keeps BossEvent in packet/boss_event.go."
+    },
+    {
+      "type_id": "CameraAimAssistActorPriority::PriorityData",
+      "package": "protocol",
+      "file": "camera",
+      "rationale": "gophertunnel keeps CameraAimAssistActorPriorityData in protocol/camera.go."
+    },
+    {
+      "type_id": "CameraAimAssistActorPriorityPacket",
+      "package": "packet",
+      "file": "camera_aim_assist_actor_priority",
+      "rationale": "gophertunnel keeps CameraAimAssistActorPriority in packet/camera_aim_assist_actor_priority.go."
+    },
+    {
+      "type_id": "CameraAimAssistPacket",
+      "package": "packet",
+      "file": "camera_aim_assist",
+      "rationale": "gophertunnel keeps CameraAimAssist in packet/camera_aim_assist.go."
+    },
+    {
+      "type_id": "CameraAimAssistPresetsPacket",
+      "package": "packet",
+      "file": "camera_aim_assist_presets",
+      "rationale": "gophertunnel keeps CameraAimAssistPresets in packet/camera_aim_assist_presets.go."
+    },
+    {
+      "type_id": "CameraInstructionOptions::AttachToEntityInstruction",
+      "package": "protocol",
+      "file": "camera",
+      "rationale": "gophertunnel keeps CameraInstructionTarget in protocol/camera.go."
+    },
+    {
+      "type_id": "CameraInstructionOptions::FadeInstruction",
+      "package": "protocol",
+      "file": "camera",
+      "rationale": "gophertunnel keeps CameraInstructionFade in protocol/camera.go."
+    },
+    {
+      "type_id": "CameraInstructionOptions::FadeInstruction::TimeOption",
+      "package": "protocol",
+      "file": "camera",
+      "rationale": "gophertunnel keeps CameraFadeTimeData in protocol/camera.go."
+    },
+    {
+      "type_id": "CameraInstructionOptions::FovInstruction",
+      "package": "protocol",
+      "file": "camera",
+      "rationale": "gophertunnel keeps CameraInstructionFieldOfView in protocol/camera.go."
+    },
+    {
+      "type_id": "CameraInstructionOptions::SetInstruction",
+      "package": "protocol",
+      "file": "camera",
+      "rationale": "gophertunnel keeps CameraInstructionSet in protocol/camera.go."
+    },
+    {
+      "type_id": "CameraInstructionOptions::SetInstruction::EaseOption",
+      "package": "protocol",
+      "file": "camera",
+      "rationale": "gophertunnel keeps CameraEase in protocol/camera.go."
+    },
+    {
+      "type_id": "CameraInstructionOptions::SplineInstruction",
+      "package": "protocol",
+      "file": "camera",
+      "rationale": "gophertunnel keeps CameraSplineInstruction in protocol/camera.go."
+    },
+    {
+      "type_id": "CameraInstructionOptions::SplineInstruction::SplineProgressOption",
+      "package": "protocol",
+      "file": "camera",
+      "rationale": "gophertunnel keeps CameraProgressOption in protocol/camera.go."
+    },
+    {
+      "type_id": "CameraInstructionOptions::SplineInstruction::SplineRotationOption",
+      "package": "protocol",
+      "file": "camera",
+      "rationale": "gophertunnel keeps CameraRotationOption in protocol/camera.go."
+    },
+    {
+      "type_id": "CameraInstructionOptions::TargetInstruction",
+      "package": "protocol",
+      "file": "camera",
+      "rationale": "gophertunnel keeps CameraInstructionTarget in protocol/camera.go."
+    },
+    {
+      "type_id": "CameraInstructionPacket",
+      "package": "packet",
+      "file": "camera_instruction",
+      "rationale": "gophertunnel keeps CameraInstruction in packet/camera_instruction.go."
+    },
+    {
+      "type_id": "CameraPacket",
+      "package": "packet",
+      "file": "camera",
+      "rationale": "gophertunnel keeps Camera in packet/camera.go."
+    },
+    {
+      "type_id": "CameraPresetsPacket",
+      "package": "packet",
+      "file": "camera_presets",
+      "rationale": "gophertunnel keeps CameraPresets in packet/camera_presets.go."
+    },
+    {
+      "type_id": "CameraShakePacket",
+      "package": "packet",
+      "file": "camera_shake",
+      "rationale": "gophertunnel keeps CameraShake in packet/camera_shake.go."
+    },
+    {
+      "type_id": "CameraSplinePacket",
+      "package": "packet",
+      "file": "camera_spline",
+      "rationale": "gophertunnel keeps CameraSpline in packet/camera_spline.go."
+    },
+    {
+      "type_id": "ChangeDimensionPacket",
+      "package": "packet",
+      "file": "change_dimension",
+      "rationale": "gophertunnel keeps ChangeDimension in packet/change_dimension.go."
+    },
+    {
+      "type_id": "ChangeMobPropertyPacket",
+      "package": "packet",
+      "file": "change_mob_property",
+      "rationale": "gophertunnel keeps ChangeMobProperty in packet/change_mob_property.go."
+    },
+    {
+      "type_id": "ChunkRadiusUpdatedPacket",
+      "package": "packet",
+      "file": "chunk_radius_updated",
+      "rationale": "gophertunnel keeps ChunkRadiusUpdated in packet/chunk_radius_updated.go."
+    },
+    {
+      "type_id": "ClientCacheBlobStatusPacket",
+      "package": "packet",
+      "file": "client_cache_blob_status",
+      "rationale": "gophertunnel keeps ClientCacheBlobStatus in packet/client_cache_blob_status.go."
+    },
+    {
+      "type_id": "ClientCacheMissResponsePacket",
+      "package": "packet",
+      "file": "client_cache_miss_response",
+      "rationale": "gophertunnel keeps ClientCacheMissResponse in packet/client_cache_miss_response.go."
+    },
+    {
+      "type_id": "ClientCacheStatusPacket",
+      "package": "packet",
+      "file": "client_cache_status",
+      "rationale": "gophertunnel keeps ClientCacheStatus in packet/client_cache_status.go."
+    },
+    {
+      "type_id": "ClientCameraAimAssistPacket",
+      "package": "packet",
+      "file": "client_camera_aim_assist",
+      "rationale": "gophertunnel keeps ClientCameraAimAssist in packet/client_camera_aim_assist.go."
+    },
+    {
+      "type_id": "ClientMovementPredictionSyncPacket",
+      "package": "packet",
+      "file": "client_movement_prediction_sync",
+      "rationale": "gophertunnel keeps ClientMovementPredictionSync in packet/client_movement_prediction_sync.go."
+    },
+    {
+      "type_id": "ClientToServerHandshakePacket",
+      "package": "packet",
+      "file": "client_to_server_handshake",
+      "rationale": "gophertunnel keeps ClientToServerHandshake in packet/client_to_server_handshake.go."
+    },
+    {
+      "type_id": "ClientboundAttributeLayerSyncPacket",
+      "package": "packet",
+      "file": "clientbound_attribute_layer_sync",
+      "rationale": "gophertunnel keeps ClientBoundAttributeLayerSync in packet/clientbound_attribute_layer_sync.go."
+    },
+    {
+      "type_id": "ClientboundCloseFormPacket",
+      "package": "packet",
+      "file": "client_bound_close_form",
+      "rationale": "gophertunnel keeps ClientBoundCloseForm in packet/client_bound_close_form.go."
+    },
+    {
+      "type_id": "ClientboundControlSchemeSetPacket",
+      "package": "packet",
+      "file": "client_bound_control_scheme_set",
+      "rationale": "gophertunnel keeps ClientBoundControlSchemeSet in packet/client_bound_control_scheme_set.go."
+    },
+    {
+      "type_id": "ClientboundDataDrivenUICloseScreenPacket",
+      "package": "packet",
+      "file": "clientbound_data_driven_ui_close_all_screens",
+      "rationale": "gophertunnel keeps ClientBoundDataDrivenUICloseScreen in packet/clientbound_data_driven_ui_close_all_screens.go."
+    },
+    {
+      "type_id": "ClientboundDataDrivenUIReloadPacket",
+      "package": "packet",
+      "file": "clientbound_data_driven_ui_reload",
+      "rationale": "gophertunnel keeps ClientBoundDataDrivenUIReload in packet/clientbound_data_driven_ui_reload.go."
+    },
+    {
+      "type_id": "ClientboundDataDrivenUIShowScreenPacket",
+      "package": "packet",
+      "file": "clientbound_data_driven_ui_show_screen",
+      "rationale": "gophertunnel keeps ClientBoundDataDrivenUIShowScreen in packet/clientbound_data_driven_ui_show_screen.go."
+    },
+    {
+      "type_id": "ClientboundDataStorePacket",
+      "package": "packet",
+      "file": "clientbound_data_store",
+      "rationale": "gophertunnel keeps ClientBoundDataStore in packet/clientbound_data_store.go."
+    },
+    {
+      "type_id": "ClientboundDebugRendererPacket",
+      "package": "packet",
+      "file": "client_bound_debug_renderer",
+      "rationale": "gophertunnel keeps ClientBoundDebugRenderer in packet/client_bound_debug_renderer.go."
+    },
+    {
+      "type_id": "ClientboundMapItemDataPacket",
+      "package": "packet",
+      "file": "client_bound_map_item_data",
+      "rationale": "gophertunnel keeps ClientBoundMapItemData in packet/client_bound_map_item_data.go."
+    },
+    {
+      "type_id": "ClientboundTextureShiftPacket",
+      "package": "packet",
+      "file": "clientbound_texture_shift",
+      "rationale": "gophertunnel keeps ClientBoundTextureShift in packet/clientbound_texture_shift.go."
+    },
+    {
+      "type_id": "ClientboundUpdateSoundDataPacket",
+      "package": "packet",
+      "file": "clientbound_update_sound_data",
+      "rationale": "gophertunnel keeps ClientboundUpdateSoundData in packet/clientbound_update_sound_data.go."
+    },
+    {
+      "type_id": "CodeBuilderPacket",
+      "package": "packet",
+      "file": "code_builder",
+      "rationale": "gophertunnel keeps CodeBuilder in packet/code_builder.go."
+    },
+    {
+      "type_id": "CodeBuilderSourcePacket",
+      "package": "packet",
+      "file": "code_builder_source",
+      "rationale": "gophertunnel keeps CodeBuilderSource in packet/code_builder_source.go."
+    },
+    {
+      "type_id": "CommandBlockUpdatePacket",
+      "package": "packet",
+      "file": "command_block_update",
+      "rationale": "gophertunnel keeps CommandBlockUpdate in packet/command_block_update.go."
+    },
+    {
+      "type_id": "CommandOriginData.json#",
+      "package": "protocol",
+      "file": "command",
+      "rationale": "gophertunnel keeps CommandOrigin in protocol/command.go."
+    },
+    {
+      "type_id": "CommandOutputMessage.json#",
+      "package": "protocol",
+      "file": "command",
+      "rationale": "gophertunnel keeps CommandOutputMessage in protocol/command.go."
+    },
+    {
+      "type_id": "CommandOutputPacket",
+      "package": "packet",
+      "file": "command_output",
+      "rationale": "gophertunnel keeps CommandOutput in packet/command_output.go."
+    },
+    {
+      "type_id": "CommandRequestPacket",
+      "package": "packet",
+      "file": "command_request",
+      "rationale": "gophertunnel keeps CommandRequest in packet/command_request.go."
+    },
+    {
+      "type_id": "CompletedUsingItemPacket",
+      "package": "packet",
+      "file": "completed_using_item",
+      "rationale": "gophertunnel keeps CompletedUsingItem in packet/completed_using_item.go."
+    },
+    {
+      "type_id": "ConeDataPayload",
+      "package": "protocol",
+      "file": "shape",
+      "rationale": "gophertunnel keeps ConeShape in protocol/shape.go."
+    },
+    {
+      "type_id": "ContainerClosePacket",
+      "package": "packet",
+      "file": "container_close",
+      "rationale": "gophertunnel keeps ContainerClose in packet/container_close.go."
+    },
+    {
+      "type_id": "ContainerOpenPacket",
+      "package": "packet",
+      "file": "container_open",
+      "rationale": "gophertunnel keeps ContainerOpen in packet/container_open.go."
+    },
+    {
+      "type_id": "ContainerRegistryCleanupPacket",
+      "package": "packet",
+      "file": "container_registry_cleanup",
+      "rationale": "gophertunnel keeps ContainerRegistryCleanup in packet/container_registry_cleanup.go."
+    },
+    {
+      "type_id": "ContainerSetDataPacket",
+      "package": "packet",
+      "file": "container_set_data",
+      "rationale": "gophertunnel keeps ContainerSetData in packet/container_set_data.go."
+    },
+    {
+      "type_id": "CorrectPlayerMovePredictionPacket",
+      "package": "packet",
+      "file": "correct_player_move_prediction",
+      "rationale": "gophertunnel keeps CorrectPlayerMovePrediction in packet/correct_player_move_prediction.go."
+    },
+    {
+      "type_id": "CraftingDataPacket",
+      "package": "packet",
+      "file": "crafting_data",
+      "rationale": "gophertunnel keeps CraftingData in packet/crafting_data.go."
+    },
+    {
+      "type_id": "CreatePhotoPacket",
+      "package": "packet",
+      "file": "create_photo",
+      "rationale": "gophertunnel keeps CreatePhoto in packet/create_photo.go."
+    },
+    {
+      "type_id": "CreativeContentPacket",
+      "package": "packet",
+      "file": "creative_content",
+      "rationale": "gophertunnel keeps CreativeContent in packet/creative_content.go."
+    },
+    {
+      "type_id": "CreativeGroupInfoPayload",
+      "package": "protocol",
+      "file": "creative",
+      "rationale": "gophertunnel keeps CreativeGroup in protocol/creative.go."
+    },
+    {
+      "type_id": "CurrentStructureFeaturePacket",
+      "package": "packet",
+      "file": "current_structure_feature",
+      "rationale": "gophertunnel keeps CurrentStructureFeature in packet/current_structure_feature.go."
+    },
+    {
+      "type_id": "CylinderDataPayload",
+      "package": "protocol",
+      "file": "shape",
+      "rationale": "gophertunnel keeps CylinderShape in protocol/shape.go."
+    },
+    {
+      "type_id": "DataItemBytePayload",
+      "package": "protocol",
+      "file": "attribute_layer",
+      "rationale": "gophertunnel keeps NoiseAlignment in protocol/attribute_layer.go."
+    },
+    {
+      "type_id": "DeathInfoPacket",
+      "package": "packet",
+      "file": "death_info",
+      "rationale": "gophertunnel keeps DeathInfo in packet/death_info.go."
+    },
+    {
+      "type_id": "DebugInfoPacket",
+      "package": "packet",
+      "file": "debug_info",
+      "rationale": "gophertunnel keeps DebugInfo in packet/debug_info.go."
+    },
+    {
+      "type_id": "DimensionDataPacket",
+      "package": "packet",
+      "file": "dimension_data",
+      "rationale": "gophertunnel keeps DimensionData in packet/dimension_data.go."
+    },
+    {
+      "type_id": "DimensionDefinitionGroup::DimensionDefinition",
+      "package": "protocol",
+      "file": "world",
+      "rationale": "gophertunnel keeps DimensionDefinition in protocol/world.go."
+    },
+    {
+      "type_id": "DisconnectPacket",
+      "package": "packet",
+      "file": "disconnect",
+      "rationale": "gophertunnel keeps Disconnect in packet/disconnect.go."
+    },
+    {
+      "type_id": "ECS::Profiling::Diagnostics::SystemCategory",
+      "package": "protocol",
+      "file": "memory_category",
+      "rationale": "gophertunnel keeps SystemCategory in protocol/memory_category.go."
+    },
+    {
+      "type_id": "ECS::Profiling::Diagnostics::SystemDiagnosticTimingInfo",
+      "package": "protocol",
+      "file": "memory_category",
+      "rationale": "gophertunnel keeps SystemDiagnosticTimingInfo in protocol/memory_category.go."
+    },
+    {
+      "type_id": "EditorNetworkPacket",
+      "package": "packet",
+      "file": "editor_network",
+      "rationale": "gophertunnel keeps EditorNetwork in packet/editor_network.go."
+    },
+    {
+      "type_id": "EduSharedUriResource",
+      "package": "protocol",
+      "file": "education",
+      "rationale": "gophertunnel keeps EducationSharedResourceURI in protocol/education.go."
+    },
+    {
+      "type_id": "EducationSettingsPacket",
+      "package": "packet",
+      "file": "education_settings",
+      "rationale": "gophertunnel keeps EducationSettings in packet/education_settings.go."
+    },
+    {
+      "type_id": "EllipsoidDataPayload",
+      "package": "protocol",
+      "file": "shape",
+      "rationale": "gophertunnel keeps EllipsoidShape in protocol/shape.go."
+    },
+    {
+      "type_id": "EmoteListPacket",
+      "package": "packet",
+      "file": "emote_list",
+      "rationale": "gophertunnel keeps EmoteList in packet/emote_list.go."
+    },
+    {
+      "type_id": "EmotePacket",
+      "package": "packet",
+      "file": "emote",
+      "rationale": "gophertunnel keeps Emote in packet/emote.go."
+    },
+    {
+      "type_id": "EnchantmentInstance",
+      "package": "protocol",
+      "file": "enchant",
+      "rationale": "gophertunnel keeps EnchantmentInstance in protocol/enchant.go."
+    },
+    {
+      "type_id": "ExternalLinkSettings",
+      "package": "protocol",
+      "file": "education",
+      "rationale": "gophertunnel keeps EducationExternalLinkSettings in protocol/education.go."
+    },
+    {
+      "type_id": "FeatureRegistryPacket",
+      "package": "packet",
+      "file": "feature_registry",
+      "rationale": "gophertunnel keeps FeatureRegistry in packet/feature_registry.go."
+    },
+    {
+      "type_id": "FullContainerName",
+      "package": "protocol",
+      "file": "container",
+      "rationale": "gophertunnel keeps FullContainerName in protocol/container.go."
+    },
+    {
+      "type_id": "GameRule",
+      "package": "protocol",
+      "file": "game_rule",
+      "rationale": "gophertunnel keeps GameRule in protocol/game_rule.go."
+    },
+    {
+      "type_id": "GameRulesChangedPacket",
+      "package": "packet",
+      "file": "game_rules_changed",
+      "rationale": "gophertunnel keeps GameRulesChanged in packet/game_rules_changed.go."
+    },
+    {
+      "type_id": "GameTestRequestPacket",
+      "package": "packet",
+      "file": "game_test_request",
+      "rationale": "gophertunnel keeps GameTestRequest in packet/game_test_request.go."
+    },
+    {
+      "type_id": "GameTestResultsPacket",
+      "package": "packet",
+      "file": "game_test_results",
+      "rationale": "gophertunnel keeps GameTestResults in packet/game_test_results.go."
+    },
+    {
+      "type_id": "GraphicsOverrideParameterPacket",
+      "package": "packet",
+      "file": "graphics_override_parameter",
+      "rationale": "gophertunnel keeps GraphicsOverrideParameter in packet/graphics_override_parameter.go."
+    },
+    {
+      "type_id": "GuiDataPickItemPacket",
+      "package": "packet",
+      "file": "gui_data_pick_item",
+      "rationale": "gophertunnel keeps GUIDataPickItem in packet/gui_data_pick_item.go."
+    },
+    {
+      "type_id": "HurtArmorPacket",
+      "package": "packet",
+      "file": "hurt_armour",
+      "rationale": "gophertunnel keeps HurtArmour in packet/hurt_armour.go."
+    },
+    {
+      "type_id": "InteractPacket",
+      "package": "packet",
+      "file": "interact",
+      "rationale": "gophertunnel keeps Interact in packet/interact.go."
+    },
+    {
+      "type_id": "InventoryAction",
+      "package": "protocol",
+      "file": "inventory",
+      "rationale": "gophertunnel keeps InventoryAction in protocol/inventory.go."
+    },
+    {
+      "type_id": "InventoryContentPacket",
+      "package": "packet",
+      "file": "inventory_content",
+      "rationale": "gophertunnel keeps InventoryContent in packet/inventory_content.go."
+    },
+    {
+      "type_id": "InventorySlotPacket",
+      "package": "packet",
+      "file": "inventory_slot",
+      "rationale": "gophertunnel keeps InventorySlot in packet/inventory_slot.go."
+    },
+    {
+      "type_id": "InventoryTransactionPacket",
+      "package": "packet",
+      "file": "inventory_transaction",
+      "rationale": "gophertunnel keeps InventoryTransaction in packet/inventory_transaction.go."
+    },
+    {
+      "type_id": "ItemRegistryPacket",
+      "package": "packet",
+      "file": "item_registry",
+      "rationale": "gophertunnel keeps ItemRegistry in packet/item_registry.go."
+    },
+    {
+      "type_id": "ItemStackRequestCereal::BeaconPaymentActionData",
+      "package": "protocol",
+      "file": "item_stack",
+      "rationale": "gophertunnel keeps BeaconPaymentStackRequestAction in protocol/item_stack.go."
+    },
+    {
+      "type_id": "ItemStackRequestCereal::ConsumeActionData",
+      "package": "protocol",
+      "file": "item_stack",
+      "rationale": "gophertunnel keeps ConsumeStackRequestAction in protocol/item_stack.go."
+    },
+    {
+      "type_id": "ItemStackRequestCereal::CraftCreativeActionData",
+      "package": "protocol",
+      "file": "item_stack",
+      "rationale": "gophertunnel keeps CraftCreativeStackRequestAction in protocol/item_stack.go."
+    },
+    {
+      "type_id": "ItemStackRequestCereal::CraftNonImplementedActionData",
+      "package": "protocol",
+      "file": "item_stack",
+      "rationale": "gophertunnel keeps CraftNonImplementedStackRequestAction in protocol/item_stack.go."
+    },
+    {
+      "type_id": "ItemStackRequestCereal::CraftRecipeActionData",
+      "package": "protocol",
+      "file": "item_stack",
+      "rationale": "gophertunnel keeps CraftRecipeStackRequestAction in protocol/item_stack.go."
+    },
+    {
+      "type_id": "ItemStackRequestCereal::CraftRecipeAutoActionData",
+      "package": "protocol",
+      "file": "item_stack",
+      "rationale": "gophertunnel keeps AutoCraftRecipeStackRequestAction in protocol/item_stack.go."
+    },
+    {
+      "type_id": "ItemStackRequestCereal::CraftRecipeOptionalActionData",
+      "package": "protocol",
+      "file": "item_stack",
+      "rationale": "gophertunnel keeps CraftRecipeOptionalStackRequestAction in protocol/item_stack.go."
+    },
+    {
+      "type_id": "ItemStackRequestCereal::CraftResultsActionData",
+      "package": "protocol",
+      "file": "item_stack",
+      "rationale": "gophertunnel keeps CraftResultsDeprecatedStackRequestAction in protocol/item_stack.go."
+    },
+    {
+      "type_id": "ItemStackRequestCereal::CreateActionData",
+      "package": "protocol",
+      "file": "item_stack",
+      "rationale": "gophertunnel keeps CreateStackRequestAction in protocol/item_stack.go."
+    },
+    {
+      "type_id": "ItemStackRequestCereal::DestroyActionData",
+      "package": "protocol",
+      "file": "item_stack",
+      "rationale": "gophertunnel keeps DestroyStackRequestAction in protocol/item_stack.go."
+    },
+    {
+      "type_id": "ItemStackRequestCereal::DropActionData",
+      "package": "protocol",
+      "file": "item_stack",
+      "rationale": "gophertunnel keeps DropStackRequestAction in protocol/item_stack.go."
+    },
+    {
+      "type_id": "ItemStackRequestCereal::EmptyItemDescriptorData",
+      "package": "protocol",
+      "file": "item_descriptor",
+      "rationale": "gophertunnel keeps InvalidItemDescriptor in protocol/item_descriptor.go."
+    },
+    {
+      "type_id": "ItemStackRequestCereal::ItemNameDescriptorData",
+      "package": "protocol",
+      "file": "item_descriptor",
+      "rationale": "gophertunnel keeps DefaultItemDescriptor in protocol/item_descriptor.go."
+    },
+    {
+      "type_id": "ItemStackRequestCereal::ItemTagDescriptorData",
+      "package": "protocol",
+      "file": "item_descriptor",
+      "rationale": "gophertunnel keeps ItemTagItemDescriptor in protocol/item_descriptor.go."
+    },
+    {
+      "type_id": "ItemStackRequestCereal::LabTableCombineActionData",
+      "package": "protocol",
+      "file": "item_stack",
+      "rationale": "gophertunnel keeps LabTableCombineStackRequestAction in protocol/item_stack.go."
+    },
+    {
+      "type_id": "ItemStackRequestCereal::MineBlockActionData",
+      "package": "protocol",
+      "file": "item_stack",
+      "rationale": "gophertunnel keeps MineBlockStackRequestAction in protocol/item_stack.go."
+    },
+    {
+      "type_id": "ItemStackRequestCereal::MolangItemDescriptorData",
+      "package": "protocol",
+      "file": "item_descriptor",
+      "rationale": "gophertunnel keeps MoLangItemDescriptor in protocol/item_descriptor.go."
+    },
+    {
+      "type_id": "ItemStackRequestCereal::NetworkItemInstanceDescriptorData",
+      "package": "protocol",
+      "file": "item",
+      "rationale": "gophertunnel keeps ItemInstance in protocol/item.go."
+    },
+    {
+      "type_id": "ItemStackRequestCereal::PlaceActionData",
+      "package": "protocol",
+      "file": "item_stack",
+      "rationale": "gophertunnel keeps PlaceStackRequestAction in protocol/item_stack.go."
+    },
+    {
+      "type_id": "ItemStackRequestCereal::RequestData",
+      "package": "protocol",
+      "file": "item_stack",
+      "rationale": "gophertunnel keeps ItemStackRequest in protocol/item_stack.go."
+    },
+    {
+      "type_id": "ItemStackRequestCereal::SlotInfoData",
+      "package": "protocol",
+      "file": "item_stack",
+      "rationale": "gophertunnel keeps StackRequestSlotInfo in protocol/item_stack.go."
+    },
+    {
+      "type_id": "ItemStackRequestCereal::SwapActionData",
+      "package": "protocol",
+      "file": "item_stack",
+      "rationale": "gophertunnel keeps SwapStackRequestAction in protocol/item_stack.go."
+    },
+    {
+      "type_id": "ItemStackRequestCereal::TakeActionData",
+      "package": "protocol",
+      "file": "item_stack",
+      "rationale": "gophertunnel keeps TakeStackRequestAction in protocol/item_stack.go."
+    },
+    {
+      "type_id": "ItemStackRequestPacket",
+      "package": "packet",
+      "file": "item_stack_request",
+      "rationale": "gophertunnel keeps ItemStackRequest in packet/item_stack_request.go."
+    },
+    {
+      "type_id": "ItemStackResponseInfo",
+      "package": "protocol",
+      "file": "item_stack",
+      "rationale": "gophertunnel keeps ItemStackResponse in protocol/item_stack.go."
+    },
+    {
+      "type_id": "ItemStackResponsePacket",
+      "package": "packet",
+      "file": "item_stack_response",
+      "rationale": "gophertunnel keeps ItemStackResponse in packet/item_stack_response.go."
+    },
+    {
+      "type_id": "JigsawStructureDataPacket",
+      "package": "packet",
+      "file": "jigsaw_structure_data",
+      "rationale": "gophertunnel keeps JigsawStructureData in packet/jigsaw_structure_data.go."
+    },
+    {
+      "type_id": "LabTablePacket",
+      "package": "packet",
+      "file": "lab_table",
+      "rationale": "gophertunnel keeps LabTable in packet/lab_table.go."
+    },
+    {
+      "type_id": "LecternUpdatePacket",
+      "package": "packet",
+      "file": "lectern_update",
+      "rationale": "gophertunnel keeps LecternUpdate in packet/lectern_update.go."
+    },
+    {
+      "type_id": "LegacyTelemetryEventPacketPayload::CodeBuilderScoreboard",
+      "package": "protocol",
+      "file": "events",
+      "rationale": "gophertunnel keeps CodeBuilderScoreboardEvent in protocol/events.go."
+    },
+    {
+      "type_id": "LegacyTelemetryEventPacketPayload::ComposterUsed",
+      "package": "protocol",
+      "file": "events",
+      "rationale": "gophertunnel keeps CauldronInteractEvent in protocol/events.go."
+    },
+    {
+      "type_id": "LegacyTelemetryEventPacketPayload::ItemUsed",
+      "package": "protocol",
+      "file": "events",
+      "rationale": "gophertunnel keeps ItemUsedEvent in protocol/events.go."
+    },
+    {
+      "type_id": "LegacyTelemetryEventPacketPayload::POICauldronUsed",
+      "package": "protocol",
+      "file": "events",
+      "rationale": "gophertunnel keeps ComposterInteractEvent in protocol/events.go."
+    },
+    {
+      "type_id": "LegacyTelemetryEventPacketPayload::PiglinBarter",
+      "package": "protocol",
+      "file": "events",
+      "rationale": "gophertunnel keeps PiglinBarterEvent in protocol/events.go."
+    },
+    {
+      "type_id": "LessonProgressPacket",
+      "package": "packet",
+      "file": "lesson_progress",
+      "rationale": "gophertunnel keeps LessonProgress in packet/lesson_progress.go."
+    },
+    {
+      "type_id": "LevelChunkPacket",
+      "package": "packet",
+      "file": "level_chunk",
+      "rationale": "gophertunnel keeps LevelChunk in packet/level_chunk.go."
+    },
+    {
+      "type_id": "LevelEventGenericPacket",
+      "package": "packet",
+      "file": "level_event_generic",
+      "rationale": "gophertunnel keeps LevelEventGeneric in packet/level_event_generic.go."
+    },
+    {
+      "type_id": "LevelEventPacket",
+      "package": "packet",
+      "file": "level_event",
+      "rationale": "gophertunnel keeps LevelEvent in packet/level_event.go."
+    },
+    {
+      "type_id": "LevelSoundEventPacket",
+      "package": "packet",
+      "file": "level_sound_event",
+      "rationale": "gophertunnel keeps LevelSoundEvent in packet/level_sound_event.go."
+    },
+    {
+      "type_id": "LocatorBarPacket",
+      "package": "packet",
+      "file": "locator_bar",
+      "rationale": "gophertunnel keeps LocatorBar in packet/locator_bar.go."
+    },
+    {
+      "type_id": "LocatorBarWaypointPayload",
+      "package": "protocol",
+      "file": "waypoint",
+      "rationale": "gophertunnel keeps LocatorBarWaypoint in protocol/waypoint.go."
+    },
+    {
+      "type_id": "LoginPacket",
+      "package": "packet",
+      "file": "login",
+      "rationale": "gophertunnel keeps Login in packet/login.go."
+    },
+    {
+      "type_id": "MapCreateLockedCopyPacket",
+      "package": "packet",
+      "file": "map_create_locked_copy",
+      "rationale": "gophertunnel keeps MapCreateLockedCopy in packet/map_create_locked_copy.go."
+    },
+    {
+      "type_id": "MapDecoration",
+      "package": "protocol",
+      "file": "map",
+      "rationale": "gophertunnel keeps MapDecoration in protocol/map.go."
+    },
+    {
+      "type_id": "MapInfoRequestPacket",
+      "package": "packet",
+      "file": "map_info_request",
+      "rationale": "gophertunnel keeps MapInfoRequest in packet/map_info_request.go."
+    },
+    {
+      "type_id": "MapInfoRequestPacketAnon::ClientPixelsProxy",
+      "package": "protocol",
+      "file": "map",
+      "rationale": "gophertunnel keeps PixelRequest in protocol/map.go."
+    },
+    {
+      "type_id": "MapItemTrackedActor::UniqueId",
+      "package": "protocol",
+      "file": "map",
+      "rationale": "gophertunnel keeps MapTrackedObject in protocol/map.go."
+    },
+    {
+      "type_id": "Memory::MemoryCategoryCounter",
+      "package": "protocol",
+      "file": "memory_category",
+      "rationale": "gophertunnel keeps MemoryCategoryCounter in protocol/memory_category.go."
+    },
+    {
+      "type_id": "MobArmorEquipmentPacket",
+      "package": "packet",
+      "file": "mob_armour_equipment",
+      "rationale": "gophertunnel keeps MobArmourEquipment in packet/mob_armour_equipment.go."
+    },
+    {
+      "type_id": "MobEffectPacket",
+      "package": "packet",
+      "file": "mob_effect",
+      "rationale": "gophertunnel keeps MobEffect in packet/mob_effect.go."
+    },
+    {
+      "type_id": "MobEquipmentPacket",
+      "package": "packet",
+      "file": "mob_equipment",
+      "rationale": "gophertunnel keeps MobEquipment in packet/mob_equipment.go."
+    },
+    {
+      "type_id": "ModalFormRequestPacket",
+      "package": "packet",
+      "file": "modal_form_request",
+      "rationale": "gophertunnel keeps ModalFormRequest in packet/modal_form_request.go."
+    },
+    {
+      "type_id": "ModalFormResponsePacket",
+      "package": "packet",
+      "file": "modal_form_response",
+      "rationale": "gophertunnel keeps ModalFormResponse in packet/modal_form_response.go."
+    },
+    {
+      "type_id": "MotionPredictionHintsPacket",
+      "package": "packet",
+      "file": "motion_prediction_hints",
+      "rationale": "gophertunnel keeps MotionPredictionHints in packet/motion_prediction_hints.go."
+    },
+    {
+      "type_id": "MoveActorAbsolutePacket",
+      "package": "packet",
+      "file": "move_actor_absolute",
+      "rationale": "gophertunnel keeps MoveActorAbsolute in packet/move_actor_absolute.go."
+    },
+    {
+      "type_id": "MoveActorDeltaPacket",
+      "package": "packet",
+      "file": "move_actor_delta",
+      "rationale": "gophertunnel keeps MoveActorDelta in packet/move_actor_delta.go."
+    },
+    {
+      "type_id": "MovePlayerPacket",
+      "package": "packet",
+      "file": "move_player",
+      "rationale": "gophertunnel keeps MovePlayer in packet/move_player.go."
+    },
+    {
+      "type_id": "MovementEffectPacket",
+      "package": "packet",
+      "file": "movement_effect",
+      "rationale": "gophertunnel keeps MovementEffect in packet/movement_effect.go."
+    },
+    {
+      "type_id": "MultiRecipePayload",
+      "package": "protocol",
+      "file": "recipe",
+      "rationale": "gophertunnel keeps MultiRecipe in protocol/recipe.go."
+    },
+    {
+      "type_id": "MultiplayerSettingsPacket",
+      "package": "packet",
+      "file": "multi_player_settings",
+      "rationale": "gophertunnel keeps MultiPlayerSettings in packet/multi_player_settings.go."
+    },
+    {
+      "type_id": "NetworkChunkPublisherUpdatePacket",
+      "package": "packet",
+      "file": "network_chunk_publisher_update",
+      "rationale": "gophertunnel keeps NetworkChunkPublisherUpdate in packet/network_chunk_publisher_update.go."
+    },
+    {
+      "type_id": "NetworkSettingsPacket",
+      "package": "packet",
+      "file": "network_settings",
+      "rationale": "gophertunnel keeps NetworkSettings in packet/network_settings.go."
+    },
+    {
+      "type_id": "NetworkStackLatencyPacket",
+      "package": "packet",
+      "file": "network_stack_latency",
+      "rationale": "gophertunnel keeps NetworkStackLatency in packet/network_stack_latency.go."
+    },
+    {
+      "type_id": "NormalTransactionData",
+      "package": "protocol",
+      "file": "inventory",
+      "rationale": "gophertunnel keeps NormalTransactionData in protocol/inventory.go."
+    },
+    {
+      "type_id": "NpcDialoguePacket",
+      "package": "packet",
+      "file": "npc_dialogue",
+      "rationale": "gophertunnel keeps NPCDialogue in packet/npc_dialogue.go."
+    },
+    {
+      "type_id": "NpcRequestPacket",
+      "package": "packet",
+      "file": "npc_request",
+      "rationale": "gophertunnel keeps NPCRequest in packet/npc_request.go."
+    },
+    {
+      "type_id": "OnScreenTextureAnimationPacket",
+      "package": "packet",
+      "file": "on_screen_texture_animation",
+      "rationale": "gophertunnel keeps OnScreenTextureAnimation in packet/on_screen_texture_animation.go."
+    },
+    {
+      "type_id": "OpenSignPacket",
+      "package": "packet",
+      "file": "open_sign",
+      "rationale": "gophertunnel keeps OpenSign in packet/open_sign.go."
+    },
+    {
+      "type_id": "PackInstanceId",
+      "package": "protocol",
+      "file": "resource_pack",
+      "rationale": "gophertunnel keeps StackResourcePack in protocol/resource_pack.go."
+    },
+    {
+      "type_id": "PacketViolationWarningPacket",
+      "package": "packet",
+      "file": "packet_violation_warning",
+      "rationale": "gophertunnel keeps PacketViolationWarning in packet/packet_violation_warning.go."
+    },
+    {
+      "type_id": "PartyChangedPacket",
+      "package": "packet",
+      "file": "party_changed",
+      "rationale": "gophertunnel keeps PartyChanged in packet/party_changed.go."
+    },
+    {
+      "type_id": "PartyDestinationCookieResponsePacket",
+      "package": "packet",
+      "file": "party_destination_cookie_response",
+      "rationale": "gophertunnel keeps PartyDestinationCookieResponse in packet/party_destination_cookie_response.go."
+    },
+    {
+      "type_id": "PhotoTransferPacket",
+      "package": "packet",
+      "file": "photo_transfer",
+      "rationale": "gophertunnel keeps PhotoTransfer in packet/photo_transfer.go."
+    },
+    {
+      "type_id": "PlaySoundPacket",
+      "package": "packet",
+      "file": "play_sound",
+      "rationale": "gophertunnel keeps PlaySound in packet/play_sound.go."
+    },
+    {
+      "type_id": "PlayStatusPacket",
+      "package": "packet",
+      "file": "play_status",
+      "rationale": "gophertunnel keeps PlayStatus in packet/play_status.go."
+    },
+    {
+      "type_id": "PlayerActionPacket",
+      "package": "packet",
+      "file": "player_action",
+      "rationale": "gophertunnel keeps PlayerAction in packet/player_action.go."
+    },
+    {
+      "type_id": "PlayerArmorDamagePacket",
+      "package": "packet",
+      "file": "player_armour_damage",
+      "rationale": "gophertunnel keeps PlayerArmourDamage in packet/player_armour_damage.go."
+    },
+    {
+      "type_id": "PlayerAuthInputPacket",
+      "package": "packet",
+      "file": "player_auth_input",
+      "rationale": "gophertunnel keeps PlayerAuthInput in packet/player_auth_input.go."
+    },
+    {
+      "type_id": "PlayerBlockActionData",
+      "package": "protocol",
+      "file": "player",
+      "rationale": "gophertunnel keeps PlayerBlockAction in protocol/player.go."
+    },
+    {
+      "type_id": "PlayerEnchantOptionsPacket",
+      "package": "packet",
+      "file": "player_enchant_options",
+      "rationale": "gophertunnel keeps PlayerEnchantOptions in packet/player_enchant_options.go."
+    },
+    {
+      "type_id": "PlayerFogPacket",
+      "package": "packet",
+      "file": "player_fog",
+      "rationale": "gophertunnel keeps PlayerFog in packet/player_fog.go."
+    },
+    {
+      "type_id": "PlayerHotbarPacket",
+      "package": "packet",
+      "file": "player_hot_bar",
+      "rationale": "gophertunnel keeps PlayerHotBar in packet/player_hot_bar.go."
+    },
+    {
+      "type_id": "PlayerListPacket",
+      "package": "packet",
+      "file": "player_list",
+      "rationale": "gophertunnel keeps PlayerList in packet/player_list.go."
+    },
+    {
+      "type_id": "PlayerLocationPacket",
+      "package": "packet",
+      "file": "player_location",
+      "rationale": "gophertunnel keeps PlayerLocation in packet/player_location.go."
+    },
+    {
+      "type_id": "PlayerSkinPacket",
+      "package": "packet",
+      "file": "player_skin",
+      "rationale": "gophertunnel keeps PlayerSkin in packet/player_skin.go."
+    },
+    {
+      "type_id": "PlayerToggleCrafterSlotRequestPacket",
+      "package": "packet",
+      "file": "player_toggle_crafter_slot_request",
+      "rationale": "gophertunnel keeps PlayerToggleCrafterSlotRequest in packet/player_toggle_crafter_slot_request.go."
+    },
+    {
+      "type_id": "PlayerUpdateEntityOverridesPacket",
+      "package": "packet",
+      "file": "player_update_entity_overrides",
+      "rationale": "gophertunnel keeps PlayerUpdateEntityOverrides in packet/player_update_entity_overrides.go."
+    },
+    {
+      "type_id": "PlayerVideoCapturePacket",
+      "package": "packet",
+      "file": "player_video_capture",
+      "rationale": "gophertunnel keeps PlayerVideoCapture in packet/player_video_capture.go."
+    },
+    {
+      "type_id": "PositionTrackingDBClientRequestPacket",
+      "package": "packet",
+      "file": "position_tracking_db_client_request",
+      "rationale": "gophertunnel keeps PositionTrackingDBClientRequest in packet/position_tracking_db_client_request.go."
+    },
+    {
+      "type_id": "PositionTrackingDBServerBroadcastPacket",
+      "package": "packet",
+      "file": "position_tracking_db_server_broadcast",
+      "rationale": "gophertunnel keeps PositionTrackingDBServerBroadcast in packet/position_tracking_db_server_broadcast.go."
+    },
+    {
+      "type_id": "PrimitiveShapeDataPayload",
+      "package": "protocol",
+      "file": "shape",
+      "rationale": "gophertunnel keeps PrimitiveShape in protocol/shape.go."
+    },
+    {
+      "type_id": "PrimitiveShapesPacket",
+      "package": "packet",
+      "file": "primitive_shapes",
+      "rationale": "gophertunnel keeps PrimitiveShapes in packet/primitive_shapes.go."
+    },
+    {
+      "type_id": "PurchaseReceiptPacket",
+      "package": "packet",
+      "file": "purchase_receipt",
+      "rationale": "gophertunnel keeps PurchaseReceipt in packet/purchase_receipt.go."
+    },
+    {
+      "type_id": "RefreshEntitlementsPacket",
+      "package": "packet",
+      "file": "refresh_entitlements",
+      "rationale": "gophertunnel keeps RefreshEntitlements in packet/refresh_entitlements.go."
+    },
+    {
+      "type_id": "RemoveActorPacket",
+      "package": "packet",
+      "file": "remove_actor",
+      "rationale": "gophertunnel keeps RemoveActor in packet/remove_actor.go."
+    },
+    {
+      "type_id": "RemoveObjectivePacket",
+      "package": "packet",
+      "file": "remove_objective",
+      "rationale": "gophertunnel keeps RemoveObjective in packet/remove_objective.go."
+    },
+    {
+      "type_id": "RemoveVolumeEntityPacket",
+      "package": "packet",
+      "file": "remove_volume_entity",
+      "rationale": "gophertunnel keeps RemoveVolumeEntity in packet/remove_volume_entity.go."
+    },
+    {
+      "type_id": "RequestAbilityPacket",
+      "package": "packet",
+      "file": "request_ability",
+      "rationale": "gophertunnel keeps RequestAbility in packet/request_ability.go."
+    },
+    {
+      "type_id": "RequestChunkRadiusPacket",
+      "package": "packet",
+      "file": "request_chunk_radius",
+      "rationale": "gophertunnel keeps RequestChunkRadius in packet/request_chunk_radius.go."
+    },
+    {
+      "type_id": "RequestNetworkSettingsPacket",
+      "package": "packet",
+      "file": "request_network_settings",
+      "rationale": "gophertunnel keeps RequestNetworkSettings in packet/request_network_settings.go."
+    },
+    {
+      "type_id": "RequestPermissionsPacket",
+      "package": "packet",
+      "file": "request_permissions",
+      "rationale": "gophertunnel keeps RequestPermissions in packet/request_permissions.go."
+    },
+    {
+      "type_id": "ResourcePackChunkDataPacket",
+      "package": "packet",
+      "file": "resource_pack_chunk_data",
+      "rationale": "gophertunnel keeps ResourcePackChunkData in packet/resource_pack_chunk_data.go."
+    },
+    {
+      "type_id": "ResourcePackChunkRequestPacket",
+      "package": "packet",
+      "file": "resource_pack_chunk_request",
+      "rationale": "gophertunnel keeps ResourcePackChunkRequest in packet/resource_pack_chunk_request.go."
+    },
+    {
+      "type_id": "ResourcePackClientResponsePacket",
+      "package": "packet",
+      "file": "resource_pack_client_response",
+      "rationale": "gophertunnel keeps ResourcePackClientResponse in packet/resource_pack_client_response.go."
+    },
+    {
+      "type_id": "ResourcePackDataInfoPacket",
+      "package": "packet",
+      "file": "resource_pack_data_info",
+      "rationale": "gophertunnel keeps ResourcePackDataInfo in packet/resource_pack_data_info.go."
+    },
+    {
+      "type_id": "ResourcePackStackPacket",
+      "package": "packet",
+      "file": "resource_pack_stack",
+      "rationale": "gophertunnel keeps ResourcePackStack in packet/resource_pack_stack.go."
+    },
+    {
+      "type_id": "ResourcePacksInfoPacket",
+      "package": "packet",
+      "file": "resource_packs_info",
+      "rationale": "gophertunnel keeps ResourcePacksInfo in packet/resource_packs_info.go."
+    },
+    {
+      "type_id": "ResourcePacksReadyForValidationPacket",
+      "package": "packet",
+      "file": "resource_packs_ready_for_validation",
+      "rationale": "gophertunnel keeps ResourcePacksReadyForValidation in packet/resource_packs_ready_for_validation.go."
+    },
+    {
+      "type_id": "RespawnPacket",
+      "package": "packet",
+      "file": "respawn",
+      "rationale": "gophertunnel keeps Respawn in packet/respawn.go."
+    },
+    {
+      "type_id": "ScriptMessagePacket",
+      "package": "packet",
+      "file": "script_message",
+      "rationale": "gophertunnel keeps ScriptMessage in packet/script_message.go."
+    },
+    {
+      "type_id": "SendPartyDestinationCookiePacket",
+      "package": "packet",
+      "file": "send_party_destination_cookie",
+      "rationale": "gophertunnel keeps SendPartyDestinationCookie in packet/send_party_destination_cookie.go."
+    },
+    {
+      "type_id": "SerializedAbilitiesData",
+      "package": "protocol",
+      "file": "ability",
+      "rationale": "gophertunnel keeps AbilityData in protocol/ability.go."
+    },
+    {
+      "type_id": "SerializedNoiseBlockSpecifier",
+      "package": "protocol",
+      "file": "biome",
+      "rationale": "gophertunnel keeps NoiseBlockSpecifier in protocol/biome.go."
+    },
+    {
+      "type_id": "SerializedPersonaPieceHandle",
+      "package": "protocol",
+      "file": "skin",
+      "rationale": "gophertunnel keeps PersonaPiece in protocol/skin.go."
+    },
+    {
+      "type_id": "ServerConfiguration::ClientStoreEntryPointConfiguration",
+      "package": "protocol",
+      "file": "server_join_information",
+      "rationale": "gophertunnel keeps StoreEntryPointInfo in protocol/server_join_information.go."
+    },
+    {
+      "type_id": "ServerConfiguration::GatheringsConfigurationJoinInfo",
+      "package": "protocol",
+      "file": "server_join_information",
+      "rationale": "gophertunnel keeps GatheringJoinInfo in protocol/server_join_information.go."
+    },
+    {
+      "type_id": "ServerPlayerPostMovePositionPacket",
+      "package": "packet",
+      "file": "server_player_post_move_position",
+      "rationale": "gophertunnel keeps ServerPlayerPostMovePosition in packet/server_player_post_move_position.go."
+    },
+    {
+      "type_id": "ServerPresenceInfoPacket",
+      "package": "packet",
+      "file": "server_presence_info",
+      "rationale": "gophertunnel keeps ServerPresenceInfo in packet/server_presence_info.go."
+    },
+    {
+      "type_id": "ServerSettingsRequestPacket",
+      "package": "packet",
+      "file": "server_settings_request",
+      "rationale": "gophertunnel keeps ServerSettingsRequest in packet/server_settings_request.go."
+    },
+    {
+      "type_id": "ServerSettingsResponsePacket",
+      "package": "packet",
+      "file": "server_settings_response",
+      "rationale": "gophertunnel keeps ServerSettingsResponse in packet/server_settings_response.go."
+    },
+    {
+      "type_id": "ServerStatsPacket",
+      "package": "packet",
+      "file": "server_stats",
+      "rationale": "gophertunnel keeps ServerStats in packet/server_stats.go."
+    },
+    {
+      "type_id": "ServerStoreInfoPacket",
+      "package": "packet",
+      "file": "server_store_info",
+      "rationale": "gophertunnel keeps ServerStoreInfo in packet/server_store_info.go."
+    },
+    {
+      "type_id": "ServerToClientHandshakePacket",
+      "package": "packet",
+      "file": "server_to_client_handshake",
+      "rationale": "gophertunnel keeps ServerToClientHandshake in packet/server_to_client_handshake.go."
+    },
+    {
+      "type_id": "ServerWaypoint::Payload",
+      "package": "protocol",
+      "file": "waypoint",
+      "rationale": "gophertunnel keeps Waypoint in protocol/waypoint.go."
+    },
+    {
+      "type_id": "ServerboundDataDrivenScreenClosedPacket",
+      "package": "packet",
+      "file": "serverbound_data_driven_screen_closed",
+      "rationale": "gophertunnel keeps ServerBoundDataDrivenScreenClosed in packet/serverbound_data_driven_screen_closed.go."
+    },
+    {
+      "type_id": "ServerboundDataStorePacket",
+      "package": "packet",
+      "file": "serverbound_data_store",
+      "rationale": "gophertunnel keeps ServerBoundDataStore in packet/serverbound_data_store.go."
+    },
+    {
+      "type_id": "ServerboundDiagnosticsPacket",
+      "package": "packet",
+      "file": "server_bound_diagnostics",
+      "rationale": "gophertunnel keeps ServerBoundDiagnostics in packet/server_bound_diagnostics.go."
+    },
+    {
+      "type_id": "ServerboundLoadingScreenPacket",
+      "package": "packet",
+      "file": "server_bound_loading_screen",
+      "rationale": "gophertunnel keeps ServerBoundLoadingScreen in packet/server_bound_loading_screen.go."
+    },
+    {
+      "type_id": "ServerboundPackSettingChangePacket",
+      "package": "packet",
+      "file": "server_bound_pack_setting_change",
+      "rationale": "gophertunnel keeps ServerBoundPackSettingChange in packet/server_bound_pack_setting_change.go."
+    },
+    {
+      "type_id": "SetActorDataPacket",
+      "package": "packet",
+      "file": "set_actor_data",
+      "rationale": "gophertunnel keeps SetActorData in packet/set_actor_data.go."
+    },
+    {
+      "type_id": "SetActorLinkPacket",
+      "package": "packet",
+      "file": "set_actor_link",
+      "rationale": "gophertunnel keeps SetActorLink in packet/set_actor_link.go."
+    },
+    {
+      "type_id": "SetActorMotionPacket",
+      "package": "packet",
+      "file": "set_actor_motion",
+      "rationale": "gophertunnel keeps SetActorMotion in packet/set_actor_motion.go."
+    },
+    {
+      "type_id": "SetCommandsEnabledPacket",
+      "package": "packet",
+      "file": "set_commands_enabled",
+      "rationale": "gophertunnel keeps SetCommandsEnabled in packet/set_commands_enabled.go."
+    },
+    {
+      "type_id": "SetDefaultGameTypePacket",
+      "package": "packet",
+      "file": "set_default_game_type",
+      "rationale": "gophertunnel keeps SetDefaultGameType in packet/set_default_game_type.go."
+    },
+    {
+      "type_id": "SetDifficultyPacket",
+      "package": "packet",
+      "file": "set_difficulty",
+      "rationale": "gophertunnel keeps SetDifficulty in packet/set_difficulty.go."
+    },
+    {
+      "type_id": "SetDisplayObjectivePacket",
+      "package": "packet",
+      "file": "set_display_objective",
+      "rationale": "gophertunnel keeps SetDisplayObjective in packet/set_display_objective.go."
+    },
+    {
+      "type_id": "SetHealthPacket",
+      "package": "packet",
+      "file": "set_health",
+      "rationale": "gophertunnel keeps SetHealth in packet/set_health.go."
+    },
+    {
+      "type_id": "SetHudPacket",
+      "package": "packet",
+      "file": "set_hud",
+      "rationale": "gophertunnel keeps SetHud in packet/set_hud.go."
+    },
+    {
+      "type_id": "SetLastHurtByPacket",
+      "package": "packet",
+      "file": "set_last_hurt_by",
+      "rationale": "gophertunnel keeps SetLastHurtBy in packet/set_last_hurt_by.go."
+    },
+    {
+      "type_id": "SetPlayerGameTypePacket",
+      "package": "packet",
+      "file": "set_player_game_type",
+      "rationale": "gophertunnel keeps SetPlayerGameType in packet/set_player_game_type.go."
+    },
+    {
+      "type_id": "SetPlayerInventoryOptionsPacket",
+      "package": "packet",
+      "file": "set_player_inventory_options",
+      "rationale": "gophertunnel keeps SetPlayerInventoryOptions in packet/set_player_inventory_options.go."
+    },
+    {
+      "type_id": "SetScorePacket",
+      "package": "packet",
+      "file": "set_score",
+      "rationale": "gophertunnel keeps SetScore in packet/set_score.go."
+    },
+    {
+      "type_id": "SetScoreboardIdentityPacket",
+      "package": "packet",
+      "file": "set_scoreboard_identity",
+      "rationale": "gophertunnel keeps SetScoreboardIdentity in packet/set_scoreboard_identity.go."
+    },
+    {
+      "type_id": "SetSpawnPositionPacket",
+      "package": "packet",
+      "file": "set_spawn_position",
+      "rationale": "gophertunnel keeps SetSpawnPosition in packet/set_spawn_position.go."
+    },
+    {
+      "type_id": "SetTimePacket",
+      "package": "packet",
+      "file": "set_time",
+      "rationale": "gophertunnel keeps SetTime in packet/set_time.go."
+    },
+    {
+      "type_id": "SetTitlePacket",
+      "package": "packet",
+      "file": "set_title",
+      "rationale": "gophertunnel keeps SetTitle in packet/set_title.go."
+    },
+    {
+      "type_id": "SettingsCommandPacket",
+      "package": "packet",
+      "file": "settings_command",
+      "rationale": "gophertunnel keeps SettingsCommand in packet/settings_command.go."
+    },
+    {
+      "type_id": "ShapedRecipePayload",
+      "package": "protocol",
+      "file": "recipe",
+      "rationale": "gophertunnel keeps ShapedRecipe in protocol/recipe.go."
+    },
+    {
+      "type_id": "ShapelessRecipePayload",
+      "package": "protocol",
+      "file": "recipe",
+      "rationale": "gophertunnel keeps ShapelessRecipe in protocol/recipe.go."
+    },
+    {
+      "type_id": "SharedTypes::FloatRange",
+      "package": "protocol",
+      "file": "biome",
+      "rationale": "gophertunnel keeps FloatRange in protocol/biome.go."
+    },
+    {
+      "type_id": "SharedTypes::v1_21_50::CameraAimAssistCategoryDefinition",
+      "package": "protocol",
+      "file": "camera",
+      "rationale": "gophertunnel keeps CameraAimAssistCategory in protocol/camera.go."
+    },
+    {
+      "type_id": "SharedTypes::v1_21_50::CameraAimAssistCategoryPriorities",
+      "package": "protocol",
+      "file": "camera",
+      "rationale": "gophertunnel keeps CameraAimAssistPriorities in protocol/camera.go."
+    },
+    {
+      "type_id": "SharedTypes::v1_21_90::CameraPreset",
+      "package": "protocol",
+      "file": "camera",
+      "rationale": "gophertunnel keeps CameraPreset in protocol/camera.go."
+    },
+    {
+      "type_id": "SharedTypes::v1_26_0::CameraSplineDefinition",
+      "package": "protocol",
+      "file": "camera",
+      "rationale": "gophertunnel keeps CameraSplineDefinition in protocol/camera.go."
+    },
+    {
+      "type_id": "SharedTypes::v1_26_30::NoiseDescriptor",
+      "package": "protocol",
+      "file": "biome",
+      "rationale": "gophertunnel keeps NoiseDescriptor in protocol/biome.go."
+    },
+    {
+      "type_id": "ShowCreditsPacket",
+      "package": "packet",
+      "file": "show_credits",
+      "rationale": "gophertunnel keeps ShowCredits in packet/show_credits.go."
+    },
+    {
+      "type_id": "ShowProfilePacket",
+      "package": "packet",
+      "file": "show_profile",
+      "rationale": "gophertunnel keeps ShowProfile in packet/show_profile.go."
+    },
+    {
+      "type_id": "ShowStoreOfferPacket",
+      "package": "packet",
+      "file": "show_store_offer",
+      "rationale": "gophertunnel keeps ShowStoreOffer in packet/show_store_offer.go."
+    },
+    {
+      "type_id": "SimpleEventPacket",
+      "package": "packet",
+      "file": "simple_event",
+      "rationale": "gophertunnel keeps SimpleEvent in packet/simple_event.go."
+    },
+    {
+      "type_id": "SimulationTypePacket",
+      "package": "packet",
+      "file": "simulation_type",
+      "rationale": "gophertunnel keeps SimulationType in packet/simulation_type.go."
+    },
+    {
+      "type_id": "SkinImage",
+      "package": "protocol",
+      "file": "shape",
+      "rationale": "gophertunnel keeps PyramidShape in protocol/shape.go."
+    },
+    {
+      "type_id": "SmithingTransformRecipePayload",
+      "package": "protocol",
+      "file": "recipe",
+      "rationale": "gophertunnel keeps SmithingTransformRecipe in protocol/recipe.go."
+    },
+    {
+      "type_id": "SmithingTrimRecipePayload",
+      "package": "protocol",
+      "file": "recipe",
+      "rationale": "gophertunnel keeps SmithingTrimRecipe in protocol/recipe.go."
+    },
+    {
+      "type_id": "SpawnExperienceOrbPacket",
+      "package": "packet",
+      "file": "spawn_experience_orb",
+      "rationale": "gophertunnel keeps SpawnExperienceOrb in packet/spawn_experience_orb.go."
+    },
+    {
+      "type_id": "SpawnParticleEffectPacket",
+      "package": "packet",
+      "file": "spawn_particle_effect",
+      "rationale": "gophertunnel keeps SpawnParticleEffect in packet/spawn_particle_effect.go."
+    },
+    {
+      "type_id": "StartGamePacket",
+      "package": "packet",
+      "file": "start_game",
+      "rationale": "gophertunnel keeps StartGame in packet/start_game.go."
+    },
+    {
+      "type_id": "StopSoundPacket",
+      "package": "packet",
+      "file": "stop_sound",
+      "rationale": "gophertunnel keeps StopSound in packet/stop_sound.go."
+    },
+    {
+      "type_id": "StructureBlockUpdatePacket",
+      "package": "packet",
+      "file": "structure_block_update",
+      "rationale": "gophertunnel keeps StructureBlockUpdate in packet/structure_block_update.go."
+    },
+    {
+      "type_id": "StructureSettings",
+      "package": "protocol",
+      "file": "structure",
+      "rationale": "gophertunnel keeps StructureSettings in protocol/structure.go."
+    },
+    {
+      "type_id": "StructureTemplateDataRequestPacket",
+      "package": "packet",
+      "file": "structure_template_data_request",
+      "rationale": "gophertunnel keeps StructureTemplateDataRequest in packet/structure_template_data_request.go."
+    },
+    {
+      "type_id": "StructureTemplateDataResponsePacket",
+      "package": "packet",
+      "file": "structure_template_data_response",
+      "rationale": "gophertunnel keeps StructureTemplateDataResponse in packet/structure_template_data_response.go."
+    },
+    {
+      "type_id": "SubChunkPacket",
+      "package": "packet",
+      "file": "sub_chunk",
+      "rationale": "gophertunnel keeps SubChunk in packet/sub_chunk.go."
+    },
+    {
+      "type_id": "SubChunkRequestPacket",
+      "package": "packet",
+      "file": "sub_chunk_request",
+      "rationale": "gophertunnel keeps SubChunkRequest in packet/sub_chunk_request.go."
+    },
+    {
+      "type_id": "SubClientLoginPacket",
+      "package": "packet",
+      "file": "sub_client_login",
+      "rationale": "gophertunnel keeps SubClientLogin in packet/sub_client_login.go."
+    },
+    {
+      "type_id": "SyncActorPropertyPacket",
+      "package": "packet",
+      "file": "sync_actor_property",
+      "rationale": "gophertunnel keeps SyncActorProperty in packet/sync_actor_property.go."
+    },
+    {
+      "type_id": "SyncWorldClockStateData",
+      "package": "protocol",
+      "file": "clock",
+      "rationale": "gophertunnel keeps SyncWorldClockStateData in protocol/clock.go."
+    },
+    {
+      "type_id": "SyncWorldClocksPacket",
+      "package": "packet",
+      "file": "sync_world_clocks",
+      "rationale": "gophertunnel keeps SyncWorldClocks in packet/sync_world_clocks.go."
+    },
+    {
+      "type_id": "SyncedPlayerMovementSettings",
+      "package": "protocol",
+      "file": "player",
+      "rationale": "gophertunnel keeps PlayerMovementSettings in protocol/player.go."
+    },
+    {
+      "type_id": "TakeItemActorPacket",
+      "package": "packet",
+      "file": "take_item_actor",
+      "rationale": "gophertunnel keeps TakeItemActor in packet/take_item_actor.go."
+    },
+    {
+      "type_id": "TextDataPayload",
+      "package": "protocol",
+      "file": "shape",
+      "rationale": "gophertunnel keeps TextShape in protocol/shape.go."
+    },
+    {
+      "type_id": "TextPacket",
+      "package": "packet",
+      "file": "text",
+      "rationale": "gophertunnel keeps Text in packet/text.go."
+    },
+    {
+      "type_id": "TickingAreasLoadStatusPacket",
+      "package": "packet",
+      "file": "ticking_areas_load_status",
+      "rationale": "gophertunnel keeps TickingAreasLoadStatus in packet/ticking_areas_load_status.go."
+    },
+    {
+      "type_id": "TimeMarkerData",
+      "package": "protocol",
+      "file": "clock",
+      "rationale": "gophertunnel keeps TimeMarkerData in protocol/clock.go."
+    },
+    {
+      "type_id": "ToastRequestPacket",
+      "package": "packet",
+      "file": "toast_request",
+      "rationale": "gophertunnel keeps ToastRequest in packet/toast_request.go."
+    },
+    {
+      "type_id": "TransferPacket",
+      "package": "packet",
+      "file": "transfer",
+      "rationale": "gophertunnel keeps Transfer in packet/transfer.go."
+    },
+    {
+      "type_id": "TrimDataPacket",
+      "package": "packet",
+      "file": "trim_data",
+      "rationale": "gophertunnel keeps TrimData in packet/trim_data.go."
+    },
+    {
+      "type_id": "TrimMaterial",
+      "package": "protocol",
+      "file": "trim",
+      "rationale": "gophertunnel keeps TrimMaterial in protocol/trim.go."
+    },
+    {
+      "type_id": "TrimPattern",
+      "package": "protocol",
+      "file": "trim",
+      "rationale": "gophertunnel keeps TrimPattern in protocol/trim.go."
+    },
+    {
+      "type_id": "UnlockedRecipesPacket",
+      "package": "packet",
+      "file": "unlocked_recipes",
+      "rationale": "gophertunnel keeps UnlockedRecipes in packet/unlocked_recipes.go."
+    },
+    {
+      "type_id": "UpdateAbilitiesPacket",
+      "package": "packet",
+      "file": "update_abilities",
+      "rationale": "gophertunnel keeps UpdateAbilities in packet/update_abilities.go."
+    },
+    {
+      "type_id": "UpdateAdventureSettingsPacket",
+      "package": "packet",
+      "file": "update_adventure_settings",
+      "rationale": "gophertunnel keeps UpdateAdventureSettings in packet/update_adventure_settings.go."
+    },
+    {
+      "type_id": "UpdateAttributesPacket",
+      "package": "packet",
+      "file": "update_attributes",
+      "rationale": "gophertunnel keeps UpdateAttributes in packet/update_attributes.go."
+    },
+    {
+      "type_id": "UpdateBlockPacket",
+      "package": "packet",
+      "file": "update_block",
+      "rationale": "gophertunnel keeps UpdateBlock in packet/update_block.go."
+    },
+    {
+      "type_id": "UpdateBlockSyncedPacket",
+      "package": "packet",
+      "file": "update_block_synced",
+      "rationale": "gophertunnel keeps UpdateBlockSynced in packet/update_block_synced.go."
+    },
+    {
+      "type_id": "UpdateClientInputLocksPacket",
+      "package": "packet",
+      "file": "update_client_input_locks",
+      "rationale": "gophertunnel keeps UpdateClientInputLocks in packet/update_client_input_locks.go."
+    },
+    {
+      "type_id": "UpdateClientOptionsPacket",
+      "package": "packet",
+      "file": "update_client_options",
+      "rationale": "gophertunnel keeps UpdateClientOptions in packet/update_client_options.go."
+    },
+    {
+      "type_id": "UpdateEquipPacket",
+      "package": "packet",
+      "file": "update_equip",
+      "rationale": "gophertunnel keeps UpdateEquip in packet/update_equip.go."
+    },
+    {
+      "type_id": "UpdatePlayerGameTypePacket",
+      "package": "packet",
+      "file": "update_player_game_type",
+      "rationale": "gophertunnel keeps UpdatePlayerGameType in packet/update_player_game_type.go."
+    },
+    {
+      "type_id": "UpdateSoftEnumPacket",
+      "package": "packet",
+      "file": "update_soft_enum",
+      "rationale": "gophertunnel keeps UpdateSoftEnum in packet/update_soft_enum.go."
+    },
+    {
+      "type_id": "UpdateSubChunkBlocksPacket",
+      "package": "packet",
+      "file": "update_sub_chunk_blocks",
+      "rationale": "gophertunnel keeps UpdateSubChunkBlocks in packet/update_sub_chunk_blocks.go."
+    },
+    {
+      "type_id": "UpdateTradePacket",
+      "package": "packet",
+      "file": "update_trade",
+      "rationale": "gophertunnel keeps UpdateTrade in packet/update_trade.go."
+    },
+    {
+      "type_id": "VoxelShapes::SerializableCells",
+      "package": "protocol",
+      "file": "voxel",
+      "rationale": "gophertunnel keeps VoxelCells in protocol/voxel.go."
+    },
+    {
+      "type_id": "VoxelShapes::SerializableVoxelShape",
+      "package": "protocol",
+      "file": "voxel",
+      "rationale": "gophertunnel keeps VoxelShape in protocol/voxel.go."
+    },
+    {
+      "type_id": "VoxelShapesPacket",
+      "package": "packet",
+      "file": "voxel_shapes",
+      "rationale": "gophertunnel keeps VoxelShapes in packet/voxel_shapes.go."
+    },
+    {
+      "type_id": "WorldClockData",
+      "package": "protocol",
+      "file": "clock",
+      "rationale": "gophertunnel keeps WorldClockData in protocol/clock.go."
+    },
+    {
+      "type_id": "cerealizer_ExperimentsAnon::ExperimentToggle",
+      "package": "protocol",
+      "file": "experiments",
+      "rationale": "gophertunnel keeps ExperimentData in protocol/experiments.go."
+    },
+    {
+      "type_id": "enums/ActorLinkType",
+      "package": "protocol",
+      "file": "entity_link",
+      "rationale": "gophertunnel keeps the EntityLink constants in protocol/entity_link.go."
+    },
+    {
+      "type_id": "enums/AnimationMode",
+      "package": "protocol",
+      "file": "structure",
+      "rationale": "gophertunnel keeps the AnimationMode constants in protocol/structure.go."
+    },
+    {
+      "type_id": "enums/BuildPlatform",
+      "package": "protocol",
+      "file": "os",
+      "rationale": "gophertunnel keeps the Device constants in protocol/os.go."
+    },
+    {
+      "type_id": "enums/CameraAimAssist::TargetMode",
+      "package": "protocol",
+      "file": "camera",
+      "rationale": "gophertunnel keeps the AimAssistTargetMode constants in protocol/camera.go."
+    },
+    {
+      "type_id": "enums/CommandPermissionLevel",
+      "package": "protocol",
+      "file": "command",
+      "rationale": "gophertunnel keeps the CommandPermissionLevel constants in protocol/command.go."
+    },
+    {
+      "type_id": "enums/ContainerEnumName",
+      "package": "protocol",
+      "file": "container",
+      "rationale": "gophertunnel keeps the Container constants in protocol/container.go."
+    },
+    {
+      "type_id": "enums/DataItemType",
+      "package": "protocol",
+      "file": "entity_metadata",
+      "rationale": "gophertunnel keeps the EntityDataType constants in protocol/entity_metadata.go."
+    },
+    {
+      "type_id": "enums/EducationEditionOffer",
+      "package": "protocol",
+      "file": "data_store",
+      "rationale": "gophertunnel keeps the DataStorePropertyType constants in protocol/data_store.go."
+    },
+    {
+      "type_id": "enums/GeneratorType",
+      "package": "protocol",
+      "file": "world",
+      "rationale": "gophertunnel keeps the Generator constants in protocol/world.go."
+    },
+    {
+      "type_id": "enums/GraphicsOverrideParameterType",
+      "package": "protocol",
+      "file": "graphics",
+      "rationale": "gophertunnel keeps the GraphicsOverrideParameterType constants in protocol/graphics.go."
+    },
+    {
+      "type_id": "enums/InventorySourceType",
+      "package": "protocol",
+      "file": "inventory",
+      "rationale": "gophertunnel keeps the InventoryActionSource constants in protocol/inventory.go."
+    },
+    {
+      "type_id": "enums/ItemReleaseInventoryTransaction::ActionType",
+      "package": "protocol",
+      "file": "inventory",
+      "rationale": "gophertunnel keeps the ReleaseItemAction constants in protocol/inventory.go."
+    },
+    {
+      "type_id": "enums/ItemStackNetResult",
+      "package": "protocol",
+      "file": "item_stack",
+      "rationale": "gophertunnel keeps the ItemStackResponseStatus constants in protocol/item_stack.go."
+    },
+    {
+      "type_id": "enums/ItemStackRequestActionType",
+      "package": "protocol",
+      "file": "item_stack",
+      "rationale": "gophertunnel keeps the StackRequestAction constants in protocol/item_stack.go."
+    },
+    {
+      "type_id": "enums/ItemUseInventoryTransaction::ActionType",
+      "package": "protocol",
+      "file": "inventory",
+      "rationale": "gophertunnel keeps the UseItemAction constants in protocol/inventory.go."
+    },
+    {
+      "type_id": "enums/ItemUseInventoryTransaction::ClientCooldownState",
+      "package": "protocol",
+      "file": "inventory",
+      "rationale": "gophertunnel keeps the ClientCooldownState constants in protocol/inventory.go."
+    },
+    {
+      "type_id": "enums/ItemUseInventoryTransaction::PredictedResult",
+      "package": "protocol",
+      "file": "inventory",
+      "rationale": "gophertunnel keeps the ClientPrediction constants in protocol/inventory.go."
+    },
+    {
+      "type_id": "enums/ItemUseInventoryTransaction::TriggerType",
+      "package": "protocol",
+      "file": "inventory",
+      "rationale": "gophertunnel keeps the TriggerType constants in protocol/inventory.go."
+    },
+    {
+      "type_id": "enums/ItemUseOnActorInventoryTransaction::ActionType",
+      "package": "protocol",
+      "file": "inventory",
+      "rationale": "gophertunnel keeps the UseItemOnEntityAction constants in protocol/inventory.go."
+    },
+    {
+      "type_id": "enums/ItemVersion",
+      "package": "protocol",
+      "file": "item",
+      "rationale": "gophertunnel keeps the ItemEntryVersion constants in protocol/item.go."
+    },
+    {
+      "type_id": "enums/LegacyTelemetryEventPacketPayload::Type",
+      "package": "protocol",
+      "file": "events",
+      "rationale": "gophertunnel keeps the EventType constants in protocol/events.go."
+    },
+    {
+      "type_id": "enums/MapDecoration::Type",
+      "package": "protocol",
+      "file": "map",
+      "rationale": "gophertunnel keeps the MapDecorationType constants in protocol/map.go."
+    },
+    {
+      "type_id": "enums/MapItemTrackedActor::Type",
+      "package": "protocol",
+      "file": "map",
+      "rationale": "gophertunnel keeps the MapObjectType constants in protocol/map.go."
+    },
+    {
+      "type_id": "enums/Memory::MemoryCategory",
+      "package": "protocol",
+      "file": "memory_category",
+      "rationale": "gophertunnel keeps the MemoryCategory constants in protocol/memory_category.go."
+    },
+    {
+      "type_id": "enums/Mirror",
+      "package": "protocol",
+      "file": "biome",
+      "rationale": "gophertunnel keeps the BiomeCoordinateEvaluationOrder constants in protocol/biome.go."
+    },
+    {
+      "type_id": "enums/MobEffectPacketPayload::Event",
+      "package": "protocol",
+      "file": "item_descriptor",
+      "rationale": "gophertunnel keeps the ItemDescriptor constants in protocol/item_descriptor.go."
+    },
+    {
+      "type_id": "enums/PacketViolationType",
+      "package": "protocol",
+      "file": "biome",
+      "rationale": "gophertunnel keeps the BiomeExpression constants in protocol/biome.go."
+    },
+    {
+      "type_id": "enums/PlayerActionType",
+      "package": "protocol",
+      "file": "player",
+      "rationale": "gophertunnel keeps the PlayerAction constants in protocol/player.go."
+    },
+    {
+      "type_id": "enums/PlayerListPacketType",
+      "package": "protocol",
+      "file": "player",
+      "rationale": "gophertunnel keeps the PlayerListAction constants in protocol/player.go."
+    },
+    {
+      "type_id": "enums/RecipeUnlockingRequirement::UnlockingContext",
+      "package": "protocol",
+      "file": "recipe",
+      "rationale": "gophertunnel keeps the RecipeUnlockContext constants in protocol/recipe.go."
+    },
+    {
+      "type_id": "enums/RequestAbilityPacketPayload::Type",
+      "package": "protocol",
+      "file": "resource_pack",
+      "rationale": "gophertunnel keeps the PackSettingType constants in protocol/resource_pack.go."
+    },
+    {
+      "type_id": "enums/Rotation",
+      "package": "protocol",
+      "file": "structure",
+      "rationale": "gophertunnel keeps the StructureRotation constants in protocol/structure.go."
+    },
+    {
+      "type_id": "enums/ScoreboardIdentityPacketType",
+      "package": "protocol",
+      "file": "data_store",
+      "rationale": "gophertunnel keeps the DataStoreChangeType constants in protocol/data_store.go."
+    },
+    {
+      "type_id": "enums/ScriptModuleMinecraft::ScriptPrimitiveShapeType",
+      "package": "protocol",
+      "file": "shape",
+      "rationale": "gophertunnel keeps the PrimitiveShape constants in protocol/shape.go."
+    },
+    {
+      "type_id": "enums/ServerWaypointGroup::Action",
+      "package": "protocol",
+      "file": "waypoint",
+      "rationale": "gophertunnel keeps the WaypointAction constants in protocol/waypoint.go."
+    },
+    {
+      "type_id": "enums/SharedTypes::CreativeItemCategory",
+      "package": "protocol",
+      "file": "creative",
+      "rationale": "gophertunnel keeps the CreativeCategory constants in protocol/creative.go."
+    },
+    {
+      "type_id": "enums/SharedTypes::persona::ArmSizeType",
+      "package": "protocol",
+      "file": "skin",
+      "rationale": "gophertunnel keeps the ArmSize constants in protocol/skin.go."
+    },
+    {
+      "type_id": "enums/SharedTypes::persona::PieceType",
+      "package": "protocol",
+      "file": "skin",
+      "rationale": "gophertunnel keeps the PieceType constants in protocol/skin.go."
+    },
+    {
+      "type_id": "enums/SharedTypes::v1_21_10::RandomDistributionType",
+      "package": "protocol",
+      "file": "biome",
+      "rationale": "gophertunnel keeps the BiomeRandomDistributionType constants in protocol/biome.go."
+    },
+    {
+      "type_id": "enums/SharedTypes::v1_21_90::CameraPreset::AudioListener",
+      "package": "protocol",
+      "file": "camera",
+      "rationale": "gophertunnel keeps the AudioListener constants in protocol/camera.go."
+    },
+    {
+      "type_id": "enums/StructureTemplateRequestOperation",
+      "package": "protocol",
+      "file": "furnace",
+      "rationale": "gophertunnel keeps the FurnaceLeftTab constants in protocol/furnace.go."
+    },
+    {
+      "type_id": "enums/StructureTemplateResponseType",
+      "package": "protocol",
+      "file": "furnace",
+      "rationale": "gophertunnel keeps the FurnaceLayout constants in protocol/furnace.go."
+    },
+    {
+      "type_id": "enums/SubChunkPacketPayload::HeightMapDataType",
+      "package": "protocol",
+      "file": "sub_chunk",
+      "rationale": "gophertunnel keeps the HeightMapData constants in protocol/sub_chunk.go."
+    },
+    {
+      "type_id": "enums/SubChunkPacketPayload::SubChunkRequestResult",
+      "package": "protocol",
+      "file": "sub_chunk",
+      "rationale": "gophertunnel keeps the SubChunkResult constants in protocol/sub_chunk.go."
+    },
+    {
+      "type_id": "enums/TextProcessingEventOrigin",
+      "package": "protocol",
+      "file": "item_stack",
+      "rationale": "gophertunnel keeps the FilterCause constants in protocol/item_stack.go."
+    },
+    {
+      "type_id": "enums/persona::AnimatedTextureType",
+      "package": "protocol",
+      "file": "skin",
+      "rationale": "gophertunnel keeps the SkinAnimation constants in protocol/skin.go."
+    },
+    {
+      "type_id": "enums/persona::AnimationExpression",
+      "package": "protocol",
+      "file": "skin",
+      "rationale": "gophertunnel keeps the ExpressionType constants in protocol/skin.go."
+    }
   ]
 }

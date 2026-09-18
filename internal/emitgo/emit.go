@@ -626,7 +626,11 @@ func (g *generator) emitFiles(m manifest.Manifest, packets []manifest.Packet, pa
 			if err != nil {
 				return nil, err
 			}
-			name := uniqueFileName(snakeName(definition.Name)+".go", 0, usedFiles)
+			stem := g.layout.File(definition.TypeID)
+			if stem == "" {
+				stem = snakeName(definition.Name)
+			}
+			name := uniqueFileName(stem+".go", 0, usedFiles)
 			files["protocol/"+name] = source
 		}
 	} else {
@@ -667,6 +671,9 @@ func (g *generator) emitFiles(m manifest.Manifest, packets []manifest.Packet, pa
 	for _, packet := range packets {
 		packetName := packetNames[packet.ID]
 		base := snakeName(packetName) + ".go"
+		if stem := g.layout.File(packet.Name); stem != "" {
+			base = stem + ".go"
+		}
 		name := uniqueFileName(base, packet.ID, packetUsed)
 		source, err := g.emitPacket(packet, packetName)
 		if err != nil {
@@ -694,6 +701,9 @@ func (g *generator) emitFiles(m manifest.Manifest, packets []manifest.Packet, pa
 }
 
 func (g *generator) domainFor(definition typeDefinition) string {
+	if file := g.layout.File(definition.TypeID); file != "" {
+		return file
+	}
 	if definition.TypeID == "" {
 		return "generated"
 	}
