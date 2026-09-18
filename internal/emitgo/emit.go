@@ -670,12 +670,16 @@ func (g *generator) emitFiles(m manifest.Manifest, packets []manifest.Packet, pa
 	}
 	for _, packet := range packets {
 		packetName := packetNames[packet.ID]
-		base := snakeName(packetName) + ".go"
-		if stem := g.layout.File(packet.Name); stem != "" {
-			base = stem + ".go"
+		stem := snakeName(packetName)
+		if reviewed := g.layout.File(packet.Name); reviewed != "" {
+			stem = reviewed
 		}
-		name := uniqueFileName(base, packet.ID, packetUsed)
-		source, err := g.emitPacket(packet, packetName)
+		name := uniqueFileName(stem+".go", packet.ID, packetUsed)
+		// Constants relocated to this file go above the packet, where the
+		// hand-written packages keep them.
+		constants := g.packetConstants[stem]
+		delete(g.packetConstants, stem)
+		source, err := g.emitPacket(packet, packetName, constants)
 		if err != nil {
 			return nil, err
 		}
@@ -683,11 +687,7 @@ func (g *generator) emitFiles(m manifest.Manifest, packets []manifest.Packet, pa
 	}
 	for stem, blocks := range g.packetConstants {
 		name := stem + ".go"
-		source, exists := packetFiles[name]
-		if !exists {
-			source = fmt.Sprintf("// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\npackage packet\n\nimport %q\n\n", g.protocolImportPath)
-		}
-		source += "\n" + strings.Join(blocks, "\n")
+		source := fmt.Sprintf("// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\npackage packet\n\nimport %q\n\n%s", g.protocolImportPath, strings.Join(blocks, "\n"))
 		formatted, err := formatGoSource(source)
 		if err != nil {
 			return nil, fmt.Errorf("packet constants in %s: %w", name, err)
@@ -860,7 +860,7 @@ type packetField struct {
 	node     manifest.Node
 }
 
-func (g *generator) emitPacket(packet manifest.Packet, packetName string) (string, error) {
+func (g *generator) emitPacket(packet manifest.Packet, packetName string, constants []string) (string, error) {
 	var b strings.Builder
 	b.WriteString("// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\npackage packet\n\n")
 	used := map[string]bool{}
@@ -878,6 +878,10 @@ func (g *generator) emitPacket(packet manifest.Packet, packetName string) (strin
 	}
 	imports := append([]string{g.protocolImportPath}, goImportsForFields(fields)...)
 	writeGoImports(&b, imports)
+	for _, block := range constants {
+		b.WriteString(block)
+		b.WriteString("\n")
+	}
 	for _, line := range docs.GoComments(g.docs.Type(packet.Name)) {
 		b.WriteString(line)
 		b.WriteByte('\n')

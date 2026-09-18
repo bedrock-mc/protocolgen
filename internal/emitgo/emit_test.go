@@ -738,6 +738,9 @@ func TestGenerateAppliesLayoutOverlay(t *testing.T) {
 	if strings.Contains(packet, "GameTypeGameTypeCreative") {
 		t.Fatal("reviewed constant name was prefixed with the enum name")
 	}
+	if strings.Index(packet, "const (") > strings.Index(packet, "type SetPlayerGameType struct") {
+		t.Fatalf("relocated constants are not above the packet:\n%s", packet)
+	}
 	if !strings.Contains(files["protocol/game_mode.go"], "type GameType uint8") {
 		t.Fatalf("enum was not placed in its reviewed file: %v", sortedKeys(files))
 	}
