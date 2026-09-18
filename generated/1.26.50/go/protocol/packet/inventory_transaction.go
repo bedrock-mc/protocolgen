@@ -24,10 +24,11 @@ type InventoryTransaction struct {
 	Transaction        protocol.InventoryTransactionPacketData
 }
 
-// ID returns the protocol ID for InventoryTransaction.
-func (*InventoryTransaction) ID() uint32 { return IDInventoryTransaction }
+// ID ...
+func (*InventoryTransaction) ID() uint32 {
+	return IDInventoryTransaction
+}
 
-// Marshal reads or writes InventoryTransaction using its canonical wire layout.
 func (pk *InventoryTransaction) Marshal(io protocol.IO) {
 	pk.LegacyRequestID.Marshal(io)
 	protocol.OptionalFunc(io, &pk.LegacySetItemSlots, func(value *[]protocol.LegacySetSlot) {

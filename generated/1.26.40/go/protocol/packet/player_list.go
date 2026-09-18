@@ -17,10 +17,11 @@ type PlayerList struct {
 	Entries []protocol.PlayerListData
 }
 
-// ID returns the protocol ID for PlayerList.
-func (*PlayerList) ID() uint32 { return IDPlayerList }
+// ID ...
+func (*PlayerList) ID() uint32 {
+	return IDPlayerList
+}
 
-// Marshal reads or writes PlayerList using its canonical wire layout.
 func (pk *PlayerList) Marshal(io protocol.IO) {
 	protocol.FuncSliceLimits(io, &pk.Entries, io.Varuint32, 0, 1000, func(value *protocol.PlayerListData) {
 		protocol.MarshalPlayerListData(io, value)

@@ -13,10 +13,11 @@ type PlayStatus struct {
 	Status protocol.PlayStatusType
 }
 
-// ID returns the protocol ID for PlayStatus.
-func (*PlayStatus) ID() uint32 { return IDPlayStatus }
+// ID ...
+func (*PlayStatus) ID() uint32 {
+	return IDPlayStatus
+}
 
-// Marshal reads or writes PlayStatus using its canonical wire layout.
 func (pk *PlayStatus) Marshal(io protocol.IO) {
 	pk.Status.Marshal(io)
 }

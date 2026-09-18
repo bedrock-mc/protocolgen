@@ -50,10 +50,11 @@ type StartGame struct {
 	ServerTelemetryData               protocol.SocialEventsServerTelemetryData
 }
 
-// ID returns the protocol ID for StartGame.
-func (*StartGame) ID() uint32 { return IDStartGame }
+// ID ...
+func (*StartGame) ID() uint32 {
+	return IDStartGame
+}
 
-// Marshal reads or writes StartGame using its canonical wire layout.
 func (pk *StartGame) Marshal(io protocol.IO) {
 	io.ActorUniqueID(&pk.EntityID)
 	io.ActorRuntimeID(&pk.RuntimeID)

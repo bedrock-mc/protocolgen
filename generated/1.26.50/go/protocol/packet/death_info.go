@@ -15,10 +15,11 @@ type DeathInfo struct {
 	DeathCauseMessageList []string
 }
 
-// ID returns the protocol ID for DeathInfo.
-func (*DeathInfo) ID() uint32 { return IDDeathInfo }
+// ID ...
+func (*DeathInfo) ID() uint32 {
+	return IDDeathInfo
+}
 
-// Marshal reads or writes DeathInfo using its canonical wire layout.
 func (pk *DeathInfo) Marshal(io protocol.IO) {
 	io.String(&pk.DeathCauseAttackName)
 	protocol.FuncSlice(io, &pk.DeathCauseMessageList, io.Varuint32, io.String)

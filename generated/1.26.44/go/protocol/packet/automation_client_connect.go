@@ -15,10 +15,11 @@ type AutomationClientConnect struct {
 	WebsocketServerURI string
 }
 
-// ID returns the protocol ID for AutomationClientConnect.
-func (*AutomationClientConnect) ID() uint32 { return IDAutomationClientConnect }
+// ID ...
+func (*AutomationClientConnect) ID() uint32 {
+	return IDAutomationClientConnect
+}
 
-// Marshal reads or writes AutomationClientConnect using its canonical wire layout.
 func (pk *AutomationClientConnect) Marshal(io protocol.IO) {
 	io.String(&pk.WebsocketServerURI)
 }

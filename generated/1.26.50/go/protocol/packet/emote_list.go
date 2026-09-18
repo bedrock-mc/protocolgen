@@ -17,10 +17,11 @@ type EmoteList struct {
 	EmotePieceIds []uuid.UUID
 }
 
-// ID returns the protocol ID for EmoteList.
-func (*EmoteList) ID() uint32 { return IDEmoteList }
+// ID ...
+func (*EmoteList) ID() uint32 {
+	return IDEmoteList
+}
 
-// Marshal reads or writes EmoteList using its canonical wire layout.
 func (pk *EmoteList) Marshal(io protocol.IO) {
 	io.ActorRuntimeID(&pk.RuntimeID)
 	protocol.FuncSlice(io, &pk.EmotePieceIds, io.Varuint32, io.UUID)

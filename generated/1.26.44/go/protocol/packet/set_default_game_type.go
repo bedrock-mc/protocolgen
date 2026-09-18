@@ -15,10 +15,11 @@ type SetDefaultGameType struct {
 	DefaultGameType protocol.GameType
 }
 
-// ID returns the protocol ID for SetDefaultGameType.
-func (*SetDefaultGameType) ID() uint32 { return IDSetDefaultGameType }
+// ID ...
+func (*SetDefaultGameType) ID() uint32 {
+	return IDSetDefaultGameType
+}
 
-// Marshal reads or writes SetDefaultGameType using its canonical wire layout.
 func (pk *SetDefaultGameType) Marshal(io protocol.IO) {
 	pk.DefaultGameType.Marshal(io)
 }

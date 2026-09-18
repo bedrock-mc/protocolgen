@@ -19,10 +19,11 @@ type Login struct {
 	ConnectionRequest []byte
 }
 
-// ID returns the protocol ID for Login.
-func (*Login) ID() uint32 { return IDLogin }
+// ID ...
+func (*Login) ID() uint32 {
+	return IDLogin
+}
 
-// Marshal reads or writes Login using its canonical wire layout.
 func (pk *Login) Marshal(io protocol.IO) {
 	io.BEInt32(&pk.ClientNetworkVersion)
 	io.Bytes(&pk.ConnectionRequest)

@@ -18,10 +18,11 @@ type RequestChunkRadius struct {
 	MaxChunkRadius uint8
 }
 
-// ID returns the protocol ID for RequestChunkRadius.
-func (*RequestChunkRadius) ID() uint32 { return IDRequestChunkRadius }
+// ID ...
+func (*RequestChunkRadius) ID() uint32 {
+	return IDRequestChunkRadius
+}
 
-// Marshal reads or writes RequestChunkRadius using its canonical wire layout.
 func (pk *RequestChunkRadius) Marshal(io protocol.IO) {
 	io.Varint32(&pk.ChunkRadius)
 	io.Uint8(&pk.MaxChunkRadius)

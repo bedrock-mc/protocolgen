@@ -17,10 +17,11 @@ type StructureBlockUpdate struct {
 	IsWaterlogged bool
 }
 
-// ID returns the protocol ID for StructureBlockUpdate.
-func (*StructureBlockUpdate) ID() uint32 { return IDStructureBlockUpdate }
+// ID ...
+func (*StructureBlockUpdate) ID() uint32 {
+	return IDStructureBlockUpdate
+}
 
-// Marshal reads or writes StructureBlockUpdate using its canonical wire layout.
 func (pk *StructureBlockUpdate) Marshal(io protocol.IO) {
 	pk.BlockPosition.Marshal(io)
 	pk.StructureData.Marshal(io)

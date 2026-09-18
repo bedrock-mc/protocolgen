@@ -17,10 +17,11 @@ type PlayerEnchantOptions struct {
 	Options []protocol.ItemEnchantOption
 }
 
-// ID returns the protocol ID for PlayerEnchantOptions.
-func (*PlayerEnchantOptions) ID() uint32 { return IDPlayerEnchantOptions }
+// ID ...
+func (*PlayerEnchantOptions) ID() uint32 {
+	return IDPlayerEnchantOptions
+}
 
-// Marshal reads or writes PlayerEnchantOptions using its canonical wire layout.
 func (pk *PlayerEnchantOptions) Marshal(io protocol.IO) {
 	protocol.SliceLimits(io, &pk.Options, 0, 3)
 }

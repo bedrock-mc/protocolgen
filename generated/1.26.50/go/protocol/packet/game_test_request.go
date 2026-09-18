@@ -20,10 +20,11 @@ type GameTestRequest struct {
 	TestName    string
 }
 
-// ID returns the protocol ID for GameTestRequest.
-func (*GameTestRequest) ID() uint32 { return IDGameTestRequest }
+// ID ...
+func (*GameTestRequest) ID() uint32 {
+	return IDGameTestRequest
+}
 
-// Marshal reads or writes GameTestRequest using its canonical wire layout.
 func (pk *GameTestRequest) Marshal(io protocol.IO) {
 	io.Varint32(&pk.MaxTestsPerBatch)
 	io.Varint32(&pk.RepeatCount)

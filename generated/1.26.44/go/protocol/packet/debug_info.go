@@ -14,10 +14,11 @@ type DebugInfo struct {
 	Data []byte
 }
 
-// ID returns the protocol ID for DebugInfo.
-func (*DebugInfo) ID() uint32 { return IDDebugInfo }
+// ID ...
+func (*DebugInfo) ID() uint32 {
+	return IDDebugInfo
+}
 
-// Marshal reads or writes DebugInfo using its canonical wire layout.
 func (pk *DebugInfo) Marshal(io protocol.IO) {
 	io.ActorUniqueID(&pk.ActorID)
 	io.Bytes(&pk.Data)

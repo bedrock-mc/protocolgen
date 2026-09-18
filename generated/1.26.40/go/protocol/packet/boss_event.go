@@ -22,10 +22,11 @@ type BossEvent struct {
 	Overlay protocol.BossBarOverlay
 }
 
-// ID returns the protocol ID for BossEvent.
-func (*BossEvent) ID() uint32 { return IDBossEvent }
+// ID ...
+func (*BossEvent) ID() uint32 {
+	return IDBossEvent
+}
 
-// Marshal reads or writes BossEvent using its canonical wire layout.
 func (pk *BossEvent) Marshal(io protocol.IO) {
 	io.ActorUniqueID(&pk.TargetActorID)
 	io.ActorUniqueID(&pk.PlayerID)

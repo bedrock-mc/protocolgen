@@ -11,10 +11,11 @@ type ClientboundDebugRenderer struct {
 	DebugMarkerData protocol.Optional[protocol.DebugMarkerData]
 }
 
-// ID returns the protocol ID for ClientboundDebugRenderer.
-func (*ClientboundDebugRenderer) ID() uint32 { return IDClientboundDebugRenderer }
+// ID ...
+func (*ClientboundDebugRenderer) ID() uint32 {
+	return IDClientboundDebugRenderer
+}
 
-// Marshal reads or writes ClientboundDebugRenderer using its canonical wire layout.
 func (pk *ClientboundDebugRenderer) Marshal(io protocol.IO) {
 	io.String(&pk.Type)
 	protocol.OptionalMarshaler(io, &pk.DebugMarkerData)

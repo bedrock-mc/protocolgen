@@ -26,10 +26,11 @@ type UpdateTrade struct {
 	Data              []byte
 }
 
-// ID returns the protocol ID for UpdateTrade.
-func (*UpdateTrade) ID() uint32 { return IDUpdateTrade }
+// ID ...
+func (*UpdateTrade) ID() uint32 {
+	return IDUpdateTrade
+}
 
-// Marshal reads or writes UpdateTrade using its canonical wire layout.
 func (pk *UpdateTrade) Marshal(io protocol.IO) {
 	io.Uint8(&pk.ContainerID)
 	io.Uint8(&pk.Type)

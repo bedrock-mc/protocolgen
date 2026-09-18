@@ -19,10 +19,11 @@ type StopSound struct {
 	StopMusicLegacy bool
 }
 
-// ID returns the protocol ID for StopSound.
-func (*StopSound) ID() uint32 { return IDStopSound }
+// ID ...
+func (*StopSound) ID() uint32 {
+	return IDStopSound
+}
 
-// Marshal reads or writes StopSound using its canonical wire layout.
 func (pk *StopSound) Marshal(io protocol.IO) {
 	io.String(&pk.SoundName)
 	io.Bool(&pk.StopAllSounds)

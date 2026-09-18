@@ -23,10 +23,11 @@ type UpdateSoftEnum struct {
 	UpdateType protocol.SoftEnumUpdateType
 }
 
-// ID returns the protocol ID for UpdateSoftEnum.
-func (*UpdateSoftEnum) ID() uint32 { return IDUpdateSoftEnum }
+// ID ...
+func (*UpdateSoftEnum) ID() uint32 {
+	return IDUpdateSoftEnum
+}
 
-// Marshal reads or writes UpdateSoftEnum using its canonical wire layout.
 func (pk *UpdateSoftEnum) Marshal(io protocol.IO) {
 	io.String(&pk.EnumName)
 	protocol.FuncSlice(io, &pk.Values, io.Varuint32, io.String)

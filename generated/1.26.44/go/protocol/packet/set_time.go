@@ -15,10 +15,11 @@ type SetTime struct {
 	Time int32
 }
 
-// ID returns the protocol ID for SetTime.
-func (*SetTime) ID() uint32 { return IDSetTime }
+// ID ...
+func (*SetTime) ID() uint32 {
+	return IDSetTime
+}
 
-// Marshal reads or writes SetTime using its canonical wire layout.
 func (pk *SetTime) Marshal(io protocol.IO) {
 	io.Varint32(&pk.Time)
 }

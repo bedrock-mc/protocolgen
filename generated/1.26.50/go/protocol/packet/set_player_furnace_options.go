@@ -11,10 +11,11 @@ type SetPlayerFurnaceOptions struct {
 	FurnaceOptions protocol.FurnaceOptions
 }
 
-// ID returns the protocol ID for SetPlayerFurnaceOptions.
-func (*SetPlayerFurnaceOptions) ID() uint32 { return IDSetPlayerFurnaceOptions }
+// ID ...
+func (*SetPlayerFurnaceOptions) ID() uint32 {
+	return IDSetPlayerFurnaceOptions
+}
 
-// Marshal reads or writes SetPlayerFurnaceOptions using its canonical wire layout.
 func (pk *SetPlayerFurnaceOptions) Marshal(io protocol.IO) {
 	pk.FurnaceType.Marshal(io)
 	pk.FurnaceOptions.Marshal(io)

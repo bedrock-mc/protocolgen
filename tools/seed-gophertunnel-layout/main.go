@@ -95,10 +95,11 @@ type enumInfo struct {
 }
 
 type ownerInfo struct {
-	TypeID string // type ID, or packet name for packets
-	Name   string // Go name
-	Fields []manifest.Field
-	Packet bool
+	TypeID  string // type ID that owns the fields: the inlined payload struct for a flattened packet
+	FileKey string // key for file placement: the packet name for packets, else TypeID
+	Name    string // Go name
+	Fields  []manifest.Field
+	Packet  bool
 }
 
 type index struct {
@@ -116,6 +117,17 @@ func buildIndex(m manifest.Manifest, overlay naming.Overlay) (index, error) {
 	var result index
 	seenEnum := map[string]int{}
 	seenOwner := map[string]bool{}
+	// A payload struct inlined into its packet is indexed as that packet, not
+	// as a shared type.
+	usage := flatten.Count(m)
+	native := func(node manifest.Node) bool { return nativeTypeIDs[node.TypeID] }
+	for _, packet := range m.Packets {
+		for _, item := range usage.PacketFields(packet, native) {
+			if item.Owner != packet.Name {
+				seenOwner[item.Owner] = true
+			}
+		}
+	}
 	var walk func(node manifest.Node) error
 	walk = func(node manifest.Node) error {
 		typeID := node.TypeID
@@ -152,7 +164,7 @@ func buildIndex(m manifest.Manifest, overlay naming.Overlay) (index, error) {
 						return err
 					}
 					seenOwner[typeID] = true
-					result.owners = append(result.owners, ownerInfo{TypeID: typeID, Name: name, Fields: node.Fields})
+					result.owners = append(result.owners, ownerInfo{TypeID: typeID, FileKey: typeID, Name: name, Fields: node.Fields})
 				}
 			}
 		}
@@ -187,19 +199,18 @@ func buildIndex(m manifest.Manifest, overlay naming.Overlay) (index, error) {
 		}
 		return nil
 	}
-	usage := flatten.Count(m)
 	for _, packet := range m.Packets {
 		// The emitter inlines a sole single-use payload struct, so the packet's
 		// effective fields and their owning type ID must match what it keys
 		// docs and layout names by.
-		effective := usage.PacketFields(packet, func(node manifest.Node) bool { return nativeTypeIDs[node.TypeID] })
+		effective := usage.PacketFields(packet, native)
 		owner := packet.Name
 		fields := make([]manifest.Field, 0, len(effective))
 		for _, item := range effective {
 			owner = item.Owner
 			fields = append(fields, item.Field)
 		}
-		result.owners = append(result.owners, ownerInfo{TypeID: owner, Name: naming.GoExportName(naming.PacketTypeName(packet.Name)), Fields: fields, Packet: true})
+		result.owners = append(result.owners, ownerInfo{TypeID: owner, FileKey: packet.Name, Name: naming.GoExportName(naming.PacketTypeName(packet.Name)), Fields: fields, Packet: true})
 		for _, field := range packet.Fields {
 			if err := walk(field.Encode); err != nil {
 				return index{}, err
@@ -585,9 +596,9 @@ func seed(m manifest.Manifest, idx index, fork forkIndex, docOverlay docs.Overla
 	var unmatchedOwners []ownerInfo
 	pair := func(owner ownerInfo, source forkType) {
 		matchedFork[source.Package+"."+source.Name] = true
-		document.Files = append(document.Files, layout.FileEntry{TypeID: owner.TypeID, Package: source.Package, File: source.File, Rationale: fmt.Sprintf("gophertunnel keeps %s in %s/%s.go.", source.Name, source.Package, source.File)})
-		if docOverlay.Types != nil && source.Doc != "" && docOverlay.Types[owner.TypeID] == "" {
-			docOverlay.Types[owner.TypeID] = docs.LeadWith(source.Doc, source.Name, owner.Name)
+		document.Files = append(document.Files, layout.FileEntry{TypeID: owner.FileKey, Package: source.Package, File: source.File, Rationale: fmt.Sprintf("gophertunnel keeps %s in %s/%s.go.", source.Name, source.Package, source.File)})
+		if docOverlay.Types != nil && source.Doc != "" && docOverlay.Types[owner.FileKey] == "" {
+			docOverlay.Types[owner.FileKey] = docs.LeadWith(source.Doc, source.Name, owner.Name)
 			report.portedDocs++
 		}
 		gap := fieldGap{Owner: owner, Fork: source}
@@ -962,7 +973,7 @@ func normalize(value string) string {
 		}
 	}
 	result := b.String()
-	for _, pair := range [][2]string{{"armour", "armor"}, {"colour", "color"}, {"behaviour", "behavior"}, {"centre", "center"}} {
+	for _, pair := range [][2]string{{"armour", "armor"}, {"colour", "color"}, {"behaviour", "behavior"}, {"centre", "center"}, {"entity", "actor"}} {
 		result = strings.ReplaceAll(result, pair[0], pair[1])
 	}
 	return result

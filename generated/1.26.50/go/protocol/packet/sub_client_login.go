@@ -14,10 +14,11 @@ type SubClientLogin struct {
 	SubClientConnectionRequest []byte
 }
 
-// ID returns the protocol ID for SubClientLogin.
-func (*SubClientLogin) ID() uint32 { return IDSubClientLogin }
+// ID ...
+func (*SubClientLogin) ID() uint32 {
+	return IDSubClientLogin
+}
 
-// Marshal reads or writes SubClientLogin using its canonical wire layout.
 func (pk *SubClientLogin) Marshal(io protocol.IO) {
 	io.Bytes(&pk.SubClientConnectionRequest)
 }

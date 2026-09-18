@@ -27,10 +27,11 @@ type ChangeDimension struct {
 	LoadingScreenID protocol.Optional[uint32]
 }
 
-// ID returns the protocol ID for ChangeDimension.
-func (*ChangeDimension) ID() uint32 { return IDChangeDimension }
+// ID ...
+func (*ChangeDimension) ID() uint32 {
+	return IDChangeDimension
+}
 
-// Marshal reads or writes ChangeDimension using its canonical wire layout.
 func (pk *ChangeDimension) Marshal(io protocol.IO) {
 	pk.DimensionID.Marshal(io)
 	io.Vec3(&pk.Position)

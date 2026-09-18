@@ -14,10 +14,11 @@ type UpdateAbilities struct {
 	Data protocol.SerializedAbilitiesData
 }
 
-// ID returns the protocol ID for UpdateAbilities.
-func (*UpdateAbilities) ID() uint32 { return IDUpdateAbilities }
+// ID ...
+func (*UpdateAbilities) ID() uint32 {
+	return IDUpdateAbilities
+}
 
-// Marshal reads or writes UpdateAbilities using its canonical wire layout.
 func (pk *UpdateAbilities) Marshal(io protocol.IO) {
 	pk.Data.Marshal(io)
 }

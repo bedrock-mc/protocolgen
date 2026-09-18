@@ -30,10 +30,11 @@ type CommandBlockUpdate struct {
 	ExecuteOnFirstTick bool
 }
 
-// ID returns the protocol ID for CommandBlockUpdate.
-func (*CommandBlockUpdate) ID() uint32 { return IDCommandBlockUpdate }
+// ID ...
+func (*CommandBlockUpdate) ID() uint32 {
+	return IDCommandBlockUpdate
+}
 
-// Marshal reads or writes CommandBlockUpdate using its canonical wire layout.
 func (pk *CommandBlockUpdate) Marshal(io protocol.IO) {
 	protocol.MarshalCommandBlockUpdateData(io, &pk.Target)
 	io.String(&pk.Command)

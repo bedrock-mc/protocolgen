@@ -19,10 +19,11 @@ type BlockPickRequest struct {
 	MaxSlots uint8
 }
 
-// ID returns the protocol ID for BlockPickRequest.
-func (*BlockPickRequest) ID() uint32 { return IDBlockPickRequest }
+// ID ...
+func (*BlockPickRequest) ID() uint32 {
+	return IDBlockPickRequest
+}
 
-// Marshal reads or writes BlockPickRequest using its canonical wire layout.
 func (pk *BlockPickRequest) Marshal(io protocol.IO) {
 	pk.Position.Marshal(io)
 	io.Bool(&pk.WithData)

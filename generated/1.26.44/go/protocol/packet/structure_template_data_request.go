@@ -21,10 +21,11 @@ type StructureTemplateDataRequest struct {
 	RequestedOperation protocol.StructureTemplateRequestOperation
 }
 
-// ID returns the protocol ID for StructureTemplateDataRequest.
-func (*StructureTemplateDataRequest) ID() uint32 { return IDStructureTemplateDataRequest }
+// ID ...
+func (*StructureTemplateDataRequest) ID() uint32 {
+	return IDStructureTemplateDataRequest
+}
 
-// Marshal reads or writes StructureTemplateDataRequest using its canonical wire layout.
 func (pk *StructureTemplateDataRequest) Marshal(io protocol.IO) {
 	io.StringLimits(&pk.StructureName, 0, 256)
 	pk.StructurePosition.Marshal(io)

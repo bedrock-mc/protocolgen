@@ -16,10 +16,11 @@ type ItemStackRequest struct {
 	Requests []protocol.ItemStackRequestPacketData
 }
 
-// ID returns the protocol ID for ItemStackRequest.
-func (*ItemStackRequest) ID() uint32 { return IDItemStackRequest }
+// ID ...
+func (*ItemStackRequest) ID() uint32 {
+	return IDItemStackRequest
+}
 
-// Marshal reads or writes ItemStackRequest using its canonical wire layout.
 func (pk *ItemStackRequest) Marshal(io protocol.IO) {
 	protocol.SliceLimits(io, &pk.Requests, 0, 100)
 }

@@ -12,10 +12,11 @@ type RemoveActor struct {
 	TargetActorID int64
 }
 
-// ID returns the protocol ID for RemoveActor.
-func (*RemoveActor) ID() uint32 { return IDRemoveActor }
+// ID ...
+func (*RemoveActor) ID() uint32 {
+	return IDRemoveActor
+}
 
-// Marshal reads or writes RemoveActor using its canonical wire layout.
 func (pk *RemoveActor) Marshal(io protocol.IO) {
 	io.ActorUniqueID(&pk.TargetActorID)
 }

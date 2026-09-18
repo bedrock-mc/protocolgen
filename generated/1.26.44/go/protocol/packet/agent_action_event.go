@@ -17,10 +17,11 @@ type AgentActionEvent struct {
 	Response string
 }
 
-// ID returns the protocol ID for AgentActionEvent.
-func (*AgentActionEvent) ID() uint32 { return IDAgentActionEvent }
+// ID ...
+func (*AgentActionEvent) ID() uint32 {
+	return IDAgentActionEvent
+}
 
-// Marshal reads or writes AgentActionEvent using its canonical wire layout.
 func (pk *AgentActionEvent) Marshal(io protocol.IO) {
 	io.String(&pk.RequestID)
 	pk.Action.Marshal(io)

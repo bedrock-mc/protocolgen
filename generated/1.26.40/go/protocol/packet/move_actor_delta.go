@@ -23,10 +23,11 @@ type MoveActorDelta struct {
 	ForceCompletion      bool
 }
 
-// ID returns the protocol ID for MoveActorDelta.
-func (*MoveActorDelta) ID() uint32 { return IDMoveActorDelta }
+// ID ...
+func (*MoveActorDelta) ID() uint32 {
+	return IDMoveActorDelta
+}
 
-// Marshal reads or writes MoveActorDelta using its canonical wire layout.
 func (pk *MoveActorDelta) Marshal(io protocol.IO) {
 	io.ActorRuntimeID(&pk.ActorRuntimeID)
 	protocol.OptionalFunc(io, &pk.NewPositionX, io.Float32)

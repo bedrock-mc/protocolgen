@@ -26,10 +26,11 @@ type ClientboundTextureShift struct {
 	Enabled bool
 }
 
-// ID returns the protocol ID for ClientboundTextureShift.
-func (*ClientboundTextureShift) ID() uint32 { return IDClientboundTextureShift }
+// ID ...
+func (*ClientboundTextureShift) ID() uint32 {
+	return IDClientboundTextureShift
+}
 
-// Marshal reads or writes ClientboundTextureShift using its canonical wire layout.
 func (pk *ClientboundTextureShift) Marshal(io protocol.IO) {
 	pk.ActionID.Marshal(io)
 	io.String(&pk.CollectionName)

@@ -15,10 +15,11 @@ type LessonProgress struct {
 	ActivityID string
 }
 
-// ID returns the protocol ID for LessonProgress.
-func (*LessonProgress) ID() uint32 { return IDLessonProgress }
+// ID ...
+func (*LessonProgress) ID() uint32 {
+	return IDLessonProgress
+}
 
-// Marshal reads or writes LessonProgress using its canonical wire layout.
 func (pk *LessonProgress) Marshal(io protocol.IO) {
 	io.Varint32(&pk.LessonAction)
 	io.Varint32(&pk.Score)

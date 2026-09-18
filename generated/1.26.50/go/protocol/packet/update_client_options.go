@@ -15,10 +15,11 @@ type UpdateClientOptions struct {
 	FilterProfanityChange protocol.Optional[bool]
 }
 
-// ID returns the protocol ID for UpdateClientOptions.
-func (*UpdateClientOptions) ID() uint32 { return IDUpdateClientOptions }
+// ID ...
+func (*UpdateClientOptions) ID() uint32 {
+	return IDUpdateClientOptions
+}
 
-// Marshal reads or writes UpdateClientOptions using its canonical wire layout.
 func (pk *UpdateClientOptions) Marshal(io protocol.IO) {
 	protocol.OptionalMarshaler(io, &pk.GraphicsModeChange)
 	protocol.OptionalFunc(io, &pk.FilterProfanityChange, io.Bool)

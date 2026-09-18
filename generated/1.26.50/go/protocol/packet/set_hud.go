@@ -12,10 +12,11 @@ type SetHud struct {
 	HudVisible protocol.HudVisibility
 }
 
-// ID returns the protocol ID for SetHud.
-func (*SetHud) ID() uint32 { return IDSetHud }
+// ID ...
+func (*SetHud) ID() uint32 {
+	return IDSetHud
+}
 
-// Marshal reads or writes SetHud using its canonical wire layout.
 func (pk *SetHud) Marshal(io protocol.IO) {
 	protocol.Slice(io, &pk.HudElement)
 	pk.HudVisible.Marshal(io)

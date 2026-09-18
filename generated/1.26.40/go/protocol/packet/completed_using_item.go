@@ -17,10 +17,11 @@ type CompletedUsingItem struct {
 	ItemUseMethod int32
 }
 
-// ID returns the protocol ID for CompletedUsingItem.
-func (*CompletedUsingItem) ID() uint32 { return IDCompletedUsingItem }
+// ID ...
+func (*CompletedUsingItem) ID() uint32 {
+	return IDCompletedUsingItem
+}
 
-// Marshal reads or writes CompletedUsingItem using its canonical wire layout.
 func (pk *CompletedUsingItem) Marshal(io protocol.IO) {
 	io.Int16(&pk.ItemID)
 	io.Int32(&pk.ItemUseMethod)

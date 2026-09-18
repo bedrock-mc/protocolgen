@@ -16,10 +16,11 @@ type ScriptMessage struct {
 	MessageValue []byte
 }
 
-// ID returns the protocol ID for ScriptMessage.
-func (*ScriptMessage) ID() uint32 { return IDScriptMessage }
+// ID ...
+func (*ScriptMessage) ID() uint32 {
+	return IDScriptMessage
+}
 
-// Marshal reads or writes ScriptMessage using its canonical wire layout.
 func (pk *ScriptMessage) Marshal(io protocol.IO) {
 	io.String(&pk.MessageID)
 	io.Bytes(&pk.MessageValue)

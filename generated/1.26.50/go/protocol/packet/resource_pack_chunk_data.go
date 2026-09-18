@@ -23,10 +23,11 @@ type ResourcePackChunkData struct {
 	ChunkData []byte
 }
 
-// ID returns the protocol ID for ResourcePackChunkData.
-func (*ResourcePackChunkData) ID() uint32 { return IDResourcePackChunkData }
+// ID ...
+func (*ResourcePackChunkData) ID() uint32 {
+	return IDResourcePackChunkData
+}
 
-// Marshal reads or writes ResourcePackChunkData using its canonical wire layout.
 func (pk *ResourcePackChunkData) Marshal(io protocol.IO) {
 	io.String(&pk.ResourceName)
 	io.Uint32(&pk.ChunkID)

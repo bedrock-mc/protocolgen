@@ -59,6 +59,16 @@
     },
     {
       "type_id": "AddActorPacket",
+      "field": "Actor Links",
+      "doc": "EntityLinks is a list of entity links that are currently active on the entity. These links alter the\nway the entity shows up when first spawned in terms of it shown as riding an entity. Setting these\nlinks is important for new viewers to see the entity is riding another entity."
+    },
+    {
+      "type_id": "AddActorPacket",
+      "field": "Actor Type",
+      "doc": "EntityType is the string entity type of the entity, for example 'minecraft:skeleton'. A list of these\nentities may be found online."
+    },
+    {
+      "type_id": "AddActorPacket",
       "field": "Position",
       "doc": "Position is the position to spawn the entity on. If the entity is on a distance that the player cannot\nsee it, the entity will still show up if the player moves closer."
     },
@@ -112,6 +122,11 @@
     {
       "type_id": "AddPlayerPacket",
       "doc": "AddPlayer is sent by the server to the client to make a player entity show up client-side. It is one of the\nfew entities that cannot be sent using the AddActor packet."
+    },
+    {
+      "type_id": "AddPlayerPacket",
+      "field": "Actor Links",
+      "doc": "EntityLinks is a list of entity links that are currently active on the player. These links alter the\nway the player shows up when first spawned in terms of it shown as riding an entity. Setting these\nlinks is important for new viewers to see the player is riding another entity."
     },
     {
       "type_id": "AddPlayerPacket",
@@ -1638,6 +1653,11 @@
       "doc": "ClientMovementPredictionSync is sent by the client to the server periodically if the client has received\nmovement corrections from the server, containing information about client-predictions that are relevant\nto movement."
     },
     {
+      "type_id": "ClientMovementPredictionSyncPacket",
+      "field": "Actor Unique ID",
+      "doc": "EntityUniqueID is the unique ID of the entity that the prediction data applies to."
+    },
+    {
       "type_id": "ClientToServerHandshakePacket",
       "doc": "ClientToServerHandshake is sent by the client in response to a ServerToClientHandshake packet sent by the\nserver. It is the first encrypted packet in the login handshake and serves as a confirmation that\nencryption is correctly initialised client side."
     },
@@ -2344,6 +2364,11 @@
     {
       "type_id": "EmotePacket",
       "doc": "Emote is sent by both the server and the client. When the client sends an emote, it sends this packet to\nthe server, after which the server will broadcast the packet to other players online."
+    },
+    {
+      "type_id": "EmotePacket",
+      "field": "Actor Runtime Id",
+      "doc": "EntityRuntimeID is the entity that sent the emote. When a player sends this packet, it has this field\nset as its own entity runtime ID."
     },
     {
       "type_id": "EmotePacket",
@@ -3215,6 +3240,11 @@
     },
     {
       "type_id": "MoveActorAbsoluteData",
+      "field": "ActorRuntimeID",
+      "doc": "EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and\nentities are generally identified in packets using this runtime ID."
+    },
+    {
+      "type_id": "MoveActorAbsoluteData",
       "field": "Position",
       "doc": "Position is the position to spawn the entity on. If the entity is on a distance that the player cannot\nsee it, the entity will still show up if the player moves closer."
     },
@@ -3225,6 +3255,11 @@
     {
       "type_id": "MoveActorDeltaData",
       "doc": "MoveActorDelta is sent by the server to move an entity. The packet is specifically optimised to save as\nmuch space as possible, by only writing non-zero fields.\nAs of 1.16.100, this packet no longer actually contains any deltas."
+    },
+    {
+      "type_id": "MoveActorDeltaData",
+      "field": "Actor Runtime ID",
+      "doc": "EntityRuntimeID is the runtime ID of the entity that is being moved. The packet works provided a\nnon-player entity with this runtime ID is present."
     },
     {
       "type_id": "MoveActorDeltaData",

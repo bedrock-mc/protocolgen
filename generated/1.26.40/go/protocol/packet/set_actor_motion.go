@@ -18,10 +18,11 @@ type SetActorMotion struct {
 	Tick uint64
 }
 
-// ID returns the protocol ID for SetActorMotion.
-func (*SetActorMotion) ID() uint32 { return IDSetActorMotion }
+// ID ...
+func (*SetActorMotion) ID() uint32 {
+	return IDSetActorMotion
+}
 
-// Marshal reads or writes SetActorMotion using its canonical wire layout.
 func (pk *SetActorMotion) Marshal(io protocol.IO) {
 	io.ActorRuntimeID(&pk.TargetRuntimeID)
 	io.Vec3(&pk.Motion)

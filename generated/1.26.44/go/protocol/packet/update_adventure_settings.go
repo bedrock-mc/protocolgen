@@ -23,10 +23,11 @@ type UpdateAdventureSettings struct {
 	AutoJump bool
 }
 
-// ID returns the protocol ID for UpdateAdventureSettings.
-func (*UpdateAdventureSettings) ID() uint32 { return IDUpdateAdventureSettings }
+// ID ...
+func (*UpdateAdventureSettings) ID() uint32 {
+	return IDUpdateAdventureSettings
+}
 
-// Marshal reads or writes UpdateAdventureSettings using its canonical wire layout.
 func (pk *UpdateAdventureSettings) Marshal(io protocol.IO) {
 	io.Bool(&pk.NoPvM)
 	io.Bool(&pk.NoMvP)

@@ -17,10 +17,11 @@ type SetActorData struct {
 	Tick uint64
 }
 
-// ID returns the protocol ID for SetActorData.
-func (*SetActorData) ID() uint32 { return IDSetActorData }
+// ID ...
+func (*SetActorData) ID() uint32 {
+	return IDSetActorData
+}
 
-// Marshal reads or writes SetActorData using its canonical wire layout.
 func (pk *SetActorData) Marshal(io protocol.IO) {
 	io.ActorRuntimeID(&pk.TargetRuntimeID)
 	pk.ActorData.Marshal(io)

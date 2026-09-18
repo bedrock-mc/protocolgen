@@ -20,10 +20,11 @@ type PacketViolationWarning struct {
 	ViolationContext string
 }
 
-// ID returns the protocol ID for PacketViolationWarning.
-func (*PacketViolationWarning) ID() uint32 { return IDPacketViolationWarning }
+// ID ...
+func (*PacketViolationWarning) ID() uint32 {
+	return IDPacketViolationWarning
+}
 
-// Marshal reads or writes PacketViolationWarning using its canonical wire layout.
 func (pk *PacketViolationWarning) Marshal(io protocol.IO) {
 	pk.ViolationType.Marshal(io)
 	pk.ViolationSeverity.Marshal(io)

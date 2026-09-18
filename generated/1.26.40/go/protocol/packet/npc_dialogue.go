@@ -15,10 +15,11 @@ type NpcDialogue struct {
 	ActionJSON            string
 }
 
-// ID returns the protocol ID for NpcDialogue.
-func (*NpcDialogue) ID() uint32 { return IDNpcDialogue }
+// ID ...
+func (*NpcDialogue) ID() uint32 {
+	return IDNpcDialogue
+}
 
-// Marshal reads or writes NpcDialogue using its canonical wire layout.
 func (pk *NpcDialogue) Marshal(io protocol.IO) {
 	io.Uint64(&pk.NpcIDRawID)
 	pk.NpcDialogueActionType.Marshal(io)

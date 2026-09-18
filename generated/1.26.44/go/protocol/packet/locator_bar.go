@@ -12,10 +12,11 @@ type LocatorBar struct {
 	Waypoints []protocol.LocatorBarWaypoint
 }
 
-// ID returns the protocol ID for LocatorBar.
-func (*LocatorBar) ID() uint32 { return IDLocatorBar }
+// ID ...
+func (*LocatorBar) ID() uint32 {
+	return IDLocatorBar
+}
 
-// Marshal reads or writes LocatorBar using its canonical wire layout.
 func (pk *LocatorBar) Marshal(io protocol.IO) {
 	protocol.SliceLimits(io, &pk.Waypoints, 0, 40000)
 }

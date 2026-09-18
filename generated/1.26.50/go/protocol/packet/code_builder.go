@@ -17,10 +17,11 @@ type CodeBuilder struct {
 	ShouldOpenCodeBuilder bool
 }
 
-// ID returns the protocol ID for CodeBuilder.
-func (*CodeBuilder) ID() uint32 { return IDCodeBuilder }
+// ID ...
+func (*CodeBuilder) ID() uint32 {
+	return IDCodeBuilder
+}
 
-// Marshal reads or writes CodeBuilder using its canonical wire layout.
 func (pk *CodeBuilder) Marshal(io protocol.IO) {
 	io.String(&pk.URL)
 	io.Bool(&pk.ShouldOpenCodeBuilder)

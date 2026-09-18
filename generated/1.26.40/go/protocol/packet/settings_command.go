@@ -18,10 +18,11 @@ type SettingsCommand struct {
 	SuppressOutput bool
 }
 
-// ID returns the protocol ID for SettingsCommand.
-func (*SettingsCommand) ID() uint32 { return IDSettingsCommand }
+// ID ...
+func (*SettingsCommand) ID() uint32 {
+	return IDSettingsCommand
+}
 
-// Marshal reads or writes SettingsCommand using its canonical wire layout.
 func (pk *SettingsCommand) Marshal(io protocol.IO) {
 	io.String(&pk.Command)
 	io.Bool(&pk.SuppressOutput)

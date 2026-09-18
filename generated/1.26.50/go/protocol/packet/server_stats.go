@@ -15,10 +15,11 @@ type ServerStats struct {
 	NetworkTime float32
 }
 
-// ID returns the protocol ID for ServerStats.
-func (*ServerStats) ID() uint32 { return IDServerStats }
+// ID ...
+func (*ServerStats) ID() uint32 {
+	return IDServerStats
+}
 
-// Marshal reads or writes ServerStats using its canonical wire layout.
 func (pk *ServerStats) Marshal(io protocol.IO) {
 	io.Float32(&pk.ServerTime)
 	io.Float32(&pk.NetworkTime)

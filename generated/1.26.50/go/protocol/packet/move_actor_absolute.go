@@ -19,10 +19,11 @@ type MoveActorAbsolute struct {
 	RotationYHead  uint8
 }
 
-// ID returns the protocol ID for MoveActorAbsolute.
-func (*MoveActorAbsolute) ID() uint32 { return IDMoveActorAbsolute }
+// ID ...
+func (*MoveActorAbsolute) ID() uint32 {
+	return IDMoveActorAbsolute
+}
 
-// Marshal reads or writes MoveActorAbsolute using its canonical wire layout.
 func (pk *MoveActorAbsolute) Marshal(io protocol.IO) {
 	io.ActorRuntimeID(&pk.ActorRuntimeID)
 	io.Uint8(&pk.Header)

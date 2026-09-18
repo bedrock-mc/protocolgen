@@ -13,10 +13,11 @@ type SubChunkRequest struct {
 	CenterPos                  protocol.SubChunkPos
 }
 
-// ID returns the protocol ID for SubChunkRequest.
-func (*SubChunkRequest) ID() uint32 { return IDSubChunkRequest }
+// ID ...
+func (*SubChunkRequest) ID() uint32 {
+	return IDSubChunkRequest
+}
 
-// Marshal reads or writes SubChunkRequest using its canonical wire layout.
 func (pk *SubChunkRequest) Marshal(io protocol.IO) {
 	pk.DimensionType.Marshal(io)
 	protocol.SliceLimits(io, &pk.SubChunkPositionOffsetList, 0, 8192)

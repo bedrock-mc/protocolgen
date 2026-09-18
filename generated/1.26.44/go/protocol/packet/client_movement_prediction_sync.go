@@ -13,14 +13,16 @@ type ClientMovementPredictionSync struct {
 	ActorDataFlag      protocol.ActorDataFlagComponent
 	ActorBoundingBox   protocol.ActorDataBoundingBoxComponent
 	MovementAttributes [9]float32
-	ActorUniqueID      int64
-	ActorFlyingState   bool
+	// EntityUniqueID is the unique ID of the entity that the prediction data applies to.
+	ActorUniqueID    int64
+	ActorFlyingState bool
 }
 
-// ID returns the protocol ID for ClientMovementPredictionSync.
-func (*ClientMovementPredictionSync) ID() uint32 { return IDClientMovementPredictionSync }
+// ID ...
+func (*ClientMovementPredictionSync) ID() uint32 {
+	return IDClientMovementPredictionSync
+}
 
-// Marshal reads or writes ClientMovementPredictionSync using its canonical wire layout.
 func (pk *ClientMovementPredictionSync) Marshal(io protocol.IO) {
 	pk.ActorDataFlag.Marshal(io)
 	pk.ActorBoundingBox.Marshal(io)

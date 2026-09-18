@@ -26,10 +26,11 @@ type CorrectPlayerMovePrediction struct {
 	Tick uint64
 }
 
-// ID returns the protocol ID for CorrectPlayerMovePrediction.
-func (*CorrectPlayerMovePrediction) ID() uint32 { return IDCorrectPlayerMovePrediction }
+// ID ...
+func (*CorrectPlayerMovePrediction) ID() uint32 {
+	return IDCorrectPlayerMovePrediction
+}
 
-// Marshal reads or writes CorrectPlayerMovePrediction using its canonical wire layout.
 func (pk *CorrectPlayerMovePrediction) Marshal(io protocol.IO) {
 	pk.PredictionType.Marshal(io)
 	io.Vec3(&pk.Pos)

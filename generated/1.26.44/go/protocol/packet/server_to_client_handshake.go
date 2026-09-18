@@ -13,10 +13,11 @@ type ServerToClientHandshake struct {
 	HandshakeWebToken string
 }
 
-// ID returns the protocol ID for ServerToClientHandshake.
-func (*ServerToClientHandshake) ID() uint32 { return IDServerToClientHandshake }
+// ID ...
+func (*ServerToClientHandshake) ID() uint32 {
+	return IDServerToClientHandshake
+}
 
-// Marshal reads or writes ServerToClientHandshake using its canonical wire layout.
 func (pk *ServerToClientHandshake) Marshal(io protocol.IO) {
 	io.String(&pk.HandshakeWebToken)
 }

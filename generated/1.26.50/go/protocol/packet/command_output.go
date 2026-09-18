@@ -16,10 +16,11 @@ type CommandOutput struct {
 	Output     protocol.CommandOutputData
 }
 
-// ID returns the protocol ID for CommandOutput.
-func (*CommandOutput) ID() uint32 { return IDCommandOutput }
+// ID ...
+func (*CommandOutput) ID() uint32 {
+	return IDCommandOutput
+}
 
-// Marshal reads or writes CommandOutput using its canonical wire layout.
 func (pk *CommandOutput) Marshal(io protocol.IO) {
 	pk.OriginData.Marshal(io)
 	pk.Output.Marshal(io)

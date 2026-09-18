@@ -15,10 +15,11 @@ type UpdateClientInputLocks struct {
 	InputLockComponentData uint32
 }
 
-// ID returns the protocol ID for UpdateClientInputLocks.
-func (*UpdateClientInputLocks) ID() uint32 { return IDUpdateClientInputLocks }
+// ID ...
+func (*UpdateClientInputLocks) ID() uint32 {
+	return IDUpdateClientInputLocks
+}
 
-// Marshal reads or writes UpdateClientInputLocks using its canonical wire layout.
 func (pk *UpdateClientInputLocks) Marshal(io protocol.IO) {
 	io.Varuint32(&pk.InputLockComponentData)
 }

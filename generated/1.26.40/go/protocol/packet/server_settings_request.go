@@ -11,9 +11,10 @@ import (
 type ServerSettingsRequest struct {
 }
 
-// ID returns the protocol ID for ServerSettingsRequest.
-func (*ServerSettingsRequest) ID() uint32 { return IDServerSettingsRequest }
+// ID ...
+func (*ServerSettingsRequest) ID() uint32 {
+	return IDServerSettingsRequest
+}
 
-// Marshal reads or writes ServerSettingsRequest using its canonical wire layout.
 func (pk *ServerSettingsRequest) Marshal(io protocol.IO) {
 }

@@ -14,10 +14,11 @@ type PlayerVideoCapture struct {
 	Action protocol.PlayerVideoCaptureData
 }
 
-// ID returns the protocol ID for PlayerVideoCapture.
-func (*PlayerVideoCapture) ID() uint32 { return IDPlayerVideoCapture }
+// ID ...
+func (*PlayerVideoCapture) ID() uint32 {
+	return IDPlayerVideoCapture
+}
 
-// Marshal reads or writes PlayerVideoCapture using its canonical wire layout.
 func (pk *PlayerVideoCapture) Marshal(io protocol.IO) {
 	protocol.MarshalPlayerVideoCaptureData(io, &pk.Action)
 }

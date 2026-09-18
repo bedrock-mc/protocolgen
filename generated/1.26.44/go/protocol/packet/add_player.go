@@ -35,7 +35,10 @@ type AddPlayer struct {
 	EntityData        protocol.SynchedActorDataCopyableDataList
 	SynchedProperties protocol.PropertySyncData
 	AbilitiesData     protocol.SerializedAbilitiesData
-	ActorLinks        []protocol.EntityLink
+	// EntityLinks is a list of entity links that are currently active on the player. These links alter the way
+	// the player shows up when first spawned in terms of it shown as riding an entity. Setting these links is
+	// important for new viewers to see the player is riding another entity.
+	ActorLinks []protocol.EntityLink
 	// DeviceID is the device ID set in one of the files found in the storage of the device of the player. It may
 	// be changed freely, so it should not be relied on for anything.
 	DeviceID string
@@ -44,10 +47,11 @@ type AddPlayer struct {
 	BuildPlatform protocol.BuildPlatform
 }
 
-// ID returns the protocol ID for AddPlayer.
-func (*AddPlayer) ID() uint32 { return IDAddPlayer }
+// ID ...
+func (*AddPlayer) ID() uint32 {
+	return IDAddPlayer
+}
 
-// Marshal reads or writes AddPlayer using its canonical wire layout.
 func (pk *AddPlayer) Marshal(io protocol.IO) {
 	io.UUID(&pk.UUID)
 	io.String(&pk.PlayerName)

@@ -10,9 +10,10 @@ import (
 type RefreshEntitlements struct {
 }
 
-// ID returns the protocol ID for RefreshEntitlements.
-func (*RefreshEntitlements) ID() uint32 { return IDRefreshEntitlements }
+// ID ...
+func (*RefreshEntitlements) ID() uint32 {
+	return IDRefreshEntitlements
+}
 
-// Marshal reads or writes RefreshEntitlements using its canonical wire layout.
 func (pk *RefreshEntitlements) Marshal(io protocol.IO) {
 }

@@ -18,10 +18,11 @@ type MobArmorEquipment struct {
 	Body protocol.NetworkItemStackDescriptorSerializedData
 }
 
-// ID returns the protocol ID for MobArmorEquipment.
-func (*MobArmorEquipment) ID() uint32 { return IDMobArmorEquipment }
+// ID ...
+func (*MobArmorEquipment) ID() uint32 {
+	return IDMobArmorEquipment
+}
 
-// Marshal reads or writes MobArmorEquipment using its canonical wire layout.
 func (pk *MobArmorEquipment) Marshal(io protocol.IO) {
 	io.ActorRuntimeID(&pk.TargetRuntimeID)
 	pk.Head.Marshal(io)

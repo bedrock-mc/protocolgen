@@ -29,10 +29,11 @@ type EducationSettings struct {
 	ExternalLinkSettings protocol.Optional[protocol.ExternalLinkSettings]
 }
 
-// ID returns the protocol ID for EducationSettings.
-func (*EducationSettings) ID() uint32 { return IDEducationSettings }
+// ID ...
+func (*EducationSettings) ID() uint32 {
+	return IDEducationSettings
+}
 
-// Marshal reads or writes EducationSettings using its canonical wire layout.
 func (pk *EducationSettings) Marshal(io protocol.IO) {
 	io.String(&pk.CodeBuilderDefaultURI)
 	io.String(&pk.CodeBuilderTitle)

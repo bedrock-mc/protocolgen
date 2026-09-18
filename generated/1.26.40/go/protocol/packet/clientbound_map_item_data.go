@@ -22,10 +22,11 @@ type ClientboundMapItemData struct {
 	Pixels          protocol.Optional[[]uint32]
 }
 
-// ID returns the protocol ID for ClientboundMapItemData.
-func (*ClientboundMapItemData) ID() uint32 { return IDClientboundMapItemData }
+// ID ...
+func (*ClientboundMapItemData) ID() uint32 {
+	return IDClientboundMapItemData
+}
 
-// Marshal reads or writes ClientboundMapItemData using its canonical wire layout.
 func (pk *ClientboundMapItemData) Marshal(io protocol.IO) {
 	io.ActorUniqueID(&pk.MapID)
 	io.Uint8(&pk.Dimension)

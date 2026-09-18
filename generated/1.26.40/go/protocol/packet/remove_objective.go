@@ -14,10 +14,11 @@ type RemoveObjective struct {
 	ObjectiveName string
 }
 
-// ID returns the protocol ID for RemoveObjective.
-func (*RemoveObjective) ID() uint32 { return IDRemoveObjective }
+// ID ...
+func (*RemoveObjective) ID() uint32 {
+	return IDRemoveObjective
+}
 
-// Marshal reads or writes RemoveObjective using its canonical wire layout.
 func (pk *RemoveObjective) Marshal(io protocol.IO) {
 	io.String(&pk.ObjectiveName)
 }

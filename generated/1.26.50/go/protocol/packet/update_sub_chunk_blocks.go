@@ -12,10 +12,11 @@ type UpdateSubChunkBlocks struct {
 	BlocksChanged         protocol.UpdateSubChunkBlocksChangedInfo
 }
 
-// ID returns the protocol ID for UpdateSubChunkBlocks.
-func (*UpdateSubChunkBlocks) ID() uint32 { return IDUpdateSubChunkBlocks }
+// ID ...
+func (*UpdateSubChunkBlocks) ID() uint32 {
+	return IDUpdateSubChunkBlocks
+}
 
-// Marshal reads or writes UpdateSubChunkBlocks using its canonical wire layout.
 func (pk *UpdateSubChunkBlocks) Marshal(io protocol.IO) {
 	pk.SubChunkBlockPosition.Marshal(io)
 	pk.BlocksChanged.Marshal(io)

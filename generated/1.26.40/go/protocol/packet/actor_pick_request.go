@@ -15,10 +15,11 @@ type ActorPickRequest struct {
 	WithData bool
 }
 
-// ID returns the protocol ID for ActorPickRequest.
-func (*ActorPickRequest) ID() uint32 { return IDActorPickRequest }
+// ID ...
+func (*ActorPickRequest) ID() uint32 {
+	return IDActorPickRequest
+}
 
-// Marshal reads or writes ActorPickRequest using its canonical wire layout.
 func (pk *ActorPickRequest) Marshal(io protocol.IO) {
 	io.Int64(&pk.ActorID)
 	io.Uint8(&pk.MaxSlots)

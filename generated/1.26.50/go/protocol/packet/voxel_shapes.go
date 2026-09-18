@@ -16,10 +16,11 @@ type VoxelShapes struct {
 	CustomShapeCount uint16
 }
 
-// ID returns the protocol ID for VoxelShapes.
-func (*VoxelShapes) ID() uint32 { return IDVoxelShapes }
+// ID ...
+func (*VoxelShapes) ID() uint32 {
+	return IDVoxelShapes
+}
 
-// Marshal reads or writes VoxelShapes using its canonical wire layout.
 func (pk *VoxelShapes) Marshal(io protocol.IO) {
 	protocol.Slice(io, &pk.Shapes)
 	protocol.OrderedMap(io, &pk.NameMap, io.Varuint32, io.String, func(value *protocol.VoxelShapesRegistryHandle) {

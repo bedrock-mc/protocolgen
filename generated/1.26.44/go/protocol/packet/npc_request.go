@@ -21,10 +21,11 @@ type NpcRequest struct {
 	SceneName string
 }
 
-// ID returns the protocol ID for NpcRequest.
-func (*NpcRequest) ID() uint32 { return IDNpcRequest }
+// ID ...
+func (*NpcRequest) ID() uint32 {
+	return IDNpcRequest
+}
 
-// Marshal reads or writes NpcRequest using its canonical wire layout.
 func (pk *NpcRequest) Marshal(io protocol.IO) {
 	io.ActorRuntimeID(&pk.NPCRuntimeID)
 	pk.RequestType.Marshal(io)

@@ -916,9 +916,8 @@ func (g *generator) emitPacket(packet manifest.Packet, packetName string, consta
 	}
 	b.WriteString("}\n\n")
 	if g.emitPacketRuntime {
-		fmt.Fprintf(&b, "// ID returns the protocol ID for %s.\nfunc (*%s) ID() uint32 { return ID%s }\n\n", packetName, packetName, packetName)
+		fmt.Fprintf(&b, "// ID ...\nfunc (*%s) ID() uint32 {\n\treturn ID%s\n}\n\n", packetName, packetName)
 	}
-	fmt.Fprintf(&b, "// Marshal reads or writes %s using its canonical wire layout.\n", packetName)
 	fmt.Fprintf(&b, "func (pk *%s) Marshal(io protocol.IO) {\n", packetName)
 	emitter := marshalEmitter{g: g, qualifier: "protocol."}
 	for _, field := range fields {

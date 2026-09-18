@@ -13,10 +13,11 @@ type TakeItemActor struct {
 	ActorRuntimeID uint64
 }
 
-// ID returns the protocol ID for TakeItemActor.
-func (*TakeItemActor) ID() uint32 { return IDTakeItemActor }
+// ID ...
+func (*TakeItemActor) ID() uint32 {
+	return IDTakeItemActor
+}
 
-// Marshal reads or writes TakeItemActor using its canonical wire layout.
 func (pk *TakeItemActor) Marshal(io protocol.IO) {
 	io.ActorRuntimeID(&pk.ItemRuntimeID)
 	io.ActorRuntimeID(&pk.ActorRuntimeID)

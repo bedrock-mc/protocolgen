@@ -50,10 +50,11 @@ type PlayerAuthInput struct {
 	RawMoveVector mgl32.Vec2
 }
 
-// ID returns the protocol ID for PlayerAuthInput.
-func (*PlayerAuthInput) ID() uint32 { return IDPlayerAuthInput }
+// ID ...
+func (*PlayerAuthInput) ID() uint32 {
+	return IDPlayerAuthInput
+}
 
-// Marshal reads or writes PlayerAuthInput using its canonical wire layout.
 func (pk *PlayerAuthInput) Marshal(io protocol.IO) {
 	io.Vec2(&pk.PlayerRotation)
 	io.Vec3(&pk.Position)

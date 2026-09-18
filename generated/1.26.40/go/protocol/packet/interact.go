@@ -19,10 +19,11 @@ type Interact struct {
 	Position protocol.Optional[mgl32.Vec3]
 }
 
-// ID returns the protocol ID for Interact.
-func (*Interact) ID() uint32 { return IDInteract }
+// ID ...
+func (*Interact) ID() uint32 {
+	return IDInteract
+}
 
-// Marshal reads or writes Interact using its canonical wire layout.
 func (pk *Interact) Marshal(io protocol.IO) {
 	pk.Action.Marshal(io)
 	io.ActorRuntimeID(&pk.TargetRuntimeID)

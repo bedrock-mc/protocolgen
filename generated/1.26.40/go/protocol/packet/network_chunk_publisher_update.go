@@ -24,10 +24,11 @@ type NetworkChunkPublisherUpdate struct {
 	ServerBuiltChunksList []protocol.ChunkPos
 }
 
-// ID returns the protocol ID for NetworkChunkPublisherUpdate.
-func (*NetworkChunkPublisherUpdate) ID() uint32 { return IDNetworkChunkPublisherUpdate }
+// ID ...
+func (*NetworkChunkPublisherUpdate) ID() uint32 {
+	return IDNetworkChunkPublisherUpdate
+}
 
-// Marshal reads or writes NetworkChunkPublisherUpdate using its canonical wire layout.
 func (pk *NetworkChunkPublisherUpdate) Marshal(io protocol.IO) {
 	pk.NewPositionForView.Marshal(io)
 	io.Varuint32(&pk.NewRadiusForView)

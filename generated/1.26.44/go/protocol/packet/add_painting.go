@@ -21,10 +21,11 @@ type AddPainting struct {
 	Motif     string
 }
 
-// ID returns the protocol ID for AddPainting.
-func (*AddPainting) ID() uint32 { return IDAddPainting }
+// ID ...
+func (*AddPainting) ID() uint32 {
+	return IDAddPainting
+}
 
-// Marshal reads or writes AddPainting using its canonical wire layout.
 func (pk *AddPainting) Marshal(io protocol.IO) {
 	io.ActorUniqueID(&pk.TargetActorID)
 	io.ActorRuntimeID(&pk.TargetRuntimeID)

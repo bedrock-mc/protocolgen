@@ -21,10 +21,11 @@ type Respawn struct {
 	PlayerRuntimeID uint64
 }
 
-// ID returns the protocol ID for Respawn.
-func (*Respawn) ID() uint32 { return IDRespawn }
+// ID ...
+func (*Respawn) ID() uint32 {
+	return IDRespawn
+}
 
-// Marshal reads or writes Respawn using its canonical wire layout.
 func (pk *Respawn) Marshal(io protocol.IO) {
 	io.Vec3(&pk.Position)
 	pk.State.Marshal(io)

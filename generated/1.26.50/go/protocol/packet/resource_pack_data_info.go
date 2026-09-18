@@ -20,10 +20,11 @@ type ResourcePackDataInfo struct {
 	PackType uint8
 }
 
-// ID returns the protocol ID for ResourcePackDataInfo.
-func (*ResourcePackDataInfo) ID() uint32 { return IDResourcePackDataInfo }
+// ID ...
+func (*ResourcePackDataInfo) ID() uint32 {
+	return IDResourcePackDataInfo
+}
 
-// Marshal reads or writes ResourcePackDataInfo using its canonical wire layout.
 func (pk *ResourcePackDataInfo) Marshal(io protocol.IO) {
 	io.String(&pk.ResourceName)
 	io.Uint32(&pk.ChunkSize)

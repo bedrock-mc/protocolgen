@@ -16,10 +16,11 @@ type GameTestResults struct {
 	TestName string
 }
 
-// ID returns the protocol ID for GameTestResults.
-func (*GameTestResults) ID() uint32 { return IDGameTestResults }
+// ID ...
+func (*GameTestResults) ID() uint32 {
+	return IDGameTestResults
+}
 
-// Marshal reads or writes GameTestResults using its canonical wire layout.
 func (pk *GameTestResults) Marshal(io protocol.IO) {
 	io.Bool(&pk.Succeeded)
 	io.String(&pk.Error)

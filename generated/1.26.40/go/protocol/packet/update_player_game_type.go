@@ -16,10 +16,11 @@ type UpdatePlayerGameType struct {
 	Tick uint64
 }
 
-// ID returns the protocol ID for UpdatePlayerGameType.
-func (*UpdatePlayerGameType) ID() uint32 { return IDUpdatePlayerGameType }
+// ID ...
+func (*UpdatePlayerGameType) ID() uint32 {
+	return IDUpdatePlayerGameType
+}
 
-// Marshal reads or writes UpdatePlayerGameType using its canonical wire layout.
 func (pk *UpdatePlayerGameType) Marshal(io protocol.IO) {
 	pk.PlayerGameType.Marshal(io)
 	io.ActorUniqueID(&pk.TargetPlayer)

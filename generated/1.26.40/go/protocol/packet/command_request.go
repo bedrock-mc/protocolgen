@@ -24,10 +24,11 @@ type CommandRequest struct {
 	Version string
 }
 
-// ID returns the protocol ID for CommandRequest.
-func (*CommandRequest) ID() uint32 { return IDCommandRequest }
+// ID ...
+func (*CommandRequest) ID() uint32 {
+	return IDCommandRequest
+}
 
-// Marshal reads or writes CommandRequest using its canonical wire layout.
 func (pk *CommandRequest) Marshal(io protocol.IO) {
 	io.StringLimits(&pk.Command, 0, 1000)
 	pk.Origin.Marshal(io)

@@ -14,10 +14,11 @@ type PlayerUpdateEntityOverrides struct {
 	Update        protocol.PlayerUpdateEntityOverridesData
 }
 
-// ID returns the protocol ID for PlayerUpdateEntityOverrides.
-func (*PlayerUpdateEntityOverrides) ID() uint32 { return IDPlayerUpdateEntityOverrides }
+// ID ...
+func (*PlayerUpdateEntityOverrides) ID() uint32 {
+	return IDPlayerUpdateEntityOverrides
+}
 
-// Marshal reads or writes PlayerUpdateEntityOverrides using its canonical wire layout.
 func (pk *PlayerUpdateEntityOverrides) Marshal(io protocol.IO) {
 	io.ActorUniqueID(&pk.TargetID)
 	io.Varuint32(&pk.PropertyIndex)

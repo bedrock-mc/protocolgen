@@ -29,10 +29,11 @@ type AddActor struct {
 	ActorLinks        []protocol.EntityLink
 }
 
-// ID returns the protocol ID for AddActor.
-func (*AddActor) ID() uint32 { return IDAddActor }
+// ID ...
+func (*AddActor) ID() uint32 {
+	return IDAddActor
+}
 
-// Marshal reads or writes AddActor using its canonical wire layout.
 func (pk *AddActor) Marshal(io protocol.IO) {
 	io.ActorUniqueID(&pk.TargetActorID)
 	io.ActorRuntimeID(&pk.TargetRuntimeID)

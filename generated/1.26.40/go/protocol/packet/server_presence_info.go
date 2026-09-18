@@ -12,10 +12,11 @@ type ServerPresenceInfo struct {
 	PresenceConfiguration protocol.Optional[protocol.ServerConfigurationPresenceConfiguration]
 }
 
-// ID returns the protocol ID for ServerPresenceInfo.
-func (*ServerPresenceInfo) ID() uint32 { return IDServerPresenceInfo }
+// ID ...
+func (*ServerPresenceInfo) ID() uint32 {
+	return IDServerPresenceInfo
+}
 
-// Marshal reads or writes ServerPresenceInfo using its canonical wire layout.
 func (pk *ServerPresenceInfo) Marshal(io protocol.IO) {
 	protocol.OptionalMarshaler(io, &pk.PresenceConfiguration)
 }

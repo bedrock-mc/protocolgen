@@ -13,10 +13,11 @@ type Camera struct {
 	TargetPlayerID int64
 }
 
-// ID returns the protocol ID for Camera.
-func (*Camera) ID() uint32 { return IDCamera }
+// ID ...
+func (*Camera) ID() uint32 {
+	return IDCamera
+}
 
-// Marshal reads or writes Camera using its canonical wire layout.
 func (pk *Camera) Marshal(io protocol.IO) {
 	io.ActorUniqueID(&pk.CameraID)
 	io.ActorUniqueID(&pk.TargetPlayerID)

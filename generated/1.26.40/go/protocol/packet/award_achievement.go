@@ -13,10 +13,11 @@ type AwardAchievement struct {
 	AchievementID int32
 }
 
-// ID returns the protocol ID for AwardAchievement.
-func (*AwardAchievement) ID() uint32 { return IDAwardAchievement }
+// ID ...
+func (*AwardAchievement) ID() uint32 {
+	return IDAwardAchievement
+}
 
-// Marshal reads or writes AwardAchievement using its canonical wire layout.
 func (pk *AwardAchievement) Marshal(io protocol.IO) {
 	io.Int32(&pk.AchievementID)
 }

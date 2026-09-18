@@ -12,10 +12,11 @@ type GameRulesChanged struct {
 	RuleData protocol.GameRulesChangedData
 }
 
-// ID returns the protocol ID for GameRulesChanged.
-func (*GameRulesChanged) ID() uint32 { return IDGameRulesChanged }
+// ID ...
+func (*GameRulesChanged) ID() uint32 {
+	return IDGameRulesChanged
+}
 
-// Marshal reads or writes GameRulesChanged using its canonical wire layout.
 func (pk *GameRulesChanged) Marshal(io protocol.IO) {
 	pk.RuleData.Marshal(io)
 }

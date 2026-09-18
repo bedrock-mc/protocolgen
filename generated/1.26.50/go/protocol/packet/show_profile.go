@@ -13,10 +13,11 @@ type ShowProfile struct {
 	PlayerXUID string
 }
 
-// ID returns the protocol ID for ShowProfile.
-func (*ShowProfile) ID() uint32 { return IDShowProfile }
+// ID ...
+func (*ShowProfile) ID() uint32 {
+	return IDShowProfile
+}
 
-// Marshal reads or writes ShowProfile using its canonical wire layout.
 func (pk *ShowProfile) Marshal(io protocol.IO) {
 	io.String(&pk.PlayerXUID)
 }

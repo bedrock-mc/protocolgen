@@ -19,10 +19,11 @@ type AddVolumeEntity struct {
 	EngineVersion string
 }
 
-// ID returns the protocol ID for AddVolumeEntity.
-func (*AddVolumeEntity) ID() uint32 { return IDAddVolumeEntity }
+// ID ...
+func (*AddVolumeEntity) ID() uint32 {
+	return IDAddVolumeEntity
+}
 
-// Marshal reads or writes AddVolumeEntity using its canonical wire layout.
 func (pk *AddVolumeEntity) Marshal(io protocol.IO) {
 	pk.EntityNetworkID.Marshal(io)
 	io.NBT(&pk.Components, protocol.NBTNetwork)

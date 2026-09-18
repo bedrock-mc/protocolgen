@@ -13,10 +13,11 @@ type MapInfoRequest struct {
 	ClientPixelsList []protocol.PixelRequest
 }
 
-// ID returns the protocol ID for MapInfoRequest.
-func (*MapInfoRequest) ID() uint32 { return IDMapInfoRequest }
+// ID ...
+func (*MapInfoRequest) ID() uint32 {
+	return IDMapInfoRequest
+}
 
-// Marshal reads or writes MapInfoRequest using its canonical wire layout.
 func (pk *MapInfoRequest) Marshal(io protocol.IO) {
 	io.ActorUniqueID(&pk.MapUniqueID)
 	protocol.FuncSliceLimits(io, &pk.ClientPixelsList, io.Uint32, 0, 16384, func(value *protocol.PixelRequest) {

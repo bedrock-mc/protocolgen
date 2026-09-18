@@ -23,10 +23,11 @@ type NetworkSettings struct {
 	ClientThrottleScalar float32
 }
 
-// ID returns the protocol ID for NetworkSettings.
-func (*NetworkSettings) ID() uint32 { return IDNetworkSettings }
+// ID ...
+func (*NetworkSettings) ID() uint32 {
+	return IDNetworkSettings
+}
 
-// Marshal reads or writes NetworkSettings using its canonical wire layout.
 func (pk *NetworkSettings) Marshal(io protocol.IO) {
 	io.Uint16(&pk.CompressionThreshold)
 	pk.CompressionAlgorithm.Marshal(io)

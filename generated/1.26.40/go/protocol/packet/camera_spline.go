@@ -12,10 +12,11 @@ type CameraSpline struct {
 	CameraDataSplines []protocol.CameraSplineDefinition
 }
 
-// ID returns the protocol ID for CameraSpline.
-func (*CameraSpline) ID() uint32 { return IDCameraSpline }
+// ID ...
+func (*CameraSpline) ID() uint32 {
+	return IDCameraSpline
+}
 
-// Marshal reads or writes CameraSpline using its canonical wire layout.
 func (pk *CameraSpline) Marshal(io protocol.IO) {
 	protocol.Slice(io, &pk.CameraDataSplines)
 }

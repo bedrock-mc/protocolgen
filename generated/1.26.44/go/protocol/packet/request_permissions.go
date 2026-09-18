@@ -19,10 +19,11 @@ type RequestPermissions struct {
 	CustomPermissionFlags uint16
 }
 
-// ID returns the protocol ID for RequestPermissions.
-func (*RequestPermissions) ID() uint32 { return IDRequestPermissions }
+// ID ...
+func (*RequestPermissions) ID() uint32 {
+	return IDRequestPermissions
+}
 
-// Marshal reads or writes RequestPermissions using its canonical wire layout.
 func (pk *RequestPermissions) Marshal(io protocol.IO) {
 	io.Int64(&pk.TargetPlayerIDSRawID)
 	io.Varint32(&pk.PlayerPermissionLevel)

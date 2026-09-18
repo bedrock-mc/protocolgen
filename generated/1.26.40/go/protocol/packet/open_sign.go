@@ -17,10 +17,11 @@ type OpenSign struct {
 	IsFrontSide bool
 }
 
-// ID returns the protocol ID for OpenSign.
-func (*OpenSign) ID() uint32 { return IDOpenSign }
+// ID ...
+func (*OpenSign) ID() uint32 {
+	return IDOpenSign
+}
 
-// Marshal reads or writes OpenSign using its canonical wire layout.
 func (pk *OpenSign) Marshal(io protocol.IO) {
 	pk.Pos.Marshal(io)
 	io.Bool(&pk.IsFrontSide)

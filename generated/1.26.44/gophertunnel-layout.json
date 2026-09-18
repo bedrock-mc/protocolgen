@@ -1986,6 +1986,18 @@
   ],
   "fields": [
     {
+      "type_id": "ActorDataBoundingBoxComponent",
+      "field": "Actor Data Bounding Box",
+      "name": "EntityDataBoundingBox",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
+    },
+    {
+      "type_id": "ActorDataFlagComponent",
+      "field": "Actor Flag Bitset Data",
+      "name": "EntityFlagBitsetData",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
+    },
+    {
       "type_id": "ActorPickRequestPacket",
       "field": "Actor ID",
       "name": "EntityUniqueID",
@@ -1998,10 +2010,52 @@
       "rationale": "gophertunnel ActorPickRequest.HotBarSlot field name."
     },
     {
+      "type_id": "AddActorPacket",
+      "field": "Actor Data",
+      "name": "EntityData",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
+    },
+    {
+      "type_id": "AddActorPacket",
+      "field": "Actor Links",
+      "name": "EntityLinks",
+      "rationale": "gophertunnel AddActor.EntityLinks field name."
+    },
+    {
+      "type_id": "AddActorPacket",
+      "field": "Actor Type",
+      "name": "EntityType",
+      "rationale": "gophertunnel AddActor.EntityType field name."
+    },
+    {
+      "type_id": "AddActorPacket",
+      "field": "Target Actor ID",
+      "name": "TargetEntityID",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
+    },
+    {
       "type_id": "AddBehaviorTreePacket",
       "field": "Behavior Tree Structure (JSON)",
       "name": "BehaviourTree",
       "rationale": "gophertunnel AddBehaviourTree.BehaviourTree field name."
+    },
+    {
+      "type_id": "AddItemActorPacket",
+      "field": "Target Actor ID",
+      "name": "TargetEntityID",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
+    },
+    {
+      "type_id": "AddPaintingPacket",
+      "field": "Target Actor ID",
+      "name": "TargetEntityID",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
+    },
+    {
+      "type_id": "AddPlayerPacket",
+      "field": "Actor Links",
+      "name": "EntityLinks",
+      "rationale": "gophertunnel AddPlayer.EntityLinks field name."
     },
     {
       "type_id": "AgentActionEventPacket",
@@ -2050,6 +2104,12 @@
       "field": "mStopExpressionVersion",
       "name": "StopConditionVersion",
       "rationale": "gophertunnel AnimateEntity.StopConditionVersion field name."
+    },
+    {
+      "type_id": "AnimatePacket",
+      "field": "Target Actor Runtime ID",
+      "name": "TargetEntityRuntimeID",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
     },
     {
       "type_id": "AnvilDamagePacket",
@@ -2220,6 +2280,12 @@
       "rationale": "gophertunnel BiomeConsolidatedFeature.CanUseInternal field name."
     },
     {
+      "type_id": "BiomeDefinitionData",
+      "field": "map water color ARGB",
+      "name": "MapWaterColourARGB",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
+    },
+    {
       "type_id": "BiomeElementData",
       "field": "noise freq scale",
       "name": "NoiseFrequencyScale",
@@ -2242,6 +2308,12 @@
       "field": "has the end surface",
       "name": "HasEndSurface",
       "rationale": "gophertunnel BiomeSurfaceBuilder.HasEndSurface field name."
+    },
+    {
+      "type_id": "BlockActorDataPacket",
+      "field": "Actor Data Tags",
+      "name": "EntityDataTags",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
     },
     {
       "type_id": "BlockEventPacket",
@@ -2272,6 +2344,12 @@
       "field": "Color",
       "name": "Colour",
       "rationale": "gophertunnel BossEvent.Colour field name."
+    },
+    {
+      "type_id": "BossEventPacket",
+      "field": "Target Actor ID",
+      "name": "TargetEntityID",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
     },
     {
       "type_id": "CameraAimAssistActorPriority::PriorityData",
@@ -2308,6 +2386,12 @@
       "field": "Camera Aim-Assist Presets",
       "name": "Categories",
       "rationale": "gophertunnel CameraAimAssistPresets.Categories field name."
+    },
+    {
+      "type_id": "CameraInstructionOptions::AttachToEntityInstruction",
+      "field": "Entity Actor ID",
+      "name": "EntityEntityID",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
     },
     {
       "type_id": "CameraInstructionOptions::FadeInstruction",
@@ -2406,6 +2490,18 @@
       "rationale": "gophertunnel CameraSpline.Splines field name."
     },
     {
+      "type_id": "ChangeEntityScore",
+      "field": "Actor Id",
+      "name": "EntityID",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
+    },
+    {
+      "type_id": "ChangeMobPropertyPacket",
+      "field": "Actor Id",
+      "name": "EntityID",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
+    },
+    {
       "type_id": "ClientCacheBlobStatusPacket",
       "field": "Found Ids",
       "name": "HitHashes",
@@ -2434,6 +2530,42 @@
       "field": "Camera Preset Id",
       "name": "PresetID",
       "rationale": "gophertunnel ClientCameraAimAssist.PresetID field name."
+    },
+    {
+      "type_id": "ClientMovementPredictionSyncPacket",
+      "field": "Actor Bounding Box",
+      "name": "EntityBoundingBox",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
+    },
+    {
+      "type_id": "ClientMovementPredictionSyncPacket",
+      "field": "Actor Data Flag",
+      "name": "EntityDataFlag",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
+    },
+    {
+      "type_id": "ClientMovementPredictionSyncPacket",
+      "field": "Actor Flying State",
+      "name": "EntityFlyingState",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
+    },
+    {
+      "type_id": "ClientMovementPredictionSyncPacket",
+      "field": "Actor Unique ID",
+      "name": "EntityUniqueID",
+      "rationale": "gophertunnel ClientMovementPredictionSync.EntityUniqueID field name."
+    },
+    {
+      "type_id": "ClientboundDebugRendererPacketPayload::DebugMarkerData",
+      "field": "Color",
+      "name": "Colour",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
+    },
+    {
+      "type_id": "ClientboundMapItemDataPacket",
+      "field": "Tracked Actor IDs",
+      "name": "TrackedEntityIDs",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
     },
     {
       "type_id": "ClientboundTextureShiftPacket",
@@ -2488,6 +2620,12 @@
       "field": "Server Initiated Close",
       "name": "ServerSide",
       "rationale": "gophertunnel ContainerClose.ServerSide field name."
+    },
+    {
+      "type_id": "ContainerOpenPacket",
+      "field": "Target Actor ID",
+      "name": "TargetEntityID",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
     },
     {
       "type_id": "ContainerSetDataPacket",
@@ -2574,10 +2712,22 @@
       "rationale": "gophertunnel DeathInfo.Messages field name."
     },
     {
+      "type_id": "DebugInfoPacket",
+      "field": "Actor Id",
+      "name": "EntityID",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
+    },
+    {
       "type_id": "ECS::Profiling::Diagnostics::SystemDiagnosticTimingInfo",
       "field": "Time in NS",
       "name": "DurationNanos",
       "rationale": "gophertunnel SystemDiagnosticTimingInfo.DurationNanos field name."
+    },
+    {
+      "type_id": "EmotePacket",
+      "field": "Actor Runtime Id",
+      "name": "EntityRuntimeID",
+      "rationale": "gophertunnel Emote.EntityRuntimeID field name."
     },
     {
       "type_id": "EmotePacket",
@@ -2670,6 +2820,18 @@
       "rationale": "gophertunnel InventoryContent.Content field name."
     },
     {
+      "type_id": "InventoryOptions",
+      "field": "Layout Craft",
+      "name": "CraftingLayout",
+      "rationale": "gophertunnel SetPlayerInventoryOptions.CraftingLayout field name."
+    },
+    {
+      "type_id": "InventoryOptions",
+      "field": "Layout Inv",
+      "name": "InventoryLayout",
+      "rationale": "gophertunnel SetPlayerInventoryOptions.InventoryLayout field name."
+    },
+    {
       "type_id": "InventorySlotPacket",
       "field": "Container Id",
       "name": "WindowID",
@@ -2736,10 +2898,76 @@
       "rationale": "gophertunnel LecternUpdate.PageCount field name."
     },
     {
+      "type_id": "LegacyTelemetryEventPacket",
+      "field": "Target Actor ID",
+      "name": "TargetEntityID",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
+    },
+    {
+      "type_id": "LegacyTelemetryEventPacketPayload::BossKilled",
+      "field": "Boss Actor ID",
+      "name": "BossEntityID",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
+    },
+    {
+      "type_id": "LegacyTelemetryEventPacketPayload::CauldronUsed",
+      "field": "Contents Color",
+      "name": "ContentsColour",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
+    },
+    {
+      "type_id": "LegacyTelemetryEventPacketPayload::Interaction",
+      "field": "Interaction Actor Color",
+      "name": "InteractionEntityColour",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
+    },
+    {
+      "type_id": "LegacyTelemetryEventPacketPayload::Interaction",
+      "field": "Interaction Actor Type",
+      "name": "InteractionEntityType",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
+    },
+    {
+      "type_id": "LegacyTelemetryEventPacketPayload::Interaction",
+      "field": "Interaction Actor Variant",
+      "name": "InteractionEntityVariant",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
+    },
+    {
       "type_id": "LegacyTelemetryEventPacketPayload::ItemUsed",
       "field": "Count",
       "name": "UseCount",
       "rationale": "gophertunnel ItemUsedEvent.UseCount field name."
+    },
+    {
+      "type_id": "LegacyTelemetryEventPacketPayload::MobBorn",
+      "field": "Born Baby: Color",
+      "name": "BornBabyColour",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
+    },
+    {
+      "type_id": "LegacyTelemetryEventPacketPayload::MobKilled",
+      "field": "Instigator Actor ID",
+      "name": "InstigatorEntityID",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
+    },
+    {
+      "type_id": "LegacyTelemetryEventPacketPayload::MobKilled",
+      "field": "Instigator's Child Actor Type",
+      "name": "InstigatorSChildEntityType",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
+    },
+    {
+      "type_id": "LegacyTelemetryEventPacketPayload::MobKilled",
+      "field": "Target Actor ID",
+      "name": "TargetEntityID",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
+    },
+    {
+      "type_id": "LegacyTelemetryEventPacketPayload::PlayerDied",
+      "field": "Instigator Actor ID",
+      "name": "InstigatorEntityID",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
     },
     {
       "type_id": "LevelEventPacket",
@@ -2752,6 +2980,12 @@
       "field": "Event Id",
       "name": "EventType",
       "rationale": "gophertunnel LevelEvent.EventType field name."
+    },
+    {
+      "type_id": "LevelSettings",
+      "field": "Has Locked Behavior Pack",
+      "name": "HasLockedBehaviourPack",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
     },
     {
       "type_id": "LevelSoundEventPacket",
@@ -2842,6 +3076,24 @@
       "field": "JSON Response",
       "name": "ResponseData",
       "rationale": "gophertunnel ModalFormResponse.ResponseData field name."
+    },
+    {
+      "type_id": "MoveActorAbsoluteData",
+      "field": "ActorRuntimeID",
+      "name": "EntityRuntimeID",
+      "rationale": "gophertunnel MoveActorAbsolute.EntityRuntimeID field name."
+    },
+    {
+      "type_id": "MoveActorDeltaData",
+      "field": "Actor Runtime ID",
+      "name": "EntityRuntimeID",
+      "rationale": "gophertunnel MoveActorDelta.EntityRuntimeID field name."
+    },
+    {
+      "type_id": "MovePlayerTeleportData",
+      "field": "Source Actor Type",
+      "name": "SourceEntityType",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
     },
     {
       "type_id": "MultiplayerSettingsPacket",
@@ -3006,6 +3258,24 @@
       "rationale": "gophertunnel PlayerHotBar.SelectHotBarSlot field name."
     },
     {
+      "type_id": "PlayerListPacketPayload::AddEntry",
+      "field": "Actor Unique ID",
+      "name": "EntityUniqueID",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
+    },
+    {
+      "type_id": "PlayerListPacketPayload::AddEntry",
+      "field": "Player Color",
+      "name": "PlayerColour",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
+    },
+    {
+      "type_id": "PlayerLocationPacket",
+      "field": "Target Actor ID",
+      "name": "TargetEntityID",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
+    },
+    {
       "type_id": "PlayerSkinPacket",
       "field": "Localized New Skin Name",
       "name": "NewSkinName",
@@ -3052,6 +3322,12 @@
       "field": "PurchaseReceipts",
       "name": "Receipts",
       "rationale": "gophertunnel PurchaseReceipt.Receipts field name."
+    },
+    {
+      "type_id": "RemoveActorPacket",
+      "field": "Target Actor ID",
+      "name": "TargetEntityID",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
     },
     {
       "type_id": "RequestNetworkSettingsPacket",
@@ -3174,6 +3450,18 @@
       "rationale": "gophertunnel PersonaPiece.Default field name."
     },
     {
+      "type_id": "SerializedSkinRef",
+      "field": "PieceTintColors",
+      "name": "PieceTintColours",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
+    },
+    {
+      "type_id": "SerializedSkinRef",
+      "field": "SkinColor",
+      "name": "SkinColour",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
+    },
+    {
       "type_id": "ServerConfiguration::GatheringsConfigurationJoinInfo",
       "field": "worldId",
       "name": "ExperienceWorldID",
@@ -3274,6 +3562,12 @@
       "field": "Loading Screen Packet Type",
       "name": "Type",
       "rationale": "gophertunnel ServerBoundLoadingScreen.Type field name."
+    },
+    {
+      "type_id": "SetActorDataPacket",
+      "field": "Actor Data",
+      "name": "EntityData",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
     },
     {
       "type_id": "SetActorLinkPacket",
@@ -3432,6 +3726,12 @@
       "rationale": "gophertunnel SpawnExperienceOrb.ExperienceAmount field name."
     },
     {
+      "type_id": "SpawnParticleEffectPacket",
+      "field": "Actor Id",
+      "name": "EntityID",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
+    },
+    {
       "type_id": "StartGamePacket",
       "field": "Multiplayer Correlation Id",
       "name": "MultiPlayerCorrelationID",
@@ -3474,6 +3774,12 @@
       "rationale": "gophertunnel SyncWorldClockStateData.Paused field name."
     },
     {
+      "type_id": "TakeItemActorPacket",
+      "field": "Actor Runtime ID",
+      "name": "EntityRuntimeID",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
+    },
+    {
       "type_id": "TextDataPayload",
       "field": "BackgroundColor",
       "name": "BackgroundColour",
@@ -3484,6 +3790,12 @@
       "field": "Waiting For Preload",
       "name": "Preload",
       "rationale": "gophertunnel TickingAreasLoadStatus.Preload field name."
+    },
+    {
+      "type_id": "TintMapColor",
+      "field": "Colors",
+      "name": "Colours",
+      "rationale": "gophertunnel spelling convention for a field it does not name."
     },
     {
       "type_id": "ToastRequestPacket",
@@ -3616,6 +3928,12 @@
       "field": "Values",
       "name": "Options",
       "rationale": "gophertunnel UpdateSoftEnum.Options field name."
+    },
+    {
+      "type_id": "WebSocketPacketData",
+      "field": "Websocket Server URI",
+      "name": "ServerURI",
+      "rationale": "gophertunnel AutomationClientConnect.ServerURI field name."
     },
     {
       "type_id": "WorldClockData",

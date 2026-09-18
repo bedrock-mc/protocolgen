@@ -24,10 +24,11 @@ type InventoryContent struct {
 	StorageItem protocol.NetworkItemStackDescriptorSerializedData
 }
 
-// ID returns the protocol ID for InventoryContent.
-func (*InventoryContent) ID() uint32 { return IDInventoryContent }
+// ID ...
+func (*InventoryContent) ID() uint32 {
+	return IDInventoryContent
+}
 
-// Marshal reads or writes InventoryContent using its canonical wire layout.
 func (pk *InventoryContent) Marshal(io protocol.IO) {
 	io.Varuint32(&pk.ContainerID)
 	protocol.Slice(io, &pk.Slots)

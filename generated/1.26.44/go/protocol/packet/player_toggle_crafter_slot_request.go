@@ -21,10 +21,11 @@ type PlayerToggleCrafterSlotRequest struct {
 	IsDisabled bool
 }
 
-// ID returns the protocol ID for PlayerToggleCrafterSlotRequest.
-func (*PlayerToggleCrafterSlotRequest) ID() uint32 { return IDPlayerToggleCrafterSlotRequest }
+// ID ...
+func (*PlayerToggleCrafterSlotRequest) ID() uint32 {
+	return IDPlayerToggleCrafterSlotRequest
+}
 
-// Marshal reads or writes PlayerToggleCrafterSlotRequest using its canonical wire layout.
 func (pk *PlayerToggleCrafterSlotRequest) Marshal(io protocol.IO) {
 	io.Int32(&pk.PosX)
 	io.Int32(&pk.PosY)

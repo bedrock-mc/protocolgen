@@ -14,10 +14,11 @@ type DimensionData struct {
 	Definitions []protocol.OrderedEntry[string, protocol.DimensionDefinition]
 }
 
-// ID returns the protocol ID for DimensionData.
-func (*DimensionData) ID() uint32 { return IDDimensionData }
+// ID ...
+func (*DimensionData) ID() uint32 {
+	return IDDimensionData
+}
 
-// Marshal reads or writes DimensionData using its canonical wire layout.
 func (pk *DimensionData) Marshal(io protocol.IO) {
 	protocol.OrderedMap(io, &pk.Definitions, io.Varuint32, func(value *string) {
 		io.StringLimits(value, 0, 256)

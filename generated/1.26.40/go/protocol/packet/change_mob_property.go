@@ -17,10 +17,11 @@ type ChangeMobProperty struct {
 	FloatComponentValue  float32
 }
 
-// ID returns the protocol ID for ChangeMobProperty.
-func (*ChangeMobProperty) ID() uint32 { return IDChangeMobProperty }
+// ID ...
+func (*ChangeMobProperty) ID() uint32 {
+	return IDChangeMobProperty
+}
 
-// Marshal reads or writes ChangeMobProperty using its canonical wire layout.
 func (pk *ChangeMobProperty) Marshal(io protocol.IO) {
 	io.ActorUniqueID(&pk.ActorID)
 	io.String(&pk.PropertyName)

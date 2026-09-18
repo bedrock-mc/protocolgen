@@ -16,10 +16,11 @@ type ToastRequest struct {
 	Content string
 }
 
-// ID returns the protocol ID for ToastRequest.
-func (*ToastRequest) ID() uint32 { return IDToastRequest }
+// ID ...
+func (*ToastRequest) ID() uint32 {
+	return IDToastRequest
+}
 
-// Marshal reads or writes ToastRequest using its canonical wire layout.
 func (pk *ToastRequest) Marshal(io protocol.IO) {
 	io.String(&pk.Title)
 	io.String(&pk.Content)

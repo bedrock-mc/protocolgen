@@ -38,10 +38,11 @@ type AvailableCommands struct {
 	Constraints []protocol.CommandEnumConstraint
 }
 
-// ID returns the protocol ID for AvailableCommands.
-func (*AvailableCommands) ID() uint32 { return IDAvailableCommands }
+// ID ...
+func (*AvailableCommands) ID() uint32 {
+	return IDAvailableCommands
+}
 
-// Marshal reads or writes AvailableCommands using its canonical wire layout.
 func (pk *AvailableCommands) Marshal(io protocol.IO) {
 	protocol.FuncSlice(io, &pk.EnumValues, io.Varuint32, io.String)
 	protocol.FuncSlice(io, &pk.ChainedSubcommandValues, io.Varuint32, io.String)

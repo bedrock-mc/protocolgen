@@ -21,10 +21,11 @@ type ClientboundUpdateSoundData struct {
 	Resume            protocol.SoundDataEvent
 }
 
-// ID returns the protocol ID for ClientboundUpdateSoundData.
-func (*ClientboundUpdateSoundData) ID() uint32 { return IDClientboundUpdateSoundData }
+// ID ...
+func (*ClientboundUpdateSoundData) ID() uint32 {
+	return IDClientboundUpdateSoundData
+}
 
-// Marshal reads or writes ClientboundUpdateSoundData using its canonical wire layout.
 func (pk *ClientboundUpdateSoundData) Marshal(io protocol.IO) {
 	pk.ServerSoundHandle.Marshal(io)
 	protocol.MarshalSoundDataEvent(io, &pk.Stop)

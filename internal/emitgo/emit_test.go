@@ -603,7 +603,7 @@ func TestGenerateEmitsPacketRuntimePoolsAndOptionalNativeProfile(t *testing.T) {
 			break
 		}
 	}
-	if !strings.Contains(files["protocol/packet/packet.go"], "type Packet interface") || !strings.Contains(serverSource, "func (*ServerEnvelope) ID() uint32 { return IDServerEnvelope }") {
+	if !strings.Contains(files["protocol/packet/packet.go"], "type Packet interface") || !strings.Contains(serverSource, "func (*ServerEnvelope) ID() uint32 {\n\treturn IDServerEnvelope\n}") {
 		t.Fatalf("packet runtime contract was not emitted:\n%s\n%s", files["protocol/packet/packet.go"], serverSource)
 	}
 	pool := files["protocol/packet/pool.go"]

@@ -17,10 +17,11 @@ type MobEquipment struct {
 	ContainerID     uint8
 }
 
-// ID returns the protocol ID for MobEquipment.
-func (*MobEquipment) ID() uint32 { return IDMobEquipment }
+// ID ...
+func (*MobEquipment) ID() uint32 {
+	return IDMobEquipment
+}
 
-// Marshal reads or writes MobEquipment using its canonical wire layout.
 func (pk *MobEquipment) Marshal(io protocol.IO) {
 	io.ActorRuntimeID(&pk.TargetRuntimeID)
 	pk.Item.Marshal(io)

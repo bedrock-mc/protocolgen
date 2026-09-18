@@ -27,10 +27,11 @@ type CameraAimAssist struct {
 	ShowDebugRender bool
 }
 
-// ID returns the protocol ID for CameraAimAssist.
-func (*CameraAimAssist) ID() uint32 { return IDCameraAimAssist }
+// ID ...
+func (*CameraAimAssist) ID() uint32 {
+	return IDCameraAimAssist
+}
 
-// Marshal reads or writes CameraAimAssist using its canonical wire layout.
 func (pk *CameraAimAssist) Marshal(io protocol.IO) {
 	io.String(&pk.PresetID)
 	io.Vec2(&pk.ViewAngle)

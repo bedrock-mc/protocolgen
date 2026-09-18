@@ -13,10 +13,11 @@ type AgentAnimation struct {
 	RuntimeID      uint64
 }
 
-// ID returns the protocol ID for AgentAnimation.
-func (*AgentAnimation) ID() uint32 { return IDAgentAnimation }
+// ID ...
+func (*AgentAnimation) ID() uint32 {
+	return IDAgentAnimation
+}
 
-// Marshal reads or writes AgentAnimation using its canonical wire layout.
 func (pk *AgentAnimation) Marshal(io protocol.IO) {
 	pk.AgentAnimation.Marshal(io)
 	io.ActorRuntimeID(&pk.RuntimeID)

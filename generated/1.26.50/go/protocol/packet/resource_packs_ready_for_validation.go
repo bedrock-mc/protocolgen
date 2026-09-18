@@ -11,9 +11,10 @@ import (
 type ResourcePacksReadyForValidation struct {
 }
 
-// ID returns the protocol ID for ResourcePacksReadyForValidation.
-func (*ResourcePacksReadyForValidation) ID() uint32 { return IDResourcePacksReadyForValidation }
+// ID ...
+func (*ResourcePacksReadyForValidation) ID() uint32 {
+	return IDResourcePacksReadyForValidation
+}
 
-// Marshal reads or writes ResourcePacksReadyForValidation using its canonical wire layout.
 func (pk *ResourcePacksReadyForValidation) Marshal(io protocol.IO) {
 }

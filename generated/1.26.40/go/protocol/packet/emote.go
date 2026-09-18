@@ -25,10 +25,11 @@ type Emote struct {
 	Flags uint8
 }
 
-// ID returns the protocol ID for Emote.
-func (*Emote) ID() uint32 { return IDEmote }
+// ID ...
+func (*Emote) ID() uint32 {
+	return IDEmote
+}
 
-// Marshal reads or writes Emote using its canonical wire layout.
 func (pk *Emote) Marshal(io protocol.IO) {
 	io.ActorRuntimeID(&pk.ActorRuntimeID)
 	io.String(&pk.EmoteID)

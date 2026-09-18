@@ -19,10 +19,11 @@ type Text struct {
 	FilteredMessage protocol.Optional[string]
 }
 
-// ID returns the protocol ID for Text.
-func (*Text) ID() uint32 { return IDText }
+// ID ...
+func (*Text) ID() uint32 {
+	return IDText
+}
 
-// Marshal reads or writes Text using its canonical wire layout.
 func (pk *Text) Marshal(io protocol.IO) {
 	io.Bool(&pk.Localize)
 	io.Uint8(&pk.MessageCategory)

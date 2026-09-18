@@ -32,10 +32,11 @@ type CreativeContent struct {
 	Entries []protocol.CreativeItemEntry
 }
 
-// ID returns the protocol ID for CreativeContent.
-func (*CreativeContent) ID() uint32 { return IDCreativeContent }
+// ID ...
+func (*CreativeContent) ID() uint32 {
+	return IDCreativeContent
+}
 
-// Marshal reads or writes CreativeContent using its canonical wire layout.
 func (pk *CreativeContent) Marshal(io protocol.IO) {
 	protocol.Slice(io, &pk.Groups)
 	protocol.Slice(io, &pk.Entries)

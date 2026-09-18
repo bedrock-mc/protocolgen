@@ -16,10 +16,11 @@ type ItemStackResponse struct {
 	Responses []protocol.ItemStackResponseInfo
 }
 
-// ID returns the protocol ID for ItemStackResponse.
-func (*ItemStackResponse) ID() uint32 { return IDItemStackResponse }
+// ID ...
+func (*ItemStackResponse) ID() uint32 {
+	return IDItemStackResponse
+}
 
-// Marshal reads or writes ItemStackResponse using its canonical wire layout.
 func (pk *ItemStackResponse) Marshal(io protocol.IO) {
 	protocol.Slice(io, &pk.Responses)
 }

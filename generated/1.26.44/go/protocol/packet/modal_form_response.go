@@ -21,10 +21,11 @@ type ModalFormResponse struct {
 	FormCancelReason protocol.Optional[protocol.ModalFormCancelReason]
 }
 
-// ID returns the protocol ID for ModalFormResponse.
-func (*ModalFormResponse) ID() uint32 { return IDModalFormResponse }
+// ID ...
+func (*ModalFormResponse) ID() uint32 {
+	return IDModalFormResponse
+}
 
-// Marshal reads or writes ModalFormResponse using its canonical wire layout.
 func (pk *ModalFormResponse) Marshal(io protocol.IO) {
 	io.Varuint32(&pk.FormID)
 	protocol.OptionalFunc(io, &pk.JSONResponse, io.String)

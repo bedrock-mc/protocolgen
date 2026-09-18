@@ -19,10 +19,11 @@ type Transfer struct {
 	GatheringsConfiguration protocol.Optional[protocol.ServerConfigurationGatheringsConfigurationJoinInfo]
 }
 
-// ID returns the protocol ID for Transfer.
-func (*Transfer) ID() uint32 { return IDTransfer }
+// ID ...
+func (*Transfer) ID() uint32 {
+	return IDTransfer
+}
 
-// Marshal reads or writes Transfer using its canonical wire layout.
 func (pk *Transfer) Marshal(io protocol.IO) {
 	io.String(&pk.ServerAddress)
 	io.Uint16(&pk.ServerPort)

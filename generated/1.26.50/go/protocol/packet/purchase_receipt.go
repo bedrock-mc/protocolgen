@@ -14,10 +14,11 @@ type PurchaseReceipt struct {
 	PurchaseReceipts []string
 }
 
-// ID returns the protocol ID for PurchaseReceipt.
-func (*PurchaseReceipt) ID() uint32 { return IDPurchaseReceipt }
+// ID ...
+func (*PurchaseReceipt) ID() uint32 {
+	return IDPurchaseReceipt
+}
 
-// Marshal reads or writes PurchaseReceipt using its canonical wire layout.
 func (pk *PurchaseReceipt) Marshal(io protocol.IO) {
 	protocol.FuncSliceLimits(io, &pk.PurchaseReceipts, io.Varuint32, 0, 10000, io.String)
 }

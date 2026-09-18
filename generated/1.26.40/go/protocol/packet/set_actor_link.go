@@ -15,10 +15,11 @@ type SetActorLink struct {
 	Link protocol.EntityLink
 }
 
-// ID returns the protocol ID for SetActorLink.
-func (*SetActorLink) ID() uint32 { return IDSetActorLink }
+// ID ...
+func (*SetActorLink) ID() uint32 {
+	return IDSetActorLink
+}
 
-// Marshal reads or writes SetActorLink using its canonical wire layout.
 func (pk *SetActorLink) Marshal(io protocol.IO) {
 	pk.Link.Marshal(io)
 }

@@ -13,10 +13,11 @@ type BookEdit struct {
 	Operation protocol.BookEditAction
 }
 
-// ID returns the protocol ID for BookEdit.
-func (*BookEdit) ID() uint32 { return IDBookEdit }
+// ID ...
+func (*BookEdit) ID() uint32 {
+	return IDBookEdit
+}
 
-// Marshal reads or writes BookEdit using its canonical wire layout.
 func (pk *BookEdit) Marshal(io protocol.IO) {
 	io.Varint32(&pk.BookSlot)
 	protocol.MarshalBookEditAction(io, &pk.Operation)

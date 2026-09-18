@@ -31,10 +31,11 @@ type PhotoTransfer struct {
 	NewPhotoName string
 }
 
-// ID returns the protocol ID for PhotoTransfer.
-func (*PhotoTransfer) ID() uint32 { return IDPhotoTransfer }
+// ID ...
+func (*PhotoTransfer) ID() uint32 {
+	return IDPhotoTransfer
+}
 
-// Marshal reads or writes PhotoTransfer using its canonical wire layout.
 func (pk *PhotoTransfer) Marshal(io protocol.IO) {
 	io.String(&pk.PhotoName)
 	protocol.Pattern(io, &pk.PhotoName, "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.jpeg$")

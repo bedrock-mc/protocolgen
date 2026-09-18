@@ -17,10 +17,11 @@ type MapCreateLockedCopy struct {
 	NewMapID int64
 }
 
-// ID returns the protocol ID for MapCreateLockedCopy.
-func (*MapCreateLockedCopy) ID() uint32 { return IDMapCreateLockedCopy }
+// ID ...
+func (*MapCreateLockedCopy) ID() uint32 {
+	return IDMapCreateLockedCopy
+}
 
-// Marshal reads or writes MapCreateLockedCopy using its canonical wire layout.
 func (pk *MapCreateLockedCopy) Marshal(io protocol.IO) {
 	io.ActorUniqueID(&pk.OriginalMapID)
 	io.ActorUniqueID(&pk.NewMapID)

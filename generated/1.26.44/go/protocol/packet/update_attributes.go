@@ -16,10 +16,11 @@ type UpdateAttributes struct {
 	Tick uint64
 }
 
-// ID returns the protocol ID for UpdateAttributes.
-func (*UpdateAttributes) ID() uint32 { return IDUpdateAttributes }
+// ID ...
+func (*UpdateAttributes) ID() uint32 {
+	return IDUpdateAttributes
+}
 
-// Marshal reads or writes UpdateAttributes using its canonical wire layout.
 func (pk *UpdateAttributes) Marshal(io protocol.IO) {
 	io.ActorRuntimeID(&pk.TargetRuntimeID)
 	protocol.Slice(io, &pk.AttributeList)

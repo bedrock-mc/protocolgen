@@ -14,10 +14,11 @@ type OnScreenTextureAnimation struct {
 	EffectID uint32
 }
 
-// ID returns the protocol ID for OnScreenTextureAnimation.
-func (*OnScreenTextureAnimation) ID() uint32 { return IDOnScreenTextureAnimation }
+// ID ...
+func (*OnScreenTextureAnimation) ID() uint32 {
+	return IDOnScreenTextureAnimation
+}
 
-// Marshal reads or writes OnScreenTextureAnimation using its canonical wire layout.
 func (pk *OnScreenTextureAnimation) Marshal(io protocol.IO) {
 	io.Uint32(&pk.EffectID)
 }

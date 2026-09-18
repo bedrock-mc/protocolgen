@@ -22,10 +22,11 @@ type UpdateBlock struct {
 	Layer uint32
 }
 
-// ID returns the protocol ID for UpdateBlock.
-func (*UpdateBlock) ID() uint32 { return IDUpdateBlock }
+// ID ...
+func (*UpdateBlock) ID() uint32 {
+	return IDUpdateBlock
+}
 
-// Marshal reads or writes UpdateBlock using its canonical wire layout.
 func (pk *UpdateBlock) Marshal(io protocol.IO) {
 	pk.BlockPosition.Marshal(io)
 	io.Varuint32(&pk.BlockRuntimeID)

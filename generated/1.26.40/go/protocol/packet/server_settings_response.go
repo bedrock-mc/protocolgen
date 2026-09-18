@@ -18,10 +18,11 @@ type ServerSettingsResponse struct {
 	FormUIJSON string
 }
 
-// ID returns the protocol ID for ServerSettingsResponse.
-func (*ServerSettingsResponse) ID() uint32 { return IDServerSettingsResponse }
+// ID ...
+func (*ServerSettingsResponse) ID() uint32 {
+	return IDServerSettingsResponse
+}
 
-// Marshal reads or writes ServerSettingsResponse using its canonical wire layout.
 func (pk *ServerSettingsResponse) Marshal(io protocol.IO) {
 	io.Varuint32(&pk.FormID)
 	io.String(&pk.FormUIJSON)

@@ -22,10 +22,11 @@ type MobEffect struct {
 	Ambient bool
 }
 
-// ID returns the protocol ID for MobEffect.
-func (*MobEffect) ID() uint32 { return IDMobEffect }
+// ID ...
+func (*MobEffect) ID() uint32 {
+	return IDMobEffect
+}
 
-// Marshal reads or writes MobEffect using its canonical wire layout.
 func (pk *MobEffect) Marshal(io protocol.IO) {
 	io.ActorRuntimeID(&pk.TargetRuntimeID)
 	pk.EventID.Marshal(io)

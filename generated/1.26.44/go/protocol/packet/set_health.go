@@ -14,10 +14,11 @@ type SetHealth struct {
 	Health int32
 }
 
-// ID returns the protocol ID for SetHealth.
-func (*SetHealth) ID() uint32 { return IDSetHealth }
+// ID ...
+func (*SetHealth) ID() uint32 {
+	return IDSetHealth
+}
 
-// Marshal reads or writes SetHealth using its canonical wire layout.
 func (pk *SetHealth) Marshal(io protocol.IO) {
 	io.Varint32(&pk.Health)
 }

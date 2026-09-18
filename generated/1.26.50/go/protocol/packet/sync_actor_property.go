@@ -12,10 +12,11 @@ type SyncActorProperty struct {
 	PropertyData []byte
 }
 
-// ID returns the protocol ID for SyncActorProperty.
-func (*SyncActorProperty) ID() uint32 { return IDSyncActorProperty }
+// ID ...
+func (*SyncActorProperty) ID() uint32 {
+	return IDSyncActorProperty
+}
 
-// Marshal reads or writes SyncActorProperty using its canonical wire layout.
 func (pk *SyncActorProperty) Marshal(io protocol.IO) {
 	io.NBT(&pk.PropertyData, protocol.NBTNetwork)
 }

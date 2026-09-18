@@ -14,10 +14,11 @@ type ContainerRegistryCleanup struct {
 	RemovedContainers []protocol.FullContainerName
 }
 
-// ID returns the protocol ID for ContainerRegistryCleanup.
-func (*ContainerRegistryCleanup) ID() uint32 { return IDContainerRegistryCleanup }
+// ID ...
+func (*ContainerRegistryCleanup) ID() uint32 {
+	return IDContainerRegistryCleanup
+}
 
-// Marshal reads or writes ContainerRegistryCleanup using its canonical wire layout.
 func (pk *ContainerRegistryCleanup) Marshal(io protocol.IO) {
 	protocol.Slice(io, &pk.RemovedContainers)
 }

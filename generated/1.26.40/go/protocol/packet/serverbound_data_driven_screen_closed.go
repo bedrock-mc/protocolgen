@@ -11,10 +11,11 @@ type ServerboundDataDrivenScreenClosed struct {
 	CloseReason string
 }
 
-// ID returns the protocol ID for ServerboundDataDrivenScreenClosed.
-func (*ServerboundDataDrivenScreenClosed) ID() uint32 { return IDServerboundDataDrivenScreenClosed }
+// ID ...
+func (*ServerboundDataDrivenScreenClosed) ID() uint32 {
+	return IDServerboundDataDrivenScreenClosed
+}
 
-// Marshal reads or writes ServerboundDataDrivenScreenClosed using its canonical wire layout.
 func (pk *ServerboundDataDrivenScreenClosed) Marshal(io protocol.IO) {
 	io.Uint32(&pk.FormID)
 	io.String(&pk.CloseReason)

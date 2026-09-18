@@ -18,10 +18,11 @@ type PlayerAction struct {
 	Face          int32
 }
 
-// ID returns the protocol ID for PlayerAction.
-func (*PlayerAction) ID() uint32 { return IDPlayerAction }
+// ID ...
+func (*PlayerAction) ID() uint32 {
+	return IDPlayerAction
+}
 
-// Marshal reads or writes PlayerAction using its canonical wire layout.
 func (pk *PlayerAction) Marshal(io protocol.IO) {
 	io.ActorRuntimeID(&pk.PlayerRuntimeID)
 	pk.Action.Marshal(io)

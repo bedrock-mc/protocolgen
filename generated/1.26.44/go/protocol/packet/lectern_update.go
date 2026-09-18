@@ -18,10 +18,11 @@ type LecternUpdate struct {
 	PositionOfLecternToUpdate protocol.BlockPos
 }
 
-// ID returns the protocol ID for LecternUpdate.
-func (*LecternUpdate) ID() uint32 { return IDLecternUpdate }
+// ID ...
+func (*LecternUpdate) ID() uint32 {
+	return IDLecternUpdate
+}
 
-// Marshal reads or writes LecternUpdate using its canonical wire layout.
 func (pk *LecternUpdate) Marshal(io protocol.IO) {
 	io.Uint8(&pk.NewPageToShow)
 	io.Uint8(&pk.TotalPages)

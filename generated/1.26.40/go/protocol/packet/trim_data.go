@@ -17,10 +17,11 @@ type TrimData struct {
 	TrimMaterialList []protocol.TrimMaterial
 }
 
-// ID returns the protocol ID for TrimData.
-func (*TrimData) ID() uint32 { return IDTrimData }
+// ID ...
+func (*TrimData) ID() uint32 {
+	return IDTrimData
+}
 
-// Marshal reads or writes TrimData using its canonical wire layout.
 func (pk *TrimData) Marshal(io protocol.IO) {
 	protocol.Slice(io, &pk.TrimPatternList)
 	protocol.Slice(io, &pk.TrimMaterialList)

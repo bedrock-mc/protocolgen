@@ -18,10 +18,11 @@ type StructureTemplateDataResponse struct {
 	ResponseType protocol.StructureTemplateResponseType
 }
 
-// ID returns the protocol ID for StructureTemplateDataResponse.
-func (*StructureTemplateDataResponse) ID() uint32 { return IDStructureTemplateDataResponse }
+// ID ...
+func (*StructureTemplateDataResponse) ID() uint32 {
+	return IDStructureTemplateDataResponse
+}
 
-// Marshal reads or writes StructureTemplateDataResponse using its canonical wire layout.
 func (pk *StructureTemplateDataResponse) Marshal(io protocol.IO) {
 	io.String(&pk.StructureName)
 	io.NBT(&pk.StructureSNBT, protocol.NBTNetwork)

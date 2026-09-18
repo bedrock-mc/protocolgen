@@ -15,10 +15,11 @@ type SetPlayerGameType struct {
 	PlayerGameType protocol.GameType
 }
 
-// ID returns the protocol ID for SetPlayerGameType.
-func (*SetPlayerGameType) ID() uint32 { return IDSetPlayerGameType }
+// ID ...
+func (*SetPlayerGameType) ID() uint32 {
+	return IDSetPlayerGameType
+}
 
-// Marshal reads or writes SetPlayerGameType using its canonical wire layout.
 func (pk *SetPlayerGameType) Marshal(io protocol.IO) {
 	pk.PlayerGameType.Marshal(io)
 }

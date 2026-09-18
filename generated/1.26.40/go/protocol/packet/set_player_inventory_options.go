@@ -16,10 +16,11 @@ type SetPlayerInventoryOptions struct {
 	LayoutCraft       protocol.InventoryLayout
 }
 
-// ID returns the protocol ID for SetPlayerInventoryOptions.
-func (*SetPlayerInventoryOptions) ID() uint32 { return IDSetPlayerInventoryOptions }
+// ID ...
+func (*SetPlayerInventoryOptions) ID() uint32 {
+	return IDSetPlayerInventoryOptions
+}
 
-// Marshal reads or writes SetPlayerInventoryOptions using its canonical wire layout.
 func (pk *SetPlayerInventoryOptions) Marshal(io protocol.IO) {
 	pk.LeftInventoryTab.Marshal(io)
 	pk.RightInventoryTab.Marshal(io)

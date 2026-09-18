@@ -23,10 +23,11 @@ type GraphicsOverrideParameter struct {
 	ResetParameter         bool
 }
 
-// ID returns the protocol ID for GraphicsOverrideParameter.
-func (*GraphicsOverrideParameter) ID() uint32 { return IDGraphicsOverrideParameter }
+// ID ...
+func (*GraphicsOverrideParameter) ID() uint32 {
+	return IDGraphicsOverrideParameter
+}
 
-// Marshal reads or writes GraphicsOverrideParameter using its canonical wire layout.
 func (pk *GraphicsOverrideParameter) Marshal(io protocol.IO) {
 	protocol.OrderedMapLimits(io, &pk.ParameterKeyframeValues, io.Varuint32, 0, 255, io.Float32, io.Vec3)
 	protocol.OptionalFunc(io, &pk.FloatValue, io.Float32)

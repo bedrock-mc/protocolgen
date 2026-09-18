@@ -19,10 +19,11 @@ type CameraInstruction struct {
 	DetachFromEntity protocol.Optional[bool]
 }
 
-// ID returns the protocol ID for CameraInstruction.
-func (*CameraInstruction) ID() uint32 { return IDCameraInstruction }
+// ID ...
+func (*CameraInstruction) ID() uint32 {
+	return IDCameraInstruction
+}
 
-// Marshal reads or writes CameraInstruction using its canonical wire layout.
 func (pk *CameraInstruction) Marshal(io protocol.IO) {
 	protocol.OptionalMarshaler(io, &pk.Set)
 	protocol.OptionalFunc(io, &pk.Clear, io.Bool)

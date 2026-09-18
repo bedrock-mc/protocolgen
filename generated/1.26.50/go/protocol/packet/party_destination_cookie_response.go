@@ -15,10 +15,11 @@ type PartyDestinationCookieResponse struct {
 	Accepted bool
 }
 
-// ID returns the protocol ID for PartyDestinationCookieResponse.
-func (*PartyDestinationCookieResponse) ID() uint32 { return IDPartyDestinationCookieResponse }
+// ID ...
+func (*PartyDestinationCookieResponse) ID() uint32 {
+	return IDPartyDestinationCookieResponse
+}
 
-// Marshal reads or writes PartyDestinationCookieResponse using its canonical wire layout.
 func (pk *PartyDestinationCookieResponse) Marshal(io protocol.IO) {
 	io.StringLimits(&pk.Cookie, 0, 2048)
 	io.Bool(&pk.Accepted)

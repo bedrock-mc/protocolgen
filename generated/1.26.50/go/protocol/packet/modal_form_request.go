@@ -15,10 +15,11 @@ type ModalFormRequest struct {
 	FormUIJSON string
 }
 
-// ID returns the protocol ID for ModalFormRequest.
-func (*ModalFormRequest) ID() uint32 { return IDModalFormRequest }
+// ID ...
+func (*ModalFormRequest) ID() uint32 {
+	return IDModalFormRequest
+}
 
-// Marshal reads or writes ModalFormRequest using its canonical wire layout.
 func (pk *ModalFormRequest) Marshal(io protocol.IO) {
 	io.Varuint32(&pk.FormID)
 	io.String(&pk.FormUIJSON)

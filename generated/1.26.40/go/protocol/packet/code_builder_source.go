@@ -18,10 +18,11 @@ type CodeBuilderSource struct {
 	CodeStatus protocol.CodeBuilderExecutionStateCodeStatus
 }
 
-// ID returns the protocol ID for CodeBuilderSource.
-func (*CodeBuilderSource) ID() uint32 { return IDCodeBuilderSource }
+// ID ...
+func (*CodeBuilderSource) ID() uint32 {
+	return IDCodeBuilderSource
+}
 
-// Marshal reads or writes CodeBuilderSource using its canonical wire layout.
 func (pk *CodeBuilderSource) Marshal(io protocol.IO) {
 	pk.Operation.Marshal(io)
 	pk.Category.Marshal(io)

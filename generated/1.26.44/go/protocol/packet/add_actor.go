@@ -13,7 +13,9 @@ import (
 type AddActor struct {
 	TargetActorID   int64
 	TargetRuntimeID uint64
-	ActorType       string
+	// EntityType is the string entity type of the entity, for example 'minecraft:skeleton'. A list of these
+	// entities may be found online.
+	ActorType string
 	// Position is the position to spawn the entity on. If the entity is on a distance that the player cannot see
 	// it, the entity will still show up if the player moves closer.
 	Position mgl32.Vec3
@@ -26,13 +28,17 @@ type AddActor struct {
 	AttributesList    []protocol.SyncedAttribute
 	ActorData         protocol.SynchedActorDataCopyableDataList
 	SynchedProperties protocol.PropertySyncData
-	ActorLinks        []protocol.EntityLink
+	// EntityLinks is a list of entity links that are currently active on the entity. These links alter the way
+	// the entity shows up when first spawned in terms of it shown as riding an entity. Setting these links is
+	// important for new viewers to see the entity is riding another entity.
+	ActorLinks []protocol.EntityLink
 }
 
-// ID returns the protocol ID for AddActor.
-func (*AddActor) ID() uint32 { return IDAddActor }
+// ID ...
+func (*AddActor) ID() uint32 {
+	return IDAddActor
+}
 
-// Marshal reads or writes AddActor using its canonical wire layout.
 func (pk *AddActor) Marshal(io protocol.IO) {
 	io.ActorUniqueID(&pk.TargetActorID)
 	io.ActorRuntimeID(&pk.TargetRuntimeID)

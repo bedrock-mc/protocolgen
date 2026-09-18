@@ -10,6 +10,8 @@ import (
 // much space as possible, by only writing non-zero fields. As of 1.16.100, this packet no longer actually
 // contains any deltas.
 type MoveActorDelta struct {
+	// EntityRuntimeID is the runtime ID of the entity that is being moved. The packet works provided a non-player
+	// entity with this runtime ID is present.
 	ActorRuntimeID uint64
 	NewPositionX   protocol.Optional[float32]
 	NewPositionY   protocol.Optional[float32]
@@ -29,10 +31,11 @@ type MoveActorDelta struct {
 	ForceCompletion bool
 }
 
-// ID returns the protocol ID for MoveActorDelta.
-func (*MoveActorDelta) ID() uint32 { return IDMoveActorDelta }
+// ID ...
+func (*MoveActorDelta) ID() uint32 {
+	return IDMoveActorDelta
+}
 
-// Marshal reads or writes MoveActorDelta using its canonical wire layout.
 func (pk *MoveActorDelta) Marshal(io protocol.IO) {
 	io.ActorRuntimeID(&pk.ActorRuntimeID)
 	protocol.OptionalFunc(io, &pk.NewPositionX, io.Float32)

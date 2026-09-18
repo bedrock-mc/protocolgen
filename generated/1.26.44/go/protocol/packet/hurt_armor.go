@@ -20,10 +20,11 @@ type HurtArmor struct {
 	ArmorSlots uint64
 }
 
-// ID returns the protocol ID for HurtArmor.
-func (*HurtArmor) ID() uint32 { return IDHurtArmor }
+// ID ...
+func (*HurtArmor) ID() uint32 {
+	return IDHurtArmor
+}
 
-// Marshal reads or writes HurtArmor using its canonical wire layout.
 func (pk *HurtArmor) Marshal(io protocol.IO) {
 	io.Varint32(&pk.Cause)
 	io.Varint32(&pk.Damage)

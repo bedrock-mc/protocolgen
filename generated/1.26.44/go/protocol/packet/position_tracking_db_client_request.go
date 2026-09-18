@@ -16,10 +16,11 @@ type PositionTrackingDBClientRequest struct {
 	IDValue protocol.PositionTrackingID
 }
 
-// ID returns the protocol ID for PositionTrackingDBClientRequest.
-func (*PositionTrackingDBClientRequest) ID() uint32 { return IDPositionTrackingDBClientRequest }
+// ID ...
+func (*PositionTrackingDBClientRequest) ID() uint32 {
+	return IDPositionTrackingDBClientRequest
+}
 
-// Marshal reads or writes PositionTrackingDBClientRequest using its canonical wire layout.
 func (pk *PositionTrackingDBClientRequest) Marshal(io protocol.IO) {
 	pk.Action.Marshal(io)
 	pk.IDValue.Marshal(io)

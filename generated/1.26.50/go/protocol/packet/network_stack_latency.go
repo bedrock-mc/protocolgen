@@ -15,10 +15,11 @@ type NetworkStackLatency struct {
 	IsFromServer bool
 }
 
-// ID returns the protocol ID for NetworkStackLatency.
-func (*NetworkStackLatency) ID() uint32 { return IDNetworkStackLatency }
+// ID ...
+func (*NetworkStackLatency) ID() uint32 {
+	return IDNetworkStackLatency
+}
 
-// Marshal reads or writes NetworkStackLatency using its canonical wire layout.
 func (pk *NetworkStackLatency) Marshal(io protocol.IO) {
 	io.Uint64(&pk.CreationTime)
 	io.Bool(&pk.IsFromServer)

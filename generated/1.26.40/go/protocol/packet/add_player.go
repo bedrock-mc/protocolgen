@@ -44,10 +44,11 @@ type AddPlayer struct {
 	BuildPlatform protocol.BuildPlatform
 }
 
-// ID returns the protocol ID for AddPlayer.
-func (*AddPlayer) ID() uint32 { return IDAddPlayer }
+// ID ...
+func (*AddPlayer) ID() uint32 {
+	return IDAddPlayer
+}
 
-// Marshal reads or writes AddPlayer using its canonical wire layout.
 func (pk *AddPlayer) Marshal(io protocol.IO) {
 	io.UUID(&pk.UUID)
 	io.String(&pk.PlayerName)

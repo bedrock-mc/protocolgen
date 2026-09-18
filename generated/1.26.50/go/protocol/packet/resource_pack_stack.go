@@ -24,10 +24,11 @@ type ResourcePackStack struct {
 	IncludeEditorPacks bool
 }
 
-// ID returns the protocol ID for ResourcePackStack.
-func (*ResourcePackStack) ID() uint32 { return IDResourcePackStack }
+// ID ...
+func (*ResourcePackStack) ID() uint32 {
+	return IDResourcePackStack
+}
 
-// Marshal reads or writes ResourcePackStack using its canonical wire layout.
 func (pk *ResourcePackStack) Marshal(io protocol.IO) {
 	io.Bool(&pk.TexturePackRequired)
 	protocol.SliceLimits(io, &pk.TexturePackList, 0, 65535)

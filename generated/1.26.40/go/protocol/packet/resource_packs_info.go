@@ -22,10 +22,11 @@ type ResourcePacksInfo struct {
 	ResourcePacks              []protocol.PackInfoData
 }
 
-// ID returns the protocol ID for ResourcePacksInfo.
-func (*ResourcePacksInfo) ID() uint32 { return IDResourcePacksInfo }
+// ID ...
+func (*ResourcePacksInfo) ID() uint32 {
+	return IDResourcePacksInfo
+}
 
-// Marshal reads or writes ResourcePacksInfo using its canonical wire layout.
 func (pk *ResourcePacksInfo) Marshal(io protocol.IO) {
 	io.Bool(&pk.ResourcePackRequired)
 	io.Bool(&pk.HasAddonPacks)

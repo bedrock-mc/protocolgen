@@ -17,10 +17,11 @@ type BiomeDefinitionList struct {
 	StringList protocol.BiomeStringList
 }
 
-// ID returns the protocol ID for BiomeDefinitionList.
-func (*BiomeDefinitionList) ID() uint32 { return IDBiomeDefinitionList }
+// ID ...
+func (*BiomeDefinitionList) ID() uint32 {
+	return IDBiomeDefinitionList
+}
 
-// Marshal reads or writes BiomeDefinitionList using its canonical wire layout.
 func (pk *BiomeDefinitionList) Marshal(io protocol.IO) {
 	protocol.OrderedMap(io, &pk.MapOfBiomeNamesToData, io.Varuint32, io.Uint16, func(value *protocol.BiomeDefinitionData) {
 		value.Marshal(io)

@@ -18,10 +18,11 @@ type MovementEffect struct {
 	Tick uint64
 }
 
-// ID returns the protocol ID for MovementEffect.
-func (*MovementEffect) ID() uint32 { return IDMovementEffect }
+// ID ...
+func (*MovementEffect) ID() uint32 {
+	return IDMovementEffect
+}
 
-// Marshal reads or writes MovementEffect using its canonical wire layout.
 func (pk *MovementEffect) Marshal(io protocol.IO) {
 	io.ActorRuntimeID(&pk.TargetRuntimeID)
 	pk.EffectID.Marshal(io)

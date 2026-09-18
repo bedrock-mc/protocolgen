@@ -21,10 +21,11 @@ type UpdateEquip struct {
 	Data           []byte
 }
 
-// ID returns the protocol ID for UpdateEquip.
-func (*UpdateEquip) ID() uint32 { return IDUpdateEquip }
+// ID ...
+func (*UpdateEquip) ID() uint32 {
+	return IDUpdateEquip
+}
 
-// Marshal reads or writes UpdateEquip using its canonical wire layout.
 func (pk *UpdateEquip) Marshal(io protocol.IO) {
 	io.Uint8(&pk.ContainerID)
 	io.Uint8(&pk.Type)

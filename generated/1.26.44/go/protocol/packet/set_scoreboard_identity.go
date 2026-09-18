@@ -20,10 +20,11 @@ type SetScoreboardIdentity struct {
 	ScoreboardIdentityInfo []protocol.ScoreboardIdentityPacketInfo
 }
 
-// ID returns the protocol ID for SetScoreboardIdentity.
-func (*SetScoreboardIdentity) ID() uint32 { return IDSetScoreboardIdentity }
+// ID ...
+func (*SetScoreboardIdentity) ID() uint32 {
+	return IDSetScoreboardIdentity
+}
 
-// Marshal reads or writes SetScoreboardIdentity using its canonical wire layout.
 func (pk *SetScoreboardIdentity) Marshal(io protocol.IO) {
 	pk.ScoreboardIdentityPacketType.Marshal(io)
 	protocol.Slice(io, &pk.ScoreboardIdentityInfo)

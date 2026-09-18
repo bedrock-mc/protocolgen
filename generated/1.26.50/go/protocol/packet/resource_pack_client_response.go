@@ -14,10 +14,11 @@ type ResourcePackClientResponse struct {
 	Response protocol.ResourcePackClientResponseData
 }
 
-// ID returns the protocol ID for ResourcePackClientResponse.
-func (*ResourcePackClientResponse) ID() uint32 { return IDResourcePackClientResponse }
+// ID ...
+func (*ResourcePackClientResponse) ID() uint32 {
+	return IDResourcePackClientResponse
+}
 
-// Marshal reads or writes ResourcePackClientResponse using its canonical wire layout.
 func (pk *ResourcePackClientResponse) Marshal(io protocol.IO) {
 	protocol.MarshalResourcePackClientResponseData(io, &pk.Response)
 }

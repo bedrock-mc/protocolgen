@@ -28,10 +28,11 @@ type PlaySound struct {
 	ServerSoundHandle protocol.Optional[protocol.ServerSoundHandle]
 }
 
-// ID returns the protocol ID for PlaySound.
-func (*PlaySound) ID() uint32 { return IDPlaySound }
+// ID ...
+func (*PlaySound) ID() uint32 {
+	return IDPlaySound
+}
 
-// Marshal reads or writes PlaySound using its canonical wire layout.
 func (pk *PlaySound) Marshal(io protocol.IO) {
 	io.String(&pk.Name)
 	pk.Position.Marshal(io)

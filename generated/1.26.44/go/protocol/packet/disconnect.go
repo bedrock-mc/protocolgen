@@ -15,10 +15,11 @@ type Disconnect struct {
 	Messages protocol.DisconnectMessages
 }
 
-// ID returns the protocol ID for Disconnect.
-func (*Disconnect) ID() uint32 { return IDDisconnect }
+// ID ...
+func (*Disconnect) ID() uint32 {
+	return IDDisconnect
+}
 
-// Marshal reads or writes Disconnect using its canonical wire layout.
 func (pk *Disconnect) Marshal(io protocol.IO) {
 	pk.Reason.Marshal(io)
 	protocol.MarshalDisconnectMessages(io, &pk.Messages)

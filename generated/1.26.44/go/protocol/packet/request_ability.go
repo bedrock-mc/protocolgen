@@ -17,10 +17,11 @@ type RequestAbility struct {
 	Float     float32
 }
 
-// ID returns the protocol ID for RequestAbility.
-func (*RequestAbility) ID() uint32 { return IDRequestAbility }
+// ID ...
+func (*RequestAbility) ID() uint32 {
+	return IDRequestAbility
+}
 
-// Marshal reads or writes RequestAbility using its canonical wire layout.
 func (pk *RequestAbility) Marshal(io protocol.IO) {
 	io.Varint32(&pk.Ability)
 	protocol.Minimum(io, &pk.Ability, 0)

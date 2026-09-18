@@ -18,10 +18,11 @@ type Animate struct {
 	SwingSource protocol.Optional[string]
 }
 
-// ID returns the protocol ID for Animate.
-func (*Animate) ID() uint32 { return IDAnimate }
+// ID ...
+func (*Animate) ID() uint32 {
+	return IDAnimate
+}
 
-// Marshal reads or writes Animate using its canonical wire layout.
 func (pk *Animate) Marshal(io protocol.IO) {
 	pk.Action.Marshal(io)
 	io.ActorRuntimeID(&pk.TargetActorRuntimeID)

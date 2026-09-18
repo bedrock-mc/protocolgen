@@ -16,10 +16,11 @@ type SendPartyDestinationCookie struct {
 	DestinationName string
 }
 
-// ID returns the protocol ID for SendPartyDestinationCookie.
-func (*SendPartyDestinationCookie) ID() uint32 { return IDSendPartyDestinationCookie }
+// ID ...
+func (*SendPartyDestinationCookie) ID() uint32 {
+	return IDSendPartyDestinationCookie
+}
 
-// Marshal reads or writes SendPartyDestinationCookie using its canonical wire layout.
 func (pk *SendPartyDestinationCookie) Marshal(io protocol.IO) {
 	io.StringLimits(&pk.Cookie, 0, 2048)
 	io.String(&pk.Intent)

@@ -17,10 +17,11 @@ type ShowCredits struct {
 	CreditsState int32
 }
 
-// ID returns the protocol ID for ShowCredits.
-func (*ShowCredits) ID() uint32 { return IDShowCredits }
+// ID ...
+func (*ShowCredits) ID() uint32 {
+	return IDShowCredits
+}
 
-// Marshal reads or writes ShowCredits using its canonical wire layout.
 func (pk *ShowCredits) Marshal(io protocol.IO) {
 	io.ActorRuntimeID(&pk.PlayerRuntimeID)
 	io.Varint32(&pk.CreditsState)

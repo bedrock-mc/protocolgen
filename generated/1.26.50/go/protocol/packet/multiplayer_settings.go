@@ -10,10 +10,11 @@ type MultiplayerSettings struct {
 	PacketType protocol.MultiplayerSettingsType
 }
 
-// ID returns the protocol ID for MultiplayerSettings.
-func (*MultiplayerSettings) ID() uint32 { return IDMultiplayerSettings }
+// ID ...
+func (*MultiplayerSettings) ID() uint32 {
+	return IDMultiplayerSettings
+}
 
-// Marshal reads or writes MultiplayerSettings using its canonical wire layout.
 func (pk *MultiplayerSettings) Marshal(io protocol.IO) {
 	pk.PacketType.Marshal(io)
 }

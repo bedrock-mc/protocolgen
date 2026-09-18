@@ -15,10 +15,11 @@ type LevelEventGeneric struct {
 	CTD     []byte
 }
 
-// ID returns the protocol ID for LevelEventGeneric.
-func (*LevelEventGeneric) ID() uint32 { return IDLevelEventGeneric }
+// ID ...
+func (*LevelEventGeneric) ID() uint32 {
+	return IDLevelEventGeneric
+}
 
-// Marshal reads or writes LevelEventGeneric using its canonical wire layout.
 func (pk *LevelEventGeneric) Marshal(io protocol.IO) {
 	io.Varint32(&pk.EventID)
 	io.NBT(&pk.CTD, protocol.NBTNetwork)

@@ -12,10 +12,11 @@ type ClientboundDataDrivenUIShowScreen struct {
 	DataInstanceID protocol.Optional[uint32]
 }
 
-// ID returns the protocol ID for ClientboundDataDrivenUIShowScreen.
-func (*ClientboundDataDrivenUIShowScreen) ID() uint32 { return IDClientboundDataDrivenUIShowScreen }
+// ID ...
+func (*ClientboundDataDrivenUIShowScreen) ID() uint32 {
+	return IDClientboundDataDrivenUIShowScreen
+}
 
-// Marshal reads or writes ClientboundDataDrivenUIShowScreen using its canonical wire layout.
 func (pk *ClientboundDataDrivenUIShowScreen) Marshal(io protocol.IO) {
 	io.StringLimits(&pk.ScreenID, 0, 500)
 	io.Uint32(&pk.FormID)

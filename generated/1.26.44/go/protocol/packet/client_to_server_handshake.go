@@ -12,9 +12,10 @@ import (
 type ClientToServerHandshake struct {
 }
 
-// ID returns the protocol ID for ClientToServerHandshake.
-func (*ClientToServerHandshake) ID() uint32 { return IDClientToServerHandshake }
+// ID ...
+func (*ClientToServerHandshake) ID() uint32 {
+	return IDClientToServerHandshake
+}
 
-// Marshal reads or writes ClientToServerHandshake using its canonical wire layout.
 func (pk *ClientToServerHandshake) Marshal(io protocol.IO) {
 }

@@ -17,10 +17,11 @@ type ContainerClose struct {
 	ServerInitiatedClose bool
 }
 
-// ID returns the protocol ID for ContainerClose.
-func (*ContainerClose) ID() uint32 { return IDContainerClose }
+// ID ...
+func (*ContainerClose) ID() uint32 {
+	return IDContainerClose
+}
 
-// Marshal reads or writes ContainerClose using its canonical wire layout.
 func (pk *ContainerClose) Marshal(io protocol.IO) {
 	io.Uint8(&pk.ContainerID)
 	io.Uint8(&pk.ContainerType)

@@ -11,10 +11,11 @@ type JigsawStructureData struct {
 	JigsawStructureDataTag []byte
 }
 
-// ID returns the protocol ID for JigsawStructureData.
-func (*JigsawStructureData) ID() uint32 { return IDJigsawStructureData }
+// ID ...
+func (*JigsawStructureData) ID() uint32 {
+	return IDJigsawStructureData
+}
 
-// Marshal reads or writes JigsawStructureData using its canonical wire layout.
 func (pk *JigsawStructureData) Marshal(io protocol.IO) {
 	io.NBT(&pk.JigsawStructureDataTag, protocol.NBTNetwork)
 }

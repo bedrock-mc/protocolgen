@@ -15,10 +15,11 @@ type ChunkRadiusUpdated struct {
 	ChunkRadius int32
 }
 
-// ID returns the protocol ID for ChunkRadiusUpdated.
-func (*ChunkRadiusUpdated) ID() uint32 { return IDChunkRadiusUpdated }
+// ID ...
+func (*ChunkRadiusUpdated) ID() uint32 {
+	return IDChunkRadiusUpdated
+}
 
-// Marshal reads or writes ChunkRadiusUpdated using its canonical wire layout.
 func (pk *ChunkRadiusUpdated) Marshal(io protocol.IO) {
 	io.Varint32(&pk.ChunkRadius)
 }

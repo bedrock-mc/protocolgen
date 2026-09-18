@@ -14,10 +14,11 @@ type CurrentStructureFeature struct {
 	CurrentStructureFeature string
 }
 
-// ID returns the protocol ID for CurrentStructureFeature.
-func (*CurrentStructureFeature) ID() uint32 { return IDCurrentStructureFeature }
+// ID ...
+func (*CurrentStructureFeature) ID() uint32 {
+	return IDCurrentStructureFeature
+}
 
-// Marshal reads or writes CurrentStructureFeature using its canonical wire layout.
 func (pk *CurrentStructureFeature) Marshal(io protocol.IO) {
 	io.String(&pk.CurrentStructureFeature)
 }

@@ -15,10 +15,11 @@ type EditorNetwork struct {
 	Payload []byte
 }
 
-// ID returns the protocol ID for EditorNetwork.
-func (*EditorNetwork) ID() uint32 { return IDEditorNetwork }
+// ID ...
+func (*EditorNetwork) ID() uint32 {
+	return IDEditorNetwork
+}
 
-// Marshal reads or writes EditorNetwork using its canonical wire layout.
 func (pk *EditorNetwork) Marshal(io protocol.IO) {
 	io.Bool(&pk.RouteToManager)
 	io.NBT(&pk.Payload, protocol.NBTNetwork)

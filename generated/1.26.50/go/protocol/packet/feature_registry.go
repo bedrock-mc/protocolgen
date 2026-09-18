@@ -15,10 +15,11 @@ type FeatureRegistry struct {
 	FeaturesDataList []protocol.FeatureRegistryFeatureBinaryJSONFormat
 }
 
-// ID returns the protocol ID for FeatureRegistry.
-func (*FeatureRegistry) ID() uint32 { return IDFeatureRegistry }
+// ID ...
+func (*FeatureRegistry) ID() uint32 {
+	return IDFeatureRegistry
+}
 
-// Marshal reads or writes FeatureRegistry using its canonical wire layout.
 func (pk *FeatureRegistry) Marshal(io protocol.IO) {
 	protocol.Slice(io, &pk.FeaturesDataList)
 }

@@ -21,10 +21,11 @@ type LabTable struct {
 	Reaction protocol.LabTableReactionType
 }
 
-// ID returns the protocol ID for LabTable.
-func (*LabTable) ID() uint32 { return IDLabTable }
+// ID ...
+func (*LabTable) ID() uint32 {
+	return IDLabTable
+}
 
-// Marshal reads or writes LabTable using its canonical wire layout.
 func (pk *LabTable) Marshal(io protocol.IO) {
 	pk.Type.Marshal(io)
 	pk.Position.Marshal(io)

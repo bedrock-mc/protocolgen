@@ -20,10 +20,11 @@ type ActorEvent struct {
 	FireAtPosition protocol.Optional[mgl32.Vec3]
 }
 
-// ID returns the protocol ID for ActorEvent.
-func (*ActorEvent) ID() uint32 { return IDActorEvent }
+// ID ...
+func (*ActorEvent) ID() uint32 {
+	return IDActorEvent
+}
 
-// Marshal reads or writes ActorEvent using its canonical wire layout.
 func (pk *ActorEvent) Marshal(io protocol.IO) {
 	io.ActorRuntimeID(&pk.TargetRuntimeID)
 	pk.EventID.Marshal(io)

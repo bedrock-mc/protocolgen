@@ -13,10 +13,11 @@ type SetDifficulty struct {
 	Difficulty uint32
 }
 
-// ID returns the protocol ID for SetDifficulty.
-func (*SetDifficulty) ID() uint32 { return IDSetDifficulty }
+// ID ...
+func (*SetDifficulty) ID() uint32 {
+	return IDSetDifficulty
+}
 
-// Marshal reads or writes SetDifficulty using its canonical wire layout.
 func (pk *SetDifficulty) Marshal(io protocol.IO) {
 	io.Varuint32(&pk.Difficulty)
 }

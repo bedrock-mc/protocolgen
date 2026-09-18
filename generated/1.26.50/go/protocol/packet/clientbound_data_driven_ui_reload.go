@@ -9,9 +9,10 @@ import (
 type ClientboundDataDrivenUIReload struct {
 }
 
-// ID returns the protocol ID for ClientboundDataDrivenUIReload.
-func (*ClientboundDataDrivenUIReload) ID() uint32 { return IDClientboundDataDrivenUIReload }
+// ID ...
+func (*ClientboundDataDrivenUIReload) ID() uint32 {
+	return IDClientboundDataDrivenUIReload
+}
 
-// Marshal reads or writes ClientboundDataDrivenUIReload using its canonical wire layout.
 func (pk *ClientboundDataDrivenUIReload) Marshal(io protocol.IO) {
 }

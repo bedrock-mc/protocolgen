@@ -19,10 +19,11 @@ type ContainerOpen struct {
 	TargetActorID int64
 }
 
-// ID returns the protocol ID for ContainerOpen.
-func (*ContainerOpen) ID() uint32 { return IDContainerOpen }
+// ID ...
+func (*ContainerOpen) ID() uint32 {
+	return IDContainerOpen
+}
 
-// Marshal reads or writes ContainerOpen using its canonical wire layout.
 func (pk *ContainerOpen) Marshal(io protocol.IO) {
 	io.Uint8(&pk.ContainerID)
 	io.Uint8(&pk.ContainerType)

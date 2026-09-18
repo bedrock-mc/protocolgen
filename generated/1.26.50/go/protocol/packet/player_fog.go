@@ -14,10 +14,11 @@ type PlayerFog struct {
 	FogStack []string
 }
 
-// ID returns the protocol ID for PlayerFog.
-func (*PlayerFog) ID() uint32 { return IDPlayerFog }
+// ID ...
+func (*PlayerFog) ID() uint32 {
+	return IDPlayerFog
+}
 
-// Marshal reads or writes PlayerFog using its canonical wire layout.
 func (pk *PlayerFog) Marshal(io protocol.IO) {
 	protocol.FuncSlice(io, &pk.FogStack, io.Varuint32, io.String)
 }

@@ -15,10 +15,11 @@ type SetSpawnPosition struct {
 	SpawnBlockPos     protocol.BlockPos
 }
 
-// ID returns the protocol ID for SetSpawnPosition.
-func (*SetSpawnPosition) ID() uint32 { return IDSetSpawnPosition }
+// ID ...
+func (*SetSpawnPosition) ID() uint32 {
+	return IDSetSpawnPosition
+}
 
-// Marshal reads or writes SetSpawnPosition using its canonical wire layout.
 func (pk *SetSpawnPosition) Marshal(io protocol.IO) {
 	pk.SpawnPositionType.Marshal(io)
 	pk.BlockPosition.Marshal(io)

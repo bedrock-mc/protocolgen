@@ -14,10 +14,11 @@ type PlayerLocation struct {
 	Location      protocol.PlayerLocationData
 }
 
-// ID returns the protocol ID for PlayerLocation.
-func (*PlayerLocation) ID() uint32 { return IDPlayerLocation }
+// ID ...
+func (*PlayerLocation) ID() uint32 {
+	return IDPlayerLocation
+}
 
-// Marshal reads or writes PlayerLocation using its canonical wire layout.
 func (pk *PlayerLocation) Marshal(io protocol.IO) {
 	io.ActorUniqueID(&pk.TargetActorID)
 	protocol.MarshalPlayerLocationData(io, &pk.Location)

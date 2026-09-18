@@ -23,10 +23,11 @@ type LevelChunk struct {
 	SerializedChunkData []byte
 }
 
-// ID returns the protocol ID for LevelChunk.
-func (*LevelChunk) ID() uint32 { return IDLevelChunk }
+// ID ...
+func (*LevelChunk) ID() uint32 {
+	return IDLevelChunk
+}
 
-// Marshal reads or writes LevelChunk using its canonical wire layout.
 func (pk *LevelChunk) Marshal(io protocol.IO) {
 	pk.ChunkPosition.Marshal(io)
 	pk.DimensionID.Marshal(io)

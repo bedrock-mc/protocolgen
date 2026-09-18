@@ -19,10 +19,11 @@ type BlockEvent struct {
 	EventValue int32
 }
 
-// ID returns the protocol ID for BlockEvent.
-func (*BlockEvent) ID() uint32 { return IDBlockEvent }
+// ID ...
+func (*BlockEvent) ID() uint32 {
+	return IDBlockEvent
+}
 
-// Marshal reads or writes BlockEvent using its canonical wire layout.
 func (pk *BlockEvent) Marshal(io protocol.IO) {
 	pk.BlockPosition.Marshal(io)
 	io.Varint32(&pk.EventType)

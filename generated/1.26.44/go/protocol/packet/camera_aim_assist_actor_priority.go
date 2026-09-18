@@ -12,10 +12,11 @@ type CameraAimAssistActorPriority struct {
 	CameraAimAssistActorPriorityList []protocol.CameraAimAssistActorPriorityData
 }
 
-// ID returns the protocol ID for CameraAimAssistActorPriority.
-func (*CameraAimAssistActorPriority) ID() uint32 { return IDCameraAimAssistActorPriority }
+// ID ...
+func (*CameraAimAssistActorPriority) ID() uint32 {
+	return IDCameraAimAssistActorPriority
+}
 
-// Marshal reads or writes CameraAimAssistActorPriority using its canonical wire layout.
 func (pk *CameraAimAssistActorPriority) Marshal(io protocol.IO) {
 	protocol.Slice(io, &pk.CameraAimAssistActorPriorityList)
 }

@@ -19,10 +19,11 @@ type PositionTrackingDBServerBroadcast struct {
 	PositionTrackingData []byte
 }
 
-// ID returns the protocol ID for PositionTrackingDBServerBroadcast.
-func (*PositionTrackingDBServerBroadcast) ID() uint32 { return IDPositionTrackingDBServerBroadcast }
+// ID ...
+func (*PositionTrackingDBServerBroadcast) ID() uint32 {
+	return IDPositionTrackingDBServerBroadcast
+}
 
-// Marshal reads or writes PositionTrackingDBServerBroadcast using its canonical wire layout.
 func (pk *PositionTrackingDBServerBroadcast) Marshal(io protocol.IO) {
 	pk.Action.Marshal(io)
 	pk.IDValue.Marshal(io)

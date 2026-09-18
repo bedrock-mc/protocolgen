@@ -22,10 +22,11 @@ type CameraShake struct {
 	ShakeAction protocol.CameraShakeAction
 }
 
-// ID returns the protocol ID for CameraShake.
-func (*CameraShake) ID() uint32 { return IDCameraShake }
+// ID ...
+func (*CameraShake) ID() uint32 {
+	return IDCameraShake
+}
 
-// Marshal reads or writes CameraShake using its canonical wire layout.
 func (pk *CameraShake) Marshal(io protocol.IO) {
 	io.Float32(&pk.Intensity)
 	io.Float32(&pk.Seconds)

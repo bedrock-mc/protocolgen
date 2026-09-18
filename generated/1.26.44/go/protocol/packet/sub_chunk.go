@@ -15,10 +15,11 @@ type SubChunk struct {
 	SubChunkData  []protocol.SubChunkData
 }
 
-// ID returns the protocol ID for SubChunk.
-func (*SubChunk) ID() uint32 { return IDSubChunk }
+// ID ...
+func (*SubChunk) ID() uint32 {
+	return IDSubChunk
+}
 
-// Marshal reads or writes SubChunk using its canonical wire layout.
 func (pk *SubChunk) Marshal(io protocol.IO) {
 	io.Bool(&pk.CacheEnabled)
 	pk.DimensionType.Marshal(io)
