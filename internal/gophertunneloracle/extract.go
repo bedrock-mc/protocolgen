@@ -62,6 +62,7 @@ type extractor struct {
 	functions   map[string]*marshalInfo
 	ioHelpers   map[string]*marshalInfo
 	consts      map[string]int
+	recursion   map[string]int // re-entries per local helper, bounded by recursionUnroll
 	diagnostics []diagnostic
 	packet      string
 	revision    string
@@ -75,6 +76,7 @@ var sourcePrimitive = map[string]string{
 	"Uint32":                  "u32le",
 	"Int32":                   "i32le",
 	"BEInt32":                 "i32be",
+	"BEARGB":                  "argb32", // channel-swapped big-endian write; same bytes as a little-endian ARGB int
 	"Uint64":                  "u64le",
 	"Int64":                   "i64le",
 	"Float32":                 "f32le",
@@ -123,7 +125,6 @@ var sourceArrayPrefixes = map[string]string{
 // the source revision used by the lock file.
 var reviewedIOHelpers = map[string]bool{
 	"AbilityValue":          true,
-	"BEARGB":                true,
 	"EntityMetadata":        true,
 	"EventOrdinal":          true,
 	"EventType":             true,
@@ -270,6 +271,7 @@ func ExtractAtRevision(root, revision string) (extraction, error) {
 		functions: map[string]*marshalInfo{},
 		ioHelpers: map[string]*marshalInfo{},
 		consts:    map[string]int{},
+		recursion: map[string]int{},
 		revision:  revision,
 	}
 	if err := e.load(); err != nil {
@@ -292,7 +294,7 @@ func ExtractAtRevision(root, revision string) (extraction, error) {
 		}
 		e.packet = shortType(key)
 		ops := e.expandType(key, e.packet, 0, map[string]bool{})
-		packets = append(packets, sourcePacket{ID: uint32(id), Name: e.packet, Operations: ops, Paths: expandSourcePaths(ops)})
+		packets = append(packets, sourcePacket{ID: uint32(id), Name: e.packet, Operations: ops})
 	}
 	sort.Slice(packets, func(i, j int) bool {
 		if packets[i].ID != packets[j].ID {
@@ -649,7 +651,7 @@ func cloneBoolMap(input map[string]bool) map[string]bool {
 
 func (e *extractor) extractBlock(stmts []ast.Stmt, method *marshalInfo, env map[string]typeRef, base string, depth int, stack map[string]bool) []sourceOperation {
 	var result []sourceOperation
-	for _, stmt := range stmts {
+	for index, stmt := range stmts {
 		switch current := stmt.(type) {
 		case *ast.ExprStmt:
 			if call, ok := current.X.(*ast.CallExpr); ok {
@@ -699,7 +701,12 @@ func (e *extractor) extractBlock(stmts []ast.Stmt, method *marshalInfo, env map[
 				}
 			}
 		case *ast.IfStmt:
-			if e.statementHasWire(current, method.IO, method.Key) {
+			returns := endsWithReturn(current.Body)
+			if returns && isInvalidInputSink(current.Body) {
+				// Rejecting bad input is not a wire path; the block continues.
+				continue
+			}
+			if e.statementHasWire(current, method.IO, method.Key) || returns && e.statementsHaveWire(stmts[index+1:], method) {
 				thenOps := e.extractBlock(current.Body.List, method, cloneTypeEnv(env), base, depth+1, stack)
 				elseOps := []sourceOperation(nil)
 				switch alternate := current.Else.(type) {
@@ -708,10 +715,18 @@ func (e *extractor) extractBlock(stmts []ast.Stmt, method *marshalInfo, env map[
 				case *ast.IfStmt:
 					elseOps = e.extractBlock([]ast.Stmt{alternate}, method, cloneTypeEnv(env), base, depth+1, stack)
 				}
+				if returns {
+					// The body leaves the function, so the rest of this block is
+					// the else path.
+					elseOps = append(elseOps, e.extractBlock(stmts[index+1:], method, env, base, depth, stack)...)
+				}
 				condition := e.conditionVariant(current.Cond, method, env, base)
 				result = append(result, sourceOperation{Kind: "conditional", Field: base, CompareTo: condition.CompareTo, Predicate: condition.Predicate, Variants: []sourceVariant{{
-					Value: condition.Value, Values: []int64{condition.Value}, Name: condition.Name, Constraint: condition.Constraint, Site: e.nodeSite(current), Ops: thenOps,
+					Value: condition.Value, Values: []int64{condition.Value}, Name: condition.Name, Constraint: condition.Constraint, Discriminant: condition.Discriminant, Negated: condition.Negated, Site: e.nodeSite(current), Ops: thenOps,
 				}}, Default: elseOps, HasDefault: true, Site: e.nodeSite(current)})
+				if returns {
+					return result
+				}
 			}
 		case *ast.SwitchStmt:
 			if e.statementHasWire(current, method.IO, method.Key) {
@@ -740,12 +755,51 @@ func (e *extractor) extractBlock(stmts []ast.Stmt, method *marshalInfo, env map[
 	return result
 }
 
+// isInvalidInputSink reports whether a returning block only reports invalid
+// input, such as `io.UnknownEnumOption(...); return`.
+func isInvalidInputSink(block *ast.BlockStmt) bool {
+	found := false
+	ast.Inspect(block, func(node ast.Node) bool {
+		call, ok := node.(*ast.CallExpr)
+		if !ok {
+			return true
+		}
+		if selector, ok := call.Fun.(*ast.SelectorExpr); ok {
+			switch selector.Sel.Name {
+			case "InvalidValue", "UnknownEnumOption":
+				found = true
+			}
+		}
+		return true
+	})
+	return found
+}
+
+func endsWithReturn(block *ast.BlockStmt) bool {
+	if block == nil || len(block.List) == 0 {
+		return false
+	}
+	_, ok := block.List[len(block.List)-1].(*ast.ReturnStmt)
+	return ok
+}
+
+func (e *extractor) statementsHaveWire(stmts []ast.Stmt, method *marshalInfo) bool {
+	for _, stmt := range stmts {
+		if e.statementHasWire(stmt, method.IO, method.Key) {
+			return true
+		}
+	}
+	return false
+}
+
 type conditionVariant struct {
-	Value      int64
-	Name       string
-	CompareTo  string
-	Predicate  string
-	Constraint string
+	Value        int64
+	Name         string
+	CompareTo    string
+	Predicate    string
+	Constraint   string
+	Discriminant bool
+	Negated      bool
 }
 
 func (e *extractor) conditionVariant(expr ast.Expr, method *marshalInfo, env map[string]typeRef, base string) conditionVariant {
@@ -754,6 +808,8 @@ func (e *extractor) conditionVariant(expr ast.Expr, method *marshalInfo, env map
 		result.CompareTo = e.fieldPath(binary.X, method, env, base)
 		if value, ok := e.literalInt(binary.Y, method.File); ok {
 			result.Value = int64(value)
+			result.Discriminant = true
+			result.Negated = binary.Op == token.NEQ
 			if binary.Op == token.NEQ {
 				result.Constraint = fmt.Sprintf("%s != %d", result.CompareTo, value)
 			} else {
@@ -833,12 +889,56 @@ func (e *extractor) extractTypeSwitch(stmt *ast.TypeSwitchStmt, method *marshalI
 			}
 			continue
 		}
+		value, ok := e.caseDiscriminant(clause, method, env, base, &ops)
 		for _, expr := range clause.List {
 			name := e.nodeString(expr)
-			operation.Variants = append(operation.Variants, sourceVariant{Name: name, Constraint: "type=" + name, Site: e.nodeSite(clause), Ops: ops})
+			variant := sourceVariant{Name: name, Constraint: "type=" + name, Site: e.nodeSite(clause), Ops: ops}
+			if ok {
+				variant.Value, variant.Values, variant.Discriminant = value, []int64{value}, true
+			}
+			operation.Variants = append(operation.Variants, variant)
 		}
 	}
 	return operation
+}
+
+// caseDiscriminant recognises a case body that assigns a constant to a local
+// and writes that local as its first wire operation, which is how hand-written
+// type switches emit a union discriminant. The variant marker is inserted
+// after that write so the language matches a manifest union.
+func (e *extractor) caseDiscriminant(clause *ast.CaseClause, method *marshalInfo, env map[string]typeRef, base string, ops *[]sourceOperation) (int64, bool) {
+	for _, stmt := range clause.Body {
+		assign, ok := stmt.(*ast.AssignStmt)
+		if !ok || len(assign.Lhs) != 1 || len(assign.Rhs) != 1 {
+			continue
+		}
+		ident, ok := assign.Lhs[0].(*ast.Ident)
+		if !ok {
+			continue
+		}
+		expr := assign.Rhs[0]
+		if call, isCall := expr.(*ast.CallExpr); isCall && len(call.Args) == 1 {
+			expr = call.Args[0]
+		}
+		value, ok := e.literalInt(expr, method.File)
+		if !ok {
+			continue
+		}
+		field := e.fieldPath(ident, method, env, base)
+		for index, operation := range *ops {
+			if operation.Kind != "primitive" {
+				continue
+			}
+			if operation.Field != field && operation.Field != base+"."+ident.Name && operation.Field != ident.Name {
+				break
+			}
+			marker := sourceOperation{Kind: "variant_marker", Field: operation.Field, VariantValue: int64(value), Site: operation.Site}
+			*ops = append((*ops)[:index+1], append([]sourceOperation{marker}, (*ops)[index+1:]...)...)
+			return int64(value), true
+		}
+		return 0, false
+	}
+	return 0, false
 }
 
 func (e *extractor) extractFor(stmt *ast.ForStmt, method *marshalInfo, env map[string]typeRef, base string, depth int, stack map[string]bool) sourceOperation {
@@ -1163,7 +1263,11 @@ func (e *extractor) recordWireCode(args []ast.Expr, code string, env map[string]
 func (e *extractor) expandFunctionCall(call *ast.CallExpr, target, caller *marshalInfo, env map[string]typeRef, base string, depth int, stack map[string]bool) []sourceOperation {
 	stackKey := "function:" + target.Key
 	if stack[stackKey] {
-		return []sourceOperation{e.unresolved(call, caller.Key, base, "recursive local helper call", target.Key)}
+		if e.recursion[target.Key] >= recursionUnroll {
+			return []sourceOperation{{Kind: "recursive", Field: base, Reason: target.Key, Site: e.nodeSite(call)}}
+		}
+		e.recursion[target.Key]++
+		defer func() { e.recursion[target.Key]-- }()
 	}
 	if depth >= extractionDepthLimit {
 		return []sourceOperation{e.unresolved(call, caller.Key, base, "local helper expansion depth limit exceeded", target.Key)}

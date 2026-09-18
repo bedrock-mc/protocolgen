@@ -6,7 +6,6 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
-	"strconv"
 	"strings"
 
 	"protocolgen/internal/manifest"
@@ -91,28 +90,20 @@ func Compare(canonical manifest.Manifest, source extraction, lock Lock, accepted
 			continue
 		}
 		result.GophertunnelName = oracle.Name
-		wantPaths := canonicalPacketPaths(packet)
-		gotPaths := sourcePacketPaths(oracle)
-		pathResults, reasons, divergent := comparePaths(wantPaths, gotPaths)
-		result.Paths = pathResults
-		if onlyPathExpansionReasons(reasons) && symbolicAgreement(packet, oracle) {
-			result.Classification = "AGREEMENT"
-			result.Paths = []PathResult{{Classification: "AGREEMENT", Reasons: []string{"wire-language comparison proved agreement without enumerating the cartesian path product"}}}
-			report.Counts.Agreement++
-			report.Packets = append(report.Packets, result)
-			continue
-		}
-		if len(reasons) > 0 {
+		want := canonicalPacketExpr(packet)
+		got := sourceSequenceExpr(oracle.Operations)
+		if want.kind == "unknown" || got.kind == "unknown" {
 			result.Classification = "UNRESOLVED"
-			result.Reasons = uniqueStrings(reasons)
+			result.Reasons = uniqueStrings(append(append([]string{}, want.reasons...), got.reasons...))
 			report.Counts.Unresolved++
 			report.Packets = append(report.Packets, result)
 			continue
 		}
-		if !divergent {
+		witness := compareLanguages(want, got)
+		if witness == nil {
 			result.Classification = "AGREEMENT"
-			if len(wantPaths) == 1 {
-				result.OperationCount = len(normalizeFixedArrayGrouping(wantPaths[0].Atoms))
+			if isLinear(want) {
+				result.OperationCount = tokenCount(want)
 			}
 			report.Counts.Agreement++
 			report.Packets = append(report.Packets, result)
@@ -120,20 +111,19 @@ func Compare(canonical manifest.Manifest, source extraction, lock Lock, accepted
 		}
 		result.Classification = "DIVERGENCE"
 		divergentIDs[packet.ID] = true
-		if len(wantPaths) > 0 {
-			result.ManifestSequence = atomDisplays(wantPaths[0].Atoms)
-		}
-		if len(gotPaths) > 0 {
-			result.GophertunnelSequence = atomDisplays(gotPaths[0].Atoms)
-		}
-		if len(result.Paths) > 0 {
-			for _, path := range result.Paths {
-				if path.Classification == "DIVERGENCE" {
-					result.Differences = path.Differences
-					break
-				}
-			}
-		}
+		manifestSequence := append(append([]atom{}, witness.prefix...), witness.manifest...)
+		sourceSequence := append(append([]atom{}, witness.prefix...), witness.gophertunnel...)
+		result.ManifestSequence = atomDisplays(manifestSequence)
+		result.GophertunnelSequence = atomDisplays(sourceSequence)
+		result.Differences = differences(manifestSequence, sourceSequence)
+		result.Paths = []PathResult{{
+			Classification:       "DIVERGENCE",
+			ManifestConstraint:   "shortest wire path on which the languages differ",
+			GophertunnelSite:     firstAtomSite(witness.gophertunnel),
+			ManifestSequence:     result.ManifestSequence,
+			GophertunnelSequence: result.GophertunnelSequence,
+			Differences:          result.Differences,
+		}}
 		report.Counts.Divergence++
 		var err error
 		result.Fingerprint, err = divergenceFingerprint(packet, oracle, result.Paths, lock)
@@ -168,124 +158,6 @@ func Compare(canonical manifest.Manifest, source extraction, lock Lock, accepted
 	return report
 }
 
-func onlyPathExpansionReasons(reasons []string) bool {
-	if len(reasons) == 0 {
-		return false
-	}
-	for _, reason := range reasons {
-		if !strings.Contains(reason, "control-flow path expansion exceeds limit") {
-			return false
-		}
-	}
-	return true
-}
-
-func comparePaths(want, got []wirePath) ([]PathResult, []string, bool) {
-	want = uniqueWirePaths(want)
-	got = uniqueWirePaths(got)
-	if paths, ok := missingVariantMetadataPaths(want, got); ok {
-		return paths, []string{missingVariantMetadataReason}, false
-	}
-	var results []PathResult
-	var reasons []string
-	divergent := false
-	matchedGot := make(map[string]bool, len(got))
-	for _, expected := range want {
-		if len(expected.Reasons) > 0 {
-			results = append(results, PathResult{Classification: "UNRESOLVED", ManifestConstraint: expected.Constraint, Reasons: expected.Reasons, ManifestSequence: atomDisplays(expected.Atoms)})
-			reasons = append(reasons, expected.Reasons...)
-			continue
-		}
-		key := pathShapeKey(expected.Atoms)
-		match := -1
-		for index, actual := range got {
-			if len(actual.Reasons) == 0 && pathShapeKey(actual.Atoms) == key {
-				match = index
-				break
-			}
-		}
-		if match >= 0 {
-			matchedGot[key] = true
-			results = append(results, PathResult{Classification: "AGREEMENT", ManifestConstraint: expected.Constraint, GophertunnelConstraint: got[match].Constraint})
-			continue
-		}
-		actual := closestWirePath(expected, got)
-		path := PathResult{Classification: "DIVERGENCE", ManifestConstraint: expected.Constraint, ManifestSequence: atomDisplays(expected.Atoms)}
-		if actual != nil {
-			path.GophertunnelConstraint = actual.Constraint
-			path.GophertunnelSite = firstAtomSite(actual.Atoms)
-			path.GophertunnelSequence = atomDisplays(actual.Atoms)
-			path.Differences = differences(expected.Atoms, actual.Atoms)
-		}
-		results = append(results, path)
-		divergent = true
-	}
-	for _, actual := range got {
-		if len(actual.Reasons) > 0 {
-			reasons = append(reasons, actual.Reasons...)
-			results = append(results, PathResult{Classification: "UNRESOLVED", GophertunnelConstraint: actual.Constraint, GophertunnelSite: firstAtomSite(actual.Atoms), Reasons: actual.Reasons, GophertunnelSequence: atomDisplays(actual.Atoms)})
-			continue
-		}
-		key := pathShapeKey(actual.Atoms)
-		if matchedGot[key] {
-			continue
-		}
-		found := false
-		for _, expected := range want {
-			if len(expected.Reasons) == 0 && pathShapeKey(expected.Atoms) == key {
-				found = true
-				break
-			}
-		}
-		if !found {
-			results = append(results, PathResult{Classification: "DIVERGENCE", GophertunnelConstraint: actual.Constraint, GophertunnelSite: firstAtomSite(actual.Atoms), GophertunnelSequence: atomDisplays(actual.Atoms)})
-			divergent = true
-		}
-	}
-	return results, uniqueStrings(reasons), divergent
-}
-
-func uniqueWirePaths(paths []wirePath) []wirePath {
-	seen := make(map[string]bool, len(paths))
-	result := make([]wirePath, 0, len(paths))
-	for _, path := range paths {
-		key := pathShapeKey(path.Atoms) + "\x00" + strings.Join(path.Reasons, "\x00")
-		if seen[key] {
-			continue
-		}
-		seen[key] = true
-		result = append(result, path)
-	}
-	return result
-}
-
-func pathShapeKey(atoms []atom) string {
-	atoms = normalizeFixedArrayGrouping(atoms)
-	parts := make([]string, len(atoms))
-	for index, current := range atoms {
-		parts[index] = current.Token
-	}
-	return strings.Join(parts, "\x00")
-}
-
-func closestWirePath(want wirePath, candidates []wirePath) *wirePath {
-	if len(candidates) == 0 {
-		return nil
-	}
-	best := 0
-	bestDistance := len(want.Atoms) + len(candidates[0].Atoms)
-	for index := range candidates {
-		if len(candidates[index].Reasons) > 0 {
-			continue
-		}
-		distance := len(differences(want.Atoms, candidates[index].Atoms))
-		if distance < bestDistance {
-			best, bestDistance = index, distance
-		}
-	}
-	return &candidates[best]
-}
-
 func defaultNormalization() Normalization {
 	return Normalization{
 		FixedWidth:    "Signed and unsigned fixed-width integers with identical width and endianness are equivalent.",
@@ -294,6 +166,7 @@ func defaultNormalization() Normalization {
 		ByteArrays:    "A prefixed array of single u8 elements is equivalent to a byte slice with the same prefix.",
 		UUID:          "UUID is compared as 16 bytes at its wire position; gophertunnel's internal UUID byte ordering is intentionally not validated.",
 		PreencodedNBT: "RawBytes named SerialisedOffers, SerialisedInventoryData, SerialisedEntityIdentifiers, or SerialisedEventData normalize to nbt_le.",
+		Colour:        "A little-endian 32-bit colour int and gophertunnel's BEARGB (channels swapped, then big-endian) are the same four bytes.",
 		Preserved: []string{
 			"integer width",
 			"endianness",
@@ -305,266 +178,6 @@ func defaultNormalization() Normalization {
 			"fixed-array scalar count",
 			"union control and variant discriminants",
 		},
-	}
-}
-
-func canonicalAtoms(packet manifest.Packet) ([]atom, []string) {
-	var result []atom
-	var reasons []string
-	fields := append([]manifest.Field(nil), packet.Fields...)
-	sort.SliceStable(fields, func(i, j int) bool { return fields[i].Ordinal < fields[j].Ordinal })
-	for _, field := range fields {
-		atoms, unresolved := manifestNodeAtoms(field.Name, field.Encode)
-		result = append(result, atoms...)
-		reasons = append(reasons, unresolved...)
-	}
-	return result, uniqueStrings(reasons)
-}
-
-func manifestNodeAtoms(path string, node manifest.Node) ([]atom, []string) {
-	switch node.Kind {
-	case manifest.KindVoid:
-		return nil, nil
-	case manifest.KindPrimitive:
-		if node.Primitive == nil {
-			return nil, []string{"manifest: primitive at " + path + " has no shape"}
-		}
-		if node.Primitive.Code == "uuid" {
-			return []atom{{Token: "UUID16", Field: path, Display: "uuid(16 bytes)"}}, nil
-		}
-		return []atom{{Token: "P:" + canonicalPrimitive(node.Primitive.Code), Field: path, Display: node.Primitive.Code}}, nil
-	case manifest.KindEnum:
-		if node.Primitive == nil {
-			return nil, []string{"manifest: enum at " + path + " has no underlying shape"}
-		}
-		return []atom{{Token: "P:" + canonicalPrimitive(node.Primitive.Code), Field: path, Display: "enum(" + node.Primitive.Code + ")"}}, nil
-	case manifest.KindString, manifest.KindBytes:
-		prefix, err := manifestPrefix(node.Prefix)
-		if err != nil {
-			return nil, []string{"manifest: " + path + ": " + err.Error()}
-		}
-		kind := "string"
-		if node.Kind == manifest.KindBytes {
-			kind = "bytes"
-		}
-		return []atom{{Token: "LEN:" + canonicalPrimitive(prefix), Field: path, Display: kind + "(prefix=" + prefix + ")"}}, nil
-	case manifest.KindArray:
-		prefix, err := manifestPrefix(node.Prefix)
-		if err != nil || node.Element == nil {
-			if err == nil {
-				err = fmt.Errorf("array has no element")
-			}
-			return nil, []string{"manifest: " + path + ": " + err.Error()}
-		}
-		if isManifestU8(*node.Element) {
-			return []atom{{Token: "LEN:" + canonicalPrimitive(prefix), Field: path, Display: "byte-array(prefix=" + prefix + ")"}}, nil
-		}
-		children, reasons := manifestNodeAtoms(path+"[]", *node.Element)
-		result := []atom{{Token: "ARRAY:" + canonicalPrimitive(prefix), Field: path, Display: "array(prefix=" + prefix + ")"}}
-		result = append(result, children...)
-		result = append(result, atom{Token: "/ARRAY", Field: path, Display: "/array"})
-		return result, reasons
-	case manifest.KindFixedArray:
-		if node.Element == nil || node.Length == 0 {
-			return nil, []string{"manifest: fixed array at " + path + " is incomplete"}
-		}
-		if node.Length == 16 && isManifestU8(*node.Element) {
-			return []atom{{Token: "UUID16", Field: path, Display: "uuid(16 bytes)"}}, nil
-		}
-		children, reasons := manifestNodeAtoms(path+"[]", *node.Element)
-		result := []atom{{Token: fmt.Sprintf("FIXED:%d", node.Length), Field: path, Display: fmt.Sprintf("fixed-array(length=%d)", node.Length)}}
-		result = append(result, children...)
-		result = append(result, atom{Token: "/FIXED", Field: path, Display: "/fixed-array"})
-		return result, reasons
-	case manifest.KindSequence:
-		var result []atom
-		var reasons []string
-		for index, child := range node.Elements {
-			atoms, childReasons := manifestNodeAtoms(fmt.Sprintf("%s[%d]", path, index), child)
-			result = append(result, atoms...)
-			reasons = append(reasons, childReasons...)
-		}
-		return result, reasons
-	case manifest.KindOptional:
-		if node.Value == nil {
-			return nil, []string{"manifest: optional at " + path + " has no value"}
-		}
-		children, reasons := manifestNodeAtoms(path, *node.Value)
-		result := []atom{{Token: "OPTION:bool", Field: path, Display: "option(presence=bool)"}}
-		result = append(result, children...)
-		result = append(result, atom{Token: "/OPTION", Field: path, Display: "/option"})
-		return result, reasons
-	case manifest.KindStruct:
-		fields := append([]manifest.Field(nil), node.Fields...)
-		sort.SliceStable(fields, func(i, j int) bool { return fields[i].Ordinal < fields[j].Ordinal })
-		var result []atom
-		var reasons []string
-		for _, field := range fields {
-			atoms, childReasons := manifestNodeAtoms(path+"."+field.Name, field.Encode)
-			result = append(result, atoms...)
-			reasons = append(reasons, childReasons...)
-		}
-		return result, reasons
-	case manifest.KindMap:
-		if node.Prefix == nil || node.Key == nil || node.Value == nil {
-			return nil, []string{"manifest: map at " + path + " is incomplete"}
-		}
-		prefix, err := manifestPrefix(node.Prefix)
-		if err != nil {
-			return nil, []string{"manifest: map at " + path + ": " + err.Error()}
-		}
-		keyAtoms, keyReasons := manifestNodeAtoms(path+".<key>", *node.Key)
-		valueAtoms, valueReasons := manifestNodeAtoms(path+".<value>", *node.Value)
-		result := []atom{{Token: "ARRAY:" + canonicalPrimitive(prefix), Field: path, Display: "map(prefix=" + prefix + ")"}}
-		result = append(result, keyAtoms...)
-		result = append(result, valueAtoms...)
-		result = append(result, atom{Token: "/ARRAY", Field: path, Display: "/map"})
-		return result, append(keyReasons, valueReasons...)
-	case manifest.KindUnion:
-		control, err := manifestPrimitive(node.Control)
-		if err != nil {
-			return nil, []string{"manifest: union at " + path + ": " + err.Error()}
-		}
-		variants := append([]manifest.Variant(nil), node.Variants...)
-		sort.SliceStable(variants, func(i, j int) bool { return variants[i].Value < variants[j].Value })
-		result := []atom{{Token: "UNION:" + canonicalPrimitive(control), Field: path, Display: "union(control=" + control + ")"}}
-		var reasons []string
-		for _, variant := range variants {
-			children, childReasons := manifestNodeAtoms(path+".variant", variant.Encode)
-			result = append(result, atom{Token: fmt.Sprintf("VARIANT:%d", variant.Value), Field: path, Display: fmt.Sprintf("variant(%d)", variant.Value)})
-			result = append(result, children...)
-			result = append(result, atom{Token: "/VARIANT", Field: path, Display: "/variant"})
-			reasons = append(reasons, childReasons...)
-		}
-		result = append(result, atom{Token: "/UNION", Field: path, Display: "/union"})
-		return result, reasons
-	case manifest.KindBitset:
-		if node.Length == 0 {
-			return nil, []string{"manifest: bitset at " + path + " has no length"}
-		}
-		return []atom{{Token: fmt.Sprintf("BITSET:%d", node.Length), Field: path, Display: fmt.Sprintf("bitset(length=%d)", node.Length)}}, nil
-	case manifest.KindReserved, manifest.KindIgnored:
-		if node.Element == nil {
-			return nil, []string{"manifest: compatibility node at " + path + " has no element"}
-		}
-		return manifestNodeAtoms(path, *node.Element)
-	case manifest.KindConditional:
-		return nil, []string{"manifest: conditional at " + path + " requires runtime branch evidence"}
-	case manifest.KindRecursive:
-		return nil, []string{"manifest: recursive node at " + path + " is not statically finite"}
-	case manifest.KindOpaque, manifest.KindUnresolved:
-		return nil, []string{"manifest: " + string(node.Kind) + " at " + path + ": " + node.Reason}
-	default:
-		return nil, []string{"manifest: unsupported node " + string(node.Kind) + " at " + path}
-	}
-}
-
-func sourceAtoms(packet sourcePacket) ([]atom, []string) {
-	var result []atom
-	var reasons []string
-	for _, operation := range packet.Operations {
-		atoms, unresolved := sourceOperationAtoms(operation)
-		result = append(result, atoms...)
-		reasons = append(reasons, unresolved...)
-	}
-	return result, uniqueStrings(reasons)
-}
-
-func sourceOperationAtoms(operation sourceOperation) ([]atom, []string) {
-	path := operation.Field
-	switch operation.Kind {
-	case "primitive":
-		code := operation.Code
-		if code == "raw_bytes" {
-			if isPreencodedNBTField(path) {
-				code = "nbt_le"
-			}
-		}
-		return []atom{{Token: "P:" + canonicalPrimitive(code), Field: path, Display: code}}, nil
-	case "string", "bytes":
-		return []atom{{Token: "LEN:" + canonicalPrimitive(operation.Prefix), Field: path, Display: operation.Kind + "(prefix=" + operation.Prefix + ")"}}, nil
-	case "uuid":
-		return []atom{{Token: "UUID16", Field: path, Display: "uuid(16 bytes)"}}, nil
-	case "variant_marker":
-		return []atom{{Token: fmt.Sprintf("VARIANT:%d", operation.VariantValue), Field: path, Display: fmt.Sprintf("variant(%d)", operation.VariantValue)}}, nil
-	case "bitset":
-		if operation.Length == 0 {
-			return nil, []string{"gophertunnel: bitset at " + path + " has no static length"}
-		}
-		return []atom{{Token: fmt.Sprintf("BITSET:%d", operation.Length), Field: path, Display: fmt.Sprintf("bitset(length=%d)", operation.Length)}}, nil
-	case "array":
-		if isSourceU8(operation.Element) {
-			return []atom{{Token: "LEN:" + canonicalPrimitive(operation.Prefix), Field: path, Display: "byte-array(prefix=" + operation.Prefix + ")"}}, nil
-		}
-		var result []atom
-		var reasons []string
-		result = append(result, atom{Token: "ARRAY:" + canonicalPrimitive(operation.Prefix), Field: path, Display: "array(prefix=" + operation.Prefix + ")"})
-		for _, child := range operation.Element {
-			atoms, childReasons := sourceOperationAtoms(child)
-			result = append(result, atoms...)
-			reasons = append(reasons, childReasons...)
-		}
-		result = append(result, atom{Token: "/ARRAY", Field: path, Display: "/array"})
-		return result, reasons
-	case "fixed_array":
-		if operation.Length == 0 {
-			return nil, []string{"gophertunnel: fixed array at " + path + " has no length"}
-		}
-		if operation.Length == 16 && isSourceU8(operation.Element) {
-			return []atom{{Token: "UUID16", Field: path, Display: "uuid(16 bytes)"}}, nil
-		}
-		var result []atom
-		var reasons []string
-		result = append(result, atom{Token: fmt.Sprintf("FIXED:%d", operation.Length), Field: path, Display: fmt.Sprintf("fixed-array(length=%d)", operation.Length)})
-		for _, child := range operation.Element {
-			atoms, childReasons := sourceOperationAtoms(child)
-			result = append(result, atoms...)
-			reasons = append(reasons, childReasons...)
-		}
-		result = append(result, atom{Token: "/FIXED", Field: path, Display: "/fixed-array"})
-		return result, reasons
-	case "optional":
-		var result []atom
-		var reasons []string
-		result = append(result, atom{Token: "OPTION:" + canonicalPrimitive(operation.Presence), Field: path, Display: "option(presence=" + operation.Presence + ")"})
-		for _, child := range operation.Value {
-			atoms, childReasons := sourceOperationAtoms(child)
-			result = append(result, atoms...)
-			reasons = append(reasons, childReasons...)
-		}
-		result = append(result, atom{Token: "/OPTION", Field: path, Display: "/option"})
-		return result, reasons
-	case "union":
-		var result []atom
-		if operation.Control != "" {
-			result = append(result, atom{Token: "UNION:" + canonicalPrimitive(operation.Control), Field: path, Display: "union(control=" + operation.Control + ")"})
-		}
-		variants := append([]sourceVariant(nil), operation.Variants...)
-		sort.SliceStable(variants, func(i, j int) bool { return variants[i].Value < variants[j].Value })
-		var reasons []string
-		for _, variant := range variants {
-			result = append(result, atom{Token: fmt.Sprintf("VARIANT:%d", variant.Value), Field: path, Display: fmt.Sprintf("variant(%d)", variant.Value)})
-			for _, child := range variant.Ops {
-				atoms, childReasons := sourceOperationAtoms(child)
-				result = append(result, atoms...)
-				reasons = append(reasons, childReasons...)
-			}
-			result = append(result, atom{Token: "/VARIANT", Field: path, Display: "/variant"})
-		}
-		result = append(result, atom{Token: "/UNION", Field: path, Display: "/union"})
-		return result, reasons
-	case "unresolved", "recursive":
-		reason := operation.Reason
-		if reason == "" {
-			reason = "operation is not statically resolvable"
-		}
-		where := path
-		if operation.Site != "" {
-			where += " (" + operation.Site + ")"
-		}
-		return nil, []string{"gophertunnel: " + reason + " at " + where}
-	default:
-		return nil, []string{"gophertunnel: unsupported operation " + operation.Kind + " at " + path}
 	}
 }
 
@@ -590,7 +203,9 @@ func canonicalPrimitive(code string) string {
 		return "FIXED16LE"
 	case "i16be", "u16be":
 		return "FIXED16BE"
-	case "i32le", "u32le":
+	case "i32le", "u32le", "argb32":
+		// BEARGB swaps the channels and writes big-endian, which is byte for
+		// byte a little-endian ARGB int.
 		return "FIXED32LE"
 	case "i32be", "u32be":
 		return "FIXED32BE"
@@ -618,69 +233,6 @@ func isPreencodedNBTField(field string) bool {
 		}
 	}
 	return false
-}
-
-func atomsEqual(left, right []atom) bool {
-	if len(left) != len(right) {
-		return false
-	}
-	for index := range left {
-		if left[index].Token != right[index].Token {
-			return false
-		}
-	}
-	return true
-}
-
-// normalizeFixedArrayGrouping removes only fixed-array wrapper tokens while
-// retaining every scalar occurrence. This makes [16][16]byte and [256]byte,
-// or a fixed vector and its individually named scalar fields, compare by the
-// bytes they put on the wire. It does not make different lengths equivalent:
-// a different number of scalar atoms still differs.
-func normalizeFixedArrayGrouping(atoms []atom) []atom {
-	result := make([]atom, 0, len(atoms))
-	for index := 0; index < len(atoms); {
-		token := atoms[index].Token
-		if !strings.HasPrefix(token, "FIXED:") {
-			result = append(result, atoms[index])
-			index++
-			continue
-		}
-		count, err := strconv.Atoi(strings.TrimPrefix(token, "FIXED:"))
-		if err != nil || count <= 0 {
-			result = append(result, atoms[index])
-			index++
-			continue
-		}
-		end := fixedArrayEnd(atoms, index)
-		if end < 0 {
-			result = append(result, atoms[index])
-			index++
-			continue
-		}
-		body := normalizeFixedArrayGrouping(atoms[index+1 : end])
-		for repeat := 0; repeat < count; repeat++ {
-			result = append(result, body...)
-		}
-		index = end + 1
-	}
-	return result
-}
-
-func fixedArrayEnd(atoms []atom, start int) int {
-	depth := 0
-	for index := start; index < len(atoms); index++ {
-		switch {
-		case strings.HasPrefix(atoms[index].Token, "FIXED:"):
-			depth++
-		case atoms[index].Token == "/FIXED":
-			depth--
-			if depth == 0 {
-				return index
-			}
-		}
-	}
-	return -1
 }
 
 func atomDisplays(atoms []atom) []string {
