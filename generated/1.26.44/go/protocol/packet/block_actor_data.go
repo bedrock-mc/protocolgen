@@ -9,6 +9,8 @@ import (
 // BlockActorData is sent by the server to update data of a block entity client-side, for example the data of
 // a chest.
 type BlockActorData struct {
+	// Position is the position of the block that holds the block entity. If no block entity is at this position,
+	// the packet is ignored by the client.
 	BlockPosition protocol.BlockPos
 	ActorDataTags []byte
 }

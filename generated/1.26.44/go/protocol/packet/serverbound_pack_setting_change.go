@@ -8,12 +8,13 @@ import (
 	"github.com/google/uuid"
 )
 
-// ServerboundPackSettingChange is sent by the client to the server when it changes a setting for a specific
+// ServerBoundPackSettingChange is sent by the client to the server when it changes a setting for a specific
 // pack in the pack settings UI.
 type ServerboundPackSettingChange struct {
 	// PackID is the UUID of the pack.
-	PackID           uuid.UUID
-	PackSettingName  string
+	PackID          uuid.UUID
+	PackSettingName string
+	// PackSetting is the new setting value applied to the pack.
 	PackSettingValue protocol.ServerboundPackSettingChangePackSettingValue
 }
 

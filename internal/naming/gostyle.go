@@ -94,3 +94,60 @@ func IsExportedGoIdentifier(value string) bool {
 	}
 	return true
 }
+
+// EnumVariantName is the Go constant suffix for a wire variant name:
+// all-caps names are title-cased by token and initialisms kept.
+func EnumVariantName(value string) string {
+	if value == "" {
+		return "Unknown"
+	}
+	allUpper := true
+	for _, r := range value {
+		if unicode.IsLetter(r) && unicode.IsLower(r) {
+			allUpper = false
+			break
+		}
+	}
+	if !allUpper {
+		return normalizeEnumInitialisms(GoExportName(value))
+	}
+	var b strings.Builder
+	for _, token := range strings.FieldsFunc(value, func(r rune) bool { return !unicode.IsLetter(r) && !unicode.IsDigit(r) }) {
+		if token == "" {
+			continue
+		}
+		if initialism, ok := enumInitialisms[token]; ok {
+			b.WriteString(initialism)
+			continue
+		}
+		lower := strings.ToLower(token)
+		b.WriteString(GoExportName(lower))
+	}
+	if b.Len() == 0 {
+		return "Unknown"
+	}
+	return NormalizeGoInitialisms(b.String())
+}
+
+func normalizeEnumInitialisms(value string) string {
+	for _, replacement := range []struct{ from, to string }{
+		{from: "Tntcart", to: "TNTCart"},
+		{from: "Fishpos", to: "FishPosition"},
+		{from: "Hooktime", to: "HookTime"},
+		{from: "Tnt", to: "TNT"},
+		{from: "Nbt", to: "NBT"},
+		{from: "Uuid", to: "UUID"},
+		{from: "Argb", to: "ARGB"},
+		{from: "Rgba", to: "RGBA"},
+		{from: "Rgb", to: "RGB"},
+		{from: "Uwp", to: "UWP"},
+		{from: "Osx", to: "OSX"},
+	} {
+		value = strings.ReplaceAll(value, replacement.from, replacement.to)
+	}
+	return value
+}
+
+var enumInitialisms = map[string]string{
+	"ANIM": "Animation", "FISHPOS": "FishPosition", "HOOKTIME": "HookTime", "ID": "ID", "NBT": "NBT", "OSX": "OSX", "RGBA": "RGBA", "RGB": "RGB", "TNT": "TNT", "TNTCART": "TNTCart", "UWP": "UWP", "URL": "URL", "URI": "URI", "UUID": "UUID", "X": "X", "Y": "Y", "Z": "Z",
+}

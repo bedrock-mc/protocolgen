@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "target": {
+    "minecraft_version": "1.26.44",
+    "protocol_version": 2168,
+    "build": "hotfix4"
+  },
+  "entries": [
+    {
+      "type_id": "ActorPickRequestPacket",
+      "field": "Actor ID",
+      "semantic": "ActorUniqueID",
+      "rationale": "gophertunnel marshals ActorPickRequest.EntityUniqueID with an ActorUniqueID operation."
+    },
+    {
+      "type_id": "CameraInstructionOptions::AttachToEntityInstruction",
+      "field": "Entity Actor ID",
+      "semantic": "ActorUniqueID",
+      "rationale": "gophertunnel marshals CameraInstruction.AttachToEntity with an ActorUniqueID operation."
+    },
+    {
+      "type_id": "CameraInstructionOptions::TargetInstruction",
+      "field": "Target Actor ID",
+      "semantic": "ActorUniqueID",
+      "rationale": "gophertunnel marshals CameraInstructionTarget.EntityUniqueID with an ActorUniqueID operation."
+    },
+    {
+      "type_id": "CreatePhotoPacket",
+      "field": "Raw ID",
+      "semantic": "ActorUniqueID",
+      "rationale": "gophertunnel marshals CreatePhoto.EntityUniqueID with an ActorUniqueID operation."
+    },
+    {
+      "type_id": "LegacyTelemetryEventPacketPayload::BossKilled",
+      "field": "Boss Actor ID",
+      "semantic": "ActorUniqueID",
+      "rationale": "gophertunnel marshals BossKilledEvent.BossEntityUniqueID with an ActorUniqueID operation."
+    },
+    {
+      "type_id": "LegacyTelemetryEventPacketPayload::MobKilled",
+      "field": "Instigator Actor ID",
+      "semantic": "ActorUniqueID",
+      "rationale": "gophertunnel marshals MobKilledEvent.KillerEntityUniqueID with an ActorUniqueID operation."
+    },
+    {
+      "type_id": "LegacyTelemetryEventPacketPayload::MobKilled",
+      "field": "Target Actor ID",
+      "semantic": "ActorUniqueID",
+      "rationale": "gophertunnel marshals MobKilledEvent.VictimEntityUniqueID with an ActorUniqueID operation."
+    },
+    {
+      "type_id": "LevelSoundEventPacket",
+      "field": "Actor Unique Id",
+      "semantic": "ActorUniqueID",
+      "rationale": "gophertunnel marshals LevelSoundEvent.EntityUniqueID with an ActorUniqueID operation."
+    },
+    {
+      "type_id": "NpcDialoguePacket",
+      "field": "Npc Id Raw Id",
+      "semantic": "ActorUniqueID",
+      "rationale": "gophertunnel marshals NPCDialogue.EntityUniqueID with an ActorUniqueID operation."
+    },
+    {
+      "type_id": "PhotoTransferPacket",
+      "field": "Owner ID",
+      "semantic": "ActorUniqueID",
+      "rationale": "gophertunnel marshals PhotoTransfer.OwnerEntityUniqueID with an ActorUniqueID operation."
+    },
+    {
+      "type_id": "PlayerScoreboardId",
+      "field": "Player Unique Id",
+      "semantic": "ActorUniqueID",
+      "rationale": "Wire field name names an actor identifier; not confirmed by the fork."
+    },
+    {
+      "type_id": "RequestPermissionsPacket",
+      "field": "Target Player Id's Raw ID",
+      "semantic": "ActorUniqueID",
+      "rationale": "gophertunnel marshals RequestPermissions.EntityUniqueID with an ActorUniqueID operation."
+    },
+    {
+      "type_id": "SerializedAbilitiesData",
+      "field": "Target Player Raw Id",
+      "semantic": "ActorUniqueID",
+      "rationale": "gophertunnel marshals AbilityData.EntityUniqueID with an ActorUniqueID operation."
+    },
+    {
+      "type_id": "UpdateBlockSyncedPacket",
+      "field": "Unique Actor Id",
+      "semantic": "ActorUniqueID",
+      "rationale": "gophertunnel marshals UpdateBlockSynced.EntityUniqueID with an ActorUniqueID operation."
+    },
+    {
+      "type_id": "UpdateSubChunkNetworkBlockInfo",
+      "field": "Sync Message - Entity Unique ID",
+      "semantic": "ActorUniqueID",
+      "rationale": "Wire field name names an actor identifier; not confirmed by the fork."
+    }
+  ]
+}

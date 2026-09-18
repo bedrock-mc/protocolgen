@@ -10,14 +10,16 @@ import (
 type GameTestRequest struct {
 	// MaxTestsPerBatch ...
 	MaxTestsPerBatch int32
-	RepeatCount      int32
+	// Repetitions represents the amount of times the test will be run.
+	RepeatCount int32
 	// Rotation represents the rotation of the test. It is one of the constants above.
 	Rotation      protocol.Rotation
 	StopOnFailure bool
 	TestPos       protocol.BlockPos
 	// TestsPerRow ...
 	TestsPerRow int32
-	TestName    string
+	// Name represents the name of the test.
+	TestName string
 }
 
 // ID ...

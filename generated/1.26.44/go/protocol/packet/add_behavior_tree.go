@@ -6,7 +6,7 @@ import (
 	"protocolgen/generated/1.26.44/go/protocol"
 )
 
-// AddBehaviorTree is sent by the server to the client. The packet is currently unused by both client and
+// AddBehaviourTree is sent by the server to the client. The packet is currently unused by both client and
 // server.
 type AddBehaviorTree struct {
 	// BehaviourTree is an unused string.

@@ -225,11 +225,11 @@ func (w *Writer) StringLimits(x *string, min, max uint64) {
 	w.write(data)
 }
 
-func (w *Writer) Bytes(x *[]byte) {
-	w.BytesLimits(x, 0, ^uint64(0))
+func (w *Writer) ByteSlice(x *[]byte) {
+	w.ByteSliceLimits(x, 0, ^uint64(0))
 }
 
-func (w *Writer) BytesLimits(x *[]byte, min, max uint64) {
+func (w *Writer) ByteSliceLimits(x *[]byte, min, max uint64) {
 	if uint64(len(*x)) < min || uint64(len(*x)) > max {
 		w.InvalidValue(len(*x), "byte slice length outside schema limits")
 		return
@@ -278,7 +278,7 @@ func (w *Writer) Vec3(x *mgl32.Vec3) {
 }
 
 func (w *Writer) RGBA(x *color.RGBA) {
-	value := uint32(x.R) | uint32(x.G)<<8 | uint32(x.B)<<16 | uint32(x.A)<<24
+	value := uint32(x.B) | uint32(x.G)<<8 | uint32(x.R)<<16 | uint32(x.A)<<24
 	w.Uint32(&value)
 }
 

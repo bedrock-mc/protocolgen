@@ -12,8 +12,11 @@ type Text struct {
 	Localize        bool
 	MessageCategory uint8
 	Body            protocol.TextData
-	SenderSXUID     string
-	PlatformID      string
+	// XUID is the XBOX Live user ID of the player that sent the message. It is only set for packets of
+	// TextTypeChat. When sent to a player, the player will only be shown the chat message if a player with this
+	// XUID is present in the player list and not muted, or if the XUID is empty.
+	SenderSXUID string
+	PlatformID  string
 	// FilteredMessage is a filtered version of Message with all the profanity removed. The client will use this
 	// over Message if this field is not empty and they have the "Filter Profanity" setting enabled.
 	FilteredMessage protocol.Optional[string]

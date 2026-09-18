@@ -177,6 +177,7 @@ gophertunnel-layout:
 		-gophertunnel $(GOPHERTUNNEL_DIR) \
 		-out $(LAYOUT_TARGET)/gophertunnel-layout.json \
 		-docs $(LAYOUT_TARGET)/docs.json \
+		-semantics-out $(LAYOUT_TARGET)/semantics.json \
 		-report docs/gophertunnel-gap-1.26.44.md
 	rm -rf build/gophertunnel-layout
 	$(PROTOCOLGEN) emit-go \

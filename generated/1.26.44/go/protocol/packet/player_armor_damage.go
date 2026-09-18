@@ -6,7 +6,7 @@ import (
 	"protocolgen/generated/1.26.44/go/protocol"
 )
 
-// PlayerArmorDamage is sent by the server to damage the armour of a player. It is a very efficient packet,
+// PlayerArmourDamage is sent by the server to damage the armour of a player. It is a very efficient packet,
 // but generally it's much easier to just send a slot update for the damaged armour.
 type PlayerArmorDamage struct {
 	// List is a list of armour entries indicating which pieces of armour should receive damage.

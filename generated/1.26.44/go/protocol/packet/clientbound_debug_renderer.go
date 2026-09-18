@@ -6,7 +6,7 @@ import (
 	"protocolgen/generated/1.26.44/go/protocol"
 )
 
-// ClientboundDebugRenderer is sent by the server to spawn an outlined cube on client-side.
+// ClientBoundDebugRenderer is sent by the server to spawn an outlined cube on client-side.
 type ClientboundDebugRenderer struct {
 	// Type is the type of action. It is one of the constants above.
 	Type            string

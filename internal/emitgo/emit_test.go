@@ -3,6 +3,7 @@ package emitgo
 import (
 	"go/format"
 	"os"
+	"regexp"
 	"sort"
 	"strings"
 	"testing"
@@ -11,6 +12,8 @@ import (
 	"protocolgen/internal/domains"
 	"protocolgen/internal/layout"
 	"protocolgen/internal/manifest"
+	"protocolgen/internal/naming"
+	"protocolgen/internal/semantics"
 )
 
 func TestMarshalEmitterUsesOneAddressParameterizedWalk(t *testing.T) {
@@ -450,7 +453,7 @@ func TestGoNamesUseCommonInitialisms(t *testing.T) {
 			t.Errorf("exportName(%q) = %q, want %q", input, got, want)
 		}
 	}
-	if got := enumVariantName("VALUE_ID"); got != "ValueID" {
+	if got := naming.EnumVariantName("VALUE_ID"); got != "ValueID" {
 		t.Fatalf("enumVariantName initialism = %q, want ValueID", got)
 	}
 }
@@ -469,8 +472,8 @@ func TestEnumVariantNamesAreIdiomaticGo(t *testing.T) {
 		"OSX":                     "OSX",
 		"UWP":                     "UWP",
 	} {
-		if got := enumVariantName(input); got != want {
-			t.Fatalf("enumVariantName(%q) = %q, want %q", input, got, want)
+		if got := naming.EnumVariantName(input); got != want {
+			t.Fatalf("naming.EnumVariantName(%q) = %q, want %q", input, got, want)
 		}
 	}
 }
@@ -721,6 +724,7 @@ func TestGenerateAppliesLayoutOverlay(t *testing.T) {
 		Constants: map[string]layout.Placement{"enums/GameType": {Package: "packet", File: "set_player_game_type", Names: map[string]string{"Creative": "GameTypeCreative"}}},
 		Fields:    map[string]string{layout.FieldKey("SetPlayerGameTypePacket", "Game Type"): "PlayerGameMode", layout.FieldKey("SetPlayerGameTypePacket", "Entries"): "Rows"},
 		Files:     map[string]string{"SetPlayerGameTypePacket": "set_player_game_type", "enums/GameType": "game_mode"},
+		Types:     map[string]string{"SetPlayerGameTypePacket": "SetPlayerGameMode"},
 	}
 	files, err := GenerateWithOptions(m, Options{ProtocolImportPath: "wiregen", NativeTypes: true, EmitPacketRuntime: true, EmitPacketPools: true, Layout: overlay})
 	if err != nil {
@@ -728,9 +732,12 @@ func TestGenerateAppliesLayoutOverlay(t *testing.T) {
 	}
 	packet := files["protocol/packet/set_player_game_type.go"]
 	for _, want := range []string{
+		"type SetPlayerGameMode struct",
+		"func (*SetPlayerGameMode) ID() uint32",
+		"IDSetPlayerGameMode",
 		"PlayerGameMode protocol.GameType",
 		"pk.PlayerGameMode.Marshal(io)",
-		"[]protocol.SetPlayerGameTypeRowsItemStruct",
+		"[]protocol.SetPlayerGameModeRowsItemStruct",
 		"GameTypeCreative protocol.GameType = 1",
 		"GameTypeSurvival protocol.GameType = 0",
 	} {
@@ -744,7 +751,7 @@ func TestGenerateAppliesLayoutOverlay(t *testing.T) {
 	if strings.Contains(packet, "GameTypeGameTypeCreative") {
 		t.Fatal("reviewed constant name was prefixed with the enum name")
 	}
-	if strings.Index(packet, "const (") > strings.Index(packet, "type SetPlayerGameType struct") {
+	if strings.Index(packet, "const (") > strings.Index(packet, "type SetPlayerGameMode struct") {
 		t.Fatalf("relocated constants are not above the packet:\n%s", packet)
 	}
 	if !strings.Contains(files["protocol/game_mode.go"], "type GameType uint8") {
@@ -803,5 +810,34 @@ func TestGenerateInlinesSingleUsePayloadStructs(t *testing.T) {
 	other := files["protocol/packet/other.go"]
 	if !strings.Contains(other, "Extra protocol.Shared") || !strings.Contains(generatedSource(files), "type Shared struct") {
 		t.Fatalf("sub-struct of a multi-field packet was inlined:\n%s", other)
+	}
+}
+
+// A plain integer marked as an actor identifier uses the identifier IO
+// operation of its wire width and keeps its Go type.
+func TestGenerateAppliesSemanticsOverlay(t *testing.T) {
+	m := manifest.Manifest{
+		SchemaVersion: 2,
+		Target:        manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 1},
+		Sources:       []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "1", Digest: "fixture", MinecraftVersion: "fixture", ProtocolVersion: 1}},
+		Packets: []manifest.Packet{{ID: 1, Name: "ActorPickRequestPacket", Direction: manifest.DirectionServerbound, Fields: []manifest.Field{
+			{Ordinal: 0, Name: "Actor ID", Encode: manifest.Primitive("i64le"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+			{Ordinal: 1, Name: "Target", Encode: manifest.Primitive("var_u64"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+			{Ordinal: 2, Name: "Slot", Encode: manifest.Primitive("u8"), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		}}},
+	}
+	overlay := semantics.Overlay{Fields: map[string]string{
+		semantics.FieldKey("ActorPickRequestPacket", "Actor ID"): semantics.ActorUniqueID,
+		semantics.FieldKey("ActorPickRequestPacket", "Target"):   semantics.ActorRuntimeID,
+	}}
+	files, err := GenerateWithOptions(m, Options{ProtocolImportPath: "wiregen", NativeTypes: true, EmitPacketRuntime: true, EmitPacketPools: true, Semantics: overlay})
+	if err != nil {
+		t.Fatal(err)
+	}
+	packet := files["protocol/packet/actor_pick_request.go"]
+	for _, want := range []string{`ActorID\s+int64`, `Target\s+uint64`, `io\.ActorUniqueIDInt64\(&pk\.ActorID\)`, `io\.ActorRuntimeID\(&pk\.Target\)`, `io\.Uint8\(&pk\.Slot\)`} {
+		if !regexp.MustCompile(want).MatchString(packet) {
+			t.Fatalf("semantics output omits %q:\n%s", want, packet)
+		}
 	}
 }

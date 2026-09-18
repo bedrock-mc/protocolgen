@@ -6,7 +6,7 @@ import (
 	"protocolgen/generated/1.26.44/go/protocol"
 )
 
-// ServerboundDataStore is sent by the client to update a data store property on the server.
+// ServerBoundDataStore is sent by the client to update a data store property on the server.
 type ServerboundDataStore struct {
 	// Update contains the data store update.
 	Update protocol.BedrockDDUIDataStoreUpdate

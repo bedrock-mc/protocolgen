@@ -23,7 +23,7 @@ func (*CreatePhoto) ID() uint32 {
 }
 
 func (pk *CreatePhoto) Marshal(io protocol.IO) {
-	io.Uint64(&pk.RawID)
+	io.ActorUniqueIDUint64(&pk.RawID)
 	io.String(&pk.PhotoName)
 	io.String(&pk.PhotoItemName)
 }

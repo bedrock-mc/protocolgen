@@ -39,10 +39,10 @@ func (*PhotoTransfer) ID() uint32 {
 func (pk *PhotoTransfer) Marshal(io protocol.IO) {
 	io.String(&pk.PhotoName)
 	protocol.Pattern(io, &pk.PhotoName, "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.jpeg$")
-	io.BytesLimits(&pk.PhotoData, 0, 20971520)
+	io.ByteSliceLimits(&pk.PhotoData, 0, 20971520)
 	io.String(&pk.BookID)
 	pk.Type.Marshal(io)
 	pk.SourceType.Marshal(io)
-	io.Int64(&pk.OwnerID)
+	io.ActorUniqueIDInt64(&pk.OwnerID)
 	io.String(&pk.NewPhotoName)
 }

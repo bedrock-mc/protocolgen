@@ -28,14 +28,21 @@ type PlayerAuthInput struct {
 	InputMode protocol.InputMode
 	// PlayMode specifies the way that the player is playing. The values it holds, which are rather random, may be
 	// found above.
-	PlayMode            protocol.ClientPlayMode
+	PlayMode protocol.ClientPlayMode
+	// InteractionModel is a constant representing the interaction model the player is using. It is one of the
+	// constants that may be found above.
 	NewInteractionModel protocol.NewInteractionModel
 	InteractRotation    mgl32.Vec2
-	ClientTick          uint64
-	PosDelta            mgl32.Vec3
-	ItemUseTransaction  protocol.Optional[protocol.PackedItemUseLegacyInventoryTransaction]
+	// Tick is the server tick at which the packet was sent. It is used in relation to
+	// CorrectPlayerMovePrediction.
+	ClientTick uint64
+	// Delta was the delta between the old and the new position. There isn't any practical use for this field as
+	// it can be calculated by the server itself.
+	PosDelta           mgl32.Vec3
+	ItemUseTransaction protocol.Optional[protocol.PackedItemUseLegacyInventoryTransaction]
 	// ItemStackRequest is sent by the client to change an item in their inventory.
-	ItemStackRequest   protocol.Optional[protocol.ItemStackRequestData]
+	ItemStackRequest protocol.Optional[protocol.ItemStackRequestData]
+	// BlockActions is a slice of block actions that the client has interacted with.
 	PlayerBlockActions protocol.Optional[[]protocol.PlayerBlockActionData]
 	// VehicleRotation is the rotation of the vehicle that the player is in, if any.
 	VehicleRotation protocol.Optional[mgl32.Vec2]

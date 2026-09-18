@@ -9,6 +9,7 @@ import (
 // DebugInfo is a packet sent by the server to the client. It does not seem to do anything when sent to the
 // normal client in 1.16.
 type DebugInfo struct {
+	// PlayerUniqueID is the unique ID of the player that the packet is sent to.
 	ActorID int64
 	// Data is the debug data.
 	Data []byte
@@ -21,5 +22,5 @@ func (*DebugInfo) ID() uint32 {
 
 func (pk *DebugInfo) Marshal(io protocol.IO) {
 	io.ActorUniqueID(&pk.ActorID)
-	io.Bytes(&pk.Data)
+	io.ByteSlice(&pk.Data)
 }

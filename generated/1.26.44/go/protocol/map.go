@@ -83,8 +83,8 @@ const (
 // Marshal reads or writes MapItemTrackedActorType through its int32 wire encoding.
 func (x *MapItemTrackedActorType) Marshal(io IO) { io.Int32((*int32)(x)) }
 
-// MapItemTrackedActorUniqueID is an object on a map that is 'tracked' by the client, such as an entity or a
-// block. This object may move, which is handled client-side.
+// MapTrackedObject is an object on a map that is 'tracked' by the client, such as an entity or a block. This
+// object may move, which is handled client-side.
 type MapItemTrackedActorUniqueID struct {
 	// Type is the type of the tracked object. It is either MapObjectTypeEntity or MapObjectTypeBlock.
 	Type MapItemTrackedActorType

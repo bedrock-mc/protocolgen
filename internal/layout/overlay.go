@@ -42,9 +42,17 @@ type FileEntry struct {
 	Rationale string `json:"rationale"`
 }
 
+// TypeEntry gives one type or packet the fork's Go name.
+type TypeEntry struct {
+	TypeID    string `json:"type_id"`
+	Name      string `json:"name"`
+	Rationale string `json:"rationale"`
+}
+
 type Document struct {
 	SchemaVersion uint32          `json:"schema_version"`
 	Target        manifest.Target `json:"target"`
+	Types         []TypeEntry     `json:"types"`
 	Constants     []ConstantEntry `json:"constants"`
 	Fields        []FieldEntry    `json:"fields"`
 	Files         []FileEntry     `json:"files"`
@@ -58,9 +66,18 @@ type Placement struct {
 }
 
 type Overlay struct {
+	Types     map[string]string // type ID or packet name -> Go name
 	Constants map[string]Placement
 	Fields    map[string]string // FieldKey -> Go name
 	Files     map[string]string // type ID or packet name -> file stem
+}
+
+// TypeName returns the reviewed Go name for a type or packet, or "".
+func (o Overlay) TypeName(typeID string) string {
+	if o.Types == nil {
+		return ""
+	}
+	return o.Types[typeID]
 }
 
 // File returns the reviewed file stem for a type or packet, or "".
@@ -94,7 +111,10 @@ func LoadOverlay(path string, m manifest.Manifest) (Overlay, error) {
 	if err := ValidateOverlay(m, document); err != nil {
 		return Overlay{}, err
 	}
-	overlay := Overlay{Constants: map[string]Placement{}, Fields: map[string]string{}, Files: map[string]string{}}
+	overlay := Overlay{Types: map[string]string{}, Constants: map[string]Placement{}, Fields: map[string]string{}, Files: map[string]string{}}
+	for _, entry := range document.Types {
+		overlay.Types[entry.TypeID] = entry.Name
+	}
 	for _, entry := range document.Constants {
 		overlay.Constants[entry.TypeID] = Placement{Package: entry.Package, File: entry.File, Names: entry.Names}
 	}
@@ -127,6 +147,19 @@ func ValidateOverlay(m manifest.Manifest, document Document) error {
 	}
 	for typeID := range fields {
 		known[typeID] = true
+	}
+	seenType := map[string]bool{}
+	for _, entry := range document.Types {
+		if seenType[entry.TypeID] {
+			return fmt.Errorf("layout overlay repeats type name for %q", entry.TypeID)
+		}
+		seenType[entry.TypeID] = true
+		if !known[entry.TypeID] && !packets[entry.TypeID] {
+			return fmt.Errorf("layout overlay type name %q is not a manifest type or packet", entry.TypeID)
+		}
+		if !naming.IsExportedGoIdentifier(entry.Name) {
+			return fmt.Errorf("layout overlay type %q maps to invalid identifier %q", entry.TypeID, entry.Name)
+		}
 	}
 	seenFile := map[string]bool{}
 	for _, entry := range document.Files {
@@ -265,6 +298,7 @@ func knownEnumsAndFields(m manifest.Manifest) (map[string]map[string]bool, map[s
 
 // SortedDocument orders entries so a regenerated overlay diffs cleanly.
 func SortedDocument(document Document) Document {
+	sort.Slice(document.Types, func(i, j int) bool { return document.Types[i].TypeID < document.Types[j].TypeID })
 	sort.Slice(document.Constants, func(i, j int) bool { return document.Constants[i].TypeID < document.Constants[j].TypeID })
 	sort.Slice(document.Files, func(i, j int) bool { return document.Files[i].TypeID < document.Files[j].TypeID })
 	sort.Slice(document.Fields, func(i, j int) bool {

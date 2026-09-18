@@ -13,9 +13,12 @@ import (
 // points. Vanilla sends this packet instead of the SetActorMotion packet when 'spatial optimisations' are
 // enabled.
 type MotionPredictionHints struct {
+	// EntityRuntimeID is the runtime ID of the entity whose velocity is sent to the client.
 	MRuntimeID uint64
-	MMotion    mgl32.Vec3
-	MOnGround  bool
+	// Velocity is the server-calculated velocity of the entity at the point of sending the packet.
+	MMotion mgl32.Vec3
+	// OnGround specifies if the server currently thinks the entity is on the ground.
+	MOnGround bool
 }
 
 // ID ...

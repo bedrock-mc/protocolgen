@@ -32,5 +32,5 @@ func (pk *ResourcePackChunkData) Marshal(io protocol.IO) {
 	io.String(&pk.ResourceName)
 	io.Uint32(&pk.ChunkID)
 	io.Uint64(&pk.ByteOffset)
-	io.Bytes(&pk.ChunkData)
+	io.ByteSlice(&pk.ChunkData)
 }

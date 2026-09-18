@@ -10,9 +10,13 @@ import (
 // Typically, a certain amount of chunks is sent to the client before sending it the spawn PlayStatus packet,
 // so that the client spawns in a loaded world.
 type LevelChunk struct {
-	ChunkPosition              protocol.ChunkPos
-	DimensionID                protocol.DimensionType
-	SubChunksCount             uint32
+	// Position contains the X and Z coordinates of the chunk sent. You can convert a block coordinate to a chunk
+	// coordinate by right-shifting it four bits.
+	ChunkPosition  protocol.ChunkPos
+	DimensionID    protocol.DimensionType
+	SubChunksCount uint32
+	// SubChunkLimit is the maximum amount of sub-chunks a client will request when in request mode. A value of -1
+	// means there is no limit.
 	ClientRequestSubChunkLimit protocol.Optional[int32]
 	// CacheEnabled specifies if the client blob cache should be enabled. This system is based on hashes of blobs
 	// which are consistent and saved by the client in combination with that blob, so that the server does not
@@ -40,5 +44,5 @@ func (pk *LevelChunk) Marshal(io protocol.IO) {
 	})
 	io.Bool(&pk.CacheEnabled)
 	protocol.SliceLimits(io, &pk.CacheMetadata, 0, 65)
-	io.Bytes(&pk.SerializedChunkData)
+	io.ByteSlice(&pk.SerializedChunkData)
 }

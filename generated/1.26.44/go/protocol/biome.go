@@ -160,6 +160,7 @@ func (x *BiomeDefinitionChunkGenData) Marshal(io IO) {
 // BiomeDefinition represents a biome definition in the game. This can be a vanilla biome or a completely
 // custom biome.
 type BiomeDefinitionData struct {
+	// NameIndex represents the index of the biome name in the string list.
 	ID uint16
 	// Temperature is the temperature of the biome, used for weather, biome behaviours and sky colour.
 	Temperature float32
@@ -170,7 +171,8 @@ type BiomeDefinitionData struct {
 	// Depth is the depth of the biome.
 	Depth float32
 	// Scale is the scale of the biome.
-	Scale             float32
+	Scale float32
+	// BiomeID is the biome ID.
 	MapWaterColorARGB int32
 	// Rain is true if the biome has rain, false if it is a dry biome.
 	Rain bool
@@ -257,7 +259,7 @@ func (x *BiomeMesaSurfaceData) Marshal(io IO) {
 	io.Bool(&x.HasForest)
 }
 
-// BiomeMountainParamsData specifies the parameters for a mountain biome.
+// BiomeMountainParameters specifies the parameters for a mountain biome.
 type BiomeMountainParamsData struct {
 	// SteepBlock is the runtime ID of the block to use for steep slopes.
 	SteepBlock uint32
@@ -283,8 +285,8 @@ func (x *BiomeMountainParamsData) Marshal(io IO) {
 	io.Bool(&x.TopSlideEnabled)
 }
 
-// BiomeMultinoiseGenRulesData specifies the rules for multi-noise biomes, which are biomes that are defined
-// by multiple noise parameters instead of just temperature and humidity.
+// BiomeMultiNoiseRules specifies the rules for multi-noise biomes, which are biomes that are defined by
+// multiple noise parameters instead of just temperature and humidity.
 type BiomeMultinoiseGenRulesData struct {
 	// Temperature is the temperature level of the biome.
 	Temperature float32
@@ -510,7 +512,7 @@ func (x *BiomeWeightedData) Marshal(io IO) {
 	io.Uint32(&x.Weight)
 }
 
-// BiomeWeightedTemperatureData defines the weight for a temperature, used for weighted randomness.
+// BiomeTemperatureWeight defines the weight for a temperature, used for weighted randomness.
 type BiomeWeightedTemperatureData struct {
 	// Temperature is the temperature that can be selected.
 	Temperature int32

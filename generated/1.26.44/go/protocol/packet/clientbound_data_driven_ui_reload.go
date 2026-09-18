@@ -6,7 +6,7 @@ import (
 	"protocolgen/generated/1.26.44/go/protocol"
 )
 
-// ClientboundDataDrivenUIReload is sent by the server to reload the data-driven UI on the client.
+// ClientBoundDataDrivenUIReload is sent by the server to reload the data-driven UI on the client.
 type ClientboundDataDrivenUIReload struct {
 }
 

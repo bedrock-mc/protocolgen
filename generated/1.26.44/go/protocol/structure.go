@@ -54,13 +54,27 @@ func (x *StructureRedstoneSaveMode) Marshal(io IO) { io.Uint8((*uint8)(x)) }
 // StructureSettings is a struct holding settings of a structure block. Its fields may be changed using the
 // in-game UI on the client-side.
 type StructureSettings struct {
-	StructurePaletteName                            string
-	ShouldIgnoreEntities                            bool
-	ShouldIgnoreBlocks                              bool
+	// PaletteName is the name of the palette used in the structure. Currently, it seems that this field is always
+	// 'default'.
+	StructurePaletteName string
+	// IgnoreEntities specifies if the structure should ignore entities or include them. If set to false, entities
+	// will also show up in the exported structure.
+	ShouldIgnoreEntities bool
+	// IgnoreBlocks specifies if the structure should ignore blocks or include them. If set to false, blocks will
+	// show up in the exported structure.
+	ShouldIgnoreBlocks bool
+	// AllowNonTickingChunks specifies if the structure should allow non-ticking chunks. If set to false, the
+	// structure will export non-ticking chunks.
 	ShouldAllowNonTickingPlayerAndTickingAreaChunks bool
-	StructureSize                                   BlockPos
-	StructureOffset                                 BlockPos
-	LastEditPlayer                                  int64
+	// Size is the size of the area that is about to be exported. The area exported will start at the Position +
+	// Offset, and will extend as far as Size specifies.
+	StructureSize BlockPos
+	// Offset is the offset position that was set in the structure block. The area exported is offset by this
+	// position.
+	StructureOffset BlockPos
+	// LastEditingPlayerUniqueID is the unique ID of the player that last edited the structure block that these
+	// settings concern.
+	LastEditPlayer int64
 	// Rotation is the rotation that the structure block should obtain. See the constants above for available
 	// options.
 	Rotation Rotation
@@ -68,11 +82,17 @@ type StructureSettings struct {
 	// axis or both.
 	Mirror Mirror
 	// AnimationMode ...
-	AnimationMode    AnimationMode
+	AnimationMode AnimationMode
+	// AnimationDuration ...
 	AnimationSeconds float32
-	IntegrityValue   float32
-	IntegritySeed    uint32
-	RotationPivot    mgl32.Vec3
+	// Integrity is usually 1, but may be set to a number between 0 and 1 to omit blocks randomly, using the Seed
+	// that follows.
+	IntegrityValue float32
+	// Seed is the seed used to omit blocks if Integrity is not equal to one. If the Seed is 0, a random seed is
+	// selected to omit blocks.
+	IntegritySeed uint32
+	// Pivot is the pivot around which the structure may be rotated.
+	RotationPivot mgl32.Vec3
 }
 
 // Marshal reads or writes StructureSettings using its canonical wire layout.

@@ -20,6 +20,7 @@ import (
 	"protocolgen/internal/layout"
 	"protocolgen/internal/manifest"
 	"protocolgen/internal/naming"
+	"protocolgen/internal/semantics"
 )
 
 type typeDefinition struct {
@@ -70,7 +71,9 @@ type generator struct {
 	domains            domains.Overlay
 	docs               docs.Overlay
 	layout             layout.Overlay
+	semantics          semantics.Overlay
 	usage              flatten.Usage
+	enumIdentities     map[string]int      // enum definitions per type ID; layout constants apply only to unique ones
 	packetConstants    map[string][]string // packet file stem -> const blocks relocated there by the layout overlay
 }
 
@@ -114,6 +117,7 @@ type Options struct {
 	Domains            domains.Overlay
 	Docs               docs.Overlay
 	Layout             layout.Overlay
+	Semantics          semantics.Overlay
 	NativeTypes        bool
 	EmitPacketRuntime  bool
 	EmitPacketPools    bool
@@ -149,6 +153,18 @@ func GenerateWithOptions(m manifest.Manifest, options Options) (map[string]strin
 	if options.ProtocolImportPath == "" || strings.ContainsAny(options.ProtocolImportPath, " \t\r\n") {
 		return nil, fmt.Errorf("invalid protocol import path %q", options.ProtocolImportPath)
 	}
+	// Layout type names override the naming overlay for shared types; packets
+	// are named directly below.
+	if len(options.Layout.Types) > 0 {
+		names := make(map[string]string, len(options.Naming.Names)+len(options.Layout.Types))
+		for typeID, name := range options.Naming.Names {
+			names[typeID] = name
+		}
+		for typeID, name := range options.Layout.Types {
+			names[typeID] = name
+		}
+		options.Naming = naming.Overlay{Names: names}
+	}
 	g := &generator{
 		definitions:        map[string]typeDefinition{},
 		identity:           map[string]string{},
@@ -161,6 +177,7 @@ func GenerateWithOptions(m manifest.Manifest, options Options) (map[string]strin
 		domains:            options.Domains,
 		docs:               options.Docs,
 		layout:             options.Layout,
+		semantics:          options.Semantics,
 		usage:              flatten.Count(m),
 		packetConstants:    map[string][]string{},
 	}
@@ -168,8 +185,12 @@ func GenerateWithOptions(m manifest.Manifest, options Options) (map[string]strin
 	sort.Slice(packets, func(i, j int) bool { return packets[i].ID < packets[j].ID })
 	packetNames := map[uint32]string{}
 	for _, packet := range packets {
-		name := packetTypeName(packet.Name)
-		if err := g.resolver.Reserve(packet.Name, naming.PacketTypeName(packet.Name), exportName); err != nil {
+		neutral := naming.PacketTypeName(packet.Name)
+		if reviewed := g.layout.TypeName(packet.Name); reviewed != "" {
+			neutral = reviewed
+		}
+		name := exportName(neutral)
+		if err := g.resolver.Reserve(packet.Name, neutral, exportName); err != nil {
 			return nil, fmt.Errorf("packet %s: %w", packet.Name, err)
 		}
 		g.usedNames[name] = true
@@ -179,7 +200,7 @@ func GenerateWithOptions(m manifest.Manifest, options Options) (map[string]strin
 			if err := ensureCodecSymmetric(field); err != nil {
 				return nil, fmt.Errorf("packet %s field %s: %w", packet.Name, field.Name, err)
 			}
-			if _, err := g.goType(field.Encode, name+g.fieldName(effective.Owner, field.Name)); err != nil {
+			if _, err := g.goType(g.semantics.Apply(effective.Owner, field), name+g.fieldName(effective.Owner, field.Name)); err != nil {
 				return nil, fmt.Errorf("packet %s field %s: %w", packet.Name, field.Name, err)
 			}
 		}
@@ -563,11 +584,12 @@ func (g *generator) registerStruct(node manifest.Node, hint string) (string, err
 	var fields []typedField
 	for _, field := range node.Fields {
 		fieldName := uniqueFieldName(g.fieldName(nodeTypeID(node), field.Name), used)
-		fieldType, err := g.goType(field.Encode, name+fieldName)
+		encode := g.semantics.Apply(nodeTypeID(node), field)
+		fieldType, err := g.goType(encode, name+fieldName)
 		if err != nil {
 			return "", err
 		}
-		fields = append(fields, typedField{Name: fieldName, WireName: field.Name, Type: fieldType, Node: field.Encode})
+		fields = append(fields, typedField{Name: fieldName, WireName: field.Name, Type: fieldType, Node: encode})
 	}
 	definition := g.definitions[name]
 	definition.Fields = fields
@@ -625,8 +647,12 @@ const (
 
 func (g *generator) emitFiles(m manifest.Manifest, packets []manifest.Packet, packetNames map[uint32]string) (map[string]string, error) {
 	definitions := make([]typeDefinition, 0, len(g.definitions))
+	g.enumIdentities = map[string]int{}
 	for _, definition := range g.definitions {
 		definitions = append(definitions, definition)
+		if definition.Kind == manifest.KindEnum {
+			g.enumIdentities[definition.TypeID]++
+		}
 	}
 	sort.Slice(definitions, func(i, j int) bool { return definitions[i].Name < definitions[j].Name })
 
@@ -807,6 +833,11 @@ func emitDefinitionBody(g *generator, definition typeDefinition) (string, error)
 	case manifest.KindEnum:
 		fmt.Fprintf(&b, "type %s %s\n\n", definition.Name, definition.Underlying)
 		placement, placed := g.layout.Constants[definition.TypeID]
+		if g.enumIdentities[definition.TypeID] != 1 {
+			// Anonymous enums can share an inferred identity; a reviewed
+			// placement cannot tell them apart, so neither gets it.
+			placement, placed = layout.Placement{}, false
+		}
 		constants, err := enumConstants(definition, placement)
 		if err != nil {
 			return "", err
@@ -859,7 +890,7 @@ func enumConstants(definition typeDefinition, placement layout.Placement) (strin
 	for _, variant := range definition.Variants {
 		name := placement.Names[variant.Name]
 		if name == "" {
-			name = definition.Name + enumVariantName(variant.Name)
+			name = definition.Name + naming.EnumVariantName(variant.Name)
 		}
 		if previous, exists := used[name]; exists {
 			return "", fmt.Errorf("enum %s variants %q and %q both map to %s", definition.Name, previous, variant.Name, name)
@@ -894,8 +925,9 @@ func (g *generator) emitPacket(packet manifest.Packet, packetName string, consta
 			baseName = "IDValue"
 		}
 		name := uniqueFieldName(baseName, used)
-		typ := mustGoType(g, field.Encode, packetName+name)
-		fields = append(fields, packetField{name: name, wireName: field.Name, owner: item.Owner, typ: qualifyGoType(typ, g.definitions), node: field.Encode})
+		encode := g.semantics.Apply(item.Owner, field)
+		typ := mustGoType(g, encode, packetName+name)
+		fields = append(fields, packetField{name: name, wireName: field.Name, owner: item.Owner, typ: qualifyGoType(typ, g.definitions), node: encode})
 	}
 	imports := append([]string{g.protocolImportPath}, goImportsForFields(fields)...)
 	writeGoImports(&b, imports)
@@ -1178,9 +1210,9 @@ func (e *marshalEmitter) node(b *strings.Builder, node manifest.Node, expression
 		}
 		if node.Constraints != nil && (node.Constraints.MinLength != nil || node.Constraints.MaxLength != nil) {
 			min, max := lengthBounds(node.Constraints.MinLength, node.Constraints.MaxLength)
-			fmt.Fprintf(b, "%sio.BytesLimits(%s, %d, %d)\n", indent, address.address(expression), min, max)
+			fmt.Fprintf(b, "%sio.ByteSliceLimits(%s, %d, %d)\n", indent, address.address(expression), min, max)
 		} else {
-			fmt.Fprintf(b, "%sio.Bytes(%s)\n", indent, address.address(expression))
+			fmt.Fprintf(b, "%sio.ByteSlice(%s)\n", indent, address.address(expression))
 		}
 		return nil
 	case manifest.KindBitset:
@@ -1490,7 +1522,7 @@ func (e *marshalEmitter) directIOCall(node manifest.Node) (string, bool) {
 		}
 	case manifest.KindBytes:
 		if varuint32Prefix(node) {
-			return "Bytes", true
+			return "ByteSlice", true
 		}
 	}
 	return "", false
@@ -1771,65 +1803,6 @@ func primitiveGoType(code string) (string, error) {
 	default:
 		return "", fmt.Errorf("unsupported primitive code %q", code)
 	}
-}
-
-func enumVariantName(value string) string {
-	if value == "" {
-		return "Unknown"
-	}
-	allUpper := true
-	for _, r := range value {
-		if unicode.IsLetter(r) && unicode.IsLower(r) {
-			allUpper = false
-			break
-		}
-	}
-	if !allUpper {
-		return normalizeEnumInitialisms(exportName(value))
-	}
-	var b strings.Builder
-	for _, token := range strings.FieldsFunc(value, func(r rune) bool { return !unicode.IsLetter(r) && !unicode.IsDigit(r) }) {
-		if token == "" {
-			continue
-		}
-		if initialism, ok := enumInitialisms[token]; ok {
-			b.WriteString(initialism)
-			continue
-		}
-		lower := strings.ToLower(token)
-		b.WriteString(exportName(lower))
-	}
-	if b.Len() == 0 {
-		return "Unknown"
-	}
-	return normalizeGoInitialisms(b.String())
-}
-
-func normalizeEnumInitialisms(value string) string {
-	for _, replacement := range []struct{ from, to string }{
-		{from: "Tntcart", to: "TNTCart"},
-		{from: "Fishpos", to: "FishPosition"},
-		{from: "Hooktime", to: "HookTime"},
-		{from: "Tnt", to: "TNT"},
-		{from: "Nbt", to: "NBT"},
-		{from: "Uuid", to: "UUID"},
-		{from: "Argb", to: "ARGB"},
-		{from: "Rgba", to: "RGBA"},
-		{from: "Rgb", to: "RGB"},
-		{from: "Uwp", to: "UWP"},
-		{from: "Osx", to: "OSX"},
-	} {
-		value = strings.ReplaceAll(value, replacement.from, replacement.to)
-	}
-	return value
-}
-
-var enumInitialisms = map[string]string{
-	"ANIM": "Animation", "FISHPOS": "FishPosition", "HOOKTIME": "HookTime", "ID": "ID", "NBT": "NBT", "OSX": "OSX", "RGBA": "RGBA", "RGB": "RGB", "TNT": "TNT", "TNTCART": "TNTCart", "UWP": "UWP", "URL": "URL", "URI": "URI", "UUID": "UUID", "X": "X", "Y": "Y", "Z": "Z",
-}
-
-func packetTypeName(value string) string {
-	return exportName(naming.PacketTypeName(value))
 }
 
 func publicTypeName(value string) string {

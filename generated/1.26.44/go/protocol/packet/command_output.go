@@ -12,6 +12,9 @@ import (
 // will not do what is expected: The message should go to the websocket server, not to the client's chat. The
 // CommandOutput packet will make sure the messages are relayed to the correct origin of the command request.
 type CommandOutput struct {
+	// CommandOrigin is the data specifying the origin of the command. In other words, the source that the command
+	// request was from, such as the player itself or a websocket server. The client forwards the messages in this
+	// packet to the right origin, depending on what is sent here.
 	OriginData protocol.CommandOriginData
 	Output     protocol.CommandOutputData
 }

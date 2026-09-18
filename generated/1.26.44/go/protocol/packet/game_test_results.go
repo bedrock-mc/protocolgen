@@ -12,7 +12,8 @@ type GameTestResults struct {
 	// Succeeded indicates whether the test succeeded or not.
 	Succeeded bool
 	// Error is the error that occurred. If Succeeded is true, this field is empty.
-	Error    string
+	Error string
+	// Name represents the name of the test.
 	TestName string
 }
 

@@ -191,7 +191,9 @@ pub enum AttributeLayerSyncData {
         attributes_layer_settings: EASAttributeLayerSettings,
     },
     UpdateEnvironmentAttributesData {
+        /// AttributeName is the name of the attribute.
         attribute_layer_name: String,
+        /// Attribute is the current attribute value.
         attribute_layer_dimension: DimensionType,
         attributes: Vec<EASEnvironmentAttributeData>,
     },
@@ -285,7 +287,7 @@ impl wire::Decode for AttributeLayerSyncData {
 
 // Domain: bedrock_profile
 
-/// BedrockProfileWhiskerDiagnosticsScopeDataSummary represents a whisker profiler scope diagnostic summary.
+/// WhiskerScopeDataSummary represents a whisker profiler scope diagnostic summary.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct BedrockProfileWhiskerDiagnosticsScopeDataSummary {
     /// `label` is the label of the whisker scope.
@@ -832,6 +834,7 @@ impl wire::Decode for BiomeDefinitionChunkGenData {
 /// custom biome.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct BiomeDefinitionData {
+    /// NameIndex represents the index of the biome name in the string list.
     pub id: wire::U16LE,
     /// `temperature` is the temperature of the biome, used for weather, biome behaviours and sky colour.
     pub temperature: wire::F32LE,
@@ -843,6 +846,7 @@ pub struct BiomeDefinitionData {
     pub depth: wire::F32LE,
     /// `scale` is the scale of the biome.
     pub scale: wire::F32LE,
+    /// BiomeID is the biome ID.
     pub map_water_color_argb: wire::I32LE,
     /// `rain` is true if the biome has rain, false if it is a dry biome.
     pub rain: bool,
@@ -1036,7 +1040,7 @@ impl wire::Decode for BiomeMesaSurfaceData {
     }
 }
 
-/// BiomeMountainParamsData specifies the parameters for a mountain biome.
+/// BiomeMountainParameters specifies the parameters for a mountain biome.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct BiomeMountainParamsData {
     /// `steep_block` is the runtime ID of the block to use for steep slopes.
@@ -1083,8 +1087,8 @@ impl wire::Decode for BiomeMountainParamsData {
     }
 }
 
-/// BiomeMultinoiseGenRulesData specifies the rules for multi-noise biomes, which are biomes that are defined
-/// by multiple noise parameters instead of just temperature and humidity.
+/// BiomeMultiNoiseRules specifies the rules for multi-noise biomes, which are biomes that are defined by
+/// multiple noise parameters instead of just temperature and humidity.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct BiomeMultinoiseGenRulesData {
     /// `temperature` is the temperature level of the biome.
@@ -1568,7 +1572,7 @@ impl wire::Decode for BiomeWeightedData {
     }
 }
 
-/// BiomeWeightedTemperatureData defines the weight for a temperature, used for weighted randomness.
+/// BiomeTemperatureWeight defines the weight for a temperature, used for weighted randomness.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct BiomeWeightedTemperatureData {
     /// `temperature` is the temperature that can be selected.
@@ -1725,8 +1729,8 @@ impl wire::Decode for CameraAimAssistActorPriorityData {
     }
 }
 
-/// CameraAimAssistCategoryDefinition is an aim assist category that defines priorities for specific blocks
-/// and entities.
+/// CameraAimAssistCategory is an aim assist category that defines priorities for specific blocks and
+/// entities.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CameraAimAssistCategoryDefinition {
     /// `name` is the name of the category which can be used by a CameraAimAssistPreset.
@@ -1754,8 +1758,8 @@ impl wire::Decode for CameraAimAssistCategoryDefinition {
     }
 }
 
-/// CameraAimAssistCategoryPriorities represents the block and entity specific priorities for targetting. The
-/// aim assist will select the block or entity with the highest priority within the specified thresholds.
+/// CameraAimAssistPriorities represents the block and entity specific priorities for targetting. The aim
+/// assist will select the block or entity with the highest priority within the specified thresholds.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CameraAimAssistCategoryPriorities {
     /// `entities` is a list of priorities for specific entity identifiers.
@@ -2385,8 +2389,10 @@ impl wire::Decode for CameraInstructionFade {
 pub struct CameraInstructionFieldOfView {
     /// `field_of_view` is the field of view of the camera.
     pub field_of_view: wire::F32LE,
+    /// EaseTime is the time in seconds that the easing function should take.
     pub fov_ease_time: wire::F32LE,
     pub fov_ease_type: String,
+    /// Clear can be set to true to clear the current instruction.
     pub field_of_view_clear: bool,
 }
 
@@ -3068,7 +3074,9 @@ impl wire::Decode for CameraPresetList {
 /// CameraProgressOption represents a progress keyframe option for camera spline instructions.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CameraProgressOption {
+    /// Value is the progress value.
     pub key_frame_value: wire::F32LE,
+    /// Time is the time for this progress option.
     pub key_frame_time: wire::F32LE,
     pub key_frame_easing_func: String,
 }
@@ -3121,7 +3129,9 @@ impl wire::Decode for CameraRotation {
 /// CameraRotationOption represents a rotation option for camera spline instructions.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CameraRotationOption {
+    /// Value is the rotation value.
     pub key_frame_value: glam::Vec3,
+    /// Time is the time for this rotation option.
     pub key_frame_time: wire::F32LE,
     pub key_frame_easing_func: String,
 }
@@ -3228,6 +3238,7 @@ pub struct CameraSplineInstruction {
     pub curve: Vec<glam::Vec3>,
     /// `progress_key_frames` is a list of progress key frames for the spline.
     pub progress_key_frames: Vec<CameraProgressOption>,
+    /// RotationOptions is a list of rotation options for the spline.
     pub rotation_option: Vec<CameraRotationOption>,
     /// `spline_identifier` is an optional identifier for referencing the spline by name.
     pub spline_identifier: String,
@@ -3908,7 +3919,13 @@ impl wire::Decode for CommandOutputData {
 /// executed.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct CommandOutputMessage {
+    /// Message is the message that is sent to the client in the chat window. It may either be simply a message or
+    /// a translated built-in string like 'commands.tp.success.coordinates', combined with specific parameters
+    /// below.
     pub message_id: String,
+    /// Success indicates if the output message was one of a successful command execution. If set to true, the
+    /// output message is by default coloured white, whereas if set to false, the message is by default coloured
+    /// red.
     pub successful: bool,
     /// `parameters` is a list of parameters that serve to supply the message sent with additional information,
     /// such as the position that a player was teleported to or the effect that was applied to an entity. These
@@ -4210,7 +4227,9 @@ pub struct EducationLevelSettings {
     pub disable_legacy_title_bar: bool,
     /// `post_process_filter` ...
     pub post_process_filter: String,
+    /// ScreenshotBorderPath ...
     pub screenshot_border_resource_path: String,
+    /// CanModifyBlocks ...
     /// Wire presence: optional value is preceded by a presence marker.
     pub agent_capabilities: Option<bool>,
     pub local_settings: EducationLocalLevelSettings,
@@ -4370,13 +4389,19 @@ impl wire::Decode for EntityNetId {
 /// EntityLink is a link between two entities, typically being one entity riding another.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct EntityLink {
+    /// RiddenEntityUniqueID is the entity unique ID of the entity that is being ridden. For a player sitting in a
+    /// boat, this is the unique ID of the boat.
     pub target_a: ActorUniqueID,
+    /// RiderEntityUniqueID is the entity unique ID of the entity that is riding. For a player sitting in a boat,
+    /// this is the unique ID of the player.
     pub target_b: ActorUniqueID,
     /// `type_` is one of the types above. It specifies the way the entity is linked to another entity.
     pub type_: ActorLinkType,
     /// `immediate` is set to immediately dismount an entity from another. This should be set when the mount of an
     /// entity is killed.
     pub immediate: bool,
+    /// RiderInitiated specifies if the link was created by the rider, for example the player starting to ride a
+    /// horse by itself. This is generally true in vanilla environment for players.
     pub passenger_initiated: bool,
     /// `vehicle_angular_velocity` is the angular velocity of the vehicle that the rider is riding.
     pub vehicle_angular_velocity: wire::F32LE,
@@ -4431,31 +4456,49 @@ pub enum EventData {
         dimension_id: wire::ZigZag32,
     },
     PortalUsed {
+        /// FromDimensionID ...
         source_dimension_id: wire::ZigZag32,
+        /// ToDimensionID ...
         target_dimension_id: wire::ZigZag32,
     },
     MobKilled {
+        /// KillerEntityUniqueID ...
         instigator_actor_id: wire::ZigZag64,
+        /// VictimEntityUniqueID ...
         target_actor_id: wire::ZigZag64,
+        /// KillerEntityType ...
         instigator_child_actor_type: ActorType,
+        /// EntityDamageCause ...
         damage_source: wire::ZigZag32,
+        /// VillagerTradeTier -1 if not a trading actor.
         trade_tier: wire::ZigZag32,
+        /// VillagerDisplayName Empty if not a trading actor.
         trader_name: String,
     },
     CauldronUsed {
+        /// Colour ...
         contents_color: wire::VarUInt,
+        /// PotionID ...
         contents_type: wire::ZigZag32,
+        /// `fill_level` ...
         fill_level: wire::ZigZag32,
     },
     PlayerDied {
+        /// AttackerEntityID ...
         instigator_actor_id: wire::ZigZag32,
+        /// AttackerVariant ...
         instigator_mob_variant: wire::ZigZag32,
+        /// EntityDamageCause ...
         damage_source: wire::ZigZag32,
+        /// InRaid ...
         died_in_raid: bool,
     },
     BossKilled {
+        /// BossEntityUniqueID ...
         boss_actor_id: wire::ZigZag64,
+        /// PlayerPartySize ...
         party_size: wire::ZigZag32,
+        /// InteractionEntityType ...
         boss_type: wire::ZigZag32,
     },
     SlashCommand {
@@ -4465,8 +4508,11 @@ pub enum EventData {
         error_list: String,
     },
     MobBorn {
+        /// EntityType ...
         born_baby_entity_type: wire::ZigZag32,
+        /// Variant ...
         born_baby_entity_variant: wire::ZigZag32,
+        /// Colour ...
         born_baby_color: wire::U8,
     },
     PoiCauldronUsed {
@@ -4482,17 +4528,22 @@ pub enum EventData {
         item_id: wire::ZigZag32,
     },
     BellUsed {
+        /// `item_id` ...
         item_id: wire::ZigZag32,
     },
     ActorDefinition {
         event_name: String,
     },
     RaidUpdate {
+        /// CurrentRaidWave ...
         current_wave: wire::ZigZag32,
+        /// TotalRaidWaves ...
         total_waves: wire::ZigZag32,
+        /// WonRaid ...
         success: bool,
     },
     TargetBlockHit {
+        /// `redstone_level` ...
         redstone_level: wire::ZigZag32,
     },
     PiglinBarter {
@@ -4505,6 +4556,7 @@ pub enum EventData {
         player_waxed_or_unwaxed_copper_block_id: wire::ZigZag32,
     },
     CodeBuilderRuntimeAction {
+        /// Action ...
         code_builder_runtime_action: String,
     },
     CodeBuilderScoreboard {
@@ -4794,7 +4846,7 @@ impl wire::Decode for EventData {
 
 // Domain: experiment
 
-/// ExperimentToggle holds data on an experiment that is either enabled or disabled.
+/// ExperimentData holds data on an experiment that is either enabled or disabled.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ExperimentToggle {
     /// `name` is the name of the experiment.
@@ -5372,9 +5424,12 @@ pub enum PrimitiveShapeExtraShapeData {
         num_segments: wire::U8,
     },
     PyramidData {
+        /// `width` is the width along the X axis of the pyramid base.
         width: wire::F32LE,
+        /// `depth` is the optional depth along the Z axis of the pyramid base. It defaults to Width if unset.
         /// Wire presence: optional value is preceded by a presence marker.
         depth: Option<wire::F32LE>,
+        /// `height` is the height of the pyramid.
         height: wire::F32LE,
     },
     EllipsoidData {
@@ -5809,6 +5864,8 @@ impl wire::Decode for SetScoreInfoItem {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct InventoryAction {
     pub source: InventorySource,
+    /// InventorySlot is the slot in which the action took place. Each action only describes the change of item in
+    /// a single slot.
     pub slot: wire::VarUInt,
     pub from_item: NetworkItemStackDescriptorSerializedData,
     pub to_item: NetworkItemStackDescriptorSerializedData,
@@ -6181,17 +6238,23 @@ pub enum ItemDescriptor {
         descriptor_type: ItemDescriptorType,
     },
     ItemNameDescriptorData {
+        /// MetadataValue is the metadata value of the item. For some items, this is the damage value, whereas for
+        /// other items it is simply an identifier of a variant of the item.
         descriptor_type: ItemDescriptorType,
+        /// Name is the identifier of the item, such as minecraft:stone.
         full_name: String,
         aux_value: wire::ZigZag32,
     },
     MolangItemDescriptorData {
         descriptor_type: ItemDescriptorType,
+        /// Expression represents the MoLang expression used to identify the item/it's associated tag.
         tag_expression: String,
+        /// Version represents the version of MoLang to use.
         molang_version: MoLangVersion,
     },
     ItemTagDescriptorData {
         descriptor_type: ItemDescriptorType,
+        /// Tag represents the tag that the item is part of.
         item_tag: String,
     },
 }
@@ -6302,6 +6365,7 @@ pub enum StackRequestAction {
         destination: StackRequestSlotInfo,
     },
     DropActionData {
+        /// Count is the count of the item in the source slot that was taken towards the destination slot.
         action_type: ItemStackRequestActionType,
         amount: wire::U8,
         /// `source` is the source slot from which items were dropped to the ground.
@@ -6311,6 +6375,7 @@ pub enum StackRequestAction {
         randomly: bool,
     },
     DestroyActionData {
+        /// Count is the count of the item in the source slot that was destroyed.
         action_type: ItemStackRequestActionType,
         amount: wire::U8,
         /// `source` is the source slot from which items came that were destroyed by moving them into the creative
@@ -6323,6 +6388,8 @@ pub enum StackRequestAction {
         source: StackRequestSlotInfo,
     },
     CreateActionData {
+        /// ResultsSlot is the slot in the inventory in which the results of the crafting ingredients are to be
+        /// placed.
         action_type: ItemStackRequestActionType,
         results_index: wire::U8,
     },
@@ -6330,23 +6397,36 @@ pub enum StackRequestAction {
         action_type: ItemStackRequestActionType,
     },
     BeaconPaymentActionData {
+        /// PrimaryEffect and SecondaryEffect are the effects that were selected from the beacon.
         action_type: ItemStackRequestActionType,
+        /// PrimaryEffect and SecondaryEffect are the effects that were selected from the beacon.
         primary_effect_id: wire::ZigZag32,
+        /// PrimaryEffect and SecondaryEffect are the effects that were selected from the beacon.
         secondary_effect_id: wire::ZigZag32,
     },
     MineBlockActionData {
+        /// StackNetworkID is the unique stack ID that the client assumes to be present at the time. The server must
+        /// check if these IDs match. If they do not match, servers should reject the stack request that the action
+        /// holding this info was in.
         action_type: ItemStackRequestActionType,
+        /// HotbarSlot is the slot held by the player while mining a block.
         slot: wire::ZigZag32,
         /// `predicted_durability` is the durability of the item that the client assumes to be present at the time.
         predicted_durability: wire::ZigZag32,
         net_id_variant: wire::I32LE,
     },
     CraftRecipeActionData {
+        /// RecipeNetworkID is the network ID of the recipe that is about to be crafted. This network ID matches one
+        /// of the recipes sent in the CraftingData packet, where each of the recipes have a RecipeNetworkID as of
+        /// 1.16.
         action_type: ItemStackRequestActionType,
         recipe_net_id: RecipeNetID,
         number_of_requested_crafts: wire::U8,
     },
     CraftRecipeAutoActionData {
+        /// RecipeNetworkID is the network ID of the recipe that is about to be crafted. This network ID matches one
+        /// of the recipes sent in the CraftingData packet, where each of the recipes have a RecipeNetworkID as of
+        /// 1.16.
         action_type: ItemStackRequestActionType,
         recipe_net_id: RecipeNetID,
         number_of_requested_crafts: wire::U8,
@@ -6355,11 +6435,18 @@ pub enum StackRequestAction {
         ingredients: Vec<RecipeIngredient>,
     },
     CraftCreativeActionData {
+        /// CreativeItemNetworkID is the network ID of the creative item that is being created. This is one of the
+        /// creative item network IDs sent in the CreativeContent packet.
         action_type: ItemStackRequestActionType,
+        /// NumberOfCrafts is how many times the recipe was crafted. This field appears to be boilerplate and has no
+        /// effect.
         creative_item_net_id: wire::VarUInt,
         number_of_requested_crafts: wire::U8,
     },
     CraftRecipeOptionalActionData {
+        /// RecipeNetworkID is the network ID of the multi-recipe that is about to be crafted. This network ID matches
+        /// one of the multi-recipes sent in the CraftingData packet, where each of the recipes have a RecipeNetworkID
+        /// as of 1.16.
         action_type: ItemStackRequestActionType,
         recipe_net_id: RecipeNetID,
         filtered_string_index: wire::I32LE,
@@ -6802,6 +6889,9 @@ impl wire::Decode for ItemStackResponseContainerInfo {
 /// ItemStackResponse is a response to an individual ItemStackRequest.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ItemStackResponseInfo {
+    /// Status specifies if the request with the RequestID below was successful. If this is the case, the
+    /// ContainerInfo below will have information on what slots ended up changing. If not, the container info will
+    /// be empty. A non-0 status means an error occurred and will result in the action being reverted.
     pub result: ItemStackNetResult,
     pub client_request_id: ItemStackRequestID,
     /// Wire presence: optional value is preceded by a presence marker.
@@ -6988,8 +7078,8 @@ impl wire::Decode for MapDecoration {
     }
 }
 
-/// MapItemTrackedActorUniqueID is an object on a map that is 'tracked' by the client, such as an entity or a
-/// block. This object may move, which is handled client-side.
+/// MapTrackedObject is an object on a map that is 'tracked' by the client, such as an entity or a block. This
+/// object may move, which is handled client-side.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct MapItemTrackedActorUniqueId {
     /// `type_` is the type of the tracked object. It is either MapObjectTypeEntity or MapObjectTypeBlock.
@@ -7181,7 +7271,7 @@ impl wire::Decode for AnimatedImageData {
     }
 }
 
-/// ArmorSlotAndDamagePair represents an entry for a single piece of armour that should be damaged.
+/// PlayerArmourDamageEntry represents an entry for a single piece of armour that should be damaged.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ArmorSlotAndDamagePair {
     /// ArmourSlot is the index of the armour slot to damage.
@@ -7927,7 +8017,7 @@ impl wire::Decode for ECSProfilingDiagnosticsEntityDiagnosticTimingInfo {
     }
 }
 
-/// ECSProfilingDiagnosticsSystemCategory maps a diagnostics category name to a system index.
+/// SystemCategory maps a diagnostics category name to a system index.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ECSProfilingDiagnosticsSystemCategory {
     pub category_name: String,
@@ -7952,7 +8042,7 @@ impl wire::Decode for ECSProfilingDiagnosticsSystemCategory {
     }
 }
 
-/// ECSProfilingDiagnosticsSystemDiagnosticTimingInfo represents diagnostics for a specific system index.
+/// SystemDiagnosticTimingInfo represents diagnostics for a specific system index.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ECSProfilingDiagnosticsSystemDiagnosticTimingInfo {
     /// `display_name` is the name to display for this timing entry.
@@ -7989,8 +8079,8 @@ impl wire::Decode for ECSProfilingDiagnosticsSystemDiagnosticTimingInfo {
     }
 }
 
-/// EduSharedURIResource is an education edition feature that is used for transmitting education resource
-/// settings to clients. It contains a button name and a link URL.
+/// EducationSharedResourceURI is an education edition feature that is used for transmitting education
+/// resource settings to clients. It contains a button name and a link URL.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct EduSharedUriResource {
     /// `button_name` is the button name of the resource URI.
@@ -8041,7 +8131,7 @@ impl wire::Decode for Experiments {
     }
 }
 
-/// ExternalLinkSettings ...
+/// EducationExternalLinkSettings ...
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ExternalLinkSettings {
     /// `url` is the external link URL.
@@ -8526,6 +8616,8 @@ pub struct MoveActorAbsoluteData {
     /// EntityRuntimeID is the runtime ID of the entity. The runtime ID is unique for each world session, and
     /// entities are generally identified in packets using this runtime ID.
     pub actor_runtime_id: ActorRuntimeID,
+    /// Flags is a combination of flags that specify details of the movement. It is a combination of the flags
+    /// above.
     pub header: wire::U8,
     /// `position` is the position to spawn the entity on. If the entity is on a distance that the player cannot
     /// see it, the entity will still show up if the player moves closer.
@@ -8573,6 +8665,7 @@ pub struct MoveActorDeltaData {
     /// EntityRuntimeID is the runtime ID of the entity that is being moved. The packet works provided a
     /// non-player entity with this runtime ID is present.
     pub actor_runtime_id: ActorRuntimeID,
+    /// Position is the new position that the entity was moved to.
     /// Wire presence: optional value is preceded by a presence marker.
     pub new_position_x: Option<wire::F32LE>,
     /// Wire presence: optional value is preceded by a presence marker.
@@ -8587,6 +8680,7 @@ pub struct MoveActorDeltaData {
     pub rotation_y: Option<wire::I8>,
     /// Wire presence: optional value is preceded by a presence marker.
     pub rotation_y_head: Option<wire::I8>,
+    /// OnGround specifies whether the entity is on the ground after applying the update.
     pub is_on_ground: bool,
     /// `force_move` specifies whether the client should snap the entity to its new position without
     /// interpolation.
@@ -9060,7 +9154,7 @@ impl wire::Decode for SemVersionData {
     }
 }
 
-/// SerializedAbilitiesData represents various data about the abilities of a player, such as ability layers or
+/// AbilityData represents various data about the abilities of a player, such as ability layers or
 /// permissions.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SerializedAbilitiesData {
@@ -9141,8 +9235,7 @@ impl wire::Decode for SerializedAbilitiesDataSerializedLayer {
     }
 }
 
-/// SerializedNoiseBlockSpecifier specifies a block placed by the gradient noise based on a threshold and
-/// range.
+/// NoiseBlockSpecifier specifies a block placed by the gradient noise based on a threshold and range.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SerializedNoiseBlockSpecifier {
     /// `noise` is the noise name.
@@ -9179,7 +9272,7 @@ impl wire::Decode for SerializedNoiseBlockSpecifier {
     }
 }
 
-/// SerializedPersonaPieceHandle represents a piece of a persona skin. All pieces are sent separately.
+/// PersonaPiece represents a piece of a persona skin. All pieces are sent separately.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SerializedPersonaPieceHandle {
     /// PieceId is a UUID that identifies the piece itself, which is unique for each separate piece.
@@ -9351,7 +9444,7 @@ impl wire::Decode for ServerBlockProperty {
     }
 }
 
-/// ServerConfigurationClientStoreEntryPointConfiguration contains information about the store entry point.
+/// StoreEntryPointInfo contains information about the store entry point.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ServerConfigurationClientStoreEntryPointConfiguration {
     /// `store_id` is the store identifier.
@@ -9378,8 +9471,7 @@ impl wire::Decode for ServerConfigurationClientStoreEntryPointConfiguration {
     }
 }
 
-/// ServerConfigurationGatheringsConfigurationJoinInfo contains information about the gathering (experience)
-/// the player is joining.
+/// GatheringJoinInfo contains information about the gathering (experience) the player is joining.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ServerConfigurationGatheringsConfigurationJoinInfo {
     /// `experience_id` is the UUID of the experience.
@@ -9616,7 +9708,7 @@ impl wire::Decode for ServerSoundHandle {
     }
 }
 
-/// ServerWaypoint holds optional data for a locator bar waypoint.
+/// Waypoint holds optional data for a locator bar waypoint.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ServerWaypoint {
     /// `update_flag` is a bitmask indicating which optional fields are set.
@@ -9856,8 +9948,8 @@ impl wire::Decode for SyncedAttribute {
     }
 }
 
-/// SyncedPlayerMovementSettings represents the different server authoritative movement settings. These
-/// control how the client will provide input to the server.
+/// PlayerMovementSettings represents the different server authoritative movement settings. These control how
+/// the client will provide input to the server.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SyncedPlayerMovementSettings {
     /// `rewind_history_size` is the amount of history to keep at maximum.
@@ -10114,7 +10206,7 @@ impl wire::Decode for PackInfoData {
     }
 }
 
-/// PackInstanceID represents a resource pack sent on the stack of the client. When sent, the client will
+/// StackResourcePack represents a resource pack sent on the stack of the client. When sent, the client will
 /// apply them in the order of the stack sent.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct PackInstanceId {
@@ -10570,6 +10662,8 @@ impl wire::Decode for PositionTrackingId {
 /// MultiRecipe serves as an 'enable' switch for multi-shape recipes.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct MultiRecipe {
+    /// UUID is a UUID identifying the recipe. Since the CraftingEvent packet no longer exists, this can always be
+    /// empty.
     pub multi_recipe_uuid: uuid::Uuid,
     pub net_id: RecipeNetID,
 }
@@ -10711,11 +10805,16 @@ pub struct ShapedRecipe {
     pub width: wire::ZigZag32,
     /// `height` is the height of the recipe's shape.
     pub height: wire::ZigZag32,
+    /// Input is a list of items that serve as the input of the shapeless recipe. These items are the items
+    /// required to craft the output. The amount of input items must be exactly equal to Width * Height.
     pub ingredients: Vec<RecipeIngredientSerializedData>,
+    /// Output is a list of items that are created as a result of crafting the recipe.
     pub results: Vec<NetworkItemInstanceDescriptorSerializedData>,
     /// `uuid` is a UUID identifying the recipe. Since the CraftingEvent packet no longer exists, this can always
     /// be empty.
     pub uuid: uuid::Uuid,
+    /// Block is the block name that is required to craft the output of the recipe. The block is not prefixed with
+    /// 'minecraft:', so it will look like 'crafting_table' as an example.
     pub tag: String,
     /// `priority` ...
     pub priority: wire::ZigZag32,
@@ -10791,11 +10890,17 @@ pub struct ShapelessRecipe {
     /// `recipe_id` is a unique ID of the recipe. This ID must be unique amongst all other types of recipes too,
     /// but its functionality is not exactly known.
     pub recipe_id: String,
+    /// Input is a list of items that serve as the input of the shapeless recipe. These items are the items
+    /// required to craft the output.
     pub ingredients: Vec<RecipeIngredientSerializedData>,
+    /// Output is a list of items that are created as a result of crafting the recipe.
     pub results: Vec<NetworkItemInstanceDescriptorSerializedData>,
     /// `uuid` is a UUID identifying the recipe. Since the CraftingEvent packet no longer exists, this can always
     /// be empty.
     pub uuid: uuid::Uuid,
+    /// Block is the block name that is required to craft the output of the recipe. The block is not prefixed with
+    /// 'minecraft:', so it will look like 'crafting_table' as an example. The available blocks are: -
+    /// crafting_table - cartography_table - stonecutter - furnace - blast_furnace - smoker - campfire
     pub tag: String,
     /// `priority` ...
     pub priority: wire::ZigZag32,
@@ -10859,8 +10964,11 @@ pub struct SmithingTransformRecipe {
     /// `recipe_id` is a unique ID of the recipe. This ID must be unique amongst all other types of recipes too,
     /// but its functionality is not exactly known.
     pub recipe_id: String,
+    /// Template is the item that is used to shape the Base item based on the Addition being applied.
     pub template_ingredient: RecipeIngredientSerializedData,
+    /// Base is the item that the Addition is being applied to in the smithing table.
     pub base_ingredient: RecipeIngredientSerializedData,
+    /// Addition is the item that is being added to the Base item to result in a modified item.
     pub addition_ingredient: RecipeIngredientSerializedData,
     /// `result` is the resulting item from the two items being added together.
     pub result: NetworkItemInstanceDescriptorSerializedData,
@@ -10908,8 +11016,11 @@ pub struct SmithingTrimRecipe {
     /// `recipe_id` is a unique ID of the recipe. This ID must be unique amongst all other types of recipes too,
     /// but its functionality is not exactly known.
     pub recipe_id: String,
+    /// Template is the item that is used to shape the Base item based on the Addition being applied.
     pub template_ingredient: RecipeIngredientSerializedData,
+    /// Base is the item that the Addition is being applied to in the smithing table.
     pub base_ingredient: RecipeIngredientSerializedData,
+    /// Addition is the item that is being added to the Base item to result in a modified item.
     pub addition_ingredient: RecipeIngredientSerializedData,
     pub tag: String,
     pub net_id: RecipeNetID,
@@ -11285,7 +11396,7 @@ impl wire::Decode for PrimitiveShape {
 
 // Domain: skin
 
-/// SkinImage represents a pyramid debug shape.
+/// PyramidShape represents a pyramid debug shape.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SkinImage {
     /// `width` is the width along the X axis of the pyramid base.
@@ -11463,12 +11574,26 @@ impl wire::Decode for StructureEditorData {
 /// in-game UI on the client-side.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct StructureSettings {
+    /// PaletteName is the name of the palette used in the structure. Currently, it seems that this field is
+    /// always 'default'.
     pub structure_palette_name: String,
+    /// IgnoreEntities specifies if the structure should ignore entities or include them. If set to false,
+    /// entities will also show up in the exported structure.
     pub should_ignore_entities: bool,
+    /// IgnoreBlocks specifies if the structure should ignore blocks or include them. If set to false, blocks will
+    /// show up in the exported structure.
     pub should_ignore_blocks: bool,
+    /// AllowNonTickingChunks specifies if the structure should allow non-ticking chunks. If set to false, the
+    /// structure will export non-ticking chunks.
     pub should_allow_non_ticking_player_and_ticking_area_chunks: bool,
+    /// Size is the size of the area that is about to be exported. The area exported will start at the Position +
+    /// Offset, and will extend as far as Size specifies.
     pub structure_size: BlockPos,
+    /// Offset is the offset position that was set in the structure block. The area exported is offset by this
+    /// position.
     pub structure_offset: BlockPos,
+    /// LastEditingPlayerUniqueID is the unique ID of the player that last edited the structure block that these
+    /// settings concern.
     pub last_edit_player: ActorUniqueID,
     /// `rotation` is the rotation that the structure block should obtain. See the constants above for available
     /// options.
@@ -11478,9 +11603,15 @@ pub struct StructureSettings {
     pub mirror: Mirror,
     /// `animation_mode` ...
     pub animation_mode: AnimationMode,
+    /// AnimationDuration ...
     pub animation_seconds: wire::F32LE,
+    /// Integrity is usually 1, but may be set to a number between 0 and 1 to omit blocks randomly, using the Seed
+    /// that follows.
     pub integrity_value: wire::F32LE,
+    /// Seed is the seed used to omit blocks if Integrity is not equal to one. If the Seed is 0, a random seed is
+    /// selected to omit blocks.
     pub integrity_seed: wire::U32LE,
+    /// Pivot is the pivot around which the structure may be rotated.
     pub rotation_pivot: glam::Vec3,
 }
 
@@ -12012,7 +12143,7 @@ impl wire::Decode for VoxelShapesRegistryHandle {
     }
 }
 
-/// VoxelShapesSerializableCells represents a 3D grid of voxel cell data.
+/// VoxelCells represents a 3D grid of voxel cell data.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct VoxelShapesSerializableCells {
     /// `x_size` is the size of the grid along the X axis.
@@ -12052,7 +12183,7 @@ impl wire::Decode for VoxelShapesSerializableCells {
     }
 }
 
-/// VoxelShapesSerializableVoxelShape represents a voxel shape with cells and coordinate axes.
+/// VoxelShape represents a voxel shape with cells and coordinate axes.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct VoxelShapesSerializableVoxelShape {
     /// `cells` is the grid of cells representing solid and empty regions.
@@ -12151,6 +12282,9 @@ impl wire::Decode for WaypointGroupWaypointHandle {
 pub struct DimensionDefinition {
     pub height_maximum: wire::ZigZag32,
     pub height_minimum: wire::ZigZag32,
+    /// Generator is the variant of generator that exists in the provided dimension. These can be one of the
+    /// constants defined above. If this is set to GeneratorLegacy, the legacy horizontal world limits will be
+    /// enforced.
     pub generator_type: GeneratorType,
     /// `dimension_type` is the numeric identifier of the dimension. This cannot override a vanilla dimension
     /// (0-2), but custom dimensions should start from 1000 like vanilla.

@@ -6,7 +6,7 @@ import (
 	"protocolgen/generated/1.26.44/go/protocol"
 )
 
-// ClientboundControlSchemeSet is sent by the server upon the client's request or the usage of the vanilla
+// ClientBoundControlSchemeSet is sent by the server upon the client's request or the usage of the vanilla
 // /controlscheme command. It is used to set the control scheme of the client, often used in combination with
 // custom cameras.
 type ClientboundControlSchemeSet struct {

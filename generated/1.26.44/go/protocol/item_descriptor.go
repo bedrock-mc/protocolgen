@@ -5,9 +5,12 @@ package protocol
 // DefaultItemDescriptor represents an item descriptor for regular items. This is used for the significant
 // majority of items.
 type DefaultItemDescriptor struct {
+	// MetadataValue is the metadata value of the item. For some items, this is the damage value, whereas for
+	// other items it is simply an identifier of a variant of the item.
 	DescriptorType ItemDescriptorType
-	FullName       string
-	AuxValue       int32
+	// Name is the identifier of the item, such as minecraft:stone.
+	FullName string
+	AuxValue int32
 }
 
 func (*DefaultItemDescriptor) tagItemDescriptor() uint32 { return 1 }
@@ -76,7 +79,8 @@ func (x *ItemDescriptorType) Marshal(io IO) { io.Uint8((*uint8)(x)) }
 // duplicative entries for items that can be grouped under a single tag.
 type ItemTagItemDescriptor struct {
 	DescriptorType ItemDescriptorType
-	ItemTag        string
+	// Tag represents the tag that the item is part of.
+	ItemTag string
 }
 
 func (*ItemTagItemDescriptor) tagItemDescriptor() uint32 { return 3 }
@@ -90,8 +94,10 @@ func (x *ItemTagItemDescriptor) Marshal(io IO) {
 // MoLangItemDescriptor represents an item descriptor for items that use MoLang (e.g. behaviour packs).
 type MoLangItemDescriptor struct {
 	DescriptorType ItemDescriptorType
-	TagExpression  string
-	MoLangVersion  MoLangVersion
+	// Expression represents the MoLang expression used to identify the item/it's associated tag.
+	TagExpression string
+	// Version represents the version of MoLang to use.
+	MoLangVersion MoLangVersion
 }
 
 func (*MoLangItemDescriptor) tagItemDescriptor() uint32 { return 2 }

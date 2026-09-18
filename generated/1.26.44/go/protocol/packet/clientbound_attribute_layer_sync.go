@@ -6,7 +6,7 @@ import (
 	"protocolgen/generated/1.26.44/go/protocol"
 )
 
-// ClientboundAttributeLayerSync is sent by the server to synchronise attribute layers with the client.
+// ClientBoundAttributeLayerSync is sent by the server to synchronise attribute layers with the client.
 type ClientboundAttributeLayerSync struct {
 	Data protocol.AttributeLayerSyncData
 }

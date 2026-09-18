@@ -6,7 +6,7 @@ import (
 	"protocolgen/generated/1.26.44/go/protocol"
 )
 
-// NpcDialogue is a packet that allows the client to display dialog boxes for interacting with NPCs.
+// NPCDialogue is a packet that allows the client to display dialog boxes for interacting with NPCs.
 type NpcDialogue struct {
 	// EntityUniqueID is the unique ID of the NPC being requested.
 	NpcIDRawID uint64
@@ -29,7 +29,7 @@ func (*NpcDialogue) ID() uint32 {
 }
 
 func (pk *NpcDialogue) Marshal(io protocol.IO) {
-	io.Uint64(&pk.NpcIDRawID)
+	io.ActorUniqueIDUint64(&pk.NpcIDRawID)
 	pk.NpcDialogueActionType.Marshal(io)
 	io.String(&pk.Dialogue)
 	io.String(&pk.SceneName)

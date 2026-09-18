@@ -15,8 +15,12 @@ type AddPlayer struct {
 	// UUID is the UUID of the player. It is the same UUID that the client sent in the Login packet at the start
 	// of the session. A player with this UUID must exist in the player list (built up using the PlayerList
 	// packet), for it to show up in-game.
-	UUID            uuid.UUID
-	PlayerName      string
+	UUID uuid.UUID
+	// Username is the name of the player. This username is the username that will be set as the initial name tag
+	// of the player.
+	PlayerName string
+	// EntityRuntimeID is the runtime ID of the player. The runtime ID is unique for each world session, and
+	// entities are generally identified in packets using this runtime ID.
 	TargetRuntimeID uint64
 	// PlatformChatID is an identifier only set for particular platforms when chatting (presumably only for
 	// Nintendo Switch). It is otherwise an empty string, and is used to decide which players are able to chat
@@ -27,10 +31,12 @@ type AddPlayer struct {
 	Position mgl32.Vec3
 	// Velocity is the initial velocity the player spawns with. This velocity will initiate client side movement
 	// of the player.
-	Velocity          mgl32.Vec3
-	Rotation          mgl32.Vec2
-	YHeadRotation     float32
-	CarriedItem       protocol.NetworkItemStackDescriptorSerializedData
+	Velocity      mgl32.Vec3
+	Rotation      mgl32.Vec2
+	YHeadRotation float32
+	CarriedItem   protocol.NetworkItemStackDescriptorSerializedData
+	// GameType is the game type of the player. If set to GameTypeSpectator, the player will not be shown to
+	// viewers.
 	PlayerGameType    protocol.GameType
 	EntityData        protocol.SynchedActorDataCopyableDataList
 	SynchedProperties protocol.PropertySyncData

@@ -12,6 +12,9 @@ import (
 type DimensionDefinition struct {
 	HeightMaximum int32
 	HeightMinimum int32
+	// Generator is the variant of generator that exists in the provided dimension. These can be one of the
+	// constants defined above. If this is set to GeneratorLegacy, the legacy horizontal world limits will be
+	// enforced.
 	GeneratorType GeneratorType
 	// DimensionType is the numeric identifier of the dimension. This cannot override a vanilla dimension (0-2),
 	// but custom dimensions should start from 1000 like vanilla.

@@ -12,6 +12,8 @@ import (
 // point to the lodestone. If not, it will start spinning around. A PositionTrackingDBServerBroadcast packet
 // should be sent in response to this packet.
 type PositionTrackingDBClientRequest struct {
+	// RequestAction is the action that should be performed upon the receiving of the packet. It is one of the
+	// constants found above.
 	Action  protocol.PositionTrackingDBClientRequestAction
 	IDValue protocol.PositionTrackingID
 }

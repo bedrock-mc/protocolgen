@@ -53,6 +53,6 @@ func (pk *LevelSoundEvent) Marshal(io protocol.IO) {
 	io.String(&pk.ActorIdentifier)
 	io.Bool(&pk.IsBaby)
 	io.Bool(&pk.IsGlobal)
-	io.Int64(&pk.ActorUniqueID)
+	io.ActorUniqueIDInt64(&pk.ActorUniqueID)
 	protocol.OptionalFunc(io, &pk.FireAtPosition, io.Vec3)
 }

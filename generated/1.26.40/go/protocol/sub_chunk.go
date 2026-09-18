@@ -14,7 +14,7 @@ type SubChunkData struct {
 func (x *SubChunkData) Marshal(io IO) {
 	x.SubChunkPosOffset.Marshal(io)
 	x.SubChunkRequestResult.Marshal(io)
-	OptionalFunc(io, &x.SerializedSubChunk, io.Bytes)
+	OptionalFunc(io, &x.SerializedSubChunk, io.ByteSlice)
 	x.HeightMapData.Marshal(io)
 	OptionalFunc(io, &x.BlobID, io.Uint64)
 }

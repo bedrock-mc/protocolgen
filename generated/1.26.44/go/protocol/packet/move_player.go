@@ -11,16 +11,22 @@ import (
 // MovePlayer is sent by players to send their movement to the server, and by the server to update the
 // movement of player entities to other players.
 type MovePlayer struct {
+	// EntityRuntimeID is the runtime ID of the player. The runtime ID is unique for each world session, and
+	// entities are generally identified in packets using this runtime ID.
 	PlayerRuntimeID uint64
 	// Position is the position to spawn the player on. If the player is on a distance that the viewer cannot see
 	// it, the player will still show up if the viewer moves closer.
 	Position      mgl32.Vec3
 	Rotation      mgl32.Vec2
 	YHeadRotation float32
-	PositionMode  protocol.PlayerPositionModeComponentPositionMode
+	// Mode is the mode of the movement. It specifies the way the player's movement should be shown to other
+	// players. It is one of the constants above.
+	PositionMode protocol.PlayerPositionModeComponentPositionMode
 	// OnGround specifies if the player is considered on the ground. Note that proxies or hacked clients could
 	// fake this to always be true, so it should not be taken for granted.
-	OnGround        bool
+	OnGround bool
+	// RiddenEntityRuntimeID is the runtime ID of the entity that the player might currently be riding. If not
+	// riding, this should be left 0.
 	RidingRuntimeID uint64
 	TeleportData    protocol.Optional[protocol.MovePlayerTeleportData]
 	// Tick is the server tick at which the packet was sent. It is used in relation to

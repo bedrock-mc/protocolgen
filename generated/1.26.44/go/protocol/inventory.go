@@ -6,7 +6,9 @@ package protocol
 // inventory action is always unbalanced: It must be combined with other actions in an inventory transaction
 // to form a balanced transaction.
 type InventoryAction struct {
-	Source   InventorySource
+	Source InventorySource
+	// InventorySlot is the slot in which the action took place. Each action only describes the change of item in
+	// a single slot.
 	Slot     uint32
 	FromItem NetworkItemStackDescriptorSerializedData
 	ToItem   NetworkItemStackDescriptorSerializedData
