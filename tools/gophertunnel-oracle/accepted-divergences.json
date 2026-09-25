@@ -1,264 +1,211 @@
 {
   "schema_version": 1,
-  "minecraft_version": "1.26.40",
-  "protocol_version": 2168,
+  "minecraft_version": "1.26.51",
+  "protocol_version": 2193,
   "divergences": [
     {
       "id": 5,
       "name": "DisconnectPacket",
-      "reason": "Wire conflict: the canonical Messages union uses var_u32; the pinned Disconnect marshal uses a HideDisconnectionScreen bool controlling the message strings.",
-      "what_would_settle_it": "Capture both disconnect screen cases at protocol 2168 to settle the discriminator and message framing.",
+      "reason": "Wire conflict: the canonical Messages union uses a var_u32 selector; the protocol 2193 Disconnect marshal uses a HideDisconnectionScreen bool to decide whether the message strings follow.",
+      "what_would_settle_it": "Capture both disconnect screen cases at protocol 2193 to settle the discriminator and message framing.",
       "evidence": [
         {
-          "locator": "https://github.com/bedrock-mc/protocolgen/blob/640546428536dcc837a13fff070c30cd2f5b61d3/generated/1.26.40/manifest.json",
-          "summary": "The immutable canonical input contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
+          "locator": "generated/1.26.51/manifest.json",
+          "summary": "The canonical 1.26.51 manifest contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
         },
         {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/disconnect.go",
-          "summary": "Pinned source operations were compared with the canonical packet, including branch and codec differences described above."
+          "locator": "https://github.com/hashimthearab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/packet/disconnect.go",
+          "summary": "The locked protocol 2193 source operations were compared with the canonical packet, including the differences described above."
         }
       ],
-      "fingerprint": "sha256:d181d7d2ac2a4b389394f724df917d3658e65a6be92f84fa0a2ab2bf16265e2c"
+      "fingerprint": "sha256:28f2dfbb876cca314577e166189b2f6f68444ec29ce953c072ac362770996972"
     },
     {
-      "id": 11,
-      "name": "StartGamePacket",
-      "reason": "Wire conflict, same as 347: the canonical server join information carries only the optional rich-presence value, while the pinned StartGame PresenceInfo writes optional ExperienceName, optional WorldName, then RichPresenceID. CloudburstMC writePresenceConfiguration (v1001, inherited by v2168) agrees with gophertunnel, so the canonical shape is the suspect side.",
-      "what_would_settle_it": "A StartGame capture at protocol 2168 carrying server join information, or a writer trace, settles the presence-info fields.",
+      "id": 9,
+      "name": "TextPacket",
+      "reason": "Control-layout conflict with identical bytes: both 1.26.51 sources model the category byte as the var_u32 selector of a three-way body union whose cases start with the u8 message type, while the protocol 2193 Text marshal writes the category and type as two u8 bytes and dispatches on the type. Category values 0 to 2 encode as the same single byte either way.",
+      "what_would_settle_it": "A capture of each message category, or a per-packet union-control normalization that treats a one-byte selector below 128 as equal to var_u32.",
       "evidence": [
         {
-          "locator": "https://github.com/bedrock-mc/protocolgen/blob/16c116fb1f11f3ef91dbf278382854a2771603b6/generated/1.26.40/manifest.json",
-          "summary": "The immutable canonical input contains the compared packet shape; this baseline acknowledges comparison debt, not wire correctness."
+          "locator": "generated/1.26.51/manifest.json",
+          "summary": "The canonical 1.26.51 manifest contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
         },
         {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/start_game.go",
-          "summary": "Pinned source operations were compared with the canonical packet as a wire language; the shortest diverging path is recorded in the oracle report."
-        },
-        {
-          "locator": "https://github.com/CloudburstMC/Protocol/blob/03d84626de7a22af2a48c61d1eebfd37526db0fa/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v1001/BedrockCodecHelper_v1001.java",
-          "summary": "writePresenceConfiguration writes optional ExperienceName, optional WorldName, then RichPresenceId."
+          "locator": "https://github.com/hashimthearab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/packet/text.go",
+          "summary": "The locked protocol 2193 source operations were compared with the canonical packet, including the differences described above."
         }
       ],
-      "fingerprint": "sha256:3a02eec0f26430a332b32af2165617e7f18c2ec71f023d33e5a5d86c721114b3"
+      "fingerprint": "sha256:c1236330086cbbef0de112ab50ec5738012e822cd19acaec036ff79dc442a693"
     },
     {
       "id": 12,
       "name": "AddPlayerPacket",
-      "reason": "Mixed comparison limits and wire conflict: item extra-data parsing is counted as outer data and stack-ID bool branches are not normalized to optionals. Entity metadata selector placement differs. Ability Layers additionally has a real var_u32 versus u8 prefix conflict shared with packet 187.",
+      "reason": "Extractor limitation: ItemInstance extra-data is decoded from one byte buffer and its canBePlacedOn/canBreak arrays are parsed inside it, so the extractor counts them as outer operations where the canonical manifest has one opaque user-data buffer. Entity metadata also differs in variant-marker placement, as in 13.",
       "what_would_settle_it": "Fix item-buffer ownership and selector dataflow in the extractor, then capture AbilityData Layers counts to settle the remaining prefix conflict.",
       "evidence": [
         {
-          "locator": "https://github.com/bedrock-mc/protocolgen/blob/640546428536dcc837a13fff070c30cd2f5b61d3/generated/1.26.40/manifest.json",
-          "summary": "The immutable canonical input contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
+          "locator": "generated/1.26.51/manifest.json",
+          "summary": "The canonical 1.26.51 manifest contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
         },
         {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/add_player.go",
-          "summary": "Pinned source operations were compared with the canonical packet, including branch and codec differences described above."
-        },
-        {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446",
-          "summary": "itemUserData first reads extraData through the outer reader, then parses canBePlacedOn/canBreak through a separate bufReader. The extractor currently counts these inner reads again."
+          "locator": "https://github.com/hashimthearab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/packet/add_player.go",
+          "summary": "The locked protocol 2193 source operations were compared with the canonical packet, including the differences described above."
         }
       ],
-      "fingerprint": "sha256:4d1616b34207fa177b78f2a57064789830ca0a9d773336456bb22559c6afc3da"
+      "fingerprint": "sha256:8361a185ee36e63d25b2f1a7944b668c0a028c74ee5a30c35bd3e5bdfc627b87"
     },
     {
       "id": 13,
       "name": "AddActorPacket",
-      "reason": "Extractor/control-layout conflict: the pinned EntityMetadata writer emits a cereal selector and a legacy type byte before its switch; the canonical union places its variant annotation earlier. The report cannot establish equivalent selector binding.",
+      "reason": "Control-layout conflict with identical bytes: both sides write a var_u32 metadata selector and a u8 legacy type byte; the canonical union places its variant marker after the selector and carries the type byte inside each case, while the protocol 2193 EntityMetadata writer dispatches on the value's Go type after both bytes.",
       "what_would_settle_it": "Bind source switches to their actual serialized selector and legacy byte, then compare every metadata type against an exact-version capture.",
       "evidence": [
         {
-          "locator": "https://github.com/bedrock-mc/protocolgen/blob/640546428536dcc837a13fff070c30cd2f5b61d3/generated/1.26.40/manifest.json",
-          "summary": "The immutable canonical input contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
+          "locator": "generated/1.26.51/manifest.json",
+          "summary": "The canonical 1.26.51 manifest contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
         },
         {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/add_actor.go",
-          "summary": "Pinned source operations were compared with the canonical packet, including branch and codec differences described above."
+          "locator": "https://github.com/hashimthearab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/packet/add_actor.go",
+          "summary": "The locked protocol 2193 source operations were compared with the canonical packet, including the differences described above."
         }
       ],
-      "fingerprint": "sha256:b659eb72fafc7c19fdb9111fa3394771fd3a1b7d9b1d1c6c823b536335209996"
+      "fingerprint": "sha256:95afe838c843233d8495f664495134d73906f6a6af064a7d82c6f26cdeb090a8"
     },
     {
       "id": 15,
       "name": "AddItemActorPacket",
-      "reason": "Extractor limitation: ItemInstance extra-data is read into one byte buffer, then bufReader parses canBePlacedOn/canBreak inside that buffer. The extractor incorrectly adds those inner operations to the outer packet and does not normalize the stack-ID bool branch. Entity metadata also has unproved selector binding.",
+      "reason": "Extractor limitation: ItemInstance extra-data is decoded from one byte buffer and its canBePlacedOn/canBreak arrays are parsed inside it, so the extractor counts them as outer operations where the canonical manifest has one opaque user-data buffer.",
       "what_would_settle_it": "Track IO receiver ownership and conditional stack-ID presence; then compare actor metadata with selector-aware extraction.",
       "evidence": [
         {
-          "locator": "https://github.com/bedrock-mc/protocolgen/blob/640546428536dcc837a13fff070c30cd2f5b61d3/generated/1.26.40/manifest.json",
-          "summary": "The immutable canonical input contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
+          "locator": "generated/1.26.51/manifest.json",
+          "summary": "The canonical 1.26.51 manifest contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
         },
         {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/add_item_actor.go",
-          "summary": "Pinned source operations were compared with the canonical packet, including branch and codec differences described above."
-        },
-        {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446",
-          "summary": "itemUserData first reads extraData through the outer reader, then parses canBePlacedOn/canBreak through a separate bufReader. The extractor currently counts these inner reads again."
+          "locator": "https://github.com/hashimthearab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/packet/add_item_actor.go",
+          "summary": "The locked protocol 2193 source operations were compared with the canonical packet, including the differences described above."
         }
       ],
-      "fingerprint": "sha256:c19e1b64a6f1a30574ca3f7cb06b360972101c1bef060d2f1ddf927fbe16a95a"
+      "fingerprint": "sha256:3388d04ff945936f12992ea116f7b538e1b1bd11fd171b21bb2ad6a95fb7e104"
     },
     {
       "id": 30,
       "name": "InventoryTransactionPacket",
-      "reason": "Framing only: the canonical Transaction is an optional union, while the pinned InventoryTransaction and CloudburstMC (v1001, inherited by v2168) both write an always-true presence bool before the transaction type. The bytes agree whenever the transaction is present; the manifest additionally admits the absent case. The transaction payloads also carry the ItemInstance extra-data limitation recorded for 12 and 15.",
+      "reason": "Control-layout and extractor limitation: the protocol 2193 marshal selects the transaction data through a reviewed interface table, so its variant marker follows the actions array rather than the selector. ItemInstance extra-data is decoded from one byte buffer and its canBePlacedOn/canBreak arrays are parsed inside it, so the extractor counts them as outer operations where the canonical manifest has one opaque user-data buffer.",
       "what_would_settle_it": "Evidence that the presence marker can be false on the wire, or confirmation from a writer trace that it is a constant.",
       "evidence": [
         {
-          "locator": "https://github.com/bedrock-mc/protocolgen/blob/16c116fb1f11f3ef91dbf278382854a2771603b6/generated/1.26.40/manifest.json",
-          "summary": "The immutable canonical input contains the compared packet shape; this baseline acknowledges comparison debt, not wire correctness."
+          "locator": "generated/1.26.51/manifest.json",
+          "summary": "The canonical 1.26.51 manifest contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
         },
         {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/inventory_transaction.go",
-          "summary": "Pinned source operations were compared with the canonical packet as a wire language; the shortest diverging path is recorded in the oracle report."
-        },
-        {
-          "locator": "https://github.com/CloudburstMC/Protocol/blob/03d84626de7a22af2a48c61d1eebfd37526db0fa/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v1001/serializer/InventoryTransactionSerializer_v1001.java",
-          "summary": "Writes buffer.writeBoolean(true) immediately before the transaction type."
+          "locator": "https://github.com/hashimthearab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/packet/inventory_transaction.go",
+          "summary": "The locked protocol 2193 source operations were compared with the canonical packet, including the differences described above."
         }
       ],
-      "fingerprint": "sha256:f79ff360c76dc2793b78e44da190a05d88dc4736db30bd55bc796a8dd24eaa24"
+      "fingerprint": "sha256:59ca8026f568fc9b34cedb7958befc20f370dbc1aa9376e66720c87a9128dbd5"
     },
     {
       "id": 31,
       "name": "MobEquipmentPacket",
-      "reason": "Extractor limitation: ItemInstance extra-data buffer parsing appears as additional outer canBePlacedOn/canBreak arrays, and the stack-ID bool-plus-conditional is not represented as the canonical optional.",
+      "reason": "Extractor limitation: ItemInstance extra-data is decoded from one byte buffer and its canBePlacedOn/canBreak arrays are parsed inside it, so the extractor counts them as outer operations where the canonical manifest has one opaque user-data buffer.",
       "what_would_settle_it": "Track the IO receiver through itemUserData and prove bool-to-optional correspondence before comparing these paths.",
       "evidence": [
         {
-          "locator": "https://github.com/bedrock-mc/protocolgen/blob/640546428536dcc837a13fff070c30cd2f5b61d3/generated/1.26.40/manifest.json",
-          "summary": "The immutable canonical input contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
+          "locator": "generated/1.26.51/manifest.json",
+          "summary": "The canonical 1.26.51 manifest contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
         },
         {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/mob_equipment.go",
-          "summary": "Pinned source operations were compared with the canonical packet, including branch and codec differences described above."
-        },
-        {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446",
-          "summary": "itemUserData first reads extraData through the outer reader, then parses canBePlacedOn/canBreak through a separate bufReader. The extractor currently counts these inner reads again."
+          "locator": "https://github.com/hashimthearab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/packet/mob_equipment.go",
+          "summary": "The locked protocol 2193 source operations were compared with the canonical packet, including the differences described above."
         }
       ],
-      "fingerprint": "sha256:21725742a4aa29685d98ccc9f7e01f72bbf934e70336e44108ada54a3f1d53d8"
+      "fingerprint": "sha256:09d6f29081e91319c6a63587d0045d15b734febad5905f2d5b4477080dc887c9"
     },
     {
       "id": 32,
       "name": "MobArmorEquipmentPacket",
-      "reason": "Extractor limitation, same as 31: ItemInstance extra-data buffer parsing appears as additional outer canBePlacedOn/canBreak arrays in the pinned MobArmourEquipment items. CloudburstMC writes those arrays inside the little-endian user-data buffer, which is the canonical opaque byte buffer.",
+      "reason": "Extractor limitation: ItemInstance extra-data is decoded from one byte buffer and its canBePlacedOn/canBreak arrays are parsed inside it, so the extractor counts them as outer operations where the canonical manifest has one opaque user-data buffer.",
       "what_would_settle_it": "Extend the extractor to keep bufReader parsing inside the enclosing byte-slice length rather than in the outer stream.",
       "evidence": [
         {
-          "locator": "https://github.com/bedrock-mc/protocolgen/blob/16c116fb1f11f3ef91dbf278382854a2771603b6/generated/1.26.40/manifest.json",
-          "summary": "The immutable canonical input contains the compared packet shape; this baseline acknowledges comparison debt, not wire correctness."
+          "locator": "generated/1.26.51/manifest.json",
+          "summary": "The canonical 1.26.51 manifest contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
         },
         {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/mob_armour_equipment.go",
-          "summary": "Pinned source operations were compared with the canonical packet as a wire language; the shortest diverging path is recorded in the oracle report."
-        },
-        {
-          "locator": "https://github.com/CloudburstMC/Protocol/blob/03d84626de7a22af2a48c61d1eebfd37526db0fa/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v2168/BedrockCodecHelper_v2168.java",
-          "summary": "canPlaceOn and canBreak are written inside the item's user-data stream."
+          "locator": "https://github.com/hashimthearab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/packet/mob_armour_equipment.go",
+          "summary": "The locked protocol 2193 source operations were compared with the canonical packet, including the differences described above."
         }
       ],
-      "fingerprint": "sha256:696c2d35a81f7832f70677a131c7c07e829a8e41b7ef2e09c958c8630594e8df"
-    },
-    {
-      "id": 38,
-      "name": "HurtArmorPacket",
-      "reason": "The canonical manifest writes Armor Slots as unsigned var_u64, while the pinned gophertunnel Marshal writes ArmourSlots with Varint64 (zigzag_i64). This is an oracle conflict, not a normalization equivalence: the independent protocol documentation and the existing gophertunnel drift adjudication both identify the unsigned shape, so the hand-written oracle is the likely defect.",
-      "what_would_settle_it": "A protocol 2168 capture of HurtArmor bytes, or an upstream gophertunnel correction backed by an authoritative serializer, must establish whether the field is unsigned VarLong or zigzag VarLong; then update the oracle or canonical correction and remove this entry.",
-      "evidence": [
-        {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/hurt_armour.go",
-          "summary": "Pinned HurtArmour.Marshal calls io.Varint64 for ArmourSlots."
-        },
-        {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/tools/protocoldrift/accepted-drift.json",
-          "summary": "The pinned prior adjudication records the same unsigned-versus-zigzag conflict and its independent-source rationale."
-        }
-      ],
-      "fingerprint": "sha256:8d5ecf4ff2a9412df9cfeb9f5a6a1fe0f27ed79f4725fc77e27551c3fb433972"
+      "fingerprint": "sha256:f1f2105099400a996ecf166d367682fb6d68a8a2ce02af3ac7819a9788b6451e"
     },
     {
       "id": 39,
       "name": "SetActorDataPacket",
       "reason": "Extractor/control-layout conflict: EntityMetadata writes its cereal selector and legacy type byte before dispatch, while the canonical union annotates its variant earlier. This is not sufficient evidence of a wire width defect.",
-      "what_would_settle_it": "Model the serialized selector and legacy byte independently and validate each metadata variant using a protocol 2168 capture.",
+      "what_would_settle_it": "Model the serialized selector and legacy byte independently and validate each metadata variant using a protocol 2193 capture.",
       "evidence": [
         {
-          "locator": "https://github.com/bedrock-mc/protocolgen/blob/640546428536dcc837a13fff070c30cd2f5b61d3/generated/1.26.40/manifest.json",
-          "summary": "The immutable canonical input contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
+          "locator": "generated/1.26.51/manifest.json",
+          "summary": "The canonical 1.26.51 manifest contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
         },
         {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/set_actor_data.go",
-          "summary": "Pinned source operations were compared with the canonical packet, including branch and codec differences described above."
+          "locator": "https://github.com/hashimthearab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/packet/set_actor_data.go",
+          "summary": "The locked protocol 2193 source operations were compared with the canonical packet, including the differences described above."
         }
       ],
-      "fingerprint": "sha256:471322fa8ff722b824db8fb624f63527d2b5c472225350ae53d54112b1f803c4"
+      "fingerprint": "sha256:fb88e1d7f37bee17ce1ae55cf3fd927c96f47d7ec3cda4eb2fe31e6902b8851b"
     },
     {
       "id": 49,
       "name": "InventoryContentPacket",
-      "reason": "Extractor limitation: both Content items and StorageItem include itemUserData inner-buffer parsing in the extracted outer stream; StackNetworkID conditional presence is also not normalized.",
+      "reason": "Extractor limitation: ItemInstance extra-data is decoded from one byte buffer and its canBePlacedOn/canBreak arrays are parsed inside it, so the extractor counts them as outer operations where the canonical manifest has one opaque user-data buffer.",
       "what_would_settle_it": "Correct buffered IO ownership and conditional-to-optional extraction, then compare all item paths again.",
       "evidence": [
         {
-          "locator": "https://github.com/bedrock-mc/protocolgen/blob/640546428536dcc837a13fff070c30cd2f5b61d3/generated/1.26.40/manifest.json",
-          "summary": "The immutable canonical input contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
+          "locator": "generated/1.26.51/manifest.json",
+          "summary": "The canonical 1.26.51 manifest contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
         },
         {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/inventory_content.go",
-          "summary": "Pinned source operations were compared with the canonical packet, including branch and codec differences described above."
-        },
-        {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446",
-          "summary": "itemUserData first reads extraData through the outer reader, then parses canBePlacedOn/canBreak through a separate bufReader. The extractor currently counts these inner reads again."
+          "locator": "https://github.com/hashimthearab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/packet/inventory_content.go",
+          "summary": "The locked protocol 2193 source operations were compared with the canonical packet, including the differences described above."
         }
       ],
-      "fingerprint": "sha256:c7c3cb98be2f941e0939b44881837a858be0aef13553c0ee40ade94bf632c10c"
+      "fingerprint": "sha256:1728e433263aa8863455d2112e5bfab72d67401942c36a6796d467767259aca1"
     },
     {
       "id": 50,
       "name": "InventorySlotPacket",
-      "reason": "Mixed comparison limits and wire conflict: the canonical Container Id is u8 while pinned InventorySlot.WindowID uses var_u32. ItemInstance also has inner-buffer and conditional-presence extraction limitations.",
+      "reason": "Wire conflict: the canonical Container Id is a fixed u8 while the protocol 2193 InventorySlot marshal writes WindowID as var_u32 (identical below 128). ItemInstance extra-data is decoded from one byte buffer and its canBePlacedOn/canBreak arrays are parsed inside it, so the extractor counts them as outer operations where the canonical manifest has one opaque user-data buffer.",
       "what_would_settle_it": "Capture inventory slots with boundary window IDs to establish the prefix; fix inner-buffer ownership and stack-ID conditional extraction independently.",
       "evidence": [
         {
-          "locator": "https://github.com/bedrock-mc/protocolgen/blob/640546428536dcc837a13fff070c30cd2f5b61d3/generated/1.26.40/manifest.json",
-          "summary": "The immutable canonical input contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
+          "locator": "generated/1.26.51/manifest.json",
+          "summary": "The canonical 1.26.51 manifest contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
         },
         {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/inventory_slot.go",
-          "summary": "Pinned source operations were compared with the canonical packet, including branch and codec differences described above."
-        },
-        {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446",
-          "summary": "itemUserData first reads extraData through the outer reader, then parses canBePlacedOn/canBreak through a separate bufReader. The extractor currently counts these inner reads again."
+          "locator": "https://github.com/hashimthearab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/packet/inventory_slot.go",
+          "summary": "The locked protocol 2193 source operations were compared with the canonical packet, including the differences described above."
         }
       ],
-      "fingerprint": "sha256:8d3e0cbd9dbfcd8cc1abe11541736099e0f4a4034cfeb340b6d050f267d09ef1"
+      "fingerprint": "sha256:81bd78ec47e1559505c86c756d5f8c3531c0e526f5a4b4930e9be7f8ed15627f"
     },
     {
       "id": 52,
       "name": "CraftingDataPacket",
-      "reason": "Modeling limitation: the canonical shaped-recipe ingredient (Endstone cerealizer<RecipeIngredient>::SerializedData) is a var_u32-counted string-to-string map followed by zigzag aux value and count, while the pinned ItemDescriptorCount and CloudburstMC readIngredient write a var_u32 descriptor kind, a descriptor-name string, a payload chosen by that name, then the zigzag count. The map is byte-identical for the default and invalid descriptors and diverges for molang and item-tag descriptors. A descriptor discriminated by a string is not expressible in the claim format, so no correction is possible without a manifest schema extension.",
-      "what_would_settle_it": "A manifest node kind for string-discriminated unions, or evidence that only default descriptors occur in CraftingData at protocol 2168.",
+      "reason": "Modeling limitation: the canonical shaped-recipe ingredient (Endstone cerealizer<RecipeIngredient>::SerializedData) is a var_u32-counted string-to-string map followed by zigzag aux value and count, while the protocol 2193 ItemDescriptorCount and CloudburstMC readIngredient write a var_u32 descriptor kind, a descriptor-name string, a payload chosen by that name, then the zigzag count. The map is byte-identical for the default and invalid descriptors and diverges for molang and item-tag descriptors. A descriptor discriminated by a string is not expressible in the claim format, so no correction is possible without a manifest schema extension.",
+      "what_would_settle_it": "A manifest node kind for string-discriminated unions, or evidence that only default descriptors occur in CraftingData at protocol 2193.",
       "evidence": [
         {
-          "locator": "https://github.com/bedrock-mc/protocolgen/blob/16c116fb1f11f3ef91dbf278382854a2771603b6/generated/1.26.40/manifest.json",
-          "summary": "The immutable canonical input contains the compared packet shape; this baseline acknowledges comparison debt, not wire correctness."
+          "locator": "generated/1.26.51/manifest.json",
+          "summary": "The canonical 1.26.51 manifest contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
         },
         {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/crafting_data.go",
-          "summary": "Pinned source operations were compared with the canonical packet as a wire language; the shortest diverging path is recorded in the oracle report."
-        },
-        {
-          "locator": "https://github.com/CloudburstMC/Protocol/blob/03d84626de7a22af2a48c61d1eebfd37526db0fa/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v2168/BedrockCodecHelper_v2168.java",
-          "summary": "readIngredient reads a var_u32 kind, then readItemDescriptor reads the descriptor-name string and dispatches on it, then a zigzag count."
+          "locator": "https://github.com/hashimthearab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/packet/crafting_data.go",
+          "summary": "The locked protocol 2193 source operations were compared with the canonical packet, including the differences described above."
         }
       ],
-      "fingerprint": "sha256:7a8ff51d0b939733ee27e5dc139f9d5830abf4cfb8f56577dd9b82bf3ccf1662"
+      "fingerprint": "sha256:714bfb5092dce2c99c0e1b3a1c6de3f024af6c13e0fdae12ad8f43264135c675"
     },
     {
       "id": 63,
@@ -267,298 +214,236 @@
       "what_would_settle_it": "Model branch termination, then test add/remove player lists and settle the same skin-colour endian conflict as packet 93.",
       "evidence": [
         {
-          "locator": "https://github.com/bedrock-mc/protocolgen/blob/640546428536dcc837a13fff070c30cd2f5b61d3/generated/1.26.40/manifest.json",
-          "summary": "The immutable canonical input contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
+          "locator": "generated/1.26.51/manifest.json",
+          "summary": "The canonical 1.26.51 manifest contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
         },
         {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/player_list.go",
-          "summary": "Pinned source operations were compared with the canonical packet, including branch and codec differences described above."
+          "locator": "https://github.com/hashimthearab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/packet/player_list.go",
+          "summary": "The locked protocol 2193 source operations were compared with the canonical packet, including the differences described above."
         }
       ],
-      "fingerprint": "sha256:4a7ad7c38751d42aacf6d5fb61549dc3320a295ad90d897b127a0b4ff59ad117"
+      "fingerprint": "sha256:eb36c56ad78521b20535b07f0f1c38913acfdc8d8b10331d9d87ff3fb9beec68"
     },
     {
       "id": 65,
       "name": "LegacyTelemetryEventPacket",
-      "reason": "Wire/control conflict: the LegacyTelemetry event union and the pinned Event marshaler disagree on event discriminants and payload fields, including Contents Color. A packet-level exception does not establish any event as correct.",
-      "what_would_settle_it": "Review each legacy event discriminant and payload against protocol 2168 binary serializers or captures; correct the responsible schema/extractor one event at a time.",
+      "reason": "Wire/control conflict: the LegacyTelemetry event union and the protocol 2193 Event marshaler disagree on event discriminants and payload fields, including Contents Color. A packet-level exception does not establish any event as correct.",
+      "what_would_settle_it": "Review each legacy event discriminant and payload against protocol 2193 binary serializers or captures; correct the responsible schema/extractor one event at a time.",
       "evidence": [
         {
-          "locator": "https://github.com/bedrock-mc/protocolgen/blob/640546428536dcc837a13fff070c30cd2f5b61d3/generated/1.26.40/manifest.json",
-          "summary": "The immutable canonical input contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
+          "locator": "generated/1.26.51/manifest.json",
+          "summary": "The canonical 1.26.51 manifest contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
         },
         {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/event.go",
-          "summary": "Pinned source operations were compared with the canonical packet, including branch and codec differences described above."
+          "locator": "https://github.com/hashimthearab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/packet/event.go",
+          "summary": "The locked protocol 2193 source operations were compared with the canonical packet, including the differences described above."
         }
       ],
-      "fingerprint": "sha256:564e8f0cf6addc2c5e9c271242e250f7b18242b146878de640254f33612c6b4d"
+      "fingerprint": "sha256:138ccd66a971b41296f8b7bdf7ace39219e725191c96a901bbdfbea096248397"
     },
     {
       "id": 78,
       "name": "CommandBlockUpdatePacket",
-      "reason": "Wire conflict: the canonical Target union uses var_u32, while pinned CommandBlockUpdate uses a bool to distinguish block and actor targets.",
-      "what_would_settle_it": "Capture both command-block target forms at protocol 2168 and settle their selector encoding.",
+      "reason": "Wire conflict: the canonical Target union uses var_u32, while protocol 2193 CommandBlockUpdate uses a bool to distinguish block and actor targets.",
+      "what_would_settle_it": "Capture both command-block target forms at protocol 2193 and settle their selector encoding.",
       "evidence": [
         {
-          "locator": "https://github.com/bedrock-mc/protocolgen/blob/640546428536dcc837a13fff070c30cd2f5b61d3/generated/1.26.40/manifest.json",
-          "summary": "The immutable canonical input contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
+          "locator": "generated/1.26.51/manifest.json",
+          "summary": "The canonical 1.26.51 manifest contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
         },
         {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/command_block_update.go",
-          "summary": "Pinned source operations were compared with the canonical packet, including branch and codec differences described above."
+          "locator": "https://github.com/hashimthearab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/packet/command_block_update.go",
+          "summary": "The locked protocol 2193 source operations were compared with the canonical packet, including the differences described above."
         }
       ],
-      "fingerprint": "sha256:998d7ee8b2bc05b00033f0b5b03658b98af3083708c699b951f79e9ccf4cbb6e"
+      "fingerprint": "sha256:126c7774d8bcb055686ed7121dc5422ff258f8a9efe78d24e65f582da0a1547d"
     },
     {
       "id": 108,
       "name": "SetScorePacket",
-      "reason": "Wire/control-layout conflict: the canonical Score Info union control is u8, while pinned ScoreboardEntry writes a var_u32 selector and type-name string before switching. Variant annotations also appear at different positions. Small current discriminator values may produce the same bytes, but the comparator deliberately preserves the primitive distinction.",
-      "what_would_settle_it": "Establish the score-entry discriminator encoding and action-dependent fields from the protocol 2168 serializer, then improve selector-aware comparison; do not infer a legacy byte that the source does not write.",
+      "reason": "Control-layout conflict with identical bytes: both sides now write a var_u32 selector; the canonical union places its variant marker right after the selector, while the protocol 2193 ScoreboardEntry writes the type-name string and entry ID before dispatching.",
+      "what_would_settle_it": "A per-union normalization that lets a type-switch discriminant bind after shared leading fields, or a capture of each score entry kind.",
       "evidence": [
         {
-          "locator": "https://github.com/bedrock-mc/protocolgen/blob/640546428536dcc837a13fff070c30cd2f5b61d3/generated/1.26.40/manifest.json",
-          "summary": "The immutable canonical input contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
+          "locator": "generated/1.26.51/manifest.json",
+          "summary": "The canonical 1.26.51 manifest contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
         },
         {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/set_score.go",
-          "summary": "Pinned source operations were compared with the canonical packet, including branch and codec differences described above."
-        },
-        {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/scoreboard.go",
-          "summary": "ScoreboardEntry writes Varuint32 for variant, its type name and EntryID before dispatch; removal entries have a separate marshaler."
+          "locator": "https://github.com/hashimthearab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/packet/set_score.go",
+          "summary": "The locked protocol 2193 source operations were compared with the canonical packet, including the differences described above."
         }
       ],
-      "fingerprint": "sha256:e8f989e19d905fa0a63aaaf3ff128090e7fc76d429351755288c5f456e21bfc2"
+      "fingerprint": "sha256:14a0024a503849404fcea5b1d59ac3da7616b8929fbaa1c7ab7b5979893a0b8a"
     },
     {
       "id": 133,
       "name": "StructureTemplateDataResponsePacket",
-      "reason": "Wire conflict: the pinned StructureTemplateDataResponse writes Success bool and conditionally NBT, while the manifest has different presence framing.",
+      "reason": "Wire conflict: the protocol 2193 StructureTemplateDataResponse writes Success bool and conditionally NBT, while the manifest has different presence framing.",
       "what_would_settle_it": "Capture successful and unsuccessful structure responses to establish the NBT presence boundary, then correct the source claim.",
       "evidence": [
         {
-          "locator": "https://github.com/bedrock-mc/protocolgen/blob/640546428536dcc837a13fff070c30cd2f5b61d3/generated/1.26.40/manifest.json",
-          "summary": "The immutable canonical input contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
+          "locator": "generated/1.26.51/manifest.json",
+          "summary": "The canonical 1.26.51 manifest contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
         },
         {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/structure_template_data_response.go",
-          "summary": "Pinned source operations were compared with the canonical packet, including branch and codec differences described above."
+          "locator": "https://github.com/hashimthearab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/packet/structure_template_data_response.go",
+          "summary": "The locked protocol 2193 source operations were compared with the canonical packet, including the differences described above."
         }
       ],
-      "fingerprint": "sha256:e454a97527dd848c564b858f8f643711c709575bd2a2e4e33e53bf7f318da8b6"
+      "fingerprint": "sha256:0f1f8e7906937e2665a13aeb637fbeed68553b2c0cae44d63aa7f23a11e4056a"
     },
     {
       "id": 144,
       "name": "PlayerAuthInputPacket",
-      "reason": "Framing only, same class as 30: Endstone's constant-true bool before Item Use Transaction and inside InventoryTransaction are lowered as optionals, so the manifest lets the item-use payload be absent, while the pinned PlayerInventoryAction and CloudburstMC writeItemUseTransaction write both markers as always-true and continue with the action type. The bytes agree whenever the markers are true. Input Data itself (presence bool, var_u32-prefixed zigzag ids) agrees on all three sides.",
+      "reason": "Control-layout conflict, same as 147: the item stack request action selector, the per-action type byte and the switch annotation appear at different positions. The item-use framing difference recorded at protocol 2168 no longer occurs, because the protocol 2193 fork writes the actions array without the extra presence flag.",
       "what_would_settle_it": "Evidence that either constant marker can be false on the wire, or an ingest rule that lowers a constant-true bool as a fixed byte instead of an optional.",
       "evidence": [
         {
-          "locator": "https://github.com/bedrock-mc/protocolgen/blob/16c116fb1f11f3ef91dbf278382854a2771603b6/generated/1.26.40/manifest.json",
-          "summary": "The immutable canonical input contains the compared packet shape; this baseline acknowledges comparison debt, not wire correctness."
+          "locator": "generated/1.26.51/manifest.json",
+          "summary": "The canonical 1.26.51 manifest contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
         },
         {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/player_auth_input.go",
-          "summary": "Pinned source operations were compared with the canonical packet as a wire language; the shortest diverging path is recorded in the oracle report."
-        },
-        {
-          "locator": "https://github.com/CloudburstMC/Protocol/blob/03d84626de7a22af2a48c61d1eebfd37526db0fa/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v2168/serializer/PlayerAuthInputSerializer_v2168.java",
-          "summary": "writeItemUseTransaction writes buffer.writeBoolean(true) twice after the legacy slots and then the zigzag action type unconditionally."
+          "locator": "https://github.com/hashimthearab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/packet/player_auth_input.go",
+          "summary": "The locked protocol 2193 source operations were compared with the canonical packet, including the differences described above."
         }
       ],
-      "fingerprint": "sha256:4740cadccc85fbe18a286f35a35b30e9b4a3747db48e43e2ee8e53948b21b631"
+      "fingerprint": "sha256:5b3678a528c00a0bddb49eabbd3776b3ad60011bc4f3e00ba5a7c8d62531ef21"
     },
     {
       "id": 145,
       "name": "CreativeContentPacket",
-      "reason": "Extractor limitation: CreativeContent item icons/items contain canBePlacedOn/canBreak parsing through a bufReader after the outer extraData byte slice. These inner arrays are currently counted twice in the extracted wire sequence.",
+      "reason": "Extractor limitation: ItemInstance extra-data is decoded from one byte buffer and its canBePlacedOn/canBreak arrays are parsed inside it, so the extractor counts them as outer operations where the canonical manifest has one opaque user-data buffer.",
       "what_would_settle_it": "Track IO receiver ownership so parsing the already-read item buffer contributes no additional outer operations.",
       "evidence": [
         {
-          "locator": "https://github.com/bedrock-mc/protocolgen/blob/640546428536dcc837a13fff070c30cd2f5b61d3/generated/1.26.40/manifest.json",
-          "summary": "The immutable canonical input contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
+          "locator": "generated/1.26.51/manifest.json",
+          "summary": "The canonical 1.26.51 manifest contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
         },
         {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/creative_content.go",
-          "summary": "Pinned source operations were compared with the canonical packet, including branch and codec differences described above."
-        },
-        {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/reader.go#L446",
-          "summary": "itemUserData first reads extraData through the outer reader, then parses canBePlacedOn/canBreak through a separate bufReader. The extractor currently counts these inner reads again."
+          "locator": "https://github.com/hashimthearab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/packet/creative_content.go",
+          "summary": "The locked protocol 2193 source operations were compared with the canonical packet, including the differences described above."
         }
       ],
-      "fingerprint": "sha256:00c784cbc2a3d67886b62c6303903119d8fc04e393bffa4d583619a6a5b5e264"
+      "fingerprint": "sha256:95f9bbf6ee6a51e9fd24556395c05b672e7307efb5c3f2a43fa1f62e340bf5e0"
     },
     {
       "id": 147,
       "name": "ItemStackRequestPacket",
       "reason": "Extractor/control-layout conflict: ItemStackRequest cereal action selector, legacy action byte and switch annotation appear at different positions; action-ID mappings also need exact evidence. Removing marker tokens would not prove the cases correspond.",
-      "what_would_settle_it": "Bind action switches to serialized discriminants and validate every action mapping and legacy byte against protocol 2168 source/captures.",
+      "what_would_settle_it": "Bind action switches to serialized discriminants and validate every action mapping and legacy byte against protocol 2193 source/captures.",
       "evidence": [
         {
-          "locator": "https://github.com/bedrock-mc/protocolgen/blob/640546428536dcc837a13fff070c30cd2f5b61d3/generated/1.26.40/manifest.json",
-          "summary": "The immutable canonical input contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
+          "locator": "generated/1.26.51/manifest.json",
+          "summary": "The canonical 1.26.51 manifest contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
         },
         {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/item_stack_request.go",
-          "summary": "Pinned source operations were compared with the canonical packet, including branch and codec differences described above."
+          "locator": "https://github.com/hashimthearab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/packet/item_stack_request.go",
+          "summary": "The locked protocol 2193 source operations were compared with the canonical packet, including the differences described above."
         }
       ],
-      "fingerprint": "sha256:c209041b1074928d2b564eecacf408f3226ea9c22ca38fa0d898d28ed6534c15"
+      "fingerprint": "sha256:2c3ec90a88d7ef8536db4fe23ae65c89715ab8c22510fc1d391c0c908e00ee3b"
     },
     {
       "id": 164,
       "name": "ClientboundDebugRendererPacket",
-      "reason": "Wire conflict: the manifest adds optional bool presence around DebugMarkerData, while pinned DebugRenderer includes marker data under its string-type condition without that presence byte.",
+      "reason": "Wire conflict: the manifest adds optional bool presence around DebugMarkerData, while protocol 2193 DebugRenderer includes marker data under its string-type condition without that presence byte.",
       "what_would_settle_it": "Capture each supported debug-renderer message type and settle whether a separate presence bool exists.",
       "evidence": [
         {
-          "locator": "https://github.com/bedrock-mc/protocolgen/blob/640546428536dcc837a13fff070c30cd2f5b61d3/generated/1.26.40/manifest.json",
-          "summary": "The immutable canonical input contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
+          "locator": "generated/1.26.51/manifest.json",
+          "summary": "The canonical 1.26.51 manifest contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
         },
         {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/client_bound_debug_renderer.go",
-          "summary": "Pinned source operations were compared with the canonical packet, including branch and codec differences described above."
+          "locator": "https://github.com/hashimthearab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/packet/client_bound_debug_renderer.go",
+          "summary": "The locked protocol 2193 source operations were compared with the canonical packet, including the differences described above."
         }
       ],
-      "fingerprint": "sha256:660201adafee00bf46e8268ca0f225bc10852c80316bf7da739e28b5aef9f9c1"
+      "fingerprint": "sha256:8da7504de4d73d8f5cb390775bc46c15ca0638fef951b72c32a538ce36fec0cd"
     },
     {
-      "id": 187,
-      "name": "UpdateAbilitiesPacket",
-      "reason": "The canonical manifest prefixes Layers with unsigned var_u32, while the pinned gophertunnel AbilityData Marshal uses SliceUint8Length and therefore an unsigned fixed u8 count. The array-prefix distinction is intentionally preserved.",
-      "what_would_settle_it": "A protocol 2168 capture or independent serializer must identify the Layers count prefix; then update the canonical source correction or gophertunnel and remove this entry.",
+      "id": 174,
+      "name": "SubChunkPacket",
+      "reason": "Modeling difference: 1.26.51 Endstone and the protocol 2193 fork both prefix each height map row with a var_u32 count, but the fork requires the count to be 16 and reads exactly 16 heights, while the canonical row is a general var_u32-counted array. Vanilla always writes 16.",
+      "what_would_settle_it": "A canonical length constraint on the row array, or a capture showing any other row length.",
       "evidence": [
         {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/ability.go",
-          "summary": "Pinned AbilityData Marshal uses SliceUint8Length for Layers."
+          "locator": "generated/1.26.51/manifest.json",
+          "summary": "The canonical 1.26.51 manifest contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
         },
         {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/tools/protocoldrift/accepted-drift.json",
-          "summary": "The prior reviewed divergence records the one-source-versus-one-source prefix conflict."
+          "locator": "https://github.com/hashimthearab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/packet/sub_chunk.go",
+          "summary": "The locked protocol 2193 source operations were compared with the canonical packet, including the differences described above."
         }
       ],
-      "fingerprint": "sha256:d4eeedaee69edece2bbe4a8aea3c70bff0988a5e3f68c08a5bb553ce9a5d117c"
+      "fingerprint": "sha256:ffac448b11331df7756668b7e5936f1c64e56125f0220977dab6701df5589fae"
     },
     {
       "id": 300,
       "name": "CameraInstructionPacket",
-      "reason": "Wire conflict: the canonical camera spline type is an unconditional u8, while the pinned CameraInstruction wraps SplineType in an optional. CloudburstMC writeSplineInstruction (v944, inherited by v2168) writes the type byte unconditionally, matching the manifest, so the pinned gophertunnel marshal is the suspect side.",
-      "what_would_settle_it": "A CameraInstruction spline capture at protocol 2168, or a writer trace of the spline instruction, settles the spline-type framing.",
+      "reason": "Wire conflict: the canonical camera spline type and spline identifier are unconditional, while the protocol 2193 CameraInstruction marshal wraps both in optionals. CloudburstMC writeSplineInstruction writes the type byte unconditionally, matching the manifest, so the fork is the suspect side for the type.",
+      "what_would_settle_it": "A capture of a spline camera instruction with and without an identifier.",
       "evidence": [
         {
-          "locator": "https://github.com/bedrock-mc/protocolgen/blob/16c116fb1f11f3ef91dbf278382854a2771603b6/generated/1.26.40/manifest.json",
-          "summary": "The immutable canonical input contains the compared packet shape; this baseline acknowledges comparison debt, not wire correctness."
+          "locator": "generated/1.26.51/manifest.json",
+          "summary": "The canonical 1.26.51 manifest contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
         },
         {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/camera_instruction.go",
-          "summary": "Pinned source operations were compared with the canonical packet as a wire language; the shortest diverging path is recorded in the oracle report."
-        },
-        {
-          "locator": "https://github.com/CloudburstMC/Protocol/blob/03d84626de7a22af2a48c61d1eebfd37526db0fa/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v944/serializer/CameraInstructionSerializer_v944.java",
-          "summary": "writeSplineInstruction writes buffer.writeByte(type) with no presence flag."
+          "locator": "https://github.com/hashimthearab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/packet/camera_instruction.go",
+          "summary": "The locked protocol 2193 source operations were compared with the canonical packet, including the differences described above."
         }
       ],
-      "fingerprint": "sha256:234c68854c7674f019f30605876585e6229c2e4bcf08ad4d5e178384830abee8"
+      "fingerprint": "sha256:2a1c6985d046829b5b9cff25f540699c7e169bd4db0b50dc0a7c315cf58072b5"
     },
     {
-      "id": 325,
-      "name": "PlayerUpdateEntityOverridesPacket",
-      "reason": "Wire conflict: pinned PlayerUpdateEntityOverrides emits an extra var_u32/legacy dispatch layout while the canonical update payload contains a Type string not represented by that marshal.",
-      "what_would_settle_it": "Inspect protocol 2168 entity-override variants and captures to establish control, legacy value, and Type string framing.",
+      "id": 315,
+      "name": "ServerboundDiagnosticsPacket",
+      "reason": "Open source conflict: Endstone 1.26.51.1 marks the entity diagnostic Position and Dimension optional and the canonical manifest carries that selection, while the 1.26.51 Mojang schema lists both as required and the protocol 2193 fork writes them unconditionally.",
+      "what_would_settle_it": "A capture of a ServerboundDiagnostics packet with entity diagnostics, or an exact-version serializer trace.",
       "evidence": [
         {
-          "locator": "https://github.com/bedrock-mc/protocolgen/blob/640546428536dcc837a13fff070c30cd2f5b61d3/generated/1.26.40/manifest.json",
-          "summary": "The immutable canonical input contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
+          "locator": "generated/1.26.51/manifest.json",
+          "summary": "The canonical 1.26.51 manifest contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
         },
         {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/player_update_entity_overrides.go",
-          "summary": "Pinned source operations were compared with the canonical packet, including branch and codec differences described above."
+          "locator": "https://github.com/hashimthearab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/packet/server_bound_diagnostics.go",
+          "summary": "The locked protocol 2193 source operations were compared with the canonical packet, including the differences described above."
         }
       ],
-      "fingerprint": "sha256:aab0c3197b642cfb04a9aa7fe8043d5492bc8adfe691c461a15f92faabd99ad9"
+      "fingerprint": "sha256:10360a99add83cdbd711d9a0424a868c3d0c78ae1937f7910346e3c4a6333b83"
     },
     {
       "id": 338,
       "name": "CameraSplinePacket",
-      "reason": "Wire conflict: canonical spline_type is unconditional but pinned CameraSpline makes it optional; canonical progress/rotation easing is optional but pinned code writes strings unconditionally.",
+      "reason": "Wire conflict: canonical spline_type is unconditional but protocol 2193 CameraSpline makes it optional; canonical progress/rotation easing is optional but protocol 2193 code writes strings unconditionally.",
       "what_would_settle_it": "Capture spline variants with absent/present spline_type and easing values or inspect the matching binary serializer to settle each presence boundary.",
       "evidence": [
         {
-          "locator": "https://github.com/bedrock-mc/protocolgen/blob/640546428536dcc837a13fff070c30cd2f5b61d3/generated/1.26.40/manifest.json",
-          "summary": "The immutable canonical input contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
+          "locator": "generated/1.26.51/manifest.json",
+          "summary": "The canonical 1.26.51 manifest contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
         },
         {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/camera_spline.go",
-          "summary": "Pinned source operations were compared with the canonical packet, including branch and codec differences described above."
+          "locator": "https://github.com/hashimthearab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/packet/camera_spline.go",
+          "summary": "The locked protocol 2193 source operations were compared with the canonical packet, including the differences described above."
         }
       ],
-      "fingerprint": "sha256:4ea951b2d3174ea7eddd14a714bf6442d519476408a2863213b03c74ab67780a"
+      "fingerprint": "sha256:b565b2e7e269828d97bbd828a6dc832968b52c1c4c759b8a272e3649674f7d41"
     },
     {
       "id": 345,
       "name": "ClientboundAttributeLayerSyncPacket",
-      "reason": "Wire conflict: the canonical attribute operation is an unconditional string, while the pinned ClientBoundAttributeLayerSync wraps BoolOperation in an optional. CloudburstMC readAttributeData (v944, inherited by v2168) reads the operation string unconditionally after the value, matching the manifest, so the pinned gophertunnel marshal is the suspect side.",
-      "what_would_settle_it": "An attribute layer sync capture at protocol 2168 with a bool attribute, or a writer trace, settles the operation framing.",
+      "reason": "Wire conflict: the canonical attribute operation is an unconditional string, while the protocol 2193 ClientBoundAttributeLayerSync wraps BoolOperation in an optional. CloudburstMC readAttributeData (v944, inherited by v2168) reads the operation string unconditionally after the value, matching the manifest, so the protocol 2193 gophertunnel marshal is the suspect side.",
+      "what_would_settle_it": "An attribute layer sync capture at protocol 2193 with a bool attribute, or a writer trace, settles the operation framing.",
       "evidence": [
         {
-          "locator": "https://github.com/bedrock-mc/protocolgen/blob/16c116fb1f11f3ef91dbf278382854a2771603b6/generated/1.26.40/manifest.json",
-          "summary": "The immutable canonical input contains the compared packet shape; this baseline acknowledges comparison debt, not wire correctness."
+          "locator": "generated/1.26.51/manifest.json",
+          "summary": "The canonical 1.26.51 manifest contains the conflicting packet shape; this baseline acknowledges comparison debt, not wire correctness."
         },
         {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/client_bound_attribute_layer_sync.go",
-          "summary": "Pinned source operations were compared with the canonical packet as a wire language; the shortest diverging path is recorded in the oracle report."
-        },
-        {
-          "locator": "https://github.com/CloudburstMC/Protocol/blob/03d84626de7a22af2a48c61d1eebfd37526db0fa/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v944/serializer/ClientboundAttributeLayerSyncSerializer_v944.java",
-          "summary": "readAttributeData reads the bool value then helper.readString for the operation with no presence flag."
+          "locator": "https://github.com/hashimthearab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/packet/clientbound_attribute_layer_sync.go",
+          "summary": "The locked protocol 2193 source operations were compared with the canonical packet, including the differences described above."
         }
       ],
-      "fingerprint": "sha256:267ef5d28c09762e729823bdc599511402ef123605d34ccffcd59f85f6c486aa"
-    },
-    {
-      "id": 347,
-      "name": "ServerPresenceInfoPacket",
-      "reason": "The canonical manifest contains only the optional rich-presence value, while the pinned gophertunnel PresenceInfo type adds optional ExperienceName and WorldName and an unconditional RichPresenceID inside the outer optional. This can change packet length rather than merely field grouping.",
-      "what_would_settle_it": "A protocol 2168 capture or exact reference serializer must identify the complete PresenceInfo payload and whether ExperienceName, WorldName, and RichPresenceID are on the wire; then correct the canonical shape or oracle and remove this entry.",
-      "evidence": [
-        {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/server_join_information.go",
-          "summary": "Pinned PresenceInfo Marshal includes optional ExperienceName and WorldName plus RichPresenceID."
-        },
-        {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/tools/protocoldrift/accepted-drift.json",
-          "summary": "The prior reviewed divergence records the same type and field-count disagreement."
-        }
-      ],
-      "fingerprint": "sha256:f9129b6645a061f57ac837e66588fda175bdf228254a013c2c74f7a41bf7c312"
-    },
-    {
-      "id": 348,
-      "name": "ClientboundUpdateSoundDataPacket",
-      "reason": "Open decision, not a guess: commit bbaa61a treats a defaulted Mojang property as always present and deliberately dropped the seven ClientboundUpdateSoundData optional-slot corrections, which is why the canonical slots are bare var_u32 unions. The pinned SoundDataUpdate (OptionalMarshaler, then var_u32 type and payload) and CloudburstMC (writeOptionalNull, then var_u32 and payload) both write a presence bool per slot. Either the defaulted-property rule needs a per-packet exception here or the pinned fork is wrong; the manifest was not changed by the oracle work.",
-      "what_would_settle_it": "A ClientboundUpdateSoundData capture at protocol 2168, or a writer trace, decides whether each slot carries a presence bool.",
-      "evidence": [
-        {
-          "locator": "https://github.com/bedrock-mc/protocolgen/blob/16c116fb1f11f3ef91dbf278382854a2771603b6/generated/1.26.40/manifest.json",
-          "summary": "The immutable canonical input contains the compared packet shape; this baseline acknowledges comparison debt, not wire correctness."
-        },
-        {
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/clientbound_update_sound_data.go",
-          "summary": "Pinned source operations were compared with the canonical packet as a wire language; the shortest diverging path is recorded in the oracle report."
-        },
-        {
-          "locator": "https://github.com/CloudburstMC/Protocol/blob/03d84626de7a22af2a48c61d1eebfd37526db0fa/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v2168/serializer/ClientboundUpdateSoundDataSerializer_v2168.java",
-          "summary": "Each slot is helper.writeOptionalNull(..., var_u32 then payload)."
-        },
-        {
-          "locator": "https://github.com/bedrock-mc/protocolgen/commit/bbaa61a",
-          "summary": "Removed the seven sound-slot optional corrections under the defaulted-property rule and recorded 348 moving from agreement to unresolved."
-        }
-      ],
-      "fingerprint": "sha256:9f3e8ad1396ac2a605494e094e2c3e1861203709151d4bc307c5485343d692a7"
+      "fingerprint": "sha256:69b2e9cf4fe1773e87caa874687f256c72e72a6b70705bc4e8ef511e6fb5c06a"
     }
   ]
 }

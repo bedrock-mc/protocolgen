@@ -737,7 +737,7 @@ func TestGenerateAppliesLayoutOverlay(t *testing.T) {
 		"IDSetPlayerGameMode",
 		"PlayerGameMode protocol.GameType",
 		"pk.PlayerGameMode.Marshal(io)",
-		"[]protocol.SetPlayerGameModeRowsItemStruct",
+		"[]protocol.SetPlayerGameModeEntriesItemStruct", // anonymous types are named from the wire field, not the layout name
 		"GameTypeCreative protocol.GameType = 1",
 		"GameTypeSurvival protocol.GameType = 0",
 	} {

@@ -43,7 +43,6 @@ jobs:
         run: |
           make verify \
             GO_CACHE="$RUNNER_TEMP/protocolgen-go-cache" \
-            ORACLE_REPORT="$RUNNER_TEMP/gophertunnel-report.json" \
             MOJANG_DIR="$RUNNER_TEMP/protocolgen-mojang/json" \
             ENDSTONE_DIR="$RUNNER_TEMP/protocolgen-endstone"
 
@@ -60,11 +59,21 @@ jobs:
             MOJANG_DIR="$RUNNER_TEMP/protocolgen-mojang-2187/json" \
             ENDSTONE_DIR="$RUNNER_TEMP/protocolgen-endstone-2187"
 
+      - name: Regenerate and verify 1.26.51
+        run: |
+          git -C "$RUNNER_TEMP/protocolgen-mojang" worktree add --detach "$RUNNER_TEMP/protocolgen-mojang-2193" "$(jq -r '.sources[] | select(.id == "mojang") | .revision' generated/1.26.51/source-lock.json)"
+          git -C "$RUNNER_TEMP/protocolgen-endstone" worktree add --detach "$RUNNER_TEMP/protocolgen-endstone-2193" "$(jq -r '.sources[] | select(.id == "endstone") | .revision' generated/1.26.51/source-lock.json)"
+          make verify-1.26.51 \
+            GO_CACHE="$RUNNER_TEMP/protocolgen-go-cache" \
+            ORACLE_REPORT="$RUNNER_TEMP/gophertunnel-report.json" \
+            MOJANG_DIR="$RUNNER_TEMP/protocolgen-mojang-2193/json" \
+            ENDSTONE_DIR="$RUNNER_TEMP/protocolgen-endstone-2193"
+
       - name: Preserve oracle comparison report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: gophertunnel-oracle-2168
+          name: gophertunnel-oracle-2193
           path: ${{ runner.temp }}/gophertunnel-report.json
           if-no-files-found: warn
 
@@ -99,7 +108,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        version: ['1.26.40', '1.26.44', '1.26.50']
+        version: ['1.26.40', '1.26.44', '1.26.50', '1.26.51']
     defaults:
       run:
         working-directory: generated/${{ matrix.version }}/rust
