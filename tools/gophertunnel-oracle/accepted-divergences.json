@@ -176,8 +176,8 @@
     {
       "id": 50,
       "name": "InventorySlotPacket",
-      "reason": "Extractor limitation: ItemInstance extra-data is decoded from one byte buffer and its canBePlacedOn/canBreak arrays are parsed inside it, so the extractor counts them as outer operations where the canonical manifest has one opaque user-data buffer. The container ID now agrees as var_u32.",
-      "what_would_settle_it": "Capture inventory slots with boundary window IDs to establish the prefix; fix inner-buffer ownership and stack-ID conditional extraction independently.",
+      "reason": "Wire conflict: Mojang declares Container Id as uint8, and 8- and 16-bit fields are fixed-width regardless of Compression, while the protocol 2193 InventorySlot marshal writes WindowID as var_u32. The encodings agree below 128, so the fork is the suspect side. ItemInstance extra-data also shows the extractor limitation recorded for 12 and 15.",
+      "what_would_settle_it": "A capture of an InventorySlot packet with a container ID of 128 or above.",
       "evidence": [
         {
           "locator": "generated/1.26.51/manifest.json",
@@ -188,7 +188,7 @@
           "summary": "The locked protocol 2193 source operations were compared with the canonical packet, including the differences described above."
         }
       ],
-      "fingerprint": "sha256:77558daee82fe301fcbeeb793ca5879b0089ff2eb2b7fb4c807d47b0d691e055"
+      "fingerprint": "sha256:81bd78ec47e1559505c86c756d5f8c3531c0e526f5a4b4930e9be7f8ed15627f"
     },
     {
       "id": 52,
@@ -397,8 +397,8 @@
     {
       "id": 315,
       "name": "ServerboundDiagnosticsPacket",
-      "reason": "Open source conflict: Endstone 1.26.51.1 marks the entity diagnostic Position and Dimension optional and the canonical manifest carries that selection, while the 1.26.51 Mojang schema lists both as required and the protocol 2193 fork writes them unconditionally.",
-      "what_would_settle_it": "A capture of a ServerboundDiagnostics packet with entity diagnostics, or an exact-version serializer trace.",
+      "reason": "The fork is the suspect side: Position and Dimension are optional. Endstone 1.26.51.1 marks both optional, Mojang 1.26.60 no longer lists them as required, and the LeviLamina 26.51 EntityDiagnosticTimingInfo storage sizes match std::optional<Vec3> and std::optional<std::string>. The protocol 2193 fork writes both unconditionally.",
+      "what_would_settle_it": "Fixing the fork to write Position and Dimension as optionals, which turns this into an agreement.",
       "evidence": [
         {
           "locator": "generated/1.26.51/manifest.json",
@@ -407,6 +407,10 @@
         {
           "locator": "https://github.com/hashimthearab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/packet/server_bound_diagnostics.go",
           "summary": "The locked protocol 2193 source operations were compared with the canonical packet, including the differences described above."
+        },
+        {
+          "locator": "https://github.com/LiteLDev/LeviLamina/blob/b3ff77f271193b0833294a9a04e4f46fafe90b36/src/mc/entity/profiling/EntityDiagnosticTimingInfo.h#L15",
+          "summary": "Storage of 16 bytes aligned to 4 and 40 bytes aligned to 8 match std::optional<Vec3> and std::optional<std::string>."
         }
       ],
       "fingerprint": "sha256:10360a99add83cdbd711d9a0424a868c3d0c78ae1937f7910346e3c4a6333b83"

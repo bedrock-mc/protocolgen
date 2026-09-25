@@ -584,24 +584,6 @@
         }
       ],
       "reason": "Select the complete Endstone claim with the StructureBlockUpdate-scoped correction: the structure name and its filtered form are two always-present strings at this site."
-    },
-    {
-      "id": "protocol-2193-retarget-041",
-      "target": "InventorySlotPacket.Container Id",
-      "selected_source": "mojang",
-      "evidence": [
-        {
-          "source_id": "mojang",
-          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
-          "summary": "The exact 1.26.51 Mojang schema marks the container ID as compressed; the reviewed correction gives it the unsigned varint width the wire uses."
-        },
-        {
-          "source_id": "mojang",
-          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/packet/inventory_slot.go#L34",
-          "summary": "The protocol 2193 gophertunnel InventorySlot marshal writes WindowID with Varuint32."
-        }
-      ],
-      "reason": "Select the corrected Mojang claim: InventorySlot writes its container ID as an unsigned varint, while the Endstone dump declares a fixed byte."
     }
   ]
 }
