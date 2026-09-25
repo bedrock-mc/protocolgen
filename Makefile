@@ -33,11 +33,15 @@ TARGET_12650 := generated/1.26.50
 CLAIMS_12650_MOJANG ?= /tmp/protocolgen-1.26.50-mojang-claims.json
 CLAIMS_12650_ENDSTONE ?= /tmp/protocolgen-1.26.50-endstone-claims.json
 
+TARGET_12651 := generated/1.26.51
+CLAIMS_12651_MOJANG ?= /tmp/protocolgen-1.26.51-mojang-claims.json
+CLAIMS_12651_ENDSTONE ?= /tmp/protocolgen-1.26.51-endstone-claims.json
+
 CANDIDATE_12660 := candidates/1.26.60-preview.25
 CLAIMS_12660_MOJANG ?= /tmp/protocolgen-1.26.60-preview.25-mojang-claims.json
 CLAIMS_12660_ENDSTONE ?= /tmp/protocolgen-1.26.60-preview.25-endstone-claims.json
 
-.PHONY: regen regen-1.26.50 ingest-1.26.60 hotfix vanilla-data differential verify verify-1.26.50
+.PHONY: regen regen-1.26.50 regen-1.26.51 ingest-1.26.60 hotfix vanilla-data differential verify verify-1.26.50 verify-1.26.51
 
 differential:
 	$(GO) -C differential test ./...
@@ -80,9 +84,6 @@ regen:
 		-domains $(DOMAINS) \
 		-docs $(DOCS) \
 		-out generated/1.26.40/rust
-	$(PROTOCOLGEN) verify-gophertunnel \
-		-manifest $(MANIFEST) \
-		-report $(ORACLE_REPORT) $(GOPHER_ARGS)
 	$(PROTOCOLGEN) parity \
 		-manifest testdata/parity/v2-small.json \
 		-axolotl testdata/parity/axolotl-v1-small.json
@@ -128,6 +129,46 @@ regen-1.26.50:
 	$(GO) test ./generated/1.26.50/go/... -count=1
 	cargo test --manifest-path $(TARGET_12650)/rust/Cargo.toml
 
+regen-1.26.51:
+	@test -n "$(MOJANG_DIR)" || (echo "MOJANG_DIR is required" >&2; exit 2)
+	@test -n "$(ENDSTONE_DIR)" || (echo "ENDSTONE_DIR is required" >&2; exit 2)
+	$(PROTOCOLGEN) ingest \
+		-lock $(TARGET_12651)/source-lock.json -kind mojang -id mojang \
+		-root $(MOJANG_DIR) -corrections $(TARGET_12651)/corrections/mojang \
+		-out $(CLAIMS_12651_MOJANG)
+	$(PROTOCOLGEN) ingest \
+		-lock $(TARGET_12651)/source-lock.json -kind endstone -id endstone \
+		-root $(ENDSTONE_DIR) -corrections $(TARGET_12651)/corrections/endstone \
+		-out $(CLAIMS_12651_ENDSTONE)
+	$(PROTOCOLGEN) reconcile-claims \
+		-lock $(TARGET_12651)/source-lock.json \
+		-claims $(CLAIMS_12651_MOJANG) \
+		-claims $(CLAIMS_12651_ENDSTONE) \
+		-adjudications $(TARGET_12651)/adjudications.json \
+		-directions $(TARGET_12651)/directions.json \
+		-nbt-encodings $(TARGET_12651)/nbt-encodings.json \
+		-out $(TARGET_12651)/manifest.json
+	$(PROTOCOLGEN) validate -manifest $(TARGET_12651)/manifest.json
+	$(PROTOCOLGEN) emit-go \
+		-manifest $(TARGET_12651)/manifest.json \
+		-naming $(TARGET_12651)/naming.json \
+		-domains $(TARGET_12651)/domains.json \
+		-docs $(TARGET_12651)/docs.json \
+		-out $(TARGET_12651)/go \
+		-protocol-import protocolgen/generated/1.26.51/go/protocol
+	$(PROTOCOLGEN) emit-rust \
+		-manifest $(TARGET_12651)/manifest.json \
+		-naming $(TARGET_12651)/naming.json \
+		-domains $(TARGET_12651)/domains.json \
+		-docs $(TARGET_12651)/docs.json \
+		-out $(TARGET_12651)/rust
+	cargo fmt --manifest-path $(TARGET_12651)/rust/Cargo.toml
+	$(PROTOCOLGEN) verify-gophertunnel \
+		-manifest $(TARGET_12651)/manifest.json \
+		-report $(ORACLE_REPORT) $(GOPHER_ARGS)
+	$(GO) test ./generated/1.26.51/go/... -count=1
+	cargo test --manifest-path $(TARGET_12651)/rust/Cargo.toml
+
 hotfix:
 	$(PROTOCOLGEN) hotfix \
 		-base $(MANIFEST) \
@@ -163,12 +204,15 @@ verify: regen hotfix differential
 verify-1.26.50: regen-1.26.50
 	@test -z "$$(git status --porcelain -- $(TARGET_12650))" || (echo "1.26.50 regeneration produced drift" >&2; exit 1)
 
-# Emit the 1.26.44 tree laid out like the gophertunnel checkout in
+verify-1.26.51: regen-1.26.51
+	@test -z "$$(git status --porcelain -- $(TARGET_12651))" || (echo "1.26.51 regeneration produced drift" >&2; exit 1)
+
+# Emit the 1.26.51 tree laid out like the gophertunnel checkout in
 # GOPHERTUNNEL_DIR (constants beside their packets under fork names, fork field
 # names) into build/gophertunnel-layout, and refresh the seeded overlay and gap
 # report. The overlay is never applied to the checked-in generated tree.
 GOPHERTUNNEL_DIR ?= ../gophertunnel
-LAYOUT_TARGET = generated/1.26.44
+LAYOUT_TARGET = generated/1.26.51
 
 gophertunnel-layout:
 	$(GO) run ./tools/seed-gophertunnel-layout \
@@ -178,7 +222,7 @@ gophertunnel-layout:
 		-out $(LAYOUT_TARGET)/gophertunnel-layout.json \
 		-docs $(LAYOUT_TARGET)/docs.json \
 		-semantics-out $(LAYOUT_TARGET)/semantics.json \
-		-report docs/gophertunnel-gap-1.26.44.md
+		-report docs/gophertunnel-gap-1.26.51.md
 	rm -rf build/gophertunnel-layout
 	$(PROTOCOLGEN) emit-go \
 		-manifest $(LAYOUT_TARGET)/manifest.json \

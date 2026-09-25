@@ -86,6 +86,19 @@ make regen-1.26.50 \
 The target refuses stale source trees, stale corrections, stale adjudications,
 and incomplete packet directions before either emitter runs.
 
+## Regenerating the 1.26.51 release
+
+`generated/1.26.51/` targets protocol 2193, the release that 1.26.50 and 1.26.51
+clients speak and that the gophertunnel fork implements. It pins Mojang's
+`v1.26.51` metadata release and Endstone's 1.26.51.1 stable dump, and the
+gophertunnel oracle runs against it.
+
+```sh
+make verify-1.26.51 \
+  MOJANG_DIR=/path/to/bedrock-protocol-docs/json \
+  ENDSTONE_DIR=/path/to/endstone-protocol-docs
+```
+
 ## Preparing the 1.26.60 preview
 
 Candidate inputs for protocol 2211 are available under
@@ -212,13 +225,14 @@ infers wire shape from anything but it.
 ## Laying the tree out like gophertunnel
 
 `make gophertunnel-layout GOPHERTUNNEL_DIR=/path/to/gophertunnel` emits the
-1.26.44 tree into `build/gophertunnel-layout` with each enum's constants
+1.26.51 tree into `build/gophertunnel-layout` with each enum's constants
 beside the packet that uses them under the fork's names and with the fork's
 field names, so `diff -r` against the checkout shows real shape gaps rather
-than naming. The reviewed mapping is `generated/1.26.44/gophertunnel-layout.json`
+than naming. The reviewed mapping is `generated/1.26.51/gophertunnel-layout.json`
 (seeded by `tools/seed-gophertunnel-layout`, hand-editable) and the remaining
-gaps are listed in `docs/gophertunnel-gap-1.26.44.md`. The same run seeds
-`generated/1.26.44/semantics.json`, the reviewed list of plain integer fields
+gaps are listed in `docs/gophertunnel-gap-1.26.51.md`. Seed it from a checkout
+at the oracle's locked commit so the diff compares one protocol version. The
+same run seeds `generated/1.26.51/semantics.json`, the reviewed list of plain integer fields
 that carry an actor identifier; `emit-go` applies it by default so every such
 field uses the `ActorUniqueID*` / `ActorRuntimeID*` IO operations. The overlay is only
 applied when `emit-go -layout` is given; the checked-in generated tree never
@@ -228,7 +242,8 @@ uses it.
 
 - `parity` compares the manifest against an independently generated Axolotl
   layout.
-- `verify-gophertunnel` parses a pinned gophertunnel commit
+- `verify-gophertunnel` parses a pinned gophertunnel commit at the manifest's
+  protocol
   (`tools/gophertunnel-oracle/lock.json`, a full SHA — checkout is rejected if
   `HEAD` differs) with `go/ast` and reports each packet as `AGREEMENT`,
   `DIVERGENCE`, `UNRESOLVED`, or `NO_ORACLE_PACKET`. Only an unaccepted

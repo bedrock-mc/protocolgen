@@ -15,7 +15,13 @@ import (
 
 const extractionDepthLimit = 40
 
-const reviewedHelperRevision = "be6713da4dc051a4197f897d04835e89e9c54321"
+// reviewedHelperRevisions are the gophertunnel commits whose hand-written
+// helper bodies, private writer methods and interface variant tables were
+// reviewed; the extractor expands them only at these commits.
+var reviewedHelperRevisions = map[string]bool{
+	"be6713da4dc051a4197f897d04835e89e9c54321": true, // protocol 2168
+	"8d903c5192f794ca33fea2d84f7afec3e3393bc5": true, // protocol 2193
+}
 
 type typeRef struct {
 	Kind string // named, primitive, slice, array, optional, pointer, unknown
@@ -58,6 +64,7 @@ type extractor struct {
 	fset        *token.FileSet
 	files       []*sourceFile
 	types       map[string]*typeInfo
+	arrays      map[string]typeRef // named fixed-size array types, by package-qualified name
 	marshals    map[string]*marshalInfo
 	functions   map[string]*marshalInfo
 	ioHelpers   map[string]*marshalInfo
@@ -267,6 +274,7 @@ func ExtractAtRevision(root, revision string) (extraction, error) {
 		root:      abs,
 		fset:      token.NewFileSet(),
 		types:     map[string]*typeInfo{},
+		arrays:    map[string]typeRef{},
 		marshals:  map[string]*marshalInfo{},
 		functions: map[string]*marshalInfo{},
 		ioHelpers: map[string]*marshalInfo{},
@@ -393,6 +401,10 @@ func (e *extractor) collectTypes(sf *sourceFile) {
 		for _, spec := range gen.Specs {
 			ts, ok := spec.(*ast.TypeSpec)
 			if !ok {
+				continue
+			}
+			if array, ok := ts.Type.(*ast.ArrayType); ok && array.Len != nil {
+				e.arrays[sf.Pkg+"."+ts.Name.Name] = e.parseType(array, sf)
 				continue
 			}
 			st, ok := ts.Type.(*ast.StructType)
@@ -876,12 +888,27 @@ func (e *extractor) extractSwitch(stmt *ast.SwitchStmt, method *marshalInfo, env
 
 func (e *extractor) extractTypeSwitch(stmt *ast.TypeSwitchStmt, method *marshalInfo, env map[string]typeRef, base string, depth int, stack map[string]bool) sourceOperation {
 	operation := sourceOperation{Kind: "type_switch", Field: base, Predicate: e.nodeString(stmt.Assign), Site: e.nodeSite(stmt)}
+	// switch v := x.(type) gives v the case's type in a single-type clause.
+	var bound *ast.Ident
+	var subject ast.Expr
+	if assign, ok := stmt.Assign.(*ast.AssignStmt); ok && len(assign.Lhs) == 1 && len(assign.Rhs) == 1 {
+		if assertion, ok := assign.Rhs[0].(*ast.TypeAssertExpr); ok {
+			bound, _ = assign.Lhs[0].(*ast.Ident)
+			subject = assertion.X
+		}
+	}
 	for _, stmt := range stmt.Body.List {
 		clause, ok := stmt.(*ast.CaseClause)
 		if !ok {
 			continue
 		}
-		ops := e.extractBlock(clause.Body, method, cloneTypeEnv(env), base, depth+1, stack)
+		clauseEnv := cloneTypeEnv(env)
+		if bound != nil && bound.Name != "_" && len(clause.List) == 1 {
+			ref := e.parseType(clause.List[0], method.File)
+			ref.Path = e.fieldPath(subject, method, env, base)
+			clauseEnv[bound.Name] = ref
+		}
+		ops := e.extractBlock(clause.Body, method, clauseEnv, base, depth+1, stack)
 		if len(clause.List) == 0 {
 			if len(ops) > 0 {
 				operation.Default = ops
@@ -956,10 +983,7 @@ func (e *extractor) extractFor(stmt *ast.ForStmt, method *marshalInfo, env map[s
 
 func (e *extractor) extractRange(stmt *ast.RangeStmt, method *marshalInfo, env map[string]typeRef, base string, depth int, stack map[string]bool) sourceOperation {
 	field := e.fieldPath(stmt.X, method, env, base)
-	ref := e.resolveExprType(stmt.X, method, env)
-	for ref.Kind == "pointer" && ref.Elem != nil {
-		ref = *ref.Elem
-	}
+	ref := e.underlyingArray(e.resolveExprType(stmt.X, method, env))
 	if ref.Kind != "array" || ref.Elem == nil || ref.Len <= 0 {
 		if method.Key == "protocol.Writer.EntityMetadata" {
 			loopEnv := cloneTypeEnv(env)
@@ -1173,7 +1197,7 @@ func (e *extractor) extractCall(call *ast.CallExpr, method *marshalInfo, env map
 		return nil
 	}
 	name := selector.Sel.Name
-	if ident, ok := selector.X.(*ast.Ident); ok && ident.Name == method.IO && e.revision == reviewedHelperRevision && reviewedHelperMethods[name] {
+	if ident, ok := selector.X.(*ast.Ident); ok && ident.Name == method.IO && reviewedHelperRevisions[e.revision] && reviewedHelperMethods[name] {
 		return e.expandReviewedHelperMethod(call, name, method, env, base, depth, stack)
 	}
 	if ident, ok := selector.X.(*ast.Ident); ok && ident.Name == method.IO {
@@ -1351,7 +1375,7 @@ func (e *extractor) expandIOHelper(call *ast.CallExpr, name, field string, metho
 		return []sourceOperation{{Kind: "string", Field: field, Prefix: "i16le", Encoding: "utf8"}}
 	case "ByteSlice":
 		return []sourceOperation{{Kind: "bytes", Field: field, Prefix: "var_u32"}}
-	case "NBT", "NBTList":
+	case "NBT", "NBTList", "RawNBT":
 		return []sourceOperation{{Kind: "primitive", Field: field, Code: "nbt_le"}}
 	case "Bytes":
 		return []sourceOperation{{Kind: "primitive", Field: field, Code: "raw_bytes"}}
@@ -1365,7 +1389,7 @@ func (e *extractor) expandIOHelper(call *ast.CallExpr, name, field string, metho
 		}
 		return []sourceOperation{{Kind: "bitset", Field: field, Length: uint64(length)}}
 	default:
-		if e.revision == reviewedHelperRevision && reviewedIOHelpers[name] {
+		if reviewedHelperRevisions[e.revision] && reviewedIOHelpers[name] {
 			return e.expandReviewedIOHelper(call, name, field, method, depth, stack)
 		}
 		return []sourceOperation{e.unresolved(call, method.Key, field, "opaque or unsupported IO helper", name)}
@@ -1531,7 +1555,7 @@ func (e *extractor) expandProtocol(call *ast.CallExpr, name string, method *mars
 		}
 		return e.expandRef(ref, field, depth+1, stack, call, method)
 	}
-	if e.revision == reviewedHelperRevision && reviewedProtocolHelpers[name] {
+	if reviewedHelperRevisions[e.revision] && reviewedProtocolHelpers[name] {
 		if target := e.functions["protocol."+name]; target != nil && target.IO != "" {
 			return e.expandFunctionCall(call, target, method, env, base, depth, stack)
 		}
@@ -1689,7 +1713,7 @@ func (e *extractor) expandRef(ref typeRef, field string, depth int, stack map[st
 	}
 	switch ref.Kind {
 	case "named":
-		if e.revision == reviewedHelperRevision {
+		if reviewedHelperRevisions[e.revision] {
 			if variants, ok := reviewedInterfaceVariants[ref.Name]; ok {
 				result := make([]sourceVariant, 0, len(variants))
 				for _, variant := range variants {
@@ -1792,10 +1816,7 @@ func (e *extractor) resolveExprType(expr ast.Expr, method *marshalInfo, env map[
 		}
 		return typeRef{Kind: "unknown"}
 	case *ast.IndexExpr:
-		ref := e.resolveExprType(current.X, method, env)
-		for ref.Kind == "pointer" && ref.Elem != nil {
-			ref = *ref.Elem
-		}
+		ref := e.underlyingArray(e.resolveExprType(current.X, method, env))
 		if (ref.Kind == "slice" || ref.Kind == "array") && ref.Elem != nil {
 			return *ref.Elem
 		}
@@ -1814,6 +1835,20 @@ func (e *extractor) resolveExprType(expr ast.Expr, method *marshalInfo, env map[
 	default:
 		return typeRef{Kind: "unknown"}
 	}
+}
+
+// underlyingArray strips pointers and resolves a named fixed-size array type
+// (type HeightMap [16][16]int8) to its array type.
+func (e *extractor) underlyingArray(ref typeRef) typeRef {
+	for ref.Kind == "pointer" && ref.Elem != nil {
+		ref = *ref.Elem
+	}
+	if ref.Kind == "named" {
+		if array, ok := e.arrays[ref.Name]; ok {
+			return array
+		}
+	}
+	return ref
 }
 
 func (e *extractor) lookupField(key, name string, seen map[string]bool) typeRef {

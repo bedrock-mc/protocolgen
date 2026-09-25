@@ -1,0 +1,607 @@
+{
+  "schema_version": 1,
+  "target": {
+    "minecraft_version": "1.26.51",
+    "protocol_version": 2193
+  },
+  "selections": [
+    {
+      "id": "protocol-2193-retarget-001",
+      "target": "TextPacket.Body",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        },
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/packet/text.go#L77",
+          "summary": "The protocol 2193 gophertunnel marshal writes this wire shape."
+        }
+      ],
+      "reason": "Both 1.26.51 sources now model the message category byte as the positional selector of the three-way message body union, each case starting with the u8 message type; the protocol 2193 gophertunnel marshal writes the same category and type bytes. Select the complete Endstone claim."
+    },
+    {
+      "id": "protocol-2193-retarget-002",
+      "target": "StartGamePacket.Block Properties",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Relative to the previously selected 1.26.50.25 claim, the 1.26.51.1 Endstone dump only lowercases enum member names and drops validation-only constraints; the wire shape is unchanged. Select the complete Endstone claim, using the exact 1.26.51 Mojang schema as independent field-order evidence."
+    },
+    {
+      "id": "protocol-2193-retarget-003",
+      "target": "StartGamePacket.Player Property Data",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Relative to the previously selected 1.26.50.25 claim, the 1.26.51.1 Endstone dump only lowercases enum member names and drops validation-only constraints; the wire shape is unchanged. Select the complete Endstone claim, using the exact 1.26.51 Mojang schema as independent field-order evidence."
+    },
+    {
+      "id": "protocol-2193-retarget-004",
+      "target": "AddPlayerPacket.Entity Data",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        },
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/writer.go#L246",
+          "summary": "The protocol 2193 gophertunnel marshal writes this wire shape."
+        }
+      ],
+      "reason": "The 1.26.51.1 Endstone dump declares this positional union selector as an unsigned varint instead of one byte, matching the protocol 2193 gophertunnel marshal. Select the complete Endstone claim."
+    },
+    {
+      "id": "protocol-2193-retarget-005",
+      "target": "AddPlayerPacket.Build Platform",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Relative to the previously selected 1.26.50.25 claim, the 1.26.51.1 Endstone dump only lowercases enum member names and drops validation-only constraints; the wire shape is unchanged. Select the complete Endstone claim, using the exact 1.26.51 Mojang schema as independent field-order evidence."
+    },
+    {
+      "id": "protocol-2193-retarget-006",
+      "target": "AddActorPacket.Actor Data",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        },
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/writer.go#L246",
+          "summary": "The protocol 2193 gophertunnel marshal writes this wire shape."
+        }
+      ],
+      "reason": "The 1.26.51.1 Endstone dump declares this positional union selector as an unsigned varint instead of one byte, matching the protocol 2193 gophertunnel marshal. Select the complete Endstone claim."
+    },
+    {
+      "id": "protocol-2193-retarget-007",
+      "target": "AddItemActorPacket.Entity Data",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        },
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/writer.go#L246",
+          "summary": "The protocol 2193 gophertunnel marshal writes this wire shape."
+        }
+      ],
+      "reason": "The 1.26.51.1 Endstone dump declares this positional union selector as an unsigned varint instead of one byte, matching the protocol 2193 gophertunnel marshal. Select the complete Endstone claim."
+    },
+    {
+      "id": "protocol-2193-retarget-008",
+      "target": "InventoryTransactionPacket.Legacy Set Item Slots",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Relative to the previously selected 1.26.50.25 claim, the 1.26.51.1 Endstone dump only lowercases enum member names and drops validation-only constraints; the wire shape is unchanged. Select the complete Endstone claim, using the exact 1.26.51 Mojang schema as independent field-order evidence."
+    },
+    {
+      "id": "protocol-2193-retarget-009",
+      "target": "InventoryTransactionPacket.Transaction",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        },
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/inventory.go#L259",
+          "summary": "The protocol 2193 gophertunnel marshal writes this wire shape."
+        }
+      ],
+      "reason": "Protocol 2193 adds a u8 hand slot between the hotbar slot and the held item of an item-use transaction; the 1.26.51.1 Endstone dump and the protocol 2193 gophertunnel marshal both write it. Select the complete Endstone claim."
+    },
+    {
+      "id": "protocol-2193-retarget-010",
+      "target": "SetActorDataPacket.Actor Data",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        },
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/writer.go#L246",
+          "summary": "The protocol 2193 gophertunnel marshal writes this wire shape."
+        }
+      ],
+      "reason": "The 1.26.51.1 Endstone dump declares this positional union selector as an unsigned varint instead of one byte, matching the protocol 2193 gophertunnel marshal. Select the complete Endstone claim."
+    },
+    {
+      "id": "protocol-2193-retarget-011",
+      "target": "InventoryContentPacket.Full Container Name",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Relative to the previously selected 1.26.50.25 claim, the 1.26.51.1 Endstone dump only lowercases enum member names and drops validation-only constraints; the wire shape is unchanged. Select the complete Endstone claim, using the exact 1.26.51 Mojang schema as independent field-order evidence."
+    },
+    {
+      "id": "protocol-2193-retarget-012",
+      "target": "InventorySlotPacket.Full Container Name",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Relative to the previously selected 1.26.50.25 claim, the 1.26.51.1 Endstone dump only lowercases enum member names and drops validation-only constraints; the wire shape is unchanged. Select the complete Endstone claim, using the exact 1.26.51 Mojang schema as independent field-order evidence."
+    },
+    {
+      "id": "protocol-2193-retarget-013",
+      "target": "BlockActorDataPacket.Actor Data Tags",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Relative to the previously selected 1.26.50.25 claim, the 1.26.51.1 Endstone dump only lowercases enum member names and drops validation-only constraints; the wire shape is unchanged. Select the complete Endstone claim, using the exact 1.26.51 Mojang schema as independent field-order evidence."
+    },
+    {
+      "id": "protocol-2193-retarget-014",
+      "target": "PlayerListPacket.Entries",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "The 1.26.51.1 Endstone dump adds persona piece members without changing existing values or the field encoding, and lowercases member names. Select the complete Endstone claim, using the exact 1.26.51 Mojang schema as independent field-order evidence."
+    },
+    {
+      "id": "protocol-2193-retarget-015",
+      "target": "LegacyTelemetryEventPacket.Event Data",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Relative to the previously selected 1.26.50.25 claim, the 1.26.51.1 Endstone dump only lowercases enum member names and drops validation-only constraints; the wire shape is unchanged. Select the complete Endstone claim, using the exact 1.26.51 Mojang schema as independent field-order evidence."
+    },
+    {
+      "id": "protocol-2193-retarget-016",
+      "target": "BossEventPacket.Event Type",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Relative to the previously selected 1.26.50.25 claim, the 1.26.51.1 Endstone dump only lowercases enum member names and drops validation-only constraints; the wire shape is unchanged. Select the complete Endstone claim, using the exact 1.26.51 Mojang schema as independent field-order evidence."
+    },
+    {
+      "id": "protocol-2193-retarget-017",
+      "target": "BossEventPacket.Color",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Relative to the previously selected 1.26.50.25 claim, the 1.26.51.1 Endstone dump only lowercases enum member names and drops validation-only constraints; the wire shape is unchanged. Select the complete Endstone claim, using the exact 1.26.51 Mojang schema as independent field-order evidence."
+    },
+    {
+      "id": "protocol-2193-retarget-018",
+      "target": "BossEventPacket.Overlay",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Relative to the previously selected 1.26.50.25 claim, the 1.26.51.1 Endstone dump only lowercases enum member names and drops validation-only constraints; the wire shape is unchanged. Select the complete Endstone claim, using the exact 1.26.51 Mojang schema as independent field-order evidence."
+    },
+    {
+      "id": "protocol-2193-retarget-019",
+      "target": "UpdateTradePacket.Data",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Relative to the previously selected 1.26.50.25 claim, the 1.26.51.1 Endstone dump only lowercases enum member names and drops validation-only constraints; the wire shape is unchanged. Select the complete Endstone claim, using the exact 1.26.51 Mojang schema as independent field-order evidence."
+    },
+    {
+      "id": "protocol-2193-retarget-020",
+      "target": "UpdateEquipPacket.Data",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Relative to the previously selected 1.26.50.25 claim, the 1.26.51.1 Endstone dump only lowercases enum member names and drops validation-only constraints; the wire shape is unchanged. Select the complete Endstone claim, using the exact 1.26.51 Mojang schema as independent field-order evidence."
+    },
+    {
+      "id": "protocol-2193-retarget-021",
+      "target": "PlayerSkinPacket.Serialized Skin",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "The 1.26.51.1 Endstone dump adds persona piece members without changing existing values or the field encoding, and lowercases member names. Select the complete Endstone claim, using the exact 1.26.51 Mojang schema as independent field-order evidence."
+    },
+    {
+      "id": "protocol-2193-retarget-022",
+      "target": "SetLastHurtByPacket.LastHurtBy",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Relative to the previously selected 1.26.50.25 claim, the 1.26.51.1 Endstone dump only lowercases enum member names and drops validation-only constraints; the wire shape is unchanged. Select the complete Endstone claim, using the exact 1.26.51 Mojang schema as independent field-order evidence."
+    },
+    {
+      "id": "protocol-2193-retarget-023",
+      "target": "SetScorePacket.Score Info",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        },
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/scoreboard.go#L41",
+          "summary": "The protocol 2193 gophertunnel marshal writes this wire shape."
+        }
+      ],
+      "reason": "The 1.26.51.1 Endstone dump declares this positional union selector as an unsigned varint instead of one byte, matching the protocol 2193 gophertunnel marshal. Select the complete Endstone claim."
+    },
+    {
+      "id": "protocol-2193-retarget-024",
+      "target": "AvailableActorIdentifiersPacket.Identifier List",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Relative to the previously selected 1.26.50.25 claim, the 1.26.51.1 Endstone dump only lowercases enum member names and drops validation-only constraints; the wire shape is unchanged. Select the complete Endstone claim, using the exact 1.26.51 Mojang schema as independent field-order evidence."
+    },
+    {
+      "id": "protocol-2193-retarget-025",
+      "target": "LevelEventGenericPacket.__[[CTD]]__",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Relative to the previously selected 1.26.50.25 claim, the 1.26.51.1 Endstone dump only lowercases enum member names and drops validation-only constraints; the wire shape is unchanged. Select the complete Endstone claim, using the exact 1.26.51 Mojang schema as independent field-order evidence."
+    },
+    {
+      "id": "protocol-2193-retarget-026",
+      "target": "StructureTemplateDataResponsePacket.Structure's NBT",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Relative to the previously selected 1.26.50.25 claim, the 1.26.51.1 Endstone dump only lowercases enum member names and drops validation-only constraints; the wire shape is unchanged. Select the complete Endstone claim, using the exact 1.26.51 Mojang schema as independent field-order evidence."
+    },
+    {
+      "id": "protocol-2193-retarget-027",
+      "target": "PlayerAuthInputPacket.Item Use Transaction",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        },
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/inventory.go#L259",
+          "summary": "The protocol 2193 gophertunnel marshal writes this wire shape."
+        }
+      ],
+      "reason": "Protocol 2193 adds a u8 hand slot between the hotbar slot and the held item of an item-use transaction; the 1.26.51.1 Endstone dump and the protocol 2193 gophertunnel marshal both write it. Select the complete Endstone claim."
+    },
+    {
+      "id": "protocol-2193-retarget-028",
+      "target": "PlayerAuthInputPacket.Item Stack Request",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Relative to the previously selected 1.26.50.25 claim, the 1.26.51.1 Endstone dump only lowercases enum member names and drops validation-only constraints; the wire shape is unchanged. Select the complete Endstone claim, using the exact 1.26.51 Mojang schema as independent field-order evidence."
+    },
+    {
+      "id": "protocol-2193-retarget-029",
+      "target": "ItemStackRequestPacket.Requests",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Relative to the previously selected 1.26.50.25 claim, the 1.26.51.1 Endstone dump only lowercases enum member names and drops validation-only constraints; the wire shape is unchanged. Select the complete Endstone claim, using the exact 1.26.51 Mojang schema as independent field-order evidence."
+    },
+    {
+      "id": "protocol-2193-retarget-030",
+      "target": "ItemStackResponsePacket.Responses",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Relative to the previously selected 1.26.50.25 claim, the 1.26.51.1 Endstone dump only lowercases enum member names and drops validation-only constraints; the wire shape is unchanged. Select the complete Endstone claim, using the exact 1.26.51 Mojang schema as independent field-order evidence."
+    },
+    {
+      "id": "protocol-2193-retarget-031",
+      "target": "PositionTrackingDBServerBroadcastPacket.Position tracking data",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Relative to the previously selected 1.26.50.25 claim, the 1.26.51.1 Endstone dump only lowercases enum member names and drops validation-only constraints; the wire shape is unchanged. Select the complete Endstone claim, using the exact 1.26.51 Mojang schema as independent field-order evidence."
+    },
+    {
+      "id": "protocol-2193-retarget-032",
+      "target": "ItemRegistryPacket.Item Data",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Relative to the previously selected 1.26.50.25 claim, the 1.26.51.1 Endstone dump only lowercases enum member names and drops validation-only constraints; the wire shape is unchanged. Select the complete Endstone claim, using the exact 1.26.51 Mojang schema as independent field-order evidence."
+    },
+    {
+      "id": "protocol-2193-retarget-033",
+      "target": "SyncActorPropertyPacket.Property Data",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Relative to the previously selected 1.26.50.25 claim, the 1.26.51.1 Endstone dump only lowercases enum member names and drops validation-only constraints; the wire shape is unchanged. Select the complete Endstone claim, using the exact 1.26.51 Mojang schema as independent field-order evidence."
+    },
+    {
+      "id": "protocol-2193-retarget-034",
+      "target": "AddVolumeEntityPacket.Components",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Relative to the previously selected 1.26.50.25 claim, the 1.26.51.1 Endstone dump only lowercases enum member names and drops validation-only constraints; the wire shape is unchanged. Select the complete Endstone claim, using the exact 1.26.51 Mojang schema as independent field-order evidence."
+    },
+    {
+      "id": "protocol-2193-retarget-035",
+      "target": "SubChunkPacket.SubChunk Data",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        },
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/sub_chunk.go#L73",
+          "summary": "The protocol 2193 gophertunnel marshal writes this wire shape."
+        }
+      ],
+      "reason": "Protocol 2193 writes each 16-entry sub-chunk height map row with an unsigned varint length prefix; the 1.26.51.1 Endstone dump and the protocol 2193 gophertunnel HeightMap marshal agree. Select the complete Endstone claim."
+    },
+    {
+      "id": "protocol-2193-retarget-036",
+      "target": "JigsawStructureDataPacket.Jigsaw Structure Data Tag",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Relative to the previously selected 1.26.50.25 claim, the 1.26.51.1 Endstone dump only lowercases enum member names and drops validation-only constraints; the wire shape is unchanged. Select the complete Endstone claim, using the exact 1.26.51 Mojang schema as independent field-order evidence."
+    },
+    {
+      "id": "protocol-2193-retarget-037",
+      "target": "ContainerRegistryCleanupPacket.Removed Containers",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        }
+      ],
+      "reason": "Relative to the previously selected 1.26.50.25 claim, the 1.26.51.1 Endstone dump only lowercases enum member names and drops validation-only constraints; the wire shape is unchanged. Select the complete Endstone claim, using the exact 1.26.51 Mojang schema as independent field-order evidence."
+    },
+    {
+      "id": "protocol-2193-retarget-038",
+      "target": "PlayerUpdateEntityOverridesPacket.Update",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        },
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/packet/player_update_entity_overrides.go#L40",
+          "summary": "The protocol 2193 gophertunnel marshal writes this wire shape."
+        }
+      ],
+      "reason": "The 1.26.51.1 Endstone dump declares this positional union selector as an unsigned varint instead of one byte, matching the protocol 2193 gophertunnel marshal. Select the complete Endstone claim."
+    },
+    {
+      "id": "protocol-2193-retarget-039",
+      "target": "PrimitiveShapesPacket.Array of primitive shapes (can be a mix of new, updated or removed)",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema references ActorUniqueID for Attached To Entity ID and independently documents the field order."
+        },
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/shape.go#L449",
+          "summary": "The protocol 2193 gophertunnel marshal writes Attached To Entity ID as an optional ActorUniqueID."
+        }
+      ],
+      "reason": "Both 1.26.51 sources declare Attached To Entity ID as an optional actor unique ID, and the protocol 2193 gophertunnel marshal writes it with the ActorUniqueID operation. Select the complete Endstone claim."
+    },
+    {
+      "id": "protocol-2193-retarget-040",
+      "target": "StructureBlockUpdatePacket.Structure Data",
+      "selected_source": "endstone",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema independently documents the field order and intended semantics; Endstone supplies the complete runtime wire shape."
+        },
+        {
+          "source_id": "endstone",
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/packet/structure_block_update.go#L69",
+          "summary": "The protocol 2193 gophertunnel marshal writes the structure name and filtered structure name as two plain strings."
+        }
+      ],
+      "reason": "Select the complete Endstone claim with the StructureBlockUpdate-scoped correction: the structure name and its filtered form are two always-present strings at this site."
+    },
+    {
+      "id": "protocol-2193-retarget-041",
+      "target": "InventorySlotPacket.Container Id",
+      "selected_source": "mojang",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema marks the container ID as compressed; the reviewed correction gives it the unsigned varint width the wire uses."
+        },
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/packet/inventory_slot.go#L34",
+          "summary": "The protocol 2193 gophertunnel InventorySlot marshal writes WindowID with Varuint32."
+        }
+      ],
+      "reason": "Select the corrected Mojang claim: InventorySlot writes its container ID as an unsigned varint, while the Endstone dump declares a fixed byte."
+    }
+  ]
+}
