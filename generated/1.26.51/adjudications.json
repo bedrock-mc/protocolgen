@@ -2597,42 +2597,6 @@
     "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field. Carried forward only after byte-equivalence with the previous canonical field was verified. Carried forward only after byte-equivalence with the previous canonical field was verified."
   },
   {
-    "id": "protocol-2193-gophertunnel-packet-324-field-0",
-    "target": "PlayerVideoCapturePacket.Action",
-    "pre_patch_context_sha256": "sha256:588bd46ab504358d2d43e4f6032bd6aaf0d63b4af21e420031b76b59e0a6374a",
-    "claims": [
-      {
-        "source_id": "endstone",
-        "digest": "sha256:d12234f1cf32a5d57cdc31a465b8f8856430e121954f52ac2d100c29a2416b95"
-      },
-      {
-        "source_id": "mojang",
-        "digest": "sha256:4059bc301eb888069596792df660e141b94eb542fbf23979c54a4f0161306a5c"
-      }
-    ],
-    "selected_source": "endstone",
-    "evidence": [
-      {
-        "source_id": "endstone",
-        "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/player_video_capture.go#L32",
-        "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
-      },
-      {
-        "source_id": "endstone",
-        "locator": "packets/PlayerVideoCapturePacket.json#/fields/0",
-        "claim_fingerprint": "sha256:d12234f1cf32a5d57cdc31a465b8f8856430e121954f52ac2d100c29a2416b95",
-        "summary": "The exact target source claim is byte-equivalent to the previous canonical wire field."
-      },
-      {
-        "source_id": "endstone",
-        "locator": "packets/PlayerVideoCapturePacket.json#/fields/0",
-        "claim_fingerprint": "sha256:d12234f1cf32a5d57cdc31a465b8f8856430e121954f52ac2d100c29a2416b95",
-        "summary": "The exact target source claim is byte-equivalent to the previous canonical wire field."
-      }
-    ],
-    "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary. Carried forward only after byte-equivalence with the previous canonical field was verified. Carried forward only after byte-equivalence with the previous canonical field was verified."
-  },
-  {
     "id": "protocol-2193-gophertunnel-packet-326-field-1",
     "target": "PlayerLocationPacket.Location",
     "pre_patch_context_sha256": "sha256:e2df3314c48fa765a6e48f839f51d8110373bbbea6e50484482057d69bbe8263",

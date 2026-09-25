@@ -104979,15 +104979,6 @@
             "variants": [
               {
                 "value": 0,
-                "name": "PlayerVideoCapturePacketPayload::StopVideoCapture",
-                "encode": {
-                  "kind": "struct",
-                  "semantic": "PlayerVideoCapturePacketPayload::StopVideoCapture",
-                  "type_id": "PlayerVideoCapturePacketPayload::StopVideoCapture"
-                }
-              },
-              {
-                "value": 1,
                 "name": "PlayerVideoCapturePacketPayload::StartVideoCapture",
                 "encode": {
                   "kind": "struct",
@@ -105043,13 +105034,22 @@
                     }
                   ]
                 }
+              },
+              {
+                "value": 1,
+                "name": "PlayerVideoCapturePacketPayload::StopVideoCapture",
+                "encode": {
+                  "kind": "struct",
+                  "semantic": "PlayerVideoCapturePacketPayload::StopVideoCapture",
+                  "type_id": "PlayerVideoCapturePacketPayload::StopVideoCapture"
+                }
               }
             ],
             "control": {
               "kind": "primitive",
               "primitive": {
-                "code": "u8",
-                "width": 8,
+                "code": "var_u32",
+                "width": 32,
                 "signed": false,
                 "zigzag": false,
                 "endianness": "none"
@@ -105059,26 +105059,8 @@
           "symmetry": "symmetric",
           "provenance": {
             "pins": [
-              "endstone"
-            ],
-            "evidence": [
-              {
-                "source_id": "endstone",
-                "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/player_video_capture.go#L32",
-                "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
-              },
-              {
-                "source_id": "endstone",
-                "locator": "packets/PlayerVideoCapturePacket.json#/fields/0",
-                "claim_fingerprint": "sha256:d12234f1cf32a5d57cdc31a465b8f8856430e121954f52ac2d100c29a2416b95",
-                "summary": "The exact target source claim is byte-equivalent to the previous canonical wire field."
-              },
-              {
-                "source_id": "endstone",
-                "locator": "packets/PlayerVideoCapturePacket.json#/fields/0",
-                "claim_fingerprint": "sha256:d12234f1cf32a5d57cdc31a465b8f8856430e121954f52ac2d100c29a2416b95",
-                "summary": "The exact target source claim is byte-equivalent to the previous canonical wire field."
-              }
+              "endstone",
+              "mojang"
             ]
           }
         }
@@ -119463,42 +119445,6 @@
       "reason": "The pinned Gophertunnel serializer independently agrees with the complete Endstone claim for this field. Carried forward only after byte-equivalence with the previous canonical field was verified. Carried forward only after byte-equivalence with the previous canonical field was verified."
     },
     {
-      "id": "protocol-2193-gophertunnel-packet-324-field-0",
-      "target": "PlayerVideoCapturePacket.Action",
-      "pre_patch_context_sha256": "sha256:588bd46ab504358d2d43e4f6032bd6aaf0d63b4af21e420031b76b59e0a6374a",
-      "claims": [
-        {
-          "source_id": "endstone",
-          "digest": "sha256:d12234f1cf32a5d57cdc31a465b8f8856430e121954f52ac2d100c29a2416b95"
-        },
-        {
-          "source_id": "mojang",
-          "digest": "sha256:4059bc301eb888069596792df660e141b94eb542fbf23979c54a4f0161306a5c"
-        }
-      ],
-      "selected_source": "endstone",
-      "evidence": [
-        {
-          "source_id": "endstone",
-          "locator": "https://github.com/hashimthearab/gophertunnel/blob/be6713da4dc051a4197f897d04835e89e9c54321/minecraft/protocol/packet/player_video_capture.go#L32",
-          "summary": "The pinned hand-written Marshal implementation and its helper or conditional chain are the independent serializer witness; the AST oracle marks the packet unresolved rather than contradictory because it cannot flatten that control flow."
-        },
-        {
-          "source_id": "endstone",
-          "locator": "packets/PlayerVideoCapturePacket.json#/fields/0",
-          "claim_fingerprint": "sha256:d12234f1cf32a5d57cdc31a465b8f8856430e121954f52ac2d100c29a2416b95",
-          "summary": "The exact target source claim is byte-equivalent to the previous canonical wire field."
-        },
-        {
-          "source_id": "endstone",
-          "locator": "packets/PlayerVideoCapturePacket.json#/fields/0",
-          "claim_fingerprint": "sha256:d12234f1cf32a5d57cdc31a465b8f8856430e121954f52ac2d100c29a2416b95",
-          "summary": "The exact target source claim is byte-equivalent to the previous canonical wire field."
-        }
-      ],
-      "reason": "Direct inspection of the pinned Gophertunnel serializer supports the complete Endstone claim; the automated oracle is unresolved only at a helper or runtime-control boundary. Carried forward only after byte-equivalence with the previous canonical field was verified. Carried forward only after byte-equivalence with the previous canonical field was verified."
-    },
-    {
       "id": "protocol-2193-gophertunnel-packet-326-field-1",
       "target": "PlayerLocationPacket.Location",
       "pre_patch_context_sha256": "sha256:e2df3314c48fa765a6e48f839f51d8110373bbbea6e50484482057d69bbe8263",
@@ -123958,9 +123904,9 @@
     {
       "id": "player-video-capture-action-is-required",
       "target": "PlayerVideoCapturePacketPayload.json##",
-      "pre_patch_node_sha256": "sha256:9e1c4cb4c16b60d870a88c932f0d92dab76b4ed18a5ed1178e61be9f32b2e445",
-      "pre_patch_context_sha256": "sha256:096bfce0d547bf5895cacb202e5f4400b4a788d4f5ee0f39a93706ce2068643a",
-      "post_patch_node_sha256": "sha256:ec41e9a644368c3464c8387616936f794a352144878058cf7aa506a039145bb6",
+      "pre_patch_node_sha256": "sha256:f0b764c2f6aac9f3abd563f6223789853897b0d455cb83acc261d062063b6248",
+      "pre_patch_context_sha256": "sha256:f25764831f3c5fce781d1d0aae7fb531adf94058e10396fc0dce5e5f5ecfec9d",
+      "post_patch_node_sha256": "sha256:82c6c56f77ddbd5c592f921684ddb3d2ed44b1cd2f337d1b96e2cee4b72cfa6b",
       "evidence": [
         {
           "source_id": "mojang",
@@ -123975,35 +123921,30 @@
       "target": "PlayerVideoCapturePacketPayload.json#/properties",
       "pre_patch_node_sha256": "sha256:bec1a56f7f8fd8f03d01a077061437916a31634a57f7865fa17bb6e095adf4c3",
       "pre_patch_context_sha256": "sha256:e226bc082b64438fbc61aa650b1f578ae8103169159ffc175179a33635d1eabf",
-      "post_patch_node_sha256": "sha256:3ed695828b29219db4998036fb36a5cbe3a1088cd9bdf0dfbe3aa2fb5b6c7114",
+      "post_patch_node_sha256": "sha256:d6196b920176e5dcf087026903d7964c70242bd5f376e049d411ac4a13733fda",
       "evidence": [
         {
           "source_id": "mojang",
-          "locator": "https://github.com/CloudburstMC/Protocol/blob/fbbeee7d63f1ea3c586a6d5907bd69196679aee6/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v786/serializer/PlayerVideoCaptureSerializer_v786.java",
-          "summary": "The inherited serializer writes one action value (0 or 1), then the payload only for start. Both selectors fit in one varuint32 byte."
+          "locator": "https://github.com/LiteLDev/LeviLamina/blob/b3ff77f271193b0833294a9a04e4f46fafe90b36/src/mc/network/packet/PlayerVideoCapturePacketPayload.h#L28",
+          "summary": "The 26.51 payload has one member, std::variant\u003cStartVideoCapture, StopVideoCapture\u003e, so start is alternative 0."
         }
       ],
-      "reason": "PlayerVideoCapture has one action union, and only the start variant carries a payload. Preserve the published uint32 selector type; indices 0 and 1 each occupy one varuint32 byte."
+      "reason": "PlayerVideoCapture has one action union in the published order, start then stop, and only the start alternative carries a payload. The schema repeats that union as two properties."
     },
     {
       "id": "player-video-capture-is-one-byte-action-union",
       "target": "packets/PlayerVideoCapturePacket.json#/fields",
       "pre_patch_node_sha256": "sha256:6b7dde126407d8d8d37da0892d5aeb407e391cf0cb1083fb7393c4346daa26b9",
       "pre_patch_context_sha256": "sha256:b512ce0ba1b04e3375480a42943e4a080d3010947a7e34982382614f9a90e732",
-      "post_patch_node_sha256": "sha256:d7561c50ec90c47e016c0beabe7129bf268d39044383b7b60eaab5e9fc949ba5",
+      "post_patch_node_sha256": "sha256:ae6d0ea209cb3cb3e1d3706de07f93f3ac23afe6c0b942ba928637e873f36877",
       "evidence": [
         {
           "source_id": "endstone",
-          "locator": "https://github.com/CloudburstMC/Protocol/blob/fbbeee7d/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v786/serializer/PlayerVideoCaptureSerializer_v786.java",
-          "summary": "The serializer writes one action byte and conditionally writes the start payload."
-        },
-        {
-          "source_id": "endstone",
-          "locator": "https://github.com/Sandertv/gophertunnel/blob/1653b540/minecraft/protocol/packet/player_video_capture.go",
-          "summary": "gophertunnel independently models STOP=0, START=1 with one byte selector."
+          "locator": "https://github.com/LiteLDev/LeviLamina/blob/b3ff77f271193b0833294a9a04e4f46fafe90b36/src/mc/network/packet/PlayerVideoCapturePacketPayload.h#L28",
+          "summary": "The 26.51 payload has one member, std::variant\u003cStartVideoCapture, StopVideoCapture\u003e, so start is alternative 0."
         }
       ],
-      "reason": "PlayerVideoCapture has one fixed-byte action selector; only the start variant carries frame-rate and file-prefix payload fields."
+      "reason": "PlayerVideoCapture has one action union with a positional selector, start then stop; the dump repeats that union as two fields."
     },
     {
       "id": "structure-editor-name-is-two-strings",

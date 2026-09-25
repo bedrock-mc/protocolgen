@@ -416,6 +416,27 @@
       "fingerprint": "sha256:10360a99add83cdbd711d9a0424a868c3d0c78ae1937f7910346e3c4a6333b83"
     },
     {
+      "id": 324,
+      "name": "PlayerVideoCapturePacket",
+      "reason": "Wire conflict: both 1.26.51 sources and LeviLamina order the action union start then stop, so start is selector 0. The protocol 2193 PlayerVideoCapture marshal numbers stop as 0 and start as 1, so it swaps the two actions. The fork is the suspect side; its u8 action and the var_u32 selector are the same byte for these values.",
+      "what_would_settle_it": "A capture of a start video capture action.",
+      "evidence": [
+        {
+          "locator": "generated/1.26.51/manifest.json",
+          "summary": "The canonical 1.26.51 manifest contains the conflicting packet shape."
+        },
+        {
+          "locator": "https://github.com/LiteLDev/LeviLamina/blob/b3ff77f271193b0833294a9a04e4f46fafe90b36/src/mc/network/packet/PlayerVideoCapturePacketPayload.h#L28",
+          "summary": "The 26.51 payload is one std::variant<StartVideoCapture, StopVideoCapture>."
+        },
+        {
+          "locator": "https://github.com/hashimthearab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/packet/player_video_capture.go#L33",
+          "summary": "The locked marshal writes the action byte with stop as 0."
+        }
+      ],
+      "fingerprint": "sha256:d3860012cc5c439cd34208eb8c562974f0701bea3c56c26b404cdeb12ecfa4b1"
+    },
+    {
       "id": 338,
       "name": "CameraSplinePacket",
       "reason": "Wire conflict: canonical spline_type is unconditional but protocol 2193 CameraSpline makes it optional; canonical progress/rotation easing is optional but protocol 2193 code writes strings unconditionally.",

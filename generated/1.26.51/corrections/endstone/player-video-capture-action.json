@@ -9,25 +9,19 @@
         {
           "name": "Action",
           "type": {
-            "switch": {
-              "type": "uint8"
-            },
+            "switch": "uvarint32",
             "cases": [
-              "PlayerVideoCapturePacketPayload::StopVideoCapture",
-              "PlayerVideoCapturePacketPayload::StartVideoCapture"
+              "PlayerVideoCapturePacketPayload::StartVideoCapture",
+              "PlayerVideoCapturePacketPayload::StopVideoCapture"
             ]
           }
         }
       ],
-      "why": "PlayerVideoCapture has one fixed-byte action selector; only the start variant carries frame-rate and file-prefix payload fields.",
+      "why": "PlayerVideoCapture has one action union with a positional selector, start then stop; the dump repeats that union as two fields.",
       "evidence": [
         {
-          "locator": "https://github.com/CloudburstMC/Protocol/blob/fbbeee7d/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v786/serializer/PlayerVideoCaptureSerializer_v786.java",
-          "summary": "The serializer writes one action byte and conditionally writes the start payload."
-        },
-        {
-          "locator": "https://github.com/Sandertv/gophertunnel/blob/1653b540/minecraft/protocol/packet/player_video_capture.go",
-          "summary": "gophertunnel independently models STOP=0, START=1 with one byte selector."
+          "locator": "https://github.com/LiteLDev/LeviLamina/blob/b3ff77f271193b0833294a9a04e4f46fafe90b36/src/mc/network/packet/PlayerVideoCapturePacketPayload.h#L28",
+          "summary": "The 26.51 payload has one member, std::variant<StartVideoCapture, StopVideoCapture>, so start is alternative 0."
         }
       ]
     }
