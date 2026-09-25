@@ -27695,8 +27695,8 @@
           "encode": {
             "kind": "primitive",
             "primitive": {
-              "code": "u8",
-              "width": 8,
+              "code": "var_u32",
+              "width": 32,
               "signed": false,
               "zigzag": false,
               "endianness": "none"
@@ -27709,8 +27709,25 @@
           "symmetry": "symmetric",
           "provenance": {
             "pins": [
-              "endstone",
               "mojang"
+            ],
+            "evidence": [
+              {
+                "source_id": "mojang",
+                "locator": "InventorySlotPacketPayload.json#/properties/Container Id",
+                "claim_fingerprint": "sha256:6469f70074cc8f79f5abfcdd94cef4ef626993582100c4d59cd065ccd6bfe20d",
+                "summary": "Exact target source claim selected by this reviewed adjudication."
+              },
+              {
+                "source_id": "mojang",
+                "locator": "https://github.com/HashimTheArab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/packet/inventory_slot.go#L34",
+                "summary": "The protocol 2193 gophertunnel InventorySlot marshal writes WindowID with Varuint32."
+              },
+              {
+                "source_id": "mojang",
+                "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+                "summary": "The exact 1.26.51 Mojang schema marks the container ID as compressed; the reviewed correction gives it the unsigned varint width the wire uses."
+              }
             ]
           }
         },
@@ -122456,6 +122473,41 @@
       "reason": "Select the complete Endstone claim with the StructureBlockUpdate-scoped correction: the structure name and its filtered form are two always-present strings at this site."
     },
     {
+      "id": "protocol-2193-retarget-041",
+      "target": "InventorySlotPacket.Container Id",
+      "pre_patch_context_sha256": "sha256:f2ddf041cf4ab155c00b1c7969ec44e29e1b0d4398309f6e211c81b90dfc6a34",
+      "claims": [
+        {
+          "source_id": "endstone",
+          "digest": "sha256:18ca2dc1be5408bb6c3dbc0db04ce36ad090613ed0c9ed182c2db28d04f8b1fa"
+        },
+        {
+          "source_id": "mojang",
+          "digest": "sha256:6469f70074cc8f79f5abfcdd94cef4ef626993582100c4d59cd065ccd6bfe20d"
+        }
+      ],
+      "selected_source": "mojang",
+      "evidence": [
+        {
+          "source_id": "mojang",
+          "locator": "InventorySlotPacketPayload.json#/properties/Container Id",
+          "claim_fingerprint": "sha256:6469f70074cc8f79f5abfcdd94cef4ef626993582100c4d59cd065ccd6bfe20d",
+          "summary": "Exact target source claim selected by this reviewed adjudication."
+        },
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/packet/inventory_slot.go#L34",
+          "summary": "The protocol 2193 gophertunnel InventorySlot marshal writes WindowID with Varuint32."
+        },
+        {
+          "source_id": "mojang",
+          "locator": "https://github.com/Mojang/bedrock-protocol-docs/tree/8667debe0adad27de6c692c88942c489a1193206/json",
+          "summary": "The exact 1.26.51 Mojang schema marks the container ID as compressed; the reviewed correction gives it the unsigned varint width the wire uses."
+        }
+      ],
+      "reason": "Select the corrected Mojang claim: InventorySlot writes its container ID as an unsigned varint, while the Endstone dump declares a fixed byte."
+    },
+    {
       "id": "protocol-2193-reviewed-001",
       "target": "DisconnectPacket.Reason",
       "pre_patch_context_sha256": "sha256:f83e6dad0e4f826bc4b27cf9ebdb687eb3761585d2e780b5d62c2a6586f46e9f",
@@ -123251,24 +123303,24 @@
       "reason": "The sub-client login request has the same binary framing as the primary login request."
     },
     {
-      "id": "inventory-slot-container-id-is-fixed-u8",
-      "target": "InventorySlotPacketPayload.json#/properties/Container Id/x-serialization-options",
-      "pre_patch_node_sha256": "sha256:3da781f5649d9b5cd5af8e188cb9685971100f724a26d6b95ccefd7d996dc6e8",
-      "pre_patch_context_sha256": "sha256:74bf10bfaf8c8001d5c271e979a486934b8ed9fcad10ddf002ce8b829a12af69",
-      "post_patch_node_sha256": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "id": "inventory-slot-container-id-is-varuint32",
+      "target": "InventorySlotPacketPayload.json#/properties/Container Id",
+      "pre_patch_node_sha256": "sha256:02cc4497dca460ae026854b55f2d84a66788fa9595470a88c21fd0d7c5ca997c",
+      "pre_patch_context_sha256": "sha256:c080dd82f8bdde73a8c513d47edd8d545d1d8eeb1d046a01b07c27ca5560f44b",
+      "post_patch_node_sha256": "sha256:5c2408d78ef96f75ed26fa00205a7e99219ea9f8c6d685bf8bcf1949e7fbcaa7",
       "evidence": [
         {
           "source_id": "mojang",
           "locator": "https://github.com/CloudburstMC/Protocol/blob/fbbeee7d/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v291/serializer/InventorySlotSerializer_v291.java",
-          "summary": "Cloudburst reads and writes the container ID as one byte."
+          "summary": "The serializer writes the container ID with VarInts.writeUnsignedInt."
         },
         {
           "source_id": "mojang",
-          "locator": "https://github.com/Sandertv/gophertunnel/blob/1653b540/minecraft/protocol/packet/inventory_slot.go",
-          "summary": "gophertunnel uses IO.Uint8 for WindowID."
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/packet/inventory_slot.go#L34",
+          "summary": "The protocol 2193 gophertunnel InventorySlot marshal writes WindowID with Varuint32."
         }
       ],
-      "reason": "The inventory container ID is one fixed unsigned byte; the published Compression marker is incorrect."
+      "reason": "InventorySlot writes the container ID as an unsigned varint. The published uint8 with Compression lowers to a fixed byte under the 32- and 64-bit compression boundary, which differs on the wire for IDs of 128 and above."
     },
     {
       "id": "mob-equipment-container-id-is-fixed-u8",

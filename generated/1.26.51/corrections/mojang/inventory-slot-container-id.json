@@ -1,20 +1,30 @@
 {
   "operations": [
     {
-      "id": "inventory-slot-container-id-is-fixed-u8",
+      "id": "inventory-slot-container-id-is-varuint32",
       "file": "InventorySlotPacketPayload.json",
-      "pointer": "/properties/Container Id/x-serialization-options",
-      "pre_patch_sha256": "sha256:3da781f5649d9b5cd5af8e188cb9685971100f724a26d6b95ccefd7d996dc6e8",
-      "replace": [],
-      "why": "The inventory container ID is one fixed unsigned byte; the published Compression marker is incorrect.",
+      "pointer": "/properties/Container Id",
+      "pre_patch_sha256": "sha256:02cc4497dca460ae026854b55f2d84a66788fa9595470a88c21fd0d7c5ca997c",
+      "replace": {
+        "description": "The container ID",
+        "type": "integer",
+        "x-underlying-type": "uint32",
+        "x-serialization-options": [
+          "Compression"
+        ],
+        "x-ordinal-index": 0,
+        "minimum": 0.0,
+        "maximum": 255.0
+      },
+      "why": "InventorySlot writes the container ID as an unsigned varint. The published uint8 with Compression lowers to a fixed byte under the 32- and 64-bit compression boundary, which differs on the wire for IDs of 128 and above.",
       "evidence": [
         {
           "locator": "https://github.com/CloudburstMC/Protocol/blob/fbbeee7d/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v291/serializer/InventorySlotSerializer_v291.java",
-          "summary": "Cloudburst reads and writes the container ID as one byte."
+          "summary": "The serializer writes the container ID with VarInts.writeUnsignedInt."
         },
         {
-          "locator": "https://github.com/Sandertv/gophertunnel/blob/1653b540/minecraft/protocol/packet/inventory_slot.go",
-          "summary": "gophertunnel uses IO.Uint8 for WindowID."
+          "locator": "https://github.com/HashimTheArab/gophertunnel/blob/8d903c5192f794ca33fea2d84f7afec3e3393bc5/minecraft/protocol/packet/inventory_slot.go#L34",
+          "summary": "The protocol 2193 gophertunnel InventorySlot marshal writes WindowID with Varuint32."
         }
       ]
     }

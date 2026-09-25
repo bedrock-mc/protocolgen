@@ -176,7 +176,7 @@
     {
       "id": 50,
       "name": "InventorySlotPacket",
-      "reason": "Wire conflict: the canonical Container Id is a fixed u8 while the protocol 2193 InventorySlot marshal writes WindowID as var_u32 (identical below 128). ItemInstance extra-data is decoded from one byte buffer and its canBePlacedOn/canBreak arrays are parsed inside it, so the extractor counts them as outer operations where the canonical manifest has one opaque user-data buffer.",
+      "reason": "Extractor limitation: ItemInstance extra-data is decoded from one byte buffer and its canBePlacedOn/canBreak arrays are parsed inside it, so the extractor counts them as outer operations where the canonical manifest has one opaque user-data buffer. The container ID now agrees as var_u32.",
       "what_would_settle_it": "Capture inventory slots with boundary window IDs to establish the prefix; fix inner-buffer ownership and stack-ID conditional extraction independently.",
       "evidence": [
         {
@@ -188,7 +188,7 @@
           "summary": "The locked protocol 2193 source operations were compared with the canonical packet, including the differences described above."
         }
       ],
-      "fingerprint": "sha256:81bd78ec47e1559505c86c756d5f8c3531c0e526f5a4b4930e9be7f8ed15627f"
+      "fingerprint": "sha256:77558daee82fe301fcbeeb793ca5879b0089ff2eb2b7fb4c807d47b0d691e055"
     },
     {
       "id": 52,
