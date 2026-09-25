@@ -11574,30 +11574,37 @@ impl wire::Decode for PlayerScoreboardId {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Default)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum PlayerVideoCaptureData {
-    #[default]
-    StopVideoCapture,
     StartVideoCapture {
         frame_rate: wire::U32LE,
         file_prefix: String,
     },
+    StopVideoCapture,
 }
 
 impl PlayerVideoCaptureData {
-    pub fn discriminant(&self) -> u8 {
+    pub fn discriminant(&self) -> u32 {
         match self {
-            Self::StopVideoCapture => 0,
-            Self::StartVideoCapture { .. } => 1,
+            Self::StartVideoCapture { .. } => 0,
+            Self::StopVideoCapture => 1,
+        }
+    }
+}
+
+impl Default for PlayerVideoCaptureData {
+    fn default() -> Self {
+        Self::StartVideoCapture {
+            frame_rate: Default::default(),
+            file_prefix: Default::default(),
         }
     }
 }
 
 impl wire::Encode for PlayerVideoCaptureData {
     fn encode(&self, writer: &mut wire::Writer) {
-        wire::U8(self.discriminant()).encode(writer);
+        wire::VarUInt(self.discriminant()).encode(writer);
         match self {
-            Self::StopVideoCapture => {}
             Self::StartVideoCapture {
                 frame_rate,
                 file_prefix,
@@ -11605,16 +11612,16 @@ impl wire::Encode for PlayerVideoCaptureData {
                 frame_rate.encode(writer);
                 file_prefix.encode(writer);
             }
+            Self::StopVideoCapture => {}
         }
     }
 }
 
 impl wire::Decode for PlayerVideoCaptureData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let discriminant = <wire::U8 as wire::Decode>::decode(reader)?.0;
+        let discriminant = <wire::VarUInt as wire::Decode>::decode(reader)?.0;
         Ok(match discriminant {
-            0 => Self::StopVideoCapture,
-            1 => {
+            0 => {
                 let frame_rate = <wire::U32LE as wire::Decode>::decode(reader)?;
                 let file_prefix = <String as wire::Decode>::decode(reader)?;
                 Self::StartVideoCapture {
@@ -11622,6 +11629,7 @@ impl wire::Decode for PlayerVideoCaptureData {
                     file_prefix,
                 }
             }
+            1 => Self::StopVideoCapture,
             value => {
                 return Err(wire::DecodeError::UnknownVariant {
                     type_name: "PlayerVideoCaptureData",

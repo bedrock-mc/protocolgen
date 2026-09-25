@@ -2228,7 +2228,7 @@ impl wire::Decode for InventoryContent {
 pub struct InventorySlot {
     /// `container_id` is the ID of the window that the packet modifies. It must point to one of the windows that
     /// the client currently has opened.
-    pub container_id: wire::VarUInt,
+    pub container_id: wire::U8,
     /// `slot` is the index of the slot that the packet modifies. The new item will be set to the slot at this
     /// index.
     pub slot: wire::VarUInt,
@@ -2276,7 +2276,7 @@ impl wire::Encode for InventorySlot {
 impl wire::Decode for InventorySlot {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let container_id = {
-            let value = <wire::VarUInt as wire::Decode>::decode(reader)?;
+            let value = <wire::U8 as wire::Decode>::decode(reader)?;
             wire::validate_number_limits(value.0, Some(0), Some(255))?;
             value
         };
