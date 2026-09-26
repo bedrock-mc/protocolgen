@@ -397,8 +397,8 @@
     {
       "id": 315,
       "name": "ServerboundDiagnosticsPacket",
-      "reason": "The fork is the suspect side: Position and Dimension are optional. Endstone 1.26.51.1 marks both optional, Mojang 1.26.60 no longer lists them as required, and the LeviLamina 26.51 EntityDiagnosticTimingInfo storage sizes match std::optional<Vec3> and std::optional<std::string>. The protocol 2193 fork writes both unconditionally.",
-      "what_would_settle_it": "Fixing the fork to write Position and Dimension as optionals, which turns this into an agreement.",
+      "reason": "Unsettled: Endstone 1.26.51.1 marks Position and Dimension optional, Mojang 1.26.60 no longer lists them as required, and the LeviLamina 26.51 EntityDiagnosticTimingInfo storage sizes match std::optional<Vec3> and std::optional<std::string>. The packet keeps both a hand-written and a reflection writer, and CloudburstMC ServerboundDiagnosticsSerializer_v2193 writes both unconditionally, as the protocol 2193 fork does.",
+      "what_would_settle_it": "A protocol 2193 ServerboundDiagnostics capture with at least one entity timing entry.",
       "evidence": [
         {
           "locator": "generated/1.26.51/manifest.json",
@@ -411,6 +411,10 @@
         {
           "locator": "https://github.com/LiteLDev/LeviLamina/blob/b3ff77f271193b0833294a9a04e4f46fafe90b36/src/mc/entity/profiling/EntityDiagnosticTimingInfo.h#L15",
           "summary": "Storage of 16 bytes aligned to 4 and 40 bytes aligned to 8 match std::optional<Vec3> and std::optional<std::string>."
+        },
+        {
+          "locator": "https://github.com/CloudburstMC/Protocol/blob/2bd3ee0baca0f9519bbe230724853f5c43b2f975/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/codec/v2193/serializer/ServerboundDiagnosticsSerializer_v2193.java#L29",
+          "summary": "The v2193 serializer writes Position and Dimension without presence flags."
         }
       ],
       "fingerprint": "sha256:10360a99add83cdbd711d9a0424a868c3d0c78ae1937f7910346e3c4a6333b83"
