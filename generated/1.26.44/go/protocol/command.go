@@ -127,7 +127,7 @@ type CommandEnumConstraint struct {
 func (x *CommandEnumConstraint) Marshal(io IO) {
 	io.Uint32(&x.EnumValueSymbol)
 	io.Uint32(&x.EnumSymbol)
-	FuncSliceLimits(io, &x.ConstraintIndices, io.Varuint32, 0, 250, io.Uint8)
+	io.ByteSliceLimits(&x.ConstraintIndices, 0, 250)
 }
 
 // CommandOrigin holds data that identifies the origin of the requesting of a command. It holds several fields

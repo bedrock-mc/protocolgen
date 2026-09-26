@@ -31,7 +31,7 @@ func (x *VoxelShapesSerializableCells) Marshal(io IO) {
 	Maximum(io, &x.YSize, 127)
 	io.Uint8(&x.ZSize)
 	Maximum(io, &x.ZSize, 127)
-	FuncSliceLimits(io, &x.Storage, io.Varuint32, 0, 256048, io.Uint8)
+	io.ByteSliceLimits(&x.Storage, 0, 256048)
 }
 
 // VoxelShape represents a voxel shape with cells and coordinate axes.

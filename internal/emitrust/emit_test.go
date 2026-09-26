@@ -49,8 +49,10 @@ func TestGenerateRustConsumesCanonicalManifest(t *testing.T) {
 func TestGenerateRustEmitsSchemaConstraintChecks(t *testing.T) {
 	text := manifest.String(manifest.Primitive("var_u32"))
 	text.Constraints = &manifest.Constraints{MinLength: pointerTo(uint64(1)), MaxLength: pointerTo(uint64(65536)), Pattern: "^[a-z]+$"}
-	count := manifest.Array(manifest.Primitive("var_u32"), manifest.Primitive("u8"))
+	count := manifest.Array(manifest.Primitive("var_u32"), manifest.Primitive("u16le"))
 	count.Constraints = &manifest.Constraints{MaxItems: pointerTo(uint64(4))}
+	raw := manifest.Array(manifest.Primitive("var_u32"), manifest.Primitive("u8"))
+	raw.Constraints = &manifest.Constraints{MaxItems: pointerTo(uint64(4))}
 	number := manifest.Primitive("zigzag_i32")
 	number.Constraints = &manifest.Constraints{Minimum: pointerTo(-1.0), Maximum: pointerTo(64.0)}
 	decimal := manifest.Primitive("f32le")
@@ -64,6 +66,7 @@ func TestGenerateRustEmitsSchemaConstraintChecks(t *testing.T) {
 		{Ordinal: 3, Name: "Decimal", Encode: decimal, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
 		{Ordinal: 4, Name: "LargeInteger", Encode: largeInteger, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
 		{Ordinal: 5, Name: "MaybeText", Encode: manifest.Optional(text), Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		{Ordinal: 6, Name: "Raw", Encode: raw, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
 	}}}}
 	files, err := GenerateFiles(m)
 	if err != nil {
@@ -76,7 +79,10 @@ func TestGenerateRustEmitsSchemaConstraintChecks(t *testing.T) {
 		`wire::assert_pattern(&self.text, "^[a-z]+$");`,
 		`wire::validate_pattern(&value, "^[a-z]+$")?;`,
 		"wire::encode_collection_limits(writer, self.values.as_slice(), 0, 4);",
-		"wire::decode_collection_limits::<wire::U8>(reader, 1, 0, 4)?",
+		"wire::decode_collection_limits::<wire::U16LE>(reader, 2, 0, 4)?",
+		"pub raw: bytes::Bytes,",
+		"wire::encode_bytes_limits(writer, self.raw.as_ref(), 0, 4);",
+		"wire::decode_bytes_limits(reader, 0, 4)?",
 		"wire::assert_number_limits(self.number.0, Some(-1), Some(64));",
 		"wire::validate_number_limits(value.0, Some(-1), Some(64))?;",
 		"wire::assert_number_limits(self.decimal.0, Some(0.0), Some(1.0));",

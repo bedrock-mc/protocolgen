@@ -596,6 +596,9 @@ func (g *generator) rustType(node manifest.Node, hint string) (string, error) {
 		if node.Element == nil {
 			return "", fmt.Errorf("array has no element")
 		}
+		if bytes, ok := g.byteRun(node); ok {
+			return g.rustType(bytes, hint)
+		}
 		element, err := g.rustType(*node.Element, hint+"Item")
 		return "Vec<" + element + ">", err
 	case manifest.KindFixedArray:
@@ -707,6 +710,19 @@ func (g *generator) rustType(node manifest.Node, hint string) (string, error) {
 	default:
 		return "", fmt.Errorf("unsupported node kind %q", node.Kind)
 	}
+}
+
+// byteRun reports the bytes node for a byte array whose elements keep the
+// plain u8 type, so its type and both codecs switch together.
+func (g *generator) byteRun(node manifest.Node) (manifest.Node, bool) {
+	bytes, ok := manifest.ByteRun(node)
+	if !ok {
+		return manifest.Node{}, false
+	}
+	if element, err := g.rustType(*node.Element, ""); err != nil || element != "wire::U8" {
+		return manifest.Node{}, false
+	}
+	return bytes, true
 }
 
 func (g *generator) nativeRustType(node manifest.Node) (string, bool, error) {

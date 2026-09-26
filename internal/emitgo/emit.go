@@ -1253,6 +1253,9 @@ func (e *marshalEmitter) node(b *strings.Builder, node manifest.Node, expression
 		if node.Element == nil || node.Prefix == nil {
 			return fmt.Errorf("array has no element or prefix")
 		}
+		if bytes, ok := manifest.ByteRun(node); ok && e.mustGoType(node, hint) == "[]uint8" {
+			return e.node(b, bytes, expression, hint, indent, address)
+		}
 		return e.collection(b, node, expression, hint+"Item", indent, address)
 	case manifest.KindFixedArray:
 		if node.Element == nil {

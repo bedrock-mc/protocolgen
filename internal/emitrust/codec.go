@@ -171,6 +171,9 @@ func (e *codecEmitter) encode(b *strings.Builder, node manifest.Node, expr, inde
 		if node.Element == nil {
 			return fmt.Errorf("array has no element")
 		}
+		if bytes, ok := e.g.byteRun(node); ok {
+			return e.encode(b, bytes, expr, indent)
+		}
 		helper, err := collectionHelper(node, "encode_collection")
 		if err != nil {
 			return err
@@ -422,6 +425,9 @@ func (e *codecEmitter) decode(node manifest.Node, hint, indent string) (string, 
 	case manifest.KindArray:
 		if node.Element == nil {
 			return "", fmt.Errorf("array has no element")
+		}
+		if bytes, ok := e.g.byteRun(node); ok {
+			return e.decode(bytes, hint, indent)
 		}
 		helper, err := collectionHelper(node, "decode_collection")
 		if err != nil {

@@ -75,14 +75,17 @@ func TestGenerateConsumesOnlyCanonicalManifest(t *testing.T) {
 func TestGenerateEmitsSchemaConstraintChecks(t *testing.T) {
 	text := manifest.String(manifest.Primitive("var_u32"))
 	text.Constraints = &manifest.Constraints{MinLength: pointerTo(uint64(1)), MaxLength: pointerTo(uint64(65536)), Pattern: "^[a-z]+$"}
-	count := manifest.Array(manifest.Primitive("var_u32"), manifest.Primitive("u8"))
+	count := manifest.Array(manifest.Primitive("var_u32"), manifest.Primitive("u16le"))
 	count.Constraints = &manifest.Constraints{MaxItems: pointerTo(uint64(4))}
+	raw := manifest.Array(manifest.Primitive("var_u32"), manifest.Primitive("u8"))
+	raw.Constraints = &manifest.Constraints{MaxItems: pointerTo(uint64(4))}
 	number := manifest.Primitive("zigzag_i32")
 	number.Constraints = &manifest.Constraints{Minimum: pointerTo(-1.0), Maximum: pointerTo(64.0)}
 	m := manifest.Manifest{SchemaVersion: 2, Target: manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 1}, Sources: []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "1", Digest: "fixture", MinecraftVersion: "fixture", ProtocolVersion: 1}}, Packets: []manifest.Packet{{ID: 1, Name: "LimitsPacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{
 		{Ordinal: 0, Name: "Text", Encode: text, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
 		{Ordinal: 1, Name: "Values", Encode: count, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
 		{Ordinal: 2, Name: "Number", Encode: number, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
+		{Ordinal: 3, Name: "Raw", Encode: raw, Symmetry: manifest.Symmetric, Provenance: manifest.Provenance{Pins: []string{"fixture"}}},
 	}}}}
 	files, err := Generate(m, "wiregen")
 	if err != nil {
@@ -92,7 +95,9 @@ func TestGenerateEmitsSchemaConstraintChecks(t *testing.T) {
 	for _, want := range []string{
 		"io.StringLimits(&pk.Text, 1, 65536)",
 		`protocol.Pattern(io, &pk.Text, "^[a-z]+$")`,
-		"protocol.FuncSliceLimits(io, &pk.Values, io.Varuint32, 0, 4, io.Uint8)",
+		"protocol.FuncSliceLimits(io, &pk.Values, io.Varuint32, 0, 4, io.Uint16)",
+		"Raw    []uint8",
+		"io.ByteSliceLimits(&pk.Raw, 0, 4)",
 		"protocol.Minimum(io, &pk.Number, -1)",
 		"protocol.Maximum(io, &pk.Number, 64)",
 	} {

@@ -291,6 +291,33 @@ func Array(prefix, element Node) Node {
 	return Node{Kind: KindArray, Prefix: &prefix, Element: &element}
 }
 
+// ByteRun returns the Bytes node wire-identical to n when n is a
+// var_u32-counted array of plain u8, so emitters can copy it in bulk.
+func ByteRun(n Node) (Node, bool) {
+	if n.Kind != KindArray || !isPrimitive(n.Prefix, "var_u32") || !isPrimitive(n.Element, "u8") {
+		return Node{}, false
+	}
+	if element := n.Element; element.Constraints != nil || element.Semantic != "" || element.TypeID != "" {
+		return Node{}, false
+	}
+	bytes := Bytes(*n.Prefix)
+	bytes.Semantic, bytes.TypeID = n.Semantic, n.TypeID
+	if c := n.Constraints; c != nil {
+		if c.MinLength != nil || c.MaxLength != nil || c.MinProperties != nil || c.MaxProperties != nil ||
+			c.Minimum != nil || c.Maximum != nil || c.Pattern != "" {
+			return Node{}, false
+		}
+		if c.MinItems != nil || c.MaxItems != nil {
+			bytes.Constraints = &Constraints{MinLength: c.MinItems, MaxLength: c.MaxItems}
+		}
+	}
+	return bytes, true
+}
+
+func isPrimitive(n *Node, code string) bool {
+	return n != nil && n.Kind == KindPrimitive && n.Primitive != nil && n.Primitive.Code == code
+}
+
 func FixedArray(length uint64, element Node) Node {
 	return Node{Kind: KindFixedArray, Length: length, Element: &element}
 }

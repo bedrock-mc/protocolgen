@@ -53,5 +53,5 @@ func (x *SkinImage) Marshal(io IO) {
 	Maximum(io, &x.Width, 4096)
 	io.Uint32(&x.Height)
 	Maximum(io, &x.Height, 4096)
-	FuncSliceLimits(io, &x.ImageBytes, io.Varuint32, 0, 67108864, io.Uint8)
+	io.ByteSliceLimits(&x.ImageBytes, 0, 67108864)
 }

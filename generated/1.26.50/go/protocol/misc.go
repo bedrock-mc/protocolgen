@@ -1807,7 +1807,7 @@ type LegacySetSlot struct {
 // Marshal reads or writes LegacySetSlot using its canonical wire layout.
 func (x *LegacySetSlot) Marshal(io IO) {
 	x.ContainerEnum.Marshal(io)
-	FuncSlice(io, &x.Slots, io.Varuint32, io.Uint8)
+	io.ByteSlice(&x.Slots)
 }
 
 type LevelSettings struct {

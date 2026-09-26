@@ -3724,14 +3724,14 @@ pub struct CommandEnumConstraint {
     /// `enum_symbol` points to an enum in the AvailableCommands packet to which this constraint should apply to.
     pub enum_symbol: wire::U32LE,
     /// `constraint_indices` holds a slice of constraints as present in the constants above.
-    pub constraint_indices: Vec<wire::U8>,
+    pub constraint_indices: bytes::Bytes,
 }
 
 impl wire::Encode for CommandEnumConstraint {
     fn encode(&self, writer: &mut wire::Writer) {
         self.enum_value_symbol.encode(writer);
         self.enum_symbol.encode(writer);
-        wire::encode_collection_limits(writer, self.constraint_indices.as_slice(), 0, 250);
+        wire::encode_bytes_limits(writer, self.constraint_indices.as_ref(), 0, 250);
     }
 }
 
@@ -3739,7 +3739,7 @@ impl wire::Decode for CommandEnumConstraint {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let enum_value_symbol = <wire::U32LE as wire::Decode>::decode(reader)?;
         let enum_symbol = <wire::U32LE as wire::Decode>::decode(reader)?;
-        let constraint_indices = wire::decode_collection_limits::<wire::U8>(reader, 1, 0, 250)?;
+        let constraint_indices = wire::decode_bytes_limits(reader, 0, 250)?;
         Ok(Self {
             enum_value_symbol,
             enum_symbol,
@@ -8015,20 +8015,20 @@ impl wire::Decode for HeightmapData {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct LegacySetSlot {
     pub container_enum: ContainerEnumName,
-    pub slots: Vec<wire::U8>,
+    pub slots: bytes::Bytes,
 }
 
 impl wire::Encode for LegacySetSlot {
     fn encode(&self, writer: &mut wire::Writer) {
         self.container_enum.encode(writer);
-        wire::encode_collection(writer, self.slots.as_slice());
+        self.slots.encode(writer);
     }
 }
 
 impl wire::Decode for LegacySetSlot {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let container_enum = <ContainerEnumName as wire::Decode>::decode(reader)?;
-        let slots = wire::decode_collection::<wire::U8>(reader, 1)?;
+        let slots = <bytes::Bytes as wire::Decode>::decode(reader)?;
         Ok(Self {
             container_enum,
             slots,
@@ -11039,7 +11039,7 @@ impl wire::Decode for PrimitiveShape {
 pub struct SkinImage {
     pub width: wire::U32LE,
     pub height: wire::U32LE,
-    pub image_bytes: Vec<wire::U8>,
+    pub image_bytes: bytes::Bytes,
 }
 
 impl wire::Encode for SkinImage {
@@ -11048,7 +11048,7 @@ impl wire::Encode for SkinImage {
         wire::assert_number_limits(self.width.0, None, Some(4096));
         self.height.encode(writer);
         wire::assert_number_limits(self.height.0, None, Some(4096));
-        wire::encode_collection_limits(writer, self.image_bytes.as_slice(), 0, 67108864);
+        wire::encode_bytes_limits(writer, self.image_bytes.as_ref(), 0, 67108864);
     }
 }
 
@@ -11056,7 +11056,7 @@ impl wire::Decode for SkinImage {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
         let width = { let value = <wire::U32LE as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, None, Some(4096))?; value };
         let height = { let value = <wire::U32LE as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, None, Some(4096))?; value };
-        let image_bytes = wire::decode_collection_limits::<wire::U8>(reader, 1, 0, 67108864)?;
+        let image_bytes = wire::decode_bytes_limits(reader, 0, 67108864)?;
         Ok(Self {
             width,
             height,
@@ -11764,7 +11764,7 @@ pub struct VoxelShapesSerializableCells {
     pub x_size: wire::U8,
     pub y_size: wire::U8,
     pub z_size: wire::U8,
-    pub storage: Vec<wire::U8>,
+    pub storage: bytes::Bytes,
 }
 
 impl wire::Encode for VoxelShapesSerializableCells {
@@ -11775,7 +11775,7 @@ impl wire::Encode for VoxelShapesSerializableCells {
         wire::assert_number_limits(self.y_size.0, None, Some(127));
         self.z_size.encode(writer);
         wire::assert_number_limits(self.z_size.0, None, Some(127));
-        wire::encode_collection_limits(writer, self.storage.as_slice(), 0, 256048);
+        wire::encode_bytes_limits(writer, self.storage.as_ref(), 0, 256048);
     }
 }
 
@@ -11784,7 +11784,7 @@ impl wire::Decode for VoxelShapesSerializableCells {
         let x_size = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, None, Some(127))?; value };
         let y_size = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, None, Some(127))?; value };
         let z_size = { let value = <wire::U8 as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, None, Some(127))?; value };
-        let storage = wire::decode_collection_limits::<wire::U8>(reader, 1, 0, 256048)?;
+        let storage = wire::decode_bytes_limits(reader, 0, 256048)?;
         Ok(Self {
             x_size,
             y_size,
