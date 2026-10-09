@@ -16,35 +16,54 @@ import (
 	"time"
 )
 
-//go:embed lock.json inputs
+//go:embed lock.json releases.json inputs
 var bundled embed.FS
 
-// Input identifies an immutable source file. Exactly one of Path or URL is set.
+// Upstream pins a public GitHub repository once for all of its input files.
+type Upstream struct {
+	Repository string `json:"repository"`
+	Revision   string `json:"revision"`
+}
+
+// Input identifies a local file or a file/archive from a locked upstream.
+// Revision is only used for local inputs without an upstream relationship.
 type Input struct {
 	Path        string `json:"path,omitempty"`
-	URL         string `json:"url,omitempty"`
+	Upstream    string `json:"upstream,omitempty"`
+	File        string `json:"file,omitempty"`
+	Archive     bool   `json:"archive,omitempty"`
 	SHA256      string `json:"sha256"`
-	Revision    string `json:"revision"`
+	Revision    string `json:"revision,omitempty"`
 	Description string `json:"description,omitempty"`
 }
 
-// Lock records the target and the independent revisions of its inputs.
+// Lock records input identities and selects one release from releases.json.
+// Target is resolved by Open and included in the complete lock digest.
 type Lock struct {
-	SchemaVersion    int              `json:"schema_version"`
-	MinecraftVersion string           `json:"minecraft_version"`
-	ProtocolVersion  int              `json:"protocol_version"`
-	Inputs           map[string]Input `json:"inputs"`
-	Semantic         SemanticInputs   `json:"semantic"`
+	SchemaVersion int                 `json:"schema_version"`
+	Release       string              `json:"release"`
+	Upstreams     map[string]Upstream `json:"upstreams"`
+	Inputs        map[string]Input    `json:"inputs"`
+	Semantic      SemanticInputs      `json:"semantic"`
+	Target        Release             `json:"-"`
 }
 
-// SHA256 identifies the complete lock using its compact JSON encoding.
+// SHA256 identifies the complete input lock and its resolved release record.
 func (l Lock) SHA256() (string, error) {
-	canonical, err := json.Marshal(l)
+	canonical, err := json.Marshal(struct {
+		Lock   Lock    `json:"lock"`
+		Target Release `json:"target"`
+	}{l, l.Target})
 	if err != nil {
 		return "", err
 	}
 	digest := sha256.Sum256(canonical)
 	return hex.EncodeToString(digest[:]), nil
+}
+
+// CloudburstRevision returns the single revision shared by the registry and facts.
+func (l Lock) CloudburstRevision() string {
+	return l.Upstreams[l.Semantic.Cloudburst].Revision
 }
 
 // Sources resolves files relative to a lock and verifies every input digest.
@@ -70,22 +89,85 @@ func Open(path string) (*Sources, error) {
 	if err := json.Unmarshal(data, &s.Lock); err != nil {
 		return nil, fmt.Errorf("decode source lock: %w", err)
 	}
-	if s.Lock.SchemaVersion != 1 || s.Lock.MinecraftVersion == "" || s.Lock.ProtocolVersion <= 0 || len(s.Lock.Inputs) == 0 {
-		return nil, fmt.Errorf("source lock has an unsupported schema or incomplete target")
+	if s.Lock.SchemaVersion != 2 || len(s.Lock.Inputs) == 0 {
+		return nil, fmt.Errorf("source lock has an unsupported schema or no inputs")
+	}
+	releases, err := Releases()
+	if err != nil {
+		return nil, err
+	}
+	target, ok := releases.Releases[s.Lock.Release]
+	if !ok {
+		return nil, fmt.Errorf("unknown source release %q", s.Lock.Release)
+	}
+	s.Lock.Target = target
+	for name, upstream := range s.Lock.Upstreams {
+		revision, err := hex.DecodeString(upstream.Revision)
+		parts := strings.Split(upstream.Repository, "/")
+		if name == "" || len(parts) != 2 || parts[0] == "" || parts[1] == "" || strings.ContainsAny(upstream.Repository, "\\ ?#%:") || strings.Contains(upstream.Repository, "..") || err != nil || len(revision) != 20 {
+			return nil, fmt.Errorf("upstream %q has an invalid repository or commit", name)
+		}
 	}
 	for name, input := range s.Lock.Inputs {
 		digest, err := hex.DecodeString(input.SHA256)
-		if name == "" || err != nil || len(digest) != sha256.Size || input.Revision == "" || (input.Path == "") == (input.URL == "") {
-			return nil, fmt.Errorf("source %q has incomplete identity", name)
+		if name == "" || err != nil || len(digest) != sha256.Size {
+			return nil, fmt.Errorf("source %q has an invalid digest", name)
 		}
-		if input.Path != "" && (!filepath.IsLocal(input.Path) || strings.Contains(input.Path, "\\")) {
-			return nil, fmt.Errorf("source %q has an invalid local path", name)
+		if input.Upstream != "" {
+			if _, ok := s.Lock.Upstreams[input.Upstream]; !ok || input.Revision != "" {
+				return nil, fmt.Errorf("source %q has an unknown upstream or duplicate revision", name)
+			}
+		} else if input.Path == "" || input.Revision == "" {
+			return nil, fmt.Errorf("source %q needs an upstream or local revision", name)
 		}
-		if input.URL != "" && !strings.HasPrefix(input.URL, "https://") {
-			return nil, fmt.Errorf("source %q must use HTTPS", name)
+		locations := 0
+		for _, path := range []string{input.Path, input.File} {
+			if path != "" {
+				locations++
+				if !filepath.IsLocal(path) || strings.ContainsAny(path, "\\?#%") {
+					return nil, fmt.Errorf("source %q has an invalid path", name)
+				}
+			}
+		}
+		if input.Archive {
+			locations++
+		}
+		if locations != 1 {
+			return nil, fmt.Errorf("source %q needs exactly one local path, upstream file or archive", name)
+		}
+	}
+	if s.Lock.CloudburstRevision() == "" {
+		return nil, fmt.Errorf("source lock has no Cloudburst upstream")
+	}
+	for _, name := range []string{"item_registry", "block_palette", "data_driven_blocks", "item_components", "liquid_clip_omissions"} {
+		if input, ok := s.Lock.Inputs[name]; ok && input.Upstream != s.Lock.Semantic.Cloudburst {
+			return nil, fmt.Errorf("source %q must use the semantic Cloudburst upstream", name)
 		}
 	}
 	return s, nil
+}
+
+// Revision returns the pinned revision for an input, or empty for an unknown name.
+func (s *Sources) Revision(name string) string {
+	input := s.Lock.Inputs[name]
+	if input.Upstream != "" {
+		return s.Lock.Upstreams[input.Upstream].Revision
+	}
+	return input.Revision
+}
+
+// URL derives an immutable download URL from the upstream commit and file path.
+// Local files and unknown names have no download URL.
+func (s *Sources) URL(name string) string {
+	input := s.Lock.Inputs[name]
+	if input.Path != "" || input.Upstream == "" {
+		return ""
+	}
+	upstream := s.Lock.Upstreams[input.Upstream]
+	if input.Archive {
+		return "https://codeload.github.com/" + upstream.Repository + "/tar.gz/" + upstream.Revision
+	}
+	return "https://raw.githubusercontent.com/" + upstream.Repository + "/" + upstream.Revision + "/" + input.File
 }
 
 // Read loads one locked source. Downloaded files use a digest-addressed cache;
@@ -113,7 +195,7 @@ func (s *Sources) Read(ctx context.Context, name, cache string) ([]byte, error) 
 			}
 		}
 		if data == nil {
-			request, reqErr := http.NewRequestWithContext(ctx, http.MethodGet, input.URL, nil)
+			request, reqErr := http.NewRequestWithContext(ctx, http.MethodGet, s.URL(name), nil)
 			if reqErr != nil {
 				return nil, reqErr
 			}

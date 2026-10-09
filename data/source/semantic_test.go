@@ -50,8 +50,8 @@ func TestValidateSemanticRejectsChangedInputSets(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			cloudburst, cloudburstFiles := semanticFixtureTree(t, "cloudburst")
 			bds, bdsFiles := semanticFixtureTree(t, "bds")
-			sources := &Sources{Lock: Lock{Semantic: SemanticInputs{
-				CloudburstRef: "fixture-cloudburst", BDSVersion: "fixture-bds",
+			sources := &Sources{Lock: Lock{Upstreams: map[string]Upstream{"cloudburst": {Revision: "fixture-cloudburst"}}, Semantic: SemanticInputs{
+				Cloudburst: "cloudburst", BDSVersion: "fixture-bds",
 				CloudburstFiles: cloudburstFiles, BDSFiles: bdsFiles,
 			}}}
 			if test.change != nil {

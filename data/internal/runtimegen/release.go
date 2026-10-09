@@ -16,11 +16,12 @@ func Release(lock source.Lock) (map[string][]byte, error) {
 		return nil, err
 	}
 	manifest, err := json.MarshalIndent(struct {
-		MinecraftVersion string      `json:"minecraft_version"`
-		ProtocolVersion  int         `json:"protocol_version"`
-		SourceLockSHA256 string      `json:"source_lock_sha256"`
-		SourceLock       source.Lock `json:"source_lock"`
-	}{lock.MinecraftVersion, lock.ProtocolVersion, digest, lock}, "", "  ")
+		MinecraftVersion string         `json:"minecraft_version"`
+		ProtocolVersion  int            `json:"protocol_version"`
+		SourceLockSHA256 string         `json:"source_lock_sha256"`
+		SourceLock       source.Lock    `json:"source_lock"`
+		Target           source.Release `json:"target"`
+	}{lock.Target.MinecraftVersion, lock.Target.ProtocolVersion, digest, lock, lock.Target}, "", "  ")
 	if err != nil {
 		return nil, err
 	}
@@ -34,10 +35,16 @@ const MinecraftVersion = %q
 // ProtocolVersion is the protocol used by the target release.
 const ProtocolVersion = %d
 
+// ProtocolSnapshot identifies the compatible generated codec directory.
+const ProtocolSnapshot = %q
+
+// ReleaseChannel distinguishes retail labels from preview labels.
+const ReleaseChannel = %q
+
 // SourceLockSHA256 identifies every pinned input in the source lock.
-// It is the SHA-256 of json.Marshal(source.Lock), without indentation.
+// It includes the resolved release record as well as every input identity.
 const SourceLockSHA256 = %q
-`, GeneratedMarker, lock.MinecraftVersion, lock.ProtocolVersion, digest))
+`, GeneratedMarker, lock.Target.MinecraftVersion, lock.Target.ProtocolVersion, lock.Target.Snapshot, lock.Target.Channel, digest))
 	if err != nil {
 		return nil, err
 	}

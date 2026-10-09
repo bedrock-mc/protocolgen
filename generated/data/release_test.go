@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/bedrock-mc/protocolgen/generated/data"
+	"github.com/bedrock-mc/protocolgen/generated/data/registry"
 )
 
 // TestReleaseMetadata verifies that both projections used the same complete lock.
@@ -45,6 +46,7 @@ func validateReleaseMetadata(releaseJSON, semanticJSON []byte) error {
 		ProtocolVersion  int             `json:"protocol_version"`
 		SourceLockSHA256 string          `json:"source_lock_sha256"`
 		SourceLock       json.RawMessage `json:"source_lock"`
+		Target           json.RawMessage `json:"target"`
 	}
 	if err := json.Unmarshal(releaseJSON, &release); err != nil {
 		return err
@@ -52,33 +54,49 @@ func validateReleaseMetadata(releaseJSON, semanticJSON []byte) error {
 	if release.MinecraftVersion != data.MinecraftVersion || release.ProtocolVersion != data.ProtocolVersion {
 		return fmt.Errorf("release target differs from the compiled catalog")
 	}
+	identity, err := json.Marshal(struct {
+		Lock   json.RawMessage `json:"lock"`
+		Target json.RawMessage `json:"target"`
+	}{release.SourceLock, release.Target})
+	if err != nil {
+		return err
+	}
 	var canonical bytes.Buffer
-	if err := json.Compact(&canonical, release.SourceLock); err != nil {
+	if err := json.Compact(&canonical, identity); err != nil {
 		return err
 	}
 	digest := fmt.Sprintf("%x", sha256.Sum256(canonical.Bytes()))
-	for _, identity := range []string{release.SourceLockSHA256, data.SourceLockSHA256, data.SemanticSourceLockSHA256} {
+	for _, identity := range []string{release.SourceLockSHA256, data.SourceLockSHA256, data.SemanticSourceLockSHA256, registry.SourceLockSHA256} {
 		if digest != identity {
 			return fmt.Errorf("catalog source-lock identities differ; regenerate both projections")
 		}
 	}
 	var lock struct {
-		MinecraftVersion string `json:"minecraft_version"`
-		ProtocolVersion  int    `json:"protocol_version"`
-		Inputs           map[string]struct {
+		Release   string `json:"release"`
+		Upstreams map[string]struct {
 			Revision string `json:"revision"`
+		} `json:"upstreams"`
+		Inputs map[string]struct {
+			Upstream string `json:"upstream"`
 		} `json:"inputs"`
 		Semantic struct {
-			CloudburstRef string `json:"cloudburst_ref"`
-			BDSVersion    string `json:"bds_version"`
+			Cloudburst string `json:"cloudburst"`
+			BDSVersion string `json:"bds_version"`
 		} `json:"semantic"`
 	}
 	if err := json.Unmarshal(release.SourceLock, &lock); err != nil {
 		return err
 	}
-	if lock.MinecraftVersion != data.MinecraftVersion || lock.ProtocolVersion != data.ProtocolVersion ||
-		lock.Semantic.CloudburstRef != data.CloudburstRef || lock.Semantic.BDSVersion != data.BDSVersion ||
-		lock.Inputs["liquid_clip_omissions"].Revision != data.CloudburstRef {
+	var target struct {
+		MinecraftVersion string `json:"minecraft_version"`
+		ProtocolVersion  int    `json:"protocol_version"`
+		Snapshot         string `json:"snapshot"`
+		Channel          string `json:"channel"`
+	}
+	if err := json.Unmarshal(release.Target, &target); err != nil {
+		return err
+	}
+	if target.MinecraftVersion != data.MinecraftVersion || target.ProtocolVersion != data.ProtocolVersion || target.Snapshot != data.ProtocolSnapshot || target.Channel != data.ReleaseChannel || lock.Release != target.Snapshot || lock.Upstreams[lock.Semantic.Cloudburst].Revision != data.CloudburstRef || lock.Semantic.BDSVersion != data.BDSVersion || lock.Inputs["liquid_clip_omissions"].Upstream != lock.Semantic.Cloudburst {
 		return fmt.Errorf("compiled source pins differ from the release lock")
 	}
 	var semantic struct {

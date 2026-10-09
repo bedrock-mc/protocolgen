@@ -3,14 +3,16 @@
 This authored module owns the source lock, input verification and generators
 for the active [catalog](../generated/data/README.md). Its module path is
 `github.com/bedrock-mc/protocolgen/data`. Runtime consumers import
-`github.com/bedrock-mc/protocolgen/generated/data` instead. Both modules use
-only the standard library; neither imports the other.
+`github.com/bedrock-mc/protocolgen/generated/data` instead. The runtime module uses only the standard library. The tooling module uses a
+pinned NBT codec to normalize registry payloads; neither module imports the other.
 
 ## Layout and ownership
 
 - `source/` holds the release lock, verified input loader and small reviewed
   registry/correction inputs. External packs remain outside the repository.
 - `internal/generator` and `cmd/generate` produce semantic values.
+- `internal/registrygen` and `cmd/registrygen` normalize block palettes, data-driven
+  block components and complete item component payloads.
 - `internal/runtimegen` and `cmd/runtimegen` produce runtime item values and
   release metadata.
 - `../generated/data/` is the single active output catalog. It has its own
@@ -18,7 +20,7 @@ only the standard library; neither imports the other.
 
 The catalog's small API and lookup files are authored beside their data.
 Files ending in `*_generated.go` are owned by their named generator and must
-not be edited by hand. Both generators default to `../generated/data` when
+not be edited by hand. All generators default to `../generated/data` when
 run from this directory. `-out` selects another catalog root.
 
 ## Regeneration
@@ -27,6 +29,7 @@ Regenerate runtime items and release metadata from this directory:
 
 ```sh
 go run ./cmd/runtimegen
+go run ./cmd/registrygen
 ```
 
 The runtime catalog targets Minecraft 1.26.50, protocol 2193, with 2,076 items.
@@ -34,7 +37,8 @@ Sources include the locked Cloudburst registry, Allay item properties and tags, 
 reviewed corrections. Generation rejects missing values and stale corrections.
 It writes `item/runtime_generated.go`, `release_generated.go` and `release.json`
 in one rollback-protected batch. The source-lock identity is SHA-256 over
-`json.Marshal(source.Lock)`, so indentation in the input lock does not affect it.
+the canonical input lock and its resolved release record. JSON indentation does
+not affect it.
 
 Regenerate semantic values using local input trees:
 
@@ -63,10 +67,10 @@ Generation marks those fields unavailable and records them in
 changed and obsolete exceptions fail generation. Required collision and outline
 shapes remain strictly validated. Zero-volume outlines remain known-empty.
 
-Both commands accept `-cache /path/to/cache` and `-lock /path/to/lock.json`.
+All commands accept `-cache /path/to/cache` and `-lock /path/to/lock.json`.
 Use a reviewed alternate lock to change a release; there are no independent
-version flags. Any source-lock change requires both generators. Catalog tests
-require `SemanticSourceLockSHA256` to match `SourceLockSHA256`, so a partial
+version flags. Any source-lock change requires all generators. Catalog tests
+require the semantic, runtime and registry lock digests to match, so a partial
 update fails even when the game version or source revision stays the same.
 Semantic generation preserves runtime release metadata. Each generator removes
 stale Go files only when they carry its exact ownership header, preserving the other generator's
@@ -85,7 +89,7 @@ struct and verifies every field is emitted without adding a module dependency
 or maintaining a second schema list. Run the generator tests from a full
 repository checkout. CI downloads and authenticates the locked Cloudburst
 block/biome/shape files and compares the full generated projection with the
-committed catalog. It also regenerates runtime items and metadata. To run the Cloudburst check locally, set
+committed catalog. It also regenerates runtime items, registry payloads and metadata. To run the Cloudburst check locally, set
 `PROTOCOLGEN_CLOUDBURST_DIR` when running `make test-data`. Full semantic
 regeneration additionally requires the local BDS inputs.
 
@@ -114,3 +118,20 @@ properties do not contain those behavior components. The existing
 `vanilla-data/endstone` exporter is a separate route for collecting live registry
 facts from a matching BDS build; a packet registry alone does not contain all
 item capabilities. This update does not change those behavior-pack inputs.
+
+## Release and upstream ownership
+
+[source/releases.json](source/releases.json) connects each supported codec snapshot
+to its protocol, release channel, accepted labels and capture adapter. The active
+input lock selects a record by `release`. Retail `1.26.50` uses snapshot
+`1.26.51` and protocol 2193; snapshot `1.26.50` describes preview protocol 2187.
+Do not select a codec directory from a game label alone. CI checks the registry
+against committed manifests and validates all declared capture adapters without
+connecting to BDS. The Rust matrix, capture defaults and adapter arguments use
+this same record. Current retail has no capture adapter declared yet.
+
+The source lock declares each GitHub repository and commit once in `upstreams`.
+Remote inputs specify an upstream, file path (or archive) and SHA-256. Download
+URLs are derived. Local corrections can refer to the upstream they qualify.
+`Sources.Revision(name)` resolves either form; `Lock.Target` exposes the selected
+release. Independent BDS pack versions remain separate provenance.

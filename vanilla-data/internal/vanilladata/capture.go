@@ -55,16 +55,8 @@ func ValidateContract(m Manifest, source SourceConfig, minecraftVersion string, 
 	if m.Target.ProtocolVersion != protocolVersion {
 		return fmt.Errorf("manifest protocol %d does not match gophertunnel protocol %d", m.Target.ProtocolVersion, protocolVersion)
 	}
-	var revision string
-	for _, pin := range m.Sources {
-		if pin.Kind == "gophertunnel-exact-codec" {
-			revision = pin.Revision
-			break
-		}
-	}
-	if revision == "" || revision != source.Gophertunnel.Revision {
-		return fmt.Errorf("manifest gophertunnel revision %q does not match vanilla source %q", revision, source.Gophertunnel.Revision)
-	}
+	// The capture source owns the codec pin. The executable checks it against
+	// compiled module metadata; protocol evidence pins are independent.
 	packets := make(map[uint32]Packet, len(m.Packets))
 	for _, manifestPacket := range m.Packets {
 		packets[manifestPacket.ID] = manifestPacket

@@ -13,7 +13,7 @@ import (
 // SemanticInputs pins the local files read by the semantic generator. Only
 // hashes are published for BDS inputs; the behavior packs stay outside the repo.
 type SemanticInputs struct {
-	CloudburstRef   string            `json:"cloudburst_ref"`
+	Cloudburst      string            `json:"cloudburst"`
 	BDSVersion      string            `json:"bds_version"`
 	CloudburstFiles map[string]string `json:"cloudburst_files"`
 	BDSFiles        map[string]string `json:"bds_files"`
@@ -23,7 +23,7 @@ type SemanticInputs struct {
 // generator. Added and missing JSON files in its input directories are rejected.
 func (s *Sources) ValidateSemantic(cloudburstDir, bdsDir string) error {
 	semantic := s.Lock.Semantic
-	if semantic.CloudburstRef == "" || semantic.BDSVersion == "" {
+	if s.Lock.CloudburstRevision() == "" || semantic.BDSVersion == "" {
 		return fmt.Errorf("source lock has no complete semantic source identity")
 	}
 	if err := s.ValidateCloudburst(cloudburstDir); err != nil {
@@ -36,7 +36,7 @@ func (s *Sources) ValidateSemantic(cloudburstDir, bdsDir string) error {
 
 // ValidateCloudburst verifies the complete block, biome and named-shape inputs independently of BDS.
 func (s *Sources) ValidateCloudburst(dir string) error {
-	if s.Lock.Semantic.CloudburstRef == "" {
+	if s.Lock.CloudburstRevision() == "" {
 		return fmt.Errorf("source lock has no Cloudburst revision")
 	}
 	return verifySemanticTree("Cloudburst", dir, s.Lock.Semantic.CloudburstFiles,
