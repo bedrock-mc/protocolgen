@@ -2,7 +2,6 @@ package runtimegen
 
 import (
 	"bytes"
-	"crypto/sha256"
 	"encoding/json"
 	"fmt"
 	"go/parser"
@@ -14,7 +13,7 @@ import (
 
 func TestReleaseIdentifiesCompleteCanonicalLock(t *testing.T) {
 	lock := source.Lock{
-		SchemaVersion: 1, MinecraftVersion: "1.26.50", ProtocolVersion: 2193,
+		SchemaVersion: 2, Release: "1.26.51", Target: source.Release{MinecraftVersion: "1.26.50", ProtocolVersion: 2193},
 		Inputs: map[string]source.Input{
 			"second": {Revision: "two", SHA256: "bb"},
 			"first":  {Revision: "one", SHA256: "aa"},
@@ -38,8 +37,11 @@ func TestReleaseIdentifiesCompleteCanonicalLock(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	wantHash := fmt.Sprintf("%x", sha256.Sum256(canonical))
-	if manifest.SourceLockSHA256 != wantHash || manifest.MinecraftVersion != lock.MinecraftVersion || manifest.ProtocolVersion != lock.ProtocolVersion {
+	wantHash, err := lock.SHA256()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if manifest.SourceLockSHA256 != wantHash || manifest.MinecraftVersion != lock.Target.MinecraftVersion || manifest.ProtocolVersion != lock.Target.ProtocolVersion {
 		t.Fatalf("wrong release identity: %+v", manifest)
 	}
 	recorded, err := json.Marshal(manifest.SourceLock)

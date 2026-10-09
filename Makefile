@@ -12,14 +12,16 @@ SOURCE_LOCK := generated/1.26.40/source-lock.json
 MOJANG_DIR ?=
 ENDSTONE_DIR ?=
 GOPHERTUNNEL_DIR ?=
+LAYOUT_GOPHERTUNNEL_DIR ?= $(if $(GOPHERTUNNEL_DIR),$(GOPHERTUNNEL_DIR),../gophertunnel)
+RELEASE_INDEX := data/source/releases.json
 ORACLE_REPORT ?= /tmp/protocolgen-gophertunnel-report.json
 GOPHER_ARGS = $(if $(GOPHERTUNNEL_DIR),-gophertunnel $(GOPHERTUNNEL_DIR))
 
-VANILLA_VERSION ?= 1.26.44
+VANILLA_VERSION ?= $(shell jq -er .default_capture $(RELEASE_INDEX))
 VANILLA_MANIFEST := ../generated/$(VANILLA_VERSION)/manifest.json
 VANILLA_SOURCE := ../generated/$(VANILLA_VERSION)/vanilla-source.json
 VANILLA_OUT := ../generated/$(VANILLA_VERSION)/vanilla-data
-VANILLA_GO_ARGS := $(if $(filter 1.26.40,$(VANILLA_VERSION)),-modfile go-1.26.40.mod -tags protocolgen_12640,)
+VANILLA_GO_ARGS = $(shell jq -er --arg version "$(VANILLA_VERSION)" '.releases[$$version].capture.go_args | join(" ")' $(RELEASE_INDEX))
 BDS_ADDRESS ?= 127.0.0.1:19132
 BDS_BINARY ?=
 
@@ -190,6 +192,7 @@ hotfix:
 		-out generated/1.26.44/rust
 
 vanilla-data:
+	@jq -e --arg version "$(VANILLA_VERSION)" '.releases[$$version].capture != null' $(RELEASE_INDEX) >/dev/null || (echo "No capture adapter for $(VANILLA_VERSION)" >&2; exit 2)
 	@test -n "$(BDS_BINARY)" || (echo "BDS_BINARY is required" >&2; exit 2)
 	$(GO) -C vanilla-data run $(VANILLA_GO_ARGS) ./cmd/vanilla-data \
 		-manifest $(VANILLA_MANIFEST) \
@@ -208,21 +211,20 @@ verify-1.26.51: regen-1.26.51
 	@test -z "$$(git status --porcelain -- $(TARGET_12651))" || (echo "1.26.51 regeneration produced drift" >&2; exit 1)
 
 # Emit the 1.26.51 tree laid out like the gophertunnel checkout in
-# GOPHERTUNNEL_DIR (constants beside their packets under fork names, fork field
+# LAYOUT_GOPHERTUNNEL_DIR (constants beside their packets under fork names, fork field
 # names) into build/gophertunnel-layout, and refresh the seeded overlay and gap
 # report. The overlay is never applied to the checked-in generated tree.
-GOPHERTUNNEL_DIR ?= ../gophertunnel
-LAYOUT_TARGET = generated/1.26.51
+LAYOUT_TARGET = generated/$(shell jq -er .default_protocol $(RELEASE_INDEX))
 
 gophertunnel-layout:
 	$(GO) run ./tools/seed-gophertunnel-layout \
 		-manifest $(LAYOUT_TARGET)/manifest.json \
 		-naming $(LAYOUT_TARGET)/naming.json \
-		-gophertunnel $(GOPHERTUNNEL_DIR) \
+		-gophertunnel "$(LAYOUT_GOPHERTUNNEL_DIR)" \
 		-out $(LAYOUT_TARGET)/gophertunnel-layout.json \
 		-docs $(LAYOUT_TARGET)/docs.json \
 		-semantics-out $(LAYOUT_TARGET)/semantics.json \
-		-report docs/gophertunnel-gap-1.26.51.md
+		-report docs/gophertunnel-gap-$(notdir $(LAYOUT_TARGET)).md
 	rm -rf build/gophertunnel-layout
 	$(PROTOCOLGEN) emit-go \
 		-manifest $(LAYOUT_TARGET)/manifest.json \
@@ -247,6 +249,7 @@ test-data:
 generate-data:
 	$(GO) -C data run ./cmd/generate -cloudburst "$(CLOUDBURST_DIR)" -bds "$(BDS_DIR)"
 	$(GO) -C data run ./cmd/runtimegen
+	$(GO) -C data run ./cmd/registrygen
 
 verify-data: generate-data
 	git diff --exit-code -- generated/data

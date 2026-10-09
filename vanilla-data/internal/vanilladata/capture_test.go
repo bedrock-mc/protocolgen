@@ -11,6 +11,7 @@ import (
 	"testing"
 )
 
+// testSource creates a synthetic capture configuration.
 func testSource() SourceConfig {
 	return SourceConfig{
 		SchemaVersion:    1,
@@ -32,11 +33,10 @@ func testSource() SourceConfig {
 	}
 }
 
-func TestValidateContractRequiresExactManifestSourceAndCodec(t *testing.T) {
+func TestValidateContractRequiresMatchingTargetAndPacketDirection(t *testing.T) {
 	source := testSource()
 	m := Manifest{
 		Target:  Target{MinecraftVersion: "1.26.44", ProtocolVersion: 2168},
-		Sources: []SourcePin{{Kind: "gophertunnel-exact-codec", Revision: source.Gophertunnel.Revision}},
 		Packets: []Packet{{ID: 162, Name: "ItemRegistryPacket", Direction: "clientbound"}},
 	}
 	specs := []PacketSpec{{ID: 162, Name: "ItemRegistryPacket", File: "item_registry.dat"}}

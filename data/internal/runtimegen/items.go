@@ -44,7 +44,7 @@ func FromSources(ctx context.Context, inputs *source.Sources, cache string) ([]b
 	if err != nil {
 		return nil, err
 	}
-	registry, err := decodeRegistry(registryJSON)
+	registry, err := DecodeRegistry(registryJSON)
 	if err != nil {
 		return nil, fmt.Errorf("decode item_registry: %w", err)
 	}
@@ -66,8 +66,8 @@ func FromSources(ctx context.Context, inputs *source.Sources, cache string) ([]b
 	return Generate(registry, properties, tags, corrections)
 }
 
-// decodeRegistry reads Cloudburst's registry without silently defaulting missing fields.
-func decodeRegistry(data []byte) (map[string]RegistryEntry, error) {
+// DecodeRegistry reads Cloudburst's registry without silently defaulting missing fields.
+func DecodeRegistry(data []byte) (map[string]RegistryEntry, error) {
 	var rows []struct {
 		Name           string `json:"name"`
 		ID             *int32 `json:"id"`

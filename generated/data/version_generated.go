@@ -7,7 +7,7 @@ const (
 	CloudburstRef = "659ce1e2eee3a67045693f4fd5515c6ccf571953"
 	BDSVersion    = "1.26.32.2"
 	// SemanticSourceLockSHA256 identifies the lock used for semantic generation.
-	SemanticSourceLockSHA256 = "4b3dcf5750c842573a096bf1b3fde0f017cd1311fe625cd55c2924a8f94bd390"
+	SemanticSourceLockSHA256 = "9c923a9a833d7336e7a1a0db11f6ed9c2da83c91d33167af01f9aaf946da7452"
 )
 
 var GeneratedCounts = Counts{

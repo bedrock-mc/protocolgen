@@ -6,7 +6,8 @@ The semantic generator and initial data snapshot were moved from
 
 The semantic values are derived from:
 
-- Block properties, geometry, named voxel shapes, biome values and item registry identities from
+- Block properties, geometry, named voxel shapes, biome values, block palettes, data-driven block components,
+  and complete item registry identities/components from
   [CloudburstMC/Data](https://github.com/CloudburstMC/Data)
 - Base entity components and food definitions distributed
   with Minecraft Bedrock Dedicated Server

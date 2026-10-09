@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       version:
-        description: Generated Minecraft version to capture
+        description: Generated snapshot to capture, or default from the release index
         required: true
         type: string
       accept_eula:
@@ -14,10 +14,10 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: Generated Minecraft version to capture
+        description: Generated snapshot to capture, or default from the release index
         required: true
         type: string
-        default: '1.26.44'
+        default: 'default'
       accept_eula:
         description: I accept the Minecraft End User License Agreement
         required: true
@@ -56,6 +56,8 @@ jobs:
           VERSION: ${{ inputs.version }}
         run: |
           set -euo pipefail
+          if test "$VERSION" = default; then VERSION=$(jq -er .default_capture data/source/releases.json); fi
+          jq -e --arg version "$VERSION" '.releases[$version].capture != null' data/source/releases.json >/dev/null
           manifest="generated/$VERSION/manifest.json"
           source_file="generated/$VERSION/vanilla-source.json"
           test -f "$manifest"
@@ -63,11 +65,7 @@ jobs:
           test "$(jq -er .target.minecraft_version "$manifest")" = "$VERSION"
           test "$(jq -er .minecraft_version "$source_file")" = "$VERSION"
           test "$(jq -er .protocol_version "$source_file")" = "$(jq -er .target.protocol_version "$manifest")"
-          test "$(jq -er .gophertunnel.revision "$source_file")" = "$(jq -er '.sources[] | select(.kind == "gophertunnel-exact-codec") | .revision' "$manifest")"
-          go_args=()
-          if test "$VERSION" = "1.26.40"; then
-            go_args=(-modfile go-1.26.40.mod -tags protocolgen_12640)
-          fi
+          mapfile -t go_args < <(jq -r --arg version "$VERSION" '.releases[$version].capture.go_args[]' data/source/releases.json)
           module_json="$(go -C vanilla-data list "${go_args[@]}" -m -json github.com/sandertv/gophertunnel)"
           test "$(jq -er .Replace.Path <<< "$module_json")" = "$(jq -er .gophertunnel.module_path "$source_file")"
           test "$(jq -er .Replace.Version <<< "$module_json")" = "$(jq -er .gophertunnel.module_version "$source_file")"
@@ -101,11 +99,12 @@ jobs:
           VERSION: ${{ inputs.version }}
         run: |
           set -euo pipefail
+          if test "$VERSION" = default; then VERSION=$(jq -er .default_capture data/source/releases.json); fi
+          jq -e --arg version "$VERSION" '.releases[$version].capture != null' data/source/releases.json >/dev/null
           source_file="generated/$VERSION/vanilla-source.json"
           test -f "$source_file"
           test "$(jq -er .minecraft_version "$source_file")" = "$VERSION"
           test "$(jq -er .protocol_version "$source_file")" = "$(jq -er .target.protocol_version "generated/$VERSION/manifest.json")"
-          test "$(jq -er .gophertunnel.revision "$source_file")" = "$(jq -er '.sources[] | select(.kind == "gophertunnel-exact-codec") | .revision' "generated/$VERSION/manifest.json")"
           bds_url="$(jq -er .bds.linux.url "$source_file")"
           bds_archive_sha256="$(jq -er .bds.linux.archive_sha256 "$source_file")"
           gophertunnel_module_path="$(jq -er .gophertunnel.module_path "$source_file")"
@@ -122,10 +121,7 @@ jobs:
       - name: Verify the committed gophertunnel codec lock
         run: |
           set -euo pipefail
-          go_args=()
-          if test "$VANILLA_VERSION" = "1.26.40"; then
-            go_args=(-modfile go-1.26.40.mod)
-          fi
+          mapfile -t go_args < <(jq -r --arg version "$VANILLA_VERSION" '.releases[$version].capture.go_args[]' data/source/releases.json)
           module_json="$(go -C vanilla-data list "${go_args[@]}" -m -json github.com/sandertv/gophertunnel)"
           test "$(jq -er .Replace.Path <<< "$module_json")" = "$GOPHERTUNNEL_MODULE_PATH"
           test "$(jq -er .Replace.Version <<< "$module_json")" = "$GOPHERTUNNEL_VERSION"
@@ -217,10 +213,7 @@ jobs:
           if test "$ENDSTONE_ENABLED" = true; then
             args+=( -internal-data "$RUNNER_TEMP/protocolgen-endstone-data" )
           fi
-          go_args=()
-          if test "$VANILLA_VERSION" = "1.26.40"; then
-            go_args=(-modfile go-1.26.40.mod -tags protocolgen_12640)
-          fi
+          mapfile -t go_args < <(jq -r --arg version "$VANILLA_VERSION" '.releases[$version].capture.go_args[]' data/source/releases.json)
           go -C vanilla-data run "${go_args[@]}" ./cmd/vanilla-data "${args[@]}"
 
       - name: Stop BDS
@@ -240,13 +233,13 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: protocolgen-${{ inputs.version }}-bds-log
+          name: protocolgen-${{ env.VANILLA_VERSION }}-bds-log
           path: ${{ runner.temp }}/protocolgen-bds.log
           if-no-files-found: ignore
 
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: protocolgen-${{ inputs.version }}-vanilla-data
-          path: generated/${{ inputs.version }}/vanilla-data
+          name: protocolgen-${{ env.VANILLA_VERSION }}-vanilla-data
+          path: generated/${{ env.VANILLA_VERSION }}/vanilla-data
           if-no-files-found: ignore

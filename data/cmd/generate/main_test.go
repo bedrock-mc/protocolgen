@@ -40,7 +40,7 @@ func TestRunUsesLockedIdentities(t *testing.T) {
 		t.Fatal(err)
 	}
 	for key, want := range map[string]string{
-		"cloudburst_ref": "locked-cloudburst", "bds_version": "locked-bds",
+		"cloudburst_ref": strings.Repeat("1", 40), "bds_version": "locked-bds",
 		"source_lock_sha256": digest,
 	} {
 		if manifest[key] != want {
@@ -74,12 +74,13 @@ func lockedFixture(t *testing.T) (lockPath, cloudburst, bds string) {
 		t.Fatal(err)
 	}
 	lock := source.Lock{
-		SchemaVersion: 1, MinecraftVersion: "fixture", ProtocolVersion: 1,
+		SchemaVersion: 2, Release: "1.26.51",
+		Upstreams: map[string]source.Upstream{"cloudburst": {Repository: "example/data", Revision: strings.Repeat("1", 40)}},
 		Inputs: map[string]source.Input{"liquid_clip_omissions": {
-			Path: "omissions.json", Revision: "locked-cloudburst", SHA256: fmt.Sprintf("%x", sha256.Sum256(omissions)),
+			Path: "omissions.json", Upstream: "cloudburst", SHA256: fmt.Sprintf("%x", sha256.Sum256(omissions)),
 		}},
 		Semantic: source.SemanticInputs{
-			CloudburstRef: "locked-cloudburst", BDSVersion: "locked-bds",
+			Cloudburst: "cloudburst", BDSVersion: "locked-bds",
 			CloudburstFiles: cloudburstFiles, BDSFiles: bdsFiles,
 		},
 	}

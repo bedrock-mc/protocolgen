@@ -68,14 +68,20 @@ availability.
 ## Generation and API ownership
 
 [Authored generators and source locks](../../data/README.md) live in `data/`.
-Run both generators there when changing the release. `*_generated.go` files
+Run all generators there when changing the release. `*_generated.go` files
 are owned by the generator named in their header. The small type, lookup and
 test files beside those values are authored API code and may be edited.
 `release.json` belongs to runtime generation; `semantic_sources.json` belongs
-to semantic generation. Each preserves the other's outputs. Any source-lock
-change requires both generators: catalog tests compare their complete lock
+to semantic generation. Each preserves outputs owned by the other generators. Any source-lock
+change requires all generators: catalog tests compare their complete lock
 hashes and reject a partial update.
 
 These values are semantic projections, not complete game packs. Raw BDS packs,
 textures, structures, localization files and executables are not included.
 See [NOTICE.md](NOTICE.md) for attribution.
+
+The `registry` package contains normalized NBT payloads for block states, data-driven
+blocks and complete item registry entries. Accessors return fresh byte slices.
+Consumers decode them with their own NBT library; this module remains dependency-free.
+`ProtocolSnapshot` and `ReleaseChannel` connect the active catalog to its codec
+snapshot without confusing preview and retail labels.

@@ -5,6 +5,42 @@ on:
   pull_request:
 
 jobs:
+  releases:
+    runs-on: ubuntu-latest
+    outputs:
+      rust: ${{ steps.matrix.outputs.rust }}
+      captures: ${{ steps.matrix.outputs.captures }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check release relationships and select supported builds
+        id: matrix
+        run: |
+          python3 tools/releases.py
+          echo "rust=$(jq -c '[.releases[].snapshot]' data/source/releases.json)" >> "$GITHUB_OUTPUT"
+          echo "captures=$(jq -c '[.releases[] | select(.capture != null) | .snapshot]' data/source/releases.json)" >> "$GITHUB_OUTPUT"
+
+  capture-contracts:
+    needs: releases
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: ${{ fromJSON(needs.releases.outputs.captures) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+          cache: false
+      - name: Validate committed capture contract without starting BDS
+        env:
+          VERSION: ${{ matrix.version }}
+        run: |
+          mapfile -t go_args < <(jq -r --arg version "$VERSION" '.releases[$version].capture.go_args[]' data/source/releases.json)
+          go -C vanilla-data run "${go_args[@]}" ./cmd/vanilla-data \
+            -manifest "../generated/$VERSION/manifest.json" \
+            -source "../generated/$VERSION/vanilla-source.json" -validate-only
+          go -C vanilla-data test "${go_args[@]}" ./...
+
   data:
     runs-on: ubuntu-latest
     steps:
@@ -19,10 +55,11 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$CLOUDBURST_DIR"
-          revision=$(jq -er '.semantic.cloudburst_ref' data/source/lock.json)
+          revision=$(jq -er '.upstreams[.semantic.cloudburst].revision' data/source/lock.json)
+          repository=$(jq -er '.upstreams[.semantic.cloudburst].repository' data/source/lock.json)
           for name in blocks.json stripped_biome_definitions.json voxel_shapes.json; do
             curl --fail --location --retry 3 --max-time 120 \
-              "https://raw.githubusercontent.com/CloudburstMC/Data/$revision/$name" \
+              "https://raw.githubusercontent.com/$repository/$revision/$name" \
               --output "$CLOUDBURST_DIR/$name"
           done
       - name: Test shared game data
@@ -33,9 +70,10 @@ jobs:
           go -C data vet ./...
           go -C generated/data test ./...
           go -C generated/data vet ./...
-      - name: Verify runtime item generation
+      - name: Verify runtime item and registry generation
         run: |
           go -C data run ./cmd/runtimegen
+          go -C data run ./cmd/registrygen
           git diff --exit-code -- generated/data
           test -z "$(git ls-files --others --exclude-standard -- generated/data)"
 
@@ -144,10 +182,11 @@ jobs:
           fi
 
   rust:
+    needs: releases
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        version: ['1.26.40', '1.26.44', '1.26.50', '1.26.51']
+        version: ${{ fromJSON(needs.releases.outputs.rust) }}
     defaults:
       run:
         working-directory: generated/${{ matrix.version }}/rust

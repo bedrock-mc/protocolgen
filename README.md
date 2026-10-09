@@ -93,3 +93,8 @@ More detail: [docs/protocolgen-v2.md](docs/protocolgen-v2.md) covers the manifes
 model, corrections and adjudications;
 [docs/gophertunnel-gap-1.26.51.md](docs/gophertunnel-gap-1.26.51.md) lists the
 remaining differences from gophertunnel.
+
+The machine-readable [release index](data/source/releases.json) connects game
+labels and channels to codec snapshots, capture support and tooling defaults.
+The shared data lock selects one of these records. Use its snapshot relationship
+when choosing codecs; the same game label can appear in preview and retail data.

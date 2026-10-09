@@ -25,7 +25,7 @@ func TestLockedCloudburstOutput(t *testing.T) {
 	if err := inputs.ValidateCloudburst(dir); err != nil {
 		t.Fatal(err)
 	}
-	if inputs.Lock.Inputs["liquid_clip_omissions"].Revision != inputs.Lock.Semantic.CloudburstRef {
+	if inputs.Revision("liquid_clip_omissions") != inputs.Lock.CloudburstRevision() {
 		t.Fatal("liquid clip omissions must match the Cloudburst revision")
 	}
 	encoded, err := inputs.Read(context.Background(), "liquid_clip_omissions", "")

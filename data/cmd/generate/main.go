@@ -46,7 +46,7 @@ func run(lockPath, cache, cloudburstDir, bdsDir, outputDir string) (generator.St
 	if err := sources.ValidateSemantic(cloudburstDir, bdsDir); err != nil {
 		return generator.Stats{}, err
 	}
-	if sources.Lock.Inputs["liquid_clip_omissions"].Revision != sources.Lock.Semantic.CloudburstRef {
+	if sources.Revision("liquid_clip_omissions") != sources.Lock.CloudburstRevision() {
 		return generator.Stats{}, fmt.Errorf("liquid clip omissions must match the Cloudburst revision")
 	}
 	omitted, err := sources.Read(context.Background(), "liquid_clip_omissions", cache)
@@ -64,7 +64,7 @@ func run(lockPath, cache, cloudburstDir, bdsDir, outputDir string) (generator.St
 	files, stats, err := generator.Generate(generator.Config{
 		CloudburstDir:       cloudburstDir,
 		BDSDir:              bdsDir,
-		CloudburstRef:       sources.Lock.Semantic.CloudburstRef,
+		CloudburstRef:       sources.Lock.CloudburstRevision(),
 		BDSVersion:          sources.Lock.Semantic.BDSVersion,
 		LiquidClipOmissions: omissions,
 		SourceLockSHA256:    digest,

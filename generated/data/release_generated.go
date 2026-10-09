@@ -8,6 +8,12 @@ const MinecraftVersion = "1.26.50"
 // ProtocolVersion is the protocol used by the target release.
 const ProtocolVersion = 2193
 
+// ProtocolSnapshot identifies the compatible generated codec directory.
+const ProtocolSnapshot = "1.26.51"
+
+// ReleaseChannel distinguishes retail labels from preview labels.
+const ReleaseChannel = "retail"
+
 // SourceLockSHA256 identifies every pinned input in the source lock.
-// It is the SHA-256 of json.Marshal(source.Lock), without indentation.
-const SourceLockSHA256 = "4b3dcf5750c842573a096bf1b3fde0f017cd1311fe625cd55c2924a8f94bd390"
+// It includes the resolved release record as well as every input identity.
+const SourceLockSHA256 = "9c923a9a833d7336e7a1a0db11f6ed9c2da83c91d33167af01f9aaf946da7452"
