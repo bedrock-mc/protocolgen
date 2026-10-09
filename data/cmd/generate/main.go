@@ -1,5 +1,5 @@
 // Command generate converts pinned Cloudburst and vanilla BDS inputs into the
-// stable Go packages in this module.
+// active generated/data catalog.
 package main
 
 import (
@@ -17,7 +17,7 @@ func main() {
 	lock := flag.String("lock", "", "source lock path; defaults to the bundled release")
 	cloudburst := flag.String("cloudburst", "", "path to the locked CloudburstMC/Data files")
 	bds := flag.String("bds", "", "path to the locked Bedrock Dedicated Server inputs")
-	output := flag.String("out", ".", "data module root to write")
+	output := flag.String("out", "../generated/data", "generated catalog root")
 	cacheRoot, _ := os.UserCacheDir()
 	cache := flag.String("cache", filepath.Join(cacheRoot, "protocolgen-data"), "authenticated input cache")
 	flag.Parse()
@@ -58,16 +58,21 @@ func run(lockPath, cache, cloudburstDir, bdsDir, outputDir string) (generator.St
 	if err := file.Close(); err != nil {
 		return generator.Stats{}, err
 	}
+	digest, err := sources.Lock.SHA256()
+	if err != nil {
+		return generator.Stats{}, err
+	}
 	files, stats, err := generator.Generate(generator.Config{
-		CloudburstDir:   cloudburstDir,
-		BDSDir:          bdsDir,
-		CloudburstRef:   sources.Lock.Semantic.CloudburstRef,
-		BDSVersion:      sources.Lock.Semantic.BDSVersion,
-		BlockShapesPath: file.Name(),
-		BlockShapesRef:  sources.Lock.Inputs["block_shapes"].Revision,
+		CloudburstDir:    cloudburstDir,
+		BDSDir:           bdsDir,
+		CloudburstRef:    sources.Lock.Semantic.CloudburstRef,
+		BDSVersion:       sources.Lock.Semantic.BDSVersion,
+		BlockShapesPath:  file.Name(),
+		BlockShapesRef:   sources.Lock.Inputs["block_shapes"].Revision,
+		SourceLockSHA256: digest,
 	})
 	if err != nil {
 		return generator.Stats{}, err
 	}
-	return stats, generator.Write(outputDir, files)
+	return stats, generator.Write(outputDir, generator.GeneratedMarker, files)
 }

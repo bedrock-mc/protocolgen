@@ -3,12 +3,12 @@ package data_test
 import (
 	"testing"
 
-	"github.com/bedrock-mc/protocolgen/data"
-	"github.com/bedrock-mc/protocolgen/data/biome"
-	"github.com/bedrock-mc/protocolgen/data/block"
-	"github.com/bedrock-mc/protocolgen/data/entity"
-	"github.com/bedrock-mc/protocolgen/data/item"
-	"github.com/bedrock-mc/protocolgen/data/voxelshape"
+	"github.com/bedrock-mc/protocolgen/generated/data"
+	"github.com/bedrock-mc/protocolgen/generated/data/biome"
+	"github.com/bedrock-mc/protocolgen/generated/data/block"
+	"github.com/bedrock-mc/protocolgen/generated/data/entity"
+	"github.com/bedrock-mc/protocolgen/generated/data/item"
+	"github.com/bedrock-mc/protocolgen/generated/data/voxelshape"
 )
 
 // TestGeneratedCountsAndIndexes verifies cross-package data references.

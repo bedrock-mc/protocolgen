@@ -8,13 +8,14 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/bedrock-mc/protocolgen/data/internal/generator"
 	"github.com/bedrock-mc/protocolgen/data/internal/runtimegen"
 	"github.com/bedrock-mc/protocolgen/data/source"
 )
 
 func main() {
 	lock := flag.String("lock", "", "source lock path; defaults to the bundled release")
-	out := flag.String("out", "item/runtime_generated.go", "generated catalog output")
+	out := flag.String("out", "../generated/data", "generated catalog root")
 	cacheRoot, _ := os.UserCacheDir()
 	cache := flag.String("cache", filepath.Join(cacheRoot, "protocolgen-data"), "authenticated input cache")
 	flag.Parse()
@@ -34,5 +35,10 @@ func run(lock, output, cache string) error {
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(output, data, 0o644)
+	files, err := runtimegen.Release(sources.Lock)
+	if err != nil {
+		return err
+	}
+	files["item/runtime_generated.go"] = data
+	return generator.Write(output, runtimegen.GeneratedMarker, files)
 }

@@ -241,10 +241,13 @@ BDS_DIR ?=
 test-data:
 	$(GO) -C data test ./...
 	$(GO) -C data vet ./...
+	$(GO) -C generated/data test ./...
+	$(GO) -C generated/data vet ./...
 
 generate-data:
-	$(GO) -C data run ./cmd/generate -cloudburst "$(CLOUDBURST_DIR)" -bds "$(BDS_DIR)" -out .
+	$(GO) -C data run ./cmd/generate -cloudburst "$(CLOUDBURST_DIR)" -bds "$(BDS_DIR)"
 	$(GO) -C data run ./cmd/runtimegen
 
 verify-data: generate-data
-	git diff --exit-code -- data
+	git diff --exit-code -- generated/data
+	@test -z "$$(git ls-files --others --exclude-standard -- generated/data)" || (echo "generation added untracked catalog files" >&2; exit 1)

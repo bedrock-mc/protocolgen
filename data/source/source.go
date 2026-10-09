@@ -37,6 +37,16 @@ type Lock struct {
 	Semantic         SemanticInputs   `json:"semantic"`
 }
 
+// SHA256 identifies the complete lock using its compact JSON encoding.
+func (l Lock) SHA256() (string, error) {
+	canonical, err := json.Marshal(l)
+	if err != nil {
+		return "", err
+	}
+	digest := sha256.Sum256(canonical)
+	return hex.EncodeToString(digest[:]), nil
+}
+
 // Sources resolves files relative to a lock and verifies every input digest.
 type Sources struct {
 	Lock Lock

@@ -31,8 +31,17 @@ func TestRunUsesLockedIdentities(t *testing.T) {
 	if err := json.Unmarshal(data, &manifest); err != nil {
 		t.Fatal(err)
 	}
+	locked, err := source.Open(lockPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	digest, err := locked.Lock.SHA256()
+	if err != nil {
+		t.Fatal(err)
+	}
 	for key, want := range map[string]string{
 		"cloudburst_ref": "locked-cloudburst", "bds_version": "locked-bds", "block_shapes_ref": "locked-shapes",
+		"source_lock_sha256": digest,
 	} {
 		if manifest[key] != want {
 			t.Errorf("generated %s = %v, want %s", key, manifest[key], want)

@@ -17,10 +17,13 @@ jobs:
         run: |
           go -C data test ./...
           go -C data vet ./...
+          go -C generated/data test ./...
+          go -C generated/data vet ./...
       - name: Verify runtime item generation
         run: |
           go -C data run ./cmd/runtimegen
-          git diff --exit-code -- data
+          git diff --exit-code -- generated/data
+          test -z "$(git ls-files --others --exclude-standard -- generated/data)"
 
   differential:
     runs-on: ubuntu-latest
@@ -119,7 +122,12 @@ jobs:
           go -C vanilla-data vet ./...
 
       - name: Check formatting
-        run: test -z "$(git ls-files -z '*.go' ':!generated/**' | xargs -0 gofmt -l)"
+        run: |
+          unformatted="$(git ls-files -z '*.go' ':!generated/**' | xargs -0 gofmt -l)"
+          if [ -n "$unformatted" ]; then
+            printf '%s\n' "$unformatted"
+            exit 1
+          fi
 
   rust:
     runs-on: ubuntu-latest

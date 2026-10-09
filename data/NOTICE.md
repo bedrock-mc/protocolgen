@@ -17,7 +17,7 @@ The semantic values are derived from:
 - Resource inputs from [Mojang/bedrock-samples](https://github.com/Mojang/bedrock-samples)
 
 The source revisions and versions are recorded in
-[`semantic_sources.json`](semantic_sources.json), with input digests in
+[`semantic_sources.json`](../generated/data/semantic_sources.json), with input digests in
 [`source/lock.json`](source/lock.json). Upstream data and Minecraft
 materials remain subject to their respective terms. No full BDS source pack,
 raw generated source catalog or executable is included in this module.

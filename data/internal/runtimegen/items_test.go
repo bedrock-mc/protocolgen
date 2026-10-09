@@ -5,25 +5,22 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
-	"reflect"
 	"strings"
 	"testing"
-
-	"github.com/bedrock-mc/protocolgen/data/item"
 )
 
 // runtimeFixture supplies independent registry, property and supplemental-tag inputs.
 func runtimeFixture() (map[string]RegistryEntry, map[string]Properties, map[string][]string, Corrections) {
 	return map[string]RegistryEntry{
-			"minecraft:apple": {RuntimeID: 1, Version: 2},
-			"minecraft:new":   {RuntimeID: 2, ComponentBased: true},
-		}, map[string]Properties{
-			"minecraft:apple": {MaxStackSize: 64},
-			"minecraft:new":   {Tags: []string{"minecraft:harness"}},
-		}, map[string][]string{
-			"minecraft:allow_offhand": {"minecraft:apple"},
-			"minecraft:head":          {"minecraft:apple"},
-		}, Corrections{StackSizes: map[string]int{"minecraft:new": 16}, Offhand: []string{"minecraft:new"}, Evidence: map[string]string{"fixture": "synthetic"}}
+		"minecraft:apple": {RuntimeID: 1, Version: 2},
+		"minecraft:new":   {RuntimeID: 2, ComponentBased: true},
+	}, map[string]Properties{
+		"minecraft:apple": {MaxStackSize: 64},
+		"minecraft:new":   {Tags: []string{"minecraft:harness"}},
+	}, map[string][]string{
+		"minecraft:allow_offhand": {"minecraft:apple"},
+		"minecraft:head":          {"minecraft:apple"},
+	}, Corrections{StackSizes: map[string]int{"minecraft:new": 16}, Offhand: []string{"minecraft:new"}, Evidence: map[string]string{"fixture": "synthetic"}}
 }
 
 func TestRuntimeCatalogCombinesSourcesDeterministically(t *testing.T) {
@@ -51,24 +48,63 @@ func TestRuntimeGeneratorHandlesEverySchemaField(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	schema := reflect.TypeFor[item.Runtime]()
+	// Read the sibling catalog schema without making either module import the other.
+	definition, err := parser.ParseFile(token.NewFileSet(), "../../../generated/data/item/runtime.go", nil, 0)
+	if err != nil {
+		t.Fatalf("read Runtime schema from the repository checkout: %v", err)
+	}
+	schema := make(map[string]bool)
+	ast.Inspect(definition, func(node ast.Node) bool {
+		spec, ok := node.(*ast.TypeSpec)
+		if !ok || spec.Name.Name != "Runtime" {
+			return true
+		}
+		structure, ok := spec.Type.(*ast.StructType)
+		if !ok {
+			t.Fatal("Runtime must be a struct")
+		}
+		for _, field := range structure.Fields.List {
+			if len(field.Names) == 0 {
+				t.Fatal("Runtime has an embedded field that the generator cannot handle")
+			}
+			for _, name := range field.Names {
+				schema[name.Name] = true
+			}
+		}
+		return false
+	})
+	if len(schema) == 0 {
+		t.Fatal("Runtime schema was not found or has no fields")
+	}
+	rows := 0
 	ast.Inspect(file, func(node ast.Node) bool {
 		literal, ok := node.(*ast.CompositeLit)
 		if !ok || literal.Type != nil {
 			return true
 		}
+		rows++
 		fields := make(map[string]bool)
 		for _, element := range literal.Elts {
-			pair := element.(*ast.KeyValueExpr)
-			fields[pair.Key.(*ast.Ident).Name] = true
+			pair, ok := element.(*ast.KeyValueExpr)
+			if !ok {
+				t.Fatal("Runtime rows must name every field")
+			}
+			name := pair.Key.(*ast.Ident).Name
+			if !schema[name] {
+				t.Errorf("generator emits unknown Runtime.%s", name)
+			}
+			fields[name] = true
 		}
-		for i := range schema.NumField() {
-			if name := schema.Field(i).Name; !fields[name] {
+		for name := range schema {
+			if !fields[name] {
 				t.Errorf("generator silently omitted Runtime.%s", name)
 			}
 		}
 		return false
 	})
+	if rows != len(r) {
+		t.Fatalf("checked %d Runtime rows, want %d", rows, len(r))
+	}
 }
 
 func TestRuntimeCatalogRejectsMissingAndStaleFacts(t *testing.T) {
