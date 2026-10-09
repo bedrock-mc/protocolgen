@@ -10,4 +10,4 @@ const ProtocolVersion = 2193
 
 // SourceLockSHA256 identifies every pinned input in the source lock.
 // It is the SHA-256 of json.Marshal(source.Lock), without indentation.
-const SourceLockSHA256 = "f8274d33814ca73c468a495ba0f4861d19df4ae15b88a72deb666cf9048d2a3a"
+const SourceLockSHA256 = "4b3dcf5750c842573a096bf1b3fde0f017cd1311fe625cd55c2924a8f94bd390"

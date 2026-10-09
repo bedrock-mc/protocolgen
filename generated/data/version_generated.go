@@ -7,13 +7,13 @@ const (
 	CloudburstRef = "659ce1e2eee3a67045693f4fd5515c6ccf571953"
 	BDSVersion    = "1.26.32.2"
 	// SemanticSourceLockSHA256 identifies the lock used for semantic generation.
-	SemanticSourceLockSHA256 = "f8274d33814ca73c468a495ba0f4861d19df4ae15b88a72deb666cf9048d2a3a"
+	SemanticSourceLockSHA256 = "4b3dcf5750c842573a096bf1b3fde0f017cd1311fe625cd55c2924a8f94bd390"
 )
 
 var GeneratedCounts = Counts{
 	BlockStates:                 22091,
 	Biomes:                      89,
-	VoxelShapes:                 57,
+	VoxelShapes:                 220,
 	Entities:                    96,
 	Foods:                       38,
 	UnavailableLiquidClipShapes: 30,

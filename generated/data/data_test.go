@@ -65,8 +65,14 @@ func TestRepresentativeLookups(t *testing.T) {
 	if value, ok := biome.Lookup("minecraft:plains"); !ok || value.Temperature != 0.8 {
 		t.Fatalf("unexpected plains biome: %+v, found=%t", value, ok)
 	}
-	if value, ok := voxelshape.Lookup("minecraft:anvil"); !ok || len(value.Boxes) != 7 {
+	if value, ok := voxelshape.Lookup("minecraft:anvil"); !ok || len(value.Boxes) == 0 {
 		t.Fatalf("unexpected anvil shape: %+v, found=%t", value, ok)
+	}
+	if value, ok := voxelshape.Lookup("minecraft:unit_cube"); !ok || len(value.Boxes) != 1 || value.Boxes[0] != (voxelshape.Box{0, 0, 0, 1, 1, 1}) {
+		t.Fatalf("unexpected unit cube: %+v, found=%t", value, ok)
+	}
+	if value, ok := voxelshape.Lookup("minecraft:empty"); !ok || len(value.Boxes) != 0 {
+		t.Fatalf("unexpected empty shape: %+v, found=%t", value, ok)
 	}
 	if value, ok := entity.Lookup("minecraft:arrow"); !ok ||
 		!value.ProjectileGravity.Present || value.ProjectileGravity.Value != 0.05 {

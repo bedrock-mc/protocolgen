@@ -1,4 +1,4 @@
-// Package voxelshape provides generated shapes from the vanilla Bedrock shape pack.
+// Package voxelshape provides generated named Bedrock voxel shapes.
 package voxelshape
 
 import "sort"
@@ -6,7 +6,8 @@ import "sort"
 // Box is an axis-aligned box in block-local coordinates.
 type Box [6]float32
 
-// Shape contains one named vanilla voxel shape.
+// Shape contains one named vanilla voxel shape. Boxes cover its occupied volume;
+// their decomposition is not a stable part of the source shape identity.
 type Shape struct {
 	Name  string
 	Boxes []Box
