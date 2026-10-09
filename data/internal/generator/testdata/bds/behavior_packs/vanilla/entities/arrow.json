@@ -1,0 +1,36 @@
+{
+  "format_version": "1.26.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "minecraft:arrow",
+      "is_experimental": false,
+      "is_summonable": true,
+      "is_spawnable": false,
+      "spawn_category": "misc"
+    },
+    "components": {
+      "minecraft:collision_box": {"height": 0.25, "width": 0.25},
+      "minecraft:fire_immune": {},
+      "minecraft:physics": {},
+      "minecraft:projectile": {
+        "gravity": 0.05,
+        "power": 1.6,
+        "should_bounce": true // JSON comments occur in vanilla files.
+      },
+      "minecraft:pushable": {
+        "is_pushable": false,
+        "is_pushable_by_piston": true
+      }
+    },
+    "component_groups": {
+      "test:armed": {
+        "minecraft:attack": {"damage": 2}
+      }
+    },
+    "events": {
+      "test:arm": {
+        "add": {"component_groups": ["test:armed"]}
+      }
+    }
+  }
+}

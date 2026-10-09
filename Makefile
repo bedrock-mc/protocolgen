@@ -232,3 +232,19 @@ gophertunnel-layout:
 		-layout $(LAYOUT_TARGET)/gophertunnel-layout.json \
 		-out build/gophertunnel-layout \
 		-protocol-import protocolgen/build/gophertunnel-layout/protocol
+
+CLOUDBURST_DIR ?=
+BDS_DIR ?=
+
+.PHONY: test-data generate-data verify-data
+
+test-data:
+	$(GO) -C data test ./...
+	$(GO) -C data vet ./...
+
+generate-data:
+	$(GO) -C data run ./cmd/generate -cloudburst "$(CLOUDBURST_DIR)" -bds "$(BDS_DIR)" -out .
+	$(GO) -C data run ./cmd/runtimegen
+
+verify-data: generate-data
+	git diff --exit-code -- data

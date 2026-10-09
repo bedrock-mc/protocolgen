@@ -1,0 +1,18 @@
+{
+  "format_version": "1.26.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "minecraft:donkey",
+      "is_summonable": true,
+      "is_spawnable": true
+    },
+    "components": {
+      "minecraft:health": {
+        "value": {"range_min": 15, "range_max": 30}
+      },
+      "minecraft:movement": {
+        "value": {"range_min": 0.1125, "range_max": 0.3375}
+      }
+    }
+  }
+}

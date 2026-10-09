@@ -3,6 +3,11 @@
 Turns Mojang and Endstone's Bedrock protocol docs into one version-locked
 manifest, then generates typed Go and Rust packet code from it.
 
+The [`data`](data/README.md) module also owns shared game-data generation and
+the Go catalogs consumed by servers and clients. Source locks, generators and
+their output live in this repository; consumers import
+`github.com/bedrock-mc/protocolgen/data` without the protocol tooling.
+
 The two doc sources disagree with each other and are each individually wrong
 sometimes. protocolgen pins both, diffs every wire field, and refuses to
 guess: a disagreement is resolved only by a fingerprinted correction or

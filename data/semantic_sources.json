@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "cloudburst_ref": "fb969c547236d87a17181941cd585a0eb18f7ceb",
+  "bds_version": "1.26.32.2",
+  "block_shapes_ref": "59d4007e322a0acf2b0add59133c81e1f7e4c501",
+  "counts": {
+    "block_states": 16913,
+    "biomes": 88,
+    "voxel_shapes": 57,
+    "entities": 96,
+    "foods": 38
+  }
+}

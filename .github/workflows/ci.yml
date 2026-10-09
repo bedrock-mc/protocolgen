@@ -5,6 +5,23 @@ on:
   pull_request:
 
 jobs:
+  data:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.26.x'
+          cache: false
+      - name: Test shared game data
+        run: |
+          go -C data test ./...
+          go -C data vet ./...
+      - name: Verify runtime item generation
+        run: |
+          go -C data run ./cmd/runtimegen
+          git diff --exit-code -- data
+
   differential:
     runs-on: ubuntu-latest
     steps:
