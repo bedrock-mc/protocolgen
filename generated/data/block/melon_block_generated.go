@@ -9,5 +9,5 @@ var MelonBlock = Block{
 }
 
 var melonBlockStates = [...]State{
-	{Hash: 3404388875, Block: 152, Properties: 371},
+	{Hash: 3404388875, Block: 165, Properties: 736},
 }

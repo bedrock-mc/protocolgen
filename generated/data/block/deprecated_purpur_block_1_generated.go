@@ -9,7 +9,7 @@ var DeprecatedPurpurBlock1 = Block{
 }
 
 var deprecatedPurpurBlock1States = [...]State{
-	{Hash: 2460413207, Block: 1027, Properties: 1277},
-	{Hash: 1405106636, Block: 1027, Properties: 1277},
-	{Hash: 3515719778, Block: 1027, Properties: 1277},
+	{Hash: 2460413207, Block: 1124, Properties: 2373},
+	{Hash: 1405106636, Block: 1124, Properties: 2373},
+	{Hash: 3515719778, Block: 1124, Properties: 2373},
 }

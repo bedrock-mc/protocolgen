@@ -9,6 +9,6 @@ var MossyCobblestoneSlab = Block{
 }
 
 var mossyCobblestoneSlabStates = [...]State{
-	{Hash: 102958971, Block: 416, Properties: 829},
-	{Hash: 3533258148, Block: 416, Properties: 830},
+	{Hash: 102958971, Block: 459, Properties: 1580},
+	{Hash: 3533258148, Block: 459, Properties: 1581},
 }

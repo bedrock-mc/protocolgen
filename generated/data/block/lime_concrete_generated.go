@@ -9,5 +9,5 @@ var LimeConcrete = Block{
 }
 
 var limeConcreteStates = [...]State{
-	{Hash: 2830558173, Block: 543, Properties: 992},
+	{Hash: 2830558173, Block: 593, Properties: 1904},
 }

@@ -9,5 +9,5 @@ var EndBricks = Block{
 }
 
 var endBricksStates = [...]State{
-	{Hash: 2704849983, Block: 105, Properties: 284},
+	{Hash: 2704849983, Block: 115, Properties: 579},
 }

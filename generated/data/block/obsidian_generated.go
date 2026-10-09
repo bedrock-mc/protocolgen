@@ -9,5 +9,5 @@ var Obsidian = Block{
 }
 
 var obsidianStates = [...]State{
-	{Hash: 2781850042, Block: 166, Properties: 401},
+	{Hash: 2781850042, Block: 180, Properties: 792},
 }

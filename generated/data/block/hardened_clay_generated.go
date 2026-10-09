@@ -9,5 +9,5 @@ var HardenedClay = Block{
 }
 
 var hardenedClayStates = [...]State{
-	{Hash: 3957983297, Block: 184, Properties: 437},
+	{Hash: 3957983297, Block: 198, Properties: 899},
 }

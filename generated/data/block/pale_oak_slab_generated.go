@@ -9,6 +9,6 @@ var PaleOakSlab = Block{
 }
 
 var paleOakSlabStates = [...]State{
-	{Hash: 653744680, Block: 462, Properties: 865},
-	{Hash: 1985245301, Block: 462, Properties: 866},
+	{Hash: 653744680, Block: 508, Properties: 1655},
+	{Hash: 1985245301, Block: 508, Properties: 1656},
 }

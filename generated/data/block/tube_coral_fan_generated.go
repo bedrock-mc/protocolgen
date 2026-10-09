@@ -9,6 +9,6 @@ var TubeCoralFan = Block{
 }
 
 var tubeCoralFanStates = [...]State{
-	{Hash: 1658024058, Block: 84, Properties: 214},
-	{Hash: 1596549235, Block: 84, Properties: 214},
+	{Hash: 1658024058, Block: 93, Properties: 430},
+	{Hash: 1596549235, Block: 93, Properties: 430},
 }

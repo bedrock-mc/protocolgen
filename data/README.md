@@ -30,7 +30,7 @@ go run ./cmd/runtimegen
 ```
 
 The runtime catalog targets Minecraft 1.26.50, protocol 2193, with 2,076 items.
-Sources include the locked registry, Allay item properties and tags, and
+Sources include the locked Cloudburst registry, Allay item properties and tags, and
 reviewed corrections. Generation rejects missing values and stale corrections.
 It writes `item/runtime_generated.go`, `release_generated.go` and `release.json`
 in one rollback-protected batch. The source-lock identity is SHA-256 over
@@ -48,8 +48,18 @@ Versions and digests come from [source/lock.json](source/lock.json). The
 semantic generator verifies both Cloudburst files and every consumed BDS JSON
 file before writing. Added, missing or changed input files fail validation.
 The independent BDS 1.26.32.2 semantic provenance is preserved; it is not a
-claim that all inputs were captured from the target runtime release. The locked
-Allay collision, outline and tint data is joined by block-state hash and name.
+claim that all inputs were captured from the target runtime release.
+Cloudburst `blocks.json` supplies all block fields, including collision, outline
+and tint; there is no separate Allay block overlay. Its pinned revision is
+`659ce1e2eee3a67045693f4fd5515c6ccf571953`, shared by the biome and runtime
+item registry inputs. The catalog contains 22,091 block states and 89 biomes.
+
+Thirty liquid-clip boxes in this extract have reversed bounds. The reviewed
+`liquid_clip_omissions` input identifies each exact name, hash and source box.
+Generation marks those fields unavailable and records them in
+`semantic_sources.json`; it never clamps them or declares them empty. New,
+changed and obsolete exceptions fail generation. Required collision and outline
+shapes remain strictly validated. Zero-volume outlines remain known-empty.
 
 Both commands accept `-cache /path/to/cache` and `-lock /path/to/lock.json`.
 Use a reviewed alternate lock to change a release; there are no independent
@@ -71,7 +81,11 @@ make verify-data CLOUDBURST_DIR=/path/to/CloudburstMC-Data BDS_DIR=/path/to/bds
 fixtures. A repository-level AST check reads the sibling catalog's `Runtime`
 struct and verifies every field is emitted without adding a module dependency
 or maintaining a second schema list. Run the generator tests from a full
-repository checkout. CI regenerates runtime data and metadata; full semantic
+repository checkout. CI downloads and authenticates the locked Cloudburst
+block/biome files, compares
+the full generated projection with the committed catalog, and regenerates runtime
+items and metadata. To run the Cloudburst check locally, set
+`PROTOCOLGEN_CLOUDBURST_DIR` when running `make test-data`. Full semantic
 regeneration additionally requires the local BDS inputs.
 
 ## Shared input access
@@ -83,3 +97,18 @@ capture tools share those pins while retaining their own processing logic.
 Raw packs, textures and executables are not published here.
 
 See [NOTICE.md](NOTICE.md) for source attribution.
+
+## Remaining sources
+
+Cloudburst's item registry covers all 2,076 items, but its component extract does
+not supply complete stack sizes or inventory capabilities. Allay item properties
+and supplemental tags remain explicit locked inputs, with reviewed corrections.
+Removing them requires a complete version-matched item extract containing stack
+limits, effective offhand acceptance and equipment-slot eligibility. Missing
+component data is not evidence for a default stack size or an unavailable slot.
+
+BDS behavior-pack inputs still supply base entity components, food and named voxel
+shapes at their independently recorded source version. The existing
+`vanilla-data/endstone` exporter is a separate route for collecting live registry
+facts from a matching BDS build; a packet registry alone does not contain all
+item capabilities. This update does not change those behavior-pack inputs.

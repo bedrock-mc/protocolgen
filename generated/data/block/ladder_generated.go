@@ -9,10 +9,10 @@ var Ladder = Block{
 }
 
 var ladderStates = [...]State{
-	{Hash: 1540239144, Block: 1347, Properties: 1992},
-	{Hash: 1478764321, Block: 1347, Properties: 1992},
-	{Hash: 1417289498, Block: 1347, Properties: 1993},
-	{Hash: 1355814675, Block: 1347, Properties: 1994},
-	{Hash: 1294339852, Block: 1347, Properties: 1995},
-	{Hash: 1232865029, Block: 1347, Properties: 1996},
+	{Hash: 1540239144, Block: 1467, Properties: 3696},
+	{Hash: 1478764321, Block: 1467, Properties: 3696},
+	{Hash: 1417289498, Block: 1467, Properties: 3697},
+	{Hash: 1355814675, Block: 1467, Properties: 3698},
+	{Hash: 1294339852, Block: 1467, Properties: 3699},
+	{Hash: 1232865029, Block: 1467, Properties: 3700},
 }

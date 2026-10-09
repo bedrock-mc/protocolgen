@@ -9,6 +9,6 @@ var PolishedTuffDoubleSlab = Block{
 }
 
 var polishedTuffDoubleSlabStates = [...]State{
-	{Hash: 785018132, Block: 378, Properties: 332},
-	{Hash: 2639716265, Block: 378, Properties: 332},
+	{Hash: 785018132, Block: 418, Properties: 1510},
+	{Hash: 2639716265, Block: 418, Properties: 1510},
 }

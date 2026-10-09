@@ -9,12 +9,12 @@ var LimeCandle = Block{
 }
 
 var limeCandleStates = [...]State{
-	{Hash: 3912107296, Block: 877, Properties: 1499},
-	{Hash: 1293713139, Block: 877, Properties: 1500},
-	{Hash: 3144957370, Block: 877, Properties: 1501},
-	{Hash: 2384070901, Block: 877, Properties: 1502},
-	{Hash: 672446571, Block: 877, Properties: 1503},
-	{Hash: 238406568, Block: 877, Properties: 1504},
-	{Hash: 4200263941, Block: 877, Properties: 1505},
-	{Hash: 1328764330, Block: 877, Properties: 1506},
+	{Hash: 3912107296, Block: 961, Properties: 2788},
+	{Hash: 1293713139, Block: 961, Properties: 2789},
+	{Hash: 3144957370, Block: 961, Properties: 2790},
+	{Hash: 2384070901, Block: 961, Properties: 2791},
+	{Hash: 672446571, Block: 961, Properties: 2792},
+	{Hash: 238406568, Block: 961, Properties: 2793},
+	{Hash: 4200263941, Block: 961, Properties: 2794},
+	{Hash: 1328764330, Block: 961, Properties: 2795},
 }

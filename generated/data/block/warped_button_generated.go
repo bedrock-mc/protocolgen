@@ -9,16 +9,16 @@ var WarpedButton = Block{
 }
 
 var warpedButtonStates = [...]State{
-	{Hash: 897130215, Block: 1054, Properties: 59},
-	{Hash: 958605038, Block: 1054, Properties: 60},
-	{Hash: 1020079861, Block: 1054, Properties: 61},
-	{Hash: 1081554684, Block: 1054, Properties: 62},
-	{Hash: 1143029507, Block: 1054, Properties: 63},
-	{Hash: 1204504330, Block: 1054, Properties: 64},
-	{Hash: 3788337082, Block: 1054, Properties: 65},
-	{Hash: 3726862259, Block: 1054, Properties: 66},
-	{Hash: 3911286728, Block: 1054, Properties: 67},
-	{Hash: 3849811905, Block: 1054, Properties: 68},
-	{Hash: 3542437790, Block: 1054, Properties: 69},
-	{Hash: 3480962967, Block: 1054, Properties: 70},
+	{Hash: 897130215, Block: 1154, Properties: 94},
+	{Hash: 958605038, Block: 1154, Properties: 95},
+	{Hash: 1020079861, Block: 1154, Properties: 96},
+	{Hash: 1081554684, Block: 1154, Properties: 97},
+	{Hash: 1143029507, Block: 1154, Properties: 98},
+	{Hash: 1204504330, Block: 1154, Properties: 99},
+	{Hash: 3788337082, Block: 1154, Properties: 100},
+	{Hash: 3726862259, Block: 1154, Properties: 101},
+	{Hash: 3911286728, Block: 1154, Properties: 102},
+	{Hash: 3849811905, Block: 1154, Properties: 103},
+	{Hash: 3542437790, Block: 1154, Properties: 104},
+	{Hash: 3480962967, Block: 1154, Properties: 105},
 }

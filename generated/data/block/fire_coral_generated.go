@@ -9,5 +9,5 @@ var FireCoral = Block{
 }
 
 var fireCoralStates = [...]State{
-	{Hash: 341687485, Block: 205, Properties: 458},
+	{Hash: 341687485, Block: 219, Properties: 923},
 }

@@ -9,5 +9,20 @@ var MagentaStainedGlassPane = Block{
 }
 
 var magentaStainedGlassPaneStates = [...]State{
-	{Hash: 3968971605, Block: 590, Properties: 49},
+	{Hash: 619983999, Block: 649, Properties: 69},
+	{Hash: 2868685242, Block: 649, Properties: 70},
+	{Hash: 1384166166, Block: 649, Properties: 71},
+	{Hash: 252190123, Block: 649, Properties: 72},
+	{Hash: 1684069562, Block: 649, Properties: 73},
+	{Hash: 1804599679, Block: 649, Properties: 74},
+	{Hash: 2381947979, Block: 649, Properties: 75},
+	{Hash: 687237110, Block: 649, Properties: 76},
+	{Hash: 3859644724, Block: 649, Properties: 77},
+	{Hash: 3923991813, Block: 649, Properties: 78},
+	{Hash: 2439472737, Block: 649, Properties: 79},
+	{Hash: 3491850848, Block: 649, Properties: 80},
+	{Hash: 2739376133, Block: 649, Properties: 81},
+	{Hash: 749293108, Block: 649, Properties: 82},
+	{Hash: 1326641408, Block: 649, Properties: 83},
+	{Hash: 1742543681, Block: 649, Properties: 84},
 }

@@ -9,10 +9,10 @@ var EndRod = Block{
 }
 
 var endRodStates = [...]State{
-	{Hash: 617576502, Block: 766, Properties: 1350},
-	{Hash: 556101679, Block: 766, Properties: 1350},
-	{Hash: 740526148, Block: 766, Properties: 1351},
-	{Hash: 679051325, Block: 766, Properties: 1351},
-	{Hash: 863475794, Block: 766, Properties: 1352},
-	{Hash: 802000971, Block: 766, Properties: 1352},
+	{Hash: 617576502, Block: 835, Properties: 2501},
+	{Hash: 556101679, Block: 835, Properties: 2501},
+	{Hash: 740526148, Block: 835, Properties: 2502},
+	{Hash: 679051325, Block: 835, Properties: 2502},
+	{Hash: 863475794, Block: 835, Properties: 2503},
+	{Hash: 802000971, Block: 835, Properties: 2503},
 }

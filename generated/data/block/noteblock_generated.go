@@ -9,5 +9,5 @@ var Noteblock = Block{
 }
 
 var noteblockStates = [...]State{
-	{Hash: 166024317, Block: 131, Properties: 331},
+	{Hash: 166024317, Block: 144, Properties: 629},
 }

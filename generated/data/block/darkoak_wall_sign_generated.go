@@ -9,10 +9,10 @@ var DarkoakWallSign = Block{
 }
 
 var darkoakWallSignStates = [...]State{
-	{Hash: 2271800461, Block: 647, Properties: 1167},
-	{Hash: 2333275284, Block: 647, Properties: 1167},
-	{Hash: 2148850815, Block: 647, Properties: 1168},
-	{Hash: 2210325638, Block: 647, Properties: 1169},
-	{Hash: 2517699753, Block: 647, Properties: 1170},
-	{Hash: 2579174576, Block: 647, Properties: 1171},
+	{Hash: 2271800461, Block: 710, Properties: 2173},
+	{Hash: 2333275284, Block: 710, Properties: 2173},
+	{Hash: 2148850815, Block: 710, Properties: 2174},
+	{Hash: 2210325638, Block: 710, Properties: 2175},
+	{Hash: 2517699753, Block: 710, Properties: 2176},
+	{Hash: 2579174576, Block: 710, Properties: 2177},
 }

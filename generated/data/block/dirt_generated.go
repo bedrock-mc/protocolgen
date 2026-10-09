@@ -9,5 +9,5 @@ var Dirt = Block{
 }
 
 var dirtStates = [...]State{
-	{Hash: 2186211206, Block: 727, Properties: 959},
+	{Hash: 2186211206, Block: 793, Properties: 1855},
 }

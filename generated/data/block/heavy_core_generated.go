@@ -9,5 +9,5 @@ var HeavyCore = Block{
 }
 
 var heavyCoreStates = [...]State{
-	{Hash: 3169785434, Block: 1087, Properties: 1789},
+	{Hash: 3169785434, Block: 1187, Properties: 3323},
 }

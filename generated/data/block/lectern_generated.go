@@ -9,12 +9,12 @@ var Lectern = Block{
 }
 
 var lecternStates = [...]State{
-	{Hash: 3354404216, Block: 983, Properties: 1649},
-	{Hash: 3137753919, Block: 983, Properties: 1649},
-	{Hash: 127930954, Block: 983, Properties: 1649},
-	{Hash: 2865516885, Block: 983, Properties: 1649},
-	{Hash: 114743491, Block: 983, Properties: 1649},
-	{Hash: 2082447348, Block: 983, Properties: 1649},
-	{Hash: 1183237525, Block: 983, Properties: 1649},
-	{Hash: 1810210314, Block: 983, Properties: 1649},
+	{Hash: 3354404216, Block: 1077, Properties: 3055},
+	{Hash: 3137753919, Block: 1077, Properties: 3055},
+	{Hash: 127930954, Block: 1077, Properties: 3055},
+	{Hash: 2865516885, Block: 1077, Properties: 3055},
+	{Hash: 114743491, Block: 1077, Properties: 3055},
+	{Hash: 2082447348, Block: 1077, Properties: 3055},
+	{Hash: 1183237525, Block: 1077, Properties: 3055},
+	{Hash: 1810210314, Block: 1077, Properties: 3055},
 }

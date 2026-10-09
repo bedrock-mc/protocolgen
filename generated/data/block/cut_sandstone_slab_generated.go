@@ -9,6 +9,6 @@ var CutSandstoneSlab = Block{
 }
 
 var cutSandstoneSlabStates = [...]State{
-	{Hash: 2263821947, Block: 663, Properties: 346},
-	{Hash: 696144548, Block: 663, Properties: 347},
+	{Hash: 2263821947, Block: 726, Properties: 681},
+	{Hash: 696144548, Block: 726, Properties: 682},
 }

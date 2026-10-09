@@ -9,5 +9,5 @@ var Tuff = Block{
 }
 
 var tuffStates = [...]State{
-	{Hash: 4100538480, Block: 132, Properties: 332},
+	{Hash: 4100538480, Block: 145, Properties: 630},
 }

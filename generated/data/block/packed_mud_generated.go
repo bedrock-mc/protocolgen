@@ -9,5 +9,5 @@ var PackedMud = Block{
 }
 
 var packedMudStates = [...]State{
-	{Hash: 4070731732, Block: 108, Properties: 287},
+	{Hash: 4070731732, Block: 119, Properties: 582},
 }

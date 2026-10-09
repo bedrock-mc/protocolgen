@@ -9,5 +9,5 @@ var BirchPlanks = Block{
 }
 
 var birchPlanksStates = [...]State{
-	{Hash: 2430443199, Block: 642, Properties: 1164},
+	{Hash: 2430443199, Block: 704, Properties: 2169},
 }

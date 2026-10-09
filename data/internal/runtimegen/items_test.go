@@ -12,15 +12,15 @@ import (
 // runtimeFixture supplies independent registry, property and supplemental-tag inputs.
 func runtimeFixture() (map[string]RegistryEntry, map[string]Properties, map[string][]string, Corrections) {
 	return map[string]RegistryEntry{
-		"minecraft:apple": {RuntimeID: 1, Version: 2},
-		"minecraft:new":   {RuntimeID: 2, ComponentBased: true},
-	}, map[string]Properties{
-		"minecraft:apple": {MaxStackSize: 64},
-		"minecraft:new":   {Tags: []string{"minecraft:harness"}},
-	}, map[string][]string{
-		"minecraft:allow_offhand": {"minecraft:apple"},
-		"minecraft:head":          {"minecraft:apple"},
-	}, Corrections{StackSizes: map[string]int{"minecraft:new": 16}, Offhand: []string{"minecraft:new"}, Evidence: map[string]string{"fixture": "synthetic"}}
+			"minecraft:apple": {RuntimeID: 1, Version: 2},
+			"minecraft:new":   {RuntimeID: 2, ComponentBased: true},
+		}, map[string]Properties{
+			"minecraft:apple": {MaxStackSize: 64},
+			"minecraft:new":   {Tags: []string{"minecraft:harness"}},
+		}, map[string][]string{
+			"minecraft:allow_offhand": {"minecraft:apple"},
+			"minecraft:head":          {"minecraft:apple"},
+		}, Corrections{StackSizes: map[string]int{"minecraft:new": 16}, Offhand: []string{"minecraft:new"}, Evidence: map[string]string{"fixture": "synthetic"}}
 }
 
 func TestRuntimeCatalogCombinesSourcesDeterministically(t *testing.T) {
@@ -139,5 +139,24 @@ func TestRuntimeCatalogRejectsMissingAndStaleFacts(t *testing.T) {
 				t.Fatalf("error = %v, want %q", err, scenario.want)
 			}
 		})
+	}
+}
+
+// TestDecodeRegistry preserves zero values and rejects incomplete or duplicate identities.
+func TestDecodeRegistry(t *testing.T) {
+	const valid = `{"name":"minecraft:air","id":-158,"version":0,"componentBased":false}`
+	rows, err := decodeRegistry([]byte(`[` + valid + `]`))
+	if err != nil || len(rows) != 1 || rows["minecraft:air"] != (RegistryEntry{RuntimeID: -158}) {
+		t.Fatalf("registry = %v, error = %v", rows, err)
+	}
+	for _, input := range []string{
+		`[` + valid + `,` + valid + `]`,
+		`[{"name":"minecraft:air","id":-158,"version":0}]`,
+		`[{"name":"minecraft:air","componentBased":false,"version":0}]`,
+		`[{"name":"minecraft:air","id":-158,"componentBased":false}]`,
+	} {
+		if _, err := decodeRegistry([]byte(input)); err == nil {
+			t.Fatalf("accepted invalid registry %s", input)
+		}
 	}
 }

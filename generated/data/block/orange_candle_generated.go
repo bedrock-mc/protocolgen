@@ -9,12 +9,12 @@ var OrangeCandle = Block{
 }
 
 var orangeCandleStates = [...]State{
-	{Hash: 910120863, Block: 145, Properties: 354},
-	{Hash: 4231888236, Block: 145, Properties: 355},
-	{Hash: 2185439649, Block: 145, Properties: 356},
-	{Hash: 3642261078, Block: 145, Properties: 357},
-	{Hash: 4149781588, Block: 145, Properties: 358},
-	{Hash: 992227511, Block: 145, Properties: 359},
-	{Hash: 1130133078, Block: 145, Properties: 360},
-	{Hash: 402600353, Block: 145, Properties: 361},
+	{Hash: 910120863, Block: 158, Properties: 689},
+	{Hash: 4231888236, Block: 158, Properties: 690},
+	{Hash: 2185439649, Block: 158, Properties: 691},
+	{Hash: 3642261078, Block: 158, Properties: 692},
+	{Hash: 4149781588, Block: 158, Properties: 693},
+	{Hash: 992227511, Block: 158, Properties: 694},
+	{Hash: 1130133078, Block: 158, Properties: 695},
+	{Hash: 402600353, Block: 158, Properties: 696},
 }

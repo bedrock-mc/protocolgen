@@ -18,5 +18,5 @@ var Savanna = Biome{
 	FoliageSnow:       0,
 	MapWaterColorRGBA: 0x2c8b9ca5,
 	Rain:              false,
-	Tags:              []string{"animal", "monster", "overworld", "savanna", "spawns_savanna_mobs", "spawns_warm_variant_farm_animals"},
+	Tags:              []string{"animal", "has_structure_abandoned_camp", "monster", "overworld", "savanna", "spawns_savanna_mobs", "spawns_warm_variant_farm_animals"},
 }

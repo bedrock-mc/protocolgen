@@ -9,7 +9,7 @@ var MangroveLog = Block{
 }
 
 var mangroveLogStates = [...]State{
-	{Hash: 2310636398, Block: 133, Properties: 333},
-	{Hash: 3365942969, Block: 133, Properties: 334},
-	{Hash: 1255329827, Block: 133, Properties: 334},
+	{Hash: 2310636398, Block: 146, Properties: 631},
+	{Hash: 3365942969, Block: 146, Properties: 632},
+	{Hash: 1255329827, Block: 146, Properties: 632},
 }

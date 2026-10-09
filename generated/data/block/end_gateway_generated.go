@@ -9,5 +9,5 @@ var EndGateway = Block{
 }
 
 var endGatewayStates = [...]State{
-	{Hash: 1001207856, Block: 44, Properties: 120},
+	{Hash: 1001207856, Block: 48, Properties: 218},
 }

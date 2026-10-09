@@ -9,5 +9,5 @@ var DeepslateGoldOre = Block{
 }
 
 var deepslateGoldOreStates = [...]State{
-	{Hash: 360452980, Block: 830, Properties: 71},
+	{Hash: 360452980, Block: 906, Properties: 2684},
 }

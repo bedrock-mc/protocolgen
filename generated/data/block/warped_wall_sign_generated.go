@@ -9,10 +9,10 @@ var WarpedWallSign = Block{
 }
 
 var warpedWallSignStates = [...]State{
-	{Hash: 1513259154, Block: 149, Properties: 364},
-	{Hash: 1451784331, Block: 149, Properties: 364},
-	{Hash: 1636208800, Block: 149, Properties: 365},
-	{Hash: 1574733977, Block: 149, Properties: 366},
-	{Hash: 1267359862, Block: 149, Properties: 367},
-	{Hash: 1205885039, Block: 149, Properties: 368},
+	{Hash: 1513259154, Block: 162, Properties: 714},
+	{Hash: 1451784331, Block: 162, Properties: 714},
+	{Hash: 1636208800, Block: 162, Properties: 715},
+	{Hash: 1574733977, Block: 162, Properties: 716},
+	{Hash: 1267359862, Block: 162, Properties: 717},
+	{Hash: 1205885039, Block: 162, Properties: 718},
 }

@@ -9,5 +9,5 @@ var WarpedFungus = Block{
 }
 
 var warpedFungusStates = [...]State{
-	{Hash: 2872033764, Block: 111, Properties: 289},
+	{Hash: 2872033764, Block: 122, Properties: 584},
 }

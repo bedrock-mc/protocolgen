@@ -9,10 +9,10 @@ var BrownGlazedTerracotta = Block{
 }
 
 var brownGlazedTerracottaStates = [...]State{
-	{Hash: 3257085223, Block: 302, Properties: 682},
-	{Hash: 3318560046, Block: 302, Properties: 682},
-	{Hash: 3380034869, Block: 302, Properties: 682},
-	{Hash: 3441509692, Block: 302, Properties: 682},
-	{Hash: 3502984515, Block: 302, Properties: 682},
-	{Hash: 3564459338, Block: 302, Properties: 682},
+	{Hash: 3257085223, Block: 330, Properties: 1300},
+	{Hash: 3318560046, Block: 330, Properties: 1300},
+	{Hash: 3380034869, Block: 330, Properties: 1300},
+	{Hash: 3441509692, Block: 330, Properties: 1300},
+	{Hash: 3502984515, Block: 330, Properties: 1300},
+	{Hash: 3564459338, Block: 330, Properties: 1300},
 }

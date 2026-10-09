@@ -9,5 +9,5 @@ var ChiseledDeepslate = Block{
 }
 
 var chiseledDeepslateStates = [...]State{
-	{Hash: 1092855370, Block: 622, Properties: 345},
+	{Hash: 1092855370, Block: 683, Properties: 680},
 }

@@ -9,5 +9,5 @@ var BlueIce = Block{
 }
 
 var blueIceStates = [...]State{
-	{Hash: 4060150725, Block: 1001, Properties: 1698},
+	{Hash: 4060150725, Block: 1098, Properties: 3168},
 }

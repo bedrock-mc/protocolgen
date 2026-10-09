@@ -9,5 +9,5 @@ var AzureBluet = Block{
 }
 
 var azureBluetStates = [...]State{
-	{Hash: 2667808960, Block: 45, Properties: 121},
+	{Hash: 2667808960, Block: 49, Properties: 219},
 }

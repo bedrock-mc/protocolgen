@@ -9,5 +9,5 @@ var LimeTerracotta = Block{
 }
 
 var limeTerracottaStates = [...]State{
-	{Hash: 3361633435, Block: 1336, Properties: 1981},
+	{Hash: 3361633435, Block: 1455, Properties: 3687},
 }

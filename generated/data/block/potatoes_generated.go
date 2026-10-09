@@ -9,12 +9,12 @@ var Potatoes = Block{
 }
 
 var potatoesStates = [...]State{
-	{Hash: 1882730424, Block: 127, Properties: 320},
-	{Hash: 1821255601, Block: 127, Properties: 321},
-	{Hash: 1759780778, Block: 127, Properties: 322},
-	{Hash: 1698305955, Block: 127, Properties: 323},
-	{Hash: 1636831132, Block: 127, Properties: 324},
-	{Hash: 1575356309, Block: 127, Properties: 325},
-	{Hash: 1513881486, Block: 127, Properties: 326},
-	{Hash: 1452406663, Block: 127, Properties: 327},
+	{Hash: 1882730424, Block: 138, Properties: 618},
+	{Hash: 1821255601, Block: 138, Properties: 619},
+	{Hash: 1759780778, Block: 138, Properties: 620},
+	{Hash: 1698305955, Block: 138, Properties: 621},
+	{Hash: 1636831132, Block: 138, Properties: 622},
+	{Hash: 1575356309, Block: 138, Properties: 623},
+	{Hash: 1513881486, Block: 138, Properties: 624},
+	{Hash: 1452406663, Block: 138, Properties: 625},
 }

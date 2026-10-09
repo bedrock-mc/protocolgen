@@ -9,6 +9,6 @@ var TallGrass = Block{
 }
 
 var tallGrassStates = [...]State{
-	{Hash: 4175527249, Block: 889, Properties: 1522},
-	{Hash: 3120220678, Block: 889, Properties: 1523},
+	{Hash: 4175527249, Block: 975, Properties: 2841},
+	{Hash: 3120220678, Block: 975, Properties: 2842},
 }

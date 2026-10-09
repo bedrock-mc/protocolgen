@@ -9,6 +9,6 @@ var LightBlueCandleCake = Block{
 }
 
 var lightBlueCandleCakeStates = [...]State{
-	{Hash: 950416830, Block: 109, Properties: 103},
-	{Hash: 2005723401, Block: 109, Properties: 104},
+	{Hash: 950416830, Block: 120, Properties: 201},
+	{Hash: 2005723401, Block: 120, Properties: 202},
 }

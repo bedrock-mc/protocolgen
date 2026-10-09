@@ -9,5 +9,5 @@ var GoldOre = Block{
 }
 
 var goldOreStates = [...]State{
-	{Hash: 2144082742, Block: 246, Properties: 560},
+	{Hash: 2144082742, Block: 265, Properties: 1085},
 }

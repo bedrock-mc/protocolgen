@@ -9,5 +9,20 @@ var YellowStainedGlassPane = Block{
 }
 
 var yellowStainedGlassPaneStates = [...]State{
-	{Hash: 3137619159, Block: 43, Properties: 49},
+	{Hash: 1108823809, Block: 47, Properties: 69},
+	{Hash: 1872126324, Block: 47, Properties: 70},
+	{Hash: 3419313336, Block: 47, Properties: 71},
+	{Hash: 3243445861, Block: 47, Properties: 72},
+	{Hash: 933341428, Block: 47, Properties: 73},
+	{Hash: 2047608705, Block: 47, Properties: 74},
+	{Hash: 1598549045, Block: 47, Properties: 75},
+	{Hash: 2457067048, Block: 47, Properties: 76},
+	{Hash: 53517238, Block: 47, Properties: 77},
+	{Hash: 2927432895, Block: 47, Properties: 78},
+	{Hash: 179652611, Block: 47, Properties: 79},
+	{Hash: 2188139290, Block: 47, Properties: 80},
+	{Hash: 1988647999, Block: 47, Properties: 81},
+	{Hash: 992302134, Block: 47, Properties: 82},
+	{Hash: 543242474, Block: 47, Properties: 83},
+	{Hash: 3512373619, Block: 47, Properties: 84},
 }

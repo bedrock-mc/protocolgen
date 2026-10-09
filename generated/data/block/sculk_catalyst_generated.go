@@ -9,6 +9,6 @@ var SculkCatalyst = Block{
 }
 
 var sculkCatalystStates = [...]State{
-	{Hash: 4289174832, Block: 317, Properties: 707},
-	{Hash: 1049514107, Block: 317, Properties: 707},
+	{Hash: 4289174832, Block: 349, Properties: 1349},
+	{Hash: 1049514107, Block: 349, Properties: 1349},
 }

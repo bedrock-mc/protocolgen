@@ -18,5 +18,5 @@ var WarmOcean = Biome{
 	FoliageSnow:       0,
 	MapWaterColorRGBA: 0x02b0e5a5,
 	Rain:              true,
-	Tags:              []string{"fast_fishing", "high_seas", "monster", "ocean", "overworld", "spawns_warm_variant_farm_animals", "spawns_warm_variant_frogs", "warm"},
+	Tags:              []string{"fast_fishing", "high_seas", "monster", "ocean", "overworld", "spawns_warm_variant_farm_animals", "spawns_warm_variant_frogs", "temperate_ocean", "warm"},
 }

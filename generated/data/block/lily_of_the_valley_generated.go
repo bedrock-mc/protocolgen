@@ -9,5 +9,5 @@ var LilyOfTheValley = Block{
 }
 
 var lilyOfTheValleyStates = [...]State{
-	{Hash: 2096774481, Block: 77, Properties: 121},
+	{Hash: 2096774481, Block: 84, Properties: 219},
 }

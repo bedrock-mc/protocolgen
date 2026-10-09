@@ -9,5 +9,5 @@ var Prismarine = Block{
 }
 
 var prismarineStates = [...]State{
-	{Hash: 3051731495, Block: 823, Properties: 870},
+	{Hash: 3051731495, Block: 899, Properties: 1660},
 }

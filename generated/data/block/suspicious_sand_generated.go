@@ -9,12 +9,12 @@ var SuspiciousSand = Block{
 }
 
 var suspiciousSandStates = [...]State{
-	{Hash: 1099051358, Block: 276, Properties: 623},
-	{Hash: 2154357929, Block: 276, Properties: 623},
-	{Hash: 1176712705, Block: 276, Properties: 623},
-	{Hash: 121406134, Block: 276, Properties: 623},
-	{Hash: 447688324, Block: 276, Properties: 623},
-	{Hash: 1502994895, Block: 276, Properties: 623},
-	{Hash: 2395835495, Block: 276, Properties: 623},
-	{Hash: 1340528924, Block: 276, Properties: 623},
+	{Hash: 1099051358, Block: 301, Properties: 1196},
+	{Hash: 2154357929, Block: 301, Properties: 1196},
+	{Hash: 1176712705, Block: 301, Properties: 1196},
+	{Hash: 121406134, Block: 301, Properties: 1196},
+	{Hash: 447688324, Block: 301, Properties: 1196},
+	{Hash: 1502994895, Block: 301, Properties: 1196},
+	{Hash: 2395835495, Block: 301, Properties: 1196},
+	{Hash: 1340528924, Block: 301, Properties: 1196},
 }

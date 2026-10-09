@@ -9,5 +9,5 @@ var Air = Block{
 }
 
 var airStates = [...]State{
-	{Hash: 3690217760, Block: 948, Properties: 1593},
+	{Hash: 3690217760, Block: 1036, Properties: 2950},
 }

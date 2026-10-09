@@ -9,6 +9,6 @@ var ResinBrickDoubleSlab = Block{
 }
 
 var resinBrickDoubleSlabStates = [...]State{
-	{Hash: 3809740713, Block: 305, Properties: 693},
-	{Hash: 751636302, Block: 305, Properties: 693},
+	{Hash: 3809740713, Block: 333, Properties: 1311},
+	{Hash: 751636302, Block: 333, Properties: 1311},
 }

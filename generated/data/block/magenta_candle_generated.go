@@ -9,12 +9,12 @@ var MagentaCandle = Block{
 }
 
 var magentaCandleStates = [...]State{
-	{Hash: 2441941495, Block: 162, Properties: 390},
-	{Hash: 3621518564, Block: 162, Properties: 391},
-	{Hash: 3647522713, Block: 162, Properties: 392},
-	{Hash: 1134542702, Block: 162, Properties: 393},
-	{Hash: 1386634924, Block: 162, Properties: 394},
-	{Hash: 381857839, Block: 162, Properties: 395},
-	{Hash: 2592216142, Block: 162, Properties: 396},
-	{Hash: 2189849273, Block: 162, Properties: 397},
+	{Hash: 2441941495, Block: 176, Properties: 781},
+	{Hash: 3621518564, Block: 176, Properties: 782},
+	{Hash: 3647522713, Block: 176, Properties: 783},
+	{Hash: 1134542702, Block: 176, Properties: 784},
+	{Hash: 1386634924, Block: 176, Properties: 785},
+	{Hash: 381857839, Block: 176, Properties: 786},
+	{Hash: 2592216142, Block: 176, Properties: 787},
+	{Hash: 2189849273, Block: 176, Properties: 788},
 }

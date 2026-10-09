@@ -18,5 +18,5 @@ var DeepWarmOcean = Biome{
 	FoliageSnow:       0,
 	MapWaterColorRGBA: 0x02b0e5a5,
 	Rain:              true,
-	Tags:              []string{"deep", "fast_fishing", "high_seas", "monster", "ocean", "overworld", "spawns_warm_variant_farm_animals", "warm"},
+	Tags:              []string{"deep", "fast_fishing", "high_seas", "monster", "ocean", "overworld", "spawns_warm_variant_farm_animals", "temperate_ocean", "warm"},
 }

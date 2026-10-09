@@ -9,5 +9,20 @@ var OxidizedCopperBars = Block{
 }
 
 var oxidizedCopperBarsStates = [...]State{
-	{Hash: 2251200536, Block: 264, Properties: 423},
+	{Hash: 1590965534, Block: 288, Properties: 831},
+	{Hash: 1064441459, Block: 288, Properties: 832},
+	{Hash: 3727531559, Block: 288, Properties: 833},
+	{Hash: 22181442, Block: 288, Properties: 834},
+	{Hash: 167575923, Block: 288, Properties: 835},
+	{Hash: 2487831070, Block: 288, Properties: 836},
+	{Hash: 750849922, Block: 288, Properties: 837},
+	{Hash: 1346856167, Block: 288, Properties: 838},
+	{Hash: 2646272105, Block: 288, Properties: 839},
+	{Hash: 9134888, Block: 288, Properties: 840},
+	{Hash: 2672224988, Block: 288, Properties: 841},
+	{Hash: 1077488013, Block: 288, Properties: 842},
+	{Hash: 3407236648, Block: 288, Properties: 843},
+	{Hash: 3543137641, Block: 288, Properties: 844},
+	{Hash: 1806156493, Block: 288, Properties: 845},
+	{Hash: 291549596, Block: 288, Properties: 846},
 }

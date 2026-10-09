@@ -9,6 +9,6 @@ var SpruceSapling = Block{
 }
 
 var spruceSaplingStates = [...]State{
-	{Hash: 1772161361, Block: 428, Properties: 370},
-	{Hash: 716854790, Block: 428, Properties: 370},
+	{Hash: 1772161361, Block: 472, Properties: 735},
+	{Hash: 716854790, Block: 472, Properties: 735},
 }

@@ -9,5 +9,5 @@ var LimeWool = Block{
 }
 
 var limeWoolStates = [...]State{
-	{Hash: 1776245615, Block: 794, Properties: 1401},
+	{Hash: 1776245615, Block: 866, Properties: 2584},
 }

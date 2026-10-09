@@ -18,7 +18,7 @@ func TestValidateSemanticRejectsChangedInputSets(t *testing.T) {
 	}{
 		{name: "unchanged"},
 		{name: "modified Cloudburst", change: func(t *testing.T, _ *Sources, cloudburst, _ string) {
-			if err := os.WriteFile(filepath.Join(cloudburst, "block_properties.json"), []byte("[]"), 0o644); err != nil {
+			if err := os.WriteFile(filepath.Join(cloudburst, "blocks.json"), []byte("[]"), 0o644); err != nil {
 				t.Fatal(err)
 			}
 		}, want: "digest is"},

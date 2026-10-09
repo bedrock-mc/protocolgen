@@ -9,6 +9,6 @@ var CherrySapling = Block{
 }
 
 var cherrySaplingStates = [...]State{
-	{Hash: 1571067594, Block: 1059, Properties: 1760},
-	{Hash: 2626374165, Block: 1059, Properties: 1760},
+	{Hash: 1571067594, Block: 1159, Properties: 3270},
+	{Hash: 2626374165, Block: 1159, Properties: 3270},
 }

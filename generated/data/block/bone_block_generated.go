@@ -9,16 +9,16 @@ var BoneBlock = Block{
 }
 
 var boneBlockStates = [...]State{
-	{Hash: 279386582, Block: 438, Properties: 851},
-	{Hash: 2252608093, Block: 438, Properties: 851},
-	{Hash: 43988248, Block: 438, Properties: 851},
-	{Hash: 3408649351, Block: 438, Properties: 851},
-	{Hash: 1334693153, Block: 438, Properties: 851},
-	{Hash: 1197301522, Block: 438, Properties: 851},
-	{Hash: 1099294819, Block: 438, Properties: 851},
-	{Hash: 2353342780, Block: 438, Properties: 851},
-	{Hash: 3519047307, Block: 438, Properties: 851},
-	{Hash: 3381655676, Block: 438, Properties: 851},
-	{Hash: 3209907961, Block: 438, Properties: 851},
-	{Hash: 168988626, Block: 438, Properties: 851},
+	{Hash: 279386582, Block: 482, Properties: 1626},
+	{Hash: 2252608093, Block: 482, Properties: 1626},
+	{Hash: 43988248, Block: 482, Properties: 1626},
+	{Hash: 3408649351, Block: 482, Properties: 1626},
+	{Hash: 1334693153, Block: 482, Properties: 1626},
+	{Hash: 1197301522, Block: 482, Properties: 1626},
+	{Hash: 1099294819, Block: 482, Properties: 1626},
+	{Hash: 2353342780, Block: 482, Properties: 1626},
+	{Hash: 3519047307, Block: 482, Properties: 1626},
+	{Hash: 3381655676, Block: 482, Properties: 1626},
+	{Hash: 3209907961, Block: 482, Properties: 1626},
+	{Hash: 168988626, Block: 482, Properties: 1626},
 }

@@ -9,5 +9,5 @@ var InfestedCobblestone = Block{
 }
 
 var infestedCobblestoneStates = [...]State{
-	{Hash: 1889697702, Block: 406, Properties: 820},
+	{Hash: 1889697702, Block: 448, Properties: 1571},
 }

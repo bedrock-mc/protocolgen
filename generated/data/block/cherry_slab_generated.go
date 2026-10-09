@@ -9,6 +9,6 @@ var CherrySlab = Block{
 }
 
 var cherrySlabStates = [...]State{
-	{Hash: 1701598681, Block: 846, Properties: 1474},
-	{Hash: 675238238, Block: 846, Properties: 1475},
+	{Hash: 1701598681, Block: 925, Properties: 2738},
+	{Hash: 675238238, Block: 925, Properties: 2739},
 }

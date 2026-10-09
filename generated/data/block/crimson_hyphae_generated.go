@@ -9,7 +9,7 @@ var CrimsonHyphae = Block{
 }
 
 var crimsonHyphaeStates = [...]State{
-	{Hash: 2914597369, Block: 469, Properties: 872},
-	{Hash: 1859290798, Block: 469, Properties: 872},
-	{Hash: 4043644952, Block: 469, Properties: 872},
+	{Hash: 2914597369, Block: 516, Properties: 1665},
+	{Hash: 1859290798, Block: 516, Properties: 1665},
+	{Hash: 4043644952, Block: 516, Properties: 1665},
 }

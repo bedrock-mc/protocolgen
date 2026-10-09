@@ -9,5 +9,5 @@ var BambooPlanks = Block{
 }
 
 var bambooPlanksStates = [...]State{
-	{Hash: 2451895266, Block: 716, Properties: 831},
+	{Hash: 2451895266, Block: 782, Properties: 1582},
 }

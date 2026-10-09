@@ -9,7 +9,7 @@ var SnifferEgg = Block{
 }
 
 var snifferEggStates = [...]State{
-	{Hash: 3657377519, Block: 992, Properties: 1666},
-	{Hash: 2877523121, Block: 992, Properties: 1666},
-	{Hash: 4084087620, Block: 992, Properties: 1666},
+	{Hash: 3657377519, Block: 1088, Properties: 3096},
+	{Hash: 2877523121, Block: 1088, Properties: 3096},
+	{Hash: 4084087620, Block: 1088, Properties: 3096},
 }

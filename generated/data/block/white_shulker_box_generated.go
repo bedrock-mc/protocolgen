@@ -9,5 +9,5 @@ var WhiteShulkerBox = Block{
 }
 
 var whiteShulkerBoxStates = [...]State{
-	{Hash: 3927159182, Block: 142, Properties: 351},
+	{Hash: 3927159182, Block: 155, Properties: 686},
 }

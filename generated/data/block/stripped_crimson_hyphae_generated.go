@@ -9,7 +9,7 @@ var StrippedCrimsonHyphae = Block{
 }
 
 var strippedCrimsonHyphaeStates = [...]State{
-	{Hash: 1851001188, Block: 908, Properties: 872},
-	{Hash: 2906307759, Block: 908, Properties: 872},
-	{Hash: 721953605, Block: 908, Properties: 872},
+	{Hash: 1851001188, Block: 994, Properties: 1665},
+	{Hash: 2906307759, Block: 994, Properties: 1665},
+	{Hash: 721953605, Block: 994, Properties: 1665},
 }

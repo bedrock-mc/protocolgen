@@ -9,12 +9,12 @@ var BlackCandle = Block{
 }
 
 var blackCandleStates = [...]State{
-	{Hash: 3785281241, Block: 54, Properties: 161},
-	{Hash: 2760770478, Block: 54, Properties: 162},
-	{Hash: 4022014519, Block: 54, Properties: 163},
-	{Hash: 2395093540, Block: 54, Properties: 164},
-	{Hash: 2729974670, Block: 54, Properties: 165},
-	{Hash: 3816077049, Block: 54, Properties: 166},
-	{Hash: 2966707948, Block: 54, Properties: 167},
-	{Hash: 3450400111, Block: 54, Properties: 168},
+	{Hash: 3785281241, Block: 58, Properties: 299},
+	{Hash: 2760770478, Block: 58, Properties: 300},
+	{Hash: 4022014519, Block: 58, Properties: 301},
+	{Hash: 2395093540, Block: 58, Properties: 302},
+	{Hash: 2729974670, Block: 58, Properties: 303},
+	{Hash: 3816077049, Block: 58, Properties: 304},
+	{Hash: 2966707948, Block: 58, Properties: 305},
+	{Hash: 3450400111, Block: 58, Properties: 306},
 }

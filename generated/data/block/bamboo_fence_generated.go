@@ -9,5 +9,20 @@ var BambooFence = Block{
 }
 
 var bambooFenceStates = [...]State{
-	{Hash: 1462261651, Block: 180, Properties: 426},
+	{Hash: 155542197, Block: 194, Properties: 849},
+	{Hash: 3663952456, Block: 194, Properties: 850},
+	{Hash: 1814624924, Block: 194, Properties: 851},
+	{Hash: 1396397641, Block: 194, Properties: 852},
+	{Hash: 1976306488, Block: 194, Properties: 853},
+	{Hash: 1627431429, Block: 194, Properties: 854},
+	{Hash: 3780734473, Block: 194, Properties: 855},
+	{Hash: 115465692, Block: 194, Properties: 856},
+	{Hash: 3395202922, Block: 194, Properties: 857},
+	{Hash: 424291731, Block: 194, Properties: 858},
+	{Hash: 2869931495, Block: 194, Properties: 859},
+	{Hash: 341091070, Block: 194, Properties: 860},
+	{Hash: 3031613059, Block: 194, Properties: 861},
+	{Hash: 572124858, Block: 194, Properties: 862},
+	{Hash: 2725427902, Block: 194, Properties: 863},
+	{Hash: 1170772263, Block: 194, Properties: 864},
 }

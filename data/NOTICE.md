@@ -6,14 +6,13 @@ The semantic generator and initial data snapshot were moved from
 
 The semantic values are derived from:
 
-- [CloudburstMC/Data](https://github.com/CloudburstMC/Data)
-- Block collision, outline and tint values from
-  [AllayMC/Allay](https://github.com/AllayMC/Allay)
+- Block properties, geometry, biome values and item registry identities from
+  [CloudburstMC/Data](https://github.com/CloudburstMC/Data)
 - Base entity components, food definitions and named voxel shapes distributed
   with Minecraft Bedrock Dedicated Server
-- Runtime registry values from [Dragonfly](https://github.com/HashimTheArab/dragonfly),
-  item properties and tags from Allay, and the documented corrections in the
-  source inputs
+- Item properties and supplemental tags from
+  [AllayMC/Allay](https://github.com/AllayMC/Allay), plus the documented corrections
+  in the source inputs
 - Resource inputs from [Mojang/bedrock-samples](https://github.com/Mojang/bedrock-samples)
 
 The source revisions and versions are recorded in
@@ -21,3 +20,10 @@ The source revisions and versions are recorded in
 [`source/lock.json`](source/lock.json). Upstream data and Minecraft
 materials remain subject to their respective terms. No full BDS source pack,
 raw generated source catalog or executable is included in this module.
+
+The pinned Cloudburst extract contains 30 invalid liquid-clip boxes. Their exact
+source values are recorded as omissions; the catalog reports those shapes as
+unavailable. The public [Endstone data exporter](https://github.com/EndstoneMC/endstone/blob/3491c609ddfde392cee2b062e3063e39aae87274/src/endstone/core/devtools/vanilla_data.cpp)
+illustrates why an output box without the query's success flag cannot establish
+valid geometry. This is not a claim about the exact tool revision that produced
+the Cloudburst files.

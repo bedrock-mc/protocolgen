@@ -9,5 +9,5 @@ var Waterlily = Block{
 }
 
 var waterlilyStates = [...]State{
-	{Hash: 2679021283, Block: 272, Properties: 620},
+	{Hash: 2679021283, Block: 296, Properties: 1193},
 }

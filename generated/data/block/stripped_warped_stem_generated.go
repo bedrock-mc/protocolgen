@@ -9,7 +9,7 @@ var StrippedWarpedStem = Block{
 }
 
 var strippedWarpedStemStates = [...]State{
-	{Hash: 74387233, Block: 1109, Properties: 1535},
-	{Hash: 3314047958, Block: 1109, Properties: 1535},
-	{Hash: 1203434816, Block: 1109, Properties: 1535},
+	{Hash: 74387233, Block: 1213, Properties: 2854},
+	{Hash: 3314047958, Block: 1213, Properties: 2854},
+	{Hash: 1203434816, Block: 1213, Properties: 2854},
 }

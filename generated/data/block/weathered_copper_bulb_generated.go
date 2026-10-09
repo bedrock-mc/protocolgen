@@ -9,8 +9,8 @@ var WeatheredCopperBulb = Block{
 }
 
 var weatheredCopperBulbStates = [...]State{
-	{Hash: 3033823498, Block: 1144, Properties: 305},
-	{Hash: 1012117963, Block: 1144, Properties: 1324},
-	{Hash: 4089130069, Block: 1144, Properties: 305},
-	{Hash: 4251778688, Block: 1144, Properties: 1324},
+	{Hash: 3033823498, Block: 1255, Properties: 603},
+	{Hash: 1012117963, Block: 1255, Properties: 2460},
+	{Hash: 4089130069, Block: 1255, Properties: 603},
+	{Hash: 4251778688, Block: 1255, Properties: 2460},
 }

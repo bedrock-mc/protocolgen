@@ -9,5 +9,5 @@ var PolishedDiorite = Block{
 }
 
 var polishedDioriteStates = [...]State{
-	{Hash: 1362605798, Block: 739, Properties: 98},
+	{Hash: 1362605798, Block: 806, Properties: 196},
 }

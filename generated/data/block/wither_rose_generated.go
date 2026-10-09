@@ -9,5 +9,5 @@ var WitherRose = Block{
 }
 
 var witherRoseStates = [...]State{
-	{Hash: 1070281985, Block: 837, Properties: 121},
+	{Hash: 1070281985, Block: 914, Properties: 219},
 }

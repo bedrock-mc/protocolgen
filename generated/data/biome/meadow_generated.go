@@ -18,5 +18,5 @@ var Meadow = Biome{
 	FoliageSnow:       0,
 	MapWaterColorRGBA: 0x60b7ffa6,
 	Rain:              true,
-	Tags:              []string{"bee_habitat", "meadow", "monster", "mountains", "overworld"},
+	Tags:              []string{"bee_habitat", "has_structure_abandoned_camp", "meadow", "monster", "mountains", "overworld"},
 }

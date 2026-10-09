@@ -9,5 +9,5 @@ var Ice = Block{
 }
 
 var iceStates = [...]State{
-	{Hash: 107547877, Block: 947, Properties: 1042},
+	{Hash: 107547877, Block: 1035, Properties: 1981},
 }

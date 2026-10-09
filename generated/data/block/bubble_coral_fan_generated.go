@@ -9,6 +9,6 @@ var BubbleCoralFan = Block{
 }
 
 var bubbleCoralFanStates = [...]State{
-	{Hash: 363691816, Block: 70, Properties: 214},
-	{Hash: 302216993, Block: 70, Properties: 214},
+	{Hash: 363691816, Block: 77, Properties: 430},
+	{Hash: 302216993, Block: 77, Properties: 430},
 }

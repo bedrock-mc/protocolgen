@@ -9,5 +9,20 @@ var HardGlassPane = Block{
 }
 
 var hardGlassPaneStates = [...]State{
-	{Hash: 320610735, Block: 209, Properties: 93},
+	{Hash: 4264740553, Block: 223, Properties: 176},
+	{Hash: 388000540, Block: 223, Properties: 177},
+	{Hash: 405398272, Block: 223, Properties: 178},
+	{Hash: 2927761229, Block: 223, Properties: 179},
+	{Hash: 2983808604, Block: 223, Properties: 180},
+	{Hash: 2354110089, Block: 223, Properties: 181},
+	{Hash: 3371652701, Block: 223, Properties: 182},
+	{Hash: 3758745392, Block: 223, Properties: 183},
+	{Hash: 3209433982, Block: 223, Properties: 184},
+	{Hash: 1443307111, Block: 223, Properties: 185},
+	{Hash: 1460704843, Block: 223, Properties: 186},
+	{Hash: 1872454658, Block: 223, Properties: 187},
+	{Hash: 4039115175, Block: 223, Properties: 188},
+	{Hash: 1298803518, Block: 223, Properties: 189},
+	{Hash: 2316346130, Block: 223, Properties: 190},
+	{Hash: 519084667, Block: 223, Properties: 191},
 }

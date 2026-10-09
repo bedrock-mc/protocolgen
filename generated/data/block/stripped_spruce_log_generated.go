@@ -9,7 +9,7 @@ var StrippedSpruceLog = Block{
 }
 
 var strippedSpruceLogStates = [...]State{
-	{Hash: 3074453584, Block: 864, Properties: 216},
-	{Hash: 4129760155, Block: 864, Properties: 216},
-	{Hash: 1945406001, Block: 864, Properties: 216},
+	{Hash: 3074453584, Block: 944, Properties: 432},
+	{Hash: 4129760155, Block: 944, Properties: 432},
+	{Hash: 1945406001, Block: 944, Properties: 432},
 }

@@ -9,6 +9,6 @@ var PrismarineDoubleSlab = Block{
 }
 
 var prismarineDoubleSlabStates = [...]State{
-	{Hash: 1557979639, Block: 466, Properties: 870},
-	{Hash: 1811717960, Block: 466, Properties: 870},
+	{Hash: 1557979639, Block: 513, Properties: 1660},
+	{Hash: 1811717960, Block: 513, Properties: 1660},
 }

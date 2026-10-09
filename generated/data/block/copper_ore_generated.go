@@ -9,5 +9,5 @@ var CopperOre = Block{
 }
 
 var copperOreStates = [...]State{
-	{Hash: 2816483885, Block: 307, Properties: 560},
+	{Hash: 2816483885, Block: 336, Properties: 1085},
 }

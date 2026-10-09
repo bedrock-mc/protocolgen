@@ -9,7 +9,7 @@ var OakLog = Block{
 }
 
 var oakLogStates = [...]State{
-	{Hash: 825916963, Block: 102, Properties: 277},
-	{Hash: 4065577688, Block: 102, Properties: 216},
-	{Hash: 1881223534, Block: 102, Properties: 216},
+	{Hash: 825916963, Block: 112, Properties: 572},
+	{Hash: 4065577688, Block: 112, Properties: 432},
+	{Hash: 1881223534, Block: 112, Properties: 432},
 }

@@ -9,5 +9,5 @@ var Glowingobsidian = Block{
 }
 
 var glowingobsidianStates = [...]State{
-	{Hash: 3873213302, Block: 298, Properties: 679},
+	{Hash: 3873213302, Block: 326, Properties: 1297},
 }

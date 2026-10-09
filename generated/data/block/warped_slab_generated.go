@@ -9,6 +9,6 @@ var WarpedSlab = Block{
 }
 
 var warpedSlabStates = [...]State{
-	{Hash: 3568642775, Block: 903, Properties: 1533},
-	{Hash: 675007912, Block: 903, Properties: 1534},
+	{Hash: 3568642775, Block: 989, Properties: 2852},
+	{Hash: 675007912, Block: 989, Properties: 2853},
 }

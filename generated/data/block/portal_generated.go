@@ -9,7 +9,7 @@ var Portal = Block{
 }
 
 var portalStates = [...]State{
-	{Hash: 674040257, Block: 1281, Properties: 1910},
-	{Hash: 751032985, Block: 1281, Properties: 1910},
-	{Hash: 2935387139, Block: 1281, Properties: 1910},
+	{Hash: 674040257, Block: 1397, Properties: 3540},
+	{Hash: 751032985, Block: 1397, Properties: 3540},
+	{Hash: 2935387139, Block: 1397, Properties: 3540},
 }

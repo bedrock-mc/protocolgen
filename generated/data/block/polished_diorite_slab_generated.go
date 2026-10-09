@@ -9,6 +9,6 @@ var PolishedDioriteSlab = Block{
 }
 
 var polishedDioriteSlabStates = [...]State{
-	{Hash: 2350724179, Block: 551, Properties: 212},
-	{Hash: 2086683724, Block: 551, Properties: 213},
+	{Hash: 2350724179, Block: 602, Properties: 396},
+	{Hash: 2086683724, Block: 602, Properties: 397},
 }

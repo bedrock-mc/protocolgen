@@ -9,5 +9,5 @@ var HangingRoots = Block{
 }
 
 var hangingRootsStates = [...]State{
-	{Hash: 2949505364, Block: 58, Properties: 183},
+	{Hash: 2949505364, Block: 64, Properties: 323},
 }

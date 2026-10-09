@@ -9,6 +9,6 @@ var BambooSlab = Block{
 }
 
 var bambooSlabStates = [...]State{
-	{Hash: 3082039124, Block: 912, Properties: 651},
-	{Hash: 3119477225, Block: 912, Properties: 652},
+	{Hash: 3082039124, Block: 998, Properties: 1245},
+	{Hash: 3119477225, Block: 998, Properties: 1246},
 }

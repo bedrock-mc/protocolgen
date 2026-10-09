@@ -9,5 +9,5 @@ var RedWool = Block{
 }
 
 var redWoolStates = [...]State{
-	{Hash: 1885700022, Block: 30, Properties: 84},
+	{Hash: 1885700022, Block: 32, Properties: 143},
 }

@@ -9,8 +9,8 @@ var CopperGolemStatue = Block{
 }
 
 var copperGolemStatueStates = [...]State{
-	{Hash: 3273233700, Block: 485, Properties: 902},
-	{Hash: 2875315049, Block: 485, Properties: 902},
-	{Hash: 883925650, Block: 485, Properties: 902},
-	{Hash: 3229079739, Block: 485, Properties: 902},
+	{Hash: 3273233700, Block: 535, Properties: 1743},
+	{Hash: 2875315049, Block: 535, Properties: 1743},
+	{Hash: 883925650, Block: 535, Properties: 1743},
+	{Hash: 3229079739, Block: 535, Properties: 1743},
 }

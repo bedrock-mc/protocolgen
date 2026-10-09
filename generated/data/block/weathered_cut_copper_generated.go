@@ -9,5 +9,5 @@ var WeatheredCutCopper = Block{
 }
 
 var weatheredCutCopperStates = [...]State{
-	{Hash: 3122153471, Block: 1039, Properties: 305},
+	{Hash: 3122153471, Block: 1137, Properties: 603},
 }

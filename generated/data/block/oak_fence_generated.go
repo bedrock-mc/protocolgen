@@ -9,5 +9,20 @@ var OakFence = Block{
 }
 
 var oakFenceStates = [...]State{
-	{Hash: 1997655867, Block: 724, Properties: 1285},
+	{Hash: 425458381, Block: 790, Properties: 2384},
+	{Hash: 2198062720, Block: 790, Properties: 2385},
+	{Hash: 3720363220, Block: 790, Properties: 2386},
+	{Hash: 1049392737, Block: 790, Properties: 2387},
+	{Hash: 1256442544, Block: 790, Properties: 2388},
+	{Hash: 869349853, Block: 790, Properties: 86},
+	{Hash: 216517857, Block: 790, Properties: 2389},
+	{Hash: 258270804, Block: 790, Properties: 2390},
+	{Hash: 3665119106, Block: 790, Properties: 2391},
+	{Hash: 3253369291, Block: 790, Properties: 2392},
+	{Hash: 480702495, Block: 790, Properties: 85},
+	{Hash: 4289053462, Block: 790, Properties: 2393},
+	{Hash: 2311749115, Block: 790, Properties: 2394},
+	{Hash: 4109010578, Block: 790, Properties: 2395},
+	{Hash: 3456178582, Block: 790, Properties: 2396},
+	{Hash: 1313577375, Block: 790, Properties: 2397},
 }

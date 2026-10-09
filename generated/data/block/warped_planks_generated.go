@@ -9,5 +9,5 @@ var WarpedPlanks = Block{
 }
 
 var warpedPlanksStates = [...]State{
-	{Hash: 1862290605, Block: 250, Properties: 563},
+	{Hash: 1862290605, Block: 271, Properties: 1089},
 }

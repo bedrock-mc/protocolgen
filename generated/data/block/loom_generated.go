@@ -9,8 +9,8 @@ var Loom = Block{
 }
 
 var loomStates = [...]State{
-	{Hash: 3620856703, Block: 374, Properties: 759},
-	{Hash: 3682331526, Block: 374, Properties: 759},
-	{Hash: 3743806349, Block: 374, Properties: 759},
-	{Hash: 3805281172, Block: 374, Properties: 759},
+	{Hash: 3620856703, Block: 413, Properties: 1475},
+	{Hash: 3682331526, Block: 413, Properties: 1475},
+	{Hash: 3743806349, Block: 413, Properties: 1475},
+	{Hash: 3805281172, Block: 413, Properties: 1475},
 }

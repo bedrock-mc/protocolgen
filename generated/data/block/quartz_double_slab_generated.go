@@ -9,6 +9,6 @@ var QuartzDoubleSlab = Block{
 }
 
 var quartzDoubleSlabStates = [...]State{
-	{Hash: 1343844126, Block: 266, Properties: 399},
-	{Hash: 1189145463, Block: 266, Properties: 399},
+	{Hash: 1343844126, Block: 290, Properties: 790},
+	{Hash: 1189145463, Block: 290, Properties: 790},
 }

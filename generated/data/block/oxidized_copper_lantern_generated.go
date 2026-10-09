@@ -9,6 +9,6 @@ var OxidizedCopperLantern = Block{
 }
 
 var oxidizedCopperLanternStates = [...]State{
-	{Hash: 2084297703, Block: 810, Properties: 1007},
-	{Hash: 1028991132, Block: 810, Properties: 1008},
+	{Hash: 2084297703, Block: 884, Properties: 1943},
+	{Hash: 1028991132, Block: 884, Properties: 1944},
 }

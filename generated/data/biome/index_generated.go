@@ -18,6 +18,7 @@ var all = []Biome{
 	ColdTaigaHills,
 	ColdTaigaMutated,
 	CrimsonForest,
+	DappledForest,
 	DeepColdOcean,
 	DeepDark,
 	DeepFrozenOcean,

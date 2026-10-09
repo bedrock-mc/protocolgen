@@ -9,8 +9,8 @@ var Smoker = Block{
 }
 
 var smokerStates = [...]State{
-	{Hash: 3435179109, Block: 202, Properties: 456},
-	{Hash: 2950269998, Block: 202, Properties: 456},
-	{Hash: 3568550727, Block: 202, Properties: 456},
-	{Hash: 3132699916, Block: 202, Properties: 456},
+	{Hash: 3435179109, Block: 216, Properties: 921},
+	{Hash: 2950269998, Block: 216, Properties: 921},
+	{Hash: 3568550727, Block: 216, Properties: 921},
+	{Hash: 3132699916, Block: 216, Properties: 921},
 }

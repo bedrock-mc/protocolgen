@@ -9,6 +9,6 @@ var AcaciaSapling = Block{
 }
 
 var acaciaSaplingStates = [...]State{
-	{Hash: 720729405, Block: 873, Properties: 370},
-	{Hash: 3960390130, Block: 873, Properties: 370},
+	{Hash: 720729405, Block: 956, Properties: 735},
+	{Hash: 3960390130, Block: 956, Properties: 735},
 }

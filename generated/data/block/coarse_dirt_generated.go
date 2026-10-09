@@ -9,5 +9,5 @@ var CoarseDirt = Block{
 }
 
 var coarseDirtStates = [...]State{
-	{Hash: 1884368513, Block: 521, Properties: 959},
+	{Hash: 1884368513, Block: 571, Properties: 1855},
 }

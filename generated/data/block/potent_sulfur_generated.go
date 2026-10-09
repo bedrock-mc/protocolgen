@@ -9,9 +9,9 @@ var PotentSulfur = Block{
 }
 
 var potentSulfurStates = [...]State{
-	{Hash: 3634701163, Block: 760, Properties: 1336},
-	{Hash: 211563958, Block: 760, Properties: 1336},
-	{Hash: 2755781955, Block: 760, Properties: 1336},
-	{Hash: 2782319079, Block: 760, Properties: 1336},
-	{Hash: 1688575440, Block: 760, Properties: 1336},
+	{Hash: 3634701163, Block: 827, Properties: 2487},
+	{Hash: 211563958, Block: 827, Properties: 2487},
+	{Hash: 2755781955, Block: 827, Properties: 2487},
+	{Hash: 2782319079, Block: 827, Properties: 2487},
+	{Hash: 1688575440, Block: 827, Properties: 2487},
 }

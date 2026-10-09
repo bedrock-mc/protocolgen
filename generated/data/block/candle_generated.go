@@ -9,12 +9,12 @@ var Candle = Block{
 }
 
 var candleStates = [...]State{
-	{Hash: 221249915, Block: 1110, Properties: 1825},
-	{Hash: 3214462088, Block: 1110, Properties: 1826},
-	{Hash: 197956445, Block: 1110, Properties: 1827},
-	{Hash: 194546498, Block: 1110, Properties: 1828},
-	{Hash: 3460910640, Block: 1110, Properties: 1829},
-	{Hash: 4269768659, Block: 1110, Properties: 1830},
-	{Hash: 3437617170, Block: 1110, Properties: 1831},
-	{Hash: 1249853069, Block: 1110, Properties: 1832},
+	{Hash: 221249915, Block: 1214, Properties: 3383},
+	{Hash: 3214462088, Block: 1214, Properties: 3384},
+	{Hash: 197956445, Block: 1214, Properties: 3385},
+	{Hash: 194546498, Block: 1214, Properties: 3386},
+	{Hash: 3460910640, Block: 1214, Properties: 3387},
+	{Hash: 4269768659, Block: 1214, Properties: 3388},
+	{Hash: 3437617170, Block: 1214, Properties: 3389},
+	{Hash: 1249853069, Block: 1214, Properties: 3390},
 }

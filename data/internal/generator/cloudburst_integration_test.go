@@ -1,0 +1,71 @@
+package generator
+
+import (
+	"bytes"
+	"context"
+	"encoding/json"
+	"os"
+	"path/filepath"
+	"testing"
+
+	"github.com/bedrock-mc/protocolgen/data/source"
+)
+
+// TestLockedCloudburstOutput verifies full committed block and biome output when
+// authenticated source files are available. CI supplies them; unit tests stay offline.
+func TestLockedCloudburstOutput(t *testing.T) {
+	dir := os.Getenv("PROTOCOLGEN_CLOUDBURST_DIR")
+	if dir == "" {
+		t.Skip("set PROTOCOLGEN_CLOUDBURST_DIR to verify the complete locked extract")
+	}
+	inputs, err := source.Open("")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := inputs.ValidateCloudburst(dir); err != nil {
+		t.Fatal(err)
+	}
+	if inputs.Lock.Inputs["liquid_clip_omissions"].Revision != inputs.Lock.Semantic.CloudburstRef {
+		t.Fatal("liquid clip omissions must match the Cloudburst revision")
+	}
+	encoded, err := inputs.Read(context.Background(), "liquid_clip_omissions", "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var omissions []LiquidClipOmission
+	if err := json.Unmarshal(encoded, &omissions); err != nil {
+		t.Fatal(err)
+	}
+	files, _, err := GenerateCloudburst(Config{CloudburstDir: dir, LiquidClipOmissions: omissions})
+	if err != nil {
+		t.Fatal(err)
+	}
+	catalog := filepath.Join("..", "..", "..", "generated", "data")
+	for name, want := range files {
+		got, err := os.ReadFile(filepath.Join(catalog, filepath.FromSlash(name)))
+		if err != nil || !bytes.Equal(got, want) {
+			t.Errorf("%s differs from the locked extract; regenerate the catalog (%v)", name, err)
+		}
+	}
+	for _, pkg := range []string{"block", "biome"} {
+		entries, err := os.ReadDir(filepath.Join(catalog, pkg))
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, entry := range entries {
+			if entry.IsDir() {
+				continue
+			}
+			name := filepath.Join(pkg, entry.Name())
+			content, err := os.ReadFile(filepath.Join(catalog, name))
+			if err != nil {
+				t.Fatal(err)
+			}
+			if bytes.HasPrefix(content, []byte(GeneratedMarker)) {
+				if _, exists := files[filepath.ToSlash(name)]; !exists {
+					t.Errorf("%s is a stale generated file", name)
+				}
+			}
+		}
+	}
+}

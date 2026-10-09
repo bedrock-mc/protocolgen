@@ -9,5 +9,5 @@ var DeepslateLapisOre = Block{
 }
 
 var deepslateLapisOreStates = [...]State{
-	{Hash: 3369869386, Block: 1057, Properties: 71},
+	{Hash: 3369869386, Block: 1157, Properties: 2684},
 }

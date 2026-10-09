@@ -9,5 +9,5 @@ var MossCarpet = Block{
 }
 
 var mossCarpetStates = [...]State{
-	{Hash: 1136091496, Block: 110, Properties: 288},
+	{Hash: 1136091496, Block: 121, Properties: 583},
 }

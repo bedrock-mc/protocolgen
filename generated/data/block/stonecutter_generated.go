@@ -9,5 +9,5 @@ var Stonecutter = Block{
 }
 
 var stonecutterStates = [...]State{
-	{Hash: 1910784310, Block: 248, Properties: 456},
+	{Hash: 1910784310, Block: 268, Properties: 921},
 }

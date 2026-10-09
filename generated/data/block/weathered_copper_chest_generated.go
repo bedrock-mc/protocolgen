@@ -9,8 +9,8 @@ var WeatheredCopperChest = Block{
 }
 
 var weatheredCopperChestStates = [...]State{
-	{Hash: 404145537, Block: 712, Properties: 22},
-	{Hash: 852883890, Block: 712, Properties: 22},
-	{Hash: 3584681075, Block: 712, Properties: 22},
-	{Hash: 3107991272, Block: 712, Properties: 22},
+	{Hash: 404145537, Block: 778, Properties: 22},
+	{Hash: 852883890, Block: 778, Properties: 22},
+	{Hash: 3584681075, Block: 778, Properties: 22},
+	{Hash: 3107991272, Block: 778, Properties: 22},
 }

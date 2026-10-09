@@ -9,5 +9,5 @@ var ChorusPlant = Block{
 }
 
 var chorusPlantStates = [...]State{
-	{Hash: 2740383245, Block: 681, Properties: 1217},
+	{Hash: 2740383245, Block: 746, Properties: 2249},
 }

@@ -9,5 +9,5 @@ var DriedKelpBlock = Block{
 }
 
 var driedKelpBlockStates = [...]State{
-	{Hash: 4012509200, Block: 1297, Properties: 1919},
+	{Hash: 4012509200, Block: 1413, Properties: 3549},
 }

@@ -9,5 +9,5 @@ var TintedGlass = Block{
 }
 
 var tintedGlassStates = [...]State{
-	{Hash: 2136584036, Block: 790, Properties: 1388},
+	{Hash: 2136584036, Block: 862, Properties: 2571},
 }

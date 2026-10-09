@@ -9,6 +9,6 @@ var FlowerPot = Block{
 }
 
 var flowerPotStates = [...]State{
-	{Hash: 1146729806, Block: 118, Properties: 302},
-	{Hash: 2202036377, Block: 118, Properties: 302},
+	{Hash: 1146729806, Block: 129, Properties: 600},
+	{Hash: 2202036377, Block: 129, Properties: 600},
 }

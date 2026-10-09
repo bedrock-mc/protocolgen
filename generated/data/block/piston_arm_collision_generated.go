@@ -9,10 +9,10 @@ var PistonArmCollision = Block{
 }
 
 var pistonArmCollisionStates = [...]State{
-	{Hash: 4162255293, Block: 14, Properties: 27},
-	{Hash: 4223730116, Block: 14, Properties: 27},
-	{Hash: 4039305647, Block: 14, Properties: 27},
-	{Hash: 4100780470, Block: 14, Properties: 27},
-	{Hash: 113187289, Block: 14, Properties: 27},
-	{Hash: 174662112, Block: 14, Properties: 27},
+	{Hash: 4162255293, Block: 14, Properties: 30},
+	{Hash: 4223730116, Block: 14, Properties: 30},
+	{Hash: 4039305647, Block: 14, Properties: 30},
+	{Hash: 4100780470, Block: 14, Properties: 30},
+	{Hash: 113187289, Block: 14, Properties: 30},
+	{Hash: 174662112, Block: 14, Properties: 30},
 }

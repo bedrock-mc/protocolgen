@@ -9,5 +9,5 @@ var AmethystBlock = Block{
 }
 
 var amethystBlockStates = [...]State{
-	{Hash: 3463019504, Block: 115, Properties: 296},
+	{Hash: 3463019504, Block: 126, Properties: 594},
 }

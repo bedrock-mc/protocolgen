@@ -9,6 +9,6 @@ var PaleOakSapling = Block{
 }
 
 var paleOakSaplingStates = [...]State{
-	{Hash: 1828678323, Block: 158, Properties: 383},
-	{Hash: 773371752, Block: 158, Properties: 383},
+	{Hash: 1828678323, Block: 171, Properties: 772},
+	{Hash: 773371752, Block: 171, Properties: 772},
 }

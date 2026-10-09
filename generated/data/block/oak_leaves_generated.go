@@ -9,8 +9,8 @@ var OakLeaves = Block{
 }
 
 var oakLeavesStates = [...]State{
-	{Hash: 2110714365, Block: 229, Properties: 503},
-	{Hash: 1055407794, Block: 229, Properties: 503},
-	{Hash: 2148803874, Block: 229, Properties: 503},
-	{Hash: 3204110445, Block: 229, Properties: 503},
+	{Hash: 2110714365, Block: 246, Properties: 986},
+	{Hash: 1055407794, Block: 246, Properties: 986},
+	{Hash: 2148803874, Block: 246, Properties: 986},
+	{Hash: 3204110445, Block: 246, Properties: 986},
 }

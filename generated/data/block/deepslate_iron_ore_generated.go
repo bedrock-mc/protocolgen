@@ -9,5 +9,5 @@ var DeepslateIronOre = Block{
 }
 
 var deepslateIronOreStates = [...]State{
-	{Hash: 1047475280, Block: 1069, Properties: 71},
+	{Hash: 1047475280, Block: 1169, Properties: 2684},
 }

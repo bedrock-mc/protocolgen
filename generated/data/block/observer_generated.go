@@ -9,16 +9,16 @@ var Observer = Block{
 }
 
 var observerStates = [...]State{
-	{Hash: 3866708032, Block: 292, Properties: 560},
-	{Hash: 1286915469, Block: 292, Properties: 560},
-	{Hash: 1028934188, Block: 292, Properties: 560},
-	{Hash: 3179466918, Block: 292, Properties: 560},
-	{Hash: 1337612001, Block: 292, Properties: 560},
-	{Hash: 508997011, Block: 292, Properties: 560},
-	{Hash: 627047307, Block: 292, Properties: 560},
-	{Hash: 231608898, Block: 292, Properties: 560},
-	{Hash: 2084240759, Block: 292, Properties: 560},
-	{Hash: 4234773489, Block: 292, Properties: 560},
-	{Hash: 282305430, Block: 292, Properties: 560},
-	{Hash: 3748657736, Block: 292, Properties: 560},
+	{Hash: 3866708032, Block: 320, Properties: 1085},
+	{Hash: 1286915469, Block: 320, Properties: 1085},
+	{Hash: 1028934188, Block: 320, Properties: 1085},
+	{Hash: 3179466918, Block: 320, Properties: 1085},
+	{Hash: 1337612001, Block: 320, Properties: 1085},
+	{Hash: 508997011, Block: 320, Properties: 1085},
+	{Hash: 627047307, Block: 320, Properties: 1085},
+	{Hash: 231608898, Block: 320, Properties: 1085},
+	{Hash: 2084240759, Block: 320, Properties: 1085},
+	{Hash: 4234773489, Block: 320, Properties: 1085},
+	{Hash: 282305430, Block: 320, Properties: 1085},
+	{Hash: 3748657736, Block: 320, Properties: 1085},
 }

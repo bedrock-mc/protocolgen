@@ -9,5 +9,5 @@ var DragonEgg = Block{
 }
 
 var dragonEggStates = [...]State{
-	{Hash: 2438740960, Block: 1066, Properties: 1771},
+	{Hash: 2438740960, Block: 1166, Properties: 3305},
 }

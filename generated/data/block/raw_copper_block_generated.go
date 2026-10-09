@@ -9,5 +9,5 @@ var RawCopperBlock = Block{
 }
 
 var rawCopperBlockStates = [...]State{
-	{Hash: 1063959733, Block: 633, Properties: 1150},
+	{Hash: 1063959733, Block: 695, Properties: 2155},
 }

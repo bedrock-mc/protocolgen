@@ -9,5 +9,20 @@ var PaleOakFence = Block{
 }
 
 var paleOakFenceStates = [...]State{
-	{Hash: 60668747, Block: 135, Properties: 343},
+	{Hash: 376355869, Block: 148, Properties: 665},
+	{Hash: 4216887184, Block: 148, Properties: 666},
+	{Hash: 412619556, Block: 148, Properties: 667},
+	{Hash: 4245759665, Block: 148, Properties: 668},
+	{Hash: 231317440, Block: 148, Properties: 669},
+	{Hash: 3592005805, Block: 148, Properties: 198},
+	{Hash: 2143833201, Block: 148, Properties: 670},
+	{Hash: 2036432740, Block: 148, Properties: 671},
+	{Hash: 3616016594, Block: 148, Properties: 672},
+	{Hash: 977226459, Block: 148, Properties: 673},
+	{Hash: 1467926127, Block: 148, Properties: 197},
+	{Hash: 3190453094, Block: 148, Properties: 674},
+	{Hash: 1286624011, Block: 148, Properties: 675},
+	{Hash: 2536699234, Block: 148, Properties: 676},
+	{Hash: 1088526630, Block: 148, Properties: 677},
+	{Hash: 3091739311, Block: 148, Properties: 678},
 }

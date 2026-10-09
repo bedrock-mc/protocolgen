@@ -9,5 +9,5 @@ var Element99 = Block{
 }
 
 var element99States = [...]State{
-	{Hash: 3273619838, Block: 1237, Properties: 1253},
+	{Hash: 3273619838, Block: 1350, Properties: 2349},
 }

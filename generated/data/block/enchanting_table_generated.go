@@ -9,5 +9,5 @@ var EnchantingTable = Block{
 }
 
 var enchantingTableStates = [...]State{
-	{Hash: 1230080101, Block: 967, Properties: 1604},
+	{Hash: 1230080101, Block: 1056, Properties: 2961},
 }

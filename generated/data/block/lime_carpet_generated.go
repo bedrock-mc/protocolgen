@@ -9,5 +9,5 @@ var LimeCarpet = Block{
 }
 
 var limeCarpetStates = [...]State{
-	{Hash: 3822248015, Block: 962, Properties: 1601},
+	{Hash: 3822248015, Block: 1051, Properties: 2958},
 }

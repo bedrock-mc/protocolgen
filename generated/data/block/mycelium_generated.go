@@ -9,5 +9,5 @@ var Mycelium = Block{
 }
 
 var myceliumStates = [...]State{
-	{Hash: 1576129324, Block: 337, Properties: 736},
+	{Hash: 1576129324, Block: 371, Properties: 1402},
 }

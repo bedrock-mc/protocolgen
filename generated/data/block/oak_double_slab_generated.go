@@ -9,6 +9,6 @@ var OakDoubleSlab = Block{
 }
 
 var oakDoubleSlabStates = [...]State{
-	{Hash: 173263259, Block: 325, Properties: 714},
-	{Hash: 3095816772, Block: 325, Properties: 714},
+	{Hash: 173263259, Block: 357, Properties: 1356},
+	{Hash: 3095816772, Block: 357, Properties: 1356},
 }

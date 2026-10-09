@@ -9,5 +9,5 @@ var ClosedEyeblossom = Block{
 }
 
 var closedEyeblossomStates = [...]State{
-	{Hash: 2018094267, Block: 963, Properties: 1602},
+	{Hash: 2018094267, Block: 1052, Properties: 2959},
 }

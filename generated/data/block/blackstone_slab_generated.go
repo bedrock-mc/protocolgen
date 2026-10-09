@@ -9,6 +9,6 @@ var BlackstoneSlab = Block{
 }
 
 var blackstoneSlabStates = [...]State{
-	{Hash: 1007596908, Block: 245, Properties: 558},
-	{Hash: 589282609, Block: 245, Properties: 559},
+	{Hash: 1007596908, Block: 264, Properties: 1083},
+	{Hash: 589282609, Block: 264, Properties: 1084},
 }

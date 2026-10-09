@@ -9,5 +9,5 @@ var Allow = Block{
 }
 
 var allowStates = [...]State{
-	{Hash: 846081725, Block: 1024, Properties: 1720},
+	{Hash: 846081725, Block: 1121, Properties: 3190},
 }

@@ -9,5 +9,5 @@ var HoneyBlock = Block{
 }
 
 var honeyBlockStates = [...]State{
-	{Hash: 1517479843, Block: 239, Properties: 542},
+	{Hash: 1517479843, Block: 257, Properties: 1067},
 }

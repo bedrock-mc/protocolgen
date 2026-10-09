@@ -9,10 +9,10 @@ var MangroveWallSign = Block{
 }
 
 var mangroveWallSignStates = [...]State{
-	{Hash: 1356487180, Block: 632, Properties: 1145},
-	{Hash: 1295012357, Block: 632, Properties: 1145},
-	{Hash: 1233537534, Block: 632, Properties: 1146},
-	{Hash: 1172062711, Block: 632, Properties: 1147},
-	{Hash: 1602386472, Block: 632, Properties: 1148},
-	{Hash: 1540911649, Block: 632, Properties: 1149},
+	{Hash: 1356487180, Block: 694, Properties: 2150},
+	{Hash: 1295012357, Block: 694, Properties: 2150},
+	{Hash: 1233537534, Block: 694, Properties: 2151},
+	{Hash: 1172062711, Block: 694, Properties: 2152},
+	{Hash: 1602386472, Block: 694, Properties: 2153},
+	{Hash: 1540911649, Block: 694, Properties: 2154},
 }

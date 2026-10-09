@@ -9,5 +9,5 @@ var PurpleConcrete = Block{
 }
 
 var purpleConcreteStates = [...]State{
-	{Hash: 2550368812, Block: 422, Properties: 834},
+	{Hash: 2550368812, Block: 465, Properties: 1585},
 }

@@ -9,10 +9,10 @@ var SoulTorch = Block{
 }
 
 var soulTorchStates = [...]State{
-	{Hash: 189951137, Block: 564, Properties: 1020},
-	{Hash: 995435893, Block: 564, Properties: 1021},
-	{Hash: 3084847535, Block: 564, Properties: 1022},
-	{Hash: 1060997350, Block: 564, Properties: 1023},
-	{Hash: 2531328968, Block: 564, Properties: 1024},
-	{Hash: 2855573232, Block: 564, Properties: 1020},
+	{Hash: 189951137, Block: 617, Properties: 1956},
+	{Hash: 995435893, Block: 617, Properties: 1957},
+	{Hash: 3084847535, Block: 617, Properties: 1958},
+	{Hash: 1060997350, Block: 617, Properties: 1959},
+	{Hash: 2531328968, Block: 617, Properties: 1960},
+	{Hash: 2855573232, Block: 617, Properties: 1956},
 }

@@ -9,6 +9,6 @@ var BubbleColumn = Block{
 }
 
 var bubbleColumnStates = [...]State{
-	{Hash: 2375032216, Block: 731, Properties: 1292},
-	{Hash: 3430338787, Block: 731, Properties: 1292},
+	{Hash: 2375032216, Block: 798, Properties: 2412},
+	{Hash: 3430338787, Block: 798, Properties: 2412},
 }

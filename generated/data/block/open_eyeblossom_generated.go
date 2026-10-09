@@ -9,5 +9,5 @@ var OpenEyeblossom = Block{
 }
 
 var openEyeblossomStates = [...]State{
-	{Hash: 2251250685, Block: 156, Properties: 381},
+	{Hash: 2251250685, Block: 169, Properties: 770},
 }

@@ -9,5 +9,5 @@ var CyanWool = Block{
 }
 
 var cyanWoolStates = [...]State{
-	{Hash: 3087081901, Block: 644, Properties: 1165},
+	{Hash: 3087081901, Block: 706, Properties: 2170},
 }

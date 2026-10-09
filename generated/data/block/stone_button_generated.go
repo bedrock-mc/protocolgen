@@ -9,16 +9,16 @@ var StoneButton = Block{
 }
 
 var stoneButtonStates = [...]State{
-	{Hash: 761806540, Block: 175, Properties: 59},
-	{Hash: 700331717, Block: 175, Properties: 60},
-	{Hash: 638856894, Block: 175, Properties: 61},
-	{Hash: 577382071, Block: 175, Properties: 62},
-	{Hash: 1007705832, Block: 175, Properties: 63},
-	{Hash: 946231009, Block: 175, Properties: 64},
-	{Hash: 4190686489, Block: 175, Properties: 65},
-	{Hash: 4252161312, Block: 175, Properties: 66},
-	{Hash: 4067736843, Block: 175, Properties: 67},
-	{Hash: 4129211666, Block: 175, Properties: 68},
-	{Hash: 3944787197, Block: 175, Properties: 69},
-	{Hash: 4006262020, Block: 175, Properties: 70},
+	{Hash: 761806540, Block: 189, Properties: 94},
+	{Hash: 700331717, Block: 189, Properties: 95},
+	{Hash: 638856894, Block: 189, Properties: 96},
+	{Hash: 577382071, Block: 189, Properties: 97},
+	{Hash: 1007705832, Block: 189, Properties: 98},
+	{Hash: 946231009, Block: 189, Properties: 99},
+	{Hash: 4190686489, Block: 189, Properties: 100},
+	{Hash: 4252161312, Block: 189, Properties: 101},
+	{Hash: 4067736843, Block: 189, Properties: 102},
+	{Hash: 4129211666, Block: 189, Properties: 103},
+	{Hash: 3944787197, Block: 189, Properties: 104},
+	{Hash: 4006262020, Block: 189, Properties: 105},
 }

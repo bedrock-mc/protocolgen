@@ -9,5 +9,5 @@ var OxidizedCopperGrate = Block{
 }
 
 var oxidizedCopperGrateStates = [...]State{
-	{Hash: 1903310502, Block: 937, Properties: 1581},
+	{Hash: 1903310502, Block: 1023, Properties: 2937},
 }

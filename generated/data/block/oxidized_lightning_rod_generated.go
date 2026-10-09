@@ -9,16 +9,16 @@ var OxidizedLightningRod = Block{
 }
 
 var oxidizedLightningRodStates = [...]State{
-	{Hash: 1704554945, Block: 112, Properties: 290},
-	{Hash: 865362998, Block: 112, Properties: 290},
-	{Hash: 819357971, Block: 112, Properties: 291},
-	{Hash: 2463550800, Block: 112, Properties: 291},
-	{Hash: 2816232901, Block: 112, Properties: 292},
-	{Hash: 3052467530, Block: 112, Properties: 292},
-	{Hash: 649248374, Block: 112, Properties: 290},
-	{Hash: 1920669569, Block: 112, Properties: 290},
-	{Hash: 4059018696, Block: 112, Properties: 291},
-	{Hash: 3518857371, Block: 112, Properties: 291},
-	{Hash: 1760926330, Block: 112, Properties: 292},
-	{Hash: 4107774101, Block: 112, Properties: 292},
+	{Hash: 1704554945, Block: 123, Properties: 585},
+	{Hash: 865362998, Block: 123, Properties: 585},
+	{Hash: 819357971, Block: 123, Properties: 586},
+	{Hash: 2463550800, Block: 123, Properties: 586},
+	{Hash: 2816232901, Block: 123, Properties: 587},
+	{Hash: 3052467530, Block: 123, Properties: 587},
+	{Hash: 649248374, Block: 123, Properties: 585},
+	{Hash: 1920669569, Block: 123, Properties: 585},
+	{Hash: 4059018696, Block: 123, Properties: 586},
+	{Hash: 3518857371, Block: 123, Properties: 586},
+	{Hash: 1760926330, Block: 123, Properties: 587},
+	{Hash: 4107774101, Block: 123, Properties: 587},
 }

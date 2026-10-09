@@ -9,12 +9,12 @@ var PinkCandle = Block{
 }
 
 var pinkCandleStates = [...]State{
-	{Hash: 3831985371, Block: 1103, Properties: 1812},
-	{Hash: 341777128, Block: 1103, Properties: 1813},
-	{Hash: 3108708029, Block: 1103, Properties: 1814},
-	{Hash: 874498210, Block: 1103, Properties: 1815},
-	{Hash: 2776678800, Block: 1103, Properties: 1816},
-	{Hash: 1397083699, Block: 1103, Properties: 1817},
-	{Hash: 2053401458, Block: 1103, Properties: 1818},
-	{Hash: 1929804781, Block: 1103, Properties: 1819},
+	{Hash: 3831985371, Block: 1205, Properties: 3370},
+	{Hash: 341777128, Block: 1205, Properties: 3371},
+	{Hash: 3108708029, Block: 1205, Properties: 3372},
+	{Hash: 874498210, Block: 1205, Properties: 3373},
+	{Hash: 2776678800, Block: 1205, Properties: 3374},
+	{Hash: 1397083699, Block: 1205, Properties: 3375},
+	{Hash: 2053401458, Block: 1205, Properties: 3376},
+	{Hash: 1929804781, Block: 1205, Properties: 3377},
 }

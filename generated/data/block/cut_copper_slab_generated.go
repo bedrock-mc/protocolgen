@@ -9,6 +9,6 @@ var CutCopperSlab = Block{
 }
 
 var cutCopperSlabStates = [...]State{
-	{Hash: 2077943524, Block: 623, Properties: 1134},
-	{Hash: 4195770585, Block: 623, Properties: 1135},
+	{Hash: 2077943524, Block: 684, Properties: 2139},
+	{Hash: 4195770585, Block: 684, Properties: 2140},
 }

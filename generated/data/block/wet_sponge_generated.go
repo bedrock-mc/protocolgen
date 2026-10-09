@@ -9,5 +9,5 @@ var WetSponge = Block{
 }
 
 var wetSpongeStates = [...]State{
-	{Hash: 3269942042, Block: 16, Properties: 29},
+	{Hash: 3269942042, Block: 16, Properties: 32},
 }

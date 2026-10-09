@@ -9,5 +9,5 @@ var PaleMossBlock = Block{
 }
 
 var paleMossBlockStates = [...]State{
-	{Hash: 924256979, Block: 725, Properties: 1286},
+	{Hash: 924256979, Block: 791, Properties: 2398},
 }

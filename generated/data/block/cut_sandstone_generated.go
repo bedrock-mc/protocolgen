@@ -9,5 +9,5 @@ var CutSandstone = Block{
 }
 
 var cutSandstoneStates = [...]State{
-	{Hash: 297338022, Block: 792, Properties: 727},
+	{Hash: 297338022, Block: 864, Properties: 1393},
 }

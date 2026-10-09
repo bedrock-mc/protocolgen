@@ -9,5 +9,5 @@ var DeadBubbleCoralBlock = Block{
 }
 
 var deadBubbleCoralBlockStates = [...]State{
-	{Hash: 1385671143, Block: 254, Properties: 566},
+	{Hash: 1385671143, Block: 275, Properties: 1092},
 }

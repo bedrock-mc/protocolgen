@@ -9,8 +9,8 @@ var ElementConstructor = Block{
 }
 
 var elementConstructorStates = [...]State{
-	{Hash: 2422841464, Block: 535, Properties: 771},
-	{Hash: 2361366641, Block: 535, Properties: 771},
-	{Hash: 2299891818, Block: 535, Properties: 771},
-	{Hash: 2238416995, Block: 535, Properties: 771},
+	{Hash: 2422841464, Block: 585, Properties: 1490},
+	{Hash: 2361366641, Block: 585, Properties: 1490},
+	{Hash: 2299891818, Block: 585, Properties: 1490},
+	{Hash: 2238416995, Block: 585, Properties: 1490},
 }

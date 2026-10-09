@@ -9,6 +9,6 @@ var SmoothStoneSlab = Block{
 }
 
 var smoothStoneSlabStates = [...]State{
-	{Hash: 98367658, Block: 1139, Properties: 829},
-	{Hash: 3884087355, Block: 1139, Properties: 830},
+	{Hash: 98367658, Block: 1250, Properties: 1580},
+	{Hash: 3884087355, Block: 1250, Properties: 1581},
 }

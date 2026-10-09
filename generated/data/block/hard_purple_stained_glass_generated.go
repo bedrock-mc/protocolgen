@@ -9,5 +9,5 @@ var HardPurpleStainedGlass = Block{
 }
 
 var hardPurpleStainedGlassStates = [...]State{
-	{Hash: 3172656462, Block: 487, Properties: 904},
+	{Hash: 3172656462, Block: 537, Properties: 1745},
 }

@@ -9,7 +9,7 @@ var StrippedCherryLog = Block{
 }
 
 var strippedCherryLogStates = [...]State{
-	{Hash: 629722723, Block: 508, Properties: 939},
-	{Hash: 3869383448, Block: 508, Properties: 940},
-	{Hash: 1685029294, Block: 508, Properties: 940},
+	{Hash: 629722723, Block: 558, Properties: 1807},
+	{Hash: 3869383448, Block: 558, Properties: 1808},
+	{Hash: 1685029294, Block: 558, Properties: 1808},
 }

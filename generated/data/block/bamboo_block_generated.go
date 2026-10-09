@@ -9,7 +9,7 @@ var BambooBlock = Block{
 }
 
 var bambooBlockStates = [...]State{
-	{Hash: 2109882402, Block: 13, Properties: 26},
-	{Hash: 3165188973, Block: 13, Properties: 26},
-	{Hash: 1054575831, Block: 13, Properties: 26},
+	{Hash: 2109882402, Block: 13, Properties: 29},
+	{Hash: 3165188973, Block: 13, Properties: 29},
+	{Hash: 1054575831, Block: 13, Properties: 29},
 }

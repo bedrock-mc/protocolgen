@@ -9,5 +9,5 @@ var LightBlueShulkerBox = Block{
 }
 
 var lightBlueShulkerBoxStates = [...]State{
-	{Hash: 885329687, Block: 987, Properties: 1651},
+	{Hash: 885329687, Block: 1082, Properties: 3057},
 }

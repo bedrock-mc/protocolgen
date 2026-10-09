@@ -9,6 +9,6 @@ var PaleHangingMoss = Block{
 }
 
 var paleHangingMossStates = [...]State{
-	{Hash: 1318033419, Block: 819, Properties: 1419},
-	{Hash: 262726848, Block: 819, Properties: 1420},
+	{Hash: 1318033419, Block: 895, Properties: 2606},
+	{Hash: 262726848, Block: 895, Properties: 2607},
 }

@@ -9,12 +9,12 @@ var EndPortalFrame = Block{
 }
 
 var endPortalFrameStates = [...]State{
-	{Hash: 4235663451, Block: 821, Properties: 1427},
-	{Hash: 3845983056, Block: 821, Properties: 1427},
-	{Hash: 529626177, Block: 821, Properties: 1427},
-	{Hash: 3411742850, Block: 821, Properties: 1427},
-	{Hash: 3128944080, Block: 821, Properties: 1428},
-	{Hash: 2463362157, Block: 821, Properties: 1428},
-	{Hash: 1432452126, Block: 821, Properties: 1428},
-	{Hash: 3583939399, Block: 821, Properties: 1428},
+	{Hash: 4235663451, Block: 897, Properties: 2614},
+	{Hash: 3845983056, Block: 897, Properties: 2614},
+	{Hash: 529626177, Block: 897, Properties: 2614},
+	{Hash: 3411742850, Block: 897, Properties: 2614},
+	{Hash: 3128944080, Block: 897, Properties: 2615},
+	{Hash: 2463362157, Block: 897, Properties: 2615},
+	{Hash: 1432452126, Block: 897, Properties: 2615},
+	{Hash: 3583939399, Block: 897, Properties: 2615},
 }

@@ -9,7 +9,7 @@ var StrippedJungleLog = Block{
 }
 
 var strippedJungleLogStates = [...]State{
-	{Hash: 516789807, Block: 186, Properties: 215},
-	{Hash: 3756450532, Block: 186, Properties: 215},
-	{Hash: 1572096378, Block: 186, Properties: 215},
+	{Hash: 516789807, Block: 200, Properties: 431},
+	{Hash: 3756450532, Block: 200, Properties: 431},
+	{Hash: 1572096378, Block: 200, Properties: 431},
 }

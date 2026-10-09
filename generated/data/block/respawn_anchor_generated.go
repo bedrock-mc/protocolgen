@@ -9,9 +9,9 @@ var RespawnAnchor = Block{
 }
 
 var respawnAnchorStates = [...]State{
-	{Hash: 1763447706, Block: 217, Properties: 483},
-	{Hash: 1701972883, Block: 217, Properties: 484},
-	{Hash: 1886397352, Block: 217, Properties: 485},
-	{Hash: 1824922529, Block: 217, Properties: 486},
-	{Hash: 1517548414, Block: 217, Properties: 487},
+	{Hash: 1763447706, Block: 233, Properties: 966},
+	{Hash: 1701972883, Block: 233, Properties: 967},
+	{Hash: 1886397352, Block: 233, Properties: 968},
+	{Hash: 1824922529, Block: 233, Properties: 969},
+	{Hash: 1517548414, Block: 233, Properties: 970},
 }

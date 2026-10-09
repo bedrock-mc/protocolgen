@@ -9,5 +9,5 @@ var Bush = Block{
 }
 
 var bushStates = [...]State{
-	{Hash: 2961272235, Block: 984, Properties: 1650},
+	{Hash: 2961272235, Block: 1078, Properties: 3056},
 }

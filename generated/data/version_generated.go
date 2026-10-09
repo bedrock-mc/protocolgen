@@ -3,18 +3,18 @@
 package data
 
 const (
-	SchemaVersion  = 1
-	CloudburstRef  = "fb969c547236d87a17181941cd585a0eb18f7ceb"
-	BDSVersion     = "1.26.32.2"
-	BlockShapesRef = "59d4007e322a0acf2b0add59133c81e1f7e4c501"
+	SchemaVersion = 1
+	CloudburstRef = "659ce1e2eee3a67045693f4fd5515c6ccf571953"
+	BDSVersion    = "1.26.32.2"
 	// SemanticSourceLockSHA256 identifies the lock used for semantic generation.
-	SemanticSourceLockSHA256 = "4eeb12b0c3142fa0b266bc5acb096a56d7c442667f2702fe00e137cdb6aef732"
+	SemanticSourceLockSHA256 = "f8274d33814ca73c468a495ba0f4861d19df4ae15b88a72deb666cf9048d2a3a"
 )
 
 var GeneratedCounts = Counts{
-	BlockStates: 16913,
-	Biomes:      88,
-	VoxelShapes: 57,
-	Entities:    96,
-	Foods:       38,
+	BlockStates:                 22091,
+	Biomes:                      89,
+	VoxelShapes:                 57,
+	Entities:                    96,
+	Foods:                       38,
+	UnavailableLiquidClipShapes: 30,
 }

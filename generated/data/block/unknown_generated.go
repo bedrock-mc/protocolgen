@@ -9,5 +9,5 @@ var Unknown = Block{
 }
 
 var unknownStates = [...]State{
-	{Hash: 4294967294, Block: 554, Properties: 1006},
+	{Hash: 4294967294, Block: 605, Properties: 1942},
 }

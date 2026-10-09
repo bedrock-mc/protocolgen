@@ -9,5 +9,5 @@ var DeepslateEmeraldOre = Block{
 }
 
 var deepslateEmeraldOreStates = [...]State{
-	{Hash: 2877006551, Block: 872, Properties: 71},
+	{Hash: 2877006551, Block: 954, Properties: 2684},
 }

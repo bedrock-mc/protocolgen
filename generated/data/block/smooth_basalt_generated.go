@@ -9,5 +9,5 @@ var SmoothBasalt = Block{
 }
 
 var smoothBasaltStates = [...]State{
-	{Hash: 368734180, Block: 271, Properties: 12},
+	{Hash: 368734180, Block: 295, Properties: 12},
 }

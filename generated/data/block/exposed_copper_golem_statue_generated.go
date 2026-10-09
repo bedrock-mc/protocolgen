@@ -9,8 +9,8 @@ var ExposedCopperGolemStatue = Block{
 }
 
 var exposedCopperGolemStatueStates = [...]State{
-	{Hash: 1150593401, Block: 1122, Properties: 822},
-	{Hash: 2178711194, Block: 1122, Properties: 822},
-	{Hash: 3857710075, Block: 1122, Properties: 822},
-	{Hash: 2250258864, Block: 1122, Properties: 822},
+	{Hash: 1150593401, Block: 1229, Properties: 1573},
+	{Hash: 2178711194, Block: 1229, Properties: 1573},
+	{Hash: 3857710075, Block: 1229, Properties: 1573},
+	{Hash: 2250258864, Block: 1229, Properties: 1573},
 }

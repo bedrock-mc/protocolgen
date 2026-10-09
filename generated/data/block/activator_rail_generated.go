@@ -9,16 +9,16 @@ var ActivatorRail = Block{
 }
 
 var activatorRailStates = [...]State{
-	{Hash: 2602891109, Block: 125, Properties: 312},
-	{Hash: 2664365932, Block: 125, Properties: 312},
-	{Hash: 2479941463, Block: 125, Properties: 313},
-	{Hash: 2541416286, Block: 125, Properties: 313},
-	{Hash: 2848790401, Block: 125, Properties: 313},
-	{Hash: 2910265224, Block: 125, Properties: 313},
-	{Hash: 849474876, Block: 125, Properties: 312},
-	{Hash: 788000053, Block: 125, Properties: 312},
-	{Hash: 726525230, Block: 125, Properties: 313},
-	{Hash: 665050407, Block: 125, Properties: 313},
-	{Hash: 1095374168, Block: 125, Properties: 313},
-	{Hash: 1033899345, Block: 125, Properties: 313},
+	{Hash: 2602891109, Block: 136, Properties: 610},
+	{Hash: 2664365932, Block: 136, Properties: 610},
+	{Hash: 2479941463, Block: 136, Properties: 611},
+	{Hash: 2541416286, Block: 136, Properties: 611},
+	{Hash: 2848790401, Block: 136, Properties: 611},
+	{Hash: 2910265224, Block: 136, Properties: 611},
+	{Hash: 849474876, Block: 136, Properties: 610},
+	{Hash: 788000053, Block: 136, Properties: 610},
+	{Hash: 726525230, Block: 136, Properties: 611},
+	{Hash: 665050407, Block: 136, Properties: 611},
+	{Hash: 1095374168, Block: 136, Properties: 611},
+	{Hash: 1033899345, Block: 136, Properties: 611},
 }

@@ -9,5 +9,5 @@ var ChiseledCinnabar = Block{
 }
 
 var chiseledCinnabarStates = [...]State{
-	{Hash: 3779517914, Block: 870, Properties: 853},
+	{Hash: 3779517914, Block: 952, Properties: 1628},
 }

@@ -9,8 +9,8 @@ var OxidizedCopperBulb = Block{
 }
 
 var oxidizedCopperBulbStates = [...]State{
-	{Hash: 16042046, Block: 262, Properties: 28},
-	{Hash: 365952687, Block: 262, Properties: 596},
-	{Hash: 1071348617, Block: 262, Properties: 28},
-	{Hash: 3605613412, Block: 262, Properties: 596},
+	{Hash: 16042046, Block: 286, Properties: 390},
+	{Hash: 365952687, Block: 286, Properties: 1153},
+	{Hash: 1071348617, Block: 286, Properties: 390},
+	{Hash: 3605613412, Block: 286, Properties: 1153},
 }

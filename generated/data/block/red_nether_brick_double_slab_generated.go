@@ -9,6 +9,6 @@ var RedNetherBrickDoubleSlab = Block{
 }
 
 var redNetherBrickDoubleSlabStates = [...]State{
-	{Hash: 1297727413, Block: 176, Properties: 123},
-	{Hash: 620032994, Block: 176, Properties: 123},
+	{Hash: 1297727413, Block: 190, Properties: 221},
+	{Hash: 620032994, Block: 190, Properties: 221},
 }

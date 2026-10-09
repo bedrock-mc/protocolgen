@@ -9,5 +9,5 @@ var Beacon = Block{
 }
 
 var beaconStates = [...]State{
-	{Hash: 561914719, Block: 46, Properties: 122},
+	{Hash: 561914719, Block: 50, Properties: 220},
 }

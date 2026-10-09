@@ -3,66 +3,70 @@ package generator
 import (
 	"encoding/json"
 	"fmt"
+	"slices"
 )
 
-// rawBlockShapes holds the fields supplied by the pinned block geometry source.
-type rawBlockShapes struct {
-	Name           string          `json:"name"`
-	Hash           uint32          `json:"blockStateHash"`
-	CollisionShape json.RawMessage `json:"collisionShape"`
-	OutlineShape   json.RawMessage `json:"shape"`
-	TintMethod     string          `json:"tintMethod"`
+// LiquidClipOmission identifies one reviewed invalid box in the locked extract.
+// Its geometry is unavailable; it must not be replaced with an empty or guessed box.
+type LiquidClipOmission struct {
+	Name      string    `json:"name"`
+	Hash      uint32    `json:"hash"`
+	SourceBox []float64 `json:"source_box"`
 }
 
-// applyBlockShapes joins the geometry source to every state by both hash and
-// name. Other block properties stay with their original source.
-func applyBlockShapes(states []rawBlockState, path string) error {
-	var shapes []rawBlockShapes
-	if err := readJSON(path, &shapes, false); err != nil {
-		return fmt.Errorf("read block shapes: %w", err)
-	}
-	if len(shapes) != len(states) || len(shapes) == 0 {
-		return fmt.Errorf("block shape coverage: got %d states, want %d", len(shapes), len(states))
-	}
-	byHash := make(map[uint32]rawBlockShapes, len(shapes))
-	for _, shape := range shapes {
-		if _, ok := byHash[shape.Hash]; ok {
-			return fmt.Errorf("duplicate block shape hash %d", shape.Hash)
+// prepareBlockShapes validates required geometry and applies exact source omissions.
+// Empty outlines keep their known-empty meaning without retaining zero-volume boxes.
+func prepareBlockShapes(states []rawBlockState, omissions []LiquidClipOmission) error {
+	remaining := make(map[uint32]LiquidClipOmission, len(omissions))
+	for _, omission := range omissions {
+		if omission.Name == "" || len(omission.SourceBox) != 6 {
+			return fmt.Errorf("liquid clip omission %d has incomplete identity or geometry", omission.Hash)
 		}
-		byHash[shape.Hash] = shape
+		if _, ok := remaining[omission.Hash]; ok {
+			return fmt.Errorf("duplicate liquid clip omission %d", omission.Hash)
+		}
+		remaining[omission.Hash] = omission
 	}
 	for i := range states {
 		state := &states[i]
-		shape, ok := byHash[state.Hash]
-		if !ok {
-			return fmt.Errorf("block shapes missing %s hash %d", state.Name, state.Hash)
+		if _, present, err := decodeShape(state.CollisionShape); err != nil || !present {
+			return fmt.Errorf("%s collision shape is missing or invalid: %v", state.Name, err)
 		}
-		if shape.Name != state.Name {
-			return fmt.Errorf("block shape hash %d names %s, want %s", state.Hash, shape.Name, state.Name)
-		}
-		if _, present, err := decodeShape(shape.CollisionShape); err != nil || !present {
-			return fmt.Errorf("%s block collision shape is missing or invalid: %v", state.Name, err)
-		}
-		outline, present, err := decodeShape(shape.OutlineShape)
+		outline, present, err := decodeShape(state.OutlineShape)
 		if err != nil || !present {
-			return fmt.Errorf("%s block outline shape is missing or invalid: %v", state.Name, err)
+			return fmt.Errorf("%s outline shape is missing or invalid: %v", state.Name, err)
 		}
-		// A zero-volume outline has no visible extent. Retain it as a known
-		// empty shape, which is different from an unavailable shape.
 		visible := make([]generatedBox, 0, len(outline))
 		for _, box := range outline {
 			if box[3] > box[0] && box[4] > box[1] && box[5] > box[2] {
 				visible = append(visible, box)
 			}
 		}
-		encoded, err := json.Marshal(visible)
+		state.OutlineShape, err = json.Marshal(visible)
 		if err != nil {
-			return fmt.Errorf("%s block outline shape: %w", state.Name, err)
+			return fmt.Errorf("%s outline shape: %w", state.Name, err)
 		}
-		state.CollisionShape = shape.CollisionShape
-		state.OutlineShape = encoded
-		state.TintMethod = shape.TintMethod
-		delete(byHash, state.Hash)
+
+		_, _, shapeErr := decodeShape(state.LiquidClipShape)
+		omission, omitted := remaining[state.Hash]
+		if omitted {
+			var actual []float64
+			if state.Name != omission.Name || json.Unmarshal(state.LiquidClipShape, &actual) != nil || !slices.Equal(actual, omission.SourceBox) {
+				return fmt.Errorf("liquid clip omission %d no longer matches its source name and box", state.Hash)
+			}
+			if shapeErr == nil {
+				return fmt.Errorf("liquid clip omission %d is obsolete: the source shape is valid", state.Hash)
+			}
+			state.LiquidClipShape = nil
+			delete(remaining, state.Hash)
+		} else if shapeErr != nil {
+			return fmt.Errorf("%s hash %d liquid clip shape: %w", state.Name, state.Hash, shapeErr)
+		}
+	}
+	for _, omission := range omissions {
+		if _, ok := remaining[omission.Hash]; ok {
+			return fmt.Errorf("liquid clip omission %d is obsolete: its source state is missing", omission.Hash)
+		}
 	}
 	return nil
 }

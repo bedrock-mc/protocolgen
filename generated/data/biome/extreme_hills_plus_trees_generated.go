@@ -18,5 +18,5 @@ var ExtremeHillsPlusTrees = Biome{
 	FoliageSnow:       0,
 	MapWaterColorRGBA: 0x0e63aba5,
 	Rain:              true,
-	Tags:              []string{"animal", "extreme_hills", "forest", "monster", "mountain", "overworld", "spawns_cold_variant_farm_animals"},
+	Tags:              []string{"animal", "extreme_hills", "forest", "has_structure_abandoned_camp", "monster", "mountain", "overworld", "spawns_cold_variant_farm_animals"},
 }

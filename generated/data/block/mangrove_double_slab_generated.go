@@ -9,6 +9,6 @@ var MangroveDoubleSlab = Block{
 }
 
 var mangroveDoubleSlabStates = [...]State{
-	{Hash: 1838512108, Block: 163, Properties: 398},
-	{Hash: 2065167537, Block: 163, Properties: 398},
+	{Hash: 1838512108, Block: 177, Properties: 789},
+	{Hash: 2065167537, Block: 177, Properties: 789},
 }

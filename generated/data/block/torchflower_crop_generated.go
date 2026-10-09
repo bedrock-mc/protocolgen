@@ -9,12 +9,12 @@ var TorchflowerCrop = Block{
 }
 
 var torchflowerCropStates = [...]State{
-	{Hash: 3864466115, Block: 804, Properties: 1407},
-	{Hash: 3925940938, Block: 804, Properties: 1407},
-	{Hash: 3987415761, Block: 804, Properties: 1407},
-	{Hash: 4048890584, Block: 804, Properties: 1407},
-	{Hash: 3618566823, Block: 804, Properties: 1407},
-	{Hash: 3680041646, Block: 804, Properties: 1407},
-	{Hash: 3741516469, Block: 804, Properties: 1407},
-	{Hash: 3802991292, Block: 804, Properties: 1407},
+	{Hash: 3864466115, Block: 877, Properties: 2590},
+	{Hash: 3925940938, Block: 877, Properties: 2590},
+	{Hash: 3987415761, Block: 877, Properties: 2590},
+	{Hash: 4048890584, Block: 877, Properties: 2590},
+	{Hash: 3618566823, Block: 877, Properties: 2590},
+	{Hash: 3680041646, Block: 877, Properties: 2590},
+	{Hash: 3741516469, Block: 877, Properties: 2590},
+	{Hash: 3802991292, Block: 877, Properties: 2590},
 }

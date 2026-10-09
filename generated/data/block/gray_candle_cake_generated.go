@@ -9,6 +9,6 @@ var GrayCandleCake = Block{
 }
 
 var grayCandleCakeStates = [...]State{
-	{Hash: 2697510622, Block: 37, Properties: 103},
-	{Hash: 3752817193, Block: 37, Properties: 104},
+	{Hash: 2697510622, Block: 40, Properties: 201},
+	{Hash: 3752817193, Block: 40, Properties: 202},
 }
