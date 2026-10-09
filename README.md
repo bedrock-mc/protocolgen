@@ -1,275 +1,95 @@
 # protocolgen
 
-Turns Mojang and Endstone's Bedrock protocol docs into one version-locked
-manifest, then generates typed Go and Rust packet code from it.
+Generates Bedrock protocol packet code for Go and Rust from one checked,
+version-locked manifest.
 
-The [`data`](data/README.md) module owns shared game-data generators and the
-source lock. Their active Go catalog lives in a separate
-[`generated/data`](generated/data/README.md) module, imported as
-`github.com/bedrock-mc/protocolgen/generated/data`. Both modules use only the
-standard library and are independent of the packet tooling.
+The manifest is built by reconciling Mojang's protocol docs with Endstone's BDS
+dump. When the two disagree, the field is only accepted through an explicit,
+fingerprinted correction, and that correction stops applying if its source
+changes. The Go and Rust emitters read only the manifest.
 
-The two doc sources disagree with each other and are each individually wrong
-sometimes. protocolgen pins both, diffs every wire field, and refuses to
-guess: a disagreement is resolved only by a fingerprinted correction or
-adjudication, which stops applying the moment the source it was written
-against changes. Emitters read the resulting manifest only — never the raw
-docs.
+## Generated versions
 
-## Commands
+| Directory | Minecraft | Protocol | Notes |
+| --- | --- | --- | --- |
+| `generated/1.26.51` | 1.26.50 / 1.26.51 | 2193 | Current release; matches the gophertunnel fork |
+| `generated/1.26.50` | 1.26.50 preview | 2187 | |
+| `generated/1.26.44` | 1.26.44 | 2168 | Hotfix derived from 1.26.40 |
+| `generated/1.26.40` | 1.26.40 | 2168 | |
+| `candidates/1.26.60-preview.25` | 1.26.60 preview | 2211 | Ingested only, not yet emitted |
 
-`cmd/protocolgen`:
+Each version directory holds `manifest.json`, the Go package under `go/protocol`,
+the Rust crate under `rust/` (`bedrock-protocol-<version>`), and the corrections
+and source lock used to build them.
 
-| Command | Purpose |
-| --- | --- |
-| `hash-source` | Hash a local source tree for an immutable source lock. |
-| `ingest` | Lower one source into inspectable claims. |
-| `reconcile` | Compare claims and write a canonical manifest. |
-| `validate` | Validate a manifest and its fingerprints. |
-| `emit-go` | Generate Go packet types from a manifest. |
-| `emit-rust` | Generate Rust packet types from a manifest. |
-| `parity` | Compare the manifest with an independently generated Axolotl layout. |
-| `verify-gophertunnel` | Compare the manifest with the pinned gophertunnel source oracle. |
-| `changelog` | Diff two corrected schema snapshots into a Markdown changelog. |
-| `update-guide` | Turn a changelog into gophertunnel transcription snippets. |
-| `hotfix` | Derive a fingerprinted same-protocol patch from a reconciled manifest. |
-
-Run any command with `-h` for its flags.
-
-`vanilla-data/cmd/vanilla-data` is the companion BDS capture bot. It follows
-the same offline gophertunnel login flow as `df-mc/datagen`. Gophertunnel owns
-the encrypted session and exposes the decrypted packet bodies; protocolgen's
-generated packet definitions then decode the captured registry packets. It is
-a separate Go module so its game-client dependencies do not leak into the
-protocol generator.
-
-## Regenerating the 1.26.40 snapshot
-
-`generated/1.26.40/` is the checked-in manifest and matching Go/Rust output
-for protocol 2168, built from pinned Mojang and Endstone checkouts. Mojang's
-docs are EULA-restricted and not vendored here, so regenerating needs local
-checkouts of both (requires Go 1.26):
-
-```sh
-MOJANG_DIR=/path/to/bedrock-protocol-docs/json \
-ENDSTONE_DIR=/path/to/protocol-docs \
-make regen
-```
-
-`make verify` runs the same pipeline and fails if it produces drift from
-what's checked in — this is what CI enforces.
-
-## Regenerating the 1.26.44 same-ID hotfix
-
-Minecraft 1.26.44 retained protocol 2168 but added one outer presence marker
-around `RemoveScore.ObjectiveName`. Because no second complete 1.26.44 source
-snapshot exists, `generated/1.26.44/hotfix.json` derives the release from the
-fully reconciled 1.26.40 manifest. The spec pins the complete base-manifest
-hash, the exact node hash, the target codec evidence, and one constrained
-`wrap_optional` operation. Run:
-
-```sh
-make hotfix
-```
-
-The derivation fails closed if the base manifest or target node changes. It
-does not relax normal reconciliation or allow arbitrary manifest replacement.
-
-## Regenerating the 1.26.50 snapshot
-
-`generated/1.26.50/` targets Minecraft 1.26.50 preview build 25 and protocol
-2187. It reconciles the pinned raw Mojang schemas with the matching Endstone
-BDS graph and includes separately pinned Lens evidence for disputed directional
-behavior. In particular, the Primitive Shapes evidence corrects the attached
-entity field to an optional runtime actor ID.
-
-```sh
-make regen-1.26.50 \
-  MOJANG_DIR=/path/to/bedrock-protocol-docs/json \
-  ENDSTONE_DIR=/path/to/endstone-protocol-docs
-```
-
-The target refuses stale source trees, stale corrections, stale adjudications,
-and incomplete packet directions before either emitter runs.
-
-## Regenerating the 1.26.51 release
-
-`generated/1.26.51/` targets protocol 2193, the release that 1.26.50 and 1.26.51
-clients speak and that the gophertunnel fork implements. It pins Mojang's
-`v1.26.51` metadata release and Endstone's 1.26.51.1 stable dump, and the
-gophertunnel oracle runs against it.
-
-```sh
-make verify-1.26.51 \
-  MOJANG_DIR=/path/to/bedrock-protocol-docs/json \
-  ENDSTONE_DIR=/path/to/endstone-protocol-docs
-```
-
-## Preparing the 1.26.60 preview
-
-Candidate inputs for protocol 2211 are available under
-[`candidates/1.26.60-preview.25/`](candidates/1.26.60-preview.25/).
-`make ingest-1.26.60` verifies the pinned sources and applies the reviewed
-corrections. This candidate still needs reconciliation and release validation
-before Go or Rust codecs can be emitted.
-
-## Capturing vanilla BDS data
-
-Vanilla data is evidence alongside a generated protocol, not an input to wire
-reconciliation. The capture includes actor identifiers, biomes, recipes,
-creative content, items, dimensions, features, camera presets, trims, and
-voxel shapes. Raw `.dat` bodies are retained as lossless evidence. Established
-packet-derived files are emitted directly in the version's `vanilla-data/`
-directory: `required_item_list.json`,
-`entity_identifiers.nbt`, `entity_id_map.json`, and
-`biome_definitions.json`. Their schemas are validated against PMMP BedrockData,
-which explicitly publishes them as vanilla-packet-trace formats; PMMP is the
-compatibility reference, not a separate output namespace. Prismarine's
-normalized catalog schemas require non-packet metadata, while Cloudburst's
-aggregate creative and recipe files are consumer-specific.
-
-The login packet capture also retains `ResourcePacksInfoPacket` and
-`ResourcePackStackPacket` as raw `.dat` evidence and emits
-`resource_packs.json`. Its `info` and `stack` sections keep session negotiation
-flags, world-template identity, stack ordering, and experiments separate from
-the pack metadata. `ResourcePackDataInfoPacket` is recorded when BDS sends it,
-so its file hash is included as packet metadata when present; the bot declines
-pack downloads and never captures chunk bodies.
-
-The workflow can also run the pinned Endstone exporter in a separate,
-headless BDS phase before the packet bot connects. Endstone's live registry
-walk supplies the canonical `block_palette.nbt` plus its documented block,
-item, shape, tag, creative, and recipe files. The exporter is built from the
-exact revision and a SHA-256-pinned, Apache-attributed headless adapter under
-`vanilla-data/endstone/`; it never drives the ImGui/OpenGL DevTools window.
-Its `endstone-export.json` manifest authenticates every output and is checked
-against the target BDS version before the Go bot accepts anything. The bot
-preserves the Endstone/Cloudburst `block_palette.nbt` and additionally emits
-PMMP's established concatenated `canonical_block_states.nbt`. It deliberately
-does not invent `block_state_meta_map.json` or `block_id_to_item_id_map.json`:
-Endstone's runtime registry does not expose those legacy semantics exactly.
-
-An individual generated source lock enables this phase only when an Endstone
-revision explicitly supports the exact BDS release and the archive build is
-pinned separately (`endstone.bds_version` must equal `bds.version`, while
-`bds.archive_version` must match the official archive filename and checksum).
-For example, the 1.26.40 lock uses Endstone's declared 1.26.40 release with
-the official 1.26.40.8 Linux archive. Until such a pin exists, the workflow
-warns and captures packet-derived data only; it does not substitute a
-mismatched Endstone binary. This remains the case for the checked-in 1.26.44
-source lock because the available upstream Endstone revision is for a
-different BDS release.
-
-Creative and recipe files therefore become available as authenticated
-Endstone-native outputs once a matching pin is added. Their established PMMP
-packet representations still require the canonical block-item/legacy mapping
-that Endstone does not expose, so the exporter does not claim to synthesize
-those files. `StartGame.CustomBlocks` is not a substitute: it is empty on an
-addon-free server and is not the vanilla runtime block palette.
-
-Dimensions and features are optional because vanilla BDS does not send them
-for every world; `capture.json` explicitly records whether they were captured
-or absent. It also records the target, BDS archive and executable SHA-256
-values, server settings, exact gophertunnel build, and every raw or compatible
-output digest.
-
-For the pinned local BDS configured as described by the version's source lock:
-
-```sh
-make vanilla-data \
-  BDS_BINARY=/absolute/path/to/bedrock_server
-```
-
-The bot verifies `server.properties` beside that executable before connecting.
-
-The `Protocol update BDS data` workflow is deliberately a post-correction
-stage, not an unconditional continuation of ingestion. After source
-reconciliation and any manual corrections or adjudications are complete, its
-first job validates and builds the corrected generated manifest and exact
-updated gophertunnel codec. Only then may the capture job start the matching
-BDS. Once this workflow exists on the default branch, manual dispatch can
-select an update branch; `workflow_call` also lets a protocol updater invoke
-capture once its manual gate is resolved.
-
-Each generated version pins its BDS download, archive checksum/build, and
-gophertunnel module version in `generated/<version>/vanilla-source.json`. The
-1.26.40 capture uses `vanilla-data/go-1.26.40.mod` and the
-`protocolgen_12640` build tag, so both the bot's gophertunnel runtime and the
-derived-data decoder are selected for 1.26.40. Other versions use the default
-module and generated packet binding. The compatibility exporter fails
-validation if its selected generated package does not match the manifest;
-updating that binding is part of adding the next generated version.
-The captured artifact should be reviewed and checked in beside that generated
-protocol before the update is considered complete. The workflow requires
-explicit EULA acceptance and never commits or pushes automatically.
-
-## The manifest
-
-Emitters consume only the canonical manifest, never the source docs. Before
-`reconcile` writes one, it checks: source versions match across every pin;
-field order, width, signedness, and length prefixes agree between sources;
-validation bounds stay attached to the exact field they constrain; optionals
-and union selectors are unambiguous; and every correction or adjudication
-still matches the source content it was written against.
+`generated/data` is a separate, standard-library-only Go module of shared game
+data (`github.com/bedrock-mc/protocolgen/generated/data`), generated by `data/`.
 
 ## Generated code
 
-- **Go** — one file per packet, shared semantic types, closed union
-  interfaces, symmetric `Marshal(IO)` methods, and a `Packet` interface with
-  ID methods plus direction-aware constructor pools (`NewPacket`,
-  `NewClientPacket`, `NewServerPacket`). Native type mappings (`uuid.UUID`,
-  `mgl32.Vec2`/`Vec3`, `color.RGBA`, a value-based `Optional[T]`) are on by
-  default; disable with `-native-types=false`.
-- **Rust** — one module per packet, native enums, fallible slice-based
-  `Encode`/`Decode`, direction-checked `Packet::decode_from`, and refcounted
-  `Bytes` for buffer/NBT fields. Collection limits are a `Reader` setting
-  (`set_collection_limit`), not a hard cap.
+- **Go:** one file per packet, a `Packet` interface, symmetric `Marshal(IO)`
+  methods, and direction-aware pools (`NewPacket`, `NewClientPacket`,
+  `NewServerPacket`). Native types (`uuid.UUID`, `mgl32` vectors, `color.RGBA`,
+  `Optional[T]`) are on by default (`-native-types=false` to disable).
+- **Rust:** one module per packet, native enums, fallible slice-based
+  `Encode`/`Decode`, direction-checked `Packet::decode_from`, and `Bytes` for
+  buffer and NBT fields. Collection limits are set per `Reader`.
 
-Both backends add target-language ergonomics on top of the manifest; neither
-infers wire shape from anything but it.
+## Regenerating
 
-## Laying the tree out like gophertunnel
+Requires Go 1.26 and local checkouts of both doc sources. Mojang's docs are
+EULA-restricted and are never committed here.
 
-`make gophertunnel-layout GOPHERTUNNEL_DIR=/path/to/gophertunnel` emits the
-1.26.51 tree into `build/gophertunnel-layout` with each enum's constants
-beside the packet that uses them under the fork's names and with the fork's
-field names, so `diff -r` against the checkout shows real shape gaps rather
-than naming. The reviewed mapping is `generated/1.26.51/gophertunnel-layout.json`
-(seeded by `tools/seed-gophertunnel-layout`, hand-editable) and the remaining
-gaps are listed in `docs/gophertunnel-gap-1.26.51.md`. Seed it from a checkout
-at the oracle's locked commit so the diff compares one protocol version. The
-same run seeds `generated/1.26.51/semantics.json`, the reviewed list of plain integer fields
-that carry an actor identifier; `emit-go` applies it by default so every such
-field uses the `ActorUniqueID*` / `ActorRuntimeID*` IO operations. The overlay is only
-applied when `emit-go -layout` is given; the checked-in generated tree never
-uses it.
+```sh
+make regen-1.26.51 \
+  MOJANG_DIR=/path/to/bedrock-protocol-docs/json \
+  ENDSTONE_DIR=/path/to/endstone-protocol-docs
+```
 
-## Cross-checking against independent implementations
+`make verify-1.26.51` (and `verify`, `verify-1.26.50`) rebuilds the same output
+and fails on any drift from what is checked in; CI runs this. Other targets:
 
-- `parity` compares the manifest against an independently generated Axolotl
-  layout.
-- `verify-gophertunnel` parses a pinned gophertunnel commit at the manifest's
-  protocol
-  (`tools/gophertunnel-oracle/lock.json`, a full SHA — checkout is rejected if
-  `HEAD` differs) with `go/ast` and reports each packet as `AGREEMENT`,
-  `DIVERGENCE`, `UNRESOLVED`, or `NO_ORACLE_PACKET`. Only an unaccepted
-  `DIVERGENCE` fails the command. Reviewed exceptions live in
-  `tools/gophertunnel-oracle/accepted-divergences.json`, each with a reason,
-  evidence locator, and what would settle it.
+| Target | Does |
+| --- | --- |
+| `regen`, `regen-1.26.50` | Rebuild 1.26.40 or 1.26.50 |
+| `hotfix` | Derive 1.26.44 from the 1.26.40 manifest |
+| `ingest-1.26.60` | Ingest the 1.26.60 preview candidate |
+| `gophertunnel-layout GOPHERTUNNEL_DIR=…` | Emit 1.26.51 in gophertunnel's layout and names, for `diff -r` |
+| `generate-data`, `verify-data`, `test-data` | Rebuild or check `generated/data` |
+| `vanilla-data BDS_BINARY=…` | Capture vanilla registries from a pinned BDS |
+| `differential` | Run the differential codec tests |
 
-Neither check edits the manifest. A real disagreement is resolved by a
-correction under `generated/<version>/corrections/`, not by trusting the
-oracle.
+## CLI
 
-## Scope
+`go run ./cmd/protocolgen <command> -h` for flags.
 
-Ingestion, reconciliation, validation, and Go/Rust emission are implemented.
-The Rust backend doesn't yet emit borrowed string views. `migration/` holds
-the superseded v1 (Axolotl-based) work and isn't an input to the current
-pipeline.
+| Command | Does |
+| --- | --- |
+| `hash-source` | Hash a source tree for a source lock |
+| `ingest` | Turn one source into claims |
+| `reconcile` | Compare claims and write the manifest |
+| `validate` | Check a manifest and its fingerprints |
+| `emit-go`, `emit-rust` | Generate code from a manifest |
+| `verify-gophertunnel` | Compare the manifest with a pinned gophertunnel commit |
+| `parity` | Compare the manifest with an Axolotl layout |
+| `changelog`, `update-guide` | Diff two versions; turn the diff into gophertunnel edits |
+| `hotfix` | Apply a fingerprinted same-protocol patch |
 
-See [docs/protocolgen-v2.md](docs/protocolgen-v2.md) for the manifest model,
-source policy, adjudication format, and known gaps.
+## Layout
 
-> Mojang protocol docs are EULA-restricted. Supply them as a local input;
-> don't commit them. All checked-in fixtures are synthetic.
+| Path | Contents |
+| --- | --- |
+| `cmd/protocolgen`, `internal/` | The generator |
+| `generated/` | Checked-in manifests and generated Go/Rust per version |
+| `candidates/` | Inputs for versions not yet released |
+| `data/`, `generated/data/` | Shared game-data generator and its output |
+| `vanilla-data/` | BDS capture bot (separate module); see its workflow in `.github/workflows/vanilla-data.yml` |
+| `differential/` | Cross-implementation codec tests |
+| `tools/` | gophertunnel oracle and layout seeding |
+| `docs/` | Design and status notes |
+| `migration/` | The superseded v1 generator; not used |
+
+More detail: [docs/protocolgen-v2.md](docs/protocolgen-v2.md) covers the manifest
+model, corrections and adjudications;
+[docs/gophertunnel-gap-1.26.51.md](docs/gophertunnel-gap-1.26.51.md) lists the
+remaining differences from gophertunnel.
