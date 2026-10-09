@@ -1,0 +1,128 @@
+package main
+
+import (
+	"crypto/sha256"
+	"encoding/json"
+	"fmt"
+	"io/fs"
+	"os"
+	"path/filepath"
+	"strings"
+	"testing"
+
+	"github.com/bedrock-mc/protocolgen/data/source"
+)
+
+func TestRunUsesLockedIdentities(t *testing.T) {
+	lockPath, cloudburst, bds := lockedFixture(t)
+	output := t.TempDir()
+	stats, err := run(lockPath, "", cloudburst, bds, output)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if stats.BlockStates != 2 || stats.Entities != 2 || stats.Foods != 1 {
+		t.Fatalf("unexpected generated counts: %+v", stats)
+	}
+	data, err := os.ReadFile(filepath.Join(output, "semantic_sources.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var manifest map[string]any
+	if err := json.Unmarshal(data, &manifest); err != nil {
+		t.Fatal(err)
+	}
+	locked, err := source.Open(lockPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	digest, err := locked.Lock.SHA256()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for key, want := range map[string]string{
+		"cloudburst_ref": "locked-cloudburst", "bds_version": "locked-bds", "block_shapes_ref": "locked-shapes",
+		"source_lock_sha256": digest,
+	} {
+		if manifest[key] != want {
+			t.Errorf("generated %s = %v, want %s", key, manifest[key], want)
+		}
+	}
+}
+
+func TestRunRejectsChangedInputsBeforeWriting(t *testing.T) {
+	lockPath, cloudburst, bds := lockedFixture(t)
+	if err := os.WriteFile(filepath.Join(cloudburst, "block_properties.json"), []byte("[]"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	output := filepath.Join(t.TempDir(), "output")
+	if _, err := run(lockPath, "", cloudburst, bds, output); err == nil || !strings.Contains(err.Error(), "digest is") {
+		t.Fatalf("run error = %v, want source digest rejection", err)
+	}
+	if _, err := os.Stat(output); !os.IsNotExist(err) {
+		t.Fatalf("invalid inputs created an output directory: %v", err)
+	}
+}
+
+// lockedFixture creates a complete local lock over the synthetic generator inputs.
+func lockedFixture(t *testing.T) (lockPath, cloudburst, bds string) {
+	t.Helper()
+	cloudburst, cloudburstFiles := copyLockedTree(t, "cloudburst")
+	bds, bdsFiles := copyLockedTree(t, "bds")
+	dir := t.TempDir()
+	shapes, err := os.ReadFile(filepath.Join(cloudburst, "block_properties.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	// The synthetic state table has the same shapes under Cloudburst's field name.
+	shapes = []byte(strings.ReplaceAll(string(shapes), `"outlineShape"`, `"shape"`))
+	if err := os.WriteFile(filepath.Join(dir, "shapes.json"), shapes, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	lock := source.Lock{
+		SchemaVersion: 1, MinecraftVersion: "fixture", ProtocolVersion: 1,
+		Inputs: map[string]source.Input{"block_shapes": {
+			Path: "shapes.json", Revision: "locked-shapes", SHA256: fmt.Sprintf("%x", sha256.Sum256(shapes)),
+		}},
+		Semantic: source.SemanticInputs{
+			CloudburstRef: "locked-cloudburst", BDSVersion: "locked-bds",
+			CloudburstFiles: cloudburstFiles, BDSFiles: bdsFiles,
+		},
+	}
+	data, err := json.Marshal(lock)
+	if err != nil {
+		t.Fatal(err)
+	}
+	lockPath = filepath.Join(dir, "lock.json")
+	if err := os.WriteFile(lockPath, data, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	return lockPath, cloudburst, bds
+}
+
+// copyLockedTree copies and hashes a synthetic source tree for a CLI test.
+func copyLockedTree(t *testing.T, name string) (string, map[string]string) {
+	t.Helper()
+	root := t.TempDir()
+	if err := os.CopyFS(root, os.DirFS(filepath.Join("..", "..", "internal", "generator", "testdata", name))); err != nil {
+		t.Fatal(err)
+	}
+	manifest := make(map[string]string)
+	if err := filepath.WalkDir(root, func(path string, entry fs.DirEntry, err error) error {
+		if err != nil || entry.IsDir() {
+			return err
+		}
+		data, err := os.ReadFile(path)
+		if err != nil {
+			return err
+		}
+		relative, err := filepath.Rel(root, path)
+		if err != nil {
+			return err
+		}
+		manifest[filepath.ToSlash(relative)] = fmt.Sprintf("%x", sha256.Sum256(data))
+		return nil
+	}); err != nil {
+		t.Fatal(err)
+	}
+	return root, manifest
+}

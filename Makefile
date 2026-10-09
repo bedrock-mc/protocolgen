@@ -232,3 +232,22 @@ gophertunnel-layout:
 		-layout $(LAYOUT_TARGET)/gophertunnel-layout.json \
 		-out build/gophertunnel-layout \
 		-protocol-import protocolgen/build/gophertunnel-layout/protocol
+
+CLOUDBURST_DIR ?=
+BDS_DIR ?=
+
+.PHONY: test-data generate-data verify-data
+
+test-data:
+	$(GO) -C data test ./...
+	$(GO) -C data vet ./...
+	$(GO) -C generated/data test ./...
+	$(GO) -C generated/data vet ./...
+
+generate-data:
+	$(GO) -C data run ./cmd/generate -cloudburst "$(CLOUDBURST_DIR)" -bds "$(BDS_DIR)"
+	$(GO) -C data run ./cmd/runtimegen
+
+verify-data: generate-data
+	git diff --exit-code -- generated/data
+	@test -z "$$(git ls-files --others --exclude-standard -- generated/data)" || (echo "generation added untracked catalog files" >&2; exit 1)

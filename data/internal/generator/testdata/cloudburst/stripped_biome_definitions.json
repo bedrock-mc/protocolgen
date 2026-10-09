@@ -1,0 +1,18 @@
+{
+  "minecraft:plains": {
+    "id": 1,
+    "temperature": 0.8,
+    "downfall": 0.4,
+    "redSporeDensity": 0,
+    "blueSporeDensity": 0,
+    "ashDensity": 0,
+    "whiteAshDensity": 0,
+    "foliageSnow": 0,
+    "depth": 0.125,
+    "scale": 0.05,
+    "mapWaterColor": {"a": 165, "r": 68, "g": 175, "b": 245},
+    "rain": true,
+    "tags": ["animal", "overworld", "plains"],
+    "chunkGenData": null
+  }
+}

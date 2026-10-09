@@ -44,7 +44,7 @@ jobs:
 
       - uses: actions/setup-go@v5
         with:
-          go-version: '1.26.x'
+          go-version: stable
           cache: true
           cache-dependency-path: |
             go.sum
@@ -90,7 +90,7 @@ jobs:
 
       - uses: actions/setup-go@v5
         with:
-          go-version: '1.26.x'
+          go-version: stable
           cache: true
           cache-dependency-path: |
             vanilla-data/go.sum
@@ -193,7 +193,7 @@ jobs:
           cd "$RUNNER_TEMP/protocolgen-bds"
           LD_LIBRARY_PATH=. ./bedrock_server > "$RUNNER_TEMP/protocolgen-bds.log" 2>&1 &
           echo "$!" > "$RUNNER_TEMP/protocolgen-bds.pid"
-          for attempt in $(seq 1 60); do
+          for _ in $(seq 1 60); do
             if grep -q 'Server started' "$RUNNER_TEMP/protocolgen-bds.log"; then
               exit 0
             fi
