@@ -42,15 +42,15 @@ Treat returned slices and definitions as immutable.
 
 The runtime target is Minecraft 1.26.50, protocol 2193, with 2,076 runtime items.
 The semantic snapshot uses CloudburstMC/Data commit
-`659ce1e2eee3a67045693f4fd5515c6ccf571953` for blocks and biomes, and BDS
-`1.26.32.2` for base entity, food and named-shape inputs. The same Cloudburst
+`659ce1e2eee3a67045693f4fd5515c6ccf571953` for blocks, biomes and named voxel
+shapes, and BDS `1.26.32.2` for base entity and food inputs. The same Cloudburst
 revision supplies runtime item identities; Allay remains an item-property and
 supplemental-tag input only.
 These inputs contain 22,091 block states, 89 biomes, 96 entities, 38 foods and
-57 named voxel shapes. Biome metadata may lack a numeric ID; check `HasID`
+220 named voxel shapes. Biome metadata may lack a numeric ID; check `HasID`
 before using `ID`. [semantic_sources.json](semantic_sources.json) and
 `version_generated.go` record these independent versions and counts.
-`BDSVersion` describes the behavior and named-shape inputs, not the runtime
+`BDSVersion` describes the entity and food inputs, not the runtime
 protocol target.
 
 Entity values describe base components. They do not execute goals, events,

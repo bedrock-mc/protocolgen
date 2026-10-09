@@ -6,8 +6,8 @@ package voxelshape
 var ShelfFacingEast = Shape{
 	Name: "minecraft:shelf_facing_east",
 	Boxes: []Box{
-		{0, 0, 0, 0.3125, 0.25, 1},
-		{0, 0.25, 0, 0.1875, 1, 1},
+		{0, 0, 0, 0.1875, 1, 1},
+		{0.1875, 0, 0, 0.3125, 0.25, 1},
 		{0.1875, 0.75, 0, 0.3125, 1, 1},
 	},
 }

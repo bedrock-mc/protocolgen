@@ -11,7 +11,7 @@ import (
 	"github.com/bedrock-mc/protocolgen/data/source"
 )
 
-// TestLockedCloudburstOutput verifies full committed block and biome output when
+// TestLockedCloudburstOutput verifies full committed block, biome and named-shape output when
 // authenticated source files are available. CI supplies them; unit tests stay offline.
 func TestLockedCloudburstOutput(t *testing.T) {
 	dir := os.Getenv("PROTOCOLGEN_CLOUDBURST_DIR")
@@ -47,7 +47,7 @@ func TestLockedCloudburstOutput(t *testing.T) {
 			t.Errorf("%s differs from the locked extract; regenerate the catalog (%v)", name, err)
 		}
 	}
-	for _, pkg := range []string{"block", "biome"} {
+	for _, pkg := range []string{"block", "biome", "voxelshape"} {
 		entries, err := os.ReadDir(filepath.Join(catalog, pkg))
 		if err != nil {
 			t.Fatal(err)

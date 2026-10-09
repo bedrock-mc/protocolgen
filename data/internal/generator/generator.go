@@ -38,7 +38,7 @@ type Stats struct {
 	UnavailableLiquidClipShapes int `json:"unavailable_liquid_clip_shapes"`
 }
 
-// GenerateCloudburst generates block and biome files from the locked extract.
+// GenerateCloudburst generates block, biome and named-shape files from the locked extract.
 // Keeping this projection separate lets CI verify it without downloading BDS packs.
 func GenerateCloudburst(cfg Config) (map[string][]byte, Stats, error) {
 	if cfg.CloudburstDir == "" {
@@ -66,6 +66,15 @@ func GenerateCloudburst(cfg Config) (map[string][]byte, Stats, error) {
 	}
 	stats.Biomes = count
 
+	shapeFiles, count, err := generateVoxelShapes(filepath.Join(cfg.CloudburstDir, "voxel_shapes.json"))
+	if err != nil {
+		return nil, stats, fmt.Errorf("generate voxel shapes: %w", err)
+	}
+	if err := mergeFiles(files, shapeFiles); err != nil {
+		return nil, stats, err
+	}
+	stats.VoxelShapes = count
+
 	return files, stats, nil
 }
 
@@ -79,17 +88,6 @@ func Generate(cfg Config) (map[string][]byte, Stats, error) {
 	if err != nil {
 		return nil, stats, err
 	}
-
-	shapeFiles, count, err := generateVoxelShapes(filepath.Join(
-		cfg.BDSDir, "behavior_packs", "experimental_vanilla_shapes", "shapes",
-	))
-	if err != nil {
-		return nil, stats, fmt.Errorf("generate voxel shapes: %w", err)
-	}
-	if err := mergeFiles(files, shapeFiles); err != nil {
-		return nil, stats, err
-	}
-	stats.VoxelShapes = count
 
 	entityFiles, count, err := generateEntities(filepath.Join(
 		cfg.BDSDir, "behavior_packs", "vanilla", "entities",
@@ -538,109 +536,6 @@ var %s = Biome{
 	}
 	files[indexName] = formatted
 	return files, len(raw), nil
-}
-
-type rawVoxelShape struct {
-	VoxelShape struct {
-		Description struct {
-			Identifier string `json:"identifier"`
-		} `json:"description"`
-		Shape struct {
-			Boxes []struct {
-				Min [3]float32 `json:"min"`
-				Max [3]float32 `json:"max"`
-			} `json:"boxes"`
-		} `json:"shape"`
-	} `json:"minecraft:voxel_shape"`
-}
-
-type generatedVoxelShape struct {
-	Name  string
-	Boxes []generatedBox
-}
-
-// generateVoxelShapes converts named shape coordinates into block-local units.
-func generateVoxelShapes(dir string) (map[string][]byte, int, error) {
-	paths, err := filepath.Glob(filepath.Join(dir, "*.json"))
-	if err != nil {
-		return nil, 0, err
-	}
-	if len(paths) == 0 {
-		return nil, 0, fmt.Errorf("no shape files found in %s", dir)
-	}
-	values := make([]generatedVoxelShape, 0, len(paths))
-	for _, path := range paths {
-		var raw rawVoxelShape
-		if err := readJSON(path, &raw, true); err != nil {
-			return nil, 0, err
-		}
-		name := raw.VoxelShape.Description.Identifier
-		if name == "" {
-			return nil, 0, fmt.Errorf("%s has no voxel shape identifier", path)
-		}
-		value := generatedVoxelShape{Name: name, Boxes: make([]generatedBox, 0, len(raw.VoxelShape.Shape.Boxes))}
-		for _, box := range raw.VoxelShape.Shape.Boxes {
-			generated := generatedBox{
-				box.Min[0] / 16, box.Min[1] / 16, box.Min[2] / 16,
-				box.Max[0] / 16, box.Max[1] / 16, box.Max[2] / 16,
-			}
-			if err := validateBox(generated); err != nil {
-				return nil, 0, fmt.Errorf("%s: %w", name, err)
-			}
-			value.Boxes = append(value.Boxes, generated)
-		}
-		values = append(values, value)
-	}
-	sort.Slice(values, func(i, j int) bool { return values[i].Name < values[j].Name })
-	for index := 1; index < len(values); index++ {
-		if values[index-1].Name == values[index].Name {
-			return nil, 0, fmt.Errorf("duplicate voxel shape %s", values[index].Name)
-		}
-	}
-	names := make([]string, len(values))
-	for index, value := range values {
-		names[index] = value.Name
-	}
-	identifiers, err := exportedIdentifiers(names)
-	if err != nil {
-		return nil, 0, err
-	}
-	fileNames, err := generatedFileNames(names)
-	if err != nil {
-		return nil, 0, err
-	}
-
-	files := make(map[string][]byte, len(values)+1)
-	for _, value := range values {
-		var output bytes.Buffer
-		fmt.Fprintf(&output, "// %s is the generated definition for %s.\nvar %s = Shape{\nName: %q,\nBoxes: []Box{\n",
-			identifiers[value.Name], value.Name, identifiers[value.Name], value.Name)
-		for _, box := range value.Boxes {
-			fmt.Fprintf(&output, "{%s, %s, %s, %s, %s, %s},\n",
-				goFloat(box[0]), goFloat(box[1]), goFloat(box[2]),
-				goFloat(box[3]), goFloat(box[4]), goFloat(box[5]))
-		}
-		output.WriteString("},\n}\n\n")
-		fileName := "voxelshape/" + fileNames[value.Name]
-		formatted, err := formattedGo(fileName, generatedSource("voxelshape", output.String()))
-		if err != nil {
-			return nil, 0, err
-		}
-		files[fileName] = formatted
-	}
-	var output bytes.Buffer
-	output.WriteString("var all = []Shape{\n")
-	for _, value := range values {
-		fmt.Fprintf(&output, "%s,\n", identifiers[value.Name])
-	}
-	output.WriteString("}\n")
-	const indexName = "voxelshape/index_generated.go"
-	formatted, err := formattedGo(indexName, generatedSource("voxelshape", output.String()))
-	if err != nil {
-		return nil, 0, err
-	}
-	files[indexName] = formatted
-	return files, len(values), nil
 }
 
 type rawEntity struct {
