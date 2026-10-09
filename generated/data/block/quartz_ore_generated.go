@@ -9,5 +9,5 @@ var QuartzOre = Block{
 }
 
 var quartzOreStates = [...]State{
-	{Hash: 4089001907, Block: 517, Properties: 13},
+	{Hash: 4089001907, Block: 567, Properties: 1854},
 }

@@ -18,5 +18,5 @@ var FlowerForest = Biome{
 	FoliageSnow:       0,
 	MapWaterColorRGBA: 0x20a3cca5,
 	Rain:              true,
-	Tags:              []string{"animal", "bee_habitat", "flower_forest", "monster", "mutated", "overworld"},
+	Tags:              []string{"animal", "bee_habitat", "flower_forest", "has_structure_abandoned_camp", "monster", "mutated", "overworld"},
 }

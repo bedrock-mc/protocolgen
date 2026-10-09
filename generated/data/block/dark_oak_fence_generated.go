@@ -9,5 +9,20 @@ var DarkOakFence = Block{
 }
 
 var darkOakFenceStates = [...]State{
-	{Hash: 329256923, Block: 1025, Properties: 1721},
+	{Hash: 1877417069, Block: 1122, Properties: 3191},
+	{Hash: 3053973536, Block: 1122, Properties: 3192},
+	{Hash: 2955018996, Block: 1122, Properties: 3193},
+	{Hash: 2191716481, Block: 1122, Properties: 3194},
+	{Hash: 3342319952, Block: 1122, Properties: 3195},
+	{Hash: 2839533181, Block: 1122, Properties: 1577},
+	{Hash: 3130501377, Block: 1122, Properties: 3196},
+	{Hash: 2016234100, Block: 1122, Properties: 3197},
+	{Hash: 822110498, Block: 1122, Properties: 3198},
+	{Hash: 4109280107, Block: 1122, Properties: 3199},
+	{Hash: 4010325567, Block: 1122, Properties: 1576},
+	{Hash: 1136409910, Block: 1122, Properties: 3200},
+	{Hash: 102659227, Block: 1122, Properties: 3201},
+	{Hash: 1784226610, Block: 1122, Properties: 3202},
+	{Hash: 2075194806, Block: 1122, Properties: 3203},
+	{Hash: 3071540671, Block: 1122, Properties: 3204},
 }

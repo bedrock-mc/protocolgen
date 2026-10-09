@@ -9,6 +9,6 @@ var CrimsonSlab = Block{
 }
 
 var crimsonSlabStates = [...]State{
-	{Hash: 1615941900, Block: 770, Properties: 1355},
-	{Hash: 908746065, Block: 770, Properties: 1356},
+	{Hash: 1615941900, Block: 839, Properties: 2506},
+	{Hash: 908746065, Block: 839, Properties: 2507},
 }

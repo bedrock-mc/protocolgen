@@ -78,14 +78,13 @@ func validateReleaseMetadata(releaseJSON, semanticJSON []byte) error {
 	}
 	if lock.MinecraftVersion != data.MinecraftVersion || lock.ProtocolVersion != data.ProtocolVersion ||
 		lock.Semantic.CloudburstRef != data.CloudburstRef || lock.Semantic.BDSVersion != data.BDSVersion ||
-		lock.Inputs["block_shapes"].Revision != data.BlockShapesRef {
+		lock.Inputs["liquid_clip_omissions"].Revision != data.CloudburstRef {
 		return fmt.Errorf("compiled source pins differ from the release lock")
 	}
 	var semantic struct {
 		SchemaVersion    int         `json:"schema_version"`
 		CloudburstRef    string      `json:"cloudburst_ref"`
 		BDSVersion       string      `json:"bds_version"`
-		BlockShapesRef   string      `json:"block_shapes_ref"`
 		SourceLockSHA256 string      `json:"source_lock_sha256"`
 		Counts           data.Counts `json:"counts"`
 	}
@@ -94,7 +93,7 @@ func validateReleaseMetadata(releaseJSON, semanticJSON []byte) error {
 	}
 	if semantic.SchemaVersion != data.SchemaVersion || semantic.SourceLockSHA256 != digest ||
 		semantic.CloudburstRef != data.CloudburstRef || semantic.BDSVersion != data.BDSVersion ||
-		semantic.BlockShapesRef != data.BlockShapesRef || semantic.Counts != data.GeneratedCounts {
+		semantic.Counts != data.GeneratedCounts {
 		return fmt.Errorf("semantic manifest differs from the compiled catalog")
 	}
 	return nil

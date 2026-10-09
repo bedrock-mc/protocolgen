@@ -9,6 +9,6 @@ var DeepslateBrickDoubleSlab = Block{
 }
 
 var deepslateBrickDoubleSlabStates = [...]State{
-	{Hash: 550697427, Block: 285, Properties: 345},
-	{Hash: 1656792268, Block: 285, Properties: 345},
+	{Hash: 550697427, Block: 313, Properties: 680},
+	{Hash: 1656792268, Block: 313, Properties: 680},
 }

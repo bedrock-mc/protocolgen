@@ -9,6 +9,6 @@ var Peony = Block{
 }
 
 var peonyStates = [...]State{
-	{Hash: 1203451821, Block: 1284, Properties: 769},
-	{Hash: 148145250, Block: 1284, Properties: 770},
+	{Hash: 1203451821, Block: 1400, Properties: 1488},
+	{Hash: 148145250, Block: 1400, Properties: 1489},
 }

@@ -9,5 +9,5 @@ var RedTerracotta = Block{
 }
 
 var redTerracottaStates = [...]State{
-	{Hash: 4056274162, Block: 259, Properties: 577},
+	{Hash: 4056274162, Block: 281, Properties: 1118},
 }

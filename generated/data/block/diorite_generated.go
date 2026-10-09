@@ -9,5 +9,5 @@ var Diorite = Block{
 }
 
 var dioriteStates = [...]State{
-	{Hash: 2538477610, Block: 35, Properties: 98},
+	{Hash: 2538477610, Block: 38, Properties: 196},
 }

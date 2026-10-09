@@ -18,5 +18,5 @@ var Forest = Biome{
 	FoliageSnow:       0,
 	MapWaterColorRGBA: 0x1e97f2a5,
 	Rain:              true,
-	Tags:              []string{"animal", "bee_habitat", "forest", "monster", "overworld"},
+	Tags:              []string{"animal", "bee_habitat", "forest", "has_structure_abandoned_camp", "monster", "oak_forest", "overworld"},
 }

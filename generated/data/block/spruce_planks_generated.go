@@ -9,5 +9,5 @@ var SprucePlanks = Block{
 }
 
 var sprucePlanksStates = [...]State{
-	{Hash: 1613885864, Block: 1288, Properties: 650},
+	{Hash: 1613885864, Block: 1404, Properties: 1244},
 }

@@ -141,3 +141,22 @@ func TestRuntimeCatalogRejectsMissingAndStaleFacts(t *testing.T) {
 		})
 	}
 }
+
+// TestDecodeRegistry preserves zero values and rejects incomplete or duplicate identities.
+func TestDecodeRegistry(t *testing.T) {
+	const valid = `{"name":"minecraft:air","id":-158,"version":0,"componentBased":false}`
+	rows, err := decodeRegistry([]byte(`[` + valid + `]`))
+	if err != nil || len(rows) != 1 || rows["minecraft:air"] != (RegistryEntry{RuntimeID: -158}) {
+		t.Fatalf("registry = %v, error = %v", rows, err)
+	}
+	for _, input := range []string{
+		`[` + valid + `,` + valid + `]`,
+		`[{"name":"minecraft:air","id":-158,"version":0}]`,
+		`[{"name":"minecraft:air","componentBased":false,"version":0}]`,
+		`[{"name":"minecraft:air","id":-158,"componentBased":false}]`,
+	} {
+		if _, err := decodeRegistry([]byte(input)); err == nil {
+			t.Fatalf("accepted invalid registry %s", input)
+		}
+	}
+}

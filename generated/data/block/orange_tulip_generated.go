@@ -9,5 +9,5 @@ var OrangeTulip = Block{
 }
 
 var orangeTulipStates = [...]State{
-	{Hash: 3283491574, Block: 971, Properties: 121},
+	{Hash: 3283491574, Block: 1060, Properties: 219},
 }

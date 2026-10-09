@@ -9,6 +9,6 @@ var BrickDoubleSlab = Block{
 }
 
 var brickDoubleSlabStates = [...]State{
-	{Hash: 1062859389, Block: 53, Properties: 160},
-	{Hash: 2736031770, Block: 53, Properties: 160},
+	{Hash: 1062859389, Block: 57, Properties: 298},
+	{Hash: 2736031770, Block: 57, Properties: 298},
 }

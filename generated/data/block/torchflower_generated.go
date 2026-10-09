@@ -9,5 +9,5 @@ var Torchflower = Block{
 }
 
 var torchflowerStates = [...]State{
-	{Hash: 4161699363, Block: 816, Properties: 121},
+	{Hash: 4161699363, Block: 892, Properties: 219},
 }

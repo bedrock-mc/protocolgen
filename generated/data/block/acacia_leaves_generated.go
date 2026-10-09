@@ -9,8 +9,8 @@ var AcaciaLeaves = Block{
 }
 
 var acaciaLeavesStates = [...]State{
-	{Hash: 1857362751, Block: 281, Properties: 503},
-	{Hash: 802056180, Block: 281, Properties: 503},
-	{Hash: 4117273740, Block: 281, Properties: 503},
-	{Hash: 877613015, Block: 281, Properties: 503},
+	{Hash: 1857362751, Block: 308, Properties: 986},
+	{Hash: 802056180, Block: 308, Properties: 986},
+	{Hash: 4117273740, Block: 308, Properties: 986},
+	{Hash: 877613015, Block: 308, Properties: 986},
 }

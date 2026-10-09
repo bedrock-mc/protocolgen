@@ -9,5 +9,5 @@ var RedstoneBlock = Block{
 }
 
 var redstoneBlockStates = [...]State{
-	{Hash: 512666773, Block: 366, Properties: 775},
+	{Hash: 512666773, Block: 405, Properties: 1494},
 }

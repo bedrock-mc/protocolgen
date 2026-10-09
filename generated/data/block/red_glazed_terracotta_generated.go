@@ -9,10 +9,10 @@ var RedGlazedTerracotta = Block{
 }
 
 var redGlazedTerracottaStates = [...]State{
-	{Hash: 556073414, Block: 412, Properties: 823},
-	{Hash: 494598591, Block: 412, Properties: 823},
-	{Hash: 679023060, Block: 412, Properties: 823},
-	{Hash: 617548237, Block: 412, Properties: 823},
-	{Hash: 801972706, Block: 412, Properties: 823},
-	{Hash: 740497883, Block: 412, Properties: 823},
+	{Hash: 556073414, Block: 455, Properties: 1574},
+	{Hash: 494598591, Block: 455, Properties: 1574},
+	{Hash: 679023060, Block: 455, Properties: 1574},
+	{Hash: 617548237, Block: 455, Properties: 1574},
+	{Hash: 801972706, Block: 455, Properties: 1574},
+	{Hash: 740497883, Block: 455, Properties: 1574},
 }

@@ -9,6 +9,6 @@ var MangroveSlab = Block{
 }
 
 var mangroveSlabStates = [...]State{
-	{Hash: 1917708593, Block: 268, Properties: 617},
-	{Hash: 3740994694, Block: 268, Properties: 618},
+	{Hash: 1917708593, Block: 292, Properties: 1190},
+	{Hash: 3740994694, Block: 292, Properties: 1191},
 }

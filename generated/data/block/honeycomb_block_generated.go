@@ -9,5 +9,5 @@ var HoneycombBlock = Block{
 }
 
 var honeycombBlockStates = [...]State{
-	{Hash: 2128784556, Block: 514, Properties: 944},
+	{Hash: 2128784556, Block: 564, Properties: 1815},
 }

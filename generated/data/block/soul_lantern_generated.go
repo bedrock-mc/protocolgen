@@ -9,6 +9,6 @@ var SoulLantern = Block{
 }
 
 var soulLanternStates = [...]State{
-	{Hash: 3342854247, Block: 726, Properties: 1287},
-	{Hash: 2287547676, Block: 726, Properties: 1288},
+	{Hash: 3342854247, Block: 792, Properties: 2399},
+	{Hash: 2287547676, Block: 792, Properties: 2400},
 }

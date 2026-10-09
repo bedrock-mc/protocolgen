@@ -9,5 +9,5 @@ var Snow = Block{
 }
 
 var snowStates = [...]State{
-	{Hash: 2267532340, Block: 430, Properties: 845},
+	{Hash: 2267532340, Block: 474, Properties: 1620},
 }

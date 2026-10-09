@@ -9,10 +9,10 @@ var PaleOakWallSign = Block{
 }
 
 var paleOakWallSignStates = [...]State{
-	{Hash: 3697065381, Block: 160, Properties: 384},
-	{Hash: 3758540204, Block: 160, Properties: 384},
-	{Hash: 3574115735, Block: 160, Properties: 385},
-	{Hash: 3635590558, Block: 160, Properties: 386},
-	{Hash: 3942964673, Block: 160, Properties: 387},
-	{Hash: 4004439496, Block: 160, Properties: 388},
+	{Hash: 3697065381, Block: 173, Properties: 773},
+	{Hash: 3758540204, Block: 173, Properties: 773},
+	{Hash: 3574115735, Block: 173, Properties: 774},
+	{Hash: 3635590558, Block: 173, Properties: 775},
+	{Hash: 3942964673, Block: 173, Properties: 776},
+	{Hash: 4004439496, Block: 173, Properties: 777},
 }

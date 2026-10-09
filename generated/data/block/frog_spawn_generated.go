@@ -9,5 +9,5 @@ var FrogSpawn = Block{
 }
 
 var frogSpawnStates = [...]State{
-	{Hash: 2644233285, Block: 504, Properties: 936},
+	{Hash: 2644233285, Block: 554, Properties: 1801},
 }

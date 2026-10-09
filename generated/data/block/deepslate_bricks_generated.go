@@ -9,5 +9,5 @@ var DeepslateBricks = Block{
 }
 
 var deepslateBricksStates = [...]State{
-	{Hash: 3480281223, Block: 672, Properties: 345},
+	{Hash: 3480281223, Block: 736, Properties: 680},
 }

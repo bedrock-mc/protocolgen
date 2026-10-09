@@ -9,6 +9,6 @@ var LargeFern = Block{
 }
 
 var largeFernStates = [...]State{
-	{Hash: 3088185042, Block: 907, Properties: 1522},
-	{Hash: 4143491613, Block: 907, Properties: 1523},
+	{Hash: 3088185042, Block: 993, Properties: 2841},
+	{Hash: 4143491613, Block: 993, Properties: 2842},
 }

@@ -9,7 +9,7 @@ var StrippedCherryWood = Block{
 }
 
 var strippedCherryWoodStates = [...]State{
-	{Hash: 3046479491, Block: 608, Properties: 940},
-	{Hash: 1991172920, Block: 608, Properties: 940},
-	{Hash: 4101786062, Block: 608, Properties: 940},
+	{Hash: 3046479491, Block: 668, Properties: 1808},
+	{Hash: 1991172920, Block: 668, Properties: 1808},
+	{Hash: 4101786062, Block: 668, Properties: 1808},
 }

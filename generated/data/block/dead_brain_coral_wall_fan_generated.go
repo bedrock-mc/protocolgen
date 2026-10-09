@@ -9,8 +9,8 @@ var DeadBrainCoralWallFan = Block{
 }
 
 var deadBrainCoralWallFanStates = [...]State{
-	{Hash: 3849968697, Block: 392, Properties: 297},
-	{Hash: 3911443520, Block: 392, Properties: 298},
-	{Hash: 3727019051, Block: 392, Properties: 299},
-	{Hash: 3788493874, Block: 392, Properties: 300},
+	{Hash: 3849968697, Block: 433, Properties: 1563},
+	{Hash: 3911443520, Block: 433, Properties: 1564},
+	{Hash: 3727019051, Block: 433, Properties: 1565},
+	{Hash: 3788493874, Block: 433, Properties: 1566},
 }

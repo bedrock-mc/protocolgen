@@ -9,5 +9,5 @@ var Sulfur = Block{
 }
 
 var sulfurStates = [...]State{
-	{Hash: 761630168, Block: 1084, Properties: 142},
+	{Hash: 761630168, Block: 1184, Properties: 256},
 }

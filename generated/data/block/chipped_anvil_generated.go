@@ -9,8 +9,8 @@ var ChippedAnvil = Block{
 }
 
 var chippedAnvilStates = [...]State{
-	{Hash: 2493044553, Block: 579, Properties: 1043},
-	{Hash: 1804948234, Block: 579, Properties: 1044},
-	{Hash: 1907541867, Block: 579, Properties: 1043},
-	{Hash: 242656704, Block: 579, Properties: 1044},
+	{Hash: 2493044553, Block: 636, Properties: 1982},
+	{Hash: 1804948234, Block: 636, Properties: 1983},
+	{Hash: 1907541867, Block: 636, Properties: 1982},
+	{Hash: 242656704, Block: 636, Properties: 1983},
 }

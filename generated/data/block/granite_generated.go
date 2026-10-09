@@ -9,5 +9,5 @@ var Granite = Block{
 }
 
 var graniteStates = [...]State{
-	{Hash: 3385275638, Block: 18, Properties: 48},
+	{Hash: 3385275638, Block: 18, Properties: 67},
 }

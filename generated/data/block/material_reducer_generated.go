@@ -9,8 +9,8 @@ var MaterialReducer = Block{
 }
 
 var materialReducerStates = [...]State{
-	{Hash: 2866719478, Block: 1322, Properties: 771},
-	{Hash: 2805244655, Block: 1322, Properties: 771},
-	{Hash: 2989669124, Block: 1322, Properties: 771},
-	{Hash: 2928194301, Block: 1322, Properties: 771},
+	{Hash: 2866719478, Block: 1440, Properties: 3629},
+	{Hash: 2805244655, Block: 1440, Properties: 3629},
+	{Hash: 2989669124, Block: 1440, Properties: 3629},
+	{Hash: 2928194301, Block: 1440, Properties: 3629},
 }

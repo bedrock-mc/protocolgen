@@ -9,7 +9,7 @@ var BirchLog = Block{
 }
 
 var birchLogStates = [...]State{
-	{Hash: 1423805714, Block: 208, Properties: 459},
-	{Hash: 2479112285, Block: 208, Properties: 460},
-	{Hash: 368499143, Block: 208, Properties: 460},
+	{Hash: 1423805714, Block: 222, Properties: 924},
+	{Hash: 2479112285, Block: 222, Properties: 925},
+	{Hash: 368499143, Block: 222, Properties: 925},
 }

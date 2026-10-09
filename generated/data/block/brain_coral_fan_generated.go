@@ -9,6 +9,6 @@ var BrainCoralFan = Block{
 }
 
 var brainCoralFanStates = [...]State{
-	{Hash: 3700181851, Block: 231, Properties: 214},
-	{Hash: 3761656674, Block: 231, Properties: 214},
+	{Hash: 3700181851, Block: 248, Properties: 430},
+	{Hash: 3761656674, Block: 248, Properties: 430},
 }

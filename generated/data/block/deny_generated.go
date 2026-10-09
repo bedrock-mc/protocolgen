@@ -9,5 +9,5 @@ var Deny = Block{
 }
 
 var denyStates = [...]State{
-	{Hash: 2775363607, Block: 729, Properties: 1290},
+	{Hash: 2775363607, Block: 795, Properties: 2402},
 }

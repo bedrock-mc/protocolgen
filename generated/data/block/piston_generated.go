@@ -9,10 +9,10 @@ var Piston = Block{
 }
 
 var pistonStates = [...]State{
-	{Hash: 1899755433, Block: 251, Properties: 564},
-	{Hash: 1961230256, Block: 251, Properties: 564},
-	{Hash: 1776805787, Block: 251, Properties: 564},
-	{Hash: 1838280610, Block: 251, Properties: 564},
-	{Hash: 1653856141, Block: 251, Properties: 564},
-	{Hash: 1715330964, Block: 251, Properties: 564},
+	{Hash: 1899755433, Block: 272, Properties: 1090},
+	{Hash: 1961230256, Block: 272, Properties: 1090},
+	{Hash: 1776805787, Block: 272, Properties: 1090},
+	{Hash: 1838280610, Block: 272, Properties: 1090},
+	{Hash: 1653856141, Block: 272, Properties: 1090},
+	{Hash: 1715330964, Block: 272, Properties: 1090},
 }

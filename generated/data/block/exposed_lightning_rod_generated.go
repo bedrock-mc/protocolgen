@@ -9,16 +9,16 @@ var ExposedLightningRod = Block{
 }
 
 var exposedLightningRodStates = [...]State{
-	{Hash: 2804163564, Block: 338, Properties: 290},
-	{Hash: 860623807, Block: 338, Properties: 290},
-	{Hash: 4254025570, Block: 338, Properties: 291},
-	{Hash: 623514653, Block: 338, Properties: 291},
-	{Hash: 4205694920, Block: 338, Properties: 292},
-	{Hash: 3689328299, Block: 338, Properties: 292},
-	{Hash: 3859470135, Block: 338, Properties: 290},
-	{Hash: 4100284532, Block: 338, Properties: 290},
-	{Hash: 1014364845, Block: 338, Properties: 291},
-	{Hash: 3863175378, Block: 338, Properties: 291},
-	{Hash: 966034195, Block: 338, Properties: 292},
-	{Hash: 2634021728, Block: 338, Properties: 292},
+	{Hash: 2804163564, Block: 372, Properties: 585},
+	{Hash: 860623807, Block: 372, Properties: 585},
+	{Hash: 4254025570, Block: 372, Properties: 586},
+	{Hash: 623514653, Block: 372, Properties: 586},
+	{Hash: 4205694920, Block: 372, Properties: 587},
+	{Hash: 3689328299, Block: 372, Properties: 587},
+	{Hash: 3859470135, Block: 372, Properties: 585},
+	{Hash: 4100284532, Block: 372, Properties: 585},
+	{Hash: 1014364845, Block: 372, Properties: 586},
+	{Hash: 3863175378, Block: 372, Properties: 586},
+	{Hash: 966034195, Block: 372, Properties: 587},
+	{Hash: 2634021728, Block: 372, Properties: 587},
 }

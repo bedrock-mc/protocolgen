@@ -9,5 +9,5 @@ var DripstoneBlock = Block{
 }
 
 var dripstoneBlockStates = [...]State{
-	{Hash: 1289380550, Block: 241, Properties: 544},
+	{Hash: 1289380550, Block: 259, Properties: 1069},
 }

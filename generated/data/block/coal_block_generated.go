@@ -9,5 +9,5 @@ var CoalBlock = Block{
 }
 
 var coalBlockStates = [...]State{
-	{Hash: 2126838376, Block: 660, Properties: 1192},
+	{Hash: 2126838376, Block: 723, Properties: 2220},
 }

@@ -9,14 +9,14 @@ var SulfurSpike = Block{
 }
 
 var sulfurSpikeStates = [...]State{
-	{Hash: 4015984009, Block: 104, Properties: 278},
-	{Hash: 1626242352, Block: 104, Properties: 279},
-	{Hash: 3762622550, Block: 104, Properties: 280},
-	{Hash: 1160092092, Block: 104, Properties: 281},
-	{Hash: 3305434036, Block: 104, Properties: 282},
-	{Hash: 2960677438, Block: 104, Properties: 283},
-	{Hash: 2681548923, Block: 104, Properties: 279},
-	{Hash: 522961825, Block: 104, Properties: 280},
-	{Hash: 2215398663, Block: 104, Properties: 281},
-	{Hash: 65773311, Block: 104, Properties: 282},
+	{Hash: 4015984009, Block: 114, Properties: 573},
+	{Hash: 1626242352, Block: 114, Properties: 574},
+	{Hash: 3762622550, Block: 114, Properties: 575},
+	{Hash: 1160092092, Block: 114, Properties: 576},
+	{Hash: 3305434036, Block: 114, Properties: 577},
+	{Hash: 2960677438, Block: 114, Properties: 578},
+	{Hash: 2681548923, Block: 114, Properties: 574},
+	{Hash: 522961825, Block: 114, Properties: 575},
+	{Hash: 2215398663, Block: 114, Properties: 576},
+	{Hash: 65773311, Block: 114, Properties: 577},
 }

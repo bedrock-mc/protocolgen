@@ -9,5 +9,5 @@ var SmoothRedSandstone = Block{
 }
 
 var smoothRedSandstoneStates = [...]State{
-	{Hash: 1329798895, Block: 1277, Properties: 497},
+	{Hash: 1329798895, Block: 1393, Properties: 980},
 }

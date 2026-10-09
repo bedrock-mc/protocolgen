@@ -9,6 +9,6 @@ var DarkOakSlab = Block{
 }
 
 var darkOakSlabStates = [...]State{
-	{Hash: 4063546444, Block: 168, Properties: 402},
-	{Hash: 2459293329, Block: 168, Properties: 403},
+	{Hash: 4063546444, Block: 182, Properties: 793},
+	{Hash: 2459293329, Block: 182, Properties: 794},
 }

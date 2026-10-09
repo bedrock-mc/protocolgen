@@ -9,7 +9,7 @@ var WarpedHyphae = Block{
 }
 
 var warpedHyphaeStates = [...]State{
-	{Hash: 16963668, Block: 771, Properties: 1259},
-	{Hash: 1072270239, Block: 771, Properties: 1259},
-	{Hash: 3182883381, Block: 771, Properties: 1259},
+	{Hash: 16963668, Block: 840, Properties: 2355},
+	{Hash: 1072270239, Block: 840, Properties: 2355},
+	{Hash: 3182883381, Block: 840, Properties: 2355},
 }

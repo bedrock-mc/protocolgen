@@ -4,6 +4,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
@@ -31,6 +32,9 @@ func main() {
 		"generated %d block states, %d biomes, %d voxel shapes, %d entities, and %d foods\n",
 		stats.BlockStates, stats.Biomes, stats.VoxelShapes, stats.Entities, stats.Foods,
 	)
+	if stats.UnavailableLiquidClipShapes > 0 {
+		fmt.Printf("marked %d reviewed liquid clip shapes unavailable; see semantic_sources.json\n", stats.UnavailableLiquidClipShapes)
+	}
 }
 
 // run authenticates every input and derives generation versions from the lock.
@@ -42,34 +46,28 @@ func run(lockPath, cache, cloudburstDir, bdsDir, outputDir string) (generator.St
 	if err := sources.ValidateSemantic(cloudburstDir, bdsDir); err != nil {
 		return generator.Stats{}, err
 	}
-	shapes, err := sources.Read(context.Background(), "block_shapes", cache)
+	if sources.Lock.Inputs["liquid_clip_omissions"].Revision != sources.Lock.Semantic.CloudburstRef {
+		return generator.Stats{}, fmt.Errorf("liquid clip omissions must match the Cloudburst revision")
+	}
+	omitted, err := sources.Read(context.Background(), "liquid_clip_omissions", cache)
 	if err != nil {
 		return generator.Stats{}, err
 	}
-	file, err := os.CreateTemp("", "protocolgen-block-shapes-*.json")
-	if err != nil {
-		return generator.Stats{}, err
-	}
-	defer os.Remove(file.Name())
-	if _, err := file.Write(shapes); err != nil {
-		_ = file.Close()
-		return generator.Stats{}, err
-	}
-	if err := file.Close(); err != nil {
-		return generator.Stats{}, err
+	var omissions []generator.LiquidClipOmission
+	if err := json.Unmarshal(omitted, &omissions); err != nil {
+		return generator.Stats{}, fmt.Errorf("decode liquid clip omissions: %w", err)
 	}
 	digest, err := sources.Lock.SHA256()
 	if err != nil {
 		return generator.Stats{}, err
 	}
 	files, stats, err := generator.Generate(generator.Config{
-		CloudburstDir:    cloudburstDir,
-		BDSDir:           bdsDir,
-		CloudburstRef:    sources.Lock.Semantic.CloudburstRef,
-		BDSVersion:       sources.Lock.Semantic.BDSVersion,
-		BlockShapesPath:  file.Name(),
-		BlockShapesRef:   sources.Lock.Inputs["block_shapes"].Revision,
-		SourceLockSHA256: digest,
+		CloudburstDir:       cloudburstDir,
+		BDSDir:              bdsDir,
+		CloudburstRef:       sources.Lock.Semantic.CloudburstRef,
+		BDSVersion:          sources.Lock.Semantic.BDSVersion,
+		LiquidClipOmissions: omissions,
+		SourceLockSHA256:    digest,
 	})
 	if err != nil {
 		return generator.Stats{}, err

@@ -9,5 +9,5 @@ var Podzol = Block{
 }
 
 var podzolStates = [...]State{
-	{Hash: 1711067891, Block: 565, Properties: 1025},
+	{Hash: 1711067891, Block: 618, Properties: 1961},
 }

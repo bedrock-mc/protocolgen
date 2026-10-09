@@ -9,7 +9,7 @@ var DarkOakLog = Block{
 }
 
 var darkOakLogStates = [...]State{
-	{Hash: 3068923123, Block: 288, Properties: 10},
-	{Hash: 2013616552, Block: 288, Properties: 10},
-	{Hash: 4124229694, Block: 288, Properties: 10},
+	{Hash: 3068923123, Block: 316, Properties: 10},
+	{Hash: 2013616552, Block: 316, Properties: 10},
+	{Hash: 4124229694, Block: 316, Properties: 10},
 }

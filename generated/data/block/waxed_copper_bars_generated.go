@@ -9,5 +9,20 @@ var WaxedCopperBars = Block{
 }
 
 var waxedCopperBarsStates = [...]State{
-	{Hash: 1831984032, Block: 174, Properties: 423},
+	{Hash: 3761880150, Block: 188, Properties: 831},
+	{Hash: 74701803, Block: 188, Properties: 832},
+	{Hash: 3982533567, Block: 188, Properties: 833},
+	{Hash: 2701895162, Block: 188, Properties: 834},
+	{Hash: 1608367243, Block: 188, Properties: 835},
+	{Hash: 1351862070, Block: 188, Properties: 836},
+	{Hash: 3603124474, Block: 188, Properties: 837},
+	{Hash: 3081304255, Block: 188, Properties: 838},
+	{Hash: 522219425, Block: 188, Properties: 839},
+	{Hash: 3314362528, Block: 188, Properties: 840},
+	{Hash: 2927226996, Block: 188, Properties: 841},
+	{Hash: 3757201733, Block: 188, Properties: 842},
+	{Hash: 553060672, Block: 188, Properties: 843},
+	{Hash: 2407168641, Block: 188, Properties: 844},
+	{Hash: 363463749, Block: 188, Properties: 845},
+	{Hash: 2025997684, Block: 188, Properties: 846},
 }

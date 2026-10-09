@@ -9,5 +9,5 @@ var CyanConcrete = Block{
 }
 
 var cyanConcreteStates = [...]State{
-	{Hash: 4237724443, Block: 1064, Properties: 1770},
+	{Hash: 4237724443, Block: 1164, Properties: 3304},
 }

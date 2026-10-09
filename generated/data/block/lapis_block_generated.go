@@ -9,5 +9,5 @@ var LapisBlock = Block{
 }
 
 var lapisBlockStates = [...]State{
-	{Hash: 78929077, Block: 441, Properties: 852},
+	{Hash: 78929077, Block: 485, Properties: 1627},
 }

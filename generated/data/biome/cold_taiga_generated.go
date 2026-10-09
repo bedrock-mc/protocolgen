@@ -18,5 +18,5 @@ var ColdTaiga = Biome{
 	FoliageSnow:       0,
 	MapWaterColorRGBA: 0x205e83a5,
 	Rain:              true,
-	Tags:              []string{"animal", "cold", "forest", "has_structure_trail_ruins", "monster", "overworld", "spawns_cold_variant_farm_animals", "taiga"},
+	Tags:              []string{"animal", "cold", "forest", "has_structure_abandoned_camp", "has_structure_trail_ruins", "monster", "overworld", "spawns_cold_variant_farm_animals", "taiga"},
 }

@@ -9,6 +9,6 @@ var DioriteSlab = Block{
 }
 
 var dioriteSlabStates = [...]State{
-	{Hash: 3669987103, Block: 65, Properties: 212},
-	{Hash: 2370060800, Block: 65, Properties: 213},
+	{Hash: 3669987103, Block: 71, Properties: 396},
+	{Hash: 2370060800, Block: 71, Properties: 397},
 }

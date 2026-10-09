@@ -9,5 +9,5 @@ var Sponge = Block{
 }
 
 var spongeStates = [...]State{
-	{Hash: 4200304857, Block: 178, Properties: 29},
+	{Hash: 4200304857, Block: 192, Properties: 32},
 }

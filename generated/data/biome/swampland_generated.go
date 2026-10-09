@@ -18,5 +18,5 @@ var Swampland = Biome{
 	FoliageSnow:       0,
 	MapWaterColorRGBA: 0x617b64a5,
 	Rain:              true,
-	Tags:              []string{"animal", "monster", "overworld", "slime", "spawns_slimes_on_surface", "swamp", "swamp_water_huge_mushroom"},
+	Tags:              []string{"animal", "has_structure_abandoned_camp", "monster", "overworld", "slime", "spawns_slimes_on_surface", "swamp", "swamp_water_huge_mushroom"},
 }

@@ -9,5 +9,5 @@ var YellowWool = Block{
 }
 
 var yellowWoolStates = [...]State{
-	{Hash: 1549901968, Block: 41, Properties: 114},
+	{Hash: 1549901968, Block: 45, Properties: 212},
 }

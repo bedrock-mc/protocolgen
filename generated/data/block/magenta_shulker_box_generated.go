@@ -9,5 +9,5 @@ var MagentaShulkerBox = Block{
 }
 
 var magentaShulkerBoxStates = [...]State{
-	{Hash: 1407699698, Block: 106, Properties: 285},
+	{Hash: 1407699698, Block: 116, Properties: 580},
 }

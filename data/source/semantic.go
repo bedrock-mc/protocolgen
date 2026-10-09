@@ -26,14 +26,22 @@ func (s *Sources) ValidateSemantic(cloudburstDir, bdsDir string) error {
 	if semantic.CloudburstRef == "" || semantic.BDSVersion == "" {
 		return fmt.Errorf("source lock has no complete semantic source identity")
 	}
-	if err := verifySemanticTree("Cloudburst", cloudburstDir, semantic.CloudburstFiles,
-		"block_properties.json", "stripped_biome_definitions.json"); err != nil {
+	if err := s.ValidateCloudburst(cloudburstDir); err != nil {
 		return err
 	}
 	return verifySemanticTree("BDS", bdsDir, semantic.BDSFiles,
 		"behavior_packs/experimental_vanilla_shapes/shapes/*.json",
 		"behavior_packs/vanilla/entities/*.json",
 		"behavior_packs/vanilla/items/*.json")
+}
+
+// ValidateCloudburst verifies the complete block and biome inputs independently of BDS.
+func (s *Sources) ValidateCloudburst(dir string) error {
+	if s.Lock.Semantic.CloudburstRef == "" {
+		return fmt.Errorf("source lock has no Cloudburst revision")
+	}
+	return verifySemanticTree("Cloudburst", dir, s.Lock.Semantic.CloudburstFiles,
+		"blocks.json", "stripped_biome_definitions.json")
 }
 
 // verifySemanticTree checks the exact input set and the content of each file.

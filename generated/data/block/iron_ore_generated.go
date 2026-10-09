@@ -9,5 +9,5 @@ var IronOre = Block{
 }
 
 var ironOreStates = [...]State{
-	{Hash: 2032622302, Block: 576, Properties: 560},
+	{Hash: 2032622302, Block: 632, Properties: 1085},
 }

@@ -9,16 +9,16 @@ var TrialSpawner = Block{
 }
 
 var trialSpawnerStates = [...]State{
-	{Hash: 3330348502, Block: 1323, Properties: 1953},
-	{Hash: 3268873679, Block: 1323, Properties: 1954},
-	{Hash: 3453298148, Block: 1323, Properties: 1955},
-	{Hash: 3391823325, Block: 1323, Properties: 1955},
-	{Hash: 3576247794, Block: 1323, Properties: 1955},
-	{Hash: 3514772971, Block: 1323, Properties: 1953},
-	{Hash: 1946252613, Block: 1323, Properties: 1953},
-	{Hash: 2007727436, Block: 1323, Properties: 1954},
-	{Hash: 1823302967, Block: 1323, Properties: 1955},
-	{Hash: 1884777790, Block: 1323, Properties: 1955},
-	{Hash: 2192151905, Block: 1323, Properties: 1955},
-	{Hash: 2253626728, Block: 1323, Properties: 1953},
+	{Hash: 3330348502, Block: 1441, Properties: 3630},
+	{Hash: 3268873679, Block: 1441, Properties: 3631},
+	{Hash: 3453298148, Block: 1441, Properties: 3632},
+	{Hash: 3391823325, Block: 1441, Properties: 3632},
+	{Hash: 3576247794, Block: 1441, Properties: 3632},
+	{Hash: 3514772971, Block: 1441, Properties: 3630},
+	{Hash: 1946252613, Block: 1441, Properties: 3630},
+	{Hash: 2007727436, Block: 1441, Properties: 3631},
+	{Hash: 1823302967, Block: 1441, Properties: 3632},
+	{Hash: 1884777790, Block: 1441, Properties: 3632},
+	{Hash: 2192151905, Block: 1441, Properties: 3632},
+	{Hash: 2253626728, Block: 1441, Properties: 3630},
 }

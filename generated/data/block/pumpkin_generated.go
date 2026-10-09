@@ -9,8 +9,8 @@ var Pumpkin = Block{
 }
 
 var pumpkinStates = [...]State{
-	{Hash: 2970556485, Block: 534, Properties: 988},
-	{Hash: 2983574414, Block: 534, Properties: 988},
-	{Hash: 721887527, Block: 534, Properties: 988},
-	{Hash: 2423673708, Block: 534, Properties: 988},
+	{Hash: 2970556485, Block: 584, Properties: 1900},
+	{Hash: 2983574414, Block: 584, Properties: 1900},
+	{Hash: 721887527, Block: 584, Properties: 1900},
+	{Hash: 2423673708, Block: 584, Properties: 1900},
 }

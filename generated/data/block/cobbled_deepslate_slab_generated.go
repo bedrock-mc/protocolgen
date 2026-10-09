@@ -9,6 +9,6 @@ var CobbledDeepslateSlab = Block{
 }
 
 var cobbledDeepslateSlabStates = [...]State{
-	{Hash: 4186243800, Block: 1088, Properties: 293},
-	{Hash: 3790166597, Block: 1088, Properties: 294},
+	{Hash: 4186243800, Block: 1188, Properties: 1441},
+	{Hash: 3790166597, Block: 1188, Properties: 1442},
 }

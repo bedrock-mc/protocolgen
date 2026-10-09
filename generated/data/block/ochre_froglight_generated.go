@@ -9,7 +9,7 @@ var OchreFroglight = Block{
 }
 
 var ochreFroglightStates = [...]State{
-	{Hash: 2635043821, Block: 290, Properties: 658},
-	{Hash: 1579737250, Block: 290, Properties: 658},
-	{Hash: 3764091404, Block: 290, Properties: 658},
+	{Hash: 2635043821, Block: 318, Properties: 1252},
+	{Hash: 1579737250, Block: 318, Properties: 1252},
+	{Hash: 3764091404, Block: 318, Properties: 1252},
 }

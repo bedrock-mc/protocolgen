@@ -9,5 +9,20 @@ var ExposedCopperBars = Block{
 }
 
 var exposedCopperBarsStates = [...]State{
-	{Hash: 519234921, Block: 859, Properties: 423},
+	{Hash: 2179408107, Block: 938, Properties: 831},
+	{Hash: 1571619158, Block: 938, Properties: 832},
+	{Hash: 2414705954, Block: 938, Properties: 833},
+	{Hash: 2556192007, Block: 938, Properties: 834},
+	{Hash: 3456568374, Block: 938, Properties: 835},
+	{Hash: 3713073547, Block: 938, Properties: 836},
+	{Hash: 1308518855, Block: 938, Properties: 837},
+	{Hash: 3744905314, Block: 938, Properties: 838},
+	{Hash: 1124101536, Block: 938, Properties: 839},
+	{Hash: 2626925729, Block: 938, Properties: 840},
+	{Hash: 3470012525, Block: 938, Properties: 841},
+	{Hash: 1500885436, Block: 938, Properties: 842},
+	{Hash: 216907649, Block: 938, Properties: 843},
+	{Hash: 2657766976, Block: 938, Properties: 844},
+	{Hash: 253212284, Block: 938, Properties: 845},
+	{Hash: 505244589, Block: 938, Properties: 846},
 }

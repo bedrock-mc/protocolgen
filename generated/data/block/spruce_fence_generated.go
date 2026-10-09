@@ -9,5 +9,20 @@ var SpruceFence = Block{
 }
 
 var spruceFenceStates = [...]State{
-	{Hash: 1246777405, Block: 150, Properties: 369},
+	{Hash: 1024275095, Block: 163, Properties: 719},
+	{Hash: 721471666, Block: 163, Properties: 720},
+	{Hash: 4128929230, Block: 163, Properties: 721},
+	{Hash: 4145079395, Block: 163, Properties: 722},
+	{Hash: 1158812210, Block: 163, Properties: 723},
+	{Hash: 586934551, Block: 163, Properties: 724},
+	{Hash: 653938019, Block: 163, Properties: 725},
+	{Hash: 3325103310, Block: 163, Properties: 726},
+	{Hash: 4263935820, Block: 163, Properties: 727},
+	{Hash: 1776778237, Block: 163, Properties: 728},
+	{Hash: 889268505, Block: 163, Properties: 729},
+	{Hash: 3089772824, Block: 163, Properties: 730},
+	{Hash: 2214118781, Block: 163, Properties: 731},
+	{Hash: 3826595276, Block: 163, Properties: 732},
+	{Hash: 3893598744, Block: 163, Properties: 733},
+	{Hash: 85442585, Block: 163, Properties: 734},
 }

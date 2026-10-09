@@ -18,5 +18,5 @@ var PaleGarden = Biome{
 	FoliageSnow:       0,
 	MapWaterColorRGBA: 0x60b7ffa6,
 	Rain:              true,
-	Tags:              []string{"monster", "overworld", "pale_garden"},
+	Tags:              []string{"has_structure_abandoned_camp", "monster", "overworld", "pale_garden"},
 }

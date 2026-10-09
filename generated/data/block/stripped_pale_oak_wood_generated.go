@@ -9,7 +9,7 @@ var StrippedPaleOakWood = Block{
 }
 
 var strippedPaleOakWoodStates = [...]State{
-	{Hash: 4154259976, Block: 273, Properties: 460},
-	{Hash: 914599251, Block: 273, Properties: 460},
-	{Hash: 3025212393, Block: 273, Properties: 460},
+	{Hash: 4154259976, Block: 298, Properties: 925},
+	{Hash: 914599251, Block: 298, Properties: 925},
+	{Hash: 3025212393, Block: 298, Properties: 925},
 }

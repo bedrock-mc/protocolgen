@@ -15,7 +15,8 @@ type Block struct {
 // Properties contains the static properties of a block state.
 //
 // Shape indexes are resolved with Shape. An index of zero means that the
-// source did not provide that shape; an available empty shape has a non-zero
+// shape is unavailable because the source omitted it or supplied invalid data.
+// An available empty shape has a non-zero
 // index and resolves to an empty slice.
 type Properties struct {
 	Hardness                    float32
@@ -89,7 +90,7 @@ func PropertiesAt(index uint16) (Properties, bool) {
 }
 
 // Shape resolves a shape index. The returned slice must be treated as
-// immutable. The boolean is false when the source did not provide a shape.
+// immutable. The boolean is false for an unavailable shape or invalid index.
 func Shape(index uint16) ([]Box, bool) {
 	if index == 0 || int(index) >= len(shapes) {
 		return nil, false

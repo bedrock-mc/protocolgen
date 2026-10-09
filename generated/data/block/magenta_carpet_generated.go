@@ -9,5 +9,5 @@ var MagentaCarpet = Block{
 }
 
 var magentaCarpetStates = [...]State{
-	{Hash: 413981434, Block: 89, Properties: 236},
+	{Hash: 413981434, Block: 99, Properties: 491},
 }

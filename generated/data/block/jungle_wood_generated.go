@@ -9,7 +9,7 @@ var JungleWood = Block{
 }
 
 var jungleWoodStates = [...]State{
-	{Hash: 764042440, Block: 225, Properties: 215},
-	{Hash: 1819349011, Block: 225, Properties: 215},
-	{Hash: 3929962153, Block: 225, Properties: 215},
+	{Hash: 764042440, Block: 242, Properties: 431},
+	{Hash: 1819349011, Block: 242, Properties: 431},
+	{Hash: 3929962153, Block: 242, Properties: 431},
 }

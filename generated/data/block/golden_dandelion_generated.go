@@ -9,5 +9,5 @@ var GoldenDandelion = Block{
 }
 
 var goldenDandelionStates = [...]State{
-	{Hash: 3536154713, Block: 124, Properties: 121},
+	{Hash: 3536154713, Block: 135, Properties: 219},
 }

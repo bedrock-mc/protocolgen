@@ -18,5 +18,5 @@ var MesaPlateauStone = Biome{
 	FoliageSnow:       0,
 	MapWaterColorRGBA: 0x55809ea5,
 	Rain:              false,
-	Tags:              []string{"animal", "mesa", "monster", "overworld", "plateau", "rare", "spawns_mesa_mobs", "spawns_warm_variant_farm_animals", "stone", "surface_mineshaft"},
+	Tags:              []string{"animal", "has_structure_abandoned_camp", "mesa", "monster", "overworld", "plateau", "rare", "spawns_mesa_mobs", "spawns_warm_variant_farm_animals", "stone", "surface_mineshaft"},
 }

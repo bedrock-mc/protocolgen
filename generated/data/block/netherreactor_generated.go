@@ -9,5 +9,5 @@ var Netherreactor = Block{
 }
 
 var netherreactorStates = [...]State{
-	{Hash: 1289677602, Block: 1114, Properties: 1834},
+	{Hash: 1289677602, Block: 1219, Properties: 3392},
 }

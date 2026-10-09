@@ -9,5 +9,5 @@ var OxidizedCutCopper = Block{
 }
 
 var oxidizedCutCopperStates = [...]State{
-	{Hash: 3150411023, Block: 677, Properties: 28},
+	{Hash: 3150411023, Block: 741, Properties: 390},
 }

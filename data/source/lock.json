@@ -6,12 +6,6 @@
       "sha256": "044d494af33347eb1f0e76bab64ce04f44261ec3dac7d1938549a41cf0a770ba",
       "url": "https://raw.githubusercontent.com/Mojang/bedrock-samples/847bd28a260da9369f0dfd4fded1893ccf5aed86/metadata/vanilladata_modules/mojang-blocks.json"
     },
-    "block_shapes": {
-      "description": "Block collision, outline and tint values shared by game-data consumers",
-      "revision": "59d4007e322a0acf2b0add59133c81e1f7e4c501",
-      "sha256": "0211c8825b2abf1cf5096f17f786462b914aa29400f6b0fb284931bd42bbe8a3",
-      "url": "https://raw.githubusercontent.com/AllayMC/Allay/59d4007e322a0acf2b0add59133c81e1f7e4c501/data/resources/block_states.json"
-    },
     "item_corrections": {
       "description": "Reviewed omissions in the pinned Allay extract, with public evidence in the correction file",
       "path": "inputs/1.26.50/item_corrections.json",
@@ -24,15 +18,21 @@
       "url": "https://raw.githubusercontent.com/AllayMC/Allay/59d4007e322a0acf2b0add59133c81e1f7e4c501/data/resources/items.json"
     },
     "item_registry": {
-      "description": "Registry fields preserved from HashimTheArab/dragonfly VanillaItemEntries; future updates use protocolgen required_item_list.json",
-      "path": "inputs/1.26.50/required_item_list.json",
-      "revision": "3d29a693c54b8412a6a1c619f5b06bd8cb09a0e5",
-      "sha256": "a35d5c5e192256247dcfb8c0ae50f9dca814f1a8a51c5c5978813c305fbeab97"
+      "description": "Vanilla item identities from the same Cloudburst revision as block and biome data",
+      "revision": "659ce1e2eee3a67045693f4fd5515c6ccf571953",
+      "sha256": "240b17a148e277afc114ba9030b92e2903c957c47b1f2970d50ae3683ac6ff11",
+      "url": "https://raw.githubusercontent.com/CloudburstMC/Data/659ce1e2eee3a67045693f4fd5515c6ccf571953/runtime_item_states.json"
     },
     "item_tags": {
       "revision": "59d4007e322a0acf2b0add59133c81e1f7e4c501",
       "sha256": "b6406e2a4ef0b02d1eb56802592440f7669e9bcbf354c5297bf5e0e8a20ab495",
       "url": "https://raw.githubusercontent.com/AllayMC/Allay/59d4007e322a0acf2b0add59133c81e1f7e4c501/data/resources/item_tags_custom.json"
+    },
+    "liquid_clip_omissions": {
+      "description": "Reviewed invalid liquid clip boxes in the pinned Cloudburst extract; expose them as unavailable without guessing geometry",
+      "path": "inputs/1.26.50/liquid_clip_omissions.json",
+      "revision": "659ce1e2eee3a67045693f4fd5515c6ccf571953",
+      "sha256": "f3aa28c068265d9c1b78de9a27b8f44f8c14aacdf90c231c018451f9b515eb20"
     },
     "resource_pack": {
       "description": "Official Mojang/bedrock-samples v1.26.50.27-preview resources for the 1.26.50 content line",
@@ -246,9 +246,9 @@
     },
     "bds_version": "1.26.32.2",
     "cloudburst_files": {
-      "block_properties.json": "6ba1bfbb6a5824cac39baedadcc5defce845fca14aaa77a48d756106c2bcdf59",
-      "stripped_biome_definitions.json": "e683c5a9ca6a01bfb1c1d5fbe176cc3fb93fdff1a95915a730be627019345e8a"
+      "blocks.json": "fc1a6860777440975638f020d3fb5fa63a5c2653e4201d2efc65ba88e3bfc10d",
+      "stripped_biome_definitions.json": "743f56178045cd79744a77494006c76fce8819ed15b8c366efe285e2fdbef7da"
     },
-    "cloudburst_ref": "fb969c547236d87a17181941cd585a0eb18f7ceb"
+    "cloudburst_ref": "659ce1e2eee3a67045693f4fd5515c6ccf571953"
   }
 }

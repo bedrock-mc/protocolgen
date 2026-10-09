@@ -9,5 +9,5 @@ var PinkWool = Block{
 }
 
 var pinkWoolStates = [...]State{
-	{Hash: 2856014310, Block: 365, Properties: 774},
+	{Hash: 2856014310, Block: 404, Properties: 1493},
 }

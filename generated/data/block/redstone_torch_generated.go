@@ -9,10 +9,10 @@ var RedstoneTorch = Block{
 }
 
 var redstoneTorchStates = [...]State{
-	{Hash: 3371924664, Block: 293, Properties: 659},
-	{Hash: 4291342978, Block: 293, Properties: 660},
-	{Hash: 2139123352, Block: 293, Properties: 661},
-	{Hash: 2651616579, Block: 293, Properties: 662},
-	{Hash: 3800191409, Block: 293, Properties: 663},
-	{Hash: 996014513, Block: 293, Properties: 659},
+	{Hash: 3371924664, Block: 321, Properties: 1253},
+	{Hash: 4291342978, Block: 321, Properties: 1254},
+	{Hash: 2139123352, Block: 321, Properties: 1255},
+	{Hash: 2651616579, Block: 321, Properties: 1256},
+	{Hash: 3800191409, Block: 321, Properties: 1257},
+	{Hash: 996014513, Block: 321, Properties: 1253},
 }

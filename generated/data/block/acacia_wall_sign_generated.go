@@ -9,10 +9,10 @@ var AcaciaWallSign = Block{
 }
 
 var acaciaWallSignStates = [...]State{
-	{Hash: 1772350155, Block: 333, Properties: 728},
-	{Hash: 1833824978, Block: 333, Properties: 728},
-	{Hash: 1895299801, Block: 333, Properties: 729},
-	{Hash: 1956774624, Block: 333, Properties: 730},
-	{Hash: 1526450863, Block: 333, Properties: 731},
-	{Hash: 1587925686, Block: 333, Properties: 732},
+	{Hash: 1772350155, Block: 366, Properties: 1394},
+	{Hash: 1833824978, Block: 366, Properties: 1394},
+	{Hash: 1895299801, Block: 366, Properties: 1395},
+	{Hash: 1956774624, Block: 366, Properties: 1396},
+	{Hash: 1526450863, Block: 366, Properties: 1397},
+	{Hash: 1587925686, Block: 366, Properties: 1398},
 }

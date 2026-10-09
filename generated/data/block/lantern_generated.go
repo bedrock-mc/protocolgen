@@ -9,6 +9,6 @@ var Lantern = Block{
 }
 
 var lanternStates = [...]State{
-	{Hash: 4077620580, Block: 1015, Properties: 1712},
-	{Hash: 837959855, Block: 1015, Properties: 1713},
+	{Hash: 4077620580, Block: 1112, Properties: 3182},
+	{Hash: 837959855, Block: 1112, Properties: 3183},
 }

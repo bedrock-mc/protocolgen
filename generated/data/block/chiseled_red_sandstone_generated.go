@@ -9,5 +9,5 @@ var ChiseledRedSandstone = Block{
 }
 
 var chiseledRedSandstoneStates = [...]State{
-	{Hash: 1326268410, Block: 1129, Properties: 816},
+	{Hash: 1326268410, Block: 1239, Properties: 1567},
 }

@@ -9,16 +9,16 @@ var BambooButton = Block{
 }
 
 var bambooButtonStates = [...]State{
-	{Hash: 1057945498, Block: 888, Properties: 59},
-	{Hash: 996470675, Block: 888, Properties: 60},
-	{Hash: 1180895144, Block: 888, Properties: 61},
-	{Hash: 1119420321, Block: 888, Properties: 62},
-	{Hash: 812046206, Block: 888, Properties: 63},
-	{Hash: 750571383, Block: 888, Properties: 64},
-	{Hash: 1063394247, Block: 888, Properties: 65},
-	{Hash: 1124869070, Block: 888, Properties: 66},
-	{Hash: 1186343893, Block: 888, Properties: 67},
-	{Hash: 1247818716, Block: 888, Properties: 68},
-	{Hash: 1309293539, Block: 888, Properties: 69},
-	{Hash: 1370768362, Block: 888, Properties: 70},
+	{Hash: 1057945498, Block: 974, Properties: 94},
+	{Hash: 996470675, Block: 974, Properties: 95},
+	{Hash: 1180895144, Block: 974, Properties: 96},
+	{Hash: 1119420321, Block: 974, Properties: 97},
+	{Hash: 812046206, Block: 974, Properties: 98},
+	{Hash: 750571383, Block: 974, Properties: 99},
+	{Hash: 1063394247, Block: 974, Properties: 100},
+	{Hash: 1124869070, Block: 974, Properties: 101},
+	{Hash: 1186343893, Block: 974, Properties: 102},
+	{Hash: 1247818716, Block: 974, Properties: 103},
+	{Hash: 1309293539, Block: 974, Properties: 104},
+	{Hash: 1370768362, Block: 974, Properties: 105},
 }

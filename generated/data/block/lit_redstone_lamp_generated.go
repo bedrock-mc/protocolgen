@@ -9,5 +9,5 @@ var LitRedstoneLamp = Block{
 }
 
 var litRedstoneLampStates = [...]State{
-	{Hash: 251779881, Block: 484, Properties: 901},
+	{Hash: 251779881, Block: 534, Properties: 1742},
 }

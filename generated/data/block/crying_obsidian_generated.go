@@ -9,5 +9,5 @@ var CryingObsidian = Block{
 }
 
 var cryingObsidianStates = [...]State{
-	{Hash: 1581112104, Block: 961, Properties: 1600},
+	{Hash: 1581112104, Block: 1050, Properties: 2957},
 }

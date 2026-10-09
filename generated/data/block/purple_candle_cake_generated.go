@@ -9,6 +9,6 @@ var PurpleCandleCake = Block{
 }
 
 var purpleCandleCakeStates = [...]State{
-	{Hash: 1272236849, Block: 952, Properties: 103},
-	{Hash: 216930278, Block: 952, Properties: 104},
+	{Hash: 1272236849, Block: 1040, Properties: 201},
+	{Hash: 216930278, Block: 1040, Properties: 202},
 }

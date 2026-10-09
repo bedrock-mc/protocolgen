@@ -9,5 +9,5 @@ var PackedIce = Block{
 }
 
 var packedIceStates = [...]State{
-	{Hash: 445316843, Block: 107, Properties: 286},
+	{Hash: 445316843, Block: 118, Properties: 581},
 }

@@ -9,16 +9,16 @@ var MangroveButton = Block{
 }
 
 var mangroveButtonStates = [...]State{
-	{Hash: 219759617, Block: 1012, Properties: 59},
-	{Hash: 281234440, Block: 1012, Properties: 60},
-	{Hash: 96809971, Block: 1012, Properties: 61},
-	{Hash: 158284794, Block: 1012, Properties: 62},
-	{Hash: 4268827621, Block: 1012, Properties: 63},
-	{Hash: 35335148, Block: 1012, Properties: 64},
-	{Hash: 3577541588, Block: 1012, Properties: 65},
-	{Hash: 3516066765, Block: 1012, Properties: 66},
-	{Hash: 3454591942, Block: 1012, Properties: 67},
-	{Hash: 3393117119, Block: 1012, Properties: 68},
-	{Hash: 3823440880, Block: 1012, Properties: 69},
-	{Hash: 3761966057, Block: 1012, Properties: 70},
+	{Hash: 219759617, Block: 1109, Properties: 94},
+	{Hash: 281234440, Block: 1109, Properties: 95},
+	{Hash: 96809971, Block: 1109, Properties: 96},
+	{Hash: 158284794, Block: 1109, Properties: 97},
+	{Hash: 4268827621, Block: 1109, Properties: 98},
+	{Hash: 35335148, Block: 1109, Properties: 99},
+	{Hash: 3577541588, Block: 1109, Properties: 100},
+	{Hash: 3516066765, Block: 1109, Properties: 101},
+	{Hash: 3454591942, Block: 1109, Properties: 102},
+	{Hash: 3393117119, Block: 1109, Properties: 103},
+	{Hash: 3823440880, Block: 1109, Properties: 104},
+	{Hash: 3761966057, Block: 1109, Properties: 105},
 }

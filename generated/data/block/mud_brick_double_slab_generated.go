@@ -9,6 +9,6 @@ var MudBrickDoubleSlab = Block{
 }
 
 var mudBrickDoubleSlabStates = [...]State{
-	{Hash: 2700066266, Block: 57, Properties: 182},
-	{Hash: 2837835659, Block: 57, Properties: 182},
+	{Hash: 2700066266, Block: 62, Properties: 322},
+	{Hash: 2837835659, Block: 62, Properties: 322},
 }

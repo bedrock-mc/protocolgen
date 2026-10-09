@@ -9,6 +9,6 @@ var CinnabarBrickDoubleSlab = Block{
 }
 
 var cinnabarBrickDoubleSlabStates = [...]State{
-	{Hash: 3690727613, Block: 525, Properties: 853},
-	{Hash: 1978631514, Block: 525, Properties: 853},
+	{Hash: 3690727613, Block: 575, Properties: 1628},
+	{Hash: 1978631514, Block: 575, Properties: 1628},
 }

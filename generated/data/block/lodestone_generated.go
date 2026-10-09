@@ -9,5 +9,5 @@ var Lodestone = Block{
 }
 
 var lodestoneStates = [...]State{
-	{Hash: 2349326407, Block: 1340, Properties: 1987},
+	{Hash: 2349326407, Block: 1459, Properties: 3691},
 }

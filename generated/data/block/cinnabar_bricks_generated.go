@@ -9,5 +9,5 @@ var CinnabarBricks = Block{
 }
 
 var cinnabarBricksStates = [...]State{
-	{Hash: 258074389, Block: 753, Properties: 853},
+	{Hash: 258074389, Block: 820, Properties: 1628},
 }

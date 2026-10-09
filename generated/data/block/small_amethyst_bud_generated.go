@@ -9,10 +9,10 @@ var SmallAmethystBud = Block{
 }
 
 var smallAmethystBudStates = [...]State{
-	{Hash: 4100747486, Block: 123, Properties: 306},
-	{Hash: 3032920933, Block: 123, Properties: 307},
-	{Hash: 2290012126, Block: 123, Properties: 308},
-	{Hash: 115994256, Block: 123, Properties: 309},
-	{Hash: 2584252973, Block: 123, Properties: 310},
-	{Hash: 576651015, Block: 123, Properties: 311},
+	{Hash: 4100747486, Block: 134, Properties: 604},
+	{Hash: 3032920933, Block: 134, Properties: 605},
+	{Hash: 2290012126, Block: 134, Properties: 606},
+	{Hash: 115994256, Block: 134, Properties: 607},
+	{Hash: 2584252973, Block: 134, Properties: 608},
+	{Hash: 576651015, Block: 134, Properties: 609},
 }

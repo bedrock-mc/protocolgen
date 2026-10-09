@@ -9,16 +9,16 @@ var DarkOakButton = Block{
 }
 
 var darkOakButtonStates = [...]State{
-	{Hash: 1644326878, Block: 23, Properties: 59},
-	{Hash: 1582852055, Block: 23, Properties: 60},
-	{Hash: 1767276524, Block: 23, Properties: 61},
-	{Hash: 1705801701, Block: 23, Properties: 62},
-	{Hash: 1890226170, Block: 23, Properties: 63},
-	{Hash: 1828751347, Block: 23, Properties: 64},
-	{Hash: 2061432251, Block: 23, Properties: 65},
-	{Hash: 2122907074, Block: 23, Properties: 66},
-	{Hash: 2184381897, Block: 23, Properties: 67},
-	{Hash: 2245856720, Block: 23, Properties: 68},
-	{Hash: 1815532959, Block: 23, Properties: 69},
-	{Hash: 1877007782, Block: 23, Properties: 70},
+	{Hash: 1644326878, Block: 24, Properties: 94},
+	{Hash: 1582852055, Block: 24, Properties: 95},
+	{Hash: 1767276524, Block: 24, Properties: 96},
+	{Hash: 1705801701, Block: 24, Properties: 97},
+	{Hash: 1890226170, Block: 24, Properties: 98},
+	{Hash: 1828751347, Block: 24, Properties: 99},
+	{Hash: 2061432251, Block: 24, Properties: 100},
+	{Hash: 2122907074, Block: 24, Properties: 101},
+	{Hash: 2184381897, Block: 24, Properties: 102},
+	{Hash: 2245856720, Block: 24, Properties: 103},
+	{Hash: 1815532959, Block: 24, Properties: 104},
+	{Hash: 1877007782, Block: 24, Properties: 105},
 }

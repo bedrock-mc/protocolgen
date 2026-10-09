@@ -9,5 +9,5 @@ var DeepslateDiamondOre = Block{
 }
 
 var deepslateDiamondOreStates = [...]State{
-	{Hash: 811072115, Block: 1308, Properties: 71},
+	{Hash: 811072115, Block: 1425, Properties: 2684},
 }

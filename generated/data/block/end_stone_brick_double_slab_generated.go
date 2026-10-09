@@ -9,6 +9,6 @@ var EndStoneBrickDoubleSlab = Block{
 }
 
 var endStoneBrickDoubleSlabStates = [...]State{
-	{Hash: 2707331067, Block: 884, Properties: 1518},
-	{Hash: 3261144868, Block: 884, Properties: 1518},
+	{Hash: 2707331067, Block: 970, Properties: 2834},
+	{Hash: 3261144868, Block: 970, Properties: 2834},
 }

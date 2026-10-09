@@ -9,7 +9,7 @@ var Seagrass = Block{
 }
 
 var seagrassStates = [...]State{
-	{Hash: 274823543, Block: 83, Properties: 230},
-	{Hash: 518857582, Block: 83, Properties: 230},
-	{Hash: 3466686788, Block: 83, Properties: 230},
+	{Hash: 274823543, Block: 92, Properties: 479},
+	{Hash: 518857582, Block: 92, Properties: 479},
+	{Hash: 3466686788, Block: 92, Properties: 479},
 }

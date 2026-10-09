@@ -8,4 +8,6 @@ type Counts struct {
 	VoxelShapes uint32 `json:"voxel_shapes"`
 	Entities    uint32 `json:"entities"`
 	Foods       uint32 `json:"foods"`
+	// UnavailableLiquidClipShapes counts reviewed invalid source shapes omitted from the catalog.
+	UnavailableLiquidClipShapes uint32 `json:"unavailable_liquid_clip_shapes"`
 }

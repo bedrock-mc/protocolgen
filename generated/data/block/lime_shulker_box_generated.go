@@ -9,5 +9,5 @@ var LimeShulkerBox = Block{
 }
 
 var limeShulkerBoxStates = [...]State{
-	{Hash: 2863298633, Block: 121, Properties: 304},
+	{Hash: 2863298633, Block: 132, Properties: 602},
 }

@@ -9,5 +9,5 @@ var FireflyBush = Block{
 }
 
 var fireflyBushStates = [...]State{
-	{Hash: 329484357, Block: 97, Properties: 265},
+	{Hash: 329484357, Block: 107, Properties: 536},
 }

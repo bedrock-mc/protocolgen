@@ -9,5 +9,5 @@ var GrassBlock = Block{
 }
 
 var grassBlockStates = [...]State{
-	{Hash: 3727763636, Block: 783, Properties: 1378},
+	{Hash: 3727763636, Block: 855, Properties: 2558},
 }

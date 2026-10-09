@@ -9,5 +9,5 @@ var PolishedTuff = Block{
 }
 
 var polishedTuffStates = [...]State{
-	{Hash: 1802723292, Block: 1047, Properties: 332},
+	{Hash: 1802723292, Block: 1146, Properties: 1510},
 }

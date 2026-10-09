@@ -9,6 +9,6 @@ var LimeCandleCake = Block{
 }
 
 var limeCandleCakeStates = [...]State{
-	{Hash: 1114532836, Block: 1317, Properties: 103},
-	{Hash: 2169839407, Block: 1317, Properties: 104},
+	{Hash: 1114532836, Block: 1435, Properties: 201},
+	{Hash: 2169839407, Block: 1435, Properties: 202},
 }

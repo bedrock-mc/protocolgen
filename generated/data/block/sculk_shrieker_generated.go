@@ -9,8 +9,8 @@ var SculkShrieker = Block{
 }
 
 var sculkShriekerStates = [...]State{
-	{Hash: 879274693, Block: 72, Properties: 218},
-	{Hash: 1061393758, Block: 72, Properties: 218},
-	{Hash: 4118935418, Block: 72, Properties: 218},
-	{Hash: 2116700329, Block: 72, Properties: 218},
+	{Hash: 879274693, Block: 79, Properties: 434},
+	{Hash: 1061393758, Block: 79, Properties: 434},
+	{Hash: 4118935418, Block: 79, Properties: 434},
+	{Hash: 2116700329, Block: 79, Properties: 434},
 }

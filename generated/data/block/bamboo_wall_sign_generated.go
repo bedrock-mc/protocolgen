@@ -9,10 +9,10 @@ var BambooWallSign = Block{
 }
 
 var bambooWallSignStates = [...]State{
-	{Hash: 4288896805, Block: 976, Properties: 1629},
-	{Hash: 55404332, Block: 976, Properties: 1629},
-	{Hash: 4165947159, Block: 976, Properties: 1630},
-	{Hash: 4227421982, Block: 976, Properties: 1631},
-	{Hash: 239828801, Block: 976, Properties: 1632},
-	{Hash: 301303624, Block: 976, Properties: 1633},
+	{Hash: 4288896805, Block: 1068, Properties: 3035},
+	{Hash: 55404332, Block: 1068, Properties: 3035},
+	{Hash: 4165947159, Block: 1068, Properties: 3036},
+	{Hash: 4227421982, Block: 1068, Properties: 3037},
+	{Hash: 239828801, Block: 1068, Properties: 3038},
+	{Hash: 301303624, Block: 1068, Properties: 3039},
 }

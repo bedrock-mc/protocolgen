@@ -9,6 +9,6 @@ var SmoothQuartzDoubleSlab = Block{
 }
 
 var smoothQuartzDoubleSlabStates = [...]State{
-	{Hash: 1333452398, Block: 164, Properties: 399},
-	{Hash: 1377667239, Block: 164, Properties: 399},
+	{Hash: 1333452398, Block: 178, Properties: 790},
+	{Hash: 1377667239, Block: 178, Properties: 790},
 }

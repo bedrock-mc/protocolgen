@@ -9,7 +9,7 @@ var MuddyMangroveRoots = Block{
 }
 
 var muddyMangroveRootsStates = [...]State{
-	{Hash: 3818668831, Block: 128, Properties: 328},
-	{Hash: 2763362260, Block: 128, Properties: 328},
-	{Hash: 579008106, Block: 128, Properties: 328},
+	{Hash: 3818668831, Block: 140, Properties: 626},
+	{Hash: 2763362260, Block: 140, Properties: 626},
+	{Hash: 579008106, Block: 140, Properties: 626},
 }

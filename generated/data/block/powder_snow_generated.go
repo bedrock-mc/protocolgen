@@ -9,5 +9,5 @@ var PowderSnow = Block{
 }
 
 var powderSnowStates = [...]State{
-	{Hash: 196630051, Block: 22, Properties: 58},
+	{Hash: 196630051, Block: 23, Properties: 93},
 }

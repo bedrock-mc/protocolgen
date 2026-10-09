@@ -9,5 +9,5 @@ var SoulSand = Block{
 }
 
 var soulSandStates = [...]State{
-	{Hash: 3005092372, Block: 736, Properties: 1297},
+	{Hash: 3005092372, Block: 803, Properties: 2417},
 }

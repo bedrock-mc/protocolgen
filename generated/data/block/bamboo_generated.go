@@ -9,16 +9,16 @@ var Bamboo = Block{
 }
 
 var bambooStates = [...]State{
-	{Hash: 1993764742, Block: 339, Properties: 737},
-	{Hash: 494219781, Block: 339, Properties: 738},
-	{Hash: 3505466069, Block: 339, Properties: 737},
-	{Hash: 3854916276, Block: 339, Properties: 738},
-	{Hash: 729447961, Block: 339, Properties: 737},
-	{Hash: 2870391192, Block: 339, Properties: 738},
-	{Hash: 331964203, Block: 339, Properties: 737},
-	{Hash: 155909154, Block: 339, Properties: 738},
-	{Hash: 3812498886, Block: 339, Properties: 737},
-	{Hash: 2391971653, Block: 339, Properties: 738},
-	{Hash: 2239307706, Block: 339, Properties: 737},
-	{Hash: 3123548841, Block: 339, Properties: 738},
+	{Hash: 1993764742, Block: 373, Properties: 1403},
+	{Hash: 494219781, Block: 373, Properties: 1404},
+	{Hash: 3505466069, Block: 373, Properties: 1403},
+	{Hash: 3854916276, Block: 373, Properties: 1404},
+	{Hash: 729447961, Block: 373, Properties: 1403},
+	{Hash: 2870391192, Block: 373, Properties: 1404},
+	{Hash: 331964203, Block: 373, Properties: 1403},
+	{Hash: 155909154, Block: 373, Properties: 1404},
+	{Hash: 3812498886, Block: 373, Properties: 1403},
+	{Hash: 2391971653, Block: 373, Properties: 1404},
+	{Hash: 2239307706, Block: 373, Properties: 1403},
+	{Hash: 3123548841, Block: 373, Properties: 1404},
 }

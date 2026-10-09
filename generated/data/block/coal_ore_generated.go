@@ -9,5 +9,5 @@ var CoalOre = Block{
 }
 
 var coalOreStates = [...]State{
-	{Hash: 685383673, Block: 442, Properties: 560},
+	{Hash: 685383673, Block: 486, Properties: 1085},
 }

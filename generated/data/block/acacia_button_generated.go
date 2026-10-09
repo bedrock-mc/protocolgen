@@ -9,16 +9,16 @@ var AcaciaButton = Block{
 }
 
 var acaciaButtonStates = [...]State{
-	{Hash: 152215376, Block: 1050, Properties: 59},
-	{Hash: 90740553, Block: 1050, Properties: 60},
-	{Hash: 29265730, Block: 1050, Properties: 61},
-	{Hash: 4262758203, Block: 1050, Properties: 62},
-	{Hash: 4201283380, Block: 1050, Properties: 63},
-	{Hash: 4139808557, Block: 1050, Properties: 64},
-	{Hash: 4116236941, Block: 1050, Properties: 65},
-	{Hash: 4177711764, Block: 1050, Properties: 66},
-	{Hash: 3993287295, Block: 1050, Properties: 67},
-	{Hash: 4054762118, Block: 1050, Properties: 68},
-	{Hash: 67168937, Block: 1050, Properties: 69},
-	{Hash: 128643760, Block: 1050, Properties: 70},
+	{Hash: 152215376, Block: 1149, Properties: 94},
+	{Hash: 90740553, Block: 1149, Properties: 95},
+	{Hash: 29265730, Block: 1149, Properties: 96},
+	{Hash: 4262758203, Block: 1149, Properties: 97},
+	{Hash: 4201283380, Block: 1149, Properties: 98},
+	{Hash: 4139808557, Block: 1149, Properties: 99},
+	{Hash: 4116236941, Block: 1149, Properties: 100},
+	{Hash: 4177711764, Block: 1149, Properties: 101},
+	{Hash: 3993287295, Block: 1149, Properties: 102},
+	{Hash: 4054762118, Block: 1149, Properties: 103},
+	{Hash: 67168937, Block: 1149, Properties: 104},
+	{Hash: 128643760, Block: 1149, Properties: 105},
 }

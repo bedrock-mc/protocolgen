@@ -9,5 +9,5 @@ var InvisibleBedrock = Block{
 }
 
 var invisibleBedrockStates = [...]State{
-	{Hash: 1699121088, Block: 258, Properties: 576},
+	{Hash: 1699121088, Block: 280, Properties: 1117},
 }

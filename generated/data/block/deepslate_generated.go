@@ -9,7 +9,7 @@ var Deepslate = Block{
 }
 
 var deepslateStates = [...]State{
-	{Hash: 994207970, Block: 88, Properties: 235},
-	{Hash: 2049514541, Block: 88, Properties: 235},
-	{Hash: 4233868695, Block: 88, Properties: 235},
+	{Hash: 994207970, Block: 97, Properties: 484},
+	{Hash: 2049514541, Block: 97, Properties: 484},
+	{Hash: 4233868695, Block: 97, Properties: 484},
 }

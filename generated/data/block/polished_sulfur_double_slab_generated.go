@@ -9,6 +9,6 @@ var PolishedSulfurDoubleSlab = Block{
 }
 
 var polishedSulfurDoubleSlabStates = [...]State{
-	{Hash: 457464140, Block: 624, Properties: 142},
-	{Hash: 2134859153, Block: 624, Properties: 142},
+	{Hash: 457464140, Block: 686, Properties: 256},
+	{Hash: 2134859153, Block: 686, Properties: 256},
 }

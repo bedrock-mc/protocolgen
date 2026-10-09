@@ -9,5 +9,5 @@ var PolishedGranite = Block{
 }
 
 var polishedGraniteStates = [...]State{
-	{Hash: 118998978, Block: 159, Properties: 48},
+	{Hash: 118998978, Block: 172, Properties: 67},
 }

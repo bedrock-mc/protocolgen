@@ -9,5 +9,5 @@ var CopperGrate = Block{
 }
 
 var copperGrateStates = [...]State{
-	{Hash: 596285486, Block: 143, Properties: 352},
+	{Hash: 596285486, Block: 156, Properties: 687},
 }

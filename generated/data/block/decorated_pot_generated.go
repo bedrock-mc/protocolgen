@@ -9,8 +9,8 @@ var DecoratedPot = Block{
 }
 
 var decoratedPotStates = [...]State{
-	{Hash: 340115056, Block: 965, Properties: 1603},
-	{Hash: 278640233, Block: 965, Properties: 1603},
-	{Hash: 217165410, Block: 965, Properties: 1603},
-	{Hash: 155690587, Block: 965, Properties: 1603},
+	{Hash: 340115056, Block: 1054, Properties: 2960},
+	{Hash: 278640233, Block: 1054, Properties: 2960},
+	{Hash: 217165410, Block: 1054, Properties: 2960},
+	{Hash: 155690587, Block: 1054, Properties: 2960},
 }

@@ -9,5 +9,5 @@ var BrownMushroom = Block{
 }
 
 var brownMushroomStates = [...]State{
-	{Hash: 1548623150, Block: 299, Properties: 680},
+	{Hash: 1548623150, Block: 327, Properties: 1298},
 }

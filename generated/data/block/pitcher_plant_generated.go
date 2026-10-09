@@ -9,6 +9,6 @@ var PitcherPlant = Block{
 }
 
 var pitcherPlantStates = [...]State{
-	{Hash: 2512282471, Block: 361, Properties: 769},
-	{Hash: 1456975900, Block: 361, Properties: 770},
+	{Hash: 2512282471, Block: 400, Properties: 1488},
+	{Hash: 1456975900, Block: 400, Properties: 1489},
 }

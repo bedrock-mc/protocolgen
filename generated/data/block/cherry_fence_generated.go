@@ -9,5 +9,20 @@ var CherryFence = Block{
 }
 
 var cherryFenceStates = [...]State{
-	{Hash: 46432752, Block: 256, Properties: 575},
+	{Hash: 2896180006, Block: 277, Properties: 1101},
+	{Hash: 2759704507, Block: 277, Properties: 1102},
+	{Hash: 1284736335, Block: 277, Properties: 1103},
+	{Hash: 1048613066, Block: 277, Properties: 1104},
+	{Hash: 1010280795, Block: 277, Properties: 1105},
+	{Hash: 2991398918, Block: 277, Properties: 1106},
+	{Hash: 3189685578, Block: 277, Properties: 1107},
+	{Hash: 3438631119, Block: 277, Properties: 1108},
+	{Hash: 3951486577, Block: 277, Properties: 1109},
+	{Hash: 1704397936, Block: 277, Properties: 1110},
+	{Hash: 229429764, Block: 277, Properties: 1111},
+	{Hash: 2103919637, Block: 277, Properties: 1112},
+	{Hash: 4249941520, Block: 277, Properties: 1113},
+	{Hash: 4046705489, Block: 277, Properties: 1114},
+	{Hash: 4244992149, Block: 277, Properties: 1115},
+	{Hash: 2383324548, Block: 277, Properties: 1116},
 }

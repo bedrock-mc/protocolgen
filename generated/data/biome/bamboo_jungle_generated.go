@@ -18,5 +18,5 @@ var BambooJungle = Biome{
 	FoliageSnow:       0,
 	MapWaterColorRGBA: 0x14a2c5a5,
 	Rain:              true,
-	Tags:              []string{"animal", "bamboo", "jungle", "monster", "overworld", "spawns_jungle_mobs", "spawns_warm_variant_farm_animals"},
+	Tags:              []string{"animal", "bamboo", "has_structure_abandoned_camp", "jungle", "monster", "overworld", "spawns_jungle_mobs", "spawns_warm_variant_farm_animals"},
 }

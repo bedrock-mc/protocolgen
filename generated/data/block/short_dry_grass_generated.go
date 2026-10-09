@@ -9,5 +9,5 @@ var ShortDryGrass = Block{
 }
 
 var shortDryGrassStates = [...]State{
-	{Hash: 1208577191, Block: 817, Properties: 1418},
+	{Hash: 1208577191, Block: 893, Properties: 2605},
 }

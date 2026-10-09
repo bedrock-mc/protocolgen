@@ -9,5 +9,5 @@ var Calcite = Block{
 }
 
 var calciteStates = [...]State{
-	{Hash: 1135757605, Block: 64, Properties: 211},
+	{Hash: 1135757605, Block: 70, Properties: 395},
 }

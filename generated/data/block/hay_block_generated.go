@@ -9,16 +9,16 @@ var HayBlock = Block{
 }
 
 var hayBlockStates = [...]State{
-	{Hash: 1514836139, Block: 224, Properties: 499},
-	{Hash: 4261745676, Block: 224, Properties: 499},
-	{Hash: 1114761569, Block: 224, Properties: 499},
-	{Hash: 2735689770, Block: 224, Properties: 499},
-	{Hash: 459529568, Block: 224, Properties: 499},
-	{Hash: 1022084951, Block: 224, Properties: 499},
-	{Hash: 59454998, Block: 224, Properties: 499},
-	{Hash: 3790996341, Block: 224, Properties: 499},
-	{Hash: 2570142710, Block: 224, Properties: 499},
-	{Hash: 3132698093, Block: 224, Properties: 499},
-	{Hash: 2243809152, Block: 224, Properties: 499},
-	{Hash: 1680383199, Block: 224, Properties: 499},
+	{Hash: 1514836139, Block: 240, Properties: 982},
+	{Hash: 4261745676, Block: 240, Properties: 982},
+	{Hash: 1114761569, Block: 240, Properties: 982},
+	{Hash: 2735689770, Block: 240, Properties: 982},
+	{Hash: 459529568, Block: 240, Properties: 982},
+	{Hash: 1022084951, Block: 240, Properties: 982},
+	{Hash: 59454998, Block: 240, Properties: 982},
+	{Hash: 3790996341, Block: 240, Properties: 982},
+	{Hash: 2570142710, Block: 240, Properties: 982},
+	{Hash: 3132698093, Block: 240, Properties: 982},
+	{Hash: 2243809152, Block: 240, Properties: 982},
+	{Hash: 1680383199, Block: 240, Properties: 982},
 }

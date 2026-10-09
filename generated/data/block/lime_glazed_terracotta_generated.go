@@ -9,10 +9,10 @@ var LimeGlazedTerracotta = Block{
 }
 
 var limeGlazedTerracottaStates = [...]State{
-	{Hash: 379907727, Block: 78, Properties: 221},
-	{Hash: 441382550, Block: 78, Properties: 221},
-	{Hash: 502857373, Block: 78, Properties: 221},
-	{Hash: 564332196, Block: 78, Properties: 221},
-	{Hash: 625807019, Block: 78, Properties: 221},
-	{Hash: 687281842, Block: 78, Properties: 221},
+	{Hash: 379907727, Block: 85, Properties: 437},
+	{Hash: 441382550, Block: 85, Properties: 437},
+	{Hash: 502857373, Block: 85, Properties: 437},
+	{Hash: 564332196, Block: 85, Properties: 437},
+	{Hash: 625807019, Block: 85, Properties: 437},
+	{Hash: 687281842, Block: 85, Properties: 437},
 }

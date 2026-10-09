@@ -18,5 +18,5 @@ var BirchForest = Biome{
 	FoliageSnow:       0,
 	MapWaterColorRGBA: 0x0677cea5,
 	Rain:              true,
-	Tags:              []string{"animal", "bee_habitat", "birch", "forest", "monster", "overworld"},
+	Tags:              []string{"animal", "bee_habitat", "birch", "forest", "has_structure_abandoned_camp", "monster", "overworld"},
 }

@@ -9,5 +9,5 @@ var Cornflower = Block{
 }
 
 var cornflowerStates = [...]State{
-	{Hash: 3233502840, Block: 617, Properties: 121},
+	{Hash: 3233502840, Block: 678, Properties: 219},
 }

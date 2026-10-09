@@ -9,5 +9,5 @@ var WarpedRoots = Block{
 }
 
 var warpedRootsStates = [...]State{
-	{Hash: 1880023250, Block: 489, Properties: 905},
+	{Hash: 1880023250, Block: 539, Properties: 1746},
 }

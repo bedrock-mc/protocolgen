@@ -40,7 +40,7 @@ func TestRunUsesLockedIdentities(t *testing.T) {
 		t.Fatal(err)
 	}
 	for key, want := range map[string]string{
-		"cloudburst_ref": "locked-cloudburst", "bds_version": "locked-bds", "block_shapes_ref": "locked-shapes",
+		"cloudburst_ref": "locked-cloudburst", "bds_version": "locked-bds",
 		"source_lock_sha256": digest,
 	} {
 		if manifest[key] != want {
@@ -51,7 +51,7 @@ func TestRunUsesLockedIdentities(t *testing.T) {
 
 func TestRunRejectsChangedInputsBeforeWriting(t *testing.T) {
 	lockPath, cloudburst, bds := lockedFixture(t)
-	if err := os.WriteFile(filepath.Join(cloudburst, "block_properties.json"), []byte("[]"), 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(cloudburst, "blocks.json"), []byte("[]"), 0o644); err != nil {
 		t.Fatal(err)
 	}
 	output := filepath.Join(t.TempDir(), "output")
@@ -69,19 +69,14 @@ func lockedFixture(t *testing.T) (lockPath, cloudburst, bds string) {
 	cloudburst, cloudburstFiles := copyLockedTree(t, "cloudburst")
 	bds, bdsFiles := copyLockedTree(t, "bds")
 	dir := t.TempDir()
-	shapes, err := os.ReadFile(filepath.Join(cloudburst, "block_properties.json"))
-	if err != nil {
-		t.Fatal(err)
-	}
-	// The synthetic state table has the same shapes under Cloudburst's field name.
-	shapes = []byte(strings.ReplaceAll(string(shapes), `"outlineShape"`, `"shape"`))
-	if err := os.WriteFile(filepath.Join(dir, "shapes.json"), shapes, 0o644); err != nil {
+	omissions := []byte("[]")
+	if err := os.WriteFile(filepath.Join(dir, "omissions.json"), omissions, 0o644); err != nil {
 		t.Fatal(err)
 	}
 	lock := source.Lock{
 		SchemaVersion: 1, MinecraftVersion: "fixture", ProtocolVersion: 1,
-		Inputs: map[string]source.Input{"block_shapes": {
-			Path: "shapes.json", Revision: "locked-shapes", SHA256: fmt.Sprintf("%x", sha256.Sum256(shapes)),
+		Inputs: map[string]source.Input{"liquid_clip_omissions": {
+			Path: "omissions.json", Revision: "locked-cloudburst", SHA256: fmt.Sprintf("%x", sha256.Sum256(omissions)),
 		}},
 		Semantic: source.SemanticInputs{
 			CloudburstRef: "locked-cloudburst", BDSVersion: "locked-bds",

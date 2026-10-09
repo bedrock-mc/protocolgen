@@ -18,5 +18,5 @@ var CherryGrove = Biome{
 	FoliageSnow:       0,
 	MapWaterColorRGBA: 0x60b7ffa6,
 	Rain:              true,
-	Tags:              []string{"bee_habitat", "cherry_grove", "monster", "mountains", "overworld"},
+	Tags:              []string{"bee_habitat", "cherry_grove", "has_structure_abandoned_camp", "monster", "mountains", "overworld"},
 }

@@ -9,7 +9,7 @@ var JungleLog = Block{
 }
 
 var jungleLogStates = [...]State{
-	{Hash: 1059442202, Block: 69, Properties: 215},
-	{Hash: 2114748773, Block: 69, Properties: 216},
-	{Hash: 4135631, Block: 69, Properties: 216},
+	{Hash: 1059442202, Block: 76, Properties: 431},
+	{Hash: 2114748773, Block: 76, Properties: 432},
+	{Hash: 4135631, Block: 76, Properties: 432},
 }

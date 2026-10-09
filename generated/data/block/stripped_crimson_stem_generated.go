@@ -9,7 +9,7 @@ var StrippedCrimsonStem = Block{
 }
 
 var strippedCrimsonStemStates = [...]State{
-	{Hash: 850053242, Block: 985, Properties: 1353},
-	{Hash: 1905359813, Block: 985, Properties: 1353},
-	{Hash: 4089713967, Block: 985, Properties: 1353},
+	{Hash: 850053242, Block: 1079, Properties: 2504},
+	{Hash: 1905359813, Block: 1079, Properties: 2504},
+	{Hash: 4089713967, Block: 1079, Properties: 2504},
 }

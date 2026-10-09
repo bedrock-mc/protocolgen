@@ -9,10 +9,10 @@ var Torch = Block{
 }
 
 var torchStates = [...]State{
-	{Hash: 3106938104, Block: 236, Properties: 519},
-	{Hash: 3604393666, Block: 236, Properties: 520},
-	{Hash: 1452174040, Block: 236, Properties: 521},
-	{Hash: 501794947, Block: 236, Properties: 522},
-	{Hash: 908039153, Block: 236, Properties: 523},
-	{Hash: 4090812401, Block: 236, Properties: 519},
+	{Hash: 3106938104, Block: 253, Properties: 1026},
+	{Hash: 3604393666, Block: 253, Properties: 1027},
+	{Hash: 1452174040, Block: 253, Properties: 1028},
+	{Hash: 501794947, Block: 253, Properties: 1029},
+	{Hash: 908039153, Block: 253, Properties: 1030},
+	{Hash: 4090812401, Block: 253, Properties: 1026},
 }

@@ -9,5 +9,5 @@ var Clay = Block{
 }
 
 var clayStates = [...]State{
-	{Hash: 666874214, Block: 1032, Properties: 1728},
+	{Hash: 666874214, Block: 1129, Properties: 3214},
 }

@@ -9,6 +9,6 @@ var DeepslateTileDoubleSlab = Block{
 }
 
 var deepslateTileDoubleSlabStates = [...]State{
-	{Hash: 3735836607, Block: 137, Properties: 345},
-	{Hash: 1991538976, Block: 137, Properties: 345},
+	{Hash: 3735836607, Block: 150, Properties: 680},
+	{Hash: 1991538976, Block: 150, Properties: 680},
 }

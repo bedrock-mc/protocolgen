@@ -9,6 +9,6 @@ var Bedrock = Block{
 }
 
 var bedrockStates = [...]State{
-	{Hash: 4121722107, Block: 998, Properties: 1695},
-	{Hash: 3066415536, Block: 998, Properties: 1695},
+	{Hash: 4121722107, Block: 1094, Properties: 3165},
+	{Hash: 3066415536, Block: 1094, Properties: 3165},
 }

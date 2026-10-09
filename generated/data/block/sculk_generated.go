@@ -9,5 +9,5 @@ var Sculk = Block{
 }
 
 var sculkStates = [...]State{
-	{Hash: 1041212874, Block: 1007, Properties: 1700},
+	{Hash: 1041212874, Block: 1104, Properties: 3170},
 }

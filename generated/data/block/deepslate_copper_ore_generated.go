@@ -9,5 +9,5 @@ var DeepslateCopperOre = Block{
 }
 
 var deepslateCopperOreStates = [...]State{
-	{Hash: 2179689791, Block: 24, Properties: 71},
+	{Hash: 2179689791, Block: 25, Properties: 106},
 }

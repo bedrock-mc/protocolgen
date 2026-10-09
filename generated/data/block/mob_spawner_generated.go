@@ -9,5 +9,5 @@ var MobSpawner = Block{
 }
 
 var mobSpawnerStates = [...]State{
-	{Hash: 2584960051, Block: 157, Properties: 382},
+	{Hash: 2584960051, Block: 170, Properties: 771},
 }

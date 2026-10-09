@@ -9,5 +9,5 @@ var CactusFlower = Block{
 }
 
 var cactusFlowerStates = [...]State{
-	{Hash: 1885884239, Block: 80, Properties: 228},
+	{Hash: 1885884239, Block: 87, Properties: 444},
 }

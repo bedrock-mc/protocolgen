@@ -9,5 +9,5 @@ var PinkConcrete = Block{
 }
 
 var pinkConcreteStates = [...]State{
-	{Hash: 728288428, Block: 296, Properties: 673},
+	{Hash: 728288428, Block: 324, Properties: 1291},
 }

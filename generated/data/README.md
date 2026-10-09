@@ -42,10 +42,13 @@ Treat returned slices and definitions as immutable.
 
 The runtime target is Minecraft 1.26.50, protocol 2193, with 2,076 runtime items.
 The semantic snapshot uses CloudburstMC/Data commit
-`fb969c547236d87a17181941cd585a0eb18f7ceb`, BDS `1.26.32.2`, and Allay commit
-`59d4007e322a0acf2b0add59133c81e1f7e4c501` for collision, outline and tint.
-These inputs contain 16,913 block states, 88 biomes, 96 entities, 38 foods and
-57 named voxel shapes. [semantic_sources.json](semantic_sources.json) and
+`659ce1e2eee3a67045693f4fd5515c6ccf571953` for blocks and biomes, and BDS
+`1.26.32.2` for base entity, food and named-shape inputs. The same Cloudburst
+revision supplies runtime item identities; Allay remains an item-property and
+supplemental-tag input only.
+These inputs contain 22,091 block states, 89 biomes, 96 entities, 38 foods and
+57 named voxel shapes. Biome metadata may lack a numeric ID; check `HasID`
+before using `ID`. [semantic_sources.json](semantic_sources.json) and
 `version_generated.go` record these independent versions and counts.
 `BDSVersion` describes the behavior and named-shape inputs, not the runtime
 protocol target.
@@ -54,7 +57,13 @@ Entity values describe base components. They do not execute goals, events,
 filters or component-group transitions. Food definitions alone are not a
 runtime item registry. Neighbor-dependent block shapes describe the extraction
 context; live worlds may need their own models to resolve connections.
-Unavailable shapes remain distinct from known empty shapes.
+Unavailable shapes remain distinct from known empty shapes. Thirty reviewed
+liquid-clip boxes in the Cloudburst extract have invalid bounds and are marked
+unavailable. Their exact source values appear in `semantic_sources.json`, and
+`GeneratedCounts.UnavailableLiquidClipShapes` reports their count. Valid geometry
+is retained; no guessed or clamped replacement is supplied. The full registry
+includes Education and internal entries; membership does not establish retail
+availability.
 
 ## Generation and API ownership
 

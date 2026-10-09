@@ -18,5 +18,5 @@ var LukewarmOcean = Biome{
 	FoliageSnow:       0,
 	MapWaterColorRGBA: 0x0d96dba5,
 	Rain:              true,
-	Tags:              []string{"fast_fishing", "high_seas", "lukewarm", "monster", "ocean", "overworld", "spawns_warm_variant_farm_animals"},
+	Tags:              []string{"fast_fishing", "high_seas", "lukewarm", "monster", "ocean", "overworld", "spawns_warm_variant_farm_animals", "temperate_ocean"},
 }

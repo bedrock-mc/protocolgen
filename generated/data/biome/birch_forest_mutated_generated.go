@@ -18,5 +18,5 @@ var BirchForestMutated = Biome{
 	FoliageSnow:       0,
 	MapWaterColorRGBA: 0x0677cea5,
 	Rain:              true,
-	Tags:              []string{"animal", "bee_habitat", "birch", "forest", "has_structure_trail_ruins", "monster", "mutated", "overworld_generation"},
+	Tags:              []string{"animal", "bee_habitat", "birch", "forest", "has_structure_abandoned_camp", "has_structure_trail_ruins", "monster", "mutated", "overworld_generation"},
 }

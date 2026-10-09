@@ -9,10 +9,10 @@ var UnderwaterTorch = Block{
 }
 
 var underwaterTorchStates = [...]State{
-	{Hash: 3816711773, Block: 284, Properties: 645},
-	{Hash: 2995373697, Block: 284, Properties: 646},
-	{Hash: 410179955, Block: 284, Properties: 647},
-	{Hash: 3794757418, Block: 284, Properties: 648},
-	{Hash: 1938573548, Block: 284, Properties: 649},
-	{Hash: 2838823732, Block: 284, Properties: 645},
+	{Hash: 3816711773, Block: 312, Properties: 1239},
+	{Hash: 2995373697, Block: 312, Properties: 1240},
+	{Hash: 410179955, Block: 312, Properties: 1241},
+	{Hash: 3794757418, Block: 312, Properties: 1242},
+	{Hash: 1938573548, Block: 312, Properties: 1243},
+	{Hash: 2838823732, Block: 312, Properties: 1239},
 }

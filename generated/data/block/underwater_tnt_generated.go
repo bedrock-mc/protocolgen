@@ -9,6 +9,6 @@ var UnderwaterTnt = Block{
 }
 
 var underwaterTntStates = [...]State{
-	{Hash: 3529064734, Block: 240, Properties: 543},
-	{Hash: 289404009, Block: 240, Properties: 543},
+	{Hash: 3529064734, Block: 258, Properties: 1068},
+	{Hash: 289404009, Block: 258, Properties: 1068},
 }

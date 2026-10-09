@@ -9,10 +9,10 @@ var BirchWallSign = Block{
 }
 
 var birchWallSignStates = [...]State{
-	{Hash: 1314747092, Block: 975, Properties: 1624},
-	{Hash: 1253272269, Block: 975, Properties: 1624},
-	{Hash: 1191797446, Block: 975, Properties: 1625},
-	{Hash: 1130322623, Block: 975, Properties: 1626},
-	{Hash: 1560646384, Block: 975, Properties: 1627},
-	{Hash: 1499171561, Block: 975, Properties: 1628},
+	{Hash: 1314747092, Block: 1067, Properties: 3030},
+	{Hash: 1253272269, Block: 1067, Properties: 3030},
+	{Hash: 1191797446, Block: 1067, Properties: 3031},
+	{Hash: 1130322623, Block: 1067, Properties: 3032},
+	{Hash: 1560646384, Block: 1067, Properties: 3033},
+	{Hash: 1499171561, Block: 1067, Properties: 3034},
 }

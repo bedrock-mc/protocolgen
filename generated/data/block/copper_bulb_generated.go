@@ -9,8 +9,8 @@ var CopperBulb = Block{
 }
 
 var copperBulbStates = [...]State{
-	{Hash: 40859174, Block: 499, Properties: 424},
-	{Hash: 1229100855, Block: 499, Properties: 425},
-	{Hash: 1096165745, Block: 499, Properties: 424},
-	{Hash: 173794284, Block: 499, Properties: 425},
+	{Hash: 40859174, Block: 549, Properties: 847},
+	{Hash: 1229100855, Block: 549, Properties: 848},
+	{Hash: 1096165745, Block: 549, Properties: 847},
+	{Hash: 173794284, Block: 549, Properties: 848},
 }

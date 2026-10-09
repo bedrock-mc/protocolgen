@@ -9,5 +9,20 @@ var BirchFence = Block{
 }
 
 var birchFenceStates = [...]State{
-	{Hash: 3642041752, Block: 1316, Properties: 1951},
+	{Hash: 2078406302, Block: 1434, Properties: 3614},
+	{Hash: 1551882227, Block: 1434, Properties: 3615},
+	{Hash: 4214972327, Block: 1434, Properties: 3616},
+	{Hash: 509622210, Block: 1434, Properties: 3617},
+	{Hash: 655016691, Block: 1434, Properties: 3618},
+	{Hash: 2975271838, Block: 1434, Properties: 1496},
+	{Hash: 1238290690, Block: 1434, Properties: 3619},
+	{Hash: 1834296935, Block: 1434, Properties: 3620},
+	{Hash: 3133712873, Block: 1434, Properties: 3621},
+	{Hash: 496575656, Block: 1434, Properties: 3622},
+	{Hash: 3159665756, Block: 1434, Properties: 1495},
+	{Hash: 1564928781, Block: 1434, Properties: 3623},
+	{Hash: 3894677416, Block: 1434, Properties: 3624},
+	{Hash: 4030578409, Block: 1434, Properties: 3625},
+	{Hash: 2293597261, Block: 1434, Properties: 3626},
+	{Hash: 778990364, Block: 1434, Properties: 3627},
 }

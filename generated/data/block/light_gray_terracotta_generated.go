@@ -9,5 +9,5 @@ var LightGrayTerracotta = Block{
 }
 
 var lightGrayTerracottaStates = [...]State{
-	{Hash: 3883952766, Block: 201, Properties: 455},
+	{Hash: 3883952766, Block: 215, Properties: 920},
 }

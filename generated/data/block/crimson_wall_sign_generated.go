@@ -9,10 +9,10 @@ var CrimsonWallSign = Block{
 }
 
 var crimsonWallSignStates = [...]State{
-	{Hash: 3012331617, Block: 42, Properties: 115},
-	{Hash: 3073806440, Block: 42, Properties: 115},
-	{Hash: 2889381971, Block: 42, Properties: 116},
-	{Hash: 2950856794, Block: 42, Properties: 117},
-	{Hash: 2766432325, Block: 42, Properties: 118},
-	{Hash: 2827907148, Block: 42, Properties: 119},
+	{Hash: 3012331617, Block: 46, Properties: 213},
+	{Hash: 3073806440, Block: 46, Properties: 213},
+	{Hash: 2889381971, Block: 46, Properties: 214},
+	{Hash: 2950856794, Block: 46, Properties: 215},
+	{Hash: 2766432325, Block: 46, Properties: 216},
+	{Hash: 2827907148, Block: 46, Properties: 217},
 }

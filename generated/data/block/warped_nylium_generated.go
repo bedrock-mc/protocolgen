@@ -9,5 +9,5 @@ var WarpedNylium = Block{
 }
 
 var warpedNyliumStates = [...]State{
-	{Hash: 2756181678, Block: 871, Properties: 1498},
+	{Hash: 2756181678, Block: 953, Properties: 2787},
 }

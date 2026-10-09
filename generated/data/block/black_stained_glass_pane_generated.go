@@ -9,5 +9,20 @@ var BlackStainedGlassPane = Block{
 }
 
 var blackStainedGlassPaneStates = [...]State{
-	{Hash: 2231041595, Block: 282, Properties: 49},
+	{Hash: 2830496205, Block: 309, Properties: 69},
+	{Hash: 308133248, Block: 309, Properties: 70},
+	{Hash: 1830433748, Block: 309, Properties: 71},
+	{Hash: 3454430561, Block: 309, Properties: 72},
+	{Hash: 3661480368, Block: 309, Properties: 73},
+	{Hash: 3274387677, Block: 309, Properties: 74},
+	{Hash: 2621555681, Block: 309, Properties: 75},
+	{Hash: 2663308628, Block: 309, Properties: 76},
+	{Hash: 1775189634, Block: 309, Properties: 77},
+	{Hash: 1363439819, Block: 309, Properties: 78},
+	{Hash: 2885740319, Block: 309, Properties: 79},
+	{Hash: 2399123990, Block: 309, Properties: 80},
+	{Hash: 421819643, Block: 309, Properties: 81},
+	{Hash: 2219081106, Block: 309, Properties: 82},
+	{Hash: 1566249110, Block: 309, Properties: 83},
+	{Hash: 3718615199, Block: 309, Properties: 84},
 }

@@ -9,5 +9,5 @@ var Andesite = Block{
 }
 
 var andesiteStates = [...]State{
-	{Hash: 1683032592, Block: 204, Properties: 72},
+	{Hash: 1683032592, Block: 218, Properties: 107},
 }

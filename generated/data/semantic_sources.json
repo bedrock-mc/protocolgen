@@ -1,14 +1,376 @@
 {
   "schema_version": 1,
-  "cloudburst_ref": "fb969c547236d87a17181941cd585a0eb18f7ceb",
+  "cloudburst_ref": "659ce1e2eee3a67045693f4fd5515c6ccf571953",
   "bds_version": "1.26.32.2",
-  "block_shapes_ref": "59d4007e322a0acf2b0add59133c81e1f7e4c501",
-  "source_lock_sha256": "4eeb12b0c3142fa0b266bc5acb096a56d7c442667f2702fe00e137cdb6aef732",
+  "liquid_clip_omissions": [
+    {
+      "name": "minecraft:polished_deepslate_slab",
+      "hash": 808632,
+      "source_box": [
+        0.000212,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "minecraft:waxed_exposed_chiseled_copper",
+      "hash": 549128054,
+      "source_box": [
+        0.000185,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "minecraft:sculk_shrieker",
+      "hash": 879274693,
+      "source_box": [
+        0.000185,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "minecraft:weathered_cut_copper_slab",
+      "hash": 918106909,
+      "source_box": [
+        0.045607,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "minecraft:nether_gold_ore",
+      "hash": 950287826,
+      "source_box": [
+        0.000065,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "minecraft:sculk_shrieker",
+      "hash": 1061393758,
+      "source_box": [
+        0.000185,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "minecraft:brick_double_slab",
+      "hash": 1062859389,
+      "source_box": [
+        0.000185,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "minecraft:yellow_concrete_slab",
+      "hash": 1669504351,
+      "source_box": [
+        0.000254,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "minecraft:polished_deepslate_slab",
+      "hash": 1777554853,
+      "source_box": [
+        0.000212,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "minecraft:yellow_concrete_slab",
+      "hash": 2034455872,
+      "source_box": [
+        0.000254,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "minecraft:waxed_exposed_copper_chain",
+      "hash": 2040556551,
+      "source_box": [
+        0.000185,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "minecraft:sculk_shrieker",
+      "hash": 2116700329,
+      "source_box": [
+        0.000185,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "minecraft:deepslate_copper_ore",
+      "hash": 2179689791,
+      "source_box": [
+        0.000031,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "minecraft:brick_double_slab",
+      "hash": 2736031770,
+      "source_box": [
+        0.000185,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "minecraft:material_reducer",
+      "hash": 2805244655,
+      "source_box": [
+        0.007792,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "minecraft:material_reducer",
+      "hash": 2866719478,
+      "source_box": [
+        0.007792,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "minecraft:material_reducer",
+      "hash": 2928194301,
+      "source_box": [
+        0.007792,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "minecraft:material_reducer",
+      "hash": 2989669124,
+      "source_box": [
+        0.007792,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "minecraft:waxed_exposed_copper_chain",
+      "hash": 3095863122,
+      "source_box": [
+        0.000185,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "minecraft:waxed_oxidized_chiseled_copper",
+      "hash": 3137006559,
+      "source_box": [
+        0.000065,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "minecraft:black_concrete_powder",
+      "hash": 3238761413,
+      "source_box": [
+        0.000212,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "minecraft:azalea",
+      "hash": 3563509743,
+      "source_box": [
+        0.012507,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "minecraft:dead_brain_coral_wall_fan",
+      "hash": 3727019051,
+      "source_box": [
+        0.000253,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "minecraft:dead_brain_coral_wall_fan",
+      "hash": 3788493874,
+      "source_box": [
+        0.000253,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "minecraft:weathered_cut_copper_slab",
+      "hash": 3802176800,
+      "source_box": [
+        0.045607,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "minecraft:dead_brain_coral_wall_fan",
+      "hash": 3849968697,
+      "source_box": [
+        0.000253,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "minecraft:dead_brain_coral_wall_fan",
+      "hash": 3911443520,
+      "source_box": [
+        0.000253,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "minecraft:tuff",
+      "hash": 4100538480,
+      "source_box": [
+        0.000212,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "minecraft:sculk_shrieker",
+      "hash": 4118935418,
+      "source_box": [
+        0.000185,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "minecraft:waxed_exposed_copper_chain",
+      "hash": 4151169693,
+      "source_box": [
+        0.000185,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "source_lock_sha256": "f8274d33814ca73c468a495ba0f4861d19df4ae15b88a72deb666cf9048d2a3a",
   "counts": {
-    "block_states": 16913,
-    "biomes": 88,
+    "block_states": 22091,
+    "biomes": 89,
     "voxel_shapes": 57,
     "entities": 96,
-    "foods": 38
+    "foods": 38,
+    "unavailable_liquid_clip_shapes": 30
   }
 }

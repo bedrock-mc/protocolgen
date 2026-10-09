@@ -9,16 +9,16 @@ var Hopper = Block{
 }
 
 var hopperStates = [...]State{
-	{Hash: 3036911681, Block: 980, Properties: 1634},
-	{Hash: 3179813464, Block: 980, Properties: 1634},
-	{Hash: 2016338511, Block: 980, Properties: 1635},
-	{Hash: 226815470, Block: 980, Properties: 1636},
-	{Hash: 2961012117, Block: 980, Properties: 1637},
-	{Hash: 4222171788, Block: 980, Properties: 1638},
-	{Hash: 1981605110, Block: 980, Properties: 1634},
-	{Hash: 4235120035, Block: 980, Properties: 1634},
-	{Hash: 961031940, Block: 980, Properties: 1635},
-	{Hash: 1282122041, Block: 980, Properties: 1636},
-	{Hash: 1905705546, Block: 980, Properties: 1637},
-	{Hash: 982511063, Block: 980, Properties: 1638},
+	{Hash: 3036911681, Block: 1074, Properties: 3040},
+	{Hash: 3179813464, Block: 1074, Properties: 3040},
+	{Hash: 2016338511, Block: 1074, Properties: 3041},
+	{Hash: 226815470, Block: 1074, Properties: 3042},
+	{Hash: 2961012117, Block: 1074, Properties: 3043},
+	{Hash: 4222171788, Block: 1074, Properties: 3044},
+	{Hash: 1981605110, Block: 1074, Properties: 3040},
+	{Hash: 4235120035, Block: 1074, Properties: 3040},
+	{Hash: 961031940, Block: 1074, Properties: 3041},
+	{Hash: 1282122041, Block: 1074, Properties: 3042},
+	{Hash: 1905705546, Block: 1074, Properties: 3043},
+	{Hash: 982511063, Block: 1074, Properties: 3044},
 }

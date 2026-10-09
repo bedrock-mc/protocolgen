@@ -9,5 +9,5 @@ var SmithingTable = Block{
 }
 
 var smithingTableStates = [...]State{
-	{Hash: 3439420253, Block: 348, Properties: 759},
+	{Hash: 3439420253, Block: 384, Properties: 1475},
 }

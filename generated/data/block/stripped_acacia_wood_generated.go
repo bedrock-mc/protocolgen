@@ -9,7 +9,7 @@ var StrippedAcaciaWood = Block{
 }
 
 var strippedAcaciaWoodStates = [...]State{
-	{Hash: 3247136438, Block: 96, Properties: 264},
-	{Hash: 7475713, Block: 96, Properties: 264},
-	{Hash: 2191829867, Block: 96, Properties: 264},
+	{Hash: 3247136438, Block: 106, Properties: 535},
+	{Hash: 7475713, Block: 106, Properties: 535},
+	{Hash: 2191829867, Block: 106, Properties: 535},
 }

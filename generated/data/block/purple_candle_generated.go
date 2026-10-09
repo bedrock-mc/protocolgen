@@ -9,12 +9,12 @@ var PurpleCandle = Block{
 }
 
 var purpleCandleStates = [...]State{
-	{Hash: 2173512871, Block: 1010, Properties: 1702},
-	{Hash: 2267809428, Block: 1010, Properties: 1703},
-	{Hash: 4071772553, Block: 1010, Properties: 1704},
-	{Hash: 2633486366, Block: 1010, Properties: 1705},
-	{Hash: 1118206300, Block: 1010, Properties: 1706},
-	{Hash: 3323115999, Block: 1010, Properties: 1707},
-	{Hash: 3016465982, Block: 1010, Properties: 1708},
-	{Hash: 3688792937, Block: 1010, Properties: 1709},
+	{Hash: 2173512871, Block: 1107, Properties: 3172},
+	{Hash: 2267809428, Block: 1107, Properties: 3173},
+	{Hash: 4071772553, Block: 1107, Properties: 3174},
+	{Hash: 2633486366, Block: 1107, Properties: 3175},
+	{Hash: 1118206300, Block: 1107, Properties: 3176},
+	{Hash: 3323115999, Block: 1107, Properties: 3177},
+	{Hash: 3016465982, Block: 1107, Properties: 3178},
+	{Hash: 3688792937, Block: 1107, Properties: 3179},
 }

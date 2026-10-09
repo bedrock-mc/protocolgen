@@ -9,5 +9,20 @@ var JungleFence = Block{
 }
 
 var jungleFenceStates = [...]State{
-	{Hash: 425194876, Block: 147, Properties: 363},
+	{Hash: 3237383978, Block: 160, Properties: 698},
+	{Hash: 390489647, Block: 160, Properties: 699},
+	{Hash: 1467915507, Block: 160, Properties: 700},
+	{Hash: 1994439582, Block: 160, Properties: 701},
+	{Hash: 3268272303, Block: 160, Properties: 702},
+	{Hash: 359601322, Block: 160, Properties: 703},
+	{Hash: 2891305118, Block: 160, Properties: 704},
+	{Hash: 571049971, Block: 160, Properties: 705},
+	{Hash: 4292690549, Block: 160, Properties: 706},
+	{Hash: 3630150372, Block: 160, Properties: 707},
+	{Hash: 412608936, Block: 160, Properties: 708},
+	{Hash: 3049746153, Block: 160, Properties: 709},
+	{Hash: 2212965732, Block: 160, Properties: 710},
+	{Hash: 1414907893, Block: 160, Properties: 711},
+	{Hash: 3946611689, Block: 160, Properties: 712},
+	{Hash: 3810710696, Block: 160, Properties: 713},
 }

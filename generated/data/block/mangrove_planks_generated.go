@@ -9,5 +9,5 @@ var MangrovePlanks = Block{
 }
 
 var mangrovePlanksStates = [...]State{
-	{Hash: 647292747, Block: 257, Properties: 398},
+	{Hash: 647292747, Block: 279, Properties: 789},
 }

@@ -9,10 +9,10 @@ var SpruceWallSign = Block{
 }
 
 var spruceWallSignStates = [...]State{
-	{Hash: 2855525059, Block: 1108, Properties: 1820},
-	{Hash: 2916999882, Block: 1108, Properties: 1820},
-	{Hash: 2978474705, Block: 1108, Properties: 1821},
-	{Hash: 3039949528, Block: 1108, Properties: 1822},
-	{Hash: 2609625767, Block: 1108, Properties: 1823},
-	{Hash: 2671100590, Block: 1108, Properties: 1824},
+	{Hash: 2855525059, Block: 1212, Properties: 3378},
+	{Hash: 2916999882, Block: 1212, Properties: 3378},
+	{Hash: 2978474705, Block: 1212, Properties: 3379},
+	{Hash: 3039949528, Block: 1212, Properties: 3380},
+	{Hash: 2609625767, Block: 1212, Properties: 3381},
+	{Hash: 2671100590, Block: 1212, Properties: 3382},
 }

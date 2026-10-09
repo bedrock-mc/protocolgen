@@ -9,16 +9,16 @@ var JungleButton = Block{
 }
 
 var jungleButtonStates = [...]State{
-	{Hash: 2525592829, Block: 31, Properties: 59},
-	{Hash: 2587067652, Block: 31, Properties: 60},
-	{Hash: 2402643183, Block: 31, Properties: 61},
-	{Hash: 2464118006, Block: 31, Properties: 62},
-	{Hash: 2771492121, Block: 31, Properties: 63},
-	{Hash: 2832966944, Block: 31, Properties: 64},
-	{Hash: 1943956160, Block: 31, Properties: 65},
-	{Hash: 1882481337, Block: 31, Properties: 66},
-	{Hash: 1821006514, Block: 31, Properties: 67},
-	{Hash: 1759531691, Block: 31, Properties: 68},
-	{Hash: 1698056868, Block: 31, Properties: 69},
-	{Hash: 1636582045, Block: 31, Properties: 70},
+	{Hash: 2525592829, Block: 34, Properties: 94},
+	{Hash: 2587067652, Block: 34, Properties: 95},
+	{Hash: 2402643183, Block: 34, Properties: 96},
+	{Hash: 2464118006, Block: 34, Properties: 97},
+	{Hash: 2771492121, Block: 34, Properties: 98},
+	{Hash: 2832966944, Block: 34, Properties: 99},
+	{Hash: 1943956160, Block: 34, Properties: 100},
+	{Hash: 1882481337, Block: 34, Properties: 101},
+	{Hash: 1821006514, Block: 34, Properties: 102},
+	{Hash: 1759531691, Block: 34, Properties: 103},
+	{Hash: 1698056868, Block: 34, Properties: 104},
+	{Hash: 1636582045, Block: 34, Properties: 105},
 }

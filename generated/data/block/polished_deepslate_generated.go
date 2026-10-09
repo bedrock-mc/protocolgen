@@ -9,5 +9,5 @@ var PolishedDeepslate = Block{
 }
 
 var polishedDeepslateStates = [...]State{
-	{Hash: 3242384931, Block: 1275, Properties: 345},
+	{Hash: 3242384931, Block: 1391, Properties: 680},
 }

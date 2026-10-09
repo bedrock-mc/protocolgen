@@ -9,5 +9,5 @@ var WarpedWartBlock = Block{
 }
 
 var warpedWartBlockStates = [...]State{
-	{Hash: 1820365362, Block: 772, Properties: 1357},
+	{Hash: 1820365362, Block: 842, Properties: 2508},
 }

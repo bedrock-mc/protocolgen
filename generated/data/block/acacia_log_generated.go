@@ -9,7 +9,7 @@ var AcaciaLog = Block{
 }
 
 var acaciaLogStates = [...]State{
-	{Hash: 3030848113, Block: 477, Properties: 891},
-	{Hash: 1975541542, Block: 477, Properties: 892},
-	{Hash: 4159895696, Block: 477, Properties: 892},
+	{Hash: 3030848113, Block: 524, Properties: 1732},
+	{Hash: 1975541542, Block: 524, Properties: 1733},
+	{Hash: 4159895696, Block: 524, Properties: 1733},
 }

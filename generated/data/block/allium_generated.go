@@ -9,5 +9,5 @@ var Allium = Block{
 }
 
 var alliumStates = [...]State{
-	{Hash: 3179430719, Block: 141, Properties: 121},
+	{Hash: 3179430719, Block: 154, Properties: 219},
 }
