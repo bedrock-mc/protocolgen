@@ -364,11 +364,11 @@
       ]
     }
   ],
-  "source_lock_sha256": "f8274d33814ca73c468a495ba0f4861d19df4ae15b88a72deb666cf9048d2a3a",
+  "source_lock_sha256": "4b3dcf5750c842573a096bf1b3fde0f017cd1311fe625cd55c2924a8f94bd390",
   "counts": {
     "block_states": 22091,
     "biomes": 89,
-    "voxel_shapes": 57,
+    "voxel_shapes": 220,
     "entities": 96,
     "foods": 38,
     "unavailable_liquid_clip_shapes": 30

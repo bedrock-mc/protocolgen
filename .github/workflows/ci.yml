@@ -13,14 +13,14 @@ jobs:
         with:
           go-version: stable
           cache: false
-      - name: Fetch locked block and biome inputs
+      - name: Fetch locked block, biome and shape inputs
         env:
           CLOUDBURST_DIR: ${{ runner.temp }}/protocolgen-cloudburst
         run: |
           set -euo pipefail
           mkdir -p "$CLOUDBURST_DIR"
           revision=$(jq -er '.semantic.cloudburst_ref' data/source/lock.json)
-          for name in blocks.json stripped_biome_definitions.json; do
+          for name in blocks.json stripped_biome_definitions.json voxel_shapes.json; do
             curl --fail --location --retry 3 --max-time 120 \
               "https://raw.githubusercontent.com/CloudburstMC/Data/$revision/$name" \
               --output "$CLOUDBURST_DIR/$name"

@@ -1,0 +1,9 @@
+{
+  "names": {"minecraft:anvil": 0},
+  "shapes": [{
+    "cells": {"xSize": 1, "ySize": 1, "zSize": 1, "storage": [1]},
+    "xCoordinates": [0.125, 0.875],
+    "yCoordinates": [0, 0.25],
+    "zCoordinates": [0.125, 0.875]
+  }]
+}

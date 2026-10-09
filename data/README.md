@@ -45,14 +45,16 @@ go run ./cmd/generate \
 ```
 
 Versions and digests come from [source/lock.json](source/lock.json). The
-semantic generator verifies both Cloudburst files and every consumed BDS JSON
-file before writing. Added, missing or changed input files fail validation.
+semantic generator verifies all three Cloudburst semantic files and every
+consumed BDS JSON file before writing. Added, missing or changed input files fail validation.
 The independent BDS 1.26.32.2 semantic provenance is preserved; it is not a
 claim that all inputs were captured from the target runtime release.
 Cloudburst `blocks.json` supplies all block fields, including collision, outline
 and tint; there is no separate Allay block overlay. Its pinned revision is
-`659ce1e2eee3a67045693f4fd5515c6ccf571953`, shared by the biome and runtime
-item registry inputs. The catalog contains 22,091 block states and 89 biomes.
+`659ce1e2eee3a67045693f4fd5515c6ccf571953`, shared by the biome, named
+voxel-shape and runtime item registry inputs. The catalog contains 22,091 block states, 89 biomes and
+220 named voxel shapes. Named shapes are decoded from occupied grid cells into
+block-local boxes; no BDS shape-pack overlay is required.
 
 Thirty liquid-clip boxes in this extract have reversed bounds. The reviewed
 `liquid_clip_omissions` input identifies each exact name, hash and source box.
@@ -82,9 +84,8 @@ fixtures. A repository-level AST check reads the sibling catalog's `Runtime`
 struct and verifies every field is emitted without adding a module dependency
 or maintaining a second schema list. Run the generator tests from a full
 repository checkout. CI downloads and authenticates the locked Cloudburst
-block/biome files, compares
-the full generated projection with the committed catalog, and regenerates runtime
-items and metadata. To run the Cloudburst check locally, set
+block/biome/shape files and compares the full generated projection with the
+committed catalog. It also regenerates runtime items and metadata. To run the Cloudburst check locally, set
 `PROTOCOLGEN_CLOUDBURST_DIR` when running `make test-data`. Full semantic
 regeneration additionally requires the local BDS inputs.
 
@@ -107,8 +108,9 @@ Removing them requires a complete version-matched item extract containing stack
 limits, effective offhand acceptance and equipment-slot eligibility. Missing
 component data is not evidence for a default stack size or an unavailable slot.
 
-BDS behavior-pack inputs still supply base entity components, food and named voxel
-shapes at their independently recorded source version. The existing
+BDS behavior-pack inputs still supply base entity components and food at their
+independently recorded source version. Cloudburst entity IDs and synchronized
+properties do not contain those behavior components. The existing
 `vanilla-data/endstone` exporter is a separate route for collecting live registry
 facts from a matching BDS build; a packet registry alone does not contain all
 item capabilities. This update does not change those behavior-pack inputs.

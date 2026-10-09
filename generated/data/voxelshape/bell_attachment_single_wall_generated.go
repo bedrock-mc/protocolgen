@@ -6,8 +6,8 @@ package voxelshape
 var BellAttachmentSingleWall = Shape{
 	Name: "minecraft:bell_attachment_single_wall",
 	Boxes: []Box{
+		{0.1875, 0.8125, 0.4375, 1, 0.9375, 0.5625},
 		{0.25, 0.25, 0.25, 0.75, 0.375, 0.75},
 		{0.3125, 0.375, 0.3125, 0.6875, 0.8125, 0.6875},
-		{0.1875, 0.8125, 0.4375, 1, 0.9375, 0.5625},
 	},
 }
