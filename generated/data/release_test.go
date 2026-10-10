@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/bedrock-mc/protocolgen/generated/data"
+	"github.com/bedrock-mc/protocolgen/generated/data/block"
 	"github.com/bedrock-mc/protocolgen/generated/data/registry"
 )
 
@@ -66,7 +67,7 @@ func validateReleaseMetadata(releaseJSON, semanticJSON []byte) error {
 		return err
 	}
 	digest := fmt.Sprintf("%x", sha256.Sum256(canonical.Bytes()))
-	for _, identity := range []string{release.SourceLockSHA256, data.SourceLockSHA256, data.SemanticSourceLockSHA256, registry.SourceLockSHA256} {
+	for _, identity := range []string{release.SourceLockSHA256, data.SourceLockSHA256, data.SemanticSourceLockSHA256, registry.SourceLockSHA256, block.MiningSourceLockSHA256} {
 		if digest != identity {
 			return fmt.Errorf("catalog source-lock identities differ; regenerate both projections")
 		}

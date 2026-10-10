@@ -60,6 +60,12 @@
       "path": "inputs/1.26.50/biome_ids.json",
       "revision": "9fc5ac80a8b4a9f897dc992ad55ccc30a2afaf16",
       "sha256": "e224516a6fb602b03a3b850ff2ba8a6cdab838dcd8ec20fc95ec46787dee0cce"
+    },
+    "mining_tools": {
+      "description": "Provisional Bedrock 1.26.30 block tool and harvest classifications; not verified against target 1.26.50",
+      "file": "data/bedrock/1.26.30/blocks.json",
+      "sha256": "12ff90b5094006b42d87ca7c296ed1bef0e1c2d6d67498aea85b6ece9408b494",
+      "upstream": "prismarine"
     }
   },
   "release": "1.26.51",
@@ -227,6 +233,10 @@
     "mojang_samples": {
       "repository": "Mojang/bedrock-samples",
       "revision": "847bd28a260da9369f0dfd4fded1893ccf5aed86"
+    },
+    "prismarine": {
+      "repository": "PrismarineJS/minecraft-data",
+      "revision": "6ec59288287e4045331eaa47ee8fb104278f6b98"
     }
   }
 }

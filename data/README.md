@@ -30,6 +30,7 @@ Regenerate runtime items and release metadata from this directory:
 ```sh
 go run ./cmd/runtimegen
 go run ./cmd/registrygen
+go run ./cmd/mininggen
 ```
 
 The runtime catalog targets Minecraft 1.26.50, protocol 2193, with 2,076 items.
@@ -143,3 +144,11 @@ Remote inputs specify an upstream, file path (or archive) and SHA-256. Download
 URLs are derived. Local corrections can refer to the upstream they qualify.
 `Sources.Revision(name)` resolves either form; `Lock.Target` exposes the selected
 release. Independent BDS pack versions remain separate provenance.
+
+`mininggen` reads the authenticated Prismarine Bedrock 1.26.30 `blocks.json`
+pin from the same lock. It writes `block/mining_generated.go` with separate
+effective-tool and drop-qualifying-tool families and a minimum harvest tier.
+The classifications are provisional for the active 1.26.50 catalog. Blocks
+without usable evidence remain unknown; they are not assumed hand-harvestable.
+Run `mininggen` again after any source-lock change so its recorded lock digest
+matches the other generated outputs.

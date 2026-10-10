@@ -17,6 +17,10 @@ The semantic values are derived from:
   [AllayMC/Allay](https://github.com/AllayMC/Allay), plus the documented corrections
   in the source inputs
 - Resource inputs from [Mojang/bedrock-samples](https://github.com/Mojang/bedrock-samples)
+- Provisional block tool and harvest classifications from
+  [PrismarineJS/minecraft-data](https://github.com/PrismarineJS/minecraft-data),
+  pinned to its Bedrock 1.26.30 `blocks.json` extract. Its README declares MIT;
+  these facts have not been verified for the catalog's target Bedrock release.
 
 The source revisions and versions are recorded in
 [`semantic_sources.json`](../generated/data/semantic_sources.json), with input digests in
