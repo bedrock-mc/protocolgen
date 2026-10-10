@@ -5,8 +5,8 @@ package biome
 // StoneBeach is the generated definition for minecraft:stone_beach.
 var StoneBeach = Biome{
 	Name:              "minecraft:stone_beach",
-	ID:                0,
-	HasID:             false,
+	ID:                25,
+	HasID:             true,
 	Temperature:       0.2,
 	Downfall:          0.3,
 	Depth:             0.1,

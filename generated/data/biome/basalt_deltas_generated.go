@@ -5,8 +5,8 @@ package biome
 // BasaltDeltas is the generated definition for minecraft:basalt_deltas.
 var BasaltDeltas = Biome{
 	Name:              "minecraft:basalt_deltas",
-	ID:                0,
-	HasID:             false,
+	ID:                181,
+	HasID:             true,
 	Temperature:       2,
 	Downfall:          0,
 	Depth:             0.1,

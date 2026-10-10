@@ -5,8 +5,8 @@ package biome
 // WarpedForest is the generated definition for minecraft:warped_forest.
 var WarpedForest = Biome{
 	Name:              "minecraft:warped_forest",
-	ID:                0,
-	HasID:             false,
+	ID:                180,
+	HasID:             true,
 	Temperature:       2,
 	Downfall:          0,
 	Depth:             0.1,

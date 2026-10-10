@@ -5,8 +5,8 @@ package biome
 // FrozenPeaks is the generated definition for minecraft:frozen_peaks.
 var FrozenPeaks = Biome{
 	Name:              "minecraft:frozen_peaks",
-	ID:                0,
-	HasID:             false,
+	ID:                183,
+	HasID:             true,
 	Temperature:       -0.7,
 	Downfall:          0.9,
 	Depth:             0.1,

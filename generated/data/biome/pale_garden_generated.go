@@ -5,8 +5,8 @@ package biome
 // PaleGarden is the generated definition for minecraft:pale_garden.
 var PaleGarden = Biome{
 	Name:              "minecraft:pale_garden",
-	ID:                0,
-	HasID:             false,
+	ID:                193,
+	HasID:             true,
 	Temperature:       0.7,
 	Downfall:          0.8,
 	Depth:             0.1,

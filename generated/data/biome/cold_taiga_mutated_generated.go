@@ -5,8 +5,8 @@ package biome
 // ColdTaigaMutated is the generated definition for minecraft:cold_taiga_mutated.
 var ColdTaigaMutated = Biome{
 	Name:              "minecraft:cold_taiga_mutated",
-	ID:                0,
-	HasID:             false,
+	ID:                158,
+	HasID:             true,
 	Temperature:       -0.5,
 	Downfall:          0.4,
 	Depth:             0.3,

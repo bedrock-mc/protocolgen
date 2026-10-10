@@ -5,8 +5,8 @@ package biome
 // BirchForest is the generated definition for minecraft:birch_forest.
 var BirchForest = Biome{
 	Name:              "minecraft:birch_forest",
-	ID:                0,
-	HasID:             false,
+	ID:                27,
+	HasID:             true,
 	Temperature:       0.6,
 	Downfall:          0.6,
 	Depth:             0.1,

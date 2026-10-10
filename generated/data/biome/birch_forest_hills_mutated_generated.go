@@ -5,8 +5,8 @@ package biome
 // BirchForestHillsMutated is the generated definition for minecraft:birch_forest_hills_mutated.
 var BirchForestHillsMutated = Biome{
 	Name:              "minecraft:birch_forest_hills_mutated",
-	ID:                0,
-	HasID:             false,
+	ID:                156,
+	HasID:             true,
 	Temperature:       0.7,
 	Downfall:          0.8,
 	Depth:             0.55,

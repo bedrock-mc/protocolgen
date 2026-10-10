@@ -5,8 +5,8 @@ package biome
 // ColdBeach is the generated definition for minecraft:cold_beach.
 var ColdBeach = Biome{
 	Name:              "minecraft:cold_beach",
-	ID:                0,
-	HasID:             false,
+	ID:                26,
+	HasID:             true,
 	Temperature:       0.05,
 	Downfall:          0.3,
 	Depth:             0,

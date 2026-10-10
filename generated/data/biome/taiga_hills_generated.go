@@ -5,8 +5,8 @@ package biome
 // TaigaHills is the generated definition for minecraft:taiga_hills.
 var TaigaHills = Biome{
 	Name:              "minecraft:taiga_hills",
-	ID:                0,
-	HasID:             false,
+	ID:                19,
+	HasID:             true,
 	Temperature:       0.25,
 	Downfall:          0.8,
 	Depth:             0.45,

@@ -5,8 +5,8 @@ package biome
 // DeepColdOcean is the generated definition for minecraft:deep_cold_ocean.
 var DeepColdOcean = Biome{
 	Name:              "minecraft:deep_cold_ocean",
-	ID:                0,
-	HasID:             false,
+	ID:                45,
+	HasID:             true,
 	Temperature:       0.5,
 	Downfall:          0.5,
 	Depth:             -1.8,

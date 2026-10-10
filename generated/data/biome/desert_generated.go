@@ -5,8 +5,8 @@ package biome
 // Desert is the generated definition for minecraft:desert.
 var Desert = Biome{
 	Name:              "minecraft:desert",
-	ID:                0,
-	HasID:             false,
+	ID:                2,
+	HasID:             true,
 	Temperature:       2,
 	Downfall:          0,
 	Depth:             0.125,

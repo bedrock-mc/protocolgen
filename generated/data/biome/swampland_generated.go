@@ -5,8 +5,8 @@ package biome
 // Swampland is the generated definition for minecraft:swampland.
 var Swampland = Biome{
 	Name:              "minecraft:swampland",
-	ID:                0,
-	HasID:             false,
+	ID:                6,
+	HasID:             true,
 	Temperature:       0.8,
 	Downfall:          0.9,
 	Depth:             -0.2,

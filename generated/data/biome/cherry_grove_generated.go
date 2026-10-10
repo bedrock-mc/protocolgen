@@ -5,8 +5,8 @@ package biome
 // CherryGrove is the generated definition for minecraft:cherry_grove.
 var CherryGrove = Biome{
 	Name:              "minecraft:cherry_grove",
-	ID:                0,
-	HasID:             false,
+	ID:                192,
+	HasID:             true,
 	Temperature:       0.3,
 	Downfall:          0.8,
 	Depth:             0.1,

@@ -5,8 +5,8 @@ package biome
 // DripstoneCaves is the generated definition for minecraft:dripstone_caves.
 var DripstoneCaves = Biome{
 	Name:              "minecraft:dripstone_caves",
-	ID:                0,
-	HasID:             false,
+	ID:                188,
+	HasID:             true,
 	Temperature:       0.2,
 	Downfall:          0,
 	Depth:             0.1,

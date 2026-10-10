@@ -5,8 +5,8 @@ package biome
 // Hell is the generated definition for minecraft:hell.
 var Hell = Biome{
 	Name:              "minecraft:hell",
-	ID:                0,
-	HasID:             false,
+	ID:                8,
+	HasID:             true,
 	Temperature:       2,
 	Downfall:          0,
 	Depth:             0.1,

@@ -5,8 +5,8 @@ package biome
 // Meadow is the generated definition for minecraft:meadow.
 var Meadow = Biome{
 	Name:              "minecraft:meadow",
-	ID:                0,
-	HasID:             false,
+	ID:                186,
+	HasID:             true,
 	Temperature:       0.3,
 	Downfall:          0.8,
 	Depth:             0.1,

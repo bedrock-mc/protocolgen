@@ -5,8 +5,8 @@ package biome
 // WarmOcean is the generated definition for minecraft:warm_ocean.
 var WarmOcean = Biome{
 	Name:              "minecraft:warm_ocean",
-	ID:                0,
-	HasID:             false,
+	ID:                40,
+	HasID:             true,
 	Temperature:       0.5,
 	Downfall:          0.5,
 	Depth:             -1,

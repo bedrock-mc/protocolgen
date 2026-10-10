@@ -5,8 +5,8 @@ package biome
 // MushroomIslandShore is the generated definition for minecraft:mushroom_island_shore.
 var MushroomIslandShore = Biome{
 	Name:              "minecraft:mushroom_island_shore",
-	ID:                0,
-	HasID:             false,
+	ID:                15,
+	HasID:             true,
 	Temperature:       0.9,
 	Downfall:          1,
 	Depth:             0,

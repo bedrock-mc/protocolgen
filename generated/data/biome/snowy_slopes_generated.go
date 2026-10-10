@@ -5,8 +5,8 @@ package biome
 // SnowySlopes is the generated definition for minecraft:snowy_slopes.
 var SnowySlopes = Biome{
 	Name:              "minecraft:snowy_slopes",
-	ID:                0,
-	HasID:             false,
+	ID:                184,
+	HasID:             true,
 	Temperature:       -0.3,
 	Downfall:          0.9,
 	Depth:             0.1,

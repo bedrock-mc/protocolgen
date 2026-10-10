@@ -12,7 +12,7 @@ const MiningEvidenceRevision = "6ec59288287e4045331eaa47ee8fb104278f6b98"
 const MiningEvidenceSHA256 = "12ff90b5094006b42d87ca7c296ed1bef0e1c2d6d67498aea85b6ece9408b494"
 
 // MiningSourceLockSHA256 identifies the complete input lock used to generate this table.
-const MiningSourceLockSHA256 = "853789a1d193ca40e7d6b2db6ada0c7cc47b4bd6cdd721ac41cfaf37007bfcfb"
+const MiningSourceLockSHA256 = "7672d394035aade326e9f36edb00d6414911e1f841137bc2eef871781a088f97"
 
 var miningRows = [...]miningRow{
 	{Name: "minecraft:acacia_button", Facts: MiningFacts{EffectiveTools: ToolAxe, HarvestTools: 0, HarvestLevel: -1}},

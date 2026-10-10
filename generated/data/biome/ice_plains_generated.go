@@ -5,8 +5,8 @@ package biome
 // IcePlains is the generated definition for minecraft:ice_plains.
 var IcePlains = Biome{
 	Name:              "minecraft:ice_plains",
-	ID:                0,
-	HasID:             false,
+	ID:                12,
+	HasID:             true,
 	Temperature:       0,
 	Downfall:          0.5,
 	Depth:             0.125,

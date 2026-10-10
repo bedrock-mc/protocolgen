@@ -5,8 +5,8 @@ package biome
 // TaigaMutated is the generated definition for minecraft:taiga_mutated.
 var TaigaMutated = Biome{
 	Name:              "minecraft:taiga_mutated",
-	ID:                0,
-	HasID:             false,
+	ID:                133,
+	HasID:             true,
 	Temperature:       0.25,
 	Downfall:          0.8,
 	Depth:             0.2,

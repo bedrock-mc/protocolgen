@@ -5,8 +5,8 @@ package biome
 // LushCaves is the generated definition for minecraft:lush_caves.
 var LushCaves = Biome{
 	Name:              "minecraft:lush_caves",
-	ID:                0,
-	HasID:             false,
+	ID:                187,
+	HasID:             true,
 	Temperature:       0.9,
 	Downfall:          0,
 	Depth:             0.1,

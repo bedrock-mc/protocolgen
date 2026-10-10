@@ -5,8 +5,8 @@ package biome
 // IcePlainsSpikes is the generated definition for minecraft:ice_plains_spikes.
 var IcePlainsSpikes = Biome{
 	Name:              "minecraft:ice_plains_spikes",
-	ID:                0,
-	HasID:             false,
+	ID:                140,
+	HasID:             true,
 	Temperature:       0,
 	Downfall:          1,
 	Depth:             0.425,

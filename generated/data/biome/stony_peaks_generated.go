@@ -5,8 +5,8 @@ package biome
 // StonyPeaks is the generated definition for minecraft:stony_peaks.
 var StonyPeaks = Biome{
 	Name:              "minecraft:stony_peaks",
-	ID:                0,
-	HasID:             false,
+	ID:                189,
+	HasID:             true,
 	Temperature:       1,
 	Downfall:          0.3,
 	Depth:             0.1,

@@ -5,8 +5,8 @@ package biome
 // MegaTaiga is the generated definition for minecraft:mega_taiga.
 var MegaTaiga = Biome{
 	Name:              "minecraft:mega_taiga",
-	ID:                0,
-	HasID:             false,
+	ID:                32,
+	HasID:             true,
 	Temperature:       0.3,
 	Downfall:          0.8,
 	Depth:             0.2,

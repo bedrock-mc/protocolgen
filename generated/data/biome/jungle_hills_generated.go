@@ -5,8 +5,8 @@ package biome
 // JungleHills is the generated definition for minecraft:jungle_hills.
 var JungleHills = Biome{
 	Name:              "minecraft:jungle_hills",
-	ID:                0,
-	HasID:             false,
+	ID:                22,
+	HasID:             true,
 	Temperature:       0.95,
 	Downfall:          0.9,
 	Depth:             0.45,

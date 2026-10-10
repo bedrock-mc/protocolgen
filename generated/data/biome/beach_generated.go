@@ -5,8 +5,8 @@ package biome
 // Beach is the generated definition for minecraft:beach.
 var Beach = Biome{
 	Name:              "minecraft:beach",
-	ID:                0,
-	HasID:             false,
+	ID:                16,
+	HasID:             true,
 	Temperature:       0.8,
 	Downfall:          0.4,
 	Depth:             0,

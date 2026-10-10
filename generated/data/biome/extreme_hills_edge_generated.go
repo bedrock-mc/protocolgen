@@ -5,8 +5,8 @@ package biome
 // ExtremeHillsEdge is the generated definition for minecraft:extreme_hills_edge.
 var ExtremeHillsEdge = Biome{
 	Name:              "minecraft:extreme_hills_edge",
-	ID:                0,
-	HasID:             false,
+	ID:                20,
+	HasID:             true,
 	Temperature:       0.2,
 	Downfall:          0.3,
 	Depth:             0.8,

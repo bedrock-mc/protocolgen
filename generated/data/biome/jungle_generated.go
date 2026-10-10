@@ -5,8 +5,8 @@ package biome
 // Jungle is the generated definition for minecraft:jungle.
 var Jungle = Biome{
 	Name:              "minecraft:jungle",
-	ID:                0,
-	HasID:             false,
+	ID:                21,
+	HasID:             true,
 	Temperature:       0.95,
 	Downfall:          0.9,
 	Depth:             0.1,

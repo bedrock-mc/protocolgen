@@ -5,8 +5,8 @@ package biome
 // Forest is the generated definition for minecraft:forest.
 var Forest = Biome{
 	Name:              "minecraft:forest",
-	ID:                0,
-	HasID:             false,
+	ID:                4,
+	HasID:             true,
 	Temperature:       0.7,
 	Downfall:          0.8,
 	Depth:             0.1,

@@ -5,8 +5,8 @@ package biome
 // MesaBryce is the generated definition for minecraft:mesa_bryce.
 var MesaBryce = Biome{
 	Name:              "minecraft:mesa_bryce",
-	ID:                0,
-	HasID:             false,
+	ID:                165,
+	HasID:             true,
 	Temperature:       2,
 	Downfall:          0,
 	Depth:             0.1,

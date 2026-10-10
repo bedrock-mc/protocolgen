@@ -5,8 +5,8 @@ package biome
 // SulfurCaves is the generated definition for minecraft:sulfur_caves.
 var SulfurCaves = Biome{
 	Name:              "minecraft:sulfur_caves",
-	ID:                0,
-	HasID:             false,
+	ID:                194,
+	HasID:             true,
 	Temperature:       0.8,
 	Downfall:          0.4,
 	Depth:             0.1,

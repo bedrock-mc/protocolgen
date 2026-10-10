@@ -5,8 +5,8 @@ package biome
 // SwamplandMutated is the generated definition for minecraft:swampland_mutated.
 var SwamplandMutated = Biome{
 	Name:              "minecraft:swampland_mutated",
-	ID:                0,
-	HasID:             false,
+	ID:                134,
+	HasID:             true,
 	Temperature:       0.8,
 	Downfall:          0.5,
 	Depth:             -0.1,

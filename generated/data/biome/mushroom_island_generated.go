@@ -5,8 +5,8 @@ package biome
 // MushroomIsland is the generated definition for minecraft:mushroom_island.
 var MushroomIsland = Biome{
 	Name:              "minecraft:mushroom_island",
-	ID:                0,
-	HasID:             false,
+	ID:                14,
+	HasID:             true,
 	Temperature:       0.9,
 	Downfall:          1,
 	Depth:             0.2,

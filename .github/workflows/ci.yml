@@ -70,9 +70,10 @@ jobs:
           go -C data vet ./...
           go -C generated/data test ./...
           go -C generated/data vet ./...
-      - name: Verify runtime item and registry generation
+      - name: Verify runtime item, mining and registry generation
         run: |
           go -C data run ./cmd/runtimegen
+          go -C data run ./cmd/mininggen
           go -C data run ./cmd/registrygen
           git diff --exit-code -- generated/data
           test -z "$(git ls-files --others --exclude-standard -- generated/data)"

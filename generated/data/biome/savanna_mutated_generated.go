@@ -5,8 +5,8 @@ package biome
 // SavannaMutated is the generated definition for minecraft:savanna_mutated.
 var SavannaMutated = Biome{
 	Name:              "minecraft:savanna_mutated",
-	ID:                0,
-	HasID:             false,
+	ID:                163,
+	HasID:             true,
 	Temperature:       2,
 	Downfall:          0,
 	Depth:             0.3625,

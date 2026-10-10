@@ -5,8 +5,8 @@ package biome
 // Savanna is the generated definition for minecraft:savanna.
 var Savanna = Biome{
 	Name:              "minecraft:savanna",
-	ID:                0,
-	HasID:             false,
+	ID:                35,
+	HasID:             true,
 	Temperature:       1.2,
 	Downfall:          0,
 	Depth:             0.125,

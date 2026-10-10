@@ -5,8 +5,8 @@ package biome
 // Grove is the generated definition for minecraft:grove.
 var Grove = Biome{
 	Name:              "minecraft:grove",
-	ID:                0,
-	HasID:             false,
+	ID:                185,
+	HasID:             true,
 	Temperature:       -0.2,
 	Downfall:          0.8,
 	Depth:             0.1,

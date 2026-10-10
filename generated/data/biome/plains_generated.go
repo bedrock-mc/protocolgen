@@ -5,8 +5,8 @@ package biome
 // Plains is the generated definition for minecraft:plains.
 var Plains = Biome{
 	Name:              "minecraft:plains",
-	ID:                0,
-	HasID:             false,
+	ID:                1,
+	HasID:             true,
 	Temperature:       0.8,
 	Downfall:          0.4,
 	Depth:             0.125,

@@ -5,8 +5,8 @@ package biome
 // DeepFrozenOcean is the generated definition for minecraft:deep_frozen_ocean.
 var DeepFrozenOcean = Biome{
 	Name:              "minecraft:deep_frozen_ocean",
-	ID:                0,
-	HasID:             false,
+	ID:                47,
+	HasID:             true,
 	Temperature:       0.5,
 	Downfall:          0.5,
 	Depth:             -1.8,

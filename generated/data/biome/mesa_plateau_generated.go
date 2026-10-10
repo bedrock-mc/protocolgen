@@ -5,8 +5,8 @@ package biome
 // MesaPlateau is the generated definition for minecraft:mesa_plateau.
 var MesaPlateau = Biome{
 	Name:              "minecraft:mesa_plateau",
-	ID:                0,
-	HasID:             false,
+	ID:                39,
+	HasID:             true,
 	Temperature:       2,
 	Downfall:          0,
 	Depth:             1.5,
