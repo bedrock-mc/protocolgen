@@ -15,6 +15,7 @@ pinned NBT codec to normalize registry payloads; neither module imports the othe
   block components and complete item component payloads.
 - `internal/runtimegen` and `cmd/runtimegen` produce runtime item values and
   release metadata.
+- `internal/mininggen` and `cmd/mininggen` produce provisional block tool facts.
 - `../generated/data/` is the single active output catalog. It has its own
   `go.mod`; it is not a versioned packet-output directory.
 
@@ -98,7 +99,8 @@ struct and verifies every field is emitted without adding a module dependency
 or maintaining a second schema list. Run the generator tests from a full
 repository checkout. CI downloads and authenticates the locked Cloudburst
 block/biome/shape files and compares the full generated projection with the
-committed catalog. It also regenerates runtime items, registry payloads and metadata. To run the Cloudburst check locally, set
+committed catalog. It also regenerates runtime items, mining facts, registry
+payloads and metadata. To run the Cloudburst check locally, set
 `PROTOCOLGEN_CLOUDBURST_DIR` when running `make test-data`. Full semantic
 regeneration additionally requires the local BDS inputs.
 
