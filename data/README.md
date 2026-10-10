@@ -60,6 +60,14 @@ voxel-shape and runtime item registry inputs. The catalog contains 22,091 block 
 220 named voxel shapes. Named shapes are decoded from occupied grid cells into
 block-local boxes; no BDS shape-pack overlay is required.
 
+Cloudburst supplies biome properties and names but no numeric IDs. The locked
+[`biome_ids.json`](source/inputs/1.26.50/biome_ids.json) adds the 89 retail
+1.26.50/protocol 2193 IDs from Cinnabar's public, BDS-verified biome registry.
+This is a transitional input, not a protocolgen BDS capture. Generation rejects
+missing, extra, duplicate, or conflicting IDs when it joins the two sources.
+The versioned source lock records the Cinnabar commit and input digest. A future
+1.26.51 capture adapter can replace this snapshot with packet-derived IDs.
+
 Thirty liquid-clip boxes in this extract have reversed bounds. The reviewed
 `liquid_clip_omissions` input identifies each exact name, hash and source box.
 Generation marks those fields unavailable and records them in

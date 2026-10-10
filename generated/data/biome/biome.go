@@ -36,3 +36,19 @@ func Lookup(name string) (Biome, bool) {
 	}
 	return all[index], true
 }
+
+var byID = func() map[int32]Biome {
+	lookup := make(map[int32]Biome, len(all))
+	for _, biome := range all {
+		if biome.HasID {
+			lookup[biome.ID] = biome
+		}
+	}
+	return lookup
+}()
+
+// LookupID finds a biome by its numeric ID in the target retail release.
+func LookupID(id int32) (Biome, bool) {
+	biome, ok := byID[id]
+	return biome, ok
+}

@@ -65,6 +65,12 @@ func TestRepresentativeLookups(t *testing.T) {
 	if value, ok := biome.Lookup("minecraft:plains"); !ok || value.Temperature != 0.8 {
 		t.Fatalf("unexpected plains biome: %+v, found=%t", value, ok)
 	}
+	if value, ok := biome.LookupID(1); !ok || value.Name != "minecraft:plains" || !value.HasID {
+		t.Fatalf("unexpected biome ID 1: %+v, found=%t", value, ok)
+	}
+	if _, ok := biome.LookupID(-1); ok {
+		t.Fatal("negative biome ID unexpectedly resolved")
+	}
 	if value, ok := voxelshape.Lookup("minecraft:anvil"); !ok || len(value.Boxes) == 0 {
 		t.Fatalf("unexpected anvil shape: %+v, found=%t", value, ok)
 	}

@@ -57,6 +57,14 @@ func run(lockPath, cache, cloudburstDir, bdsDir, outputDir string) (generator.St
 	if err := json.Unmarshal(omitted, &omissions); err != nil {
 		return generator.Stats{}, fmt.Errorf("decode liquid clip omissions: %w", err)
 	}
+	encodedBiomeIDs, err := sources.Read(context.Background(), "biome_ids", cache)
+	if err != nil {
+		return generator.Stats{}, fmt.Errorf("read biome IDs: %w", err)
+	}
+	biomeIDs, err := generator.DecodeBiomeIDs(encodedBiomeIDs, sources.Lock.Target.MinecraftVersion, sources.Lock.Target.ProtocolVersion)
+	if err != nil {
+		return generator.Stats{}, err
+	}
 	digest, err := sources.Lock.SHA256()
 	if err != nil {
 		return generator.Stats{}, err
@@ -66,6 +74,7 @@ func run(lockPath, cache, cloudburstDir, bdsDir, outputDir string) (generator.St
 		BDSDir:              bdsDir,
 		CloudburstRef:       sources.Lock.CloudburstRevision(),
 		BDSVersion:          sources.Lock.Semantic.BDSVersion,
+		BiomeIDs:            biomeIDs,
 		LiquidClipOmissions: omissions,
 		SourceLockSHA256:    digest,
 	})

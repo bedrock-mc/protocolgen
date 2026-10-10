@@ -9,6 +9,8 @@ The semantic values are derived from:
 - Block properties, geometry, named voxel shapes, biome values, block palettes, data-driven block components,
   and complete item registry identities/components from
   [CloudburstMC/Data](https://github.com/CloudburstMC/Data)
+- Numeric biome IDs for the retail 1.26.50 catalog from the public,
+  BDS-verified [Cinnabar biome registry](https://github.com/bedrock-mc/cinnabar/blob/9fc5ac80a8b4a9f897dc992ad55ccc30a2afaf16/crates/assets/data/biome-registry-v2193.bin)
 - Base entity components and food definitions distributed
   with Minecraft Bedrock Dedicated Server
 - Item properties and supplemental tags from

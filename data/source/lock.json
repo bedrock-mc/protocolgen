@@ -54,6 +54,12 @@
       "description": "Official Mojang/bedrock-samples v1.26.50.27-preview resources for the 1.26.50 content line",
       "sha256": "48374e11c5696adc8f4b3b39b0837192917e07179e671297e23c382de5a343d7",
       "upstream": "mojang_samples"
+    },
+    "biome_ids": {
+      "description": "1.26.50 retail numeric biome IDs derived from Cinnabar's public BDS-verified BIOREG01 artifact; transitional until protocolgen captures the retail packet",
+      "path": "inputs/1.26.50/biome_ids.json",
+      "revision": "9fc5ac80a8b4a9f897dc992ad55ccc30a2afaf16",
+      "sha256": "e224516a6fb602b03a3b850ff2ba8a6cdab838dcd8ec20fc95ec46787dee0cce"
     }
   },
   "release": "1.26.51",
