@@ -31,6 +31,8 @@ func TestBiomeIDsRejectWrongReleaseAndDuplicates(t *testing.T) {
 		{"wrong protocol", strings.Replace(base, `"protocol_version":2193`, `"protocol_version":2187`, 1), "do not match"},
 		{"duplicate ID", strings.Replace(base, `"minecraft:ocean","id":0`, `"minecraft:ocean","id":1`, 1), "duplicate biome ID"},
 		{"duplicate name", strings.Replace(base, `"minecraft:ocean","id":0`, `"minecraft:plains","id":0`, 1), "duplicate biome name"},
+		{"missing ID", strings.Replace(base, `"minecraft:ocean","id":0`, `"minecraft:ocean"`, 1), "has no numeric ID"},
+		{"null ID", strings.Replace(base, `"minecraft:ocean","id":0`, `"minecraft:ocean","id":null`, 1), "has no numeric ID"},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			if _, err := DecodeBiomeIDs([]byte(test.data), "1.26.50", 2193); err == nil || !strings.Contains(err.Error(), test.want) {

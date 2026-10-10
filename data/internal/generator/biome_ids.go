@@ -17,7 +17,7 @@ type biomeIDCatalog struct {
 	SourceSHA256     string `json:"source_sha256"`
 	Biomes           []struct {
 		Name string `json:"name"`
-		ID   int32  `json:"id"`
+		ID   *int32 `json:"id"`
 	} `json:"biomes"`
 }
 
@@ -43,16 +43,19 @@ func DecodeBiomeIDs(data []byte, minecraftVersion string, protocolVersion int) (
 	ids := make(map[string]int32, len(catalog.Biomes))
 	seenIDs := make(map[int32]string, len(catalog.Biomes))
 	for _, biome := range catalog.Biomes {
-		if !strings.HasPrefix(biome.Name, "minecraft:") || biome.ID < 0 || biome.ID > 65535 {
-			return nil, fmt.Errorf("invalid biome ID record %q/%d", biome.Name, biome.ID)
+		if biome.ID == nil {
+			return nil, fmt.Errorf("biome %q has no numeric ID", biome.Name)
+		}
+		if !strings.HasPrefix(biome.Name, "minecraft:") || *biome.ID < 0 || *biome.ID > 65535 {
+			return nil, fmt.Errorf("invalid biome ID record %q/%d", biome.Name, *biome.ID)
 		}
 		if _, exists := ids[biome.Name]; exists {
 			return nil, fmt.Errorf("duplicate biome name %q", biome.Name)
 		}
-		if previous, exists := seenIDs[biome.ID]; exists {
-			return nil, fmt.Errorf("duplicate biome ID %d for %q and %q", biome.ID, previous, biome.Name)
+		if previous, exists := seenIDs[*biome.ID]; exists {
+			return nil, fmt.Errorf("duplicate biome ID %d for %q and %q", *biome.ID, previous, biome.Name)
 		}
-		ids[biome.Name], seenIDs[biome.ID] = biome.ID, biome.Name
+		ids[biome.Name], seenIDs[*biome.ID] = *biome.ID, biome.Name
 	}
 	return ids, nil
 }
