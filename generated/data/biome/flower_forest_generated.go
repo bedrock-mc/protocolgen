@@ -5,8 +5,8 @@ package biome
 // FlowerForest is the generated definition for minecraft:flower_forest.
 var FlowerForest = Biome{
 	Name:              "minecraft:flower_forest",
-	ID:                0,
-	HasID:             false,
+	ID:                132,
+	HasID:             true,
 	Temperature:       0.7,
 	Downfall:          0.8,
 	Depth:             0.1,

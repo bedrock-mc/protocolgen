@@ -5,8 +5,8 @@ package biome
 // JungleEdge is the generated definition for minecraft:jungle_edge.
 var JungleEdge = Biome{
 	Name:              "minecraft:jungle_edge",
-	ID:                0,
-	HasID:             false,
+	ID:                23,
+	HasID:             true,
 	Temperature:       0.95,
 	Downfall:          0.8,
 	Depth:             0.1,

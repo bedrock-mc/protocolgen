@@ -1,7 +1,7 @@
 {
   "minecraft_version": "1.26.50",
   "protocol_version": 2193,
-  "source_lock_sha256": "9c923a9a833d7336e7a1a0db11f6ed9c2da83c91d33167af01f9aaf946da7452",
+  "source_lock_sha256": "7672d394035aade326e9f36edb00d6414911e1f841137bc2eef871781a088f97",
   "source_lock": {
     "schema_version": 2,
     "release": "1.26.51",
@@ -17,9 +17,19 @@
       "mojang_samples": {
         "repository": "Mojang/bedrock-samples",
         "revision": "847bd28a260da9369f0dfd4fded1893ccf5aed86"
+      },
+      "prismarine": {
+        "repository": "PrismarineJS/minecraft-data",
+        "revision": "6ec59288287e4045331eaa47ee8fb104278f6b98"
       }
     },
     "inputs": {
+      "biome_ids": {
+        "path": "inputs/1.26.50/biome_ids.json",
+        "sha256": "e224516a6fb602b03a3b850ff2ba8a6cdab838dcd8ec20fc95ec46787dee0cce",
+        "revision": "9fc5ac80a8b4a9f897dc992ad55ccc30a2afaf16",
+        "description": "1.26.50 retail numeric biome IDs derived from Cinnabar's public BDS-verified BIOREG01 artifact; transitional until protocolgen captures the retail packet"
+      },
       "block_metadata": {
         "upstream": "mojang_samples",
         "file": "metadata/vanilladata_modules/mojang-blocks.json",
@@ -68,6 +78,12 @@
         "upstream": "cloudburst",
         "sha256": "f3aa28c068265d9c1b78de9a27b8f44f8c14aacdf90c231c018451f9b515eb20",
         "description": "Reviewed invalid liquid clip boxes in the pinned Cloudburst extract; expose them as unavailable without guessing geometry"
+      },
+      "mining_tools": {
+        "upstream": "prismarine",
+        "file": "data/bedrock/1.26.30/blocks.json",
+        "sha256": "12ff90b5094006b42d87ca7c296ed1bef0e1c2d6d67498aea85b6ece9408b494",
+        "description": "Provisional Bedrock 1.26.30 block tool and harvest classifications; not verified against target 1.26.50"
       },
       "resource_pack": {
         "upstream": "mojang_samples",

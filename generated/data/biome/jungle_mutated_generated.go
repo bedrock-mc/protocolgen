@@ -5,8 +5,8 @@ package biome
 // JungleMutated is the generated definition for minecraft:jungle_mutated.
 var JungleMutated = Biome{
 	Name:              "minecraft:jungle_mutated",
-	ID:                0,
-	HasID:             false,
+	ID:                149,
+	HasID:             true,
 	Temperature:       0.95,
 	Downfall:          0.9,
 	Depth:             0.2,

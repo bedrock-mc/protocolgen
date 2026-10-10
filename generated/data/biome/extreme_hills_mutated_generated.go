@@ -5,8 +5,8 @@ package biome
 // ExtremeHillsMutated is the generated definition for minecraft:extreme_hills_mutated.
 var ExtremeHillsMutated = Biome{
 	Name:              "minecraft:extreme_hills_mutated",
-	ID:                0,
-	HasID:             false,
+	ID:                131,
+	HasID:             true,
 	Temperature:       0.2,
 	Downfall:          0.3,
 	Depth:             1,

@@ -5,8 +5,8 @@ package biome
 // DeepLukewarmOcean is the generated definition for minecraft:deep_lukewarm_ocean.
 var DeepLukewarmOcean = Biome{
 	Name:              "minecraft:deep_lukewarm_ocean",
-	ID:                0,
-	HasID:             false,
+	ID:                43,
+	HasID:             true,
 	Temperature:       0.5,
 	Downfall:          0.5,
 	Depth:             -1.8,

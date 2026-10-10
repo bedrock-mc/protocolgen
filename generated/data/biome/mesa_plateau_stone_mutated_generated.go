@@ -5,8 +5,8 @@ package biome
 // MesaPlateauStoneMutated is the generated definition for minecraft:mesa_plateau_stone_mutated.
 var MesaPlateauStoneMutated = Biome{
 	Name:              "minecraft:mesa_plateau_stone_mutated",
-	ID:                0,
-	HasID:             false,
+	ID:                166,
+	HasID:             true,
 	Temperature:       2,
 	Downfall:          0,
 	Depth:             0.45,

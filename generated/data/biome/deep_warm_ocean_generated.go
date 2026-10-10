@@ -5,8 +5,8 @@ package biome
 // DeepWarmOcean is the generated definition for minecraft:deep_warm_ocean.
 var DeepWarmOcean = Biome{
 	Name:              "minecraft:deep_warm_ocean",
-	ID:                0,
-	HasID:             false,
+	ID:                41,
+	HasID:             true,
 	Temperature:       0.5,
 	Downfall:          0.5,
 	Depth:             -1.8,

@@ -5,8 +5,8 @@ package biome
 // BirchForestMutated is the generated definition for minecraft:birch_forest_mutated.
 var BirchForestMutated = Biome{
 	Name:              "minecraft:birch_forest_mutated",
-	ID:                0,
-	HasID:             false,
+	ID:                155,
+	HasID:             true,
 	Temperature:       0.6,
 	Downfall:          0.6,
 	Depth:             0.2,

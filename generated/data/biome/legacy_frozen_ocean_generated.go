@@ -5,8 +5,8 @@ package biome
 // LegacyFrozenOcean is the generated definition for minecraft:legacy_frozen_ocean.
 var LegacyFrozenOcean = Biome{
 	Name:              "minecraft:legacy_frozen_ocean",
-	ID:                0,
-	HasID:             false,
+	ID:                10,
+	HasID:             true,
 	Temperature:       0,
 	Downfall:          0.5,
 	Depth:             -1,

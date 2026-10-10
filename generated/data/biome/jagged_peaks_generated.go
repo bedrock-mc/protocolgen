@@ -5,8 +5,8 @@ package biome
 // JaggedPeaks is the generated definition for minecraft:jagged_peaks.
 var JaggedPeaks = Biome{
 	Name:              "minecraft:jagged_peaks",
-	ID:                0,
-	HasID:             false,
+	ID:                182,
+	HasID:             true,
 	Temperature:       -0.7,
 	Downfall:          0.9,
 	Depth:             0.1,

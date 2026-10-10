@@ -5,8 +5,8 @@ package biome
 // CrimsonForest is the generated definition for minecraft:crimson_forest.
 var CrimsonForest = Biome{
 	Name:              "minecraft:crimson_forest",
-	ID:                0,
-	HasID:             false,
+	ID:                179,
+	HasID:             true,
 	Temperature:       2,
 	Downfall:          0,
 	Depth:             0.1,

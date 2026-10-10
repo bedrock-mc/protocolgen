@@ -5,8 +5,8 @@ package biome
 // TheEnd is the generated definition for minecraft:the_end.
 var TheEnd = Biome{
 	Name:              "minecraft:the_end",
-	ID:                0,
-	HasID:             false,
+	ID:                9,
+	HasID:             true,
 	Temperature:       0.5,
 	Downfall:          0.5,
 	Depth:             0.1,

@@ -5,8 +5,8 @@ package biome
 // River is the generated definition for minecraft:river.
 var River = Biome{
 	Name:              "minecraft:river",
-	ID:                0,
-	HasID:             false,
+	ID:                7,
+	HasID:             true,
 	Temperature:       0.5,
 	Downfall:          0.5,
 	Depth:             -0.5,

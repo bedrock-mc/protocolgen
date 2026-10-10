@@ -36,7 +36,15 @@ func TestLockedCloudburstOutput(t *testing.T) {
 	if err := json.Unmarshal(encoded, &omissions); err != nil {
 		t.Fatal(err)
 	}
-	files, _, err := GenerateCloudburst(Config{CloudburstDir: dir, LiquidClipOmissions: omissions})
+	biomeInput, err := inputs.Read(context.Background(), "biome_ids", "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	biomeIDs, err := DecodeBiomeIDs(biomeInput, inputs.Lock.Target.MinecraftVersion, inputs.Lock.Target.ProtocolVersion)
+	if err != nil {
+		t.Fatal(err)
+	}
+	files, _, err := GenerateCloudburst(Config{CloudburstDir: dir, BiomeIDs: biomeIDs, LiquidClipOmissions: omissions})
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -249,6 +249,7 @@ test-data:
 generate-data:
 	$(GO) -C data run ./cmd/generate -cloudburst "$(CLOUDBURST_DIR)" -bds "$(BDS_DIR)"
 	$(GO) -C data run ./cmd/runtimegen
+	$(GO) -C data run ./cmd/mininggen
 	$(GO) -C data run ./cmd/registrygen
 
 verify-data: generate-data

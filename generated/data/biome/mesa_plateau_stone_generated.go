@@ -5,8 +5,8 @@ package biome
 // MesaPlateauStone is the generated definition for minecraft:mesa_plateau_stone.
 var MesaPlateauStone = Biome{
 	Name:              "minecraft:mesa_plateau_stone",
-	ID:                0,
-	HasID:             false,
+	ID:                38,
+	HasID:             true,
 	Temperature:       2,
 	Downfall:          0,
 	Depth:             1.5,

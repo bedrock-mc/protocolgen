@@ -5,8 +5,8 @@ package biome
 // ColdOcean is the generated definition for minecraft:cold_ocean.
 var ColdOcean = Biome{
 	Name:              "minecraft:cold_ocean",
-	ID:                0,
-	HasID:             false,
+	ID:                44,
+	HasID:             true,
 	Temperature:       0.5,
 	Downfall:          0.5,
 	Depth:             -1,

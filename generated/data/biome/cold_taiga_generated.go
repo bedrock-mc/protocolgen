@@ -5,8 +5,8 @@ package biome
 // ColdTaiga is the generated definition for minecraft:cold_taiga.
 var ColdTaiga = Biome{
 	Name:              "minecraft:cold_taiga",
-	ID:                0,
-	HasID:             false,
+	ID:                30,
+	HasID:             true,
 	Temperature:       -0.5,
 	Downfall:          0.4,
 	Depth:             0.2,

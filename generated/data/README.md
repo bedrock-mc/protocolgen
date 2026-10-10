@@ -28,7 +28,7 @@ if ok {
 | Package | Contents |
 | --- | --- |
 | `data` | Target release, independent source versions and generated counts |
-| `block` | State hashes, physical properties, light, tint and shape references |
+| `block` | State hashes, physical properties, light, tint, shapes and provisional mining-tool facts |
 | `biome` | Climate, terrain values, water color, rain and tags |
 | `entity` | Base collision, health, movement, scale, projectile and family values |
 | `item` | Runtime registry, stack limits, equipment flags and food values |
@@ -52,6 +52,12 @@ before using `ID`. [semantic_sources.json](semantic_sources.json) and
 `version_generated.go` record these independent versions and counts.
 `BDSVersion` describes the entity and food inputs, not the runtime
 protocol target.
+
+`block.MiningByName` reports effective tools, drop-qualifying tools and a
+minimum tier from pinned Prismarine Bedrock 1.26.30 data. These classifications
+are provisional for the target release. A false lookup means the source lacks
+usable classification; it does not establish that a block is hand-harvestable.
+The evidence version, commit and SHA-256 are exposed beside the table.
 
 Entity values describe base components. They do not execute goals, events,
 filters or component-group transitions. Food definitions alone are not a

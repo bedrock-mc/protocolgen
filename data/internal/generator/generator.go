@@ -24,6 +24,7 @@ type Config struct {
 	BDSDir              string
 	CloudburstRef       string
 	BDSVersion          string
+	BiomeIDs            map[string]int32
 	LiquidClipOmissions []LiquidClipOmission
 	SourceLockSHA256    string
 }
@@ -57,7 +58,7 @@ func GenerateCloudburst(cfg Config) (map[string][]byte, Stats, error) {
 	stats.BlockStates = count
 	stats.UnavailableLiquidClipShapes = len(cfg.LiquidClipOmissions)
 
-	biomeFiles, count, err := generateBiomes(filepath.Join(cfg.CloudburstDir, "stripped_biome_definitions.json"))
+	biomeFiles, count, err := generateBiomes(filepath.Join(cfg.CloudburstDir, "stripped_biome_definitions.json"), cfg.BiomeIDs)
 	if err != nil {
 		return nil, stats, fmt.Errorf("generate biomes: %w", err)
 	}
@@ -468,10 +469,13 @@ type rawBiome struct {
 }
 
 // generateBiomes emits named biome values and their lookup index.
-func generateBiomes(path string) (map[string][]byte, int, error) {
+func generateBiomes(path string, ids map[string]int32) (map[string][]byte, int, error) {
 	var raw map[string]rawBiome
 	if err := readJSON(path, &raw, false); err != nil {
 		return nil, 0, err
+	}
+	if len(ids) != len(raw) {
+		return nil, 0, fmt.Errorf("biome IDs cover %d names, Cloudburst has %d", len(ids), len(raw))
 	}
 	names := sortedKeys(raw)
 	identifiers, err := exportedIdentifiers(names)
@@ -483,12 +487,23 @@ func generateBiomes(path string) (map[string][]byte, int, error) {
 		return nil, 0, err
 	}
 	files := make(map[string][]byte, len(names)+1)
+	seenIDs := make(map[int32]string, len(names))
 	for _, name := range names {
 		value := raw[name]
 		sort.Strings(value.Tags)
-		id, hasID := int32(0), value.ID != nil
-		if hasID {
-			id = *value.ID
+		id, hasID := ids[name]
+		if !hasID {
+			return nil, 0, fmt.Errorf("Cloudburst biome %q has no locked numeric ID", name)
+		}
+		if id < 0 || id > 65535 {
+			return nil, 0, fmt.Errorf("biome %q has invalid numeric ID %d", name, id)
+		}
+		if previous, exists := seenIDs[id]; exists {
+			return nil, 0, fmt.Errorf("biomes %q and %q share numeric ID %d", previous, name, id)
+		}
+		seenIDs[id] = name
+		if value.ID != nil && *value.ID != id {
+			return nil, 0, fmt.Errorf("Cloudburst biome %q has ID %d, locked source has %d", name, *value.ID, id)
 		}
 		color := uint32(value.MapWaterColor.R)<<24 | uint32(value.MapWaterColor.G)<<16 |
 			uint32(value.MapWaterColor.B)<<8 | uint32(value.MapWaterColor.A)

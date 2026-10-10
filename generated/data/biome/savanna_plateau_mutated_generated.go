@@ -5,8 +5,8 @@ package biome
 // SavannaPlateauMutated is the generated definition for minecraft:savanna_plateau_mutated.
 var SavannaPlateauMutated = Biome{
 	Name:              "minecraft:savanna_plateau_mutated",
-	ID:                0,
-	HasID:             false,
+	ID:                164,
+	HasID:             true,
 	Temperature:       1,
 	Downfall:          0.5,
 	Depth:             1.05,

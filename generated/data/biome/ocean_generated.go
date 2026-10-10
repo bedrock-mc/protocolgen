@@ -6,7 +6,7 @@ package biome
 var Ocean = Biome{
 	Name:              "minecraft:ocean",
 	ID:                0,
-	HasID:             false,
+	HasID:             true,
 	Temperature:       0.5,
 	Downfall:          0.5,
 	Depth:             -1,

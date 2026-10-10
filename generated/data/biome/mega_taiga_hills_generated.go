@@ -5,8 +5,8 @@ package biome
 // MegaTaigaHills is the generated definition for minecraft:mega_taiga_hills.
 var MegaTaigaHills = Biome{
 	Name:              "minecraft:mega_taiga_hills",
-	ID:                0,
-	HasID:             false,
+	ID:                33,
+	HasID:             true,
 	Temperature:       0.3,
 	Downfall:          0.8,
 	Depth:             0.45,

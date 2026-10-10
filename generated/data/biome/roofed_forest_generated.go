@@ -5,8 +5,8 @@ package biome
 // RoofedForest is the generated definition for minecraft:roofed_forest.
 var RoofedForest = Biome{
 	Name:              "minecraft:roofed_forest",
-	ID:                0,
-	HasID:             false,
+	ID:                29,
+	HasID:             true,
 	Temperature:       0.7,
 	Downfall:          0.8,
 	Depth:             0.1,

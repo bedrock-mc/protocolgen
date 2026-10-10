@@ -5,8 +5,8 @@ package biome
 // BirchForestHills is the generated definition for minecraft:birch_forest_hills.
 var BirchForestHills = Biome{
 	Name:              "minecraft:birch_forest_hills",
-	ID:                0,
-	HasID:             false,
+	ID:                28,
+	HasID:             true,
 	Temperature:       0.6,
 	Downfall:          0.6,
 	Depth:             0.45,

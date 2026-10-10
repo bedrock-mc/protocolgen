@@ -5,8 +5,8 @@ package biome
 // RoofedForestMutated is the generated definition for minecraft:roofed_forest_mutated.
 var RoofedForestMutated = Biome{
 	Name:              "minecraft:roofed_forest_mutated",
-	ID:                0,
-	HasID:             false,
+	ID:                157,
+	HasID:             true,
 	Temperature:       0.7,
 	Downfall:          0.8,
 	Depth:             0.2,

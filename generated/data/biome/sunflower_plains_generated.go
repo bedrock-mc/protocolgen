@@ -5,8 +5,8 @@ package biome
 // SunflowerPlains is the generated definition for minecraft:sunflower_plains.
 var SunflowerPlains = Biome{
 	Name:              "minecraft:sunflower_plains",
-	ID:                0,
-	HasID:             false,
+	ID:                129,
+	HasID:             true,
 	Temperature:       0.8,
 	Downfall:          0.4,
 	Depth:             0.125,

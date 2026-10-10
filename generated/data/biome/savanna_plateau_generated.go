@@ -5,8 +5,8 @@ package biome
 // SavannaPlateau is the generated definition for minecraft:savanna_plateau.
 var SavannaPlateau = Biome{
 	Name:              "minecraft:savanna_plateau",
-	ID:                0,
-	HasID:             false,
+	ID:                36,
+	HasID:             true,
 	Temperature:       1,
 	Downfall:          0,
 	Depth:             1.5,

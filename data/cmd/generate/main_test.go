@@ -73,12 +73,17 @@ func lockedFixture(t *testing.T) (lockPath, cloudburst, bds string) {
 	if err := os.WriteFile(filepath.Join(dir, "omissions.json"), omissions, 0o644); err != nil {
 		t.Fatal(err)
 	}
+	biomeInput := []byte(`{"schema_version":1,"minecraft_version":"1.26.50","protocol_version":2193,"source":"fixture","source_sha256":"1111111111111111111111111111111111111111111111111111111111111111","biomes":[{"name":"minecraft:plains","id":1}]}`)
+	if err := os.WriteFile(filepath.Join(dir, "biome_ids.json"), biomeInput, 0o644); err != nil {
+		t.Fatal(err)
+	}
 	lock := source.Lock{
 		SchemaVersion: 2, Release: "1.26.51",
 		Upstreams: map[string]source.Upstream{"cloudburst": {Repository: "example/data", Revision: strings.Repeat("1", 40)}},
-		Inputs: map[string]source.Input{"liquid_clip_omissions": {
-			Path: "omissions.json", Upstream: "cloudburst", SHA256: fmt.Sprintf("%x", sha256.Sum256(omissions)),
-		}},
+		Inputs: map[string]source.Input{
+			"liquid_clip_omissions": {Path: "omissions.json", Upstream: "cloudburst", SHA256: fmt.Sprintf("%x", sha256.Sum256(omissions))},
+			"biome_ids":             {Path: "biome_ids.json", Revision: strings.Repeat("1", 40), SHA256: fmt.Sprintf("%x", sha256.Sum256(biomeInput))},
+		},
 		Semantic: source.SemanticInputs{
 			Cloudburst: "cloudburst", BDSVersion: "locked-bds",
 			CloudburstFiles: cloudburstFiles, BDSFiles: bdsFiles,

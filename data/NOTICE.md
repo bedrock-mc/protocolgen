@@ -9,12 +9,18 @@ The semantic values are derived from:
 - Block properties, geometry, named voxel shapes, biome values, block palettes, data-driven block components,
   and complete item registry identities/components from
   [CloudburstMC/Data](https://github.com/CloudburstMC/Data)
+- Numeric biome IDs for the retail 1.26.50 catalog from the public,
+  BDS-verified [Cinnabar biome registry](https://github.com/bedrock-mc/cinnabar/blob/9fc5ac80a8b4a9f897dc992ad55ccc30a2afaf16/crates/assets/data/biome-registry-v2193.bin)
 - Base entity components and food definitions distributed
   with Minecraft Bedrock Dedicated Server
 - Item properties and supplemental tags from
   [AllayMC/Allay](https://github.com/AllayMC/Allay), plus the documented corrections
   in the source inputs
 - Resource inputs from [Mojang/bedrock-samples](https://github.com/Mojang/bedrock-samples)
+- Provisional block tool and harvest classifications from
+  [PrismarineJS/minecraft-data](https://github.com/PrismarineJS/minecraft-data),
+  pinned to its Bedrock 1.26.30 `blocks.json` extract. Its README declares MIT;
+  these facts have not been verified for the catalog's target Bedrock release.
 
 The source revisions and versions are recorded in
 [`semantic_sources.json`](../generated/data/semantic_sources.json), with input digests in

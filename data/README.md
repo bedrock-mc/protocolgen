@@ -15,6 +15,7 @@ pinned NBT codec to normalize registry payloads; neither module imports the othe
   block components and complete item component payloads.
 - `internal/runtimegen` and `cmd/runtimegen` produce runtime item values and
   release metadata.
+- `internal/mininggen` and `cmd/mininggen` produce provisional block tool facts.
 - `../generated/data/` is the single active output catalog. It has its own
   `go.mod`; it is not a versioned packet-output directory.
 
@@ -30,6 +31,7 @@ Regenerate runtime items and release metadata from this directory:
 ```sh
 go run ./cmd/runtimegen
 go run ./cmd/registrygen
+go run ./cmd/mininggen
 ```
 
 The runtime catalog targets Minecraft 1.26.50, protocol 2193, with 2,076 items.
@@ -60,6 +62,14 @@ voxel-shape and runtime item registry inputs. The catalog contains 22,091 block 
 220 named voxel shapes. Named shapes are decoded from occupied grid cells into
 block-local boxes; no BDS shape-pack overlay is required.
 
+Cloudburst supplies biome properties and names but no numeric IDs. The locked
+[`biome_ids.json`](source/inputs/1.26.50/biome_ids.json) adds the 89 retail
+1.26.50/protocol 2193 IDs from Cinnabar's public, BDS-verified biome registry.
+This is a transitional input, not a protocolgen BDS capture. Generation rejects
+missing, extra, duplicate, or conflicting IDs when it joins the two sources.
+The versioned source lock records the Cinnabar commit and input digest. A future
+1.26.51 capture adapter can replace this snapshot with packet-derived IDs.
+
 Thirty liquid-clip boxes in this extract have reversed bounds. The reviewed
 `liquid_clip_omissions` input identifies each exact name, hash and source box.
 Generation marks those fields unavailable and records them in
@@ -89,7 +99,8 @@ struct and verifies every field is emitted without adding a module dependency
 or maintaining a second schema list. Run the generator tests from a full
 repository checkout. CI downloads and authenticates the locked Cloudburst
 block/biome/shape files and compares the full generated projection with the
-committed catalog. It also regenerates runtime items, registry payloads and metadata. To run the Cloudburst check locally, set
+committed catalog. It also regenerates runtime items, mining facts, registry
+payloads and metadata. To run the Cloudburst check locally, set
 `PROTOCOLGEN_CLOUDBURST_DIR` when running `make test-data`. Full semantic
 regeneration additionally requires the local BDS inputs.
 
@@ -135,3 +146,11 @@ Remote inputs specify an upstream, file path (or archive) and SHA-256. Download
 URLs are derived. Local corrections can refer to the upstream they qualify.
 `Sources.Revision(name)` resolves either form; `Lock.Target` exposes the selected
 release. Independent BDS pack versions remain separate provenance.
+
+`mininggen` reads the authenticated Prismarine Bedrock 1.26.30 `blocks.json`
+pin from the same lock. It writes `block/mining_generated.go` with separate
+effective-tool and drop-qualifying-tool families and a minimum harvest tier.
+The classifications are provisional for the active 1.26.50 catalog. Blocks
+without usable evidence remain unknown; they are not assumed hand-harvestable.
+Run `mininggen` again after any source-lock change so its recorded lock digest
+matches the other generated outputs.

@@ -18,6 +18,7 @@ func TestGenerateProducesDeterministicImportableGo(t *testing.T) {
 		BDSDir:        filepath.Join("testdata", "bds"),
 		CloudburstRef: "fixture-cloudburst",
 		BDSVersion:    "fixture-bds",
+		BiomeIDs:      map[string]int32{"minecraft:plains": 1},
 	}
 
 	first, firstStats, err := Generate(cfg)
@@ -60,6 +61,8 @@ func TestGenerateProducesDeterministicImportableGo(t *testing.T) {
 	assertContains(t, first, "block/index_generated.go", "airStates[0],")
 	assertContains(t, first, "biome/plains_generated.go", "var Plains = Biome{")
 	assertContains(t, first, "biome/plains_generated.go", `"minecraft:plains"`)
+	assertContains(t, first, "biome/plains_generated.go", "ID:                1,")
+	assertContains(t, first, "biome/plains_generated.go", "HasID:             true,")
 	assertContains(t, first, "biome/index_generated.go", "Plains,")
 	assertContains(t, first, "voxelshape/anvil_generated.go", "var Anvil = Shape{")
 	assertContains(t, first, "voxelshape/anvil_generated.go", "0.125")

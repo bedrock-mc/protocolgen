@@ -5,8 +5,8 @@ package biome
 // DappledForest is the generated definition for minecraft:dappled_forest.
 var DappledForest = Biome{
 	Name:              "minecraft:dappled_forest",
-	ID:                0,
-	HasID:             false,
+	ID:                195,
+	HasID:             true,
 	Temperature:       0.6,
 	Downfall:          0.6,
 	Depth:             0.1,

@@ -5,8 +5,8 @@ package biome
 // RedwoodTaigaMutated is the generated definition for minecraft:redwood_taiga_mutated.
 var RedwoodTaigaMutated = Biome{
 	Name:              "minecraft:redwood_taiga_mutated",
-	ID:                0,
-	HasID:             false,
+	ID:                160,
+	HasID:             true,
 	Temperature:       0.25,
 	Downfall:          0.8,
 	Depth:             0.2,

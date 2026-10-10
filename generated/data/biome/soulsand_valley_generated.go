@@ -5,8 +5,8 @@ package biome
 // SoulsandValley is the generated definition for minecraft:soulsand_valley.
 var SoulsandValley = Biome{
 	Name:              "minecraft:soulsand_valley",
-	ID:                0,
-	HasID:             false,
+	ID:                178,
+	HasID:             true,
 	Temperature:       2,
 	Downfall:          0,
 	Depth:             0.1,

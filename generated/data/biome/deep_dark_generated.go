@@ -5,8 +5,8 @@ package biome
 // DeepDark is the generated definition for minecraft:deep_dark.
 var DeepDark = Biome{
 	Name:              "minecraft:deep_dark",
-	ID:                0,
-	HasID:             false,
+	ID:                190,
+	HasID:             true,
 	Temperature:       0.8,
 	Downfall:          0.4,
 	Depth:             0.1,

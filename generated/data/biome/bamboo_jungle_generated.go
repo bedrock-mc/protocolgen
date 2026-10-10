@@ -5,8 +5,8 @@ package biome
 // BambooJungle is the generated definition for minecraft:bamboo_jungle.
 var BambooJungle = Biome{
 	Name:              "minecraft:bamboo_jungle",
-	ID:                0,
-	HasID:             false,
+	ID:                48,
+	HasID:             true,
 	Temperature:       0.95,
 	Downfall:          0.9,
 	Depth:             0.1,

@@ -5,8 +5,8 @@ package biome
 // JungleEdgeMutated is the generated definition for minecraft:jungle_edge_mutated.
 var JungleEdgeMutated = Biome{
 	Name:              "minecraft:jungle_edge_mutated",
-	ID:                0,
-	HasID:             false,
+	ID:                151,
+	HasID:             true,
 	Temperature:       0.95,
 	Downfall:          0.8,
 	Depth:             0.2,

@@ -5,8 +5,8 @@ package biome
 // DesertHills is the generated definition for minecraft:desert_hills.
 var DesertHills = Biome{
 	Name:              "minecraft:desert_hills",
-	ID:                0,
-	HasID:             false,
+	ID:                17,
+	HasID:             true,
 	Temperature:       2,
 	Downfall:          0,
 	Depth:             0.45,

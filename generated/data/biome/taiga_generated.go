@@ -5,8 +5,8 @@ package biome
 // Taiga is the generated definition for minecraft:taiga.
 var Taiga = Biome{
 	Name:              "minecraft:taiga",
-	ID:                0,
-	HasID:             false,
+	ID:                5,
+	HasID:             true,
 	Temperature:       0.25,
 	Downfall:          0.8,
 	Depth:             0.1,

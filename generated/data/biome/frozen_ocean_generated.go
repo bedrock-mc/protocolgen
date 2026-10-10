@@ -5,8 +5,8 @@ package biome
 // FrozenOcean is the generated definition for minecraft:frozen_ocean.
 var FrozenOcean = Biome{
 	Name:              "minecraft:frozen_ocean",
-	ID:                0,
-	HasID:             false,
+	ID:                46,
+	HasID:             true,
 	Temperature:       0,
 	Downfall:          0.5,
 	Depth:             -1,

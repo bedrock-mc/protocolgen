@@ -5,8 +5,8 @@ package biome
 // IceMountains is the generated definition for minecraft:ice_mountains.
 var IceMountains = Biome{
 	Name:              "minecraft:ice_mountains",
-	ID:                0,
-	HasID:             false,
+	ID:                13,
+	HasID:             true,
 	Temperature:       0,
 	Downfall:          0.5,
 	Depth:             0.45,

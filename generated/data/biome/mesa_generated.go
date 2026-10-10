@@ -5,8 +5,8 @@ package biome
 // Mesa is the generated definition for minecraft:mesa.
 var Mesa = Biome{
 	Name:              "minecraft:mesa",
-	ID:                0,
-	HasID:             false,
+	ID:                37,
+	HasID:             true,
 	Temperature:       2,
 	Downfall:          0,
 	Depth:             0.1,

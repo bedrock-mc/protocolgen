@@ -5,8 +5,8 @@ package biome
 // FrozenRiver is the generated definition for minecraft:frozen_river.
 var FrozenRiver = Biome{
 	Name:              "minecraft:frozen_river",
-	ID:                0,
-	HasID:             false,
+	ID:                11,
+	HasID:             true,
 	Temperature:       0,
 	Downfall:          0.5,
 	Depth:             -0.5,

@@ -5,8 +5,8 @@ package biome
 // MangroveSwamp is the generated definition for minecraft:mangrove_swamp.
 var MangroveSwamp = Biome{
 	Name:              "minecraft:mangrove_swamp",
-	ID:                0,
-	HasID:             false,
+	ID:                191,
+	HasID:             true,
 	Temperature:       0.8,
 	Downfall:          0.9,
 	Depth:             -0.2,

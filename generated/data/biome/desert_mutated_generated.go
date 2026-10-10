@@ -5,8 +5,8 @@ package biome
 // DesertMutated is the generated definition for minecraft:desert_mutated.
 var DesertMutated = Biome{
 	Name:              "minecraft:desert_mutated",
-	ID:                0,
-	HasID:             false,
+	ID:                130,
+	HasID:             true,
 	Temperature:       2,
 	Downfall:          0,
 	Depth:             0.225,

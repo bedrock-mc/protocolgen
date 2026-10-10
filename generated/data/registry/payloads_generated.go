@@ -5,7 +5,7 @@ package registry
 import _ "embed"
 
 // SourceLockSHA256 identifies the authenticated inputs used for these payloads.
-const SourceLockSHA256 = "9c923a9a833d7336e7a1a0db11f6ed9c2da83c91d33167af01f9aaf946da7452"
+const SourceLockSHA256 = "7672d394035aade326e9f36edb00d6414911e1f841137bc2eef871781a088f97"
 
 // BlockStateCount is the number of versioned states in BlockStatesNBT.
 const BlockStateCount = 22091

@@ -16,4 +16,4 @@ const ReleaseChannel = "retail"
 
 // SourceLockSHA256 identifies every pinned input in the source lock.
 // It includes the resolved release record as well as every input identity.
-const SourceLockSHA256 = "9c923a9a833d7336e7a1a0db11f6ed9c2da83c91d33167af01f9aaf946da7452"
+const SourceLockSHA256 = "7672d394035aade326e9f36edb00d6414911e1f841137bc2eef871781a088f97"

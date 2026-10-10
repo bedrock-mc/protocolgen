@@ -5,8 +5,8 @@ package biome
 // LukewarmOcean is the generated definition for minecraft:lukewarm_ocean.
 var LukewarmOcean = Biome{
 	Name:              "minecraft:lukewarm_ocean",
-	ID:                0,
-	HasID:             false,
+	ID:                42,
+	HasID:             true,
 	Temperature:       0.5,
 	Downfall:          0.5,
 	Depth:             -1,
