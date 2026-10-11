@@ -182,6 +182,24 @@ jobs:
             exit 1
           fi
 
+  rust-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+          cache: true
+          cache-dependency-path: go.sum
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+
+      - name: Emit, lint and test the codec-contract crate
+        run: make rust-contract GO_CACHE="$RUNNER_TEMP/protocolgen-go-cache"
+
   rust:
     needs: releases
     runs-on: ubuntu-latest

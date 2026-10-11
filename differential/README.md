@@ -24,3 +24,10 @@ each verified against oracle source:
   inactive-union fields, empty-NBT compound insertion, lossy sound-position
   conversion. The generated codec preserves wire bytes in every adjudicated
   case.
+
+## Retail 2193
+
+`retail/corpus.json` pins Cinnabar's packet fixtures for a three-way
+comparison of generated Go, generated Rust and Cinnabar's current decoder. The
+plan is in [the Rust codec contract](../docs/rust-codec-contract.md#retail-fixtures);
+the harness is not implemented yet.

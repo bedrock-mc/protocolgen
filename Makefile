@@ -43,7 +43,7 @@ CANDIDATE_12660 := candidates/1.26.60-preview.25
 CLAIMS_12660_MOJANG ?= /tmp/protocolgen-1.26.60-preview.25-mojang-claims.json
 CLAIMS_12660_ENDSTONE ?= /tmp/protocolgen-1.26.60-preview.25-endstone-claims.json
 
-.PHONY: regen regen-1.26.50 regen-1.26.51 ingest-1.26.60 hotfix vanilla-data differential verify verify-1.26.50 verify-1.26.51
+.PHONY: regen regen-1.26.50 regen-1.26.51 ingest-1.26.60 hotfix vanilla-data differential verify verify-1.26.50 verify-1.26.51 rust-contract
 
 differential:
 	$(GO) -C differential test ./...
@@ -209,6 +209,24 @@ verify-1.26.50: regen-1.26.50
 
 verify-1.26.51: regen-1.26.51
 	@test -z "$$(git status --porcelain -- $(TARGET_12651))" || (echo "1.26.51 regeneration produced drift" >&2; exit 1)
+
+# Emit the default protocol under the Rust codec contract
+# (docs/rust-codec-contract.md) into build/ and check it compiles and passes
+# its generated tests. The contract output is not checked in.
+CONTRACT_TARGET = generated/$(shell jq -er .default_protocol $(RELEASE_INDEX))
+CONTRACT_OUT := build/rust-contract
+
+rust-contract:
+	rm -rf $(CONTRACT_OUT)
+	$(PROTOCOLGEN) emit-rust -codec-contract 1 \
+		-manifest $(CONTRACT_TARGET)/manifest.json \
+		-naming $(CONTRACT_TARGET)/naming.json \
+		-domains $(CONTRACT_TARGET)/domains.json \
+		-docs $(CONTRACT_TARGET)/docs.json \
+		-out $(CONTRACT_OUT)
+	cargo fmt --manifest-path $(CONTRACT_OUT)/Cargo.toml
+	cargo clippy --manifest-path $(CONTRACT_OUT)/Cargo.toml -- -D warnings
+	cargo test --manifest-path $(CONTRACT_OUT)/Cargo.toml
 
 # Emit the 1.26.51 tree laid out like the gophertunnel checkout in
 # LAYOUT_GOPHERTUNNEL_DIR (constants beside their packets under fork names, fork field

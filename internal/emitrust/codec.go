@@ -113,44 +113,48 @@ func (e *codecEmitter) encode(b *strings.Builder, node manifest.Node, expr, inde
 	if _, matched, err := e.nativeCall(node); err != nil {
 		return err
 	} else if matched {
-		fmt.Fprintf(b, "%s%s.encode(writer);\n", indent, expr)
+		e.stmt(b, indent, expr+".encode(writer)")
 		return nil
 	}
 
 	switch node.Kind {
 	case manifest.KindPrimitive, manifest.KindEnum:
-		fmt.Fprintf(b, "%s%s.encode(writer);\n", indent, expr)
+		e.stmt(b, indent, expr+".encode(writer)")
 		return e.encodeNumberConstraints(b, node, expr, indent)
 
 	case manifest.KindString:
 		reference := rustStringReference(expr)
 		if min, max, ok := stringBounds(node); ok {
-			fmt.Fprintf(b, "%swire::encode_string_limits(writer, %s, %d, %d);\n", indent, reference, min, max)
+			e.stmt(b, indent, fmt.Sprintf("wire::encode_string_limits(writer, %s, %d, %d)", reference, min, max))
 		} else {
-			fmt.Fprintf(b, "%s%s.encode(writer);\n", indent, expr)
+			e.stmt(b, indent, expr+".encode(writer)")
 		}
 		if node.Constraints != nil && node.Constraints.Pattern != "" {
-			fmt.Fprintf(b, "%swire::assert_pattern(%s, %q);\n", indent, reference, node.Constraints.Pattern)
+			if e.g.contract > 0 {
+				fmt.Fprintf(b, "%swire::check_pattern(%s, %q)?;\n", indent, reference, node.Constraints.Pattern)
+			} else {
+				fmt.Fprintf(b, "%swire::assert_pattern(%s, %q);\n", indent, reference, node.Constraints.Pattern)
+			}
 		}
 		return nil
 
 	case manifest.KindBytes:
 		if min, max, ok := stringBounds(node); ok {
-			fmt.Fprintf(b, "%swire::encode_bytes_limits(writer, %s.as_ref(), %d, %d);\n", indent, expr, min, max)
+			e.stmt(b, indent, fmt.Sprintf("wire::encode_bytes_limits(writer, %s.as_ref(), %d, %d)", expr, min, max))
 		} else {
-			fmt.Fprintf(b, "%s%s.encode(writer);\n", indent, expr)
+			e.stmt(b, indent, expr+".encode(writer)")
 		}
 		return nil
 
 	case manifest.KindStruct, manifest.KindUnion, manifest.KindRecursive:
-		fmt.Fprintf(b, "%s%s.encode(writer);\n", indent, expr)
+		e.stmt(b, indent, expr+".encode(writer)")
 		return nil
 
 	case manifest.KindVoid:
 		return nil
 
 	case manifest.KindBitset:
-		fmt.Fprintf(b, "%swire::encode_bitset(writer, %s.0.as_slice(), %d);\n", indent, expr, node.Length)
+		e.stmt(b, indent, fmt.Sprintf("wire::encode_bitset(writer, %s.0.as_slice(), %d)", expr, node.Length))
 		return nil
 
 	case manifest.KindOptional:
@@ -180,10 +184,10 @@ func (e *codecEmitter) encode(b *strings.Builder, node manifest.Node, expr, inde
 		}
 		if e.directlyEncodable(*node.Element) {
 			if min, max, ok := arrayBounds(node); ok && helper == "encode_collection" {
-				fmt.Fprintf(b, "%swire::encode_collection_limits(writer, %s.as_slice(), %d, %d);\n", indent, expr, min, max)
+				e.stmt(b, indent, fmt.Sprintf("wire::encode_collection_limits(writer, %s.as_slice(), %d, %d)", expr, min, max))
 			} else {
 				e.encodeLengthAssertion(b, node, expr, indent)
-				fmt.Fprintf(b, "%swire::%s(writer, %s.as_slice());\n", indent, helper, expr)
+				e.stmt(b, indent, fmt.Sprintf("wire::%s(writer, %s.as_slice())", helper, expr))
 			}
 			return nil
 		}
@@ -204,14 +208,14 @@ func (e *codecEmitter) encode(b *strings.Builder, node manifest.Node, expr, inde
 		}
 		if e.directlyEncodable(*node.Key) && e.directlyEncodable(*node.Value) {
 			if min, max, ok := mapBounds(node); ok {
-				fmt.Fprintf(b, "%swire::encode_map_limits(writer, %s.as_slice(), %d, %d);\n", indent, expr, min, max)
+				e.stmt(b, indent, fmt.Sprintf("wire::encode_map_limits(writer, %s.as_slice(), %d, %d)", expr, min, max))
 			} else {
-				fmt.Fprintf(b, "%swire::encode_map(writer, %s.as_slice());\n", indent, expr)
+				e.stmt(b, indent, fmt.Sprintf("wire::encode_map(writer, %s.as_slice())", expr))
 			}
 			return nil
 		}
 		e.encodeLengthAssertion(b, node, expr, indent)
-		fmt.Fprintf(b, "%swriter.write_var_u32(%s.len() as u32);\n", indent, expr)
+		e.writeLenVarU32(b, expr, indent)
 		fmt.Fprintf(b, "%sfor (key, value) in %s.iter() {\n", indent, expr)
 		if err := e.encode(b, *node.Key, "key", indent+"    "); err != nil {
 			return err
@@ -242,7 +246,11 @@ func (e *codecEmitter) encodeNumberConstraints(b *strings.Builder, node manifest
 	if err != nil {
 		return err
 	}
-	fmt.Fprintf(b, "%swire::assert_number_limits(%s, %s, %s);\n", indent, raw, rustOptionNumber(node, node.Constraints.Minimum), rustOptionNumber(node, node.Constraints.Maximum))
+	helper := "assert_number_limits"
+	if e.g.contract > 0 {
+		helper = "check_number_limits"
+	}
+	e.stmt(b, indent, fmt.Sprintf("wire::%s(%s, %s, %s)", helper, raw, rustOptionNumber(node, node.Constraints.Minimum), rustOptionNumber(node, node.Constraints.Maximum)))
 	return nil
 }
 
@@ -255,8 +263,21 @@ func (e *codecEmitter) encodeLengthAssertion(b *strings.Builder, node manifest.N
 		min, max, ok = arrayBounds(node)
 	}
 	if ok {
-		fmt.Fprintf(b, "%swire::assert_length(%s.len(), %d, %d);\n", indent, expr, min, max)
+		helper := "assert_length"
+		if e.g.contract > 0 {
+			helper = "check_length"
+		}
+		e.stmt(b, indent, fmt.Sprintf("wire::%s(%s.len(), %d, %d)", helper, expr, min, max))
 	}
+}
+
+// writeLenVarU32 writes a collection length as its var_u32 prefix.
+func (e *codecEmitter) writeLenVarU32(b *strings.Builder, expr, indent string) {
+	if e.g.contract > 0 {
+		fmt.Fprintf(b, "%swriter.write_len_var_u32(%s.len())?;\n", indent, expr)
+		return
+	}
+	fmt.Fprintf(b, "%swriter.write_var_u32(%s.len() as u32);\n", indent, expr)
 }
 
 func (e *codecEmitter) writeCollectionPrefix(b *strings.Builder, node manifest.Node, expr, indent string) error {
@@ -266,9 +287,13 @@ func (e *codecEmitter) writeCollectionPrefix(b *strings.Builder, node manifest.N
 	}
 	switch code {
 	case "var_u32":
-		fmt.Fprintf(b, "%swriter.write_var_u32(%s.len() as u32);\n", indent, expr)
+		e.writeLenVarU32(b, expr, indent)
 	case "u32le":
-		fmt.Fprintf(b, "%swriter.write_all(&(%s.len() as u32).to_le_bytes());\n", indent, expr)
+		if e.g.contract > 0 {
+			fmt.Fprintf(b, "%swriter.write_len_u32le(%s.len())?;\n", indent, expr)
+		} else {
+			fmt.Fprintf(b, "%swriter.write_all(&(%s.len() as u32).to_le_bytes());\n", indent, expr)
+		}
 	default:
 		return fmt.Errorf("unsupported collection prefix %q", code)
 	}
@@ -289,16 +314,20 @@ func (e *codecEmitter) encodeOptional(b *strings.Builder, node manifest.Node, ex
 			return fmt.Errorf("nested optional has no value")
 		}
 		value = *value.Value
-		fmt.Fprintf(b, "%swriter.write_u8(1);\n", indent)
+		e.stmt(b, indent, "writer.write_u8(1)")
 	}
 	fmt.Fprintf(b, "%smatch &%s {\n", indent, expr)
 	fmt.Fprintf(b, "%s    Some(value) => {\n", indent)
-	fmt.Fprintf(b, "%s        writer.write_u8(1);\n", indent)
+	e.stmt(b, indent+"        ", "writer.write_u8(1)")
 	if err := e.encode(b, value, "value", indent+"        "); err != nil {
 		return err
 	}
 	fmt.Fprintf(b, "%s    }\n", indent)
-	fmt.Fprintf(b, "%s    None => writer.write_u8(0),\n", indent)
+	if e.g.contract > 0 {
+		fmt.Fprintf(b, "%s    None => writer.write_u8(0)?,\n", indent)
+	} else {
+		fmt.Fprintf(b, "%s    None => writer.write_u8(0),\n", indent)
+	}
 	fmt.Fprintf(b, "%s}\n", indent)
 	return nil
 }
@@ -311,8 +340,11 @@ func (e *codecEmitter) directlyEncodable(node manifest.Node) bool {
 		return true
 	}
 	switch node.Kind {
-	case manifest.KindPrimitive, manifest.KindString, manifest.KindBytes,
-		manifest.KindStruct, manifest.KindEnum, manifest.KindUnion, manifest.KindRecursive:
+	case manifest.KindString, manifest.KindBytes:
+		// Under the contract each string or buffer element carries its own
+		// field site, so collections of them decode through an emitted loop.
+		return e.g.contract == 0
+	case manifest.KindPrimitive, manifest.KindStruct, manifest.KindEnum, manifest.KindUnion, manifest.KindRecursive:
 		return true
 	default:
 		return false
@@ -343,7 +375,8 @@ func collectionHelper(node manifest.Node, base string) (string, error) {
 
 // decode returns a Rust expression that yields the decoded value. The
 // expression may be a block, so it is always safe to use in value position.
-func (e *codecEmitter) decode(node manifest.Node, hint, indent string) (string, error) {
+// site names the field for per-field limits under the codec contract.
+func (e *codecEmitter) decode(node manifest.Node, hint, site, indent string) (string, error) {
 	if typ, matched, err := e.nativeCall(node); err != nil {
 		return "", err
 	} else if matched {
@@ -368,8 +401,11 @@ func (e *codecEmitter) decode(node manifest.Node, hint, indent string) (string, 
 
 	case manifest.KindString:
 		decoded := decodeCall("String")
+		if e.g.contract > 0 {
+			decoded = fmt.Sprintf("reader.read_str(%s)?", e.field(site))
+		}
 		if min, max, ok := stringBounds(node); ok {
-			decoded = fmt.Sprintf("wire::decode_string_limits(reader, %d, %d)?", min, max)
+			decoded = fmt.Sprintf("wire::decode_string_limits(reader, %s%d, %d)?", e.fieldArg(site), min, max)
 		}
 		if node.Constraints != nil && node.Constraints.Pattern != "" {
 			return fmt.Sprintf("{ let value = %s; wire::validate_pattern(&value, %q)?; value }", decoded, node.Constraints.Pattern), nil
@@ -378,7 +414,10 @@ func (e *codecEmitter) decode(node manifest.Node, hint, indent string) (string, 
 
 	case manifest.KindBytes:
 		if min, max, ok := stringBounds(node); ok {
-			return fmt.Sprintf("wire::decode_bytes_limits(reader, %d, %d)?", min, max), nil
+			return fmt.Sprintf("wire::decode_bytes_limits(reader, %s%d, %d)?", e.fieldArg(site), min, max), nil
+		}
+		if e.g.contract > 0 {
+			return fmt.Sprintf("reader.read_shared_bytes(%s)?", e.field(site)), nil
 		}
 		typ, err := e.g.rustType(node, hint)
 		if err != nil {
@@ -401,7 +440,7 @@ func (e *codecEmitter) decode(node manifest.Node, hint, indent string) (string, 
 		return fmt.Sprintf("%s(wire::decode_bitset::<%d>(reader, %d)?)", e.bitsetName(node), words, node.Length), nil
 
 	case manifest.KindOptional:
-		return e.decodeOptional(node, hint, indent)
+		return e.decodeOptional(node, hint, site, indent)
 
 	case manifest.KindFixedArray:
 		if node.Element == nil {
@@ -410,7 +449,7 @@ func (e *codecEmitter) decode(node manifest.Node, hint, indent string) (string, 
 		if node.Length > maxFixedArray {
 			return "", fmt.Errorf("fixed array of %d exceeds the emitted literal bound", node.Length)
 		}
-		element, err := e.decode(*node.Element, hint+"Item", indent)
+		element, err := e.decode(*node.Element, hint+"Item", site+"[]", indent)
 		if err != nil {
 			return "", err
 		}
@@ -427,7 +466,7 @@ func (e *codecEmitter) decode(node manifest.Node, hint, indent string) (string, 
 			return "", fmt.Errorf("array has no element")
 		}
 		if bytes, ok := e.g.byteRun(node); ok {
-			return e.decode(bytes, hint, indent)
+			return e.decode(bytes, hint, site, indent)
 		}
 		helper, err := collectionHelper(node, "decode_collection")
 		if err != nil {
@@ -440,11 +479,11 @@ func (e *codecEmitter) decode(node manifest.Node, hint, indent string) (string, 
 		}
 		if e.directlyEncodable(*node.Element) {
 			if lower, upper, ok := arrayBounds(node); ok && helper == "decode_collection" {
-				return fmt.Sprintf("wire::decode_collection_limits::<%s>(reader, %d, %d, %d)?", element, min, lower, upper), nil
+				return fmt.Sprintf("wire::decode_collection_limits::<%s>(reader, %s%d, %d, %d)?", element, e.fieldArg(site), min, lower, upper), nil
 			}
-			return fmt.Sprintf("wire::%s::<%s>(reader, %d)?", helper, element, min), nil
+			return fmt.Sprintf("wire::%s::<%s>(reader, %s%d)?", helper, element, e.fieldArg(site), min), nil
 		}
-		return e.decodeCollectionLoop(node, helper, element, min, hint, indent)
+		return e.decodeCollectionLoop(node, element, min, hint, site, indent)
 
 	case manifest.KindMap:
 		if node.Key == nil || node.Value == nil {
@@ -461,15 +500,15 @@ func (e *codecEmitter) decode(node manifest.Node, hint, indent string) (string, 
 		}
 		if e.directlyEncodable(*node.Key) && e.directlyEncodable(*node.Value) {
 			if lower, upper, ok := mapBounds(node); ok {
-				return fmt.Sprintf("wire::decode_map_limits::<%s, %s>(reader, %d, %d, %d)?", keyType, valueType, min, lower, upper), nil
+				return fmt.Sprintf("wire::decode_map_limits::<%s, %s>(reader, %s%d, %d, %d)?", keyType, valueType, e.fieldArg(site), min, lower, upper), nil
 			}
-			return fmt.Sprintf("wire::decode_map::<%s, %s>(reader, %d)?", keyType, valueType, min), nil
+			return fmt.Sprintf("wire::decode_map::<%s, %s>(reader, %s%d)?", keyType, valueType, e.fieldArg(site), min), nil
 		}
-		key, err := e.decode(*node.Key, hint+"Key", indent+"        ")
+		key, err := e.decode(*node.Key, hint+"Key", site+"{key}", indent+"        ")
 		if err != nil {
 			return "", err
 		}
-		value, err := e.decode(*node.Value, hint+"Value", indent+"        ")
+		value, err := e.decode(*node.Value, hint+"Value", site+"{value}", indent+"        ")
 		if err != nil {
 			return "", err
 		}
@@ -477,15 +516,15 @@ func (e *codecEmitter) decode(node manifest.Node, hint, indent string) (string, 
 		fmt.Fprintf(&b, "{\n")
 		fmt.Fprintf(&b, "%s    let declared = u64::from(reader.read_var_u32()?);\n", indent)
 		if lower, upper, ok := mapBounds(node); ok {
-			fmt.Fprintf(&b, "%s    let count = reader.checked_count_limits(declared, %d, %d, %d)?;\n", indent, min, lower, upper)
+			fmt.Fprintf(&b, "%s    let count = reader.checked_count_limits(%sdeclared, %d, %d, %d)?;\n", indent, e.fieldArg(site), min, lower, upper)
 		} else {
-			fmt.Fprintf(&b, "%s    let count = reader.checked_count(declared, %d)?;\n", indent, min)
+			fmt.Fprintf(&b, "%s    let count = reader.checked_count(%sdeclared, %d)?;\n", indent, e.fieldArg(site), min)
 		}
-		fmt.Fprintf(&b, "%s    let mut out: Vec<(%s, %s)> = Vec::with_capacity(count);\n", indent, keyType, valueType)
+		fmt.Fprintf(&b, "%s    let mut out: Vec<(%s, %s)> = %s;\n", indent, keyType, valueType, e.allocVec())
 		fmt.Fprintf(&b, "%s    for _ in 0..count {\n", indent)
 		fmt.Fprintf(&b, "%s        let key = %s;\n", indent, key)
 		fmt.Fprintf(&b, "%s        let value = %s;\n", indent, value)
-		fmt.Fprintf(&b, "%s        out.push((key, value));\n", indent)
+		fmt.Fprintf(&b, "%s        %s;\n", indent, e.pushItem("(key, value)"))
 		fmt.Fprintf(&b, "%s    }\n", indent)
 		fmt.Fprintf(&b, "%s    out\n", indent)
 		fmt.Fprintf(&b, "%s}", indent)
@@ -496,8 +535,8 @@ func (e *codecEmitter) decode(node manifest.Node, hint, indent string) (string, 
 	}
 }
 
-func (e *codecEmitter) decodeCollectionLoop(node manifest.Node, helper, element string, min int, hint, indent string) (string, error) {
-	item, err := e.decode(*node.Element, hint+"Item", indent+"        ")
+func (e *codecEmitter) decodeCollectionLoop(node manifest.Node, element string, min int, hint, site, indent string) (string, error) {
+	item, err := e.decode(*node.Element, hint+"Item", site+"[]", indent+"        ")
 	if err != nil {
 		return "", err
 	}
@@ -516,13 +555,13 @@ func (e *codecEmitter) decodeCollectionLoop(node manifest.Node, helper, element 
 		return "", fmt.Errorf("unsupported collection prefix %q", code)
 	}
 	if lower, upper, ok := arrayBounds(node); ok {
-		fmt.Fprintf(&b, "%s    let count = reader.checked_count_limits(declared, %d, %d, %d)?;\n", indent, min, lower, upper)
+		fmt.Fprintf(&b, "%s    let count = reader.checked_count_limits(%sdeclared, %d, %d, %d)?;\n", indent, e.fieldArg(site), min, lower, upper)
 	} else {
-		fmt.Fprintf(&b, "%s    let count = reader.checked_count(declared, %d)?;\n", indent, min)
+		fmt.Fprintf(&b, "%s    let count = reader.checked_count(%sdeclared, %d)?;\n", indent, e.fieldArg(site), min)
 	}
-	fmt.Fprintf(&b, "%s    let mut out: Vec<%s> = Vec::with_capacity(count);\n", indent, element)
+	fmt.Fprintf(&b, "%s    let mut out: Vec<%s> = %s;\n", indent, element, e.allocVec())
 	fmt.Fprintf(&b, "%s    for _ in 0..count {\n", indent)
-	fmt.Fprintf(&b, "%s        out.push(%s);\n", indent, item)
+	fmt.Fprintf(&b, "%s        %s;\n", indent, e.pushItem(item))
 	fmt.Fprintf(&b, "%s    }\n", indent)
 	fmt.Fprintf(&b, "%s    out\n", indent)
 	fmt.Fprintf(&b, "%s}", indent)
@@ -600,7 +639,7 @@ func mapBounds(node manifest.Node) (uint64, uint64, bool) {
 	return min, max, true
 }
 
-func (e *codecEmitter) decodeOptional(node manifest.Node, hint, indent string) (string, error) {
+func (e *codecEmitter) decodeOptional(node manifest.Node, hint, site, indent string) (string, error) {
 	if node.Value == nil {
 		return "", fmt.Errorf("optional has no value")
 	}
@@ -612,7 +651,7 @@ func (e *codecEmitter) decodeOptional(node manifest.Node, hint, indent string) (
 		}
 		value = *value.Value
 	}
-	inner, err := e.decode(value, hint+"Value", indent+"        ")
+	inner, err := e.decode(value, hint+"Value", site, indent+"        ")
 	if err != nil {
 		return "", err
 	}

@@ -73,12 +73,17 @@ type generator struct {
 	resolver    *naming.Resolver
 	domains     domains.Overlay
 	docs        docs.Overlay
+	contract    int
+	sites       *fieldSites
 }
 
 type Options struct {
 	Naming  naming.Overlay
 	Domains domains.Overlay
 	Docs    docs.Overlay
+	// CodecContract selects the Rust codec contract to emit; zero keeps the
+	// profile-neutral output.
+	CodecContract int
 }
 
 func prepare(m manifest.Manifest) (*generator, []packetInfo, error) {
@@ -101,7 +106,10 @@ func prepareWithOptions(m manifest.Manifest, options Options) (*generator, []pac
 			return nil, nil, err
 		}
 	}
-	g := &generator{definitions: map[string]definition{}, identities: map[string]string{}, used: map[string]bool{}, standalone: standaloneRustStructs(m), resolver: naming.NewResolver(options.Naming), domains: options.Domains, docs: options.Docs}
+	if options.CodecContract < 0 || options.CodecContract > CodecContractVersion {
+		return nil, nil, fmt.Errorf("unsupported Rust codec contract %d", options.CodecContract)
+	}
+	g := &generator{definitions: map[string]definition{}, identities: map[string]string{}, used: map[string]bool{}, standalone: standaloneRustStructs(m), resolver: naming.NewResolver(options.Naming), domains: options.Domains, docs: options.Docs, contract: options.CodecContract, sites: newFieldSites()}
 	packets := append([]manifest.Packet(nil), m.Packets...)
 	sort.Slice(packets, func(i, j int) bool { return packets[i].ID < packets[j].ID })
 	infos := make([]packetInfo, 0, len(packets))
@@ -254,14 +262,24 @@ func GenerateFilesWithOptions(m manifest.Manifest, options Options) (map[string]
 		return nil, err
 	}
 	files := map[string]string{
-		"Cargo.toml":         emitCargo(m, g),
-		"src/lib.rs":         emitLib(m),
-		"src/enums.rs":       enums,
-		"src/types.rs":       types,
-		"src/wire.rs":        emitWire(g),
-		"src/packets.rs":     packets,
-		"tests/roundtrip.rs": emitRoundtripTest(m, infos),
+		"Cargo.toml":     emitCargo(m, g),
+		"src/enums.rs":   enums,
+		"src/types.rs":   types,
+		"src/wire.rs":    emitWire(g),
+		"src/packets.rs": packets,
 	}
+	if g.contract == 0 {
+		files["src/lib.rs"] = emitLib(m)
+		files["tests/roundtrip.rs"] = emitRoundtripTest(m, infos)
+		return files, nil
+	}
+	if files["src/lib.rs"], err = emitContractLib(m); err != nil {
+		return nil, err
+	}
+	if files["src/fields.rs"], err = emitFields(g.sites); err != nil {
+		return nil, err
+	}
+	files["tests/roundtrip.rs"] = emitContractRoundtripTest(m, infos)
 	return files, nil
 }
 
@@ -478,6 +496,9 @@ func (g *generator) emitRustPackets(infos []packetInfo) (string, error) {
 	var b strings.Builder
 	b.WriteString("// Code generated from canonical protocol manifest v2. DO NOT EDIT.\n\n")
 	b.WriteString("use crate::enums::*;\nuse crate::types::*;\n")
+	if g.contract > 0 {
+		b.WriteString("use crate::wire::{Direction, Peer};\n")
+	}
 	b.WriteString("use crate::wire;\n\n")
 	codec := &codecEmitter{g: g}
 	for _, info := range infos {
@@ -487,7 +508,10 @@ func (g *generator) emitRustPackets(infos []packetInfo) (string, error) {
 		}
 	}
 	emitPacketRegistry(&b, infos)
-	emitDirectionRegistry(&b, infos)
+	emitDirectionRegistry(&b, infos, g.contract)
+	if g.contract > 0 {
+		emitFramePackets(&b)
+	}
 	return strings.TrimSpace(b.String()) + "\n", nil
 }
 
@@ -581,6 +605,9 @@ func (g *generator) rustType(node manifest.Node, hint string) (string, error) {
 	case manifest.KindString:
 		if node.Constraints != nil && node.Constraints.Pattern != "" {
 			g.usesPattern = true
+		}
+		if g.contract > 0 {
+			return "wire::Str", nil
 		}
 		return "String", nil
 	case manifest.KindBytes:
@@ -903,6 +930,9 @@ func (g *generator) estimatePacketSize(fields []rustFieldInfo) int {
 func (g *generator) estimateRustType(typ string, visiting map[string]bool) int {
 	if strings.HasPrefix(typ, "Box<") || strings.HasPrefix(typ, "Vec<") || strings.HasPrefix(typ, "Option<") || typ == "String" || typ == "bytes::Bytes" {
 		return 24
+	}
+	if typ == "wire::Str" {
+		return 32
 	}
 	if strings.HasPrefix(typ, "wire::") {
 		return 8
