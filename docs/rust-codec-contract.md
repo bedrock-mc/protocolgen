@@ -102,8 +102,9 @@ generated code reads, writes, bounds and reports those layouts.
   - the body must consume its entry exactly, or the result is `TrailingBytes`.
   Every error from `decode_frame` covers that entry only.
 - Header bits above the target subclient are ignored, as gophertunnel's
-  `Header.Read` does. `UnknownPacket::encode_frame` forwards an unknown entry
-  unchanged.
+  `Header.Read` does. `UnknownPacket` keeps the entry as received, so
+  `UnknownPacket::encode_frame` forwards it byte for byte, those bits
+  included.
 
 ## Direction checks
 

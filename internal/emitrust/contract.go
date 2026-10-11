@@ -152,17 +152,20 @@ pub enum Decoded {
     Unknown(UnknownPacket),
 }
 
-/// A packet id absent from this manifest, with its body preserved byte-exact.
+/// A packet id absent from this manifest, with its entry preserved byte-exact.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct UnknownPacket {
     pub header: wire::PacketHeader,
     pub body: bytes::Bytes,
+    /// The complete entry as received. The header keeps only the id and
+    /// subclient bits, so forwarding uses these bytes instead.
+    pub frame: bytes::Bytes,
 }
 
 impl UnknownPacket {
-    /// Appends the preserved entry unchanged; on error ` + "`out`" + ` is restored.
+    /// Appends the entry exactly as received; on error ` + "`out`" + ` is unchanged.
     pub fn encode_frame(&self, out: &mut Vec<u8>) -> wire::EncodeResult<()> {
-        wire::encode_frame_with(out, self.header, usize::MAX, |writer| writer.write_all(&self.body))
+        wire::Writer::new(out).write_all(&self.frame)
     }
 }
 
@@ -178,7 +181,7 @@ impl Packet {
         let header = frame.header();
         let body = frame.body();
         let Some(id) = PacketId::from_raw(header.id) else {
-            return Ok(Decoded::Unknown(UnknownPacket { header, body }));
+            return Ok(Decoded::Unknown(UnknownPacket { header, body, frame: frame.frame().clone() }));
         };
         if !id.direction().permits(sender) {
             return Err(wire::DecodeError::UnexpectedDirection(header.id));
@@ -310,6 +313,31 @@ fn unknown_packets_keep_exact_boundaries() {
         other => panic!("unknown id decoded as {other:?}"),
     }
     assert!(matches!(&decoded[1], Decoded::Unknown(packet) if packet.body.is_empty()));
+}
+
+/// Header bits above the target subclient are ignored on decode but must
+/// survive forwarding an unknown entry.
+#[test]
+fn unknown_packets_forward_byte_for_byte() {
+    let unknown = (0..=wire::PacketHeader::ID_MASK)
+        .find(|id| PacketId::from_raw(*id).is_none())
+        .expect("a free packet id");
+    let mut header = Vec::new();
+    wire::Writer::new(&mut header).write_var_u32(unknown | (1 << 14)).unwrap();
+    let mut entry = Vec::new();
+    let mut writer = wire::Writer::new(&mut entry);
+    writer.write_var_u32(header.len() as u32 + 1).unwrap();
+    writer.write_all(&header).unwrap();
+    writer.write_u8(0xab).unwrap();
+    let frame = wire::Frames::new(entry.clone().into(), 1).next().unwrap().unwrap();
+    let decoded = Packet::decode_frame(&frame, Peer::Server, &wire::Limits::unbounded());
+    let Ok(Decoded::Unknown(packet)) = &decoded else {
+        panic!("unknown id decoded as {decoded:?}");
+    };
+    assert_eq!(packet.header.id, unknown);
+    let mut out = Vec::new();
+    packet.encode_frame(&mut out).unwrap();
+    assert_eq!(out, entry);
 }
 `)
 	return b.String()

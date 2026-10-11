@@ -129,7 +129,15 @@ func TestContractFramesPreserveUnknownPackets(t *testing.T) {
 	if wire := files["src/wire.rs"]; !strings.Contains(wire, "pub struct Frames") || !strings.Contains(wire, "pub struct Limits") {
 		t.Fatal("contract runtime omits frames or limits")
 	}
-	if roundtrip := files["tests/roundtrip.rs"]; !strings.Contains(roundtrip, "unknown_packets_keep_exact_boundaries") {
-		t.Fatal("contract tests omit the unknown-packet boundary check")
+	roundtrip := files["tests/roundtrip.rs"]
+	for _, want := range []string{"unknown_packets_keep_exact_boundaries", "unknown_packets_forward_byte_for_byte"} {
+		if !strings.Contains(roundtrip, want) {
+			t.Fatalf("contract tests omit %s", want)
+		}
+	}
+	// Re-encoding from the parsed header would drop bits above the target
+	// subclient, so forwarding must copy the received entry.
+	if !strings.Contains(packets, "wire::Writer::new(out).write_all(&self.frame)") {
+		t.Fatal("unknown packets are not forwarded from their received bytes")
 	}
 }
