@@ -33,16 +33,16 @@ func (e *codecEmitter) emitDefinitionCodec(b *strings.Builder, item definition) 
 
 func (e *codecEmitter) emitStructCodec(b *strings.Builder, item definition) error {
 	if item.Tuple {
-		fmt.Fprintf(b, "impl wire::Encode for %s {\n    fn encode(&self, writer: &mut wire::Writer) {\n", item.Name)
-		fmt.Fprintf(b, "        wire::%s(self.0).encode(writer);\n", item.WrapperCodec)
-		b.WriteString("    }\n}\n\n")
+		e.openEncode(b, item.Name)
+		e.stmt(b, "        ", fmt.Sprintf("wire::%s(self.0).encode(writer)", item.WrapperCodec))
+		e.closeEncode(b)
 		fmt.Fprintf(b, "impl wire::Decode for %s {\n    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {\n", item.Name)
 		fmt.Fprintf(b, "        Ok(Self(<wire::%s as wire::Decode>::decode(reader)?.0))\n", item.WrapperCodec)
 		b.WriteString("    }\n}\n\n")
 		return nil
 	}
 
-	fmt.Fprintf(b, "impl wire::Encode for %s {\n    fn encode(&self, writer: &mut wire::Writer) {\n", item.Name)
+	e.openEncode(b, item.Name)
 	if len(item.Fields) == 0 {
 		b.WriteString("        let _ = writer;\n")
 	}
@@ -51,14 +51,14 @@ func (e *codecEmitter) emitStructCodec(b *strings.Builder, item definition) erro
 			return fmt.Errorf("%s.%s: %w", item.Name, field.Name, err)
 		}
 	}
-	b.WriteString("    }\n}\n\n")
+	e.closeEncode(b)
 
 	fmt.Fprintf(b, "impl wire::Decode for %s {\n    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {\n", item.Name)
 	if len(item.Fields) == 0 {
 		b.WriteString("        let _ = reader;\n")
 	}
 	for _, field := range item.Fields {
-		expr, err := e.decode(field.Node, field.Hint, "        ")
+		expr, err := e.decode(field.Node, field.Hint, item.Name+"."+siteField(field.Name), "        ")
 		if err != nil {
 			return fmt.Errorf("%s.%s: %w", item.Name, field.Name, err)
 		}
@@ -81,8 +81,8 @@ func (e *codecEmitter) emitUnionCodec(b *strings.Builder, item definition) error
 		return fmt.Errorf("union %s has unsupported control code %q", item.Name, item.ControlCode)
 	}
 
-	fmt.Fprintf(b, "impl wire::Encode for %s {\n    fn encode(&self, writer: &mut wire::Writer) {\n", item.Name)
-	fmt.Fprintf(b, "        wire::%s(self.discriminant()).encode(writer);\n", controlCodec)
+	e.openEncode(b, item.Name)
+	e.stmt(b, "        ", fmt.Sprintf("wire::%s(self.discriminant()).encode(writer)", controlCodec))
 	b.WriteString("        match self {\n")
 	for _, variant := range item.Union {
 		switch {
@@ -108,7 +108,8 @@ func (e *codecEmitter) emitUnionCodec(b *strings.Builder, item definition) error
 			fmt.Fprintf(b, "            Self::%s => {}\n", variant.Name)
 		}
 	}
-	b.WriteString("        }\n    }\n}\n\n")
+	b.WriteString("        }\n")
+	e.closeEncode(b)
 
 	fmt.Fprintf(b, "impl wire::Decode for %s {\n    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {\n", item.Name)
 	fmt.Fprintf(b, "        let discriminant = <wire::%s as wire::Decode>::decode(reader)?.0;\n", controlCodec)
@@ -119,7 +120,7 @@ func (e *codecEmitter) emitUnionCodec(b *strings.Builder, item definition) error
 			fmt.Fprintf(b, "            %d => {\n", variant.Discriminant)
 			names := make([]string, 0, len(variant.Fields))
 			for _, field := range variant.Fields {
-				expr, err := e.decode(field.Node, field.Hint, "                ")
+				expr, err := e.decode(field.Node, field.Hint, item.Name+"::"+variant.Name+"."+siteField(field.Name), "                ")
 				if err != nil {
 					return fmt.Errorf("%s::%s.%s: %w", item.Name, variant.Name, field.Name, err)
 				}
@@ -132,7 +133,7 @@ func (e *codecEmitter) emitUnionCodec(b *strings.Builder, item definition) error
 			fmt.Fprintf(b, "                Self::%s { %s }\n", variant.Name, strings.Join(names, ", "))
 			b.WriteString("            }\n")
 		case variant.Payload != "":
-			expr, err := e.decode(variant.Node, variant.Hint, "                ")
+			expr, err := e.decode(variant.Node, variant.Hint, item.Name+"::"+variant.Name, "                ")
 			if err != nil {
 				return fmt.Errorf("%s::%s: %w", item.Name, variant.Name, err)
 			}
@@ -150,9 +151,9 @@ func (e *codecEmitter) emitUnionCodec(b *strings.Builder, item definition) error
 }
 
 func (e *codecEmitter) emitBitsetCodec(b *strings.Builder, item definition) {
-	fmt.Fprintf(b, "impl wire::Encode for %s {\n    fn encode(&self, writer: &mut wire::Writer) {\n", item.Name)
-	fmt.Fprintf(b, "        wire::encode_bitset(writer, &self.0, %d);\n", item.BitLength)
-	b.WriteString("    }\n}\n\n")
+	e.openEncode(b, item.Name)
+	e.stmt(b, "        ", fmt.Sprintf("wire::encode_bitset(writer, &self.0, %d)", item.BitLength))
+	e.closeEncode(b)
 	fmt.Fprintf(b, "impl wire::Decode for %s {\n    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {\n", item.Name)
 	fmt.Fprintf(b, "        Ok(Self(wire::decode_bitset(reader, %d)?))\n", item.BitLength)
 	b.WriteString("    }\n}\n\n")
@@ -166,9 +167,9 @@ func (e *codecEmitter) emitEnumCodec(b *strings.Builder, item definition) error 
 	if codec == "" {
 		return fmt.Errorf("enum %s has unsupported primitive code %q", item.Name, item.PrimitiveCode)
 	}
-	fmt.Fprintf(b, "impl wire::Encode for %s {\n    fn encode(&self, writer: &mut wire::Writer) {\n", item.Name)
-	fmt.Fprintf(b, "        wire::%s(self.to_raw()).encode(writer);\n", codec)
-	b.WriteString("    }\n}\n\n")
+	e.openEncode(b, item.Name)
+	e.stmt(b, "        ", fmt.Sprintf("wire::%s(self.to_raw()).encode(writer)", codec))
+	e.closeEncode(b)
 	fmt.Fprintf(b, "impl wire::Decode for %s {\n    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {\n", item.Name)
 	fmt.Fprintf(b, "        Ok(Self::from(<wire::%s as wire::Decode>::decode(reader)?.0))\n", codec)
 	b.WriteString("    }\n}\n\n")
@@ -176,7 +177,7 @@ func (e *codecEmitter) emitEnumCodec(b *strings.Builder, item definition) error 
 }
 
 func (e *codecEmitter) emitPacketCodec(b *strings.Builder, info packetInfo) error {
-	fmt.Fprintf(b, "impl wire::Encode for %s {\n    fn encode(&self, writer: &mut wire::Writer) {\n", info.name)
+	e.openEncode(b, info.name)
 	if len(info.fields) == 0 {
 		b.WriteString("        let _ = writer;\n")
 	}
@@ -185,14 +186,14 @@ func (e *codecEmitter) emitPacketCodec(b *strings.Builder, info packetInfo) erro
 			return fmt.Errorf("%s.%s: %w", info.name, field.name, err)
 		}
 	}
-	b.WriteString("    }\n}\n\n")
+	e.closeEncode(b)
 
 	fmt.Fprintf(b, "impl wire::Decode for %s {\n    fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {\n", info.name)
 	if len(info.fields) == 0 {
 		b.WriteString("        let _ = reader;\n")
 	}
 	for _, field := range info.fields {
-		expr, err := e.decode(field.node, field.hint, "        ")
+		expr, err := e.decode(field.node, field.hint, info.name+"."+siteField(field.name), "        ")
 		if err != nil {
 			return fmt.Errorf("%s.%s: %w", info.name, field.name, err)
 		}
@@ -208,9 +209,13 @@ func (e *codecEmitter) emitPacketCodec(b *strings.Builder, info packetInfo) erro
 
 // emitDirectionRegistry emits the packet direction table and the dispatchers
 // that use it. Decoding a packet the local role must never receive is rejected
-// on the id, before any field is read.
-func emitDirectionRegistry(b *strings.Builder, infos []packetInfo) {
-	b.WriteString(`
+// on the id, before any field is read. Under the codec contract Direction and
+// Peer live in the wire runtime.
+func emitDirectionRegistry(b *strings.Builder, infos []packetInfo, contract int) {
+	if contract > 0 {
+		b.WriteString("\n")
+	} else {
+		b.WriteString(`
 /// Which peer may send a packet.
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub enum Direction {
@@ -239,6 +244,7 @@ pub enum Peer {
 }
 
 `)
+	}
 	b.WriteString("impl PacketId {\n    pub const fn direction(self) -> Direction {\n        match self {\n")
 	for _, info := range infos {
 		direction := "Bidirectional"
@@ -264,7 +270,11 @@ pub enum Peer {
 	}
 	b.WriteString("        }\n    }\n\n")
 
-	b.WriteString("    pub fn encode(&self, writer: &mut wire::Writer) {\n        match self {\n")
+	if contract > 0 {
+		b.WriteString("    pub fn encode(&self, writer: &mut wire::Writer<'_>) -> wire::EncodeResult<()> {\n        match self {\n")
+	} else {
+		b.WriteString("    pub fn encode(&self, writer: &mut wire::Writer) {\n        match self {\n")
+	}
 	for _, info := range infos {
 		receiver := "value"
 		if packetNeedsBox(info) {

@@ -764,6 +764,7 @@ func runEmitRust(args []string) error {
 	namingPath := fs.String("naming", "", "reviewed naming overlay JSON; defaults to naming.json beside the manifest")
 	domainsPath := fs.String("domains", "", "reviewed domain overlay JSON; defaults to domains.json beside the manifest")
 	docsPath := fs.String("docs", "", "reviewed documentation overlay JSON; defaults to docs.json beside the manifest")
+	codecContract := fs.Int("codec-contract", 0, "Rust codec contract to emit (docs/rust-codec-contract.md); 0 keeps the profile-neutral output")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
@@ -777,7 +778,7 @@ func runEmitRust(args []string) error {
 		DocsPath:     *docsPath,
 		OutputDir:    *out,
 	}, emitter.Func(func(input emitter.Input) (map[string]string, error) {
-		return emitrust.GenerateFilesWithOptions(input.Manifest, emitrust.Options{Naming: input.Naming, Domains: input.Domains, Docs: input.Docs})
+		return emitrust.GenerateFilesWithOptions(input.Manifest, emitrust.Options{Naming: input.Naming, Domains: input.Domains, Docs: input.Docs, CodecContract: *codecContract})
 	}))
 	if err != nil {
 		return err
