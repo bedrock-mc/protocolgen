@@ -399,6 +399,9 @@ func (g *generator) goType(node manifest.Node, hint string) (string, error) {
 			g.definitions[name] = typeDefinition{Name: name, TypeID: nodeTypeID(node), Kind: manifest.KindEnum, Underlying: underlying, Primitive: node.Primitive.Code, Variants: append([]manifest.Variant(nil), node.Variants...)}
 		} else if existing.Primitive != node.Primitive.Code {
 			return "", fmt.Errorf("enum %s is encoded as both %s and %s", name, existing.Primitive, node.Primitive.Code)
+		} else {
+			existing.Variants = manifest.MergeEnumVariants(existing.Variants, node.Variants)
+			g.definitions[name] = existing
 		}
 		return name, nil
 	case manifest.KindReserved, manifest.KindIgnored:

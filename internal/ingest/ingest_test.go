@@ -78,6 +78,19 @@ func TestMojangIngestionRetainsValidationConstraints(t *testing.T) {
 	}
 }
 
+// Both sources put prose in "pattern"; it must not become a regex constraint.
+func TestIngestionDropsProsePatterns(t *testing.T) {
+	lowerer := &mojangLowerer{documents: map[string]any{}, active: map[string]bool{}}
+	node := lowerer.lowerSchema(map[string]any{"type": "string", "pattern": "A string in the format of <uuid>_<semver>"}, "Packet.json", "Value")
+	if node.Constraints != nil {
+		t.Fatalf("prose pattern became a constraint: %#v", node.Constraints)
+	}
+	node = withEndstoneConstraintMap(manifest.String(manifest.Primitive("var_u32")), map[string]any{"pattern": "A string in the format of <uuid>_<semver>"})
+	if node.Constraints != nil {
+		t.Fatalf("Endstone prose pattern became a constraint: %#v", node.Constraints)
+	}
+}
+
 func TestMojangArrayIgnoresObjectPropertyBounds(t *testing.T) {
 	lowerer := &mojangLowerer{documents: map[string]any{}, active: map[string]bool{}}
 	node := lowerer.lowerSchema(map[string]any{

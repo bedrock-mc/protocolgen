@@ -246,3 +246,34 @@ func TestValidateRejectsDuplicateUnionTags(t *testing.T) {
 		t.Fatalf("Validate error = %v, want duplicate union tag rejection", err)
 	}
 }
+
+// Prose in a pattern field compiles as a regex but matches no real value.
+func TestValidateRejectsUnanchoredPatterns(t *testing.T) {
+	value := adjudicatedFixture()
+	text := String(Primitive("var_u32"))
+	text.Constraints = &Constraints{Pattern: "A string in the format of <uuid>_<semver>"}
+	value.Packets[0].Fields[0].Encode = text
+	if err := Validate(value); err == nil || !strings.Contains(err.Error(), "not anchored") {
+		t.Fatalf("Validate error = %v, want prose pattern rejection", err)
+	}
+	text.Constraints = &Constraints{Pattern: `^\w+:\w+$`}
+	value.Packets[0].Fields[0].Encode = text
+	if err := Validate(value); err != nil {
+		t.Fatalf("Validate anchored pattern: %v", err)
+	}
+}
+
+func TestMergeEnumVariantsKeepsEverySiteValue(t *testing.T) {
+	first := Enum("u8", EnumValue{Name: "raw", Value: 0}, EnumValue{Name: "tip", Value: 5}).Variants
+	second := Enum("u8", EnumValue{Name: "chat", Value: 1}, EnumValue{Name: "raw", Value: 0}).Variants
+	var got []int64
+	for _, variant := range MergeEnumVariants(first, second) {
+		got = append(got, variant.Value)
+	}
+	if len(got) != 3 || got[0] != 0 || got[1] != 1 || got[2] != 5 {
+		t.Fatalf("merged values = %v, want [0 1 5]", got)
+	}
+	if merged := MergeEnumVariants(first, first[:1]); len(merged) != 2 || merged[1].Value != 5 {
+		t.Fatalf("merging a subset reordered or grew the enum: %+v", merged)
+	}
+}

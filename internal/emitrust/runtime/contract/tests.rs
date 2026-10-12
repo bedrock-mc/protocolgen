@@ -37,6 +37,69 @@ mod runtime_tests {
         assert!(matches!(result, Err(DecodeError::LengthNotRepresentable { .. })));
     }
 
+    /// A truncated count reports truncation, not a schema or limit violation.
+    #[test]
+    fn truncation_is_reported_before_bounds() {
+        let mut input = Vec::new();
+        Writer::new(&mut input).write_var_u32(1000).unwrap();
+        let limits = Limits::unbounded().with_field(FieldId(0), 4);
+        let truncated = decode_collection_limits::<U8>(
+            &mut Reader::new(&input).with_limits(&limits),
+            FieldId(0),
+            1,
+            0,
+            4,
+        );
+        assert!(matches!(truncated, Err(DecodeError::LengthNotRepresentable { .. })));
+        let text = decode_string_limits(&mut Reader::new(&input).with_limits(&limits), FieldId(0), 0, 4);
+        assert!(matches!(text, Err(DecodeError::LengthNotRepresentable { .. })));
+
+        input.resize(input.len() + 1000, 0);
+        let schema = decode_collection_limits::<U8>(
+            &mut Reader::new(&input).with_limits(&limits),
+            FieldId(0),
+            1,
+            0,
+            4,
+        );
+        assert_eq!(schema, Err(DecodeError::SchemaConstraint("length above maximum")));
+        let limited = decode_collection_limits::<U8>(
+            &mut Reader::new(&input).with_limits(&limits),
+            FieldId(0),
+            1,
+            0,
+            2000,
+        );
+        assert!(matches!(limited, Err(DecodeError::LengthLimitExceeded { .. })));
+    }
+
+    /// Bits at or beyond the declared width are dropped in both directions.
+    #[test]
+    fn bitsets_mask_bits_beyond_their_width() {
+        for words in [[1u64 << 10, 0], [0, 1], [0, 1 << 63], [u64::MAX, u64::MAX]] {
+            let mut out = Vec::new();
+            encode_bitset(&mut Writer::new(&mut out), &words, 10).unwrap();
+            let masked = words[0] & ((1 << 10) - 1);
+            assert_eq!(decode_bitset::<1>(&mut Reader::new(&out), 10), Ok([masked]));
+        }
+        let mut out = Vec::new();
+        encode_bitset(&mut Writer::new(&mut out), &[1 << 9 | 1, 0], 10).unwrap();
+        assert_eq!(out, vec![0x81, 0x04]);
+
+        // 0x7c sets bits 9..=13 of a 10-bit set; only bit 9 survives.
+        assert_eq!(decode_bitset::<1>(&mut Reader::new(&[0x81, 0x7c]), 10), Ok([1 << 9 | 1]));
+        assert!(decode_bitset::<1>(&mut Reader::new(&[0x80, 0x80, 0x00]), 10).is_err());
+        let mut widest = vec![0xff; 18];
+        widest.push(0x7f);
+        assert_eq!(decode_bitset::<3>(&mut Reader::new(&widest), 131), Ok([u64::MAX, u64::MAX, 7]));
+        widest[18] = 0xff;
+        widest.push(0x00);
+        assert_eq!(
+            decode_bitset::<3>(&mut Reader::new(&widest), 131),
+            Err(DecodeError::InvalidBitset("unterminated after its widest encoding"))
+        );
+    }
+
     #[test]
     fn field_limits_override_the_default() {
         let mut input = Vec::new();

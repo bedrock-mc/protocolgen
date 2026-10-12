@@ -347,7 +347,11 @@ func withMojangConstraints(node manifest.Node, schema map[string]any) manifest.N
 	}
 	setFloat("minimum", &constraints.Minimum)
 	setFloat("maximum", &constraints.Maximum)
-	constraints.Pattern = asString(schema["pattern"])
+	// Both sources also put prose descriptions in "pattern"; only a whole-string
+	// regular expression constrains the wire value.
+	if pattern := asString(schema["pattern"]); manifest.IsSchemaPattern(pattern) {
+		constraints.Pattern = pattern
+	}
 	if constraints != (manifest.Constraints{}) {
 		node.Constraints = &constraints
 	}

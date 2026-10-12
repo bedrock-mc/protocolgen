@@ -12939,7 +12939,6 @@ impl wire::Encode for RecipeIngredientSerializedData {
             value.encode(writer)?;
         }
         self.aux_value.encode(writer)?;
-        wire::check_number_limits(self.aux_value.0, Some(0), Some(32767))?;
         self.stack_size.encode(writer)?;
         wire::check_number_limits(self.stack_size.0, Some(0), Some(64))?;
         Ok(())
@@ -12965,11 +12964,7 @@ impl wire::Decode for RecipeIngredientSerializedData {
             }
             out
         };
-        let aux_value = {
-            let value = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
-            wire::validate_number_limits(value.0, Some(0), Some(32767))?;
-            value
-        };
+        let aux_value = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
         let stack_size = {
             let value = <wire::ZigZag32 as wire::Decode>::decode(reader)?;
             wire::validate_number_limits(value.0, Some(0), Some(64))?;

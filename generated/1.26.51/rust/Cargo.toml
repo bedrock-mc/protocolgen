@@ -8,6 +8,6 @@ publish = false
 
 [dependencies]
 bytes = "1"
-glam = "0.30"
+glam = "0.33"
 uuid = "1"
 regex = "1"

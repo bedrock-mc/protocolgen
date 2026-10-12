@@ -374,19 +374,34 @@ impl<'a> Reader<'a> {
         min_element_size: usize,
         limit: usize,
     ) -> DecodeResult<usize> {
+        self.checked_bounds(field, declared, min_element_size, 0, u64::MAX, limit)
+    }
+
+    /// Checks truncation first, then the schema bounds, then `limit`, so a
+    /// short input is never reported as a recoverable bound violation.
+    fn checked_bounds(
+        &self,
+        field: FieldId,
+        declared: u64,
+        min_element_size: usize,
+        minimum: u64,
+        maximum: u64,
+        limit: usize,
+    ) -> DecodeResult<usize> {
+        let remaining = self.remaining();
+        let needed = declared.saturating_mul(min_element_size.max(1) as u64);
+        if needed > remaining as u64 {
+            return Err(DecodeError::LengthNotRepresentable {
+                field,
+                needed: usize::try_from(needed).unwrap_or(usize::MAX),
+                remaining,
+            });
+        }
+        validate_length(declared, minimum, maximum)?;
         if declared > limit as u64 {
             return Err(DecodeError::LengthLimitExceeded { field, limit, actual: declared });
         }
-        let count = declared as usize;
-        let needed = count.saturating_mul(min_element_size.max(1));
-        if needed > self.remaining() {
-            return Err(DecodeError::LengthNotRepresentable {
-                field,
-                needed,
-                remaining: self.remaining(),
-            });
-        }
-        Ok(count)
+        Ok(declared as usize)
     }
 
     /// Validates the declared element count of `field` before allocation.
@@ -408,12 +423,28 @@ impl<'a> Reader<'a> {
         minimum: u64,
         maximum: u64,
     ) -> DecodeResult<usize> {
-        validate_length(declared, minimum, maximum)?;
-        self.checked_count(field, declared, min_element_size)
+        self.checked_bounds(
+            field,
+            declared,
+            min_element_size,
+            minimum,
+            maximum,
+            self.limits.elements_for(field),
+        )
     }
 
     fn checked_byte_len(&self, field: FieldId, declared: u64) -> DecodeResult<usize> {
         self.checked(field, declared, 1, self.limits.bytes_for(field))
+    }
+
+    fn checked_byte_bounds(
+        &self,
+        field: FieldId,
+        declared: u64,
+        minimum: u64,
+        maximum: u64,
+    ) -> DecodeResult<usize> {
+        self.checked_bounds(field, declared, 1, minimum, maximum, self.limits.bytes_for(field))
     }
 
     /// Reads the `var_u32`-prefixed string at `field`, keeping its exact bytes.
@@ -960,8 +991,7 @@ pub fn decode_string_limits(
     maximum: u64,
 ) -> DecodeResult<Str> {
     let declared = u64::from(reader.read_var_u32()?);
-    validate_length(declared, minimum, maximum)?;
-    let count = reader.checked_byte_len(field, declared)?;
+    let count = reader.checked_byte_bounds(field, declared, minimum, maximum)?;
     Ok(Str(reader.take_shared(count)?))
 }
 
@@ -982,8 +1012,7 @@ pub fn decode_bytes_limits(
     maximum: u64,
 ) -> DecodeResult<bytes::Bytes> {
     let declared = u64::from(reader.read_var_u32()?);
-    validate_length(declared, minimum, maximum)?;
-    let count = reader.checked_byte_len(field, declared)?;
+    let count = reader.checked_byte_bounds(field, declared, minimum, maximum)?;
     reader.take_shared(count)
 }
 
@@ -1101,33 +1130,27 @@ pub fn decode_map_limits<K: Decode, V: Decode>(
 /// Writes `bits` bits using seven payload bits per continuation byte.
 ///
 /// Trailing zero groups are omitted, so an all-zero bitset is a single `0`
-/// byte.
+/// byte. Set bits at or beyond `bits` are not written, as the client drops
+/// them on read.
 pub fn encode_bitset(writer: &mut Writer<'_>, words: &[u64], bits: u64) -> EncodeResult<()> {
-    let mut last = 0u64;
-    let mut found = false;
-    for (index, word) in words.iter().enumerate() {
-        if *word == 0 {
-            continue;
-        }
-        found = true;
-        for bit in (0..64).rev() {
-            if word & (1u64 << bit) != 0 {
-                last = index as u64 * 64 + bit;
-                break;
-            }
-        }
-    }
-    if !found {
+    let masked = |index: usize| match bits.saturating_sub(index as u64 * 64) {
+        0 => 0,
+        width if width >= 64 => words[index],
+        width => words[index] & ((1u64 << width) - 1),
+    };
+    let Some(last) = (0..words.len()).rev().find_map(|index| {
+        let word = masked(index);
+        if word == 0 { None } else { Some(index as u64 * 64 + u64::from(63 - word.leading_zeros())) }
+    }) else {
         return writer.write_u8(0);
-    }
+    };
     let groups = last / 7 + 1;
     for group in 0..groups {
         let offset = group * 7;
-        let width = (bits - offset).min(7);
         let mut value = 0u8;
-        for bit in 0..width {
+        for bit in 0..7 {
             let index = offset + bit;
-            if words[(index / 64) as usize] & (1u64 << (index % 64)) != 0 {
+            if index <= last && words[(index / 64) as usize] & (1u64 << (index % 64)) != 0 {
                 value |= 1 << bit;
             }
         }
@@ -1139,31 +1162,29 @@ pub fn encode_bitset(writer: &mut Writer<'_>, words: &[u64], bits: u64) -> Encod
     Ok(())
 }
 
-/// Reads a seven-bits-per-byte bitset, rejecting payload bits outside `bits`.
+/// Reads a seven-bits-per-byte bitset, dropping payload bits at or beyond
+/// `bits` as the client does. Only an encoding still unterminated after
+/// `ceil(bits / 7)` bytes is an error.
 pub fn decode_bitset<const N: usize>(reader: &mut Reader<'_>, bits: u64) -> DecodeResult<[u64; N]> {
     let mut words = [0u64; N];
     let mut offset = 0u64;
-    while offset < bits {
+    for _ in 0..bits.div_ceil(7).max(1) {
         let value = reader.read_u8()?;
-        let width = (bits - offset).min(7);
-        if width < 7 && u64::from(value & 0x7f) >= (1u64 << width) {
-            return Err(DecodeError::InvalidBitset("bits outside declared width"));
-        }
-        for bit in 0..width {
-            if value & (1 << bit) != 0 {
-                let index = offset + bit;
-                words[(index / 64) as usize] |= 1u64 << (index % 64);
+        for bit in 0..7 {
+            let index = offset + bit;
+            if index >= bits || value & (1 << bit) == 0 {
+                continue;
+            }
+            if let Some(word) = words.get_mut((index / 64) as usize) {
+                *word |= 1u64 << (index % 64);
             }
         }
         if value & 0x80 == 0 {
             return Ok(words);
         }
-        if offset + 7 >= bits {
-            return Err(DecodeError::InvalidBitset("exceeds declared width"));
-        }
         offset += 7;
     }
-    Ok(words)
+    Err(DecodeError::InvalidBitset("unterminated after its widest encoding"))
 }
 
 // ---------------------------------------------------------------------------

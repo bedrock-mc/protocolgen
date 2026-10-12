@@ -45057,10 +45057,7 @@
               }
             },
             "encoding": "utf8",
-            "representation": "text",
-            "constraints": {
-              "pattern": "A string in the format of \u003cuuid\u003e_\u003csemver\u003e, where \u003cuuid\u003e is a valid UUID and \u003csemver\u003e is a valid semantic version"
-            }
+            "representation": "text"
           },
           "symmetry": "symmetric",
           "provenance": {

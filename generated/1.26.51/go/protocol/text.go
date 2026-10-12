@@ -26,8 +26,14 @@ type TextPacketType uint8
 
 const (
 	TextPacketTypeRaw                    TextPacketType = 0
+	TextPacketTypeChat                   TextPacketType = 1
+	TextPacketTypeTranslate              TextPacketType = 2
+	TextPacketTypePopup                  TextPacketType = 3
+	TextPacketTypeJukeboxpopup           TextPacketType = 4
 	TextPacketTypeTip                    TextPacketType = 5
 	TextPacketTypeSystemmessage          TextPacketType = 6
+	TextPacketTypeWhisper                TextPacketType = 7
+	TextPacketTypeAnnouncement           TextPacketType = 8
 	TextPacketTypeTextobjectwhisper      TextPacketType = 9
 	TextPacketTypeTextobject             TextPacketType = 10
 	TextPacketTypeTextobjectannouncement TextPacketType = 11

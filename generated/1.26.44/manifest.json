@@ -45085,10 +45085,7 @@
               }
             },
             "encoding": "utf8",
-            "representation": "text",
-            "constraints": {
-              "pattern": "A string in the format of \u003cuuid\u003e_\u003csemver\u003e, where \u003cuuid\u003e is a valid UUID and \u003csemver\u003e is a valid semantic version"
-            }
+            "representation": "text"
           },
           "symmetry": "symmetric",
           "provenance": {
@@ -119682,7 +119679,7 @@
       "minecraft_version": "1.26.40",
       "protocol_version": 2168
     },
-    "base_manifest_sha256": "sha256:67dff1c28a08ce6907d01cd7d0ea1fc6f1c079afbdf5ae547666d577845cb012",
+    "base_manifest_sha256": "sha256:f8e3474916fc0bfabec2e4bbebd08a394f3c4374cd87a6fe5fd7fe66d68c0ce1",
     "operations": [
       {
         "id": "set-score-remove-objective-double-optional",

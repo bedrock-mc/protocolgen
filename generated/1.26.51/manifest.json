@@ -28931,10 +28931,6 @@
                               "signed": true,
                               "zigzag": true,
                               "endianness": "none"
-                            },
-                            "constraints": {
-                              "minimum": 0,
-                              "maximum": 32767
                             }
                           },
                           "symmetry": "symmetric",
@@ -29373,10 +29369,6 @@
                                         "signed": true,
                                         "zigzag": true,
                                         "endianness": "none"
-                                      },
-                                      "constraints": {
-                                        "minimum": 0,
-                                        "maximum": 32767
                                       }
                                     },
                                     "symmetry": "symmetric",
@@ -29638,10 +29630,6 @@
                               "signed": true,
                               "zigzag": true,
                               "endianness": "none"
-                            },
-                            "constraints": {
-                              "minimum": 0,
-                              "maximum": 32767
                             }
                           },
                           "symmetry": "symmetric",
@@ -30059,10 +30047,6 @@
                                         "signed": true,
                                         "zigzag": true,
                                         "endianness": "none"
-                                      },
-                                      "constraints": {
-                                        "minimum": 0,
-                                        "maximum": 32767
                                       }
                                     },
                                     "symmetry": "symmetric",
@@ -30416,10 +30400,6 @@
                               "signed": true,
                               "zigzag": true,
                               "endianness": "none"
-                            },
-                            "constraints": {
-                              "minimum": 0,
-                              "maximum": 32767
                             }
                           },
                           "symmetry": "symmetric",
@@ -30837,10 +30817,6 @@
                                         "signed": true,
                                         "zigzag": true,
                                         "endianness": "none"
-                                      },
-                                      "constraints": {
-                                        "minimum": 0,
-                                        "maximum": 32767
                                       }
                                     },
                                     "symmetry": "symmetric",
@@ -31102,10 +31078,6 @@
                               "signed": true,
                               "zigzag": true,
                               "endianness": "none"
-                            },
-                            "constraints": {
-                              "minimum": 0,
-                              "maximum": 32767
                             }
                           },
                           "symmetry": "symmetric",
@@ -31523,10 +31495,6 @@
                                         "signed": true,
                                         "zigzag": true,
                                         "endianness": "none"
-                                      },
-                                      "constraints": {
-                                        "minimum": 0,
-                                        "maximum": 32767
                                       }
                                     },
                                     "symmetry": "symmetric",
@@ -31830,10 +31798,6 @@
                               "signed": true,
                               "zigzag": true,
                               "endianness": "none"
-                            },
-                            "constraints": {
-                              "minimum": 0,
-                              "maximum": 32767
                             }
                           },
                           "symmetry": "symmetric",
@@ -32272,10 +32236,6 @@
                                         "signed": true,
                                         "zigzag": true,
                                         "endianness": "none"
-                                      },
-                                      "constraints": {
-                                        "minimum": 0,
-                                        "maximum": 32767
                                       }
                                     },
                                     "symmetry": "symmetric",
@@ -32525,10 +32485,6 @@
                             "signed": true,
                             "zigzag": true,
                             "endianness": "none"
-                          },
-                          "constraints": {
-                            "minimum": 0,
-                            "maximum": 32767
                           }
                         },
                         "symmetry": "symmetric",
@@ -32648,10 +32604,6 @@
                             "signed": true,
                             "zigzag": true,
                             "endianness": "none"
-                          },
-                          "constraints": {
-                            "minimum": 0,
-                            "maximum": 32767
                           }
                         },
                         "symmetry": "symmetric",
@@ -32771,10 +32723,6 @@
                             "signed": true,
                             "zigzag": true,
                             "endianness": "none"
-                          },
-                          "constraints": {
-                            "minimum": 0,
-                            "maximum": 32767
                           }
                         },
                         "symmetry": "symmetric",
@@ -33170,10 +33118,6 @@
                             "signed": true,
                             "zigzag": true,
                             "endianness": "none"
-                          },
-                          "constraints": {
-                            "minimum": 0,
-                            "maximum": 32767
                           }
                         },
                         "symmetry": "symmetric",
@@ -33293,10 +33237,6 @@
                             "signed": true,
                             "zigzag": true,
                             "endianness": "none"
-                          },
-                          "constraints": {
-                            "minimum": 0,
-                            "maximum": 32767
                           }
                         },
                         "symmetry": "symmetric",
@@ -33416,10 +33356,6 @@
                             "signed": true,
                             "zigzag": true,
                             "endianness": "none"
-                          },
-                          "constraints": {
-                            "minimum": 0,
-                            "maximum": 32767
                           }
                         },
                         "symmetry": "symmetric",
@@ -45684,10 +45620,7 @@
               }
             },
             "encoding": "utf8",
-            "representation": "text",
-            "constraints": {
-              "pattern": "A string in the format of \u003cuuid\u003e_\u003csemver\u003e, where \u003cuuid\u003e is a valid UUID and \u003csemver\u003e is a valid semantic version"
-            }
+            "representation": "text"
           },
           "symmetry": "symmetric",
           "provenance": {
@@ -122985,6 +122918,21 @@
         }
       ],
       "reason": "EducationSettings carries Agent Capabilities as one optional boolean. Modeling an optional AgentCapabilities struct containing an optional boolean would emit two presence markers instead of the single marker used by protocol 2168."
+    },
+    {
+      "id": "endstone-crafting-ingredient-aux-unbounded",
+      "target": "types/cerealizer_RecipeIngredient___SerializedData.json#/fields/1",
+      "pre_patch_node_sha256": "sha256:310a997694e81215269e1dce408d741a8c5abea33541fd8c2c113696d30475fc",
+      "pre_patch_context_sha256": "sha256:c4edc4d0be8d85ddac19cef7f53cb8530e5560007dd959d4aa806bf8c2472625",
+      "post_patch_node_sha256": "sha256:ce3b1c2a53e972cf91b0363d0410833c56c173ca2ee434024177bbc170db1b1a",
+      "evidence": [
+        {
+          "source_id": "endstone",
+          "locator": "types/cerealizer_RecipeIngredient___SerializedData.json#/fields/1",
+          "summary": "The bound has no corroborating source: the pinned Mojang docs give no range for this field, unlike the item-stack-request name descriptor, whose 0..32767 bound matches client behaviour and stays."
+        }
+      ],
+      "reason": "Only this dump bounds a crafting-recipe ingredient's aux value to 0..32767, and client behaviour has not confirmed that the client rejects values outside it, so decoding does not reject them until it does."
     },
     {
       "id": "endstone-debug-info-data-is-bytes",

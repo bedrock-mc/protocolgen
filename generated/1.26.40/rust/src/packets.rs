@@ -3455,7 +3455,6 @@ impl ResourcePackChunkRequest {
 impl wire::Encode for ResourcePackChunkRequest {
     fn encode(&self, writer: &mut wire::Writer) {
         self.resource_name.encode(writer);
-        wire::assert_pattern(&self.resource_name, "A string in the format of <uuid>_<semver>, where <uuid> is a valid UUID and <semver> is a valid semantic version");
         self.chunk.encode(writer);
         wire::assert_number_limits(self.chunk.0, Some(0), None);
     }
@@ -3463,7 +3462,7 @@ impl wire::Encode for ResourcePackChunkRequest {
 
 impl wire::Decode for ResourcePackChunkRequest {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        let resource_name = { let value = <String as wire::Decode>::decode(reader)?; wire::validate_pattern(&value, "A string in the format of <uuid>_<semver>, where <uuid> is a valid UUID and <semver> is a valid semantic version")?; value };
+        let resource_name = <String as wire::Decode>::decode(reader)?;
         let chunk = { let value = <wire::I32LE as wire::Decode>::decode(reader)?; wire::validate_number_limits(value.0, Some(0), None)?; value };
         Ok(Self {
             resource_name,

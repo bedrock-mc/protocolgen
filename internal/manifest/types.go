@@ -6,6 +6,7 @@ package manifest
 import (
 	"encoding/json"
 	"fmt"
+	"sort"
 )
 
 const SchemaVersion uint32 = 2
@@ -350,6 +351,30 @@ func Enum(underlying string, values ...EnumValue) Node {
 		node.Variants = append(node.Variants, Variant{Value: value.Value, Name: value.Name, Encode: Void()})
 	}
 	return node
+}
+
+// MergeEnumVariants returns known plus the value/name pairs of more it lacks,
+// sorted by value once any are added; sites of one enum type may each list a subset.
+func MergeEnumVariants(known, more []Variant) []Variant {
+	type key struct {
+		value int64
+		name  string
+	}
+	seen := make(map[key]bool, len(known))
+	for _, variant := range known {
+		seen[key{variant.Value, variant.Name}] = true
+	}
+	merged := append([]Variant(nil), known...)
+	for _, variant := range more {
+		if !seen[key{variant.Value, variant.Name}] {
+			seen[key{variant.Value, variant.Name}] = true
+			merged = append(merged, variant)
+		}
+	}
+	if len(merged) > len(known) {
+		sort.SliceStable(merged, func(i, j int) bool { return merged[i].Value < merged[j].Value })
+	}
+	return merged
 }
 
 func Reserved(value Node) Node { return Node{Kind: KindReserved, Element: &value} }

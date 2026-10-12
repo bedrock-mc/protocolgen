@@ -1588,6 +1588,7 @@ const (
 	HeightMapDataTypeHasdata    HeightMapDataType = 1
 	HeightMapDataTypeAlltoohigh HeightMapDataType = 2
 	HeightMapDataTypeAlltoolow  HeightMapDataType = 3
+	HeightMapDataTypeAllcopied  HeightMapDataType = 4
 )
 
 // Marshal reads or writes HeightMapDataType through its uint8 wire encoding.
