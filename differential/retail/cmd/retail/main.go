@@ -107,13 +107,18 @@ func compare(args []string) error {
 	flags := flag.NewFlagSet("compare", flag.ExitOnError)
 	corpusPath := flags.String("corpus", "corpus.json", "retail corpus")
 	exceptionsPath := flags.String("exceptions", "exceptions.json", "reviewed exceptions")
+	goMod := flags.String("gomod", "go.mod", "this module's go.mod, which pins the oracle")
 	out := flags.String("out", "", "directory holding expected.tsv and verdicts/")
 	flags.Parse(args)
 	corpus, err := retail.LoadCorpus(*corpusPath)
 	if err != nil {
 		return err
 	}
-	exceptions, err := retail.LoadExceptions(*exceptionsPath, corpus)
+	oracle, err := retail.GophertunnelReplacement(*goMod)
+	if err != nil {
+		return err
+	}
+	exceptions, err := retail.LoadExceptions(*exceptionsPath, corpus, oracle)
 	if err != nil {
 		return err
 	}
@@ -150,8 +155,9 @@ func formatReport(summary string, report retail.Report) string {
 	for _, d := range report.Accepted {
 		fmt.Fprintf(&b, "accepted\t%s\t%s\t%s\t%d\t%s\t%s\n", d.Decoder, d.Case, d.Fixture, d.Entry, d.Kind, d.Detail)
 	}
-	for _, e := range report.Stale {
-		fmt.Fprintf(&b, "STALE\t%s\t%s\t%s\t%s\t%s\n", e.Decoder, e.Case, e.Fixture, e.Kind, e.Reason)
+	for _, stale := range report.Stale {
+		e := stale.Exception
+		fmt.Fprintf(&b, "STALE\t%s\t%s\t%s\t%s\t%s\n", e.Decoder, e.Case, stale.Fixture, e.Kind, e.Reason)
 	}
 	return b.String()
 }

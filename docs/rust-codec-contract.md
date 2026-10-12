@@ -157,9 +157,12 @@ cases and reviewed exception list.
   Disconnect's `Empty1`. Today the naming overlay only covers type ids.
 - **Rust-only naming profile:** needed only if Cinnabar keeps the reserved
   Education Edition names.
-- **Crafting ingredient descriptors:** the manifest cannot express a union
-  discriminated by a string. That is oracle divergence 52, for molang and
-  item-tag descriptors, and it needs a manifest schema extension.
+- **Crafting ingredient descriptors:** the manifest models the ingredient as
+  vanilla sends it, a string-to-string map, so it decodes molang (`tags`) and
+  item-tag (`item_tag`) maps. Oracle divergence 52 comes from gophertunnel's
+  molang writer, which sends a `molang` key and an int16 version instead (see
+  `differential/retail/exceptions.json`). Typed descriptor variants would be
+  an API addition, not a wire fix.
 - **Exact encoded size:** `encode_frame` writes the body and then moves it to
   close up the length prefix. There is no `encoded_size` yet, which Valentine
   had.

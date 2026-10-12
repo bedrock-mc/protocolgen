@@ -11,6 +11,7 @@ pub const OK: &str = "ok";
 pub const UNKNOWN: &str = "unknown";
 pub const ERROR: &str = "error";
 pub const FRAME_ERROR: &str = "frame-error";
+pub const PANIC: &str = "panic";
 pub const SAME: &str = "same";
 pub const DIFFERS: &str = "differs";
 
@@ -128,7 +129,7 @@ impl Verdict {
     }
 }
 
-/// Runs one entry's decode, turning a panic into an error verdict so the
+/// Runs one entry's decode, recording a panic as its own outcome so the
 /// remaining entries still run.
 pub fn guarded(verdict: &mut Verdict, decode: impl FnOnce(&mut Verdict)) {
     let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| decode(verdict)));
@@ -138,7 +139,9 @@ pub fn guarded(verdict: &mut Verdict, decode: impl FnOnce(&mut Verdict)) {
             .map(|text| text.to_string())
             .or_else(|| payload.downcast_ref::<String>().cloned())
             .unwrap_or_default();
-        verdict.fail("panic", format!("panicked: {text}"));
+        verdict.outcome = PANIC;
+        verdict.class = None;
+        verdict.detail = Some(format!("panicked: {text}"));
     }
 }
 

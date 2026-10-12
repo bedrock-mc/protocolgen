@@ -5,6 +5,7 @@ package retail
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -27,6 +28,7 @@ const (
 	OutcomeUnknown    = "unknown"
 	OutcomeError      = "error"
 	OutcomeFrameError = "frame-error"
+	OutcomePanic      = "panic" // the decoder panicked; never an acceptable rejection
 )
 
 // Round-trip results: whether decoding the re-encoded entry reproduces the
@@ -88,7 +90,7 @@ func ParseVerdict(line string) (Verdict, error) {
 		return Verdict{}, fmt.Errorf("verdict entry %q is not an index", cols[2])
 	}
 	switch cols[4] {
-	case OutcomeOK, OutcomeUnknown, OutcomeError, OutcomeFrameError:
+	case OutcomeOK, OutcomeUnknown, OutcomeError, OutcomeFrameError, OutcomePanic:
 	default:
 		return Verdict{}, fmt.Errorf("verdict outcome %q is not recognised", cols[4])
 	}
@@ -104,8 +106,25 @@ func ParseVerdict(line string) (Verdict, error) {
 	}, nil
 }
 
+// fail records err, as a panic outcome when it came from a recovered panic.
 func (v *Verdict) fail(class string, err error) {
+	var panicked *panicError
+	if errors.As(err, &panicked) {
+		v.Outcome, v.Class, v.Detail = OutcomePanic, "", err.Error()
+		return
+	}
 	v.Outcome, v.Class, v.Detail = OutcomeError, class, err.Error()
+}
+
+// encodeFailed records a re-encoding error, keeping the decode outcome unless
+// the encoder panicked.
+func (v *Verdict) encodeFailed(err error) {
+	var panicked *panicError
+	if errors.As(err, &panicked) {
+		v.fail("", err)
+		return
+	}
+	v.Detail = "encode: " + err.Error()
 }
 
 // Digest returns the verdict digest of data.

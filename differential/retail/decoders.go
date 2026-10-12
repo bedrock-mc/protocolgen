@@ -2,7 +2,9 @@ package retail
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
+	"runtime"
 	"strings"
 
 	gtprotocol "github.com/sandertv/gophertunnel/minecraft/protocol"
@@ -86,7 +88,7 @@ func decodeGeneratedEntry(sender string, e Entry, v *Verdict, newReader func([]b
 	v.Outcome, v.Fields = OutcomeOK, renderDigest(pk)
 	body, err := genpacket.Encode(pk)
 	if err != nil {
-		v.Detail = "encode: " + err.Error()
+		v.encodeFailed(err)
 		return
 	}
 	v.Encoded = Digest(NewEntry(e.Header, body).Payload)
@@ -167,7 +169,7 @@ func decodeGophertunnelEntry(sender string, payload []byte, v *Verdict) {
 	}
 	encoded, err := encodeGophertunnel(header, pk)
 	if err != nil {
-		v.Detail = "encode: " + err.Error()
+		v.encodeFailed(err)
 		return
 	}
 	v.Encoded = Digest(encoded)
@@ -225,15 +227,28 @@ func gophertunnelClass(err error) string {
 	}
 }
 
+// panicError is a panic recovered from a decoder that is not one of
+// gophertunnel's error-carrying reader panics.
+type panicError struct{ value any }
+
+func (p *panicError) Error() string { return fmt.Sprintf("panicked: %v", p.value) }
+
+// recoverError runs fn, returning gophertunnel's reader panics, which carry
+// decode errors, as errors and any other panic as a *panicError.
 func recoverError(fn func() error) (err error) {
 	defer func() {
-		if recovered := recover(); recovered != nil {
-			if value, ok := recovered.(error); ok {
+		recovered := recover()
+		if recovered == nil {
+			return
+		}
+		if value, ok := recovered.(error); ok {
+			var runtimeErr runtime.Error
+			if !errors.As(value, &runtimeErr) {
 				err = value
-			} else {
-				err = fmt.Errorf("panic: %v", recovered)
+				return
 			}
 		}
+		err = &panicError{recovered}
 	}()
 	return fn()
 }

@@ -110,7 +110,7 @@ func (c Corpus) ReadFixtures(cinnabar string) (map[string][]byte, error) {
 // CheckOraclePin fails unless this binary links the gophertunnel commit that
 // encoded the fixtures, as pinned by fixturegen's go.mod in the checkout.
 func CheckOraclePin(cinnabar string) error {
-	want, err := fixturegenOracle(filepath.Join(cinnabar, "tools", "fixturegen", "go.mod"))
+	want, err := GophertunnelReplacement(filepath.Join(cinnabar, "tools", "fixturegen", "go.mod"))
 	if err != nil {
 		return err
 	}
@@ -134,9 +134,9 @@ func CheckOraclePin(cinnabar string) error {
 	return errors.New("binary does not link gophertunnel")
 }
 
-// fixturegenOracle returns "path version" of fixturegen's gophertunnel
-// replacement.
-func fixturegenOracle(goMod string) (string, error) {
+// GophertunnelReplacement returns "path version" of the gophertunnel
+// replacement in a go.mod file.
+func GophertunnelReplacement(goMod string) (string, error) {
 	file, err := os.Open(goMod)
 	if err != nil {
 		return "", err

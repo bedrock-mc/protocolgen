@@ -57,7 +57,17 @@ func TestTrailingBytesFailBothGoDecoders(t *testing.T) {
 	}
 }
 
+// gophertunnel must round-trip its own CraftingData variants, except where a
+// committed exception records a re-encoding divergence, which must persist.
 func TestCraftingVariantsRoundTripThroughTheirEncoder(t *testing.T) {
+	oracle, err := GophertunnelReplacement("go.mod")
+	if err != nil {
+		t.Fatal(err)
+	}
+	exceptions, err := LoadExceptions("exceptions.json", committedCorpus(t), oracle)
+	if err != nil {
+		t.Fatal(err)
+	}
 	inputs, err := CraftingInputs()
 	if err != nil {
 		t.Fatal(err)
@@ -71,8 +81,13 @@ func TestCraftingVariantsRoundTripThroughTheirEncoder(t *testing.T) {
 			t.Fatalf("%s: %d entries", input.Fixture, len(verdicts))
 		}
 		v := verdicts[0]
-		if v.Header != "52:0:0" || v.Outcome != OutcomeOK || v.Encoded != v.Payload || v.RoundTrip != RoundTripSame {
-			t.Errorf("%s: verdict %+v", input.Fixture, v)
+		if v.Header != "52:0:0" || v.Outcome != OutcomeOK {
+			t.Fatalf("%s: verdict %+v", input.Fixture, v)
+		}
+		diverges := Disagreement{DecoderGophertunnel, CaseCrafting, input.Fixture, 0, KindReencode, ""}
+		excused := len(Apply([]Disagreement{diverges}, exceptions).Accepted) == 1
+		if reproduced := v.Encoded == v.Payload && v.RoundTrip == RoundTripSame; reproduced == excused {
+			t.Errorf("%s: reproduced=%v but exception=%v: %+v", input.Fixture, reproduced, excused, v)
 		}
 	}
 }

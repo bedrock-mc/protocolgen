@@ -18,7 +18,11 @@ func committedCorpus(t *testing.T) Corpus {
 }
 
 func TestCommittedExceptionsAreReviewable(t *testing.T) {
-	if _, err := LoadExceptions("exceptions.json", committedCorpus(t)); err != nil {
+	oracle, err := GophertunnelReplacement("go.mod")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := LoadExceptions("exceptions.json", committedCorpus(t), oracle); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -75,13 +79,13 @@ func TestRunnerTargetsTheCorpusVersion(t *testing.T) {
 	}
 }
 
-func TestFixturegenOracleReadsTheReplacement(t *testing.T) {
+func TestGophertunnelReplacementIsRead(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "go.mod")
 	mod := "module fixturegen\n\nreplace github.com/sandertv/gophertunnel => github.com/fork/gophertunnel v1.2.3\n"
 	if err := os.WriteFile(path, []byte(mod), 0o644); err != nil {
 		t.Fatal(err)
 	}
-	got, err := fixturegenOracle(path)
+	got, err := GophertunnelReplacement(path)
 	if err != nil || got != "github.com/fork/gophertunnel v1.2.3" {
 		t.Fatalf("got %q, %v", got, err)
 	}

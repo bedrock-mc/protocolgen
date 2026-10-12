@@ -10,7 +10,8 @@ import (
 const (
 	KindMissing       = "missing"        // no verdict for an entry the harness framed
 	KindExtra         = "extra"          // a verdict for an entry the harness did not frame
-	KindFrame         = "frame"          // the decoder could not frame the batch
+	KindFrame         = "frame"          // the decoder could not frame the batch, or framed past its end
+	KindPanic         = "panic"          // the decoder panicked, whatever the input
 	KindHeader        = "header"         // the decoder read different header bits
 	KindPayload       = "payload"        // the decoder framed different entry bytes
 	KindDecode        = "decode"         // not decoded, or for unknown-id not kept as unknown
@@ -24,7 +25,7 @@ const (
 )
 
 var kinds = []string{
-	KindMissing, KindExtra, KindFrame, KindHeader, KindPayload, KindDecode, KindReencode, KindRoundTrip,
+	KindMissing, KindExtra, KindFrame, KindPanic, KindHeader, KindPayload, KindDecode, KindReencode, KindRoundTrip,
 	KindAccepted, KindClass, KindLimitMismatch, KindZeroCopy, KindUnexercised,
 }
 
@@ -116,6 +117,9 @@ func Compare(expected []Expected, verdicts map[string][]Verdict) []Disagreement 
 				v, ok := index[key]
 				seen[key] = ok
 				if probe && !baseHolds(decoder, r.source, want.Fixture, want.Entry) {
+					if ok && v.Outcome == OutcomePanic {
+						out = append(out, Disagreement{decoder, caseName, want.Fixture, want.Entry, KindPanic, v.Detail})
+					}
 					continue
 				}
 				if !ok {
@@ -131,7 +135,13 @@ func Compare(expected []Expected, verdicts map[string][]Verdict) []Disagreement 
 		}
 	}
 	for key, v := range index {
-		if !seen[key] && v.Outcome != OutcomeFrameError {
+		switch {
+		case seen[key]:
+		case v.Outcome == OutcomePanic:
+			out = append(out, Disagreement{key.decoder, key.caseName, key.fixture, key.entry, KindPanic, v.Detail})
+		case v.Outcome == OutcomeFrameError:
+			out = append(out, Disagreement{key.decoder, key.caseName, key.fixture, key.entry, KindFrame, "after the last framed entry: " + v.Detail})
+		default:
 			out = append(out, Disagreement{key.decoder, key.caseName, key.fixture, key.entry, KindExtra, "no such framed entry"})
 		}
 	}
@@ -157,7 +167,10 @@ func Compare(expected []Expected, verdicts map[string][]Verdict) []Disagreement 
 
 // check returns the kind and detail of each way v misses its expectation.
 func check(expect expectation, want Expected, v Verdict) [][2]string {
-	if v.Outcome == OutcomeFrameError {
+	switch v.Outcome {
+	case OutcomePanic:
+		return [][2]string{{KindPanic, v.Detail}}
+	case OutcomeFrameError:
 		return [][2]string{{KindFrame, v.Detail}}
 	}
 	var out [][2]string

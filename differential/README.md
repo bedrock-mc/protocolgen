@@ -65,6 +65,11 @@ decoder, so they are compared only across that round trip.
 | `alloc-failure` | `large`, Rust with allocations over 64 KiB refused | `AllocationFailed`, no abort |
 | `zero-copy` | `unknown-id`, Rust | frame and unknown bodies share the batch; `compact` copies |
 
-Startup cancellation is session behavior and is not exercised here. An
-exception names a decoder, case, fixture (or `*`) and kind, with a reason and
-evidence.
+A panic is its own outcome and always fails the comparison, even on
+malformed input. Startup cancellation is session behavior and is not exercised
+here.
+
+An exception names a decoder, case, kind and the fixtures (or `*`) that share
+one cause, with a reason and evidence; each listed fixture must still disagree.
+Exceptions about gophertunnel carry `oracle`, the module version in
+`retail/go.mod`, and stop loading when that pin moves.

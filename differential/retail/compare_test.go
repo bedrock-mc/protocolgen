@@ -162,40 +162,66 @@ func TestExceptionsAcceptMatchesAndStaleOnesFail(t *testing.T) {
 		{DecoderValentine, CaseUnknownID, "a.bin", 0, KindDecode, ""},
 		{DecoderValentine, CaseUnknownID, "b.bin", 0, KindDecode, ""},
 		{DecoderGo, CaseRetail, "a.bin", 0, KindReencode, ""},
+		{DecoderGophertunnel, CaseTruncated, "a.bin", 0, KindAccepted, ""},
 	}
 	exceptions := []Exception{
-		{Decoder: DecoderValentine, Case: CaseUnknownID, Fixture: AnyFixture, Kind: KindDecode},
-		{Decoder: DecoderRust, Case: CaseRetail, Fixture: "a.bin", Kind: KindDecode},
+		{Decoder: DecoderValentine, Case: CaseUnknownID, Fixtures: []string{AnyFixture}, Kind: KindDecode},
+		{Decoder: DecoderGophertunnel, Case: CaseTruncated, Fixtures: []string{"a.bin", "b.bin"}, Kind: KindAccepted},
+		{Decoder: DecoderRust, Case: CaseRetail, Fixtures: []string{"a.bin"}, Kind: KindDecode},
 	}
 	report := Apply(found, exceptions)
-	if len(report.Accepted) != 2 || len(report.Unexpected) != 1 || len(report.Stale) != 1 || !report.Failed() {
+	if len(report.Accepted) != 3 || len(report.Unexpected) != 1 || len(report.Stale) != 2 || !report.Failed() {
 		t.Fatalf("report %+v", report)
 	}
-	if report.Stale[0].Decoder != DecoderRust {
-		t.Fatalf("stale exception %+v", report.Stale[0])
+	if stale := report.Stale[0]; stale.Exception.Decoder != DecoderGophertunnel || stale.Fixture != "b.bin" {
+		t.Fatalf("stale fixture %+v", stale)
 	}
 	if Apply(found[:2], exceptions[:1]).Failed() {
 		t.Fatal("fully accepted comparison failed")
 	}
 }
 
+func TestPanicsAreNeverAcceptedAsRejections(t *testing.T) {
+	expected := testExpected()
+	verdicts := agreeing(expected)
+	edit(verdicts, DecoderRust, CaseTruncated, "a.bin", 0, func(v *Verdict) { v.Outcome, v.Class = OutcomePanic, "" })
+	edit(verdicts, DecoderRust, CaseRetail, "b.bin", 0, func(v *Verdict) { v.Outcome = OutcomeError })
+	edit(verdicts, DecoderRust, ProbeElementLimit, "b.bin", 0, func(v *Verdict) { v.Outcome = OutcomePanic })
+	wantKinds(t, Compare(expected, verdicts), "rust element-limit b.bin panic", "rust retail b.bin decode", "rust truncated a.bin panic")
+}
+
+func TestFrameErrorsPastTheLastEntryAreReported(t *testing.T) {
+	expected := testExpected()
+	verdicts := agreeing(expected)
+	verdicts[DecoderValentine] = append(verdicts[DecoderValentine], Verdict{Fixture: "a.bin", Case: CaseRetail, Entry: 2, Outcome: OutcomeFrameError})
+	wantKinds(t, Compare(expected, verdicts), "valentine retail a.bin frame")
+}
+
 func TestLoadExceptionsRejectsUnreviewedEntries(t *testing.T) {
 	corpus := Corpus{MinecraftVersion: "1.26.51", ProtocolVersion: 2193}
-	valid := `{"decoder":"go","case":"retail","fixture":"a.bin","kind":"decode","reason":"why","evidence":["where"]}`
+	const oracle = "github.com/fork/gophertunnel v1"
+	entry := func(decoder, fixtures, kind, extra string) string {
+		return `{"decoder":"` + decoder + `","case":"retail","fixtures":` + fixtures + `,"kind":"` + kind + `","reason":"why","evidence":["where"]` + extra + `}`
+	}
+	valid := entry("go", `["a.bin"]`, "decode", "")
 	for name, body := range map[string]string{
-		"no evidence":     `{"decoder":"go","case":"retail","fixture":"a.bin","kind":"decode","reason":"why","evidence":[]}`,
-		"no reason":       `{"decoder":"go","case":"retail","fixture":"a.bin","kind":"decode","reason":" ","evidence":["where"]}`,
-		"unknown decoder": `{"decoder":"java","case":"retail","fixture":"a.bin","kind":"decode","reason":"why","evidence":["where"]}`,
-		"unknown case":    `{"decoder":"go","case":"fuzz","fixture":"a.bin","kind":"decode","reason":"why","evidence":["where"]}`,
-		"unknown kind":    `{"decoder":"go","case":"retail","fixture":"a.bin","kind":"slow","reason":"why","evidence":["where"]}`,
-		"repeated":        valid + "," + valid,
+		"no evidence":      `{"decoder":"go","case":"retail","fixtures":["a.bin"],"kind":"decode","reason":"why","evidence":[]}`,
+		"no reason":        `{"decoder":"go","case":"retail","fixtures":["a.bin"],"kind":"decode","reason":" ","evidence":["where"]}`,
+		"unknown decoder":  entry("java", `["a.bin"]`, "decode", ""),
+		"unknown kind":     entry("go", `["a.bin"]`, "slow", ""),
+		"excused panic":    entry("go", `["a.bin"]`, "panic", ""),
+		"no fixtures":      entry("go", `[]`, "decode", ""),
+		"wildcard mixed":   entry("go", `["*","a.bin"]`, "decode", ""),
+		"unpinned oracle":  entry("gophertunnel", `["a.bin"]`, "decode", ""),
+		"other oracle":     entry("gophertunnel", `["a.bin"]`, "decode", `,"oracle":"github.com/fork/gophertunnel v2"`),
+		"repeated fixture": valid + "," + entry("go", `["b.bin","a.bin"]`, "decode", ""),
 	} {
 		path := filepath.Join(t.TempDir(), "exceptions.json")
 		data := `{"schema_version":1,"minecraft_version":"1.26.51","protocol_version":2193,"exceptions":[` + body + `]}`
 		if err := os.WriteFile(path, []byte(data), 0o644); err != nil {
 			t.Fatal(err)
 		}
-		if _, err := LoadExceptions(path, corpus); err == nil {
+		if _, err := LoadExceptions(path, corpus, oracle); err == nil {
 			t.Errorf("%s: loaded", name)
 		}
 	}

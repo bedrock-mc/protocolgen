@@ -9,17 +9,23 @@ import (
 	"strings"
 )
 
-// AnyFixture matches every fixture of an exception's decoder, case and kind.
+// AnyFixture, as an exception's only fixture, matches every fixture of its
+// decoder, case and kind.
 const AnyFixture = "*"
 
-// Exception accepts the disagreements of one decoder, case, fixture and kind.
+// Exception accepts one decoder's disagreements of one kind and case on the
+// listed fixtures, which share one cause. Every listed fixture must still
+// disagree, or the exception is stale.
 type Exception struct {
 	Decoder  string   `json:"decoder"`
 	Case     string   `json:"case"`
-	Fixture  string   `json:"fixture"`
+	Fixtures []string `json:"fixtures"`
 	Kind     string   `json:"kind"`
 	Reason   string   `json:"reason"`
 	Evidence []string `json:"evidence"`
+	// Oracle pins an exception caused by gophertunnel to the module version
+	// this harness links; it is required for gophertunnel's own verdicts.
+	Oracle string `json:"oracle,omitempty"`
 }
 
 // ExceptionFile is differential/retail/exceptions.json.
@@ -30,9 +36,11 @@ type ExceptionFile struct {
 	Exceptions       []Exception `json:"exceptions"`
 }
 
-// LoadExceptions reads an exception file for corpus, rejecting entries
-// without a reason and evidence, with unknown names, or repeated.
-func LoadExceptions(path string, corpus Corpus) ([]Exception, error) {
+// LoadExceptions reads an exception file for corpus and the linked
+// gophertunnel ("path version"). It rejects entries without a reason and
+// evidence, with unknown names, repeated, excusing a panic, or pinned to
+// another oracle.
+func LoadExceptions(path string, corpus Corpus, oracle string) ([]Exception, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
@@ -48,36 +56,50 @@ func LoadExceptions(path string, corpus Corpus) ([]Exception, error) {
 	}
 	seen := map[[4]string]bool{}
 	for i, e := range file.Exceptions {
-		key := [4]string{e.Decoder, e.Case, e.Fixture, e.Kind}
+		fail := func(problem string) error { return fmt.Errorf("%s: exception %d %s", path, i, problem) }
 		switch {
 		case !slices.Contains(Decoders, e.Decoder):
-			return nil, fmt.Errorf("%s: exception %d names decoder %q", path, i, e.Decoder)
+			return nil, fail(fmt.Sprintf("names decoder %q", e.Decoder))
 		case rules[e.Case].decoders == nil:
-			return nil, fmt.Errorf("%s: exception %d names case %q", path, i, e.Case)
-		case !slices.Contains(kinds, e.Kind):
-			return nil, fmt.Errorf("%s: exception %d names kind %q", path, i, e.Kind)
-		case e.Fixture == "":
-			return nil, fmt.Errorf("%s: exception %d names no fixture", path, i)
+			return nil, fail(fmt.Sprintf("names case %q", e.Case))
+		case !slices.Contains(kinds, e.Kind) || e.Kind == KindPanic:
+			return nil, fail(fmt.Sprintf("names kind %q, which is unknown or never acceptable", e.Kind))
+		case len(e.Fixtures) == 0 || slices.Contains(e.Fixtures, "") || len(e.Fixtures) > 1 && slices.Contains(e.Fixtures, AnyFixture):
+			return nil, fail("needs fixtures, or * alone")
 		case strings.TrimSpace(e.Reason) == "" || len(e.Evidence) == 0 || slices.Contains(e.Evidence, ""):
-			return nil, fmt.Errorf("%s: exception %d lacks a reason or evidence", path, i)
-		case seen[key]:
-			return nil, fmt.Errorf("%s: exception %d repeats %v", path, i, key)
+			return nil, fail("lacks a reason or evidence")
+		case e.Decoder == DecoderGophertunnel && e.Oracle == "":
+			return nil, fail("excuses gophertunnel without pinning the oracle")
+		case e.Oracle != "" && e.Oracle != oracle:
+			return nil, fail(fmt.Sprintf("is pinned to %s, the harness links %s", e.Oracle, oracle))
 		}
-		seen[key] = true
+		for _, fixture := range e.Fixtures {
+			key := [4]string{e.Decoder, e.Case, fixture, e.Kind}
+			if seen[key] {
+				return nil, fail(fmt.Sprintf("repeats %v", key))
+			}
+			seen[key] = true
+		}
 	}
 	return file.Exceptions, nil
 }
 
-func (e Exception) matches(d Disagreement) bool {
-	return e.Decoder == d.Decoder && e.Case == d.Case && e.Kind == d.Kind && (e.Fixture == AnyFixture || e.Fixture == d.Fixture)
+func (e Exception) matches(d Disagreement, fixture string) bool {
+	return e.Decoder == d.Decoder && e.Case == d.Case && e.Kind == d.Kind && (fixture == AnyFixture || fixture == d.Fixture)
+}
+
+// Stale is an exception fixture that no disagreement matched.
+type Stale struct {
+	Exception Exception
+	Fixture   string
 }
 
 // Report splits disagreements by whether an exception accepts them, and lists
-// exceptions that accept nothing.
+// exception fixtures that accept nothing.
 type Report struct {
 	Unexpected []Disagreement
 	Accepted   []Disagreement
-	Stale      []Exception
+	Stale      []Stale
 }
 
 // Failed reports whether the comparison must fail: an unaccepted
@@ -89,12 +111,14 @@ func (r Report) Failed() bool {
 // Apply matches disagreements against exceptions.
 func Apply(found []Disagreement, exceptions []Exception) Report {
 	var report Report
-	used := make([]bool, len(exceptions))
+	used := map[[2]int]bool{} // exception index, fixture index
 	for _, d := range found {
 		accepted := false
 		for i, e := range exceptions {
-			if e.matches(d) {
-				used[i], accepted = true, true
+			for j, fixture := range e.Fixtures {
+				if e.matches(d, fixture) {
+					used[[2]int{i, j}], accepted = true, true
+				}
 			}
 		}
 		if accepted {
@@ -104,8 +128,10 @@ func Apply(found []Disagreement, exceptions []Exception) Report {
 		}
 	}
 	for i, e := range exceptions {
-		if !used[i] {
-			report.Stale = append(report.Stale, e)
+		for j, fixture := range e.Fixtures {
+			if !used[[2]int{i, j}] {
+				report.Stale = append(report.Stale, Stale{e, fixture})
+			}
 		}
 	}
 	return report
