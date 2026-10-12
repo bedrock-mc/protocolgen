@@ -2,6 +2,7 @@
 *.test
 /pgen
 generated/*/rust/Cargo.lock
+differential/retail/runner/Cargo.lock
 generated/**/rust/target/
 generated/**/.vanilla-data-stage-*/
 generated/**/vanilla-data.previous/

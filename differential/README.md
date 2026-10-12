@@ -27,7 +27,49 @@ each verified against oracle source:
 
 ## Retail 2193
 
-`retail/corpus.json` pins Cinnabar's packet fixtures for a three-way
-comparison of generated Go, generated Rust and Cinnabar's current decoder. The
-plan is in [the Rust codec contract](../docs/rust-codec-contract.md#retail-fixtures);
-the harness is not implemented yet.
+`make retail` (CI job `retail`) runs the 53 batches pinned in
+`retail/corpus.json` through four decoders and fails on any disagreement that
+`retail/exceptions.json` does not accept, or on an exception that accepts
+nothing. `scripts/fetch-cinnabar.sh` checks out the pinned Cinnabar commit,
+sparsely, into `build/cinnabar`.
+
+- **valentine:** Cinnabar's vendored crate, framed as `codec.rs`'s
+  `decode_batch` frames, without Cinnabar's UI and audio policy checks.
+- **rust:** `emit-rust -codec-contract 1` for the corpus version, through
+  `Frames`, `Packet::decode_frame` with `Limits::receiving_from(sender)` and
+  `encode_frame`.
+- **go:** the generated Go, with the reader's limits for client packets only.
+  An id outside the manifest is forwarded as unknown; a manifest id from the
+  wrong sender is a direction error.
+- **gophertunnel:** the fork commit Cinnabar's fixturegen pins, which encoded
+  the fixtures (`prepare` checks they match), used as its connections use it:
+  `packet.Decoder` framing, the sender's pool, `packet.Unknown` for absent
+  ids, limits for client packets.
+
+Each decoder writes `build/retail/verdicts/<decoder>.tsv`, one line per entry:
+fixture, case, entry, header (`id:sender:target`), outcome, error class, then
+digests (8 bytes of SHA-256) of the received entry, of the decoder's own
+rendering of the decoded value and of the re-encoded entry, whether decoding
+the re-encoding renders the same, and a detail. Field renderings are per
+decoder, so they are compared only across that round trip.
+
+| Case | Input | Expected |
+| --- | --- | --- |
+| `retail` | the corpus | decodes, re-encodes byte for byte, reads back the same |
+| `crafting` | gophertunnel CraftingData for every recipe list and descriptor kind | as `retail` |
+| `large` | generated-Go UpdateSoftEnum with 3000 values | as `retail` |
+| `unknown-id` | retail entries under an id nobody defines | kept as unknown, forwarded byte for byte |
+| `wrong-sender` | one-direction retail batches from the other peer | direction error |
+| `truncated`, `trailing` | retail entries one byte short or long | decode error |
+| `element-limit` | retail, Rust and Go with a zero element limit | the two agree; errors are limit errors |
+| `alloc-failure` | `large`, Rust with allocations over 64 KiB refused | `AllocationFailed`, no abort |
+| `zero-copy` | `unknown-id`, Rust | frame and unknown bodies share the batch; `compact` copies |
+
+A panic is its own outcome and always fails the comparison, even on
+malformed input. Startup cancellation is session behavior and is not exercised
+here.
+
+An exception names a decoder, case, kind and the fixtures (or `*`) that share
+one cause, with a reason and evidence; each listed fixture must still disagree.
+Exceptions about gophertunnel carry `oracle`, the module version in
+`retail/go.mod`, and stop loading when that pin moves.

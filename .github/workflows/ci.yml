@@ -92,6 +92,45 @@ jobs:
       - name: Differential codec tests
         run: make differential
 
+  retail:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+          cache: true
+          cache-dependency-path: |
+            go.sum
+            differential/retail/go.sum
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            build/retail-target
+          key: retail-${{ runner.os }}-${{ hashFiles('differential/retail/corpus.json', 'differential/retail/runner/Cargo.toml') }}
+          restore-keys: retail-${{ runner.os }}-
+
+      - name: Compare retail fixtures across Valentine, generated Rust, generated Go and gophertunnel
+        run: make retail GO_CACHE="$RUNNER_TEMP/protocolgen-go-cache"
+
+      - name: Preserve verdicts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: retail-verdicts
+          path: |
+            build/retail/expected.tsv
+            build/retail/verdicts/
+            build/retail/report.txt
+          if-no-files-found: warn
+
   go:
     runs-on: ubuntu-latest
     steps:

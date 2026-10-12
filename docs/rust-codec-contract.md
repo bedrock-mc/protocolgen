@@ -131,26 +131,17 @@ and how each one is now covered:
 
 `differential/retail/corpus.json` pins Cinnabar's packet fixtures by commit and
 SHA-256: 53 uncompressed batches, 34 sent by the server and 19 by the client.
-Most were encoded by the gophertunnel fork through `tools/fixturegen`; the
-`_live_` ones were captured from servers. So the corpus checks agreement with
-gophertunnel's layouts. It does not prove vanilla behavior.
+Most were encoded by the gophertunnel fork through `tools/fixturegen`,
+including `available_commands_live_356513`, which pads a fixture to an
+observed live body length; the two `_live_zeqa` inventory fixtures are not
+fixturegen output. So the corpus checks agreement with gophertunnel's layouts.
+It does not prove vanilla behavior.
 
-The planned comparison has not been run. Each decoder writes one TSV verdict
-line per entry, `fixture`, `entry`, `id`, `result` (`ok`, `unknown` or
-`error`), and then the re-encoded hex or the error:
-
-1. **Go:** a `differential/retail` module pinned to the gophertunnel fork
-   commit that Cinnabar's `tools/fixturegen` uses. It reads the corpus from
-   `CINNABAR_DIR`, checks each SHA-256, splits the entries, then decodes and
-   re-encodes each body with the generated 1.26.51 Go and with gophertunnel.
-2. **Rust:** a binary crate that depends on `build/rust-contract` by path. It
-   uses `wire::Frames`, `Packet::decode_frame` with
-   `Limits::receiving_from(sender)`, and `encode_frame`.
-3. **Cinnabar:** a test in `crates/protocol` that writes the same verdicts
-   from the current Valentine decoder, until Cinnabar switches decoders.
-4. **Comparison:** every entry must decode in all three, and the re-encoded
-   body must equal the input. Any exception goes in a reasoned
-   accepted-divergence list, like the 2168 harness's.
+`make retail` compares Valentine, this contract's output, the generated Go
+and that gophertunnel commit on every fixture and on derived malformed,
+misdirected, unknown, large and crafting inputs. See
+[the differential README](../differential/README.md#retail-2193) for the runners,
+cases and reviewed exception list.
 
 ## Remaining work
 
@@ -166,9 +157,12 @@ line per entry, `fixture`, `entry`, `id`, `result` (`ok`, `unknown` or
   Disconnect's `Empty1`. Today the naming overlay only covers type ids.
 - **Rust-only naming profile:** needed only if Cinnabar keeps the reserved
   Education Edition names.
-- **Crafting ingredient descriptors:** the manifest cannot express a union
-  discriminated by a string. That is oracle divergence 52, for molang and
-  item-tag descriptors, and it needs a manifest schema extension.
+- **Crafting ingredient descriptors:** the manifest models the ingredient as
+  vanilla sends it, a string-to-string map, so it decodes molang (`tags`) and
+  item-tag (`item_tag`) maps. Oracle divergence 52 comes from gophertunnel's
+  molang writer, which sends a `molang` key and an int16 version instead (see
+  `differential/retail/exceptions.json`). Typed descriptor variants would be
+  an API addition, not a wire fix.
 - **Exact encoded size:** `encode_frame` writes the body and then moves it to
   close up the length prefix. There is no `encoded_size` yet, which Valentine
   had.
@@ -177,4 +171,3 @@ line per entry, `fixture`, `entry`, `id`, `result` (`ok`, `unknown` or
 - **Field limits:** Cinnabar's values, such as `MAX_UI_TEXT_BYTES` and
   `MAX_CHAT_PARAMETERS`, belong in Cinnabar's `Limits` setup, not in
   protocolgen.
-- **Retail harness:** steps 1 to 4 above are not implemented.
