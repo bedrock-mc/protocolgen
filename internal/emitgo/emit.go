@@ -400,7 +400,9 @@ func (g *generator) goType(node manifest.Node, hint string) (string, error) {
 		} else if existing.Primitive != node.Primitive.Code {
 			return "", fmt.Errorf("enum %s is encoded as both %s and %s", name, existing.Primitive, node.Primitive.Code)
 		} else {
-			existing.Variants = manifest.MergeEnumVariants(existing.Variants, node.Variants)
+			if existing.Variants, err = manifest.MergeEnumVariants(name, existing.Variants, node.Variants); err != nil {
+				return "", err
+			}
 			g.definitions[name] = existing
 		}
 		return name, nil

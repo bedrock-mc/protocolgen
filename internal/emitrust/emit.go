@@ -726,7 +726,9 @@ func (g *generator) rustType(node manifest.Node, hint string) (string, error) {
 		if existing.PrimitiveCode != node.Primitive.Code {
 			return "", fmt.Errorf("enum %s is encoded as both %s and %s", name, existing.PrimitiveCode, node.Primitive.Code)
 		}
-		existing.Variants = manifest.MergeEnumVariants(existing.Variants, node.Variants)
+		if existing.Variants, err = manifest.MergeEnumVariants(name, existing.Variants, node.Variants); err != nil {
+			return "", err
+		}
 		g.definitions[name] = existing
 		return name, nil
 	case manifest.KindReserved, manifest.KindIgnored:

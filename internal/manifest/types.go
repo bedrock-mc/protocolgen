@@ -355,26 +355,29 @@ func Enum(underlying string, values ...EnumValue) Node {
 
 // MergeEnumVariants returns known plus the value/name pairs of more it lacks,
 // sorted by value once any are added; sites of one enum type may each list a subset.
-func MergeEnumVariants(known, more []Variant) []Variant {
-	type key struct {
-		value int64
-		name  string
-	}
-	seen := make(map[key]bool, len(known))
+// A name already bound to a different value is an error; aliases of one value are kept.
+func MergeEnumVariants(enum string, known, more []Variant) ([]Variant, error) {
+	values := make(map[string]int64, len(known))
 	for _, variant := range known {
-		seen[key{variant.Value, variant.Name}] = true
+		if _, ok := values[variant.Name]; !ok {
+			values[variant.Name] = variant.Value
+		}
 	}
 	merged := append([]Variant(nil), known...)
 	for _, variant := range more {
-		if !seen[key{variant.Value, variant.Name}] {
-			seen[key{variant.Value, variant.Name}] = true
+		value, ok := values[variant.Name]
+		if ok && value != variant.Value {
+			return nil, fmt.Errorf("enum %s names %q both %d and %d", enum, variant.Name, value, variant.Value)
+		}
+		if !ok {
+			values[variant.Name] = variant.Value
 			merged = append(merged, variant)
 		}
 	}
 	if len(merged) > len(known) {
 		sort.SliceStable(merged, func(i, j int) bool { return merged[i].Value < merged[j].Value })
 	}
-	return merged
+	return merged, nil
 }
 
 func Reserved(value Node) Node { return Node{Kind: KindReserved, Element: &value} }

@@ -1,6 +1,7 @@
 package manifest
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 )
@@ -265,15 +266,29 @@ func TestValidateRejectsUnanchoredPatterns(t *testing.T) {
 
 func TestMergeEnumVariantsKeepsEverySiteValue(t *testing.T) {
 	first := Enum("u8", EnumValue{Name: "raw", Value: 0}, EnumValue{Name: "tip", Value: 5}).Variants
-	second := Enum("u8", EnumValue{Name: "chat", Value: 1}, EnumValue{Name: "raw", Value: 0}).Variants
-	var got []int64
-	for _, variant := range MergeEnumVariants(first, second) {
-		got = append(got, variant.Value)
+	second := Enum("u8", EnumValue{Name: "chat", Value: 1}, EnumValue{Name: "raw", Value: 0}, EnumValue{Name: "plain", Value: 0}).Variants
+	merged, err := MergeEnumVariants("TextPacketType", first, second)
+	if err != nil {
+		t.Fatal(err)
 	}
-	if len(got) != 3 || got[0] != 0 || got[1] != 1 || got[2] != 5 {
-		t.Fatalf("merged values = %v, want [0 1 5]", got)
+	var got []string
+	for _, variant := range merged {
+		got = append(got, fmt.Sprintf("%s=%d", variant.Name, variant.Value))
 	}
-	if merged := MergeEnumVariants(first, first[:1]); len(merged) != 2 || merged[1].Value != 5 {
-		t.Fatalf("merging a subset reordered or grew the enum: %+v", merged)
+	if want := "raw=0 plain=0 chat=1 tip=5"; strings.Join(got, " ") != want {
+		t.Fatalf("merged = %v, want %s", got, want)
+	}
+	if merged, err := MergeEnumVariants("TextPacketType", first, first[:1]); err != nil || len(merged) != 2 || merged[1].Value != 5 {
+		t.Fatalf("merging a subset reordered or grew the enum: %+v, %v", merged, err)
+	}
+}
+
+// One name bound to two values would silently rename a Rust variant.
+func TestMergeEnumVariantsRejectsConflictingName(t *testing.T) {
+	first := Enum("u8", EnumValue{Name: "chat", Value: 1}).Variants
+	second := Enum("u8", EnumValue{Name: "chat", Value: 7}).Variants
+	_, err := MergeEnumVariants("TextPacketType", first, second)
+	if err == nil || !strings.Contains(err.Error(), `enum TextPacketType names "chat" both 1 and 7`) {
+		t.Fatalf("error = %v, want name conflict", err)
 	}
 }
