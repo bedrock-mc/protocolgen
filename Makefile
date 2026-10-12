@@ -165,6 +165,7 @@ regen-1.26.51:
 		-docs $(TARGET_12651)/docs.json \
 		-out $(TARGET_12651)/rust
 	cargo fmt --manifest-path $(TARGET_12651)/rust/Cargo.toml
+	$(call emit-rust-contract,$(TARGET_12651))
 	$(PROTOCOLGEN) verify-gophertunnel \
 		-manifest $(TARGET_12651)/manifest.json \
 		-report $(ORACLE_REPORT) $(GOPHER_ARGS)
@@ -210,23 +211,27 @@ verify-1.26.50: regen-1.26.50
 verify-1.26.51: regen-1.26.51
 	@test -z "$$(git status --porcelain -- $(TARGET_12651))" || (echo "1.26.51 regeneration produced drift" >&2; exit 1)
 
-# Emit the default protocol under the Rust codec contract
-# (docs/rust-codec-contract.md) into build/ and check it compiles and passes
-# its generated tests. The contract output is not checked in.
+# Emit $(1)'s manifest under the Rust codec contract (docs/rust-codec-contract.md)
+# into the checked-in $(1)/rust-contract.
+define emit-rust-contract
+	$(PROTOCOLGEN) emit-rust -codec-contract 1 \
+		-manifest $(1)/manifest.json \
+		-naming $(1)/naming.json \
+		-domains $(1)/domains.json \
+		-docs $(1)/docs.json \
+		-out $(1)/rust-contract
+	cargo fmt --manifest-path $(1)/rust-contract/Cargo.toml
+endef
+
+# Regenerate the default protocol's codec-contract crate, fail on drift from
+# the checked-in copy, then lint and test it.
 CONTRACT_TARGET = generated/$(shell jq -er .default_protocol $(RELEASE_INDEX))
-CONTRACT_OUT := build/rust-contract
 
 rust-contract:
-	rm -rf $(CONTRACT_OUT)
-	$(PROTOCOLGEN) emit-rust -codec-contract 1 \
-		-manifest $(CONTRACT_TARGET)/manifest.json \
-		-naming $(CONTRACT_TARGET)/naming.json \
-		-domains $(CONTRACT_TARGET)/domains.json \
-		-docs $(CONTRACT_TARGET)/docs.json \
-		-out $(CONTRACT_OUT)
-	cargo fmt --manifest-path $(CONTRACT_OUT)/Cargo.toml
-	cargo clippy --manifest-path $(CONTRACT_OUT)/Cargo.toml -- -D warnings
-	cargo test --manifest-path $(CONTRACT_OUT)/Cargo.toml
+	$(call emit-rust-contract,$(CONTRACT_TARGET))
+	@test -z "$$(git status --porcelain -- $(CONTRACT_TARGET)/rust-contract)" || (echo "codec-contract regeneration produced drift:" >&2; git status --short -- $(CONTRACT_TARGET)/rust-contract >&2; exit 1)
+	cargo clippy --manifest-path $(CONTRACT_TARGET)/rust-contract/Cargo.toml -- -D warnings
+	cargo test --manifest-path $(CONTRACT_TARGET)/rust-contract/Cargo.toml
 
 # Run Cinnabar's pinned retail fixtures through Valentine, the codec-contract
 # crate, the generated Go and gophertunnel, and fail on any disagreement that
@@ -234,7 +239,6 @@ rust-contract:
 RETAIL := differential/retail
 RETAIL_OUT := build/retail
 RETAIL_CINNABAR := build/cinnabar
-RETAIL_VERSION = $(shell jq -er .minecraft_version $(RETAIL)/corpus.json)
 RETAIL_RUNNER = cargo run --manifest-path $(RETAIL)/runner/Cargo.toml --target-dir build/retail-target --
 
 .PHONY: retail
@@ -242,12 +246,6 @@ RETAIL_RUNNER = cargo run --manifest-path $(RETAIL)/runner/Cargo.toml --target-d
 retail:
 	scripts/fetch-cinnabar.sh $(RETAIL)/corpus.json $(RETAIL_CINNABAR)
 	rm -rf $(RETAIL_OUT)
-	$(PROTOCOLGEN) emit-rust -codec-contract 1 \
-		-manifest generated/$(RETAIL_VERSION)/manifest.json \
-		-naming generated/$(RETAIL_VERSION)/naming.json \
-		-domains generated/$(RETAIL_VERSION)/domains.json \
-		-docs generated/$(RETAIL_VERSION)/docs.json \
-		-out $(RETAIL_OUT)/rust-contract
 	$(GO) -C $(RETAIL) vet ./...
 	$(GO) -C $(RETAIL) test ./...
 	$(GO) -C $(RETAIL) run ./cmd/retail prepare -cinnabar $(CURDIR)/$(RETAIL_CINNABAR) -out $(CURDIR)/$(RETAIL_OUT)

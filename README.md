@@ -62,7 +62,7 @@ and fails on any drift from what is checked in; CI runs this. Other targets:
 | `generate-data`, `verify-data`, `test-data` | Rebuild or check `generated/data` |
 | `vanilla-data BDS_BINARY=…` | Capture vanilla registries from a pinned BDS |
 | `differential` | Run the differential codec tests |
-| `rust-contract` | Emit, lint and test the codec-contract crate in `build/` |
+| `rust-contract` | Regenerate the checked-in codec-contract crate, fail on drift, then lint and test it |
 | `retail` | Compare Valentine, the contract crate, generated Go and gophertunnel on Cinnabar's pinned fixtures |
 
 ## CLI

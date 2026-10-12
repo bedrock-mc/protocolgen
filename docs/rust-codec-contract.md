@@ -3,10 +3,11 @@
 The API a Rust consumer such as Cinnabar can rely on from protocolgen's
 generated Rust crate. This is version 1.
 
-`protocolgen emit-rust -codec-contract 1` emits it, and `make rust-contract`
-builds and tests that output for the default protocol in `build/`. Without the
-flag, `emit-rust` produces the profile-neutral crate that is checked in under
-`generated/*/rust`. The contract output is not checked in yet.
+`protocolgen emit-rust -codec-contract 1` emits it. The default protocol's
+crate is checked in under `generated/<version>/rust-contract`, and
+`make rust-contract` regenerates it, fails on drift, then lints and tests it.
+Without the flag, `emit-rust` produces the profile-neutral crate under
+`generated/*/rust`.
 
 Every packet layout comes from the manifest. The contract only covers how the
 generated code reads, writes, bounds and reports those layouts.
@@ -145,9 +146,8 @@ cases and reviewed exception list.
 
 ## Remaining work
 
-- **Make the contract the default output:** flip the default and check in the
-  output once Cinnabar adopts it. Every checked-in version then needs a
-  regeneration run.
+- **Make the contract the default output:** flip the default once Cinnabar
+  adopts it. Every checked-in version then needs a regeneration run.
 - **Lifetime-borrowed views (`&'a str`, slice-backed collections):** not
   implemented. Valentine's `Borrowed*` views have no equivalent, beyond
   zero-copy `Str` and `Bytes` and the lazy `RawFrame`. Add them only if

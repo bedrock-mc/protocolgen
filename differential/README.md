@@ -35,7 +35,7 @@ sparsely, into `build/cinnabar`.
 
 - **valentine:** Cinnabar's vendored crate, framed as `codec.rs`'s
   `decode_batch` frames, without Cinnabar's UI and audio policy checks.
-- **rust:** `emit-rust -codec-contract 1` for the corpus version, through
+- **rust:** the checked-in `generated/1.26.51/rust-contract` crate, through
   `Frames`, `Packet::decode_frame` with `Limits::receiving_from(sender)` and
   `encode_frame`.
 - **go:** the generated Go, with the reader's limits for client packets only.
