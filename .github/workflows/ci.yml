@@ -236,7 +236,7 @@ jobs:
         with:
           components: clippy, rustfmt
 
-      - name: Emit, lint and test the codec-contract crate
+      - name: Verify, lint and test the checked-in codec-contract crate
         run: make rust-contract GO_CACHE="$RUNNER_TEMP/protocolgen-go-cache"
 
   rust:
