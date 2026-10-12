@@ -357,6 +357,9 @@ func validateConstraints(node Node, path string) error {
 		if _, err := regexp.Compile(constraints.Pattern); err != nil {
 			return fmt.Errorf("%s has invalid pattern constraint: %w", path, err)
 		}
+		if !IsSchemaPattern(constraints.Pattern) {
+			return fmt.Errorf("%s pattern constraint %q is not anchored with ^ and $", path, constraints.Pattern)
+		}
 	}
 	if allowed(constraints.MinItems, constraints.MaxItems) && node.Kind != KindArray && node.Kind != KindFixedArray {
 		return fmt.Errorf("%s item constraints require an array node", path)
@@ -383,6 +386,16 @@ func validateConstraints(node Node, path string) error {
 		}
 	}
 	return nil
+}
+
+// IsSchemaPattern reports whether value is a regular expression anchored to
+// the whole string. Source docs also carry prose in pattern fields; it is not.
+func IsSchemaPattern(value string) bool {
+	if !strings.HasPrefix(value, "^") || !strings.HasSuffix(value, "$") || strings.HasSuffix(value, `\$`) {
+		return false
+	}
+	_, err := regexp.Compile(value)
+	return err == nil
 }
 
 func validatePrefix(node Node, path string) error {

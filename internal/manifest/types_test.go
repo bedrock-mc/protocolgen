@@ -1,6 +1,7 @@
 package manifest
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 )
@@ -244,5 +245,50 @@ func TestValidateRejectsDuplicateUnionTags(t *testing.T) {
 	)
 	if err := Validate(value); err == nil || !strings.Contains(err.Error(), "duplicate or empty explicit identity") {
 		t.Fatalf("Validate error = %v, want duplicate union tag rejection", err)
+	}
+}
+
+// Prose in a pattern field compiles as a regex but matches no real value.
+func TestValidateRejectsUnanchoredPatterns(t *testing.T) {
+	value := adjudicatedFixture()
+	text := String(Primitive("var_u32"))
+	text.Constraints = &Constraints{Pattern: "A string in the format of <uuid>_<semver>"}
+	value.Packets[0].Fields[0].Encode = text
+	if err := Validate(value); err == nil || !strings.Contains(err.Error(), "not anchored") {
+		t.Fatalf("Validate error = %v, want prose pattern rejection", err)
+	}
+	text.Constraints = &Constraints{Pattern: `^\w+:\w+$`}
+	value.Packets[0].Fields[0].Encode = text
+	if err := Validate(value); err != nil {
+		t.Fatalf("Validate anchored pattern: %v", err)
+	}
+}
+
+func TestMergeEnumVariantsKeepsEverySiteValue(t *testing.T) {
+	first := Enum("u8", EnumValue{Name: "raw", Value: 0}, EnumValue{Name: "tip", Value: 5}).Variants
+	second := Enum("u8", EnumValue{Name: "chat", Value: 1}, EnumValue{Name: "raw", Value: 0}, EnumValue{Name: "plain", Value: 0}).Variants
+	merged, err := MergeEnumVariants("TextPacketType", first, second)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var got []string
+	for _, variant := range merged {
+		got = append(got, fmt.Sprintf("%s=%d", variant.Name, variant.Value))
+	}
+	if want := "raw=0 plain=0 chat=1 tip=5"; strings.Join(got, " ") != want {
+		t.Fatalf("merged = %v, want %s", got, want)
+	}
+	if merged, err := MergeEnumVariants("TextPacketType", first, first[:1]); err != nil || len(merged) != 2 || merged[1].Value != 5 {
+		t.Fatalf("merging a subset reordered or grew the enum: %+v, %v", merged, err)
+	}
+}
+
+// One name bound to two values would silently rename a Rust variant.
+func TestMergeEnumVariantsRejectsConflictingName(t *testing.T) {
+	first := Enum("u8", EnumValue{Name: "chat", Value: 1}).Variants
+	second := Enum("u8", EnumValue{Name: "chat", Value: 7}).Variants
+	_, err := MergeEnumVariants("TextPacketType", first, second)
+	if err == nil || !strings.Contains(err.Error(), `enum TextPacketType names "chat" both 1 and 7`) {
+		t.Fatalf("error = %v, want name conflict", err)
 	}
 }

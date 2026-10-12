@@ -846,3 +846,31 @@ func TestGenerateAppliesSemanticsOverlay(t *testing.T) {
 		}
 	}
 }
+
+// An enum type used at sites that each allow a subset keeps every site's values.
+func TestGenerateMergesSharedEnumValuesAcrossSites(t *testing.T) {
+	first := manifest.Enum("u8", manifest.EnumValue{Name: "raw", Value: 0}, manifest.EnumValue{Name: "tip", Value: 5})
+	second := manifest.Enum("u8", manifest.EnumValue{Name: "chat", Value: 1})
+	first.Semantic, first.TypeID = "TextPacketType", "enums/TextPacketType"
+	second.Semantic, second.TypeID = first.Semantic, first.TypeID
+	pins := manifest.Provenance{Pins: []string{"fixture"}}
+	m := manifest.Manifest{
+		SchemaVersion: 2,
+		Target:        manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168},
+		Sources:       []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:shared-enum", MinecraftVersion: "fixture", ProtocolVersion: 2168}},
+		Packets: []manifest.Packet{{ID: 1, Name: "TextPacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{
+			{Ordinal: 0, Name: "First", Encode: first, Symmetry: manifest.Symmetric, Provenance: pins},
+			{Ordinal: 1, Name: "Second", Encode: second, Symmetry: manifest.Symmetric, Provenance: pins},
+		}}},
+	}
+	files, err := Generate(m, "wiregen")
+	if err != nil {
+		t.Fatal(err)
+	}
+	normalized := strings.Join(strings.Fields(generatedSource(files)), " ")
+	for _, want := range []string{"TextPacketType = 0", "TextPacketType = 1", "TextPacketType = 5"} {
+		if !strings.Contains(normalized, want) {
+			t.Fatalf("generated Go omits shared enum value %q", want)
+		}
+	}
+}

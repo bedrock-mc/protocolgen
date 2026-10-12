@@ -528,7 +528,7 @@ func TestGenerateRustMapsCanonicalSemanticsToNativeTypes(t *testing.T) {
 	if !strings.Contains(files["src/wire.rs"], "nbt_codec!(\n    NetworkNbt,\n    NbtVariant::Network,") || strings.Contains(files["src/types.rs"], "pub struct Vec3") {
 		t.Fatalf("Rust shared types do not reflect native mapping:\n%s", files["src/types.rs"])
 	}
-	for _, dependency := range []string{`bytes = "1"`, `glam = "0.30"`, `uuid = "1"`} {
+	for _, dependency := range []string{`bytes = "1"`, `glam = "0.33"`, `uuid = "1"`} {
 		if !strings.Contains(files["Cargo.toml"], dependency) {
 			t.Fatalf("generated Cargo.toml omits %q:\n%s", dependency, files["Cargo.toml"])
 		}
@@ -817,5 +817,35 @@ func TestRustEnumAliasCanonicalNameSurvivesManifestRoundTrip(t *testing.T) {
 	}
 	if string(first) != string(second) {
 		t.Fatal("alias manifest serialization is not stable")
+	}
+}
+
+// An enum type used at sites that each allow a subset keeps every site's values.
+func TestGenerateRustMergesSharedEnumValuesAcrossSites(t *testing.T) {
+	first := manifest.Enum("u8", manifest.EnumValue{Name: "raw", Value: 0}, manifest.EnumValue{Name: "tip", Value: 5})
+	second := manifest.Enum("u8", manifest.EnumValue{Name: "chat", Value: 1})
+	first.Semantic, first.TypeID = "TextPacketType", "enums/TextPacketType"
+	second.Semantic, second.TypeID = first.Semantic, first.TypeID
+	pins := manifest.Provenance{Pins: []string{"fixture"}}
+	m := manifest.Manifest{
+		SchemaVersion: 2,
+		Target:        manifest.Target{MinecraftVersion: "fixture", ProtocolVersion: 2168},
+		Sources:       []manifest.SourcePin{{ID: "fixture", Kind: "synthetic", Revision: "fixture", Digest: "fixture:shared-enum", MinecraftVersion: "fixture", ProtocolVersion: 2168}},
+		Packets: []manifest.Packet{{ID: 1, Name: "TextPacket", Direction: manifest.DirectionClientbound, Fields: []manifest.Field{
+			{Ordinal: 0, Name: "First", Encode: first, Symmetry: manifest.Symmetric, Provenance: pins},
+			{Ordinal: 1, Name: "Second", Encode: second, Symmetry: manifest.Symmetric, Provenance: pins},
+		}}},
+	}
+	for _, contract := range []int{0, CodecContractVersion} {
+		files, err := GenerateFilesWithOptions(m, Options{CodecContract: contract})
+		if err != nil {
+			t.Fatal(err)
+		}
+		enums := files["src/enums.rs"]
+		for _, want := range []string{"0 => Self::Raw", "1 => Self::Chat", "5 => Self::Tip"} {
+			if !strings.Contains(enums, want) {
+				t.Fatalf("contract %d omits shared enum value %q:\n%s", contract, want, enums)
+			}
+		}
 	}
 }

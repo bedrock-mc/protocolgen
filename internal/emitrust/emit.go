@@ -481,7 +481,7 @@ func emitCargo(m manifest.Manifest, g *generator) string {
 	// the reader contract, not a per-manifest feature.
 	b.WriteString("\n[dependencies]\nbytes = \"1\"\n")
 	if g.usesGlam {
-		b.WriteString("glam = \"0.30\"\n")
+		b.WriteString("glam = \"0.33\"\n")
 	}
 	if g.usesUUID {
 		b.WriteString("uuid = \"1\"\n")
@@ -718,9 +718,18 @@ func (g *generator) rustType(node manifest.Node, hint string) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		if _, ok := g.definitions[name]; !ok {
+		existing, ok := g.definitions[name]
+		if !ok {
 			g.definitions[name] = definition{Name: name, TypeID: rustNodeTypeID(node), Kind: manifest.KindEnum, Underlying: underlying, Variants: append([]manifest.Variant(nil), node.Variants...), PrimitiveCode: node.Primitive.Code}
+			return name, nil
 		}
+		if existing.PrimitiveCode != node.Primitive.Code {
+			return "", fmt.Errorf("enum %s is encoded as both %s and %s", name, existing.PrimitiveCode, node.Primitive.Code)
+		}
+		if existing.Variants, err = manifest.MergeEnumVariants(name, existing.Variants, node.Variants); err != nil {
+			return "", err
+		}
+		g.definitions[name] = existing
 		return name, nil
 	case manifest.KindReserved, manifest.KindIgnored:
 		return "", fmt.Errorf("%s nodes require explicit write/discard codec semantics", node.Kind)

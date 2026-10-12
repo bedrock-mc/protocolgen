@@ -42,8 +42,6 @@ type RecipeIngredientSerializedData struct {
 func (x *RecipeIngredientSerializedData) Marshal(io IO) {
 	OrderedMap(io, &x.Descriptor, io.Varuint32, io.String, io.String)
 	io.Varint32(&x.AuxValue)
-	Minimum(io, &x.AuxValue, 0)
-	Maximum(io, &x.AuxValue, 32767)
 	io.Varint32(&x.StackSize)
 	Minimum(io, &x.StackSize, 0)
 	Maximum(io, &x.StackSize, 64)

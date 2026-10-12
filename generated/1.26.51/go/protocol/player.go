@@ -111,6 +111,7 @@ func MarshalPlayerListData(io IO, x *PlayerListData) {
 type PlayerListPacketType uint8
 
 const (
+	PlayerListPacketTypeAdd    PlayerListPacketType = 0
 	PlayerListPacketTypeRemove PlayerListPacketType = 1
 )
 
@@ -139,6 +140,7 @@ type PlayerLocationType int32
 
 const (
 	PlayerLocationTypePlayerLocationCoordinates PlayerLocationType = 0
+	PlayerLocationTypePlayerLocationHide        PlayerLocationType = 1
 )
 
 // Marshal reads or writes PlayerLocationType through its int32 wire encoding.

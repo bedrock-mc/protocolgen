@@ -5505,6 +5505,7 @@ pub enum HeightMapDataType {
     Hasdata,
     Alltoohigh,
     Alltoolow,
+    Allcopied,
     Unknown(u8),
 }
 
@@ -5515,6 +5516,7 @@ impl From<u8> for HeightMapDataType {
             1 => Self::Hasdata,
             2 => Self::Alltoohigh,
             3 => Self::Alltoolow,
+            4 => Self::Allcopied,
             value => Self::Unknown(value),
         }
     }
@@ -5527,6 +5529,7 @@ impl HeightMapDataType {
             Self::Hasdata => 1,
             Self::Alltoohigh => 2,
             Self::Alltoolow => 3,
+            Self::Allcopied => 4,
             Self::Unknown(value) => value,
         }
     }
@@ -8879,6 +8882,7 @@ impl wire::Decode for PlayerActionType {
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum PlayerListPacketType {
     #[default]
+    Add,
     Remove,
     Unknown(u8),
 }
@@ -8886,6 +8890,7 @@ pub enum PlayerListPacketType {
 impl From<u8> for PlayerListPacketType {
     fn from(value: u8) -> Self {
         match value {
+            0 => Self::Add,
             1 => Self::Remove,
             value => Self::Unknown(value),
         }
@@ -8895,6 +8900,7 @@ impl From<u8> for PlayerListPacketType {
 impl PlayerListPacketType {
     pub fn to_raw(self) -> u8 {
         match self {
+            Self::Add => 0,
             Self::Remove => 1,
             Self::Unknown(value) => value,
         }
@@ -8923,6 +8929,7 @@ impl wire::Decode for PlayerListPacketType {
 pub enum PlayerLocationType {
     #[default]
     PlayerLocationCoordinates,
+    PlayerLocationHide,
     Unknown(i32),
 }
 
@@ -8930,6 +8937,7 @@ impl From<i32> for PlayerLocationType {
     fn from(value: i32) -> Self {
         match value {
             0 => Self::PlayerLocationCoordinates,
+            1 => Self::PlayerLocationHide,
             value => Self::Unknown(value),
         }
     }
@@ -8939,6 +8947,7 @@ impl PlayerLocationType {
     pub fn to_raw(self) -> i32 {
         match self {
             Self::PlayerLocationCoordinates => 0,
+            Self::PlayerLocationHide => 1,
             Self::Unknown(value) => value,
         }
     }
@@ -9860,8 +9869,14 @@ impl wire::Decode for LegacyTelemetryType {
 pub enum TextPacketType {
     #[default]
     Raw,
+    Chat,
+    Translate,
+    Popup,
+    Jukeboxpopup,
     Tip,
     Systemmessage,
+    Whisper,
+    Announcement,
     Textobjectwhisper,
     Textobject,
     Textobjectannouncement,
@@ -9872,8 +9887,14 @@ impl From<u8> for TextPacketType {
     fn from(value: u8) -> Self {
         match value {
             0 => Self::Raw,
+            1 => Self::Chat,
+            2 => Self::Translate,
+            3 => Self::Popup,
+            4 => Self::Jukeboxpopup,
             5 => Self::Tip,
             6 => Self::Systemmessage,
+            7 => Self::Whisper,
+            8 => Self::Announcement,
             9 => Self::Textobjectwhisper,
             10 => Self::Textobject,
             11 => Self::Textobjectannouncement,
@@ -9886,8 +9907,14 @@ impl TextPacketType {
     pub fn to_raw(self) -> u8 {
         match self {
             Self::Raw => 0,
+            Self::Chat => 1,
+            Self::Translate => 2,
+            Self::Popup => 3,
+            Self::Jukeboxpopup => 4,
             Self::Tip => 5,
             Self::Systemmessage => 6,
+            Self::Whisper => 7,
+            Self::Announcement => 8,
             Self::Textobjectwhisper => 9,
             Self::Textobject => 10,
             Self::Textobjectannouncement => 11,

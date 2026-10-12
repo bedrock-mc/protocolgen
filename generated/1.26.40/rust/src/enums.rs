@@ -5130,6 +5130,7 @@ pub enum HeightMapDataType {
     HasData,
     AllTooHigh,
     AllTooLow,
+    AllCopied,
     Unknown(u8),
 }
 
@@ -5140,6 +5141,7 @@ impl From<u8> for HeightMapDataType {
             1 => Self::HasData,
             2 => Self::AllTooHigh,
             3 => Self::AllTooLow,
+            4 => Self::AllCopied,
             value => Self::Unknown(value),
         }
     }
@@ -5152,6 +5154,7 @@ impl HeightMapDataType {
             Self::HasData => 1,
             Self::AllTooHigh => 2,
             Self::AllTooLow => 3,
+            Self::AllCopied => 4,
             Self::Unknown(value) => value,
         }
     }
@@ -8459,6 +8462,7 @@ impl wire::Decode for PlayerActionType {
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default)]
 pub enum PlayerListPacketType {
     #[default]
+    Add,
     Remove,
     Unknown(u8),
 }
@@ -8466,6 +8470,7 @@ pub enum PlayerListPacketType {
 impl From<u8> for PlayerListPacketType {
     fn from(value: u8) -> Self {
         match value {
+            0 => Self::Add,
             1 => Self::Remove,
             value => Self::Unknown(value),
         }
@@ -8475,6 +8480,7 @@ impl From<u8> for PlayerListPacketType {
 impl PlayerListPacketType {
     pub fn to_raw(self) -> u8 {
         match self {
+            Self::Add => 0,
             Self::Remove => 1,
             Self::Unknown(value) => value,
         }
@@ -8503,6 +8509,7 @@ impl wire::Decode for PlayerListPacketType {
 pub enum PlayerLocationType {
     #[default]
     PlayerLocationCoordinates,
+    PlayerLocationHide,
     Unknown(i32),
 }
 
@@ -8510,6 +8517,7 @@ impl From<i32> for PlayerLocationType {
     fn from(value: i32) -> Self {
         match value {
             0 => Self::PlayerLocationCoordinates,
+            1 => Self::PlayerLocationHide,
             value => Self::Unknown(value),
         }
     }
@@ -8519,6 +8527,7 @@ impl PlayerLocationType {
     pub fn to_raw(self) -> i32 {
         match self {
             Self::PlayerLocationCoordinates => 0,
+            Self::PlayerLocationHide => 1,
             Self::Unknown(value) => value,
         }
     }

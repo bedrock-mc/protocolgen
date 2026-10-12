@@ -23,7 +23,6 @@ func (*ResourcePackChunkRequest) ID() uint32 {
 
 func (pk *ResourcePackChunkRequest) Marshal(io protocol.IO) {
 	io.String(&pk.ResourceName)
-	protocol.Pattern(io, &pk.ResourceName, "A string in the format of <uuid>_<semver>, where <uuid> is a valid UUID and <semver> is a valid semantic version")
 	io.Int32(&pk.Chunk)
 	protocol.Minimum(io, &pk.Chunk, 0)
 }

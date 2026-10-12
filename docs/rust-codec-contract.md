@@ -31,7 +31,8 @@ generated code reads, writes, bounds and reports those layouts.
 - Before anything is allocated, every declared length is checked against the
   remaining input, using the smallest wire size of one element from the
   manifest. If the input cannot hold the count, decoding fails with
-  `LengthNotRepresentable`.
+  `LengthNotRepresentable`, before any schema bound or limit is checked, so
+  a truncated packet is never reported as a bound violation.
 - `wire::Limits` has a default element ceiling, a default byte ceiling for
   strings and buffers, and per-field overrides by `FieldId`. Every
   length-prefixed site has a constant in `fields`, and `fields::PATHS` names
@@ -56,7 +57,11 @@ generated code reads, writes, bounds and reports those layouts.
   be computed after decoding without extra allocation.
 - Varints must use their shortest encoding and fit their width. A bool is true
   for any non-zero byte. Unknown enum values decode to `Unknown(raw)`, and an
-  unknown union selector is `UnknownVariant`.
+  unknown union selector is `UnknownVariant`. An enum type shared by several
+  fields names the values of every field.
+- Bitsets drop bits at or beyond their declared width in both directions, as
+  the client does. Only an encoding still unterminated after
+  `ceil(width / 7)` bytes is `InvalidBitset`.
 
 ## Zero-copy strings and borrowed views
 
