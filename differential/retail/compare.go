@@ -187,12 +187,16 @@ func check(expect expectation, want Expected, v Verdict) [][2]string {
 		if expect == expectUnknown {
 			outcome = OutcomeUnknown
 		}
-		switch {
-		case v.Outcome != outcome:
+		if v.Outcome != outcome {
 			add(KindDecode, describe(v))
-		case v.Encoded != want.Payload:
+			break
+		}
+		// Bytes and field stability are separate dimensions, so an exception
+		// for one cannot hide a failure in the other.
+		if v.Encoded != want.Payload {
 			add(KindReencode, fmt.Sprintf("encoded %s: %s", orNone(v.Encoded), v.Detail))
-		case expect == expectRoundTrip && v.RoundTrip != RoundTripSame:
+		}
+		if expect == expectRoundTrip && v.RoundTrip != RoundTripSame {
 			add(KindRoundTrip, describe(v))
 		}
 	case expectReject, expectDirection:

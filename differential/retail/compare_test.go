@@ -101,6 +101,21 @@ func TestReencodedBytesMustMatchTheEntry(t *testing.T) {
 	wantKinds(t, Compare(expected, verdicts), "go retail a.bin reencode")
 }
 
+// An accepted byte mismatch must not hide a round-trip failure on the same
+// entry.
+func TestReencodeExceptionDoesNotHideRoundTrip(t *testing.T) {
+	expected := testExpected()
+	verdicts := agreeing(expected)
+	edit(verdicts, DecoderGophertunnel, CaseCrafting, "a.bin", 0, func(v *Verdict) { v.Encoded, v.RoundTrip = "other", RoundTripDiffers })
+	found := Compare(expected, verdicts)
+	wantKinds(t, found, "gophertunnel crafting a.bin reencode", "gophertunnel crafting a.bin roundtrip")
+	exception := Exception{Decoder: DecoderGophertunnel, Case: CaseCrafting, Fixtures: []string{"a.bin"}, Kind: KindReencode}
+	report := Apply(found, []Exception{exception})
+	if len(report.Unexpected) != 1 || report.Unexpected[0].Kind != KindRoundTrip || len(report.Stale) != 0 {
+		t.Fatalf("report %+v", report)
+	}
+}
+
 func TestUnknownIDMustStayUnknown(t *testing.T) {
 	expected := testExpected()
 	verdicts := agreeing(expected)
