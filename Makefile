@@ -228,6 +228,34 @@ rust-contract:
 	cargo clippy --manifest-path $(CONTRACT_OUT)/Cargo.toml -- -D warnings
 	cargo test --manifest-path $(CONTRACT_OUT)/Cargo.toml
 
+# Run Cinnabar's pinned retail fixtures through Valentine, the codec-contract
+# crate, the generated Go and gophertunnel, and fail on any disagreement that
+# differential/retail/exceptions.json does not accept (see differential/README.md).
+RETAIL := differential/retail
+RETAIL_OUT := build/retail
+RETAIL_CINNABAR := build/cinnabar
+RETAIL_VERSION = $(shell jq -er .minecraft_version $(RETAIL)/corpus.json)
+RETAIL_RUNNER = cargo run --manifest-path $(RETAIL)/runner/Cargo.toml --target-dir build/retail-target --
+
+.PHONY: retail
+
+retail:
+	scripts/fetch-cinnabar.sh $(RETAIL)/corpus.json $(RETAIL_CINNABAR)
+	rm -rf $(RETAIL_OUT)
+	$(PROTOCOLGEN) emit-rust -codec-contract 1 \
+		-manifest generated/$(RETAIL_VERSION)/manifest.json \
+		-naming generated/$(RETAIL_VERSION)/naming.json \
+		-domains generated/$(RETAIL_VERSION)/domains.json \
+		-docs generated/$(RETAIL_VERSION)/docs.json \
+		-out $(RETAIL_OUT)/rust-contract
+	$(GO) -C $(RETAIL) vet ./...
+	$(GO) -C $(RETAIL) test ./...
+	$(GO) -C $(RETAIL) run ./cmd/retail prepare -cinnabar $(CURDIR)/$(RETAIL_CINNABAR) -out $(CURDIR)/$(RETAIL_OUT)
+	$(GO) -C $(RETAIL) run ./cmd/retail decode -out $(CURDIR)/$(RETAIL_OUT)
+	$(RETAIL_RUNNER) rust $(RETAIL_OUT)
+	$(RETAIL_RUNNER) valentine $(RETAIL_OUT)
+	$(GO) -C $(RETAIL) run ./cmd/retail compare -out $(CURDIR)/$(RETAIL_OUT)
+
 # Emit the 1.26.51 tree laid out like the gophertunnel checkout in
 # LAYOUT_GOPHERTUNNEL_DIR (constants beside their packets under fork names, fork field
 # names) into build/gophertunnel-layout, and refresh the seeded overlay and gap

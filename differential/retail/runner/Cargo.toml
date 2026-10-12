@@ -1,0 +1,15 @@
+[package]
+name = "retail-runner"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+# Standalone: `make retail` emits the contract crate and fetches the pinned
+# Cinnabar checkout into build/ before building this.
+[workspace]
+
+[dependencies]
+bedrock-protocol-1-26-51 = { path = "../../../build/retail/rust-contract" }
+bytes = "1"
+sha2 = "0.10"
+valentine = { path = "../../../build/cinnabar/crates/protocol/vendor/valentine", default-features = false, features = ["bedrock_1_26_51"] }

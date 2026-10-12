@@ -63,6 +63,7 @@ and fails on any drift from what is checked in; CI runs this. Other targets:
 | `vanilla-data BDS_BINARY=…` | Capture vanilla registries from a pinned BDS |
 | `differential` | Run the differential codec tests |
 | `rust-contract` | Emit, lint and test the codec-contract crate in `build/` |
+| `retail` | Compare Valentine, the contract crate, generated Go and gophertunnel on Cinnabar's pinned fixtures |
 
 ## CLI
 

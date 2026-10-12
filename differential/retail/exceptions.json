@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "minecraft_version": "1.26.51",
+  "protocol_version": 2193,
+  "exceptions": [
+    {
+      "decoder": "valentine",
+      "case": "unknown-id",
+      "fixture": "*",
+      "kind": "decode",
+      "reason": "Valentine has no unknown-packet value: decode_inner maps the header id through McpePacketName::from_raw, which fails with InvalidPacketId for an id outside its table, and Cinnabar's decode_batch returns that error for the whole batch. The generated contract keeps such entries as Decoded::Unknown instead.",
+      "evidence": [
+        "https://github.com/bedrock-mc/cinnabar/blob/991cf4c3a90a78c7d50c80382a9402e18b9fddbb/crates/protocol/vendor/valentine/bedrock_versions/v1_26_51/src/mcpe.rs (McpePacketName::from_raw, McpePacketData::decode_inner)",
+        "https://github.com/bedrock-mc/cinnabar/blob/991cf4c3a90a78c7d50c80382a9402e18b9fddbb/crates/protocol/src/codec.rs (decode_batch)"
+      ]
+    },
+    {
+      "decoder": "valentine",
+      "case": "wrong-sender",
+      "fixture": "*",
+      "kind": "accepted",
+      "reason": "Valentine decodes without knowing the sender: McpePacketData::decode_inner takes only the buffer and McpePacketArgs, so a clientbound packet sent by a client decodes like any other. The generated contract rejects it before reading the body.",
+      "evidence": [
+        "https://github.com/bedrock-mc/cinnabar/blob/991cf4c3a90a78c7d50c80382a9402e18b9fddbb/crates/protocol/vendor/valentine/bedrock_versions/v1_26_51/src/mcpe.rs (McpePacketData::decode_inner)"
+      ]
+    },
+    {
+      "decoder": "gophertunnel",
+      "case": "wrong-sender",
+      "fixture": "*",
+      "kind": "accepted",
+      "reason": "gophertunnel connections look the id up in the peer's pool (server pool for Dial, client pool for Listener) and decode an id missing from it as packet.Unknown rather than rejecting it, so a packet from the wrong peer is accepted as unknown or, where the fork registers the id for both peers, decoded.",
+      "evidence": [
+        "https://github.com/hashimthearab/gophertunnel/blob/169f954bbe81c88346618d7c37df1d020a778018/minecraft/packet.go (packetData.decodePacket)",
+        "https://github.com/hashimthearab/gophertunnel/blob/169f954bbe81c88346618d7c37df1d020a778018/minecraft/protocol.go (pool selection by peer)"
+      ]
+    }
+  ]
+}
