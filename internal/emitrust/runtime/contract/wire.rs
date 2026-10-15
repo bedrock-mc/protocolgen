@@ -1,6 +1,6 @@
 // Code generated from canonical protocol manifest v2. DO NOT EDIT.
 
-//! Wire runtime for Rust codec contract v1 (`docs/rust-codec-contract.md`).
+//! Wire runtime for Rust codec contract v2 (`docs/rust-codec-contract.md`).
 //!
 //! Decoding is slice-based: every declared length is checked against the
 //! remaining input and the reader's [`Limits`] before anything is allocated,
@@ -51,6 +51,8 @@ pub enum DecodeError {
     UnknownVariant { type_name: &'static str, value: i64 },
     InvalidBitset(&'static str),
     NbtDepthExceeded,
+    /// A recursive schema edge exceeded the client-owned decoded-tree depth budget.
+    RecursiveDepthExceeded,
     NbtMalformed(&'static str),
     UnknownPacketId(u32),
     /// A known packet id that the sending peer is not permitted to use.
@@ -85,6 +87,9 @@ impl fmt::Display for DecodeError {
             }
             Self::InvalidBitset(reason) => write!(f, "invalid bitset: {reason}"),
             Self::NbtDepthExceeded => write!(f, "NBT nesting exceeds {MAX_NBT_DEPTH}"),
+            Self::RecursiveDepthExceeded => {
+                write!(f, "recursive value depth exceeds {MAX_RECURSIVE_VALUE_DEPTH}")
+            }
             Self::NbtMalformed(reason) => write!(f, "malformed NBT: {reason}"),
             Self::UnknownPacketId(id) => write!(f, "unknown packet id {id}"),
             Self::UnexpectedDirection(id) => {
@@ -227,11 +232,18 @@ pub struct Reader<'a> {
     pos: usize,
     shared: Option<&'a bytes::Bytes>,
     limits: &'a Limits,
+    recursive_depth: usize,
 }
 
 impl<'a> Reader<'a> {
     pub fn new(buf: &'a [u8]) -> Self {
-        Self { buf, pos: 0, shared: None, limits: &UNBOUNDED }
+        Self {
+            buf,
+            pos: 0,
+            shared: None,
+            limits: &UNBOUNDED,
+            recursive_depth: 0,
+        }
     }
 
     /// Reads from `source` and shares its allocation with decoded byte fields.

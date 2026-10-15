@@ -106,7 +106,7 @@ func prepareWithOptions(m manifest.Manifest, options Options) (*generator, []pac
 			return nil, nil, err
 		}
 	}
-	if options.CodecContract < 0 || options.CodecContract > CodecContractVersion {
+	if options.CodecContract != 0 && options.CodecContract != CodecContractVersion {
 		return nil, nil, fmt.Errorf("unsupported Rust codec contract %d", options.CodecContract)
 	}
 	g := &generator{definitions: map[string]definition{}, identities: map[string]string{}, used: map[string]bool{}, standalone: standaloneRustStructs(m), resolver: naming.NewResolver(options.Naming), domains: options.Domains, docs: options.Docs, contract: options.CodecContract, sites: newFieldSites()}
@@ -267,6 +267,9 @@ func GenerateFilesWithOptions(m manifest.Manifest, options Options) (map[string]
 		"src/types.rs":   types,
 		"src/wire.rs":    emitWire(g),
 		"src/packets.rs": packets,
+	}
+	if recursive := emitRecursiveValueTests(m, definitions, g.contract); recursive != "" {
+		files["tests/recursive_values.rs"] = recursive
 	}
 	if g.contract == 0 {
 		files["src/lib.rs"] = emitLib(m)

@@ -11,7 +11,7 @@ import (
 
 // CodecContractVersion is the Rust codec contract (docs/rust-codec-contract.md)
 // this emitter implements when Options.CodecContract is set.
-const CodecContractVersion = 1
+const CodecContractVersion = 2
 
 // fieldSites names every length-prefixed decode site so consumers can bound
 // one field without bounding the rest. Ids follow emission order.

@@ -351,6 +351,11 @@ func (e *codecEmitter) directlyEncodable(node manifest.Node) bool {
 	}
 }
 
+// directlyDecodable keeps recursive edges at their decode site so the reader budget applies.
+func (e *codecEmitter) directlyDecodable(node manifest.Node) bool {
+	return node.Kind != manifest.KindRecursive && e.directlyEncodable(node)
+}
+
 func prefixCode(node manifest.Node) (string, error) {
 	if node.Prefix == nil || node.Prefix.Primitive == nil {
 		return "", fmt.Errorf("%s node has no primitive prefix", node.Kind)
@@ -425,7 +430,14 @@ func (e *codecEmitter) decode(node manifest.Node, hint, site, indent string) (st
 		}
 		return decodeCall(typ), nil
 
-	case manifest.KindStruct, manifest.KindUnion, manifest.KindRecursive:
+	case manifest.KindRecursive:
+		typ, err := e.g.rustType(node, hint)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("reader.with_recursive_value(|reader| <%s as wire::Decode>::decode(reader))?", typ), nil
+
+	case manifest.KindStruct, manifest.KindUnion:
 		typ, err := e.g.rustType(node, hint)
 		if err != nil {
 			return "", err
@@ -477,7 +489,7 @@ func (e *codecEmitter) decode(node manifest.Node, hint, site, indent string) (st
 		if err != nil {
 			return "", err
 		}
-		if e.directlyEncodable(*node.Element) {
+		if e.directlyDecodable(*node.Element) {
 			if lower, upper, ok := arrayBounds(node); ok && helper == "decode_collection" {
 				return fmt.Sprintf("wire::decode_collection_limits::<%s>(reader, %s%d, %d, %d)?", element, e.fieldArg(site), min, lower, upper), nil
 			}
@@ -498,7 +510,7 @@ func (e *codecEmitter) decode(node manifest.Node, hint, site, indent string) (st
 		if err != nil {
 			return "", err
 		}
-		if e.directlyEncodable(*node.Key) && e.directlyEncodable(*node.Value) {
+		if e.directlyDecodable(*node.Key) && e.directlyDecodable(*node.Value) {
 			if lower, upper, ok := mapBounds(node); ok {
 				return fmt.Sprintf("wire::decode_map_limits::<%s, %s>(reader, %s%d, %d, %d)?", keyType, valueType, e.fieldArg(site), min, lower, upper), nil
 			}

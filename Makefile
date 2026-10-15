@@ -214,7 +214,7 @@ verify-1.26.51: regen-1.26.51
 # Emit $(1)'s manifest under the Rust codec contract (docs/rust-codec-contract.md)
 # into the checked-in $(1)/rust-contract.
 define emit-rust-contract
-	$(PROTOCOLGEN) emit-rust -codec-contract 1 \
+	$(PROTOCOLGEN) emit-rust -codec-contract 2 \
 		-manifest $(1)/manifest.json \
 		-naming $(1)/naming.json \
 		-domains $(1)/domains.json \
