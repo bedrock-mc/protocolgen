@@ -49,6 +49,8 @@ pub enum DecodeError {
         value: i64,
     },
     NbtDepthExceeded,
+    /// A recursive schema edge exceeded the client-owned decoded-tree depth budget.
+    RecursiveDepthExceeded,
     NbtMalformed(&'static str),
     UnknownPacketId(u32),
     /// A known packet id that the sending peer is not permitted to use.
@@ -84,6 +86,12 @@ impl fmt::Display for DecodeError {
                 write!(f, "unknown {type_name} discriminant {value}")
             }
             Self::NbtDepthExceeded => write!(f, "NBT nesting exceeds {MAX_NBT_DEPTH}"),
+            Self::RecursiveDepthExceeded => {
+                write!(
+                    f,
+                    "recursive value depth exceeds {MAX_RECURSIVE_VALUE_DEPTH}"
+                )
+            }
             Self::NbtMalformed(reason) => write!(f, "malformed NBT: {reason}"),
             Self::UnknownPacketId(id) => write!(f, "unknown packet id {id}"),
             Self::UnexpectedDirection(id) => {
@@ -109,6 +117,7 @@ pub struct Reader<'a> {
     shared: Option<&'a bytes::Bytes>,
     collection_limit: usize,
     byte_buffer_limit: usize,
+    recursive_depth: usize,
 }
 
 impl<'a> Reader<'a> {
@@ -119,6 +128,7 @@ impl<'a> Reader<'a> {
             shared: None,
             collection_limit: MAX_COLLECTION_ELEMENTS,
             byte_buffer_limit: MAX_BYTE_BUFFER_LEN,
+            recursive_depth: 0,
         }
     }
 
@@ -716,6 +726,27 @@ pub fn validate_number_limits<T: PartialOrd + Copy>(
         return Err(DecodeError::SchemaConstraint("number above maximum"));
     }
     Ok(())
+}
+/// Client-owned ceiling on recursive schema edges along a decoded value's path.
+/// This bounds decoder stack use and the resulting owned tree's clone/drop depth;
+/// it is independent of collection/byte limits and is not a native protocol maximum.
+pub const MAX_RECURSIVE_VALUE_DEPTH: usize = 64;
+
+impl Reader<'_> {
+    /// Decodes one recursive child, restoring depth capacity on success or a decode error.
+    /// Refusal consumes no child bytes; cursor changes made by `decode` are not rolled back.
+    pub fn with_recursive_value<T>(
+        &mut self,
+        decode: impl FnOnce(&mut Self) -> DecodeResult<T>,
+    ) -> DecodeResult<T> {
+        if self.recursive_depth == MAX_RECURSIVE_VALUE_DEPTH {
+            return Err(DecodeError::RecursiveDepthExceeded);
+        }
+        self.recursive_depth += 1;
+        let result = decode(self);
+        self.recursive_depth -= 1;
+        result
+    }
 }
 
 // ---------------------------------------------------------------------------
