@@ -144,6 +144,13 @@ jobs:
             go.sum
             vanilla-data/go.sum
 
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+
+      - name: Verify Rust snapshots from checked manifests
+        run: make verify-rust GO_CACHE="$RUNNER_TEMP/protocolgen-go-cache"
+
       - name: Fetch pinned protocol sources
         run: |
           git clone --filter=blob:none --no-checkout https://github.com/Mojang/bedrock-protocol-docs.git "$RUNNER_TEMP/protocolgen-mojang"
@@ -157,10 +164,6 @@ jobs:
             GO_CACHE="$RUNNER_TEMP/protocolgen-go-cache" \
             MOJANG_DIR="$RUNNER_TEMP/protocolgen-mojang/json" \
             ENDSTONE_DIR="$RUNNER_TEMP/protocolgen-endstone"
-
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          components: rustfmt
 
       - name: Regenerate and verify 1.26.50
         run: |

@@ -26,6 +26,8 @@ var (
 	runtimePattern string
 	//go:embed runtime/tests.rs
 	runtimeTests string
+	//go:embed runtime/recursive.rs
+	runtimeRecursive string
 )
 
 // The codec-contract runtime replaces every fragment whose signatures the
@@ -55,6 +57,7 @@ func emitWire(g *generator) string {
 	}
 	var b strings.Builder
 	b.WriteString(runtimeWire)
+	b.WriteString(runtimeRecursive)
 	b.WriteString(runtimeCollections)
 	// bytes is an unconditional runtime dependency: Reader::from_shared and
 	// schema-bounded byte buffers use it even when this manifest has no public
@@ -80,6 +83,7 @@ func emitWire(g *generator) string {
 func emitContractWire(g *generator) string {
 	var b strings.Builder
 	b.WriteString(contractWire)
+	b.WriteString(runtimeRecursive)
 	b.WriteString(contractFrame)
 	if g.usesNbt {
 		b.WriteString(runtimeNbtScan)

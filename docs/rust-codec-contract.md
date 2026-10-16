@@ -1,9 +1,9 @@
 # Rust codec contract
 
 The API a Rust consumer such as Cinnabar can rely on from protocolgen's
-generated Rust crate. This is version 1.
+generated Rust crate. This is version 2.
 
-`protocolgen emit-rust -codec-contract 1` emits it. The default protocol's
+`protocolgen emit-rust -codec-contract 2` emits it. The default protocol's
 crate is checked in under `generated/<version>/rust-contract`, and
 `make rust-contract` regenerates it, fails on drift, then lints and tests it.
 Without the flag, `emit-rust` produces the profile-neutral crate under
@@ -22,6 +22,9 @@ generated code reads, writes, bounds and reports those layouts.
   protocolgen commit and can assert `CODEC_CONTRACT` at compile time.
 - Each crate carries its own `wire` runtime, so two protocol versions share
   no types.
+- Version 2 adds `DecodeError::RecursiveDepthExceeded` and a bounded recursive-value
+  decoder. Consumers upgrading from version 1 must update exhaustive error matches
+  and their contract assertion. Wire layouts and the canonical manifest are unchanged.
 - Field-site ids (`fields`) follow emission order and can change whenever the
   manifest changes. Use the constants or `fields::find(path)`, never raw
   numbers.
@@ -40,11 +43,19 @@ generated code reads, writes, bounds and reports those layouts.
   `Owner.field`, `Union::Variant.field`, `Union::Variant` for a payload, plus
   the suffixes `[]` (element), `{key}` and `{value}`. An optional value uses
   its field's site. Owners and fields use their Rust names.
-- `Limits::receiving_from(Peer::Server)` sets no ceiling beyond the input,
+- `Limits::receiving_from(Peer::Server)` sets no length ceiling beyond the input,
   matching gophertunnel's `Dial`, which reads with limits disabled.
   `Limits::receiving_from(Peer::Client)` caps collections at 4096 elements,
   matching the generated Go reader's `maxSliceLength`; gophertunnel's
   `Listener` also enables its limits.
+- Every recursive manifest edge acquires capacity from the reader's shared
+  `MAX_RECURSIVE_VALUE_DEPTH` budget before decoding its child. This client-owned
+  safety ceiling also bounds the resulting tree's recursive clone/drop depth;
+  collection and byte limits cannot disable it. Refusal returns
+  `RecursiveDepthExceeded` before consuming child bytes. Capacity is restored on
+  success or a decode error, while the cursor retains any bytes already read.
+  This policy does not state a native nesting maximum. Both Rust profiles use
+  the same runtime policy.
 - Allocation can fail without aborting. `wire::alloc_vec` reserves at most
   `MAX_EAGER_RESERVE_BYTES` (1 MiB) up front, and `wire::push` grows the
   vector with `try_reserve`. A refused allocation returns `AllocationFailed`.
@@ -78,7 +89,7 @@ generated code reads, writes, bounds and reports those layouts.
   consumer can route or forward on the id and decode later.
   `RawFrame::compact` copies one entry out so that a retained packet does
   not keep the whole batch alive.
-- Version 1 has no lifetime-parameterized view types (see Remaining work).
+- This version has no lifetime-parameterized view types (see Remaining work).
 
 ## Encoding
 

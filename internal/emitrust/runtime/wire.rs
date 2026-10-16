@@ -37,6 +37,8 @@ pub enum DecodeError {
     SchemaConstraint(&'static str),
     UnknownVariant { type_name: &'static str, value: i64 },
     NbtDepthExceeded,
+    /// A recursive schema edge exceeded the client-owned decoded-tree depth budget.
+    RecursiveDepthExceeded,
     NbtMalformed(&'static str),
     UnknownPacketId(u32),
     /// A known packet id that the sending peer is not permitted to use.
@@ -66,6 +68,9 @@ impl fmt::Display for DecodeError {
                 write!(f, "unknown {type_name} discriminant {value}")
             }
             Self::NbtDepthExceeded => write!(f, "NBT nesting exceeds {MAX_NBT_DEPTH}"),
+            Self::RecursiveDepthExceeded => {
+                write!(f, "recursive value depth exceeds {MAX_RECURSIVE_VALUE_DEPTH}")
+            }
             Self::NbtMalformed(reason) => write!(f, "malformed NBT: {reason}"),
             Self::UnknownPacketId(id) => write!(f, "unknown packet id {id}"),
             Self::UnexpectedDirection(id) => {
@@ -91,6 +96,7 @@ pub struct Reader<'a> {
     shared: Option<&'a bytes::Bytes>,
     collection_limit: usize,
     byte_buffer_limit: usize,
+    recursive_depth: usize,
 }
 
 impl<'a> Reader<'a> {
@@ -101,6 +107,7 @@ impl<'a> Reader<'a> {
             shared: None,
             collection_limit: MAX_COLLECTION_ELEMENTS,
             byte_buffer_limit: MAX_BYTE_BUFFER_LEN,
+            recursive_depth: 0,
         }
     }
 

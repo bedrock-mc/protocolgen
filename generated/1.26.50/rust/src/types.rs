@@ -8445,8 +8445,30 @@ impl wire::Decode for DynamicValue {
             2 => Self::Int64(<wire::I64LE as wire::Decode>::decode(reader)?),
             3 => Self::Double(<wire::F64LE as wire::Decode>::decode(reader)?),
             4 => Self::String(<String as wire::Decode>::decode(reader)?),
-            5 => Self::List(wire::decode_collection::<DynamicValue>(reader, 1)?),
-            6 => Self::Map(wire::decode_map::<String, DynamicValue>(reader, 2)?),
+            5 => Self::List({
+                let declared = u64::from(reader.read_var_u32()?);
+                let count = reader.checked_count(declared, 1)?;
+                let mut out: Vec<DynamicValue> = Vec::with_capacity(count);
+                for _ in 0..count {
+                    out.push(reader.with_recursive_value(|reader| {
+                        <DynamicValue as wire::Decode>::decode(reader)
+                    })?);
+                }
+                out
+            }),
+            6 => Self::Map({
+                let declared = u64::from(reader.read_var_u32()?);
+                let count = reader.checked_count(declared, 2)?;
+                let mut out: Vec<(String, DynamicValue)> = Vec::with_capacity(count);
+                for _ in 0..count {
+                    let key = <String as wire::Decode>::decode(reader)?;
+                    let value = reader.with_recursive_value(|reader| {
+                        <DynamicValue as wire::Decode>::decode(reader)
+                    })?;
+                    out.push((key, value));
+                }
+                out
+            }),
             value => {
                 return Err(wire::DecodeError::UnknownVariant {
                     type_name: "DynamicValue",

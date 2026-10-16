@@ -43,7 +43,7 @@ CANDIDATE_12660 := candidates/1.26.60-preview.25
 CLAIMS_12660_MOJANG ?= /tmp/protocolgen-1.26.60-preview.25-mojang-claims.json
 CLAIMS_12660_ENDSTONE ?= /tmp/protocolgen-1.26.60-preview.25-endstone-claims.json
 
-.PHONY: regen regen-1.26.50 regen-1.26.51 ingest-1.26.60 hotfix vanilla-data differential verify verify-1.26.50 verify-1.26.51 rust-contract
+.PHONY: regen regen-1.26.50 regen-1.26.51 ingest-1.26.60 hotfix vanilla-data differential verify verify-1.26.50 verify-1.26.51 rust-contract emit-rust regen-rust verify-rust
 
 differential:
 	$(GO) -C differential test ./...
@@ -80,12 +80,7 @@ regen:
 		-docs $(DOCS) \
 		-out generated/1.26.40/go \
 		-protocol-import protocolgen/generated/1.26.40/go/protocol
-	$(PROTOCOLGEN) emit-rust \
-		-manifest $(MANIFEST) \
-		-naming $(NAMING) \
-		-domains $(DOMAINS) \
-		-docs $(DOCS) \
-		-out generated/1.26.40/rust
+	$(call emit-rust,$(MANIFEST),generated/1.26.40/rust,-naming $(NAMING) -domains $(DOMAINS) -docs $(DOCS))
 	$(PROTOCOLGEN) parity \
 		-manifest testdata/parity/v2-small.json \
 		-axolotl testdata/parity/axolotl-v1-small.json
@@ -121,13 +116,7 @@ regen-1.26.50:
 		-docs $(TARGET_12650)/docs.json \
 		-out $(TARGET_12650)/go \
 		-protocol-import protocolgen/generated/1.26.50/go/protocol
-	$(PROTOCOLGEN) emit-rust \
-		-manifest $(TARGET_12650)/manifest.json \
-		-naming $(TARGET_12650)/naming.json \
-		-domains $(TARGET_12650)/domains.json \
-		-docs $(TARGET_12650)/docs.json \
-		-out $(TARGET_12650)/rust
-	cargo fmt --manifest-path $(TARGET_12650)/rust/Cargo.toml
+	$(call emit-rust-snapshot,$(TARGET_12650),rust)
 	$(GO) test ./generated/1.26.50/go/... -count=1
 	cargo test --manifest-path $(TARGET_12650)/rust/Cargo.toml
 
@@ -158,13 +147,7 @@ regen-1.26.51:
 		-docs $(TARGET_12651)/docs.json \
 		-out $(TARGET_12651)/go \
 		-protocol-import protocolgen/generated/1.26.51/go/protocol
-	$(PROTOCOLGEN) emit-rust \
-		-manifest $(TARGET_12651)/manifest.json \
-		-naming $(TARGET_12651)/naming.json \
-		-domains $(TARGET_12651)/domains.json \
-		-docs $(TARGET_12651)/docs.json \
-		-out $(TARGET_12651)/rust
-	cargo fmt --manifest-path $(TARGET_12651)/rust/Cargo.toml
+	$(call emit-rust-snapshot,$(TARGET_12651),rust)
 	$(call emit-rust-contract,$(TARGET_12651))
 	$(PROTOCOLGEN) verify-gophertunnel \
 		-manifest $(TARGET_12651)/manifest.json \
@@ -185,12 +168,7 @@ hotfix:
 		-docs $(HOTFIX_DOCS) \
 		-out generated/1.26.44/go \
 		-protocol-import protocolgen/generated/1.26.44/go/protocol
-	$(PROTOCOLGEN) emit-rust \
-		-manifest $(HOTFIX_MANIFEST) \
-		-naming $(HOTFIX_NAMING) \
-		-domains $(HOTFIX_DOMAINS) \
-		-docs $(HOTFIX_DOCS) \
-		-out generated/1.26.44/rust
+	$(call emit-rust,$(HOTFIX_MANIFEST),generated/1.26.44/rust,-naming $(HOTFIX_NAMING) -domains $(HOTFIX_DOMAINS) -docs $(HOTFIX_DOCS))
 
 vanilla-data:
 	@jq -e --arg version "$(VANILLA_VERSION)" '.releases[$$version].capture != null' $(RELEASE_INDEX) >/dev/null || (echo "No capture adapter for $(VANILLA_VERSION)" >&2; exit 2)
@@ -211,21 +189,52 @@ verify-1.26.50: regen-1.26.50
 verify-1.26.51: regen-1.26.51
 	@test -z "$$(git status --porcelain -- $(TARGET_12651))" || (echo "1.26.51 regeneration produced drift" >&2; exit 1)
 
-# Emit $(1)'s manifest under the Rust codec contract (docs/rust-codec-contract.md)
-# into the checked-in $(1)/rust-contract.
+# Emit manifest $(1) to $(2), passing optional profile/overlay flags $(3), then
+# normalize every Rust source and integration test to its checked-in representation.
+define emit-rust
+	$(PROTOCOLGEN) emit-rust -manifest $(1) -out $(2) $(3)
+	cargo fmt --manifest-path $(2)/Cargo.toml
+endef
+
+# Emit one snapshot directory $(1) into subdirectory $(2), requiring its reviewed
+# overlays and passing optional profile flags $(3) through the shared normalization.
+define emit-rust-snapshot
+	$(call emit-rust,$(1)/manifest.json,$(1)/$(2),-naming $(1)/naming.json -domains $(1)/domains.json -docs $(1)/docs.json $(3))
+endef
+
+# Emit the documented Rust codec contract into $(1)/rust-contract.
 define emit-rust-contract
-	$(PROTOCOLGEN) emit-rust -codec-contract 1 \
-		-manifest $(1)/manifest.json \
-		-naming $(1)/naming.json \
-		-domains $(1)/domains.json \
-		-docs $(1)/docs.json \
-		-out $(1)/rust-contract
-	cargo fmt --manifest-path $(1)/rust-contract/Cargo.toml
+	$(call emit-rust-snapshot,$(1),rust-contract,-codec-contract 2)
 endef
 
 # Regenerate the default protocol's codec-contract crate, fail on drift from
 # the checked-in copy, then lint and test it.
 CONTRACT_TARGET = generated/$(shell jq -er .default_protocol $(RELEASE_INDEX))
+
+# Regenerate ordinary Rust for SNAPSHOT_DIR using checked manifest inputs only.
+emit-rust:
+	@test -n "$(SNAPSHOT_DIR)" || (echo "SNAPSHOT_DIR is required" >&2; exit 2)
+	$(call emit-rust-snapshot,$(SNAPSHOT_DIR),rust)
+
+# Every release snapshot and the default contract profile share the production
+# emission/format path without requiring external documentation source checkouts.
+regen-rust:
+	@set -eu; \
+	snapshots=$$(jq -er '[.releases[].snapshot] | unique | .[]' $(RELEASE_INDEX)); \
+	for snapshot in $$snapshots; do \
+		$(MAKE) emit-rust SNAPSHOT_DIR="generated/$$snapshot"; \
+	done
+	$(call emit-rust-contract,$(CONTRACT_TARGET))
+
+verify-rust: regen-rust
+	@set -eu; \
+	paths=$$(jq -er '[.releases[].snapshot | "generated/\(.)/rust"] + ["generated/\(.default_protocol)/rust-contract"] | unique | .[]' $(RELEASE_INDEX)); \
+	drift=$$(git status --porcelain --untracked-files=all -- $$paths); \
+	if test -n "$$drift"; then \
+		echo "Rust regeneration produced drift:" >&2; \
+		printf '%s\n' "$$drift" >&2; \
+		exit 1; \
+	fi
 
 rust-contract:
 	$(call emit-rust-contract,$(CONTRACT_TARGET))

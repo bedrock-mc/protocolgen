@@ -23,7 +23,10 @@ pub const MAX_NBT_DEPTH: u32 = 512;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum DecodeError {
-    UnexpectedEof { needed: usize, remaining: usize },
+    UnexpectedEof {
+        needed: usize,
+        remaining: usize,
+    },
     /// A varint used more bytes than its canonical encoding requires.
     VarIntOverlong,
     /// A varint did not terminate within the width of its target type.
@@ -31,12 +34,23 @@ pub enum DecodeError {
     InvalidUtf8,
     NegativeLength(i64),
     /// A declared element count exceeded the configured bound.
-    LengthLimitExceeded { limit: usize, actual: usize },
+    LengthLimitExceeded {
+        limit: usize,
+        actual: usize,
+    },
     /// A declared element count could not be covered by the remaining bytes.
-    LengthNotRepresentable { needed: usize, remaining: usize },
+    LengthNotRepresentable {
+        needed: usize,
+        remaining: usize,
+    },
     SchemaConstraint(&'static str),
-    UnknownVariant { type_name: &'static str, value: i64 },
+    UnknownVariant {
+        type_name: &'static str,
+        value: i64,
+    },
     NbtDepthExceeded,
+    /// A recursive schema edge exceeded the client-owned decoded-tree depth budget.
+    RecursiveDepthExceeded,
     NbtMalformed(&'static str),
     UnknownPacketId(u32),
     /// A known packet id that the sending peer is not permitted to use.
@@ -49,7 +63,10 @@ impl fmt::Display for DecodeError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::UnexpectedEof { needed, remaining } => {
-                write!(f, "unexpected end of input: needed {needed}, {remaining} remaining")
+                write!(
+                    f,
+                    "unexpected end of input: needed {needed}, {remaining} remaining"
+                )
             }
             Self::VarIntOverlong => write!(f, "varint is not canonically encoded"),
             Self::VarIntTooLarge => write!(f, "varint exceeds the width of its target type"),
@@ -59,13 +76,22 @@ impl fmt::Display for DecodeError {
                 write!(f, "declared length {actual} exceeds limit {limit}")
             }
             Self::LengthNotRepresentable { needed, remaining } => {
-                write!(f, "declared length needs {needed} bytes, {remaining} remaining")
+                write!(
+                    f,
+                    "declared length needs {needed} bytes, {remaining} remaining"
+                )
             }
             Self::SchemaConstraint(reason) => write!(f, "schema constraint violated: {reason}"),
             Self::UnknownVariant { type_name, value } => {
                 write!(f, "unknown {type_name} discriminant {value}")
             }
             Self::NbtDepthExceeded => write!(f, "NBT nesting exceeds {MAX_NBT_DEPTH}"),
+            Self::RecursiveDepthExceeded => {
+                write!(
+                    f,
+                    "recursive value depth exceeds {MAX_RECURSIVE_VALUE_DEPTH}"
+                )
+            }
             Self::NbtMalformed(reason) => write!(f, "malformed NBT: {reason}"),
             Self::UnknownPacketId(id) => write!(f, "unknown packet id {id}"),
             Self::UnexpectedDirection(id) => {
@@ -91,6 +117,7 @@ pub struct Reader<'a> {
     shared: Option<&'a bytes::Bytes>,
     collection_limit: usize,
     byte_buffer_limit: usize,
+    recursive_depth: usize,
 }
 
 impl<'a> Reader<'a> {
@@ -101,12 +128,16 @@ impl<'a> Reader<'a> {
             shared: None,
             collection_limit: MAX_COLLECTION_ELEMENTS,
             byte_buffer_limit: MAX_BYTE_BUFFER_LEN,
+            recursive_depth: 0,
         }
     }
 
     /// Reads from `source` and shares its allocation with decoded byte buffers.
     pub fn from_shared(source: &'a bytes::Bytes) -> Self {
-        Self { shared: Some(source), ..Self::new(source) }
+        Self {
+            shared: Some(source),
+            ..Self::new(source)
+        }
     }
 
     pub fn collection_limit(&self) -> usize {
@@ -170,7 +201,10 @@ impl<'a> Reader<'a> {
 
     pub fn take(&mut self, count: usize) -> DecodeResult<&'a [u8]> {
         if count > self.remaining() {
-            return Err(DecodeError::UnexpectedEof { needed: count, remaining: self.remaining() });
+            return Err(DecodeError::UnexpectedEof {
+                needed: count,
+                remaining: self.remaining(),
+            });
         }
         let start = self.pos;
         self.pos += count;
@@ -263,12 +297,18 @@ impl<'a> Reader<'a> {
         limit: usize,
     ) -> DecodeResult<usize> {
         if declared > limit as u64 {
-            return Err(DecodeError::LengthLimitExceeded { limit, actual: declared as usize });
+            return Err(DecodeError::LengthLimitExceeded {
+                limit,
+                actual: declared as usize,
+            });
         }
         let count = declared as usize;
         let needed = count.saturating_mul(min_element_size.max(1));
         if needed > self.remaining() {
-            return Err(DecodeError::LengthNotRepresentable { needed, remaining: self.remaining() });
+            return Err(DecodeError::LengthNotRepresentable {
+                needed,
+                remaining: self.remaining(),
+            });
         }
         Ok(count)
     }
@@ -301,7 +341,9 @@ impl Writer {
     }
 
     pub fn with_capacity(capacity: usize) -> Self {
-        Self { buf: Vec::with_capacity(capacity) }
+        Self {
+            buf: Vec::with_capacity(capacity),
+        }
     }
 
     pub fn into_inner(self) -> Vec<u8> {
@@ -569,7 +611,12 @@ pub fn encode_collection<T: Encode>(writer: &mut Writer, values: &[T]) {
     }
 }
 
-pub fn encode_collection_limits<T: Encode>(writer: &mut Writer, values: &[T], minimum: u64, maximum: u64) {
+pub fn encode_collection_limits<T: Encode>(
+    writer: &mut Writer,
+    values: &[T],
+    minimum: u64,
+    maximum: u64,
+) {
     assert_length(values.len(), minimum, maximum);
     encode_collection(writer, values);
 }
@@ -605,7 +652,10 @@ pub fn decode_collection_limits<T: Decode>(
 }
 
 pub fn assert_length(actual: usize, minimum: u64, maximum: u64) {
-    assert!(validate_length(actual as u64, minimum, maximum).is_ok(), "length outside schema limits");
+    assert!(
+        validate_length(actual as u64, minimum, maximum).is_ok(),
+        "length outside schema limits"
+    );
 }
 
 fn validate_length(actual: u64, minimum: u64, maximum: u64) -> DecodeResult<()> {
@@ -623,12 +673,18 @@ pub fn encode_string_limits(writer: &mut Writer, value: &str, minimum: u64, maxi
     writer.write_str(value);
 }
 
-pub fn decode_string_limits(reader: &mut Reader<'_>, minimum: u64, maximum: u64) -> DecodeResult<String> {
+pub fn decode_string_limits(
+    reader: &mut Reader<'_>,
+    minimum: u64,
+    maximum: u64,
+) -> DecodeResult<String> {
     let declared = u64::from(reader.read_var_u32()?);
     validate_length(declared, minimum, maximum)?;
     let count = reader.checked_count_with(declared, 1, reader.byte_buffer_limit())?;
     let bytes = reader.take(count)?;
-    std::str::from_utf8(bytes).map(str::to_owned).map_err(|_| DecodeError::InvalidUtf8)
+    std::str::from_utf8(bytes)
+        .map(str::to_owned)
+        .map_err(|_| DecodeError::InvalidUtf8)
 }
 
 pub fn encode_bytes_limits(writer: &mut Writer, value: &[u8], minimum: u64, maximum: u64) {
@@ -636,18 +692,33 @@ pub fn encode_bytes_limits(writer: &mut Writer, value: &[u8], minimum: u64, maxi
     writer.write_byte_slice(value);
 }
 
-pub fn decode_bytes_limits(reader: &mut Reader<'_>, minimum: u64, maximum: u64) -> DecodeResult<bytes::Bytes> {
+pub fn decode_bytes_limits(
+    reader: &mut Reader<'_>,
+    minimum: u64,
+    maximum: u64,
+) -> DecodeResult<bytes::Bytes> {
     let declared = u64::from(reader.read_var_u32()?);
     validate_length(declared, minimum, maximum)?;
     let count = reader.checked_count_with(declared, 1, reader.byte_buffer_limit())?;
     reader.take_shared(count)
 }
 
-pub fn assert_number_limits<T: PartialOrd + Copy>(value: T, minimum: Option<T>, maximum: Option<T>) {
-    assert!(validate_number_limits(value, minimum, maximum).is_ok(), "number outside schema limits");
+pub fn assert_number_limits<T: PartialOrd + Copy>(
+    value: T,
+    minimum: Option<T>,
+    maximum: Option<T>,
+) {
+    assert!(
+        validate_number_limits(value, minimum, maximum).is_ok(),
+        "number outside schema limits"
+    );
 }
 
-pub fn validate_number_limits<T: PartialOrd + Copy>(value: T, minimum: Option<T>, maximum: Option<T>) -> DecodeResult<()> {
+pub fn validate_number_limits<T: PartialOrd + Copy>(
+    value: T,
+    minimum: Option<T>,
+    maximum: Option<T>,
+) -> DecodeResult<()> {
     if minimum.is_some_and(|minimum| value < minimum) {
         return Err(DecodeError::SchemaConstraint("number below minimum"));
     }
@@ -655,6 +726,27 @@ pub fn validate_number_limits<T: PartialOrd + Copy>(value: T, minimum: Option<T>
         return Err(DecodeError::SchemaConstraint("number above maximum"));
     }
     Ok(())
+}
+/// Client-owned ceiling on recursive schema edges along a decoded value's path.
+/// This bounds decoder stack use and the resulting owned tree's clone/drop depth;
+/// it is independent of collection/byte limits and is not a native protocol maximum.
+pub const MAX_RECURSIVE_VALUE_DEPTH: usize = 64;
+
+impl Reader<'_> {
+    /// Decodes one recursive child, restoring depth capacity on success or a decode error.
+    /// Refusal consumes no child bytes; cursor changes made by `decode` are not rolled back.
+    pub fn with_recursive_value<T>(
+        &mut self,
+        decode: impl FnOnce(&mut Self) -> DecodeResult<T>,
+    ) -> DecodeResult<T> {
+        if self.recursive_depth == MAX_RECURSIVE_VALUE_DEPTH {
+            return Err(DecodeError::RecursiveDepthExceeded);
+        }
+        self.recursive_depth += 1;
+        let result = decode(self);
+        self.recursive_depth -= 1;
+        result
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -693,7 +785,12 @@ pub fn encode_map<K: Encode, V: Encode>(writer: &mut Writer, entries: &[(K, V)])
     }
 }
 
-pub fn encode_map_limits<K: Encode, V: Encode>(writer: &mut Writer, entries: &[(K, V)], minimum: u64, maximum: u64) {
+pub fn encode_map_limits<K: Encode, V: Encode>(
+    writer: &mut Writer,
+    entries: &[(K, V)],
+    minimum: u64,
+    maximum: u64,
+) {
     assert_length(entries.len(), minimum, maximum);
     encode_map(writer, entries);
 }
@@ -780,7 +877,9 @@ pub fn decode_bitset<const N: usize>(reader: &mut Reader<'_>, bits: u64) -> Deco
         let value = reader.read_u8()?;
         let width = (bits - offset).min(7);
         if width < 7 && u64::from(value & 0x7f) >= (1u64 << width) {
-            return Err(DecodeError::NbtMalformed("bitset bits outside declared width"));
+            return Err(DecodeError::NbtMalformed(
+                "bitset bits outside declared width",
+            ));
         }
         for bit in 0..width {
             if value & (1 << bit) != 0 {
@@ -1136,18 +1235,25 @@ static SCHEMA_PATTERNS: LazyLock<Mutex<HashMap<&'static str, regex::Regex>>> =
     LazyLock::new(|| Mutex::new(HashMap::new()));
 
 pub fn assert_pattern(value: &str, pattern: &'static str) {
-    assert!(validate_pattern(value, pattern).is_ok(), "string does not match schema pattern");
+    assert!(
+        validate_pattern(value, pattern).is_ok(),
+        "string does not match schema pattern"
+    );
 }
 
 pub fn validate_pattern(value: &str, pattern: &'static str) -> DecodeResult<()> {
-    let mut patterns = SCHEMA_PATTERNS.lock().expect("schema pattern cache poisoned");
+    let mut patterns = SCHEMA_PATTERNS
+        .lock()
+        .expect("schema pattern cache poisoned");
     let compiled = patterns.entry(pattern).or_insert_with(|| {
         regex::Regex::new(pattern).expect("manifest contains an invalid schema pattern")
     });
     if compiled.is_match(value) {
         Ok(())
     } else {
-        Err(DecodeError::SchemaConstraint("string does not match pattern"))
+        Err(DecodeError::SchemaConstraint(
+            "string does not match pattern",
+        ))
     }
 }
 
@@ -1160,7 +1266,9 @@ mod pattern_tests {
         assert_eq!(validate_pattern("abc", "^[a-z]+$"), Ok(()));
         assert_eq!(
             validate_pattern("123", "^[a-z]+$"),
-            Err(DecodeError::SchemaConstraint("string does not match pattern"))
+            Err(DecodeError::SchemaConstraint(
+                "string does not match pattern"
+            ))
         );
     }
 }
@@ -1238,7 +1346,10 @@ mod runtime_tests {
         // Within the limit, but more elements than the input could hold.
         assert_eq!(
             reader.checked_count(100, 8),
-            Err(DecodeError::LengthNotRepresentable { needed: 800, remaining: 4 })
+            Err(DecodeError::LengthNotRepresentable {
+                needed: 800,
+                remaining: 4
+            })
         );
         assert_eq!(reader.checked_count(4, 1), Ok(4));
     }
@@ -1312,7 +1423,12 @@ mod bitset_tests {
 
     #[test]
     fn bitsets_round_trip() {
-        for words in [[0u64, 0, 0], [1, 0, 0], [0, 0, 1 << 2], [u64::MAX, u64::MAX, 0b111]] {
+        for words in [
+            [0u64, 0, 0],
+            [1, 0, 0],
+            [0, 0, 1 << 2],
+            [u64::MAX, u64::MAX, 0b111],
+        ] {
             let mut writer = Writer::new();
             encode_bitset(&mut writer, &words, 131);
             let decoded: [u64; 3] =

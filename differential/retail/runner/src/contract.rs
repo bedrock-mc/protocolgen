@@ -163,7 +163,7 @@ fn class(error: &DecodeError) -> &'static str {
         DecodeError::UnexpectedEof { .. } | DecodeError::LengthNotRepresentable { .. } => "eof",
         DecodeError::VarIntOverlong | DecodeError::VarIntTooLarge => "varint",
         DecodeError::NegativeLength(_) => "length",
-        DecodeError::LengthLimitExceeded { .. } => "limit",
+        DecodeError::LengthLimitExceeded { .. } | DecodeError::RecursiveDepthExceeded => "limit",
         DecodeError::AllocationFailed { .. } => "alloc",
         DecodeError::SchemaConstraint(_) => "schema",
         DecodeError::UnknownVariant { .. } => "variant",

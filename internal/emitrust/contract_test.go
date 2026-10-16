@@ -1,6 +1,7 @@
 package emitrust
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
@@ -48,8 +49,10 @@ func TestContractOutputIsOptIn(t *testing.T) {
 }
 
 func TestContractRejectsUnknownVersions(t *testing.T) {
-	if _, err := GenerateFilesWithOptions(contractFixture(), Options{CodecContract: CodecContractVersion + 1}); err == nil {
-		t.Fatal("an unimplemented codec contract version was accepted")
+	for _, version := range []int{-1, 1, CodecContractVersion + 1} {
+		if _, err := GenerateFilesWithOptions(contractFixture(), Options{CodecContract: version}); err == nil {
+			t.Fatalf("unimplemented codec contract version %d was accepted", version)
+		}
 	}
 }
 
@@ -121,7 +124,7 @@ func TestContractFramesPreserveUnknownPackets(t *testing.T) {
 		t.Fatal("contract packets redefine Peer instead of using the wire runtime")
 	}
 	lib := files["src/lib.rs"]
-	for _, want := range []string{"pub const CODEC_CONTRACT: u32 = 1;", "pub const MANIFEST_SHA256: &str = \"", "pub mod fields;"} {
+	for _, want := range []string{fmt.Sprintf("pub const CODEC_CONTRACT: u32 = %d;", CodecContractVersion), "pub const MANIFEST_SHA256: &str = \"", "pub mod fields;"} {
 		if !strings.Contains(lib, want) {
 			t.Fatalf("contract lib.rs omits %q:\n%s", want, lib)
 		}

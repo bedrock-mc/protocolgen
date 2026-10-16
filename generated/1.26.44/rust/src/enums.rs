@@ -789,7 +789,9 @@ impl wire::Encode for ActorType {
 
 impl wire::Decode for ActorType {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::ZigZag32 as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -1478,7 +1480,9 @@ impl wire::Encode for EducationEditionOffer {
 
 impl wire::Decode for EducationEditionOffer {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::VarUInt as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::VarUInt as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -1706,7 +1710,9 @@ impl wire::Encode for InventoryLayout {
 
 impl wire::Decode for InventoryLayout {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::ZigZag32 as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -1767,7 +1773,9 @@ impl wire::Encode for InventoryLeftTabIndex {
 
 impl wire::Decode for InventoryLeftTabIndex {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::ZigZag32 as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -1819,7 +1827,9 @@ impl wire::Encode for InventoryRightTabIndex {
 
 impl wire::Decode for InventoryRightTabIndex {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::ZigZag32 as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -1865,7 +1875,9 @@ impl wire::Encode for InventorySourceInventorySourceFlags {
 
 impl wire::Decode for InventorySourceInventorySourceFlags {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::VarUInt as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::VarUInt as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -1920,7 +1932,9 @@ impl wire::Encode for InventorySourceType {
 
 impl wire::Decode for InventorySourceType {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::VarUInt as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::VarUInt as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -1968,7 +1982,9 @@ impl wire::Encode for ItemReleaseInventoryTransactionActionType {
 
 impl wire::Decode for ItemReleaseInventoryTransactionActionType {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::ZigZag32 as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -2020,7 +2036,9 @@ impl wire::Encode for ItemUseInventoryTransactionActionType {
 
 impl wire::Decode for ItemUseInventoryTransactionActionType {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::ZigZag32 as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -2210,7 +2228,9 @@ impl wire::Encode for ItemUseOnActorInventoryTransactionActionType {
 
 impl wire::Decode for ItemUseOnActorInventoryTransactionActionType {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::ZigZag32 as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -2259,7 +2279,9 @@ impl wire::Encode for ItemVersion {
 
 impl wire::Decode for ItemVersion {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::ZigZag32 as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -3889,7 +3911,9 @@ impl wire::Encode for ClientPlayMode {
 
 impl wire::Decode for ClientPlayMode {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::VarUInt as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::VarUInt as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -4587,7 +4611,9 @@ impl wire::Encode for ConnectionDisconnectFailReason {
 
 impl wire::Decode for ConnectionDisconnectFailReason {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::ZigZag32 as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -4700,7 +4726,9 @@ impl wire::Encode for CoordinateEvaluationOrder {
 
 impl wire::Decode for CoordinateEvaluationOrder {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::ZigZag32 as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -4752,7 +4780,9 @@ impl wire::Encode for EditorWorldType {
 
 impl wire::Decode for EditorWorldType {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::ZigZag32 as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -4810,7 +4840,9 @@ impl wire::Encode for GameType {
 
 impl wire::Decode for GameType {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::ZigZag32 as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -4871,7 +4903,9 @@ impl wire::Encode for GeneratorType {
 
 impl wire::Decode for GeneratorType {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::ZigZag32 as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -5253,7 +5287,9 @@ impl wire::Encode for HudElement {
 
 impl wire::Decode for HudElement {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::ZigZag32 as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -5299,7 +5335,9 @@ impl wire::Encode for HudVisibility {
 
 impl wire::Decode for HudVisibility {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::ZigZag32 as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -5537,7 +5575,9 @@ impl wire::Encode for InputData {
 
 impl wire::Decode for InputData {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::ZigZag32 as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -5595,7 +5635,9 @@ impl wire::Encode for InputMode {
 
 impl wire::Decode for InputMode {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::VarUInt as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::VarUInt as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -5833,7 +5875,9 @@ impl wire::Encode for LegacyArmorSlot {
 
 impl wire::Decode for LegacyArmorSlot {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::ZigZag32 as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -5891,7 +5935,9 @@ impl wire::Encode for LegacyDifficulty {
 
 impl wire::Decode for LegacyDifficulty {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::ZigZag32 as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -6673,7 +6719,9 @@ impl wire::Encode for MovementEffectType {
 
 impl wire::Decode for MovementEffectType {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::ZigZag32 as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -6722,7 +6770,9 @@ impl wire::Encode for MultiplayerSettingsType {
 
 impl wire::Decode for MultiplayerSettingsType {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::ZigZag32 as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -6774,7 +6824,9 @@ impl wire::Encode for NewInteractionModel {
 
 impl wire::Decode for NewInteractionModel {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::ZigZag32 as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -6930,7 +6982,9 @@ impl wire::Encode for PacketViolationSeverity {
 
 impl wire::Decode for PacketViolationSeverity {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::ZigZag32 as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -6976,7 +7030,9 @@ impl wire::Encode for PacketViolationType {
 
 impl wire::Decode for PacketViolationType {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::ZigZag32 as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -7025,7 +7081,9 @@ impl wire::Encode for PersonaAnimatedTextureType {
 
 impl wire::Decode for PersonaAnimatedTextureType {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::VarUInt as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::VarUInt as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -7071,7 +7129,9 @@ impl wire::Encode for PersonaAnimationExpression {
 
 impl wire::Decode for PersonaAnimationExpression {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::VarUInt as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::VarUInt as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -7297,7 +7357,9 @@ impl wire::Encode for RandomDistributionType {
 
 impl wire::Decode for RandomDistributionType {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::ZigZag32 as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -7627,7 +7689,9 @@ impl wire::Encode for ServerEditorConnectionPolicy {
 
 impl wire::Decode for ServerEditorConnectionPolicy {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::ZigZag32 as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -7725,7 +7789,9 @@ impl wire::Encode for ServerboundLoadingScreenType {
 
 impl wire::Decode for ServerboundLoadingScreenType {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::ZigZag32 as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -7881,7 +7947,9 @@ impl wire::Encode for SocialGamePublishSetting {
 
 impl wire::Decode for SocialGamePublishSetting {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::ZigZag32 as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -8022,7 +8090,9 @@ impl wire::Encode for SpawnPositionType {
 
 impl wire::Decode for SpawnPositionType {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::ZigZag32 as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -8187,7 +8257,9 @@ impl wire::Encode for TitleType {
 
 impl wire::Decode for TitleType {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::ZigZag32 as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -8290,7 +8362,9 @@ impl wire::Encode for NpcDialogueActionType {
 
 impl wire::Decode for NpcDialogueActionType {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::ZigZag32 as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -8455,7 +8529,9 @@ impl wire::Encode for PlayerActionType {
 
 impl wire::Decode for PlayerActionType {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::ZigZag32 as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -8547,7 +8623,9 @@ impl wire::Encode for PlayerLocationType {
 
 impl wire::Decode for PlayerLocationType {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::ZigZag32 as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -8848,7 +8926,9 @@ impl wire::Encode for RecipeUnlockingRequirementUnlockingContext {
 
 impl wire::Decode for RecipeUnlockingRequirementUnlockingContext {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::ZigZag32 as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -9080,7 +9160,9 @@ impl wire::Encode for StructureBlockType {
 
 impl wire::Decode for StructureBlockType {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::ZigZag32 as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 
@@ -9425,7 +9507,9 @@ impl wire::Encode for LegacyTelemetryType {
 
 impl wire::Decode for LegacyTelemetryType {
     fn decode(reader: &mut wire::Reader<'_>) -> wire::DecodeResult<Self> {
-        Ok(Self::from(<wire::ZigZag32 as wire::Decode>::decode(reader)?.0))
+        Ok(Self::from(
+            <wire::ZigZag32 as wire::Decode>::decode(reader)?.0,
+        ))
     }
 }
 

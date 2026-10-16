@@ -8,11 +8,12 @@ where
     T: Encode + Decode + Default + PartialEq + std::fmt::Debug,
 {
     let value = T::default();
-    let bytes = match std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| value.encode_to_vec())) {
-        Ok(bytes) => bytes,
-        Err(payload) if schema_constraint_panic(payload.as_ref()) => return,
-        Err(payload) => std::panic::resume_unwind(payload),
-    };
+    let bytes =
+        match std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| value.encode_to_vec())) {
+            Ok(bytes) => bytes,
+            Err(payload) if schema_constraint_panic(payload.as_ref()) => return,
+            Err(payload) => std::panic::resume_unwind(payload),
+        };
     match T::decode_exact(&bytes) {
         Ok(decoded) => assert_eq!(decoded, value, "{name} did not survive a round trip"),
         Err(error) => panic!("{name} could not decode its own encoding: {error}"),
